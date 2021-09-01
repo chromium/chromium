@@ -20,9 +20,15 @@ namespace extensions {
 namespace {
 
 std::vector<std::unique_ptr<ArgumentSpec>> ValueListToArgumentSpecs(
-    const base::Value& specification_list) {
+    const base::Value& specification_list,
+    bool uses_returns_async) {
   std::vector<std::unique_ptr<ArgumentSpec>> signature;
   auto size = specification_list.GetList().size();
+  // If the API specification uses the returns_async format we will be pushing a
+  // callback onto the end of the argument spec list during the call to the ctor
+  // later, so we make room for it now when we reserve the size.
+  if (uses_returns_async)
+    size++;
   signature.reserve(size);
   for (const auto& value : specification_list.GetList()) {
     CHECK(value.is_dict());
@@ -47,8 +53,10 @@ std::unique_ptr<APISignature::ReturnsAsync> BuildReturnsAsyncFromValues(
   if (binding::IsResponseValidationEnabled()) {
     const base::Value* callback_params =
         returns_async_spec.FindKeyOfType("parameters", base::Value::Type::LIST);
-    if (callback_params)
-      returns_async->signature = ValueListToArgumentSpecs(*callback_params);
+    if (callback_params) {
+      returns_async->signature =
+          ValueListToArgumentSpecs(*callback_params, false);
+    }
   }
   return returns_async;
 }
@@ -479,16 +487,15 @@ std::unique_ptr<APISignature> APISignature::CreateFromValues(
     const base::Value& spec_list,
     const base::Value* returns_async,
     BindingAccessChecker* access_checker) {
-  // TODO(tjudkins): There is a slight-inefficiency in ValueListToArgumentSpecs,
-  // in that it reserves a size for argument_specs based on the size of the
-  // spec_list, but for returns_async specified APIs we then add an extra value
-  // to the end of it in the APISignature ctor.
-  auto argument_specs = ValueListToArgumentSpecs(spec_list);
-  const base::Value* returns_async_spec = nullptr;
-  if (returns_async) {
-    returns_async_spec = returns_async;
-  } else if (!argument_specs.empty() &&
-             argument_specs.back()->type() == ArgumentType::FUNCTION) {
+  bool uses_returns_async = returns_async != nullptr;
+  auto argument_specs = ValueListToArgumentSpecs(spec_list, uses_returns_async);
+
+  // Asynchronous returns for an API are either defined in the returns_async
+  // part of the specification or as a trailing function argument.
+  const base::Value* returns_async_spec = returns_async;
+  if (!argument_specs.empty() &&
+      argument_specs.back()->type() == ArgumentType::FUNCTION) {
+    DCHECK(!returns_async_spec);
     returns_async_spec = &spec_list.GetList().back();
     argument_specs.pop_back();
   }
