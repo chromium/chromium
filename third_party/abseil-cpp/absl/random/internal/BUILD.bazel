@@ -626,7 +626,7 @@ cc_test(
     name = "randen_hwaes_test",
     size = "small",
     srcs = ["randen_hwaes_test.cc"],
-    copts = ABSL_TEST_COPTS,
+    copts = ABSL_TEST_COPTS + ABSL_RANDOM_RANDEN_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ABSL_RANDOM_NONPORTABLE_TAGS,
     deps = [

@@ -1921,11 +1921,12 @@ class raw_hash_set {
 
 // Erases all elements that satisfy the predicate `pred` from the container `c`.
 template <typename P, typename H, typename E, typename A, typename Predicate>
-void EraseIf(Predicate pred, raw_hash_set<P, H, E, A>* c) {
+void EraseIf(Predicate& pred, raw_hash_set<P, H, E, A>* c) {
   for (auto it = c->begin(), last = c->end(); it != last;) {
-    auto copy_it = it++;
-    if (pred(*copy_it)) {
-      c->erase(copy_it);
+    if (pred(*it)) {
+      c->erase(it++);
+    } else {
+      ++it;
     }
   }
 }

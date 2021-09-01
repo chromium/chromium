@@ -30,43 +30,13 @@
 // ABSL_RANDEN_HWAES_IMPL indicates whether this file will contain
 // a hardware accelerated implementation of randen, or whether it
 // will contain stubs that exit the process.
-#if defined(ABSL_ARCH_X86_64) || defined(ABSL_ARCH_X86_32)
-// The platform.h directives are sufficient to indicate whether
-// we should build accelerated implementations for x86.
-#if (ABSL_HAVE_ACCELERATED_AES || ABSL_RANDOM_INTERNAL_AES_DISPATCH)
-#define ABSL_RANDEN_HWAES_IMPL 1
-#endif
-#elif defined(ABSL_ARCH_PPC)
-// The platform.h directives are sufficient to indicate whether
-// we should build accelerated implementations for PPC.
-//
-// NOTE: This has mostly been tested on 64-bit Power variants,
-// and not embedded cpus such as powerpc32-8540
 #if ABSL_HAVE_ACCELERATED_AES
+// The following plaforms have implemented RandenHwAws.
+#if defined(ABSL_ARCH_X86_64) || defined(ABSL_ARCH_X86_32) || \
+    defined(ABSL_ARCH_PPC) || defined(ABSL_ARCH_ARM) ||       \
+    defined(ABSL_ARCH_AARCH64)
 #define ABSL_RANDEN_HWAES_IMPL 1
 #endif
-#elif defined(ABSL_ARCH_ARM) || defined(ABSL_ARCH_AARCH64)
-// ARM is somewhat more complicated. We might support crypto natively...
-#if ABSL_HAVE_ACCELERATED_AES || \
-    (defined(__ARM_NEON) && defined(__ARM_FEATURE_CRYPTO))
-#define ABSL_RANDEN_HWAES_IMPL 1
-
-#elif ABSL_RANDOM_INTERNAL_AES_DISPATCH && !defined(__APPLE__) && \
-    (defined(__GNUC__) && __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ > 9)
-// ...or, on GCC, we can use an ASM directive to
-// instruct the assember to allow crypto instructions.
-#define ABSL_RANDEN_HWAES_IMPL 1
-#define ABSL_RANDEN_HWAES_IMPL_CRYPTO_DIRECTIVE 1
-#endif
-#else
-// HWAES is unsupported by these architectures / platforms:
-//   __myriad2__
-//   __mips__
-//
-// Other architectures / platforms are unknown.
-//
-// See the Abseil documentation on supported macros at:
-// https://abseil.io/docs/cpp/platforms/macros
 #endif
 
 #if !defined(ABSL_RANDEN_HWAES_IMPL)
@@ -191,22 +161,6 @@ inline ABSL_TARGET_CRYPTO void SwapEndian(absl::uint128* state) {
 }  // namespace
 
 #elif defined(ABSL_ARCH_ARM) || defined(ABSL_ARCH_AARCH64)
-
-// This asm directive will cause the file to be compiled with crypto extensions
-// whether or not the cpu-architecture supports it.
-#if ABSL_RANDEN_HWAES_IMPL_CRYPTO_DIRECTIVE
-asm(".arch_extension  crypto\n");
-
-// Override missing defines.
-#if !defined(__ARM_NEON)
-#define __ARM_NEON 1
-#endif
-
-#if !defined(__ARM_FEATURE_CRYPTO)
-#define __ARM_FEATURE_CRYPTO 1
-#endif
-
-#endif
 
 // Rely on the ARM NEON+Crypto advanced simd types, defined in <arm_neon.h>.
 // uint8x16_t is the user alias for underlying __simd128_uint8_t type.
