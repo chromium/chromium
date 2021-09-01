@@ -48,6 +48,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
 
   // Synchronous getters for C++ clients, mojo setters can be used as is
   bool GetEnabled() const;
+  bool GetFastInitiationNotificationEnabled() const;
   std::string GetDeviceName() const;
   nearby_share::mojom::DataUsage GetDataUsage() const;
   nearby_share::mojom::Visibility GetVisibility() const;
@@ -62,7 +63,10 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
       ::mojo::PendingRemote<nearby_share::mojom::NearbyShareSettingsObserver>
           observer) override;
   void GetEnabled(base::OnceCallback<void(bool)> callback) override;
+  void GetFastInitiationNotificationEnabled(
+      base::OnceCallback<void(bool)> callback) override;
   void SetEnabled(bool enabled) override;
+  void SetFastInitiationNotificationEnabled(bool enabled) override;
   void IsOnboardingComplete(base::OnceCallback<void(bool)> callback) override;
   void GetDeviceName(
       base::OnceCallback<void(const std::string&)> callback) override;
@@ -95,6 +99,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
 
  private:
   void OnEnabledPrefChanged();
+  void OnFastInitiationNotificationEnabledPrefChanged();
   void OnDataUsagePrefChanged();
   void OnVisibilityPrefChanged();
   void OnAllowedContactsPrefChanged();

@@ -29,6 +29,7 @@ suite('nearby-contact-visibility', () => {
 
     visibilityElement.settings = {
       enabled: false,
+      fastInitiationNotificationEnabled: true,
       deviceName: 'deviceName',
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kUnknown,

@@ -23,6 +23,11 @@ NearbyShareSettings::NearbyShareSettings(
       base::BindRepeating(&NearbyShareSettings::OnEnabledPrefChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName,
+      base::BindRepeating(
+          &NearbyShareSettings::OnFastInitiationNotificationEnabledPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kNearbySharingBackgroundVisibilityName,
       base::BindRepeating(&NearbyShareSettings::OnVisibilityPrefChanged,
                           base::Unretained(this)));
@@ -49,6 +54,11 @@ NearbyShareSettings::~NearbyShareSettings() {
 
 bool NearbyShareSettings::GetEnabled() const {
   return pref_service_->GetBoolean(prefs::kNearbySharingEnabledPrefName);
+}
+
+bool NearbyShareSettings::GetFastInitiationNotificationEnabled() const {
+  return pref_service_->GetBoolean(
+      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName);
 }
 
 std::string NearbyShareSettings::GetDeviceName() const {
@@ -98,6 +108,11 @@ void NearbyShareSettings::GetEnabled(base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(GetEnabled());
 }
 
+void NearbyShareSettings::GetFastInitiationNotificationEnabled(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(GetFastInitiationNotificationEnabled());
+}
+
 void NearbyShareSettings::SetEnabled(bool enabled) {
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
   if (enabled) {
@@ -112,6 +127,11 @@ void NearbyShareSettings::SetEnabled(bool enabled) {
       SetVisibility(Visibility::kNoOne);
     }
   }
+}
+
+void NearbyShareSettings::SetFastInitiationNotificationEnabled(bool enabled) {
+  pref_service_->SetBoolean(
+      prefs::kNearbySharingFastInitiationNotificationEnabledPrefName, enabled);
 }
 
 void NearbyShareSettings::IsOnboardingComplete(
@@ -197,6 +217,13 @@ void NearbyShareSettings::OnEnabledPrefChanged() {
   bool enabled = GetEnabled();
   for (auto& remote : observers_set_) {
     remote->OnEnabledChanged(enabled);
+  }
+}
+
+void NearbyShareSettings::OnFastInitiationNotificationEnabledPrefChanged() {
+  bool enabled = GetFastInitiationNotificationEnabled();
+  for (auto& remote : observers_set_) {
+    remote->OnFastInitiationNotificationEnabledChanged(enabled);
   }
 }
 

@@ -15,6 +15,8 @@ cr.define('nearby_share', function() {
     constructor() {
       /** @private {!boolean} */
       this.enabled_ = true;
+      /** @private {!boolean} */
+      this.fastInitiationNotificationEnabled_ = true;
       /** @private {!string} */
       this.deviceName_ = 'testDevice';
       /** @private {!nearbyShare.mojom.DataUsage} */
@@ -62,6 +64,13 @@ cr.define('nearby_share', function() {
     }
 
     /**
+     * @return {!Promise<{enabled: !boolean}>}
+     */
+    async getFastInitiationNotificationEnabled() {
+      return {enabled: this.fastInitiationNotificationEnabled_};
+    }
+
+    /**
      * @param { !boolean } enabled
      */
     setEnabled(enabled) {
@@ -71,6 +80,16 @@ cr.define('nearby_share', function() {
       }
       if (this.observer_) {
         this.observer_.onEnabledChanged(enabled);
+      }
+    }
+
+    /**
+     * @param { !boolean } enabled
+     */
+    setFastInitiationNotificationEnabled(enabled) {
+      this.fastInitiationNotificationEnabled_ = enabled;
+      if (this.observer_) {
+        this.observer_.onFastInitiationNotificationEnabledChanged(enabled);
       }
     }
 

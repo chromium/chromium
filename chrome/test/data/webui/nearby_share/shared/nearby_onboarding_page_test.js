@@ -32,6 +32,7 @@ suite('nearby-onboarding-page', function() {
         document.createElement('nearby-onboarding-page'));
     element.settings = {
       enabled: false,
+      fastInitiationNotificationEnabled: true,
       deviceName: deviceName,
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kAllContacts,

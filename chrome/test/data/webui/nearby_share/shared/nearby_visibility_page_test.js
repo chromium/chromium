@@ -21,6 +21,7 @@ suite('nearby-visibility-page', function() {
         document.createElement('nearby-visibility-page'));
     visibility_page.settings = {
       enabled: false,
+      fastInitiationNotificationEnabled: true,
       deviceName: 'deviceName',
       dataUsage: nearbyShare.mojom.DataUsage.kOnline,
       visibility: nearbyShare.mojom.Visibility.kAllContacts,

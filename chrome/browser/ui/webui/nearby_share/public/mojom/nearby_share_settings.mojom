@@ -49,6 +49,8 @@ enum DeviceNameValidationResult {
 interface NearbyShareSettingsObserver {
   // Called when the nearby feature is enabled or disabled.
   OnEnabledChanged(bool enabled);
+  // Called when Fast Initiation notifications are enabled or disabled.
+  OnFastInitiationNotificationEnabledChanged(bool enabled);
   // Called when the device name changes.
   OnDeviceNameChanged(string device_name);
   // Called when data usage changes.
@@ -72,6 +74,11 @@ interface NearbyShareSettings {
   SetEnabled(bool enabled);
   // Get the onboarding completion state for the Nearby Share feature.
   IsOnboardingComplete() => (bool completed);
+
+  // Get the enabled state for Fast Initiation notification.
+  GetFastInitiationNotificationEnabled() => (bool enabled);
+  // Set the enabled state for Fast Initiation notification.
+  SetFastInitiationNotificationEnabled(bool enabled);
 
   // Get the device name shown to a sender when this device is available as
   // a share target. |device_name| is the new device name.

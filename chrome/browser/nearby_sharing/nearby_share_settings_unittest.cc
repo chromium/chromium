@@ -41,6 +41,9 @@ class FakeNearbyShareSettingsObserver
     : public nearby_share::mojom::NearbyShareSettingsObserver {
  public:
   void OnEnabledChanged(bool enabled) override { this->enabled = enabled; }
+  void OnFastInitiationNotificationEnabledChanged(bool enabled) override {
+    this->fast_initiation_notification_enabled = enabled;
+  }
   void OnDeviceNameChanged(const std::string& device_name) override {
     this->device_name = device_name;
   }
@@ -57,6 +60,7 @@ class FakeNearbyShareSettingsObserver
   }
 
   bool enabled = false;
+  bool fast_initiation_notification_enabled = true;
   std::string device_name = "uncalled";
   nearby_share::mojom::DataUsage data_usage =
       nearby_share::mojom::DataUsage::kUnknown;
@@ -129,6 +133,19 @@ TEST_F(NearbyShareSettingsTest, GetAndSetEnabled) {
   FlushMojoMessages();
   // the observers's value should not have been updated.
   EXPECT_EQ(true, observer_.enabled);
+}
+
+TEST_F(NearbyShareSettingsTest, GetAndSetFastInitiationNotificationEnabled) {
+  // Fast init notifications are enabled by default.
+  EXPECT_TRUE(observer_.fast_initiation_notification_enabled);
+  settings()->SetFastInitiationNotificationEnabled(false);
+  EXPECT_FALSE(settings()->GetFastInitiationNotificationEnabled());
+  FlushMojoMessages();
+  EXPECT_FALSE(observer_.fast_initiation_notification_enabled);
+
+  bool enabled = true;
+  settings_waiter()->GetFastInitiationNotificationEnabled(&enabled);
+  EXPECT_FALSE(enabled);
 }
 
 TEST_F(NearbyShareSettingsTest, ValidateDeviceName) {

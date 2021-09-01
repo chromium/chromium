@@ -17,6 +17,7 @@ extern const char kNearbySharingDataUsageName[];
 extern const char kNearbySharingDeviceIdPrefName[];
 extern const char kNearbySharingDeviceNamePrefName[];
 extern const char kNearbySharingEnabledPrefName[];
+extern const char kNearbySharingFastInitiationNotificationEnabledPrefName[];
 extern const char kNearbySharingOnboardingCompletePrefName[];
 extern const char kNearbySharingFullNamePrefName[];
 extern const char kNearbySharingIconUrlPrefName[];

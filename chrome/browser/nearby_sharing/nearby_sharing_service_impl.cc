@@ -1218,6 +1218,12 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   InvalidateSurfaceState();
 }
 
+void NearbySharingServiceImpl::OnFastInitiationNotificationEnabledChanged(
+    bool enabled) {
+  NS_LOG(VERBOSE) << __func__ << ": Fast Initiation Notification "
+                  << (enabled ? "enabled" : "disabled");
+}
+
 void NearbySharingServiceImpl::OnDeviceNameChanged(
     const std::string& device_name) {
   NS_LOG(INFO) << __func__ << ": Nearby sharing device name changed";

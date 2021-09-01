@@ -14,6 +14,7 @@ cr.define('nearby_share', function() {
   /**
    * @typedef {{
    *            enabled:boolean,
+   *            fastInitiationNotificationEnabled:boolean,
    *            deviceName:string,
    *            dataUsage:nearbyShare.mojom.DataUsage,
    *            visibility:nearbyShare.mojom.Visibility,
@@ -57,6 +58,7 @@ cr.define('nearby_share', function() {
             this.nearbyShareSettings_.getVisibility(),
             this.nearbyShareSettings_.getAllowedContacts(),
             this.nearbyShareSettings_.isOnboardingComplete(),
+            this.nearbyShareSettings_.getFastInitiationNotificationEnabled(),
           ])
           .then((results) => {
             this.set('settings.enabled', results[0].enabled);
@@ -65,6 +67,9 @@ cr.define('nearby_share', function() {
             this.set('settings.visibility', results[3].visibility);
             this.set('settings.allowedContacts', results[4].allowedContacts);
             this.set('settings.isOnboardingComplete', results[5].completed);
+            this.set(
+                'settings.fastInitiationNotificationEnabled',
+                results[6].enabled);
             this.onSettingsRetrieved();
           });
     },
@@ -84,6 +89,13 @@ cr.define('nearby_share', function() {
      */
     onEnabledChanged(enabled) {
       this.set('settings.enabled', enabled);
+    },
+
+    /**
+     * @param {!boolean} enabled
+     */
+    onFastInitiationNotificationEnabledChanged(enabled) {
+      this.set('settings.fastInitiationNotificationEnabled', enabled);
     },
 
     /**
@@ -125,6 +137,10 @@ cr.define('nearby_share', function() {
       switch (change.path) {
         case 'settings.enabled':
           this.nearbyShareSettings_.setEnabled(change.value);
+          break;
+        case 'settings.fastInitiationNotificationEnabled':
+          this.nearbyShareSettings_.setFastInitiationNotificationEnabled(
+              change.value);
           break;
         case 'settings.deviceName':
           this.nearbyShareSettings_.setDeviceName(change.value);

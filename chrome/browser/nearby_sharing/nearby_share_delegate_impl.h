@@ -68,6 +68,7 @@ class NearbyShareDelegateImpl
 
   // nearby_share::mojom::NearbyShareSettingsObserver
   void OnEnabledChanged(bool enabled) override;
+  void OnFastInitiationNotificationEnabledChanged(bool enabled) override {}
   void OnDeviceNameChanged(const std::string& device_name) override {}
   void OnDataUsageChanged(nearby_share::mojom::DataUsage data_usage) override {}
   void OnVisibilityChanged(

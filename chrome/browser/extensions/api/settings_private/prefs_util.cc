@@ -349,6 +349,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Nearby Share.
   (*s_allowlist)[::prefs::kNearbySharingEnabledPrefName] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [::prefs::kNearbySharingFastInitiationNotificationEnabledPrefName] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kNearbySharingOnboardingCompletePrefName] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kNearbySharingActiveProfilePrefName] =
