@@ -102,6 +102,7 @@ styles.innerHTML = `
       outline: none;
     }
     .photo-images-container {
+      border: 1px solid rgba(0, 0, 0, 0.08);
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
