@@ -373,6 +373,7 @@ android_library("chrome_java") {
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_entry_edit:public_java",
+    "//chrome/browser/password_manager/android:backend_interface_java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/performance_hints/android:java",
     "//chrome/browser/policy/android:java",
