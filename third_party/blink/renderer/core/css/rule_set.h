@@ -441,6 +441,10 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
     return pending_rules_.Get();
   }
 
+#if DCHECK_IS_ON()
+  void AssertRuleListsSorted() const;
+#endif
+
   CascadeLayer* EnsureImplicitOuterLayer() {
     if (!implicit_outer_layer_)
       implicit_outer_layer_ = MakeGarbageCollected<CascadeLayer>();

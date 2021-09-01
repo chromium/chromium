@@ -524,8 +524,13 @@ void RuleSet::CompactPendingRules(PendingRuleMap& pending_map,
     } else {
       rules->ReserveCapacity(pending_rules->size());
     }
-    while (!pending_rules->IsEmpty()) {
-      rules->push_back(pending_rules->Peek());
+    // Since pending_rules is a stack, we need to insert in the reversed
+    // ordering so that the resulting vector is sorted by rule position
+    wtf_size_t num_pending_rules = pending_rules->size();
+    rules->Grow(rules->size() + num_pending_rules);
+    for (auto iter = rules->rbegin(); !pending_rules->IsEmpty(); ++iter) {
+      DCHECK(iter != rules->rend());
+      *iter = pending_rules->Peek();
       pending_rules->Pop();
     }
   }
@@ -555,7 +560,52 @@ void RuleSet::CompactRules() {
   counter_style_rules_.ShrinkToFit();
   scroll_timeline_rules_.ShrinkToFit();
   slotted_pseudo_element_rules_.ShrinkToFit();
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  AssertRuleListsSorted();
+#endif
 }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+
+namespace {
+
+template <class RuleList>
+bool IsRuleListSorted(const RuleList& rules) {
+  unsigned last_position = 0;
+  bool first_rule = true;
+  for (const auto& rule : rules) {
+    if (!first_rule && rule->GetPosition() <= last_position)
+      return false;
+    first_rule = false;
+    last_position = rule->GetPosition();
+  }
+  return true;
+}
+
+}  // namespace
+
+void RuleSet::AssertRuleListsSorted() const {
+  for (const auto& item : id_rules_)
+    DCHECK(IsRuleListSorted(*item.value));
+  for (const auto& item : class_rules_)
+    DCHECK(IsRuleListSorted(*item.value));
+  for (const auto& item : tag_rules_)
+    DCHECK(IsRuleListSorted(*item.value));
+  for (const auto& item : ua_shadow_pseudo_element_rules_)
+    DCHECK(IsRuleListSorted(*item.value));
+  DCHECK(IsRuleListSorted(link_pseudo_class_rules_));
+  DCHECK(IsRuleListSorted(cue_pseudo_rules_));
+  DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
+  DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
+  DCHECK(IsRuleListSorted(spatial_navigation_interest_class_rules_));
+  DCHECK(IsRuleListSorted(universal_rules_));
+  DCHECK(IsRuleListSorted(shadow_host_rules_));
+  DCHECK(IsRuleListSorted(part_pseudo_rules_));
+  DCHECK(IsRuleListSorted(visited_dependent_rules_));
+}
+
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 bool RuleSet::DidMediaQueryResultsChange(
     const MediaQueryEvaluator& evaluator) const {
