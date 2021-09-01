@@ -16,6 +16,8 @@ namespace blink {
 // layers in each sheet to the sorted layer order number.
 class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
  public:
+  static const unsigned kImplicitOuterLayerOrder;
+
   explicit CascadeLayerMap(const ActiveStyleSheetVector&);
 
   unsigned GetLayerOrder(const CascadeLayer& layer) const {
