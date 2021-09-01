@@ -730,6 +730,8 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
       }
       break;
   }
+
+  SetPersistentState(display_type == DisplayType::kPictureInPicture);
 }
 
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
