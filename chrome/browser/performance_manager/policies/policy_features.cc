@@ -32,7 +32,7 @@ const base::Feature kTrimArcOnMemoryPressure{"TrimArcOnMemoryPressure",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimArcVmOnMemoryPressure{
-    "TrimArcVmOnMemoryPressure", base::FEATURE_DISABLED_BY_DEFAULT};
+    "TrimArcVmOnMemoryPressure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTrimOnFreeze{"TrimOnFreeze",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
@@ -74,7 +74,7 @@ const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure = {
 
 const base::FeatureParam<bool> kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot = {
     &kTrimArcVmOnMemoryPressure, "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot",
-    false};
+    true};
 
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
