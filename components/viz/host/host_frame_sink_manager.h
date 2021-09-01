@@ -206,6 +206,11 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   uint32_t CacheBackBufferForRootSink(const FrameSinkId& root_sink_id);
   void EvictCachedBackBuffer(uint32_t cache_id);
 
+  void CreateHitTestQueryForSynchronousCompositor(
+      const FrameSinkId& frame_sink_id);
+  void EraseHitTestQueryForSynchronousCompositor(
+      const FrameSinkId& frame_sink_id);
+
   void UpdateDebugRendererSettings(const DebugRendererSettings& debug_settings);
 
   const DebugRendererSettings& debug_renderer_settings() const {

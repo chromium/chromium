@@ -306,6 +306,10 @@ ContentBrowserClient::GetAdditionalSiteIsolationModes() {
   return std::vector<std::string>();
 }
 
+size_t ContentBrowserClient::GetMaxRendererProcessCountOverride() {
+  return 0u;
+}
+
 bool ContentBrowserClient::IsFileAccessAllowed(
     const base::FilePath& path,
     const base::FilePath& absolute_path,

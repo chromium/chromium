@@ -903,7 +903,8 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
       return false;
     target_ancestors.push_back(cur_view->GetFrameSinkId());
   }
-  target_ancestors.push_back(root_frame_sink_id);
+  if (target_ancestors.back() != root_frame_sink_id)
+    target_ancestors.push_back(root_frame_sink_id);
 
   float device_scale_factor = original_view->GetDeviceScaleFactor();
   DCHECK_GT(device_scale_factor, 0.0f);

@@ -399,27 +399,30 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   }
 
 #if defined(OS_ANDROID)
-  bool using_synchronous_compositor =
-      platform->IsSynchronousCompositingEnabledForAndroidWebView();
+  // Synchronous compositing is used only for the root frame.
+  bool use_synchronous_compositor =
+      platform->IsSynchronousCompositingEnabledForAndroidWebView() &&
+      !for_child_local_root_frame;
+  // Do not use low memory policies for Android WebView.
   bool using_low_memory_policy =
-      base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size);
+      base::SysInfo::IsLowEndDevice() && !IsSmallScreen(screen_size) &&
+      !platform->IsSynchronousCompositingEnabledForAndroidWebView();
 
   settings.use_stream_video_draw_quad = true;
-  settings.using_synchronous_renderer_compositor = using_synchronous_compositor;
-  if (using_synchronous_compositor) {
-    // Android WebView uses system scrollbars, so make ours invisible.
-    // http://crbug.com/677348: This can't be done using hide_scrollbars
-    // setting because supporting -webkit custom scrollbars is still desired
-    // on sublayers.
+  settings.using_synchronous_renderer_compositor = use_synchronous_compositor;
+  if (use_synchronous_compositor) {
+    // Root frame in Android WebView uses system scrollbars, so make ours
+    // invisible. http://crbug.com/677348: This can't be done using
+    // hide_scrollbars setting because supporting -webkit custom scrollbars is
+    // still desired on sublayers.
     settings.scrollbar_animator = cc::LayerTreeSettings::NO_ANIMATOR;
     settings.solid_color_scrollbar_color = SK_ColorTRANSPARENT;
 
+    // Early damage check works in combination with synchronous compositor.
     settings.enable_early_damage_check =
         cmd.HasSwitch(cc::switches::kCheckDamageEarly);
   }
-  // Memory policy on Android WebView does not depend on whether device is
-  // low end, so always use default policy.
-  if (using_low_memory_policy && !using_synchronous_compositor) {
+  if (using_low_memory_policy) {
     // On low-end we want to be very careful about killing other
     // apps. So initially we use 50% more memory to avoid flickering
     // or raster-on-demand.
@@ -435,7 +438,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.create_low_res_tiling = true;
 
 #else   // defined(OS_ANDROID)
-  bool using_synchronous_compositor = false;  // Only for Android WebView.
   bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
 
   if (ui::IsOverlayScrollbarEnabled()) {
@@ -471,7 +473,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // TODO(penghuang): query supported formats from GPU process.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
         base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
-        !using_synchronous_compositor && !::features::IsUsingVulkan()) {
+        !::features::IsUsingVulkan()) {
       settings.use_rgba_4444 = viz::RGBA_4444;
 
       // If we are going to unpremultiply and dither these tiles, we need to

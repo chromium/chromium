@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview.test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
@@ -48,7 +51,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.viz.common.VizFeatures;
+import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -947,6 +952,45 @@ public class AwContentsTest {
         Assert.assertEquals("chrome://safe-browsing/", awContents.getLastCommittedUrl());
     }
 
+    private void pollForQuadrantColors(AwTestContainerView testView, int[] expectedQuadrantColors)
+            throws Throwable {
+        int[] lastQuadrantColors = null;
+        // Poll for 10s in case raster is slow.
+        for (int i = 0; i < 100; ++i) {
+            final CallbackHelper callbackHelper = new CallbackHelper();
+            final Object[] resultHolder = new Object[1];
+            mActivityTestRule.runOnUiThread(() -> {
+                testView.readbackQuadrantColors((int[] result) -> {
+                    resultHolder[0] = result;
+                    callbackHelper.notifyCalled();
+                });
+            });
+            try {
+                callbackHelper.waitForFirst();
+            } catch (TimeoutException e) {
+                Log.w(TAG, "Timeout", e);
+                continue;
+            }
+            int[] quadrantColors = (int[]) resultHolder[0];
+            lastQuadrantColors = quadrantColors;
+            if (quadrantColors != null && expectedQuadrantColors[0] == quadrantColors[0]
+                    && expectedQuadrantColors[1] == quadrantColors[1]
+                    && expectedQuadrantColors[2] == quadrantColors[2]
+                    && expectedQuadrantColors[3] == quadrantColors[3]) {
+                return;
+            }
+            Thread.sleep(100);
+        }
+        Assert.assertNotNull(lastQuadrantColors);
+        // If this test is failing for your CL, then chances are your change is breaking Android
+        // WebView hardware rendering. Please build the "real" webview and check if this is the
+        // case and if so, fix your CL.
+        Assert.assertEquals(expectedQuadrantColors[0], lastQuadrantColors[0]);
+        Assert.assertEquals(expectedQuadrantColors[1], lastQuadrantColors[1]);
+        Assert.assertEquals(expectedQuadrantColors[2], lastQuadrantColors[2]);
+        Assert.assertEquals(expectedQuadrantColors[3], lastQuadrantColors[3]);
+    }
+
     private void doHardwareRenderingSmokeTest() throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -969,41 +1013,10 @@ public class AwContentsTest {
                 mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
         mActivityTestRule.waitForVisualStateCallback(testView.getAwContents());
 
-        int[] lastQuadrantColors = null;
-        // Poll for 10s in case raster is slow.
-        for (int i = 0; i < 100; ++i) {
-            final CallbackHelper callbackHelper = new CallbackHelper();
-            final Object[] resultHolder = new Object[1];
-            mActivityTestRule.runOnUiThread(() -> {
-                testView.readbackQuadrantColors((int[] result) -> {
-                    resultHolder[0] = result;
-                    callbackHelper.notifyCalled();
-                });
-            });
-            try {
-                callbackHelper.waitForFirst();
-            } catch (TimeoutException e) {
-                Log.w(TAG, "Timeout", e);
-                continue;
-            }
-            int[] quadrantColors = (int[]) resultHolder[0];
-            lastQuadrantColors = quadrantColors;
-            if (quadrantColors != null && Color.rgb(255, 0, 0) == quadrantColors[0]
-                    && Color.rgb(0, 255, 0) == quadrantColors[1]
-                    && Color.rgb(0, 0, 255) == quadrantColors[2]
-                    && Color.rgb(128, 128, 128) == quadrantColors[3]) {
-                return;
-            }
-            Thread.sleep(100);
-        }
-        Assert.assertNotNull(lastQuadrantColors);
-        // If this test is failing for your CL, then chances are your change is breaking Android
-        // WebView hardware rendering. Please build the "real" webview and check if this is the
-        // case and if so, fix your CL.
-        Assert.assertEquals(Color.rgb(255, 0, 0), lastQuadrantColors[0]);
-        Assert.assertEquals(Color.rgb(0, 255, 0), lastQuadrantColors[1]);
-        Assert.assertEquals(Color.rgb(0, 0, 255), lastQuadrantColors[2]);
-        Assert.assertEquals(Color.rgb(128, 128, 128), lastQuadrantColors[3]);
+        int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
+                Color.rgb(0, 0, 255), Color.rgb(128, 128, 128)};
+
+        pollForQuadrantColors(testView, expectedQuadrantColors);
     }
 
     @Test
@@ -1335,6 +1348,74 @@ public class AwContentsTest {
             Assert.assertNull(webuiProcess);
         } finally {
             testServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @CommandLineFlags.Add(ContentSwitches.SITE_PER_PROCESS)
+    public void testOutOfProcessIframeSmokeTest() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testView.getAwContents();
+
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            // Destination iframe has blue color.
+            final String iframeDestinationPath = webServer.setResponse("/iframe_destination.html",
+                    "<html><body style=\"background-color:rgb(0,0,255);\"></body></html>", null);
+            // Initial iframe has red color with a full-page link to navigate to destination.
+            final String iframePath = webServer.setResponse("/iframe.html",
+                    "<html><body style=\"background-color:rgb(255,0,0);\">"
+                            + "<a href=\"" + iframeDestinationPath + "\" "
+                            + "style=\"width:100%;height:100%;display:block;\"></a>"
+                            + "</body></html>",
+                    null);
+            // Main frame has green color at the top half, and iframe in the bottom half.
+            final String pageHtml = "<html><body>"
+                    + "<div style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div>"
+                    + "<iframe style=\"width:100%;height:50%;\" src=\"" + iframePath
+                    + "\"></iframe>"
+                    + "</body></html>";
+
+            // Iframes are loaded with origin of the test server, and the main page is loaded with
+            // origin http://foo.bar. This ensures that the main and iframe are different renderer
+            // processes when site isolation is enabled.
+            mActivityTestRule.loadDataWithBaseUrlSync(awContents,
+                    mContentsClient.getOnPageFinishedHelper(), pageHtml, "text/html", false,
+                    "http://foo.bar", null);
+
+            // Check initial iframe is displayed.
+            int expectedQuadrantColors[] = {
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(255, 0, 0),
+                    Color.rgb(255, 0, 0),
+            };
+            pollForQuadrantColors(testView, expectedQuadrantColors);
+            assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
+
+            // Click iframe to navigate. This exercises hit testing code paths.
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                int width = testView.getWidth();
+                int height = testView.getHeight();
+                TouchCommon.singleClickView(testView, width / 2, height * 3 / 4);
+            });
+
+            // Check destination iframe is displayed.
+            expectedQuadrantColors = new int[] {
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 255, 0),
+                    Color.rgb(0, 0, 255),
+                    Color.rgb(0, 0, 255),
+            };
+            pollForQuadrantColors(testView, expectedQuadrantColors);
+            assertThat(RenderProcessHostUtils.getCurrentRenderProcessCount(), greaterThan(1));
+        } finally {
+            webServer.shutdown();
         }
     }
 }

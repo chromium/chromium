@@ -603,6 +603,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& origin,
       ChildProcessSecurityPolicy::IsolatedOriginSource source) {}
 
+  // Allow the embedder to control the maximum renderer process count. Only
+  // applies if it is set to a non-zero value.  Once this limit is exceeded,
+  // existing processes will be reused whenever possible, see
+  // `ShouldTryToUseExistingProcessHost()`.
+  virtual size_t GetMaxRendererProcessCountOverride();
+
   // Indicates whether a file path should be accessible via file URL given a
   // request from a browser context which lives within |profile_path|.
   //

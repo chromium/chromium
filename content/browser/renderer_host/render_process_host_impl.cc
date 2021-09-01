@@ -1530,6 +1530,11 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
   if (g_max_renderer_count_override)
     return g_max_renderer_count_override;
 
+  size_t client_override =
+      GetContentClient()->browser()->GetMaxRendererProcessCountOverride();
+  if (client_override)
+    return client_override;
+
 #if defined(OS_ANDROID)
   // On Android we don't maintain a limit of renderer process hosts - we are
   // happy with keeping a lot of these, as long as the number of live renderer

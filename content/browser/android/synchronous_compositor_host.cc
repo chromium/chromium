@@ -137,7 +137,8 @@ class SynchronousCompositorControlHost
 // static
 std::unique_ptr<SynchronousCompositorHost> SynchronousCompositorHost::Create(
     RenderWidgetHostViewAndroid* rwhva,
-    const viz::FrameSinkId& frame_sink_id) {
+    const viz::FrameSinkId& frame_sink_id,
+    viz::HostFrameSinkManager* host_frame_sink_manager) {
   if (!rwhva->synchronous_compositor_client())
     return nullptr;  // Not using sync compositing.
 
@@ -145,16 +146,19 @@ std::unique_ptr<SynchronousCompositorHost> SynchronousCompositorHost::Create(
   bool use_in_proc_software_draw =
       command_line->HasSwitch(switches::kSingleProcess);
   return base::WrapUnique(new SynchronousCompositorHost(
-      rwhva, frame_sink_id, use_in_proc_software_draw));
+      rwhva, frame_sink_id, host_frame_sink_manager,
+      use_in_proc_software_draw));
 }
 
 SynchronousCompositorHost::SynchronousCompositorHost(
     RenderWidgetHostViewAndroid* rwhva,
     const viz::FrameSinkId& frame_sink_id,
+    viz::HostFrameSinkManager* host_frame_sink_manager,
     bool use_in_proc_software_draw)
     : rwhva_(rwhva),
       client_(rwhva->synchronous_compositor_client()),
       frame_sink_id_(frame_sink_id),
+      host_frame_sink_manager_(host_frame_sink_manager),
       use_in_process_zero_copy_software_draw_(use_in_proc_software_draw),
       bytes_limit_(0u),
       renderer_param_version_(0u),
@@ -163,12 +167,16 @@ SynchronousCompositorHost::SynchronousCompositorHost(
       did_activate_pending_tree_count_(0u) {
   EstablishGpuChannelToEstablishVizConnection();
   client_->DidInitializeCompositor(this, frame_sink_id_);
+  host_frame_sink_manager_->CreateHitTestQueryForSynchronousCompositor(
+      frame_sink_id_);
   bridge_ = new SynchronousCompositorSyncCallBridge(this);
 }
 
 SynchronousCompositorHost::~SynchronousCompositorHost() {
   if (outstanding_begin_frame_requests_ && begin_frame_source_)
     begin_frame_source_->RemoveObserver(this);
+  host_frame_sink_manager_->EraseHitTestQueryForSynchronousCompositor(
+      frame_sink_id_);
   client_->DidDestroyCompositor(this, frame_sink_id_);
   bridge_->HostDestroyedOnUIThread();
 }
@@ -277,19 +285,23 @@ SynchronousCompositor::Frame SynchronousCompositorHost::DemandDrawHw(
     frame.local_surface_id = local_surface_id.value();
   *frame.frame = std::move(*compositor_frame);
   frame.hit_test_region_list = std::move(hit_test_region_list);
-  UpdateFrameMetaData(metadata_version, frame.frame->metadata.Clone());
+  UpdateFrameMetaData(metadata_version, frame.frame->metadata.Clone(),
+                      std::move(local_surface_id));
   return frame;
 }
 
 void SynchronousCompositorHost::UpdateFrameMetaData(
     uint32_t version,
-    viz::CompositorFrameMetadata frame_metadata) {
+    viz::CompositorFrameMetadata frame_metadata,
+    absl::optional<viz::LocalSurfaceId> new_local_surface_id) {
   // Ignore if |frame_metadata_version_| is newer than |version|. This
   // comparison takes into account when the unsigned int wraps.
   if ((frame_metadata_version_ - version) < 0x80000000) {
     return;
   }
   frame_metadata_version_ = version;
+  if (new_local_surface_id)
+    local_surface_id_ = new_local_surface_id.value();
   UpdatePresentedFrameToken(frame_metadata.frame_token);
 }
 
@@ -330,7 +342,7 @@ bool SynchronousCompositorHost::DemandDrawSwInProc(SkCanvas* canvas) {
   if (!metadata)
     return false;
   UpdateState(std::move(common_renderer_params));
-  UpdateFrameMetaData(metadata_version, std::move(*metadata));
+  UpdateFrameMetaData(metadata_version, std::move(*metadata), absl::nullopt);
   return true;
 }
 
@@ -403,7 +415,7 @@ bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,
     return false;
 
   UpdateState(std::move(common_renderer_params));
-  UpdateFrameMetaData(metadata_version, std::move(*metadata));
+  UpdateFrameMetaData(metadata_version, std::move(*metadata), absl::nullopt);
 
   SkBitmap bitmap;
   SkPixmap pixmap(info, software_draw_shm_->shared_memory.memory(), stride);
@@ -748,6 +760,10 @@ void SynchronousCompositorHost::RequestOneBeginFrame() {
 void SynchronousCompositorHost::AddBeginFrameCompletionCallback(
     base::OnceClosure callback) {
   client_->AddBeginFrameCompletionCallback(std::move(callback));
+}
+
+viz::SurfaceId SynchronousCompositorHost::GetSurfaceId() const {
+  return viz::SurfaceId(frame_sink_id_, local_surface_id_);
 }
 
 void SynchronousCompositorHost::DidInvalidate() {

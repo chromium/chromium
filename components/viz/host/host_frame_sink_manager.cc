@@ -410,6 +410,15 @@ void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
   frame_sink_manager_remote_->EvictBackBuffer(cache_id);
 }
 
+void HostFrameSinkManager::CreateHitTestQueryForSynchronousCompositor(
+    const FrameSinkId& frame_sink_id) {
+  display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
+}
+void HostFrameSinkManager::EraseHitTestQueryForSynchronousCompositor(
+    const FrameSinkId& frame_sink_id) {
+  display_hit_test_query_.erase(frame_sink_id);
+}
+
 void HostFrameSinkManager::UpdateDebugRendererSettings(
     const DebugRendererSettings& debug_settings) {
   debug_renderer_settings_ = debug_settings;

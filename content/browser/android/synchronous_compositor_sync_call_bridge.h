@@ -123,8 +123,10 @@ class SynchronousCompositorSyncCallBridge
   void BeginFrameCompleteOnUIThread();
 
   // Process metadata.
-  void ProcessFrameMetadataOnUIThread(uint32_t metadata_version,
-                                      viz::CompositorFrameMetadata metadata);
+  void ProcessFrameMetadataOnUIThread(
+      uint32_t metadata_version,
+      viz::CompositorFrameMetadata metadata,
+      const viz::LocalSurfaceId& local_surface_id);
 
   // Signal all waiters for closure. Callee must host a lock to |lock_|.
   void SignalRemoteClosedToAllWaitersOnIOThread()

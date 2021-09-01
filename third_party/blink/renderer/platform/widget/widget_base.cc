@@ -647,7 +647,8 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
           viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
 
 #if defined(OS_ANDROID)
-  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView()) {
+  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
+      !is_for_child_local_root_) {
     // TODO(ericrk): Collapse with non-webview registration below.
     if (::features::IsUsingVizFrameSubmissionForWebView()) {
       widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),

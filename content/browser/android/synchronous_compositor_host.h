@@ -32,6 +32,10 @@ namespace ui {
 struct DidOverscrollParams;
 }
 
+namespace viz {
+class HostFrameSinkManager;
+}
+
 namespace content {
 
 class RenderProcessHost;
@@ -46,7 +50,8 @@ class CONTENT_EXPORT SynchronousCompositorHost
  public:
   static std::unique_ptr<SynchronousCompositorHost> Create(
       RenderWidgetHostViewAndroid* rwhva,
-      const viz::FrameSinkId& frame_sink_id);
+      const viz::FrameSinkId& frame_sink_id,
+      viz::HostFrameSinkManager* host_frame_sink_manager);
 
   ~SynchronousCompositorHost() override;
 
@@ -74,8 +79,10 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void DidOverscroll(const ui::DidOverscrollParams& over_scroll_params);
 
   // Called by SynchronousCompositorSyncCallBridge.
-  void UpdateFrameMetaData(uint32_t version,
-                           viz::CompositorFrameMetadata frame_metadata);
+  void UpdateFrameMetaData(
+      uint32_t version,
+      viz::CompositorFrameMetadata frame_metadata,
+      absl::optional<viz::LocalSurfaceId> new_local_surface_id);
 
   // Called when the mojo channel should be created.
   void InitMojo();
@@ -87,6 +94,9 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void RequestOneBeginFrame();
 
   void AddBeginFrameCompletionCallback(base::OnceClosure callback);
+
+  const viz::FrameSinkId& GetFrameSinkId() const { return frame_sink_id_; }
+  viz::SurfaceId GetSurfaceId() const;
 
   // blink::mojom::SynchronousCompositorHost overrides.
   void LayerTreeFrameSinkCreated() override;
@@ -115,6 +125,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
 
   SynchronousCompositorHost(RenderWidgetHostViewAndroid* rwhva,
                             const viz::FrameSinkId& frame_sink_id,
+                            viz::HostFrameSinkManager* host_frame_sink_manager,
                             bool use_in_proc_software_draw);
   SynchronousCompositor::Frame DemandDrawHw(
       const gfx::Size& viewport_size,
@@ -138,10 +149,13 @@ class CONTENT_EXPORT SynchronousCompositorHost
   RenderWidgetHostViewAndroid* const rwhva_;
   SynchronousCompositorClient* const client_;
   const viz::FrameSinkId frame_sink_id_;
+  viz::HostFrameSinkManager* const host_frame_sink_manager_;
   const bool use_in_process_zero_copy_software_draw_;
   mojo::AssociatedRemote<blink::mojom::SynchronousCompositor> sync_compositor_;
   mojo::AssociatedReceiver<blink::mojom::SynchronousCompositorHost>
       host_receiver_{this};
+
+  viz::LocalSurfaceId local_surface_id_;
 
   bool registered_with_filter_ = false;
 
