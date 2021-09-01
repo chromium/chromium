@@ -453,7 +453,8 @@ const char kEnterpriseEnableForcedReEnrollment[] =
 const char kEnterpriseEnableInitialEnrollment[] =
     "enterprise-enable-initial-enrollment";
 
-// Whether to use fake PSM RLWE client for testing purposes.
+// Whether to use fake PSM (private set membership) RLWE client for testing
+// purposes.
 const char kEnterpriseUseFakePsmRlweClient[] =
     "enterprise-use-fake-psm-rlwe-client";
 
