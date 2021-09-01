@@ -139,6 +139,12 @@ TEST_F(WorkletAnimationTest, WorkletAnimationInElementAnimations) {
             element_->EnsureElementAnimations().GetWorkletAnimations().size());
 }
 
+TEST_F(WorkletAnimationTest, ElementHasWorkletAnimation) {
+  EXPECT_FALSE(element_->HasAnimations());
+  worklet_animation_->play(ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(element_->HasAnimations());
+}
+
 // Regression test for crbug.com/1136120, pass if there is no crash.
 TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
   absl::optional<base::TimeDelta> seek_time = base::TimeDeltaFromString("inf");
