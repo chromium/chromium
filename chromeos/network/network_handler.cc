@@ -104,7 +104,9 @@ void NetworkHandler::Init() {
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get());
   if (features::IsESimPolicyEnabled()) {
-    cellular_policy_handler_->Init(cellular_esim_installer_.get());
+    cellular_policy_handler_->Init(
+        cellular_esim_installer_.get(), network_profile_handler_.get(),
+        managed_network_configuration_handler_.get());
   }
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),

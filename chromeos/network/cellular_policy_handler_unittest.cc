@@ -8,21 +8,26 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hermes/hermes_euicc_client.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/cellular_connection_handler.h"
 #include "chromeos/network/cellular_esim_installer.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
+#include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/shill_property_util.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
@@ -32,6 +37,35 @@ const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEuiccPath2[] = "/org/chromium/Hermes/Euicc/1";
 const char kTestEid[] = "12345678901234567890123456789012";
 const char kTestEid2[] = "12345678901234567890123456789000";
+const char kCellularGuid[] = "cellular_guid";
+const char kEntryPath[] = "service_path_for_cellular_guid";
+const char kICCID[] = "1000000000000000002";
+
+void CheckShillConfiguration(bool is_installed) {
+  const base::Value* properties =
+      ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
+          kEntryPath);
+  if (!is_installed) {
+    EXPECT_EQ(properties, nullptr);
+    return;
+  }
+  const std::string* guid = properties->FindStringKey(shill::kGuidProperty);
+  EXPECT_EQ(kCellularGuid, *guid);
+  // UIData should not be empty if cellular service is configured.
+  const std::string* ui_data_value =
+      properties->FindStringKey(shill::kUIDataProperty);
+  EXPECT_NE(*ui_data_value, std::string());
+  const std::string* iccid = properties->FindStringKey(shill::kIccidProperty);
+  EXPECT_EQ(kICCID, *iccid);
+}
+
+std::string GenerateCellularPolicy(const std::string& smdp_address) {
+  return base::StringPrintf(
+      R"({"GUID": "%s", "Type": "Cellular",
+                        "Name": "cellular1",
+                        "Cellular": { "SMDPAddress": "%s"}})",
+      kCellularGuid, smdp_address.c_str());
+}
 
 }  // namespace
 
@@ -48,6 +82,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     network_state_handler_ = NetworkStateHandler::InitializeForTest();
     network_device_handler_ = NetworkDeviceHandler::InitializeForTesting(
         network_state_handler_.get());
+    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
     network_connection_handler_ =
         std::make_unique<FakeNetworkConnectionHandler>();
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
@@ -66,8 +101,19 @@ class CellularPolicyHandlerTest : public testing::Test {
     cellular_esim_installer_->Init(
         cellular_connection_handler_.get(), cellular_inhibitor_.get(),
         network_connection_handler_.get(), network_state_handler_.get());
+    network_configuration_handler_ =
+        base::WrapUnique<NetworkConfigurationHandler>(
+            NetworkConfigurationHandler::InitializeForTest(
+                network_state_handler_.get(), network_device_handler_.get()));
+    managed_network_configuration_handler_ =
+        ManagedNetworkConfigurationHandler::InitializeForTesting(
+            network_state_handler_.get(), network_profile_handler_.get(),
+            network_device_handler_.get(), network_configuration_handler_.get(),
+            /*UIProxyConfigService=*/nullptr);
     cellular_policy_handler_ = std::make_unique<CellularPolicyHandler>();
-    cellular_policy_handler_->Init(cellular_esim_installer_.get());
+    cellular_policy_handler_->Init(
+        cellular_esim_installer_.get(), network_profile_handler_.get(),
+        managed_network_configuration_handler_.get());
     SetupEuicc();
   }
 
@@ -86,6 +132,9 @@ class CellularPolicyHandlerTest : public testing::Test {
     cellular_esim_profile_handler_.reset();
     cellular_connection_handler_.reset();
     cellular_inhibitor_.reset();
+    network_configuration_handler_.reset();
+    managed_network_configuration_handler_.reset();
+    network_profile_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
     network_connection_handler_.reset();
@@ -94,17 +143,23 @@ class CellularPolicyHandlerTest : public testing::Test {
     shill_clients::Shutdown();
   }
 
-  void InstallESimPolicy(const std::string& activation_code,
+  void InstallESimPolicy(const std::string& onc_json,
+                         const std::string& activation_code,
                          bool expect_install_success) {
-    cellular_policy_handler_->InstallESim(activation_code);
+    base::Value policy = onc::ReadDictionaryFromJson(onc_json);
+    cellular_policy_handler_->InstallESim(
+        activation_code, base::Value::AsDictionaryValue(policy));
     FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 
-    if (expect_install_success)
+    if (expect_install_success) {
       EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
-    else
+      network_connection_handler_->connect_calls()
+          .back()
+          .InvokeSuccessCallback();
+    } else {
       EXPECT_LE(0u, network_connection_handler_->connect_calls().size());
-
+    }
     base::RunLoop().RunUntilIdle();
   }
 
@@ -128,27 +183,40 @@ class CellularPolicyHandlerTest : public testing::Test {
       cellular_esim_profile_handler_;
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimInstaller> cellular_esim_installer_;
+  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
+  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  std::unique_ptr<ManagedNetworkConfigurationHandler>
+      managed_network_configuration_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
 };
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileSuccess) {
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
   // Verify esim profile get installed successfully when installing policy esim
   // with a fake SMDP address.
-  InstallESimPolicy(HermesEuiccClient::Get()
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
+  CheckShillConfiguration(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallProfileFailure) {
   // Verify esim profile doesn't get installed when installing policy esim
   // with a invalid SMDP address.
-  InstallESimPolicy(/*activation_code=*/std::string(),
+  const std::string policy = GenerateCellularPolicy("000");
+  InstallESimPolicy(policy,
+                    /*activation_code=*/std::string(),
                     /*expect_install_success=*/false);
+  CheckShillConfiguration(/*is_installed=*/false);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
-  // Verify esim profile get installed successfully when installing policy esim
+  // Verify esim profile get installed successfully when installing policy
   // on the external EUICC.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kCellularUseExternalEuicc);
@@ -156,10 +224,16 @@ TEST_F(CellularPolicyHandlerTest, InstallOnExternalEUICC) {
       dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
       /*physical_slot=*/1);
   base::RunLoop().RunUntilIdle();
-  InstallESimPolicy(HermesEuiccClient::Get()
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/true);
+  CheckShillConfiguration(/*is_installed=*/true);
 }
 
 TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
@@ -167,10 +241,16 @@ TEST_F(CellularPolicyHandlerTest, InstallNoEUICCAvailable) {
   // with no available EUICC.
   HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
   base::RunLoop().RunUntilIdle();
-  InstallESimPolicy(HermesEuiccClient::Get()
+  const std::string policy =
+      GenerateCellularPolicy(HermesEuiccClient::Get()
+                                 ->GetTestInterface()
+                                 ->GenerateFakeActivationCode());
+  InstallESimPolicy(policy,
+                    HermesEuiccClient::Get()
                         ->GetTestInterface()
                         ->GenerateFakeActivationCode(),
                     /*expect_install_success=*/false);
+  CheckShillConfiguration(/*is_installed=*/false);
 }
 
 }  // namespace chromeos

@@ -100,6 +100,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const = 0;
 
+  // Creates network configuration with given |shill_properties| from policy.
+  // Any conflicting configuration for the same network will have to be removed
+  // before calling this method. |callback| will be called after the
+  // configuration update has been reflected in NetworkStateHandler, or on
+  // error. This fires OnPolicyApplied notification on success.
+  virtual void ConfigurePolicyNetwork(const base::Value& shill_properties,
+                                      base::OnceClosure callback) const = 0;
+
   // Removes the user's configuration from the network with |service_path|. The
   // network may still show up in the visible networks after this, but no user
   // configuration will remain. If it was managed, it will still be configured.

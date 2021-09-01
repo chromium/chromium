@@ -35,6 +35,9 @@ specific_include_rules = {
  "managed_network_configuration_handler_unittest.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],
+ "cellular_policy_handler_unittest.cc": [
+    "+components/sync_preferences/testing_pref_service_syncable.h"
+  ],
  "network_metadata_store_unittest.cc": [
     "+components/sync_preferences/testing_pref_service_syncable.h"
   ],

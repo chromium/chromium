@@ -9,7 +9,11 @@
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/cellular_esim_installer.h"
 #include "chromeos/network/cellular_utils.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_profile_handler.h"
+#include "chromeos/network/policy_util.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
 
@@ -29,18 +33,34 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 
 }  // namespace
 
+CellularPolicyHandler::InstallPolicyESimRequest::InstallPolicyESimRequest(
+    const std::string& smdp_address,
+    const base::DictionaryValue& onc_config)
+    : smdp_address(smdp_address), onc_config(onc_config.CreateDeepCopy()) {}
+
+CellularPolicyHandler::InstallPolicyESimRequest::~InstallPolicyESimRequest() =
+    default;
+
 CellularPolicyHandler::CellularPolicyHandler()
     : retry_backoff_(&kRetryBackoffPolicy) {}
 
 CellularPolicyHandler::~CellularPolicyHandler() = default;
 
 void CellularPolicyHandler::Init(
-    CellularESimInstaller* cellular_esim_installer) {
+    CellularESimInstaller* cellular_esim_installer,
+    NetworkProfileHandler* network_profile_handler,
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
   cellular_esim_installer_ = cellular_esim_installer;
+  network_profile_handler_ = network_profile_handler;
+  managed_network_configuration_handler_ =
+      managed_network_configuration_handler;
 }
 
-void CellularPolicyHandler::InstallESim(const std::string& smdp_address) {
-  remaining_install_requests_.push_back(smdp_address);
+void CellularPolicyHandler::InstallESim(
+    const std::string& smdp_address,
+    const base::DictionaryValue& onc_config) {
+  remaining_install_requests_.push_back(
+      std::make_unique<InstallPolicyESimRequest>(smdp_address, onc_config));
   ProcessRequests();
 }
 
@@ -70,7 +90,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
   if (!euicc_path) {
     NET_LOG(ERROR) << "Error installing policy eSim profile for SMDP: "
                    << GetCurrentSmdpAddress() << ": euicc is not found.";
-    CompleteCurrentRequest(/*iccid=*/absl::nullopt);
+    PopRequestAndProcessNext();
     return;
   }
 
@@ -89,7 +109,7 @@ void CellularPolicyHandler::AttemptInstallESim() {
 const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {
   DCHECK(is_installing_);
 
-  return remaining_install_requests_.front();
+  return remaining_install_requests_.front()->smdp_address;
 }
 
 void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
@@ -102,14 +122,18 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
     retry_backoff_.InformOfRequest(/*succeeded=*/true);
     HermesProfileClient::Properties* profile_properties =
         HermesProfileClient::Get()->GetProperties(*profile_path);
-    CompleteCurrentRequest(profile_properties->iccid().value());
+    NET_LOG(EVENT)
+        << "Successfully installed policy eSim profile on service path: "
+        << *service_path << ", iccid: " << profile_properties->iccid().value();
+    UpdateShillConfiguration(profile_properties->iccid().value(),
+                             *service_path);
     return;
   }
 
   if (retry_backoff_.failure_count() >= kInstallRetryLimit) {
     NET_LOG(ERROR) << "Install policy eSim profile with SMDP: "
                    << GetCurrentSmdpAddress() << " failed three times.";
-    CompleteCurrentRequest(/*iccid=*/absl::nullopt);
+    PopRequestAndProcessNext();
     return;
   }
 
@@ -123,18 +147,67 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
       retry_backoff_.GetTimeUntilRelease());
 }
 
-void CellularPolicyHandler::CompleteCurrentRequest(
-    absl::optional<const std::string> iccid) {
-  DCHECK(is_installing_);
-
-  // TODO(crbug.com/1231305)
-  // If succeed: delete current shill property entry and create new shill
-  // entry with policy configuration and new ICCID.
-
+void CellularPolicyHandler::PopRequestAndProcessNext() {
   // Pop out the completed smdp and process next request.
   remaining_install_requests_.pop_front();
   is_installing_ = false;
   ProcessRequests();
+}
+
+void CellularPolicyHandler::UpdateShillConfiguration(
+    const std::string& iccid,
+    const std::string& service_path) {
+  DCHECK(is_installing_);
+
+  managed_network_configuration_handler_->RemoveConfiguration(
+      service_path,
+      base::BindOnce(&CellularPolicyHandler::OnRemoveConfigurationSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), service_path, iccid),
+      base::BindOnce(&CellularPolicyHandler::OnRemoveConfigurationFailure,
+                     weak_ptr_factory_.GetWeakPtr(), service_path));
+}
+
+void CellularPolicyHandler::OnRemoveConfigurationSuccess(
+    const std::string& service_path,
+    const std::string& iccid) {
+  NET_LOG(EVENT)
+      << "Successfully removed cellular network configuration with path: "
+      << service_path;
+
+  const NetworkProfile* profile =
+      network_profile_handler_->GetProfileForUserhash(
+          /*userhash=*/std::string());
+  // The profile is not expected to be null, since policy applicator is not
+  // started by managed network configuration handler until after a profile
+  // is available.
+  DCHECK(profile);
+
+  const std::string* guid =
+      remaining_install_requests_.front()->onc_config->FindStringKey(
+          ::onc::network_config::kGUID);
+  DCHECK(guid);
+
+  // Insert the new ICCID into the ONC configuration
+  remaining_install_requests_.front()->onc_config->SetString(
+      shill::kIccidProperty, iccid);
+  base::Value new_shill_properties = policy_util::CreateShillConfiguration(
+      *profile, *guid, /*global_policy=*/nullptr,
+      remaining_install_requests_.front()->onc_config.get(),
+      /*user_settings=*/nullptr);
+
+  managed_network_configuration_handler_->ConfigurePolicyNetwork(
+      new_shill_properties,
+      base::BindOnce(&CellularPolicyHandler::PopRequestAndProcessNext,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CellularPolicyHandler::OnRemoveConfigurationFailure(
+    const std::string& service_path,
+    const std::string& error_name,
+    std::unique_ptr<base::DictionaryValue> error_data) {
+  NET_LOG(ERROR) << "Failed to remove cellular network configuration with path "
+                 << service_path << ". Error:" << error_name << ".";
+  PopRequestAndProcessNext();
 }
 
 }  // namespace chromeos
