@@ -334,6 +334,21 @@ class PrivateNetworkAccessBrowserTestBlockFromPrivate
             {}) {}
 };
 
+// Test with insecure private network subresource requests blocked, including
+// from the `private` address space.
+class PrivateNetworkAccessBrowserTestBlockFromUnknown
+    : public PrivateNetworkAccessBrowserTestBase {
+ public:
+  PrivateNetworkAccessBrowserTestBlockFromUnknown()
+      : PrivateNetworkAccessBrowserTestBase(
+            {
+                features::kBlockInsecurePrivateNetworkRequests,
+                features::kBlockInsecurePrivateNetworkRequestsFromUnknown,
+                features::kWarnAboutSecurePrivateNetworkRequests,
+            },
+            {}) {}
+};
+
 // Test with insecure private network requests blocked, including navigations.
 class PrivateNetworkAccessBrowserTestBlockNavigations
     : public PrivateNetworkAccessBrowserTestBase {
@@ -2180,6 +2195,38 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromPrivate,
                        PrivateNetworkPolicyIsBlockForPrivate) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePrivateURL(kDefaultPath)));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kBlock);
+}
+
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to allow requests from non-secure
+// contexts in the `unknown` address space.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
+                       PrivateNetworkPolicyIsAllowByDefaultForUnknown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that when the right feature is enabled, the private
+// network request policy used by RenderFrameHostImpl for requests is set to
+// block requests from non-secure contexts in the `unknown` address space.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestBlockFromUnknown,
+                       PrivateNetworkPolicyIsBlockForUnknown) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();

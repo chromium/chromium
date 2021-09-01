@@ -124,6 +124,7 @@ const base::Feature kBlockCredentialedSubresources{
 // See also:
 //  - https://wicg.github.io/private-network-access/#integration-fetch
 //  - kBlockInsecurePrivateNetworkRequestsFromPrivate
+//  - kBlockInsecurePrivateNetworkRequestsFromUnknown
 //  - kBlockInsecurePrivateNetworkRequestsForNavigations
 const base::Feature kBlockInsecurePrivateNetworkRequests{
     "BlockInsecurePrivateNetworkRequests", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -136,6 +137,15 @@ const base::Feature kBlockInsecurePrivateNetworkRequests{
 //  - kBlockInsecurePrivateNetworkRequests
 const base::Feature kBlockInsecurePrivateNetworkRequestsFromPrivate{
     "BlockInsecurePrivateNetworkRequestsFromPrivate",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// When this feature is enabled, requests to localhost initiated from non-secure
+// contexts in the `unknown` IP address space are blocked.
+//
+// See also:
+//  - kBlockInsecurePrivateNetworkRequests
+const base::Feature kBlockInsecurePrivateNetworkRequestsFromUnknown{
+    "BlockInsecurePrivateNetworkRequestsFromUnknown",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation

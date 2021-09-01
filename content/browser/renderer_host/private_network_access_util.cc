@@ -23,11 +23,14 @@ network::mojom::PrivateNetworkRequestPolicy DerivePrivateNetworkRequestPolicy(
                : network::mojom::PrivateNetworkRequestPolicy::kAllow;
   }
 
-  // Requests from non-secure contexts in the unknown address space are allowed
-  // so as not to break anything unexpectedly. The goal is to eliminate
-  // occurrences of this case as much as possible.
+  // Requests from non-secure contexts in the unknown address space are blocked
+  // if the right feature is enabled. The goal is to eliminate occurrences of
+  // this case as much as possible before enabling the feature.
   if (policies.ip_address_space == network::mojom::IPAddressSpace::kUnknown) {
-    return network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    return base::FeatureList::IsEnabled(
+               features::kBlockInsecurePrivateNetworkRequestsFromUnknown)
+               ? network::mojom::PrivateNetworkRequestPolicy::kBlock
+               : network::mojom::PrivateNetworkRequestPolicy::kAllow;
   }
 
   // Requests from the `private` address space to localhost are blocked if the

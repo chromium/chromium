@@ -36,6 +36,8 @@ CONTENT_EXPORT extern const base::Feature kBlockInsecurePrivateNetworkRequests;
 CONTENT_EXPORT extern const base::Feature
     kBlockInsecurePrivateNetworkRequestsFromPrivate;
 CONTENT_EXPORT extern const base::Feature
+    kBlockInsecurePrivateNetworkRequestsFromUnknown;
+CONTENT_EXPORT extern const base::Feature
     kBlockInsecurePrivateNetworkRequestsDeprecationTrial;
 CONTENT_EXPORT extern const base::Feature
     kBlockInsecurePrivateNetworkRequestsForNavigations;
