@@ -57,6 +57,17 @@
         a:layout_height="wrap_content"
         a:gravity="center_horizontal"/>
 
+    <!-- not shown by default. The visibility is toggled by code when needed -->
+    <org.chromium.ui.widget.ButtonCompat
+        a:id="@+id/error_settings_button"
+        style="@style/TextButton"
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        a:gravity="center_horizontal"
+        a:layout_marginTop="20dp"
+        a:visibility="invisible"
+        a:text="@string/qr_code_open_settings_label"/>
+
   </LinearLayout>
 
   <LinearLayout

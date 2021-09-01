@@ -4607,6 +4607,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Can’t connect to your computer. Try another verification option.
       </message>
 
+      <message name="IDS_CABLEV2_ERROR_BLE_PERMISSION" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but the user denied Chrome the permission it needs to do this. Below this message is a button that will open the Settings app where the user can grant the permission. 'Nearby devices' is the name of the specific permission in Settings that needs to be granted. It is TC ID 5529147543651181991 and, ideally, the same wording that will appear in Settings would be used here.">
+        <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> needs Nearby devices permission in order to connect to your device
+      </message>
+
       <message name="IDS_CABLEV2_ERROR_GENERIC" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but some generic error occured.">
         Try another verification option
       </message>

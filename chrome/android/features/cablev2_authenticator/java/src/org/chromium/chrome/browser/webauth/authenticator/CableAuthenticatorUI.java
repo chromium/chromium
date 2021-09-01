@@ -118,6 +118,7 @@ public class CableAuthenticatorUI
     private TextView mStatusText;
     private View mErrorView;
     private View mErrorCloseButton;
+    private View mErrorSettingsButton;
     private View mSpinnerView;
 
     // mErrorCode contains a value of the authenticator::Platform::Error
@@ -244,14 +245,12 @@ public class CableAuthenticatorUI
         getActivity().setTitle(R.string.cablev2_activity_title);
         ViewGroup top = new LinearLayout(getContext());
 
-        // Inflate the error view in case it's needed later.
         mErrorView = inflater.inflate(R.layout.cablev2_error, container, false);
+        mSpinnerView = createSpinnerScreen(inflater, container);
 
         View v = null;
-
         if (mState == State.ENABLE_BLUETOOTH) {
             v = inflater.inflate(R.layout.cablev2_ble_enable, container, false);
-            mSpinnerView = createSpinnerScreen(inflater, container);
         } else if (mState == State.ERROR) {
             fillOutErrorUI(mErrorCode);
             v = mErrorView;
@@ -263,7 +262,7 @@ public class CableAuthenticatorUI
 
                 case FCM:
                 case SERVER_LINK:
-                    v = createSpinnerScreen(inflater, container);
+                    v = mSpinnerView;
                     break;
 
                 case QR:
@@ -303,7 +302,28 @@ public class CableAuthenticatorUI
             }, BLE_SCREEN_DELAY_SECS * 1000);
         } else if (mState == State.BLUETOOTH_PERMISSION) {
             onBluetoothEnabled();
+        } else if (mState == State.ERROR && mErrorCode == ERROR_NO_BLUETOOTH_PERMISSION
+                && BuildInfo.isAtLeastS()) {
+            // This needs to be in a different function call to use functions above API level 21.
+            maybeResolveBLEPermissionError();
         }
+    }
+
+    // Called when the activity is resumed in a BLE permission error state.
+    @TargetApi(31)
+    private void maybeResolveBLEPermissionError() {
+        if (getContext().checkSelfPermission(permission.BLUETOOTH_ADVERTISE)
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        // The user navigated away and came back, but now we have the needed permission.
+        ViewGroup top = (ViewGroup) getView();
+        top.removeAllViews();
+        top.addView(mSpinnerView);
+
+        mErrorCode = 0;
+        onHaveBluetoothPermission();
     }
 
     // Called when the Bluetooth adapter has been enabled, or was already enabled.
@@ -397,6 +417,14 @@ public class CableAuthenticatorUI
             return;
         } else if (v == mErrorCloseButton) {
             getActivity().finish();
+            return;
+        } else if (v == mErrorSettingsButton) {
+            // Open the Settings screen for Chromium.
+            Intent intent =
+                    new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(android.net.Uri.fromParts(
+                    "package", BuildInfo.getInstance().packageName, null));
+            startActivity(intent);
             return;
         }
 
@@ -516,7 +544,6 @@ public class CableAuthenticatorUI
                 } else {
                     mState = State.ERROR;
 
-                    // TODO(agl): do a better UI once we're out of strings freeze.
                     mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
                     fillOutErrorUI(mErrorCode);
                     ViewGroup top = (ViewGroup) getView();
@@ -650,17 +677,34 @@ public class CableAuthenticatorUI
     void fillOutErrorUI(int errorCode) {
         mErrorCloseButton = mErrorView.findViewById(R.id.error_close);
         mErrorCloseButton.setOnClickListener(this);
+        mErrorSettingsButton = mErrorView.findViewById(R.id.error_settings_button);
+        mErrorSettingsButton.setOnClickListener(this);
 
         String desc;
-        if (errorCode == ERROR_UNEXPECTED_EOF) {
-            desc = getResources().getString(R.string.cablev2_error_timeout);
-        } else {
-            TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);
-            errorCodeTextView.setText(
-                    getResources().getString(R.string.cablev2_error_code, errorCode));
+        boolean settingsButtonVisible = false;
+        switch (errorCode) {
+            case ERROR_UNEXPECTED_EOF:
+                desc = getResources().getString(R.string.cablev2_error_timeout);
+                break;
 
-            desc = getResources().getString(R.string.cablev2_error_generic);
+            case ERROR_NO_BLUETOOTH_PERMISSION:
+                final String packageLabel = BuildInfo.getInstance().hostPackageLabel;
+                desc = getResources().getString(
+                        R.string.cablev2_error_ble_permission, packageLabel);
+                settingsButtonVisible = true;
+                break;
+
+            default:
+                TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);
+                errorCodeTextView.setText(
+                        getResources().getString(R.string.cablev2_error_code, errorCode));
+
+                desc = getResources().getString(R.string.cablev2_error_generic);
+                break;
         }
+
+        ((View) mErrorView.findViewById(R.id.error_settings_button))
+                .setVisibility(settingsButtonVisible ? View.VISIBLE : View.INVISIBLE);
 
         TextView descriptionTextView = (TextView) mErrorView.findViewById(R.id.error_description);
         descriptionTextView.setText(desc);
