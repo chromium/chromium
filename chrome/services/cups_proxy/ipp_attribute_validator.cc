@@ -77,6 +77,9 @@ ValidateAttributeResult ValidateAttribute(ipp_op_t ipp_oper_id,
       {"marker-types", {true, ValueType::STRING}},
       {"media", {false, ValueType::STRING}},
       {"media-ready", {true, ValueType::STRING}},
+      // This is not a PWG attribute but CUPS supports it for InputSlot
+      // selection.
+      {"media-source", {true, ValueType::STRING}},
       {"member-names", {true, ValueType::STRING}},
       {"member-uris", {true, ValueType::STRING}},
       {"multiple-document-handling", {false, ValueType::STRING}},
