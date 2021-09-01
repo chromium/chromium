@@ -32,20 +32,9 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
       mojo::PendingReceiver<mojom::NetworkDiagnosticsRoutines> receiver);
 
   // mojom::NetworkDiagnostics
-  void LanConnectivity(LanConnectivityCallback callback) override;
-  void SignalStrength(SignalStrengthCallback callback) override;
-  void GatewayCanBePinged(GatewayCanBePingedCallback callback) override;
-  void HttpFirewall(HttpFirewallCallback callback) override;
-  void HttpsFirewall(HttpsFirewallCallback callback) override;
-  void HasSecureWiFiConnection(
-      HasSecureWiFiConnectionCallback callback) override;
-  void DnsResolverPresent(DnsResolverPresentCallback callback) override;
-  void DnsLatency(DnsLatencyCallback callback) override;
-  void DnsResolution(DnsResolutionCallback callback) override;
-  void CaptivePortal(CaptivePortalCallback callback) override;
-  void HttpsLatency(HttpsLatencyCallback callback) override;
-  void VideoConferencing(const absl::optional<std::string>& stun_server_name,
-                         VideoConferencingCallback callback) override;
+  void GetResult(const mojom::RoutineType type,
+                 GetResultCallback callback) override;
+  void GetAllResults(GetAllResultsCallback callback) override;
   void RunLanConnectivity(RunLanConnectivityCallback callback) override;
   void RunSignalStrength(RunSignalStrengthCallback callback) override;
   void RunGatewayCanBePinged(RunGatewayCanBePingedCallback callback) override;
@@ -63,9 +52,6 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
   void RunArcHttp(RunArcHttpCallback callback) override;
   void RunArcDnsResolution(RunArcDnsResolutionCallback callback) override;
   void RunArcPing(RunArcPingCallback callback) override;
-  void GetResult(const mojom::RoutineType type,
-                 GetResultCallback callback) override;
-  void GetAllResults(GetAllResultsCallback callback) override;
 
  private:
   void RunRoutine(std::unique_ptr<NetworkDiagnosticsRoutine> routine,

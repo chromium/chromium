@@ -18,9 +18,6 @@ namespace network_diagnostics {
 // Tests whether the WiFi connection uses a secure encryption method.
 class HasSecureWiFiConnectionRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using HasSecureWiFiConnectionRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::HasSecureWiFiConnectionCallback;
-
   HasSecureWiFiConnectionRoutine();
   HasSecureWiFiConnectionRoutine(const HasSecureWiFiConnectionRoutine&) =
       delete;

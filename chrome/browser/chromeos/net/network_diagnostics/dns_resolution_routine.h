@@ -30,9 +30,6 @@ namespace network_diagnostics {
 class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
                              public network::ResolveHostClientBase {
  public:
-  using DnsResolutionRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::DnsResolutionCallback;
-
   DnsResolutionRoutine();
   DnsResolutionRoutine(const DnsResolutionRoutine&) = delete;
   DnsResolutionRoutine& operator=(const DnsResolutionRoutine&) = delete;

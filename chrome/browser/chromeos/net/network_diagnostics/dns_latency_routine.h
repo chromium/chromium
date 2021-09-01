@@ -29,9 +29,6 @@ namespace network_diagnostics {
 class DnsLatencyRoutine : public NetworkDiagnosticsRoutine,
                           public network::ResolveHostClientBase {
  public:
-  using DnsLatencyRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::DnsLatencyCallback;
-
   DnsLatencyRoutine();
   DnsLatencyRoutine(const DnsLatencyRoutine&) = delete;
   DnsLatencyRoutine& operator=(const DnsLatencyRoutine&) = delete;

@@ -19,9 +19,6 @@ namespace network_diagnostics {
 // resolution.
 class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using DnsResolverPresentRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::DnsResolverPresentCallback;
-
   DnsResolverPresentRoutine();
   DnsResolverPresentRoutine(const DnsResolverPresentRoutine&) = delete;
   DnsResolverPresentRoutine& operator=(const DnsResolverPresentRoutine&) =

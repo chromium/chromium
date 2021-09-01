@@ -43,8 +43,6 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
   using HttpRequestManagerGetter =
       base::RepeatingCallback<std::unique_ptr<HttpRequestManager>()>;
-  using HttpsLatencyRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::HttpsLatencyCallback;
 
   HttpsLatencyRoutine();
   HttpsLatencyRoutine(const HttpsLatencyRoutine&) = delete;

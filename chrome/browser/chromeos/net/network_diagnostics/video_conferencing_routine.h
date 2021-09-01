@@ -31,8 +31,6 @@ extern const base::TimeDelta kTimeoutAfterHostResolution;
 // README.md file for more details.
 class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using VideoConferencingRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::VideoConferencingCallback;
   using UdpProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<UdpProber>(
           UdpProber::NetworkContextGetter network_context_getter,

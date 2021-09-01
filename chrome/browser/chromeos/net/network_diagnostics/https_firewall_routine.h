@@ -29,8 +29,6 @@ extern const int kTotalNumRetries;
 // Tests whether a firewall is blocking HTTPS port 443.
 class HttpsFirewallRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using HttpsFirewallRoutineCallback =
-      mojom::NetworkDiagnosticsRoutines::HttpsFirewallCallback;
   using TlsProberGetterCallback =
       base::RepeatingCallback<std::unique_ptr<TlsProber>(
           TlsProber::NetworkContextGetter network_context_getter,
