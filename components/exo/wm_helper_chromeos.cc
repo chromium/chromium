@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "components/exo/wm_helper.h"
@@ -146,20 +147,25 @@ void WMHelperChromeOS::OnDragExited() {
 ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
     const ui::DropTargetEvent& event,
     std::unique_ptr<ui::OSExchangeData> data) {
-  auto operation = ui::mojom::DragOperation::kNone;
-  for (DragDropObserver& observer : drag_drop_observers_) {
-    auto observer_op = observer.OnPerformDrop(event);
-    if (observer_op != ui::mojom::DragOperation::kNone)
-      operation = observer_op;
-  }
-  return operation;
+  auto drop_cb = GetDropCallback(event);
+  auto output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  return output_drag_op;
 }
 
-WMHelper::DropCallback WMHelperChromeOS::GetDropCallback(
+aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  // TODO(crbug.com/1197501): Return drop callback
-  NOTIMPLEMENTED();
-  return base::NullCallback();
+  std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks;
+  for (DragDropObserver& observer : drag_drop_observers_) {
+    WMHelper::DragDropObserver::DropCallback drop_cb =
+        observer.GetDropCallback(event);
+    if (!drop_cb.is_null()) {
+      drop_callbacks.push_back(std::move(drop_cb));
+    }
+  }
+  return base::BindOnce(&WMHelperChromeOS::PerformDrop,
+                        weak_ptr_factory_.GetWeakPtr(),
+                        std::move(drop_callbacks));
 }
 
 void WMHelperChromeOS::AddVSyncParameterObserver(
@@ -289,6 +295,19 @@ float GetDefaultDeviceScaleFactor() {
       display_manager->GetDisplayInfo(display::Display::InternalDisplayId());
   DCHECK(display_info.display_modes().size());
   return display_info.display_modes()[0].device_scale_factor();
+}
+
+void WMHelperChromeOS::PerformDrop(
+    std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+    const ui::DropTargetEvent& event,
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op) {
+  for (auto& drop_cb : drop_callbacks) {
+    auto operation = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(event, operation);
+    if (operation != ui::mojom::DragOperation::kNone)
+      output_drag_op = operation;
+  }
 }
 
 }  // namespace exo

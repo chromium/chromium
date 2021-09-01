@@ -49,10 +49,13 @@ class VSyncTimingManager;
 // Helper interface for accessing WindowManager related features.
 class WMHelper : public aura::client::DragDropDelegate {
  public:
-  using DropCallback = aura::client::DragDropDelegate::DropCallback;
 
   class DragDropObserver {
    public:
+    using DropCallback =
+        base::OnceCallback<void(const ui::DropTargetEvent& event,
+                                ui::mojom::DragOperation& output_drag_op)>;
+
     virtual void OnDragEntered(const ui::DropTargetEvent& event) = 0;
     virtual aura::client::DragUpdateInfo OnDragUpdated(
         const ui::DropTargetEvent& event) = 0;
@@ -162,7 +165,8 @@ class WMHelper : public aura::client::DragDropDelegate {
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data) override = 0;
-  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override = 0;
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override = 0;
 
   // Registers an AppPropertyResolver. Multiple resolver can be registered and
   // all resolvers are called in the registration order by the method below.

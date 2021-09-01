@@ -97,8 +97,7 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
   }
   WMHelper::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override {
-    NOTIMPLEMENTED();
-    return base::NullCallback();
+    return base::DoNothing();
   }
 
   // Overridden from VSyncTimingManager::Delegate:

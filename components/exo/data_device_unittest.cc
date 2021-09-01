@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/shell.h"
@@ -279,6 +280,86 @@ TEST_F(DataDeviceTest, NotAcceptDataEventsForSurface) {
 
   device_->OnPerformDrop(event);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
+}
+
+TEST_F(DataDeviceTest, DropCallback_Run) {
+  ui::DropTargetEvent event(data_, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_MOVE);
+  ui::Event::DispatcherApi(&event).set_target(surface_->window());
+
+  std::vector<DataEvent> events;
+  device_->OnDragEntered(event);
+  ASSERT_EQ(2u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kOffer, events[0]);
+  EXPECT_EQ(DataEvent::kEnter, events[1]);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
+  ASSERT_EQ(1u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kMotion, events[0]);
+
+  auto drop_cb = device_->GetDropCallback(event);
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&TestDataDeviceDelegate::DeleteDataOffer,
+                                base::Unretained(&delegate_), true));
+
+  DragOperation output_drag_op = DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+
+  EXPECT_EQ(DragOperation::kLink, output_drag_op);
+  ASSERT_EQ(1u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kDrop, events[0]);
+}
+
+TEST_F(DataDeviceTest, DropCallback_Invalidated) {
+  ui::DropTargetEvent event(data_, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_MOVE);
+  ui::Event::DispatcherApi(&event).set_target(surface_->window());
+
+  std::vector<DataEvent> events;
+  device_->OnDragEntered(event);
+  ASSERT_EQ(2u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kOffer, events[0]);
+  EXPECT_EQ(DataEvent::kEnter, events[1]);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
+  ASSERT_EQ(1u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kMotion, events[0]);
+
+  auto drop_cb = device_->GetDropCallback(event);
+
+  delegate_.DeleteDataOffer(false);
+
+  DragOperation output_drag_op = DragOperation::kNone;
+  std::move(drop_cb).Run(event, output_drag_op);
+
+  EXPECT_EQ(DragOperation::kNone, output_drag_op);
+  EXPECT_EQ(0u, delegate_.PopEvents(&events));
+}
+
+TEST_F(DataDeviceTest, DropCallback_Reset) {
+  ui::DropTargetEvent event(data_, gfx::PointF(), gfx::PointF(),
+                            ui::DragDropTypes::DRAG_MOVE);
+  ui::Event::DispatcherApi(&event).set_target(surface_->window());
+
+  std::vector<DataEvent> events;
+  device_->OnDragEntered(event);
+  ASSERT_EQ(2u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kOffer, events[0]);
+  EXPECT_EQ(DataEvent::kEnter, events[1]);
+
+  EXPECT_EQ(ui::DragDropTypes::DRAG_LINK,
+            device_->OnDragUpdated(event).drag_operation);
+  ASSERT_EQ(1u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kMotion, events[0]);
+
+  auto drop_cb = device_->GetDropCallback(event);
+  drop_cb.Reset();
+
+  ASSERT_EQ(1u, delegate_.PopEvents(&events));
+  EXPECT_EQ(DataEvent::kLeave, events[0]);
 }
 
 TEST_F(DataDeviceTest, ClipboardCopy) {

@@ -9,6 +9,7 @@
 
 #include "ash/display/window_tree_host_manager.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/vsync_timing_manager.h"
 #include "components/exo/wm_helper.h"
@@ -113,7 +114,7 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data) override;
-  WMHelper::DropCallback GetDropCallback(
+  aura::client::DragDropDelegate::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
   // Overridden from VSyncTimingManager::Delegate:
@@ -122,10 +123,17 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       override;
 
  private:
+  void PerformDrop(
+      std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
+      const ui::DropTargetEvent& event,
+      std::unique_ptr<ui::OSExchangeData> data,
+      ui::mojom::DragOperation& output_drag_op);
+
   base::ObserverList<DragDropObserver>::Unchecked drag_drop_observers_;
   LifetimeManager lifetime_manager_;
   VSyncTimingManager vsync_timing_manager_;
   bool default_scale_cancellation_ = true;
+  base::WeakPtrFactory<WMHelperChromeOS> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WMHelperChromeOS);
 };

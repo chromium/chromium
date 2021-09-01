@@ -63,7 +63,7 @@ class DataDevice : public WMHelper::DragDropObserver,
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
       const ui::DropTargetEvent& event) override;
-  WMHelper::DropCallback GetDropCallback(
+  WMHelper::DragDropObserver::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
 
   // Overridden from ui::ClipboardObserver:
@@ -84,6 +84,10 @@ class DataDevice : public WMHelper::DragDropObserver,
   Surface* GetEffectiveTargetForEvent(const ui::DropTargetEvent& event) const;
   void SetSelectionToCurrentClipboardData();
 
+  void PerformDropOrExitDrag(base::ScopedClosureRunner exit_drag,
+                             const ui::DropTargetEvent& event,
+                             ui::mojom::DragOperation& output_drag_op);
+
   DataDeviceDelegate* const delegate_;
   Seat* const seat_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
@@ -91,6 +95,7 @@ class DataDevice : public WMHelper::DragDropObserver,
 
   base::OnceClosure quit_closure_;
   bool drop_succeeded_;
+  base::WeakPtrFactory<DataDevice> drop_weak_factory_{this};
   base::WeakPtrFactory<DataDevice> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataDevice);
