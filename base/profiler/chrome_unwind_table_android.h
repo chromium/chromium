@@ -56,6 +56,55 @@ enum UnwindInstructionResult {
 BASE_EXPORT UnwindInstructionResult
 ExecuteUnwindInstruction(const uint8_t*& instruction,
                          RegisterContext* thread_context);
+
+// Given
+//  - function_offset_table_byte_index
+//  - instruction_offset_from_function_start
+// finds the instruction to execute on unwind instruction table.
+//
+// Function offset table is expected to have following memory layout:
+// +---------------------+---------------------+
+// | <-----ULEB128-----> | <-----ULEB128-----> |
+// +---------------------+---------------------+
+// | Offset              | Unwind Index        |
+// +---------------------+---------------------+-----
+// | 8                   | XXX                 |  |
+// +---------------------+---------------------+  |
+// | 3                   | YYY                 |Function 1
+// +---------------------+---------------------+  |
+// | 0                   | ZZZ                 |  |
+// +---------------------+---------------------+-----
+// | 5                   | AAA                 |  |
+// +---------------------+---------------------+Function 2
+// | 0                   | BBB                 |  |
+// +---------------------+---------------------+-----
+// | ...                 | ....                |
+// +---------------------+---------------------+
+//
+// The function offset table contains [offset, unwind index] pairs, where
+// - offset: offset from function start address of an instruction that affects
+//           the unwind state, measured in two-byte instructions.
+// - unwind index: unwind instruction location on unwind instruction table.
+//
+// Note:
+// - Each function always ends at 0 offset, which correspond to a COMPLETE
+//   instruction on unwind instruction table.
+// - Within each function section, offset strictly decreases. By doing so,
+//   each function's own COMPLETE instruction will serve as termination
+//   condition when searching in the table.
+//
+// Arguments:
+//  unwind_instruction_table: The table that stores a list of unwind
+//                             instructions
+//  function_offset_table: Explained above.
+//  function_offset_table_byte_index: The byte index of the first offset for the
+//                                    function in the function offset table.
+//  instruction_offset_from_function_start: (pc - function_start_address) >> 1.
+BASE_EXPORT const uint8_t* GetFirstUnwindInstructionFromInstructionOffset(
+    const uint8_t* unwind_instruction_table,
+    const uint8_t* function_offset_table,
+    uint16_t function_offset_table_byte_index,
+    uint32_t instruction_offset_from_function_start);
 }  // namespace base
 
 #endif  // BASE_PROFILER_CHROME_UNWIND_TABLE_ANDROID_H_

@@ -141,4 +141,30 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   return UnwindInstructionResult::INSTRUCTION_PENDING;
 }
 
+const uint8_t* GetFirstUnwindInstructionFromInstructionOffset(
+    const uint8_t* unwind_instruction_table,
+    const uint8_t* function_offset_table,
+    uint16_t function_offset_table_byte_index,
+    uint32_t instruction_offset_from_function_start) {
+  const uint8_t* current_function_offset_table_position =
+      &function_offset_table[function_offset_table_byte_index];
+
+  do {
+    const uintptr_t function_offset =
+        DecodeULEB128(current_function_offset_table_position);
+
+    const uintptr_t unwind_table_index =
+        DecodeULEB128(current_function_offset_table_position);
+
+    // Each function always ends at 0 offset. It is guaranteed to find an entry
+    // as long as the function offset table is well-structured.
+    if (function_offset <= instruction_offset_from_function_start)
+      return &unwind_instruction_table[unwind_table_index];
+
+  } while (true);
+
+  NOTREACHED();
+  return nullptr;
+}
+
 }  // namespace base

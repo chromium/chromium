@@ -420,4 +420,87 @@ TEST(ChromeAndroidUnwindInstructionTest, TestBigStackPointerIncrementOverflow) {
   EXPECT_EQ(0xfffffffful, thread_context.arm_sp);
 }
 
+TEST(ChromeUnwindTableAndroidTest,
+     TestFunctionOffsetTableLookupExactMatchingOffset) {
+  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
+  const uint8_t function_offset_table[] = {
+      // Function 1: [(130, 2), (128, 3), (0, 4)]
+      // offset = 130
+      0b10000010,
+      0b00000001,
+      // unwind index = 2
+      0b00000010,
+      // offset = 128
+      0b10000000,
+      0b00000001,
+      // unwind index = 3
+      0b00000011,
+      // offset = 0
+      0b00000000,
+      // unwind index = 4
+      0b00000100,
+  };
+
+  EXPECT_EQ(unwind_instruction_table + 3,
+            GetFirstUnwindInstructionFromInstructionOffset(
+                unwind_instruction_table, function_offset_table,
+                /* function_offset_table_byte_index */ 0x0,
+                /* instruction_offset_from_function_start */ 128));
+}
+
+TEST(ChromeUnwindTableAndroidTest,
+     TestFunctionOffsetTableLookupNonExactMatchingOffset) {
+  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
+  const uint8_t function_offset_table[] = {
+      // Function 1: [(130, 2), (128, 3), (0, 4)]
+      // offset = 130
+      0b10000010,
+      0b00000001,
+      // unwind index = 2
+      0b00000010,
+      // offset = 128
+      0b10000000,
+      0b00000001,
+      // unwind index = 3
+      0b00000011,
+      // offset = 0
+      0b00000000,
+      // unwind index = 4
+      0b00000100,
+  };
+
+  EXPECT_EQ(unwind_instruction_table + 3,
+            GetFirstUnwindInstructionFromInstructionOffset(
+                unwind_instruction_table, function_offset_table,
+                /* function_offset_table_byte_index */ 0x0,
+                /* instruction_offset_from_function_start */ 129));
+}
+
+TEST(ChromeUnwindTableAndroidTest, TestFunctionOffsetTableLookupZeroOffset) {
+  const uint8_t unwind_instruction_table[] = {0, 1, 2, 3, 4, 5, 6};
+  const uint8_t function_offset_table[] = {
+      // Function 1: [(130, 2), (128, 3), (0, 4)]
+      // offset = 130
+      0b10000010,
+      0b00000001,
+      // unwind index = 2
+      0b00000010,
+      // offset = 128
+      0b10000000,
+      0b00000001,
+      // unwind index = 3
+      0b00000011,
+      // offset = 0
+      0b00000000,
+      // unwind index = 4
+      0b00000100,
+  };
+
+  EXPECT_EQ(unwind_instruction_table + 4,
+            GetFirstUnwindInstructionFromInstructionOffset(
+                unwind_instruction_table, function_offset_table,
+                /* function_offset_table_byte_index */ 0x0,
+                /* instruction_offset_from_function_start */ 0));
+}
+
 }  // namespace base
