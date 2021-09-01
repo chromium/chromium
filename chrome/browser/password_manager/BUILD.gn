@@ -16,10 +16,8 @@ source_set("backend_factory") {
   if (is_android && enable_chrome_android_internal) {
     sources = [ "password_store_android_backend_factory.cc" ]
 
-    deps += [
-      "//chrome/browser/password_manager/android:backend",
-      "//components/password_manager/core/common:common",
-    ]
+    deps += [ "//components/password_manager/core/common:common" ]
+    public_deps = [ "//chrome/browser/password_manager/android:backend" ]
   } else {
     sources = [ "password_store_local_backend_factory.cc" ]
   }

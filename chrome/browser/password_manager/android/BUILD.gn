@@ -64,8 +64,10 @@ android_library("java") {
   ]
 
   if (enable_chrome_android_internal) {
-    sources += [ "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java" ]
-    deps += [ ":backend_interface_java" ]
+    sources += [
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
+      "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
+    ]
   }
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
@@ -110,19 +112,6 @@ android_resources("java_resources") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
   ]
-}
-
-android_library("backend_interface_java") {
-  deps = [ "//base:base_java" ]
-  sources = [
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackend.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactory.java",
-    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendFactoryImpl.java",
-  ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/PasswordStoreAndroidBackendFactoryImpl.class" ]
 }
 
 source_set("unit_tests") {
