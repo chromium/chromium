@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "net/cert/internal/cert_error_params.h"
 #include "net/cert/internal/cert_issuer_source_static.h"
 #include "net/cert/internal/common_cert_errors.h"
@@ -23,6 +24,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
+
+#if defined(OS_WIN)
+#include "base/ranges/algorithm.h"
+#include "base/win/wincrypt_shim.h"
+#include "crypto/scoped_capi_types.h"
+#include "net/cert/internal/trust_store_win.h"
+#endif  // OS_WIN
 
 namespace net {
 
@@ -570,6 +578,101 @@ TEST_F(PathBuilderMultiRootTest, TestTrivialDeadline) {
     EXPECT_EQ(deadline, path_builder.deadline());
   }
 }
+
+#if defined(OS_WIN)
+
+void AddToStoreWithEKURestriction(HCERTSTORE store,
+                                  const scoped_refptr<ParsedCertificate>& cert,
+                                  LPCSTR usage_identifier) {
+  crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
+      X509_ASN_ENCODING, cert->der_cert().UnsafeData(),
+      cert->der_cert().Length()));
+
+  CERT_ENHKEY_USAGE usage;
+  memset(&usage, 0, sizeof(usage));
+  CertSetEnhancedKeyUsage(os_cert.get(), &usage);
+  if (usage_identifier) {
+    CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier);
+  }
+  CertAddCertificateContextToStore(store, os_cert.get(), CERT_STORE_ADD_ALWAYS,
+                                   NULL);
+}
+
+bool AreCertsEq(const scoped_refptr<ParsedCertificate> cert_1,
+                const scoped_refptr<ParsedCertificate> cert_2) {
+  return cert_1 && cert_2 &&
+         base::ranges::equal(cert_1->der_cert().AsSpan(),
+                             cert_2->der_cert().AsSpan());
+}
+
+// Test to ensure that path building stops when an intermediate cert is
+// encountered that is not usable for TLS because of EKU restrictions.
+TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
+  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+
+  AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
+                               szOID_PKIX_KP_SERVER_AUTH);
+  AddToStoreWithEKURestriction(root_store.get(), e_by_e_,
+                               szOID_PKIX_KP_SERVER_AUTH);
+  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_e_,
+                               szOID_PKIX_KP_SERVER_AUTH);
+  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
+
+  std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
+      std::move(root_store), std::move(intermediate_store));
+
+  CertPathBuilder path_builder(
+      b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+
+  // Check all paths.
+  path_builder.SetExploreAllPaths(true);
+
+  auto result = path_builder.Run();
+  ASSERT_TRUE(result.HasValidPath());
+  ASSERT_EQ(2U, result.paths.size());
+  const auto& path = *result.GetBestValidPath();
+  ASSERT_EQ(3U, path.certs.size());
+  EXPECT_TRUE(AreCertsEq(b_by_c_, path.certs[0]));
+  EXPECT_TRUE(AreCertsEq(c_by_e_, path.certs[1]));
+  EXPECT_TRUE(AreCertsEq(e_by_e_, path.certs[2]));
+
+  // Should only be one valid path, the one above.
+  int valid_paths = 0;
+  for (auto&& path : result.paths) {
+    valid_paths += path->IsValid() ? 1 : 0;
+  }
+  ASSERT_EQ(1, valid_paths);
+}
+
+// Test that if an intermediate is disabled for TLS, and it is the only
+// path, then path building should fail, even if the root is enabled for
+// TLS.
+TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
+  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+
+  AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
+                               szOID_PKIX_KP_SERVER_AUTH);
+  AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
+  std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
+      std::move(root_store), std::move(intermediate_store));
+
+  CertPathBuilder path_builder(
+      b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
+      initial_explicit_policy_, user_initial_policy_set_,
+      initial_policy_mapping_inhibit_, initial_any_policy_inhibit_);
+
+  auto result = path_builder.Run();
+  ASSERT_FALSE(result.HasValidPath());
+}
+#endif  // OS_WIN
 
 class PathBuilderKeyRolloverTest : public ::testing::Test {
  public:

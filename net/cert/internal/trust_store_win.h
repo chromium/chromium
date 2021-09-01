@@ -30,11 +30,11 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
 
   // Creates a TrustStoreWin for testing, which will treat `root_cert_store`
   // as if it's the source of truth for roots for `GetTrust,
-  // and `all_certs_store` as the store for locating certificates during
-  // `SyncGetIssuersOf`.
+  // and `intermediate_cert_store` as an extra store (in addition to
+  // root_cert_store) for locating certificates during `SyncGetIssuersOf`.
   static std::unique_ptr<TrustStoreWin> CreateForTesting(
       crypto::ScopedHCERTSTORE root_cert_store,
-      crypto::ScopedHCERTSTORE all_certs_store);
+      crypto::ScopedHCERTSTORE intermediate_cert_store);
 
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
@@ -45,10 +45,14 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
 
  private:
   TrustStoreWin(crypto::ScopedHCERTSTORE root_cert_store,
+                crypto::ScopedHCERTSTORE intermediate_cert_store,
                 crypto::ScopedHCERTSTORE all_certs_store);
 
   // Cert Collection containing all user-added trust anchors.
   crypto::ScopedHCERTSTORE root_cert_store_;
+
+  // Cert Collection containing all user-added intermediates.
+  crypto::ScopedHCERTSTORE intermediate_cert_store_;
 
   // Cert Collection for searching via SyncGetIssuersOf()
   crypto::ScopedHCERTSTORE all_certs_store_;
