@@ -416,7 +416,7 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     util_buttons_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStretch);
 
-    {
+    if (item_->SourceType() != SourceType::kCast) {
       // The picture-in-picture button appears directly under the media
       // labels.
       auto picture_in_picture_button = std::make_unique<MediaButton>(
@@ -501,9 +501,11 @@ void MediaNotificationViewModernImpl::UpdateWithMediaSessionInfo(
       session_info->picture_in_picture_state ==
           media_session::mojom::MediaPictureInPictureState::kInPictureInPicture;
 
-  action = in_picture_in_picture ? MediaSessionAction::kExitPictureInPicture
-                                 : MediaSessionAction::kEnterPictureInPicture;
-  picture_in_picture_button_->set_tag(static_cast<int>(action));
+  if (picture_in_picture_button_) {
+    action = in_picture_in_picture ? MediaSessionAction::kExitPictureInPicture
+                                   : MediaSessionAction::kEnterPictureInPicture;
+    picture_in_picture_button_->set_tag(static_cast<int>(action));
+  }
 
   UpdateActionButtonsVisibility();
 
@@ -689,7 +691,9 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
   // Update the colors for the toggle buttons (play/pause and
   // picture-in-picture)
   play_pause_button_->SetButtonColor(foreground, disabled_icon_color);
-  picture_in_picture_button_->SetButtonColor(foreground, disabled_icon_color);
+
+  if (picture_in_picture_button_)
+    picture_in_picture_button_->SetButtonColor(foreground, disabled_icon_color);
 
   // Update the colors for the media control buttons.
   for (views::View* child : media_controls_container_->children()) {
