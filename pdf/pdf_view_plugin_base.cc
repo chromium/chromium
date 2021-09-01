@@ -365,7 +365,6 @@ void PdfViewPluginBase::DocumentLoadComplete() {
   SendAttachments();
   SendBookmarks();
   SendMetadata();
-  SendLoadingProgress(/*percentage=*/100);
 
   if (accessibility_state_ == AccessibilityState::kPending)
     LoadAccessibility();
@@ -428,7 +427,6 @@ void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
   if (progress <= last_progress_sent_ + 1)
     return;
 
-  last_progress_sent_ = progress;
   SendLoadingProgress(progress);
 }
 
@@ -606,6 +604,7 @@ void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
 
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {
   DCHECK(percentage == -1 || (percentage >= 0 && percentage <= 100));
+  last_progress_sent_ = percentage;
 
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "loadProgress");
@@ -1205,6 +1204,10 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     document_size_ = engine()->ApplyDocumentLayout(layout_options);
     OnGeometryChanged(zoom_, device_scale_);
+
+    // Send 100% loading progress only after initial layout negotiated.
+    if (last_progress_sent_ < 100)
+      SendLoadingProgress(/*percentage=*/100);
   }
 
   gfx::PointF scroll_position(message.FindDoubleKey("xOffset").value(),

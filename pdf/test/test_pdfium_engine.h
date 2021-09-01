@@ -16,6 +16,7 @@
 #include "pdf/document_metadata.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace blink {
@@ -39,6 +40,11 @@ class TestPDFiumEngine : public PDFiumEngine {
   TestPDFiumEngine& operator=(const TestPDFiumEngine&) = delete;
 
   ~TestPDFiumEngine() override;
+
+  MOCK_METHOD(gfx::Size,
+              ApplyDocumentLayout,
+              (const DocumentLayout::Options&),
+              (override));
 
   // Sets a scaled mouse event for testing.
   bool HandleInputEvent(const blink::WebInputEvent& scaled_event) override;
