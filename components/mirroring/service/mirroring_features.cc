@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/mirroring/service/mirroring_features.h"
-#include "third_party/libaom/libaom_buildflags.h"
 
 namespace mirroring {
 namespace features {
@@ -24,14 +23,6 @@ const base::Feature kCastStreamingAv1{"CastStreamingAv1",
 // include VP8.
 const base::Feature kCastStreamingVp9{"CastStreamingVp9",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsCastStreamingAV1Enabled() {
-#if BUILDFLAG(ENABLE_LIBAOM)
-  return base::FeatureList::IsEnabled(features::kCastStreamingAv1);
-#else
-  return false;
-#endif
-}
 
 }  // namespace features
 }  // namespace mirroring

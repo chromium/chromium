@@ -884,15 +884,6 @@ void Session::CreateAndSendOffer() {
         AddStreamObject(stream_index++, "H264", video_configs.back(),
                         mirror_settings_, &stream_list);
       }
-      if (mirroring::features::IsCastStreamingAV1Enabled()) {
-        FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
-            RtpPayloadType::VIDEO_AV1, Codec::CODEC_VIDEO_AV1);
-        config.use_external_encoder = false;
-        AddSenderConfig(video_ssrc, config, aes_key, aes_iv, session_params_,
-                        &video_configs);
-        AddStreamObject(stream_index++, "AV1", video_configs.back(),
-                        mirror_settings_, &stream_list);
-      }
       if (video_configs.empty()) {
         if (base::FeatureList::IsEnabled(features::kCastStreamingVp9)) {
           FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(

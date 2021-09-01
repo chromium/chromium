@@ -7,7 +7,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
-import("//third_party/libaom/options.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("logging_proto") {
@@ -161,7 +160,6 @@ source_set("sender") {
     "//base",
     "//media",
     "//media/capture:capture_base",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/libvpx",
     "//third_party/opus",
     "//ui/gfx/geometry",
@@ -181,15 +179,6 @@ source_set("sender") {
       "CoreVideo.framework",
       "VideoToolbox.framework",
     ]
-  }
-
-  if (enable_libaom) {
-    sources += [
-      "sender/av1_encoder.cc",
-      "sender/av1_encoder.h",
-    ]
-
-    deps += [ "//third_party/libaom" ]
   }
 }
 

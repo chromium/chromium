@@ -21,8 +21,6 @@ extern const base::Feature kCastStreamingAv1;
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastStreamingVp9;
 
-bool IsCastStreamingAV1Enabled();
-
 }  // namespace features
 }  // namespace mirroring
 

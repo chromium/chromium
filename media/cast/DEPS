@@ -3,7 +3,6 @@ include_rules = [
   "+media",
   "+net",
   "+third_party/libyuv",
-  "+third_party/libaom",
   "+third_party/zlib",
   "+ui/base",
   "+ui/gfx",

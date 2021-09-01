@@ -32,8 +32,6 @@ openscreen::cast::VideoCodec ToOpenscreenCodec(media::VideoCodec codec) {
       return openscreen::cast::VideoCodec::kHevc;
     case media::VideoCodec::kCodecVP9:
       return openscreen::cast::VideoCodec::kVp9;
-    case media::VideoCodec::kCodecAV1:
-      return openscreen::cast::VideoCodec::kAv1;
     default:
       break;
   }
