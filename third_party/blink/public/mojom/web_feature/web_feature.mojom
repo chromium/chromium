@@ -3309,6 +3309,12 @@ enum WebFeature {
   kCanvasRenderingContext2DRoundRect = 3998,
   kNewLayoutOverflowDifferentBlockWithNonEmptyInflowBounds = 3999,
   kCanvasRenderingContext2DReset = 4000,
+  kCanvasRenderingContext2DLetterSpacing = 4001,
+  kCanvasRenderingContext2DWordSpacing = 4002,
+  kCanvasRenderingContext2DFontVariantCaps = 4003,
+  kCanvasRenderingContext2DFontKerning = 4004,
+  kCanvasRenderingContext2DFontStretch = 4005,
+  kCanvasRenderingContext2DTextRendering = 4006,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

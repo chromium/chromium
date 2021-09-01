@@ -34398,6 +34398,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3999"
       label="NewLayoutOverflowDifferentBlockWithNonEmptyInflowBounds"/>
   <int value="4000" label="CanvasRenderingContext2DReset"/>
+  <int value="4001" label="CanvasRenderingContext2DLetterSpacing"/>
+  <int value="4002" label="CanvasRenderingContext2DWordSpacing"/>
+  <int value="4003" label="CanvasRenderingContext2DFontVariantCaps"/>
+  <int value="4004" label="CanvasRenderingContext2DFontKerning"/>
+  <int value="4005" label="CanvasRenderingContext2DFontStretch"/>
+  <int value="4006" label="CanvasRenderingContext2DTextRendering"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

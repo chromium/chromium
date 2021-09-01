@@ -436,6 +436,8 @@ String OffscreenCanvasRenderingContext2D::direction() const {
 }
 void OffscreenCanvasRenderingContext2D::setLetterSpacing(
     const double letter_spacing) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DLetterSpacing);
   if (UNLIKELY(!std::isfinite(letter_spacing)))
     return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -450,6 +452,8 @@ void OffscreenCanvasRenderingContext2D::setLetterSpacing(
 
 void OffscreenCanvasRenderingContext2D::setWordSpacing(
     const double word_spacing) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DWordSpacing);
   if (UNLIKELY(!std::isfinite(word_spacing)))
     return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -464,6 +468,8 @@ void OffscreenCanvasRenderingContext2D::setWordSpacing(
 
 void OffscreenCanvasRenderingContext2D::setTextRendering(
     const String& text_rendering_string) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DTextRendering);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
   if (!GetState().HasRealizedFont())
@@ -507,6 +513,8 @@ void OffscreenCanvasRenderingContext2D::setDirection(
 
 void OffscreenCanvasRenderingContext2D::setFontKerning(
     const String& font_kerning_string) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DFontKerning);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
   if (!GetState().HasRealizedFont())
@@ -530,6 +538,8 @@ void OffscreenCanvasRenderingContext2D::setFontKerning(
 
 void OffscreenCanvasRenderingContext2D::setFontStretch(
     const String& font_stretch) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DFontStretch);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
   if (!GetState().HasRealizedFont())
@@ -566,6 +576,8 @@ void OffscreenCanvasRenderingContext2D::setFontStretch(
 
 void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
     const String& font_variant_caps_string) {
+  UseCounter::Count(Host()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DFontVariantCaps);
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
   if (!GetState().HasRealizedFont())
