@@ -100,11 +100,8 @@ static_assert(sizeof(void*) != 8, "");
 // Only for Little endian CPUs, as the freelist encoding used on big endian
 // platforms complicates things. Note that Chromium is not officially supported
 // on any big endian architecture as well.
-//
-// Not on perf bots to gather performance impact numbers.
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-    defined(ARCH_CPU_LITTLE_ENDIAN) &&            \
-    !BUILDFLAG(DISABLE_FREELIST_HARDENING_ON_PERF_BOTS)
+    defined(ARCH_CPU_LITTLE_ENDIAN)
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
