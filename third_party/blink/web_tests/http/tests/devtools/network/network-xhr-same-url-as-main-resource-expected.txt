@@ -1,6 +1,0 @@
-Tests that XHRs with the same url as a main resource have correct category.
-
-xhr
-network-xhr-same-url…main-resource.js:17 iframe loaded
-VM:5 XHR loaded: 1
-

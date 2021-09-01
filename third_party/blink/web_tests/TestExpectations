@@ -4365,7 +4365,6 @@ crbug.com/757165 [ Win ] fast/spatial-navigation/snav-tiny-table-traversal.html 
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-two-elements-one-line.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-unit-overflow-and-scroll-in-direction.html [ Crash Failure Pass Timeout ]
 crbug.com/757165 [ Win ] fast/spatial-navigation/snav-z-index.html [ Crash Failure Pass Timeout ]
-crbug.com/757165 [ Win ] http/tests/devtools/console/console-links-in-errors-with-trace.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/devtools/sources/ui-source-code-metadata.js [ Skip ]
 crbug.com/757165 [ Win ] http/tests/misc/client-hints-accept-meta-preloader.html [ Skip ]
 crbug.com/757165 [ Win ] paint/invalidation/filters/filter-repaint-accelerated-child-with-filter-child.html [ Skip ]
@@ -4488,12 +4487,6 @@ crbug.com/1141909 external/wpt/websockets/cookies/003.html?wss [ Skip ]
 crbug.com/1141909 external/wpt/websockets/cookies/005.html?wss [ Skip ]
 crbug.com/1141909 external/wpt/websockets/cookies/007.html?wss [ Skip ]
 
-# Sheriff failures 2017-11-15
-crbug.com/785179 [ Debug Win7 ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Skip ]
-
-# Sheriff failures 2017-11-16
-crbug.com/785980 [ Win ] http/tests/devtools/network/network-xhr-same-url-as-main-resource.js [ Failure Pass ]
-
 # Sheriff failures 2017-12-04
 crbug.com/667560 http/tests/devtools/elements/styles-4/inline-style-sourcemap.js [ Failure Pass ]
 
@@ -4560,9 +4553,6 @@ crbug.com/807110 external/wpt/media-source/mediasource-sequencemode-append-buffe
 crbug.com/807110 external/wpt/media-source/mediasource-sourcebuffer-mode-timestamps.html [ Failure Pass ]
 crbug.com/794338 media/video-rotation.html [ Failure Pass ]
 crbug.com/811605 media/video-poster-after-loadedmetadata.html [ Failure Pass ]
-
-crbug.com/806645 [ Win7 ] http/tests/devtools/elements/elements-panel-rewrite-href.js [ Failure Pass ]
-crbug.com/806645 [ Mac ] http/tests/devtools/elements/elements-panel-rewrite-href.js [ Failure Pass ]
 
 # MHT works only when loaded from local FS (file://..).
 crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
