@@ -141,6 +141,7 @@ class GridTrackSizingAlgorithm final
   void Trace(Visitor* visitor) const {
     visitor->Trace(layout_grid_);
     visitor->Trace(strategy_);
+    visitor->Trace(baseline_alignment_);
     visitor->Trace(column_baseline_items_map_);
     visitor->Trace(row_baseline_items_map_);
   }
