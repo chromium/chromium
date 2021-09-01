@@ -10,7 +10,7 @@ import {ScannerArr, ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
 import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.js';
+import {flushTasks} from '../../test_util.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 
@@ -97,7 +97,7 @@ export function scannerSelectTest() {
     scannerSelect.lastUsedScannerId = secondScannerIdString;
     scannerSelect.scanners = scanners;
 
-    return waitAfterNextRender(scannerSelect).then(() => {
+    return flushTasks().then(() => {
       assertEquals(secondScannerIdString, scannerSelect.selectedScannerId);
       assertEquals(secondScannerIdString, scannerSelect.$$('select').value);
     });
@@ -119,7 +119,7 @@ export function scannerSelectTest() {
     scannerSelect.scanners = scanners;
 
     const firstScannerIdString = tokenToString(firstScannerId);
-    return waitAfterNextRender(scannerSelect).then(() => {
+    return flushTasks().then(() => {
       assertEquals(firstScannerIdString, scannerSelect.selectedScannerId);
       assertEquals(firstScannerIdString, scannerSelect.$$('select').value);
     });
