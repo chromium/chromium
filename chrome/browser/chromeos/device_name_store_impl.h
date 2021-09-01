@@ -7,9 +7,11 @@
 
 #include "chrome/browser/chromeos/device_name_store.h"
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
-#include "components/user_manager/user_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 
 namespace chromeos {
 
@@ -17,10 +19,9 @@ class DeviceNameApplier;
 
 // DeviceNameStore implementation which uses a PrefService to store the device
 // name.
-class DeviceNameStoreImpl
-    : public DeviceNameStore,
-      public policy::DeviceNamePolicyHandler::Observer,
-      public user_manager::UserManager::UserSessionStateObserver {
+class DeviceNameStoreImpl : public DeviceNameStore,
+                            public policy::DeviceNamePolicyHandler::Observer,
+                            public ProfileManagerObserver {
  public:
   DeviceNameStoreImpl(PrefService* prefs,
                       policy::DeviceNamePolicyHandler* handler);
@@ -42,8 +43,9 @@ class DeviceNameStoreImpl
   // policy::DeviceNamePolicyHandler::Observer:
   void OnHostnamePolicyChanged() override;
 
-  // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(user_manager::User* active_user) override;
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   std::string GetDeviceName() const;
 
@@ -68,11 +70,19 @@ class DeviceNameStoreImpl
   // must be different from the one set previously in |prefs_|.
   void AttemptDeviceNameUpdate(const std::string& new_device_name);
 
+  // Callback function for OwnerSettingsService::IsOwnerAsync() that attempts to
+  // update the device name state and notify observers if the state has changed.
+  void AttemptDeviceNameStateUpdate(bool is_user_owner);
+
   // Provides access and persistence for the device name value.
   PrefService* prefs_;
 
   // Stores the device name state that was last set.
   DeviceNameStore::DeviceNameState device_name_state_;
+
+  // Stores whether the active profile is owner or not. This takes an initial
+  // value of false and gets updated in AttemptDeviceNameStateUpdate().
+  bool is_user_owner_ = false;
 
   policy::DeviceNamePolicyHandler* handler_;
   std::unique_ptr<DeviceNameApplier> device_name_applier_;
@@ -80,12 +90,10 @@ class DeviceNameStoreImpl
   base::ScopedObservation<policy::DeviceNamePolicyHandler,
                           policy::DeviceNamePolicyHandler::Observer>
       policy_handler_observation_{this};
-  base::ScopedObservation<
-      user_manager::UserManager,
-      user_manager::UserManager::UserSessionStateObserver,
-      &user_manager::UserManager::AddSessionStateObserver,
-      &user_manager::UserManager::RemoveSessionStateObserver>
-      user_manager_observation_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observer_{this};
+
+  base::WeakPtrFactory<DeviceNameStoreImpl> weak_factory_{this};
 };
 
 }  // namespace chromeos

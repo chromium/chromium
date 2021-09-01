@@ -8,13 +8,18 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/fake_device_name_applier.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,6 +42,9 @@ class FakeObserver : public DeviceNameStore::Observer {
   size_t num_calls_ = 0;
 };
 
+constexpr char kUser1Email[] = "test-user-1@example.com";
+constexpr char kUser2Email[] = "test-user-2@example.com";
+
 }  // namespace
 
 class DeviceNameStoreImplTest : public ::testing::Test {
@@ -47,18 +55,44 @@ class DeviceNameStoreImplTest : public ::testing::Test {
 
   ~DeviceNameStoreImplTest() override = default;
 
+  void SetUp() override {
+    ASSERT_TRUE(mock_profile_manager_.SetUp());
+    scoped_cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
+
+    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
+    fake_user_manager_ = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+  }
+
   void TearDown() override {
     if (device_name_store_)
       device_name_store_->RemoveObserver(&fake_observer_);
 
     DeviceNameStore::Shutdown();
+    scoped_cros_settings_test_helper_.RestoreRealDeviceSettingsProvider();
   }
 
-  void MakeUserOwner() { user_manager_->SwitchActiveUser(account_id_); }
+  void CreateTestingProfile(const std::string& email) {
+    AccountId test_account_id(AccountId::FromUserEmail(email));
 
-  void SwitchActiveUser(const std::string& email) {
-    const AccountId account_id(AccountId::FromUserEmail(email));
-    user_manager_->SwitchActiveUser(account_id);
+    fake_user_manager_->AddUser(test_account_id);
+    fake_user_manager_->LoginUser(test_account_id);
+
+    TestingProfile* mock_profile = mock_profile_manager_.CreateTestingProfile(
+        test_account_id.GetUserEmail(),
+        {{ash::OwnerSettingsServiceAshFactory::GetInstance(),
+          base::BindRepeating(
+              &DeviceNameStoreImplTest::CreateOwnerSettingsServiceAsh,
+              base::Unretained(this))}});
+    owner_settings_service_ash_ =
+        ash::OwnerSettingsServiceAshFactory::GetInstance()
+            ->GetForBrowserContext(mock_profile);
+  }
+
+  void FlushActiveProfileCallbacks(bool is_owner) {
+    DCHECK(owner_settings_service_ash_);
+    owner_settings_service_ash_->RunPendingIsOwnerCallbacksForTesting(is_owner);
   }
 
   void InitializeFakeDeviceNamePolicyHandler(
@@ -70,7 +104,6 @@ class DeviceNameStoreImplTest : public ::testing::Test {
 
   void InitializeDeviceNameStore(
       bool is_hostname_setting_flag_enabled,
-      bool is_current_user_owner,
       const absl::optional<std::string>& name_in_prefs = absl::nullopt) {
     if (is_hostname_setting_flag_enabled) {
       feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
@@ -78,19 +111,6 @@ class DeviceNameStoreImplTest : public ::testing::Test {
       feature_list_.InitAndDisableFeature(
           ash::features::kEnableHostnameSetting);
     }
-
-    auto user_manager = std::make_unique<FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    account_id_ = AccountId::FromUserEmail(profile_.GetProfileUserName());
-    user_manager_->AddUser(account_id_);
-    user_manager_->LoginUser(account_id_);
-    user_manager_->SetOwnerId(account_id_);
-
-    if (is_current_user_owner)
-      user_manager_->SwitchActiveUser(account_id_);
-
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
 
     // Set the device name from the previous session of the user if any.
     if (name_in_prefs)
@@ -134,17 +154,26 @@ class DeviceNameStoreImplTest : public ::testing::Test {
   size_t GetNumObserverCalls() const { return fake_observer_.num_calls(); }
 
  private:
+  std::unique_ptr<KeyedService> CreateOwnerSettingsServiceAsh(
+      content::BrowserContext* context) {
+    return scoped_cros_settings_test_helper_.CreateOwnerSettingsService(
+        Profile::FromBrowserContext(context));
+  }
+
   // Run on the UI thread.
   content::BrowserTaskEnvironment task_environment_;
 
   // Test backing store for prefs.
   TestingPrefServiceSimple local_state_;
 
-  base::test::ScopedFeatureList feature_list_;
-  TestingProfile profile_;
-  ash::FakeChromeUserManager* user_manager_;
+  ash::FakeChromeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  AccountId account_id_;
+  TestingProfileManager mock_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  ash::OwnerSettingsServiceAsh* owner_settings_service_ash_;
+  ash::ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
+
   FakeDeviceNameApplier* fake_device_name_applier_;
   FakeObserver fake_observer_;
   std::unique_ptr<policy::FakeDeviceNamePolicyHandler>
@@ -165,18 +194,24 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceOwnerFirstTimeUser) {
   InitializeFakeDeviceNamePolicyHandler();
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as owner. Observers should be notified because this changes the
+  // state from kCannotBeModifiedBecauseNotDeviceOwner to kCanBeModified.
+  EXPECT_EQ(0u, GetNumObserverCalls());
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/true);
+
   VerifyDeviceNameMetadata("ChromeOS",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
+  EXPECT_EQ(1u, GetNumObserverCalls());
 
   // Device owner can set a new device name.
-  EXPECT_EQ(0u, GetNumObserverCalls());
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
             device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata("TestName",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
 TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceNotOwnerFirstTimeUser) {
@@ -186,8 +221,12 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceNotOwnerFirstTimeUser) {
   InitializeFakeDeviceNamePolicyHandler();
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
@@ -207,18 +246,24 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceOwnerNotFirstTimeUser) {
 
   // Verify that device name is the previously set name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/true,
                             /*name_in_prefs=*/"NameFromPreviousSession");
+
+  // Log user in as owner. Observers should be notified because this changes the
+  // state from kCannotBeModifiedBecauseNotDeviceOwner to kCanBeModified.
+  EXPECT_EQ(0u, GetNumObserverCalls());
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/true);
+
   VerifyDeviceNameMetadata("NameFromPreviousSession",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
 
   // Device owner can set a new device name.
-  EXPECT_EQ(0u, GetNumObserverCalls());
+  EXPECT_EQ(1u, GetNumObserverCalls());
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kSuccess,
             device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata("TestName",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
-  EXPECT_EQ(1u, GetNumObserverCalls());
+  EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
 TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
@@ -228,10 +273,13 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
   InitializeFakeDeviceNamePolicyHandler();
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
 
-  // User is not device owner, hence they cannot modify the device name.
+  // Log user in as owner.
+  CreateTestingProfile(kUser1Email);
+
+  // If owner callback has not been called yet, the user is not technically
+  // owner yet and hence they cannot modify the device name.
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner,
             device_name_store()->SetDeviceName("TestName"));
   VerifyDeviceNameMetadata(
@@ -239,9 +287,9 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
   EXPECT_EQ(0u, GetNumObserverCalls());
 
-  // Verify that if logged in user is now device owner, observer is notified and
-  // user can now modify the device name.
-  MakeUserOwner();
+  // Once owner callback has been called, observer is notified and the user can
+  // now modify the device name.
+  FlushActiveProfileCallbacks(/*is_owner=*/true);
   VerifyDeviceNameMetadata("ChromeOS",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
   EXPECT_EQ(1u, GetNumObserverCalls());
@@ -252,9 +300,10 @@ TEST_F(DeviceNameStoreImplTest, UnmanagedDeviceSwitchOwnerStates) {
                            DeviceNameStore::DeviceNameState::kCanBeModified);
   EXPECT_EQ(2u, GetNumObserverCalls());
 
-  // Switch back to non-owner state and verify they cannot modify the device
-  // name again. Observer should be notified of the device name state change.
-  SwitchActiveUser("nonowner@tray");
+  // Log in non-owner user and verify they cannot modify the device name.
+  // Observer should be notified of the device name state change.
+  CreateTestingProfile(kUser2Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
   EXPECT_EQ(DeviceNameStore::SetDeviceNameResult::kNotDeviceOwner,
             device_name_store()->SetDeviceName("TestName1"));
   VerifyDeviceNameMetadata(
@@ -281,8 +330,12 @@ TEST_F(DeviceNameStoreImplTest,
       "Template");
 
   // Verify that device name is set to the template upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "Template",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -304,8 +357,12 @@ TEST_F(DeviceNameStoreImplTest,
   // Verify that device name is set to the template upon initialization despite
   // the name set from previous session.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "Template",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -320,8 +377,12 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceTemplateDuringSession) {
           kPolicyHostnameNotConfigurable);
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -360,8 +421,12 @@ TEST_F(DeviceNameStoreImplTest,
   // Verify that device name is set to the default name because of
   // non-configurable device name policy.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -376,8 +441,12 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameNotConfigurable) {
           kPolicyHostnameNotConfigurable);
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -413,8 +482,11 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceNotFirstTimeUserNameConfigurable) {
 
   // Verify that device name is the previously set name upon initialization.
   InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false,
                             /*name_in_prefs=*/"NameFromPreviousSession");
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
   VerifyDeviceNameMetadata("NameFromPreviousSession",
                            DeviceNameStore::DeviceNameState::kCanBeModified);
 }
@@ -428,8 +500,12 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceFirstTimeUserNameConfigurable) {
           kPolicyHostnameNotConfigurable);
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);
@@ -478,8 +554,12 @@ TEST_F(DeviceNameStoreImplTest, ManagedDeviceOwnerPolicyChanges) {
           kPolicyHostnameNotConfigurable);
 
   // Verify that device name is set to the default name upon initialization.
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true,
-                            /*is_current_user_owner=*/false);
+  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
+
+  // Log user in as non-owner.
+  CreateTestingProfile(kUser1Email);
+  FlushActiveProfileCallbacks(/*is_owner=*/false);
+
   VerifyDeviceNameMetadata(
       "ChromeOS",
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseOfPolicy);

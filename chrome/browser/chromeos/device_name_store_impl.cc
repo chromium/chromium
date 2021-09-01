@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/device_name_store_impl.h"
 
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/device_name_applier_impl.h"
 #include "chrome/browser/chromeos/device_name_validator.h"
 #include "chrome/common/pref_names.h"
@@ -31,7 +34,9 @@ DeviceNameStoreImpl::DeviceNameStoreImpl(
       handler_(handler),
       device_name_applier_(std::move(device_name_applier)) {
   policy_handler_observation_.Observe(handler_);
-  user_manager_observation_.Observe(user_manager::UserManager::Get());
+
+  if (g_browser_process->profile_manager())
+    profile_manager_observer_.Observe(g_browser_process->profile_manager());
 
   // Gets the device name according to the device name policy set. If empty, the
   // name in prefs is not set yet and hence we set it to the default name.
@@ -78,7 +83,7 @@ bool DeviceNameStoreImpl::CannotModifyBecauseNotDeviceOwner() const {
 
   // If device is unmanaged, then user has to be the device owner to be able to
   // change the name.
-  if (user_manager::UserManager::Get()->IsCurrentUserOwner())
+  if (is_user_owner_)
     return false;
 
   return true;
@@ -160,9 +165,33 @@ void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
   AttemptDeviceNameUpdate(ComputeDeviceName());
 }
 
-void DeviceNameStoreImpl::ActiveUserChanged(user_manager::User* active_user) {
-  device_name_state_ = ComputeDeviceNameState();
+void DeviceNameStoreImpl::AttemptDeviceNameStateUpdate(bool is_user_owner) {
+  is_user_owner_ = is_user_owner;
+  DeviceNameStore::DeviceNameState new_state = ComputeDeviceNameState();
+  if (device_name_state_ == new_state)
+    return;
+
+  device_name_state_ = new_state;
   NotifyDeviceNameMetadataChanged();
+}
+
+void DeviceNameStoreImpl::OnProfileAdded(Profile* profile) {
+  DCHECK(profile);
+
+  ash::OwnerSettingsServiceAsh* service =
+      ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
+  if (service) {
+    service->IsOwnerAsync(
+        base::BindOnce(&DeviceNameStoreImpl::AttemptDeviceNameStateUpdate,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    VLOG(1) << "Owner settings service unavailable for added profile, will "
+               "not update device name state.";
+  }
+}
+
+void DeviceNameStoreImpl::OnProfileManagerDestroying() {
+  profile_manager_observer_.Reset();
 }
 
 }  // namespace chromeos
