@@ -85,5 +85,5 @@ export function testWarningBannerDefaults() {
 
   // Ensure the default allowed volume type is empty. This ensures any
   // banners that don't override this property do not show by default.
-  assertEquals(warningBanner.allowedVolumeTypes().length, 0);
+  assertEquals(warningBanner.allowedVolumes().length, 0);
 }

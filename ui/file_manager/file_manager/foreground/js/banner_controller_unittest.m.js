@@ -37,7 +37,7 @@ let mockDate;
 
 /**
  * @typedef {{
- *    setAllowedVolumeTypes: function(!Array<!Banner.AllowedVolumeType>),
+ *    setAllowedVolumes: function(!Array<!Banner.AllowedVolumeType>),
  *    setShowLimit: function(number),
  *    setDiskThreshold:
  * function((!Banner.DiskThresholdMinSize|!Banner.DiskThresholdMinRatio|!undefined)),
@@ -72,6 +72,7 @@ const BANNERS_COUNT = 5;
  */
 const downloadsAllowedVolumeType = {
   type: VolumeManagerCommon.VolumeType.DOWNLOADS,
+  root: null,
   id: null,
 };
 
@@ -80,6 +81,7 @@ const downloadsAllowedVolumeType = {
  */
 const driveAllowedVolumeType = {
   type: VolumeManagerCommon.VolumeType.DRIVE,
+  root: null,
   id: null,
 };
 
@@ -88,6 +90,7 @@ const driveAllowedVolumeType = {
  */
 const androidFilesAllowedVolumeType = {
   type: VolumeManagerCommon.VolumeType.ANDROID_FILES,
+  root: null,
   id: null,
 };
 
@@ -96,8 +99,8 @@ const androidFilesAllowedVolumeType = {
  * @return {!TestBanner}
  */
 function createTestBanner(tagName) {
-  /** @type {!Array<!Banner.AllowedVolumeType>} */
-  let allowedVolumeTypes = [];
+  /** @type {!Array<!Banner.AllowedVolume>} */
+  let allowedVolumes = [];
 
   /** @type {number|undefined} */
   let showLimit;
@@ -118,8 +121,8 @@ function createTestBanner(tagName) {
   let timeLimitSeconds;
 
   class FakeBanner extends Banner {
-    allowedVolumeTypes() {
-      return allowedVolumeTypes;
+    allowedVolumes() {
+      return allowedVolumes;
     }
 
     showLimit() {
@@ -142,11 +145,11 @@ function createTestBanner(tagName) {
   customElements.define(tagName, FakeBanner);
 
   return {
-    setAllowedVolumeTypes: (types) => {
-      allowedVolumeTypes = types;
+    setAllowedVolumes: (types) => {
+      allowedVolumes = types;
     },
     reset: () => {
-      allowedVolumeTypes = [];
+      allowedVolumes = [];
       showLimit = undefined;
       diskThreshold = undefined;
     },
@@ -217,8 +220,9 @@ function isAllBannersHidden() {
  * Changes the global directory to |newVolume|.
  * @param {?VolumeManagerCommon.VolumeType} volumeType
  * @param {?string=} volumeId
+ * @param {?VolumeManagerCommon.RootType=} rootType
  */
-function changeCurrentVolume(volumeType, volumeId = null) {
+function changeCurrentVolume(volumeType, volumeId = null, rootType = null) {
   directoryModel.getCurrentVolumeInfo = function() {
     // Certain directory roots return null (USB drive root).
     if (!volumeType) {
@@ -228,6 +232,17 @@ function changeCurrentVolume(volumeType, volumeId = null) {
       volumeType,
       volumeId,
     });
+  };
+
+  // Infer the root type from the volume type unless explicitly defined.
+  directoryModel.getCurrentRootType = function() {
+    if (rootType) {
+      return rootType;
+    }
+    if (!volumeType) {
+      return null;
+    }
+    return VolumeManagerCommon.getRootTypeFromVolumeType(volumeType);
   };
 
   directoryModel.dispatchEvent(new Event('directory-changed'));
@@ -377,8 +392,8 @@ export async function testWarningBannerTopPriority() {
   controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
 
   // Set the allowed volume type to be the DOWNLOADS directory.
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
@@ -395,7 +410,7 @@ export async function testNextMatchingBannerShows() {
   controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
 
   // Only set the educational banner to have allowed type of DOWNLOADS.
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
@@ -413,7 +428,7 @@ export async function testBannersArePrioritisedByIndexOrder() {
   ]);
 
   // Set the banner at index 1 to be shown.
-  testWarningBanners[1].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[1].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   await controller.initialize();
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
@@ -435,10 +450,9 @@ export async function testBannersAreHiddenOnVolumeChange() {
   //  First Warning Banner shows on Downloads.
   //  Second Warning Banner shows on Drive.
   //  First Educational Banner shows on Android Files.
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
-  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
-  testEducationalBanners[0].setAllowedVolumeTypes(
-      [androidFilesAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testWarningBanners[1].setAllowedVolumes([driveAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([androidFilesAllowedVolumeType]);
 
   // Verify for Downloads the first banner shows.
   await controller.initialize();
@@ -459,7 +473,7 @@ export async function testBannersAreHiddenOnVolumeChange() {
  */
 export async function testNullVolumeInfoClearsBanners() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // Verify for Downloads the warning banner is shown.
   await controller.initialize();
@@ -483,9 +497,9 @@ export async function testBannersChangeAfterShowLimitReached() {
 
   // Set the showLimit for the educational banners.
   testEducationalBanners[0].setShowLimit(1);
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testEducationalBanners[1].setShowLimit(3);
-  testEducationalBanners[1].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[1].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // The first reconciliation should increment the counter and append to DOM.
   await controller.initialize();
@@ -507,7 +521,7 @@ export async function testChangingVolumesDoesntIncreaseShowTimes() {
   controller.setEducationalBannersInOrder([testEducationalBanners[0].tagName]);
 
   const bannerShowLimit = 3;
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testEducationalBanners[0].setShowLimit(bannerShowLimit);
 
   await controller.initialize();
@@ -528,11 +542,11 @@ export async function testChangingVolumesDoesntIncreaseShowTimes() {
 }
 
 /**
- * Test that multiple banners with different allowedVolumeTypes and show limits
+ * Test that multiple banners with different allowedVolumes and show limits
  * are show at the right stages. This also asserts that banners that don't
  * implement showLimit still are shown as expected.
  */
-export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
+export async function testMultipleBannersAllowedVolumesAndShowLimit() {
   controller.setWarningBannersInOrder([
     testWarningBanners[0].tagName,
   ]);
@@ -541,11 +555,11 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
   ]);
 
   // Set the allowed volume types for the warning banners.
-  testWarningBanners[0].setAllowedVolumeTypes([driveAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([driveAllowedVolumeType]);
 
   // Set the showLimit and allowed volume types for the educational banner.
   testEducationalBanners[0].setShowLimit(2);
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // The first reconciliation should increment the counter and append to DOM.
   await controller.initialize();
@@ -580,7 +594,7 @@ export async function testMultipleBannersAllowedVolumeTypesAndShowLimit() {
  */
 export async function testNullGetSizeStatsDoesntTriggerThreshold() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -598,7 +612,7 @@ export async function testNullGetSizeStatsDoesntTriggerThreshold() {
  */
 export async function testVolumeSizeChangeShowsBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -622,7 +636,7 @@ export async function testVolumeSizeChangeShowsBanner() {
  */
 export async function testVolumeSizeBelowShowsBannerAndAboveHidesBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -658,7 +672,7 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
   ]);
 
   // Banner should show on Downloads when volume goes below 1GB remaining size.
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
@@ -666,7 +680,7 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
 
   // Banner should show on Drive when volume goes below 10% remaining free
   // space.
-  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
+  testWarningBanners[1].setAllowedVolumes([driveAllowedVolumeType]);
   testWarningBanners[1].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DRIVE,
     minRatio: 0.1,
@@ -717,12 +731,12 @@ export async function testTwoVolumeBannersShowOnWatchedVolumeTypes() {
 export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
   controller.setWarningBannersInOrder(
       [testWarningBanners[0].tagName, testWarningBanners[1].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DOWNLOADS,
     minSize: 1 * 1024 * 1024 * 1024,  // 1 GB
   });
-  testWarningBanners[1].setAllowedVolumeTypes([driveAllowedVolumeType]);
+  testWarningBanners[1].setAllowedVolumes([driveAllowedVolumeType]);
   testWarningBanners[1].setDiskThreshold({
     type: VolumeManagerCommon.VolumeType.DRIVE,
     minRatio: 0.1,
@@ -760,7 +774,7 @@ export async function testChangingDirectoryMidSizeUpdateHidesBanner() {
  */
 export async function testDismissHidesBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // Set the hidden duration to 999999 seconds to ensure it doesn't reappear.
   testWarningBanners[0].setHideAfterDismissedDurationSeconds(999999);
@@ -780,7 +794,7 @@ export async function testDismissHidesBanner() {
  */
 export async function testDismissedBannerShowsAfterDuration() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setHideAfterDismissedDurationSeconds(15);
 
   // Verify for Downloads the warning banner is shown.
@@ -813,7 +827,7 @@ export async function testBannerContinuesShowingThroughoutAppSession() {
 
   // Set the showLimit for the warning banner.
   testWarningBanners[0].setShowLimit(2);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // The first reconciliation should increment the counter and append to DOM.
   // Show counter should equal 1.
@@ -858,8 +872,8 @@ export async function testMultipleWinningBannersOnlyTopPriorityShown() {
 
   // Set the educational banner to show on both Downloads and Drive and the
   // warning banner to show only on Downloads.
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
-  testEducationalBanners[0].setAllowedVolumeTypes([
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([
     downloadsAllowedVolumeType,
     driveAllowedVolumeType,
   ]);
@@ -887,7 +901,7 @@ export async function testMultipleWinningBannersOnlyTopPriorityShown() {
  */
 export async function testTimeLimitReachedHidesBanner() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setTimeLimit(60);
 
   mockDate.setDate(1);
@@ -925,7 +939,7 @@ export async function testTimeLimitReachedHidesBanner() {
  */
 export async function testInfiniteTimeLimitWorks() {
   controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
-  testWarningBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
   testWarningBanners[0].setTimeLimit(Banner.INIFINITE_TIME);
 
   mockDate.setDate(1);
@@ -955,7 +969,7 @@ export async function testEducationalBannerDismissedForever() {
 
   // Set the educational banner to downloads volume type and show limit to 10.
   testEducationalBanners[0].setShowLimit(10);
-  testEducationalBanners[0].setAllowedVolumeTypes([downloadsAllowedVolumeType]);
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
 
   // Changing to the Downloads directory should show the educational banner
   // only.

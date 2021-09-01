@@ -16,7 +16,7 @@ const htmlTemplate = html`{__html_template__}`;
  * or that are contextually relevant (e.g. Google Drive is offline).
  *
  * To implement a WarningBanner, extend from this banner and override the
- * allowedVolumeTypes method where you want the warning message shown. The
+ * allowedVolumes method where you want the warning message shown. The
  * connectedCallback method can be used to set the warning text and an optional
  * link to provide more information. All other configuration elements are
  * optional and can be found documented on the Banner extern.
@@ -25,7 +25,7 @@ const htmlTemplate = html`{__html_template__}`;
  * Downloads volume type:
  *
  *    class ConcreteWarningBanner extends WarningBanner {
- *      allowedVolumeTypes() {
+ *      allowedVolumes() {
  *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
  *      }
  *    }
@@ -104,9 +104,9 @@ export class WarningBanner extends Banner {
    * All banners that inherit this class should override with their own
    * volume types to allow. Setting this explicitly as an empty array ensures
    * banners that don't override this are not shown by default.
-   * @returns {!Array<!Banner.AllowedVolumeType>}
+   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumeTypes() {
+  allowedVolumes() {
     return [];
   }
 

@@ -15,7 +15,7 @@ const htmlTemplate = html`{__html_template__}`;
  * certain state, e.g. the current folder is shared with Linux.
  *
  * To implement an StateBanner, extend from this banner and override the
- * allowedVolumeTypes method to define the VolumeType you want the banner to be
+ * allowedVolumes method to define the VolumeType you want the banner to be
  * shown on. All other configuration elements are optional and can be found
  * documented on the Banner externs.
  *
@@ -23,7 +23,7 @@ const htmlTemplate = html`{__html_template__}`;
  * Downloads volume type:
  *
  *    class ConcreteStateBanner extends StateBanner {
- *      allowedVolumeTypes() {
+ *      allowedVolumes() {
  *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
  *      }
  *    }
@@ -77,9 +77,9 @@ export class StateBanner extends Banner {
    * All banners that inherit this class should override with their own
    * volume types to allow. Setting this explicitly as an empty array ensures
    * banners that don't override this are not shown by default.
-   * @returns {!Array<!Banner.AllowedVolumeType>}
+   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumeTypes() {
+  allowedVolumes() {
     return [];
   }
 }

@@ -99,6 +99,13 @@ export class BannerController extends EventTarget {
     this.currentVolume_ = null;
 
     /**
+     * Maintains the currently navigated root type. This is updated by the
+     * directory-changed event.
+     * @private {?VolumeManagerCommon.RootType}
+     */
+    this.currentRootType_ = null;
+
+    /**
      * Maintains a cache of the current size for all observed volumes. If a
      * banner requests to observe a volumeType on initialization, the volume
      * size is cached here, keyed by volumeId.
@@ -210,6 +217,7 @@ export class BannerController extends EventTarget {
    */
   async reconcile() {
     this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
+    this.currentRootType_ = this.directoryModel_.getCurrentRootType();
 
     /** @type {?Banner} */
     let bannerToShow = null;
@@ -251,8 +259,9 @@ export class BannerController extends EventTarget {
     }
 
     // Check if the banner should be shown on this particular volume type.
-    const allowedVolumeTypes = banner.allowedVolumeTypes();
-    if (!isAllowedVolume(this.currentVolume_, allowedVolumeTypes)) {
+    const allowedVolumes = banner.allowedVolumes();
+    if (!isAllowedVolume(
+            this.currentVolume_, this.currentRootType_, allowedVolumes)) {
       return false;
     }
 
@@ -599,24 +608,32 @@ export class BannerController extends EventTarget {
  * Identifies if the current volume is in the list of allowed volume type
  * array for a specific banner.
  * @param {?VolumeInfo} currentVolume Volume that is currently navigated.
- * @param {!Array<!Banner.AllowedVolumeType>} allowedVolumeTypes Array of
- * allowed volumes
+ * @param {?VolumeManagerCommon.RootType} currentRootType Root type that is
+ *    currently navigated.
+ * @param {!Array<!Banner.AllowedVolume>} allowedVolumes Array of allowed
+ *    volumes.
  * @return {boolean}
  */
-export function isAllowedVolume(currentVolume, allowedVolumeTypes) {
-  // Some entries return null despite being valid volume (e.g. the root entry
-  // for a USB drive).
-  if (!currentVolume) {
-    return false;
+export function isAllowedVolume(
+    currentVolume, currentRootType, allowedVolumes) {
+  let currentVolumeType = null;
+  let currentVolumeId = null;
+  if (currentVolume) {
+    currentVolumeType = currentVolume.volumeType;
+    currentVolumeId = currentVolume.volumeId;
   }
-  for (let i = 0; i < allowedVolumeTypes.length; i++) {
-    const {type, id} = allowedVolumeTypes[i];
-    if (currentVolume.volumeType !== type) {
+  for (let i = 0; i < allowedVolumes.length; i++) {
+    const {type, id, root} = allowedVolumes[i];
+    if (!type && !root) {
       continue;
     }
-    // Avoid verifying the volumeId against null in the case a Banner wants to
-    // show for all volumeId's of a specific volumeType.
-    if (id && currentVolume.volumeId !== id) {
+    if (type && currentVolumeType !== type) {
+      continue;
+    }
+    if (root && currentRootType !== root) {
+      continue;
+    }
+    if (id && currentVolumeId !== id) {
       continue;
     }
     return true;

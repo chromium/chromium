@@ -281,6 +281,7 @@ js_library("mock_directory_model") {
   deps = [
     ":directory_contents",
     ":directory_model",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/js/cr:event_target.m",

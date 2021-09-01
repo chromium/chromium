@@ -16,7 +16,7 @@ const htmlTemplate = html`{__html_template__}`;
  * contextually relevant information in specific part of the Files app.
  *
  * To implement an EducationalBanner, extend from this banner and override the
- * allowedVolumeTypes method to define the VolumeType you want the banner to be
+ * allowedVolumes method to define the VolumeType you want the banner to be
  * shown on. All other configuration elements are optional and can be found
  * documented on the Banner externs.
  *
@@ -24,7 +24,7 @@ const htmlTemplate = html`{__html_template__}`;
  * Downloads volume type:
  *
  *    class ConcreteEducationalBanner extends EducationalBanner {
- *      allowedVolumeTypes() {
+ *      allowedVolumes() {
  *        return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
  *      }
  *    }
@@ -104,9 +104,9 @@ export class EducationalBanner extends Banner {
    * All banners that inherit this class should override with their own
    * volume types to allow. Setting this explicitly as an empty array ensures
    * banners that don't override this are not shown by default.
-   * @returns {!Array<!Banner.AllowedVolumeType>}
+   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumeTypes() {
+  allowedVolumes() {
     return [];
   }
 

@@ -10,11 +10,11 @@ import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
  */
 export class Banner extends HTMLElement {
   /**
-   * Returns the volume types the banner where the banner is enabled.
-   * @return {!Array<!Banner.AllowedVolumeType>}
+   * Returns the volume types or roots where the banner is enabled.
+   * @return {!Array<!Banner.AllowedVolume>}
    * @abstract
    */
-  allowedVolumeTypes() {}
+  allowedVolumes() {}
 
   /**
    * The number of Files app sessions a banner can be shown for. A session is
@@ -62,10 +62,27 @@ export class Banner extends HTMLElement {
  * the exact DocumentProvider.
  * @typedef {{
  *            type: VolumeManagerCommon.VolumeType,
+ *            root: (VolumeManagerCommon.RootType|null),
  *            id: (string|null),
  *          }}
  */
 Banner.AllowedVolumeType;
+
+/**
+ * An explicitly defined volume root type with an optional volume type and id.
+ * Main use for "fake" volumes such as Trash that don't report a volumeType.
+ * @typedef {{
+ *            root: VolumeManagerCommon.RootType,
+ *            type: (VolumeManagerCommon.VolumeType|null),
+ *            id: (string|null),
+ *          }}
+ */
+Banner.AllowedRootType;
+
+/**
+ * @typedef {!Banner.AllowedVolumeType|!Banner.AllowedRootType}
+ */
+Banner.AllowedVolume;
 
 /**
  * The minSize is denoted in bytes.

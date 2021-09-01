@@ -10,16 +10,16 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {isAllowedVolume, isBelowThreshold} from './banner_controller.js';
 
-/** @type {!Array<!Banner.AllowedVolumeType>} */
-let allowedVolumeTypes = [];
+/** @type {!Array<!Banner.AllowedVolume>} */
+let allowedVolumes = [];
 
 /**
  * Returns a VolumeInfo with the type and id set.
  * @param {!VolumeManagerCommon.VolumeType} volumeType
- * @param {string|null} volumeId
+ * @param {?string=} volumeId
  * @returns {!VolumeInfo}
  */
-function createAndSetVolumeInfo(volumeType, volumeId) {
+function createAndSetVolumeInfo(volumeType, volumeId = null) {
   class FakeVolumeInfo {
     constructor() {
       this.volumeType = volumeType;
@@ -43,7 +43,7 @@ function createRemainingSizeStats(remainingSize) {
 }
 
 export function tearDown() {
-  allowedVolumeTypes = [];
+  allowedVolumes = [];
 }
 
 /**
@@ -51,9 +51,10 @@ export function tearDown() {
  */
 export function testNoAllowedVolumes() {
   const currentVolume =
-      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
 
-  assertFalse(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertFalse(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
 }
 
 /**
@@ -61,10 +62,11 @@ export function testNoAllowedVolumes() {
  */
 export function testAllowedVolume() {
   const currentVolume =
-      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-  allowedVolumeTypes = [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  allowedVolumes = [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
 
-  assertTrue(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertTrue(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
 }
 
 /**
@@ -72,13 +74,14 @@ export function testAllowedVolume() {
  */
 export function testMultipleAllowedVolumes() {
   const currentVolume =
-      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-  allowedVolumeTypes = [
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  allowedVolumes = [
     {type: VolumeManagerCommon.VolumeType.DOWNLOADS},
     {type: VolumeManagerCommon.VolumeType.ANDROID_FILES}
   ];
 
-  assertTrue(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertTrue(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
 }
 
 /**
@@ -86,13 +89,14 @@ export function testMultipleAllowedVolumes() {
  */
 export function testMultipleNoAllowedVolumes() {
   const currentVolume =
-      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS, null);
-  allowedVolumeTypes = [
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  allowedVolumes = [
     {type: VolumeManagerCommon.VolumeType.ARCHIVE},
     {type: VolumeManagerCommon.VolumeType.ANDROID_FILES}
   ];
 
-  assertFalse(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertFalse(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
 }
 
 /**
@@ -101,7 +105,7 @@ export function testMultipleNoAllowedVolumes() {
 export function testMultipleAllowedDocumentProviders() {
   const currentVolume = createAndSetVolumeInfo(
       VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_a');
-  allowedVolumeTypes = [
+  allowedVolumes = [
     {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       id: 'provider_a',
@@ -109,7 +113,8 @@ export function testMultipleAllowedDocumentProviders() {
     {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_b'}
   ];
 
-  assertTrue(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertTrue(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
 }
 
 /**
@@ -118,7 +123,7 @@ export function testMultipleAllowedDocumentProviders() {
 export function testMultipleNoAllowedDocumentProviders() {
   const currentVolume = createAndSetVolumeInfo(
       VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_a');
-  allowedVolumeTypes = [
+  allowedVolumes = [
     {
       type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
       id: 'provider_b',
@@ -126,7 +131,194 @@ export function testMultipleNoAllowedDocumentProviders() {
     {type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, id: 'provider_c'}
   ];
 
-  assertFalse(isAllowedVolume(currentVolume, allowedVolumeTypes));
+  assertFalse(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
+}
+
+/**
+ * Test that a single root type (with no volume info) returns true if the
+ * allowed volumes only contains root information.
+ */
+export function testSingleRootTypeNoVolumeTypeOrId() {
+  const currentRootType = VolumeManagerCommon.RootType.DOWNLOADS;
+  allowedVolumes = [{
+    root: VolumeManagerCommon.RootType.DOWNLOADS,
+  }];
+  assertTrue(isAllowedVolume(
+      /* currentVolume */ null, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test that multiple root types defined in allowed volumes (with one matching
+ * the current type) returns true.
+ */
+export function testMultipleRootTypesNoVolumeTypeOrId() {
+  const currentRootType = VolumeManagerCommon.RootType.DOWNLOADS;
+  allowedVolumes = [
+    {
+      root: VolumeManagerCommon.RootType.DOWNLOADS,
+    },
+    {
+      root: VolumeManagerCommon.RootType.DRIVE,
+    }
+  ];
+  assertTrue(isAllowedVolume(
+      /* currentVolume */ null, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test multiple defined root types with none matching the allowed volumes
+ * returns false.
+ */
+export function testMultipleDisallowedRootTypesNoVolumeTypeOrId() {
+  const currentRootType = VolumeManagerCommon.RootType.SMB;
+  allowedVolumes = [
+    {
+      root: VolumeManagerCommon.RootType.DOWNLOADS,
+    },
+    {
+      root: VolumeManagerCommon.RootType.DRIVE,
+    }
+  ];
+  assertFalse(isAllowedVolume(
+      /* currentVolume */ null, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test both volume info and root type returns true (for stricter checking of
+ * a volume type).)
+ */
+export function testVolumeTypeAndRootTypeNoId() {
+  const currentRootType = VolumeManagerCommon.RootType.SHARED_DRIVE;
+  const currentVolume =
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DRIVE);
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.DRIVE,
+    root: VolumeManagerCommon.RootType.SHARED_DRIVE,
+  }];
+  assertTrue(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test that if volume type matches with but not root type should return false.
+ */
+export function testVolumeTypeMatchesButNotRootType() {
+  const currentRootType = VolumeManagerCommon.RootType.SHARED_DRIVE;
+  const currentVolume =
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DRIVE);
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.DRIVE,
+    root: VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
+  }];
+  assertFalse(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test that volume type is defined but the root type is null, allowed volumes
+ * should allow for stricter checking of a volume type, this should return
+ * false.
+ */
+export function testVolumeTypeDefinedButNotRootType() {
+  const currentVolume =
+      createAndSetVolumeInfo(VolumeManagerCommon.VolumeType.DRIVE);
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.DRIVE,
+    root: VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
+  }];
+  assertFalse(isAllowedVolume(
+      currentVolume, /* currentRootType */ null, allowedVolumes));
+}
+
+/**
+ * Test that root type is defined but not volume type. If the allowed volumes
+ * requires both defined, should return false.
+ */
+export function testRootTypeDefinedButNotVolumeType() {
+  const currentRootType = VolumeManagerCommon.RootType.TRASH;
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.TRASH,
+    root: VolumeManagerCommon.RootType.TRASH,
+  }];
+  assertFalse(isAllowedVolume(
+      /* currentVolume */ null, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test that volume type, root type and id are all defined.
+ */
+export function testVolumeTypeRootTypeAndIdDefined() {
+  const currentVolume = createAndSetVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_a');
+  const currentRootType = VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER;
+
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+    root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+    id: 'provider_a',
+  }];
+  assertTrue(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test that volume type, root type are defined but id does not match.
+ */
+export function testVolumeTypeRootTypeAndIdDefinedNoMatch() {
+  const currentVolume = createAndSetVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_a');
+  const currentRootType = VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER;
+
+  allowedVolumes = [{
+    type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+    root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+    id: 'provider_b',
+  }];
+  assertFalse(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test multiple volume types, root types and ids defined with one matching.
+ */
+export function testMultipleDifferentIdsSameVolumeTypeAndRootTypeOneMatches() {
+  const currentVolume = createAndSetVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_a');
+  const currentRootType = VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER;
+
+  allowedVolumes = [
+    {
+      type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+      root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+      id: 'provider_b',
+    },
+    {
+      type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+      root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+      id: 'provider_a',
+    }
+  ];
+  assertTrue(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
+}
+
+/**
+ * Test multiple volume types, root types and ids defined with none matching.
+ */
+export function testMultipleDifferentIdsSameVolumeTypeAndRootTypeNoneMatches() {
+  const currentVolume = createAndSetVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER, 'provider_c');
+  const currentRootType = VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER;
+
+  allowedVolumes = [
+    {
+      type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+      root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+      id: 'provider_b',
+    },
+    {
+      type: VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER,
+      root: VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,
+      id: 'provider_a',
+    }
+  ];
+  assertFalse(isAllowedVolume(currentVolume, currentRootType, allowedVolumes));
 }
 
 /**

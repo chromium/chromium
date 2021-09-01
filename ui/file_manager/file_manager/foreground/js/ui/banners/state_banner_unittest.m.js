@@ -41,5 +41,5 @@ export async function testAdditionalButtonCanBeClicked() {
 export function testStateBannerDefaults() {
   // Ensure the default allowed volume type is empty. This ensures any
   // banners that don't override this property do not show by default.
-  assertEquals(stateBanner.allowedVolumeTypes().length, 0);
+  assertEquals(stateBanner.allowedVolumes().length, 0);
 }

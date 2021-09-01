@@ -46,9 +46,9 @@ export class LocalDiskLowSpaceBanner extends WarningBanner {
   /**
    * Only show the banner when the user has navigated to the Downloads volume
    * type (this includes the My files directory).
-   * @returns {!Array<!Banner.AllowedVolumeType>}
+   * @returns {!Array<!Banner.AllowedVolume>}
    */
-  allowedVolumeTypes() {
+  allowedVolumes() {
     return [{type: VolumeManagerCommon.VolumeType.DOWNLOADS}];
   }
 }
