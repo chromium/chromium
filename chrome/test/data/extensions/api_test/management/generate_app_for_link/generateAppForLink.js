@@ -58,5 +58,9 @@ var tests = [
   }
 ];
 
-chrome.test.runTests(tests);
+const scriptUrl = '_test_resources/api_test/management/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
 
+loadScript.then(async function() {
+  chrome.test.runTests(tests);
+});

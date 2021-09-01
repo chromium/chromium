@@ -45,11 +45,16 @@ var tests = [
   }
 ];
 
-chrome.management.getAll(callback(function(items) {
-  enabled_app_id = getItemNamed(items, "enabled_app").id;
-  disabled_app_id = getItemNamed(items, "disabled_app").id;
-  enabled_extension_id = getItemNamed(items, "enabled_extension").id;
-  packaged_app_id = getItemNamed(items, "packaged_app").id;
+const scriptUrl = '_test_resources/api_test/management/common.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
 
-  chrome.test.runTests(tests);
-}));
+loadScript.then(async function() {
+  chrome.management.getAll(callback(function(items) {
+    enabled_app_id = getItemNamed(items, "enabled_app").id;
+    disabled_app_id = getItemNamed(items, "disabled_app").id;
+    enabled_extension_id = getItemNamed(items, "enabled_extension").id;
+    packaged_app_id = getItemNamed(items, "packaged_app").id;
+
+    chrome.test.runTests(tests);
+  }));
+});

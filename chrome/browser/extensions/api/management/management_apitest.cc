@@ -122,13 +122,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Basics) {
                         ManifestLocation::kExternalPolicyDownload);
   InstallNamedExtension(basedir, "version_name", ManifestLocation::kInternal);
 
-  ASSERT_TRUE(RunExtensionTest("management/test", {.page_url = "basics.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/basics"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, NoPermission) {
   LoadExtensions();
-  ASSERT_TRUE(
-      RunExtensionTest("management/no_permission", {.page_url = "test.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/no_permission"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Uninstall) {
@@ -136,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Uninstall) {
   // Confirmation dialog will be shown for uninstallations except for self.
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  ASSERT_TRUE(
-      RunExtensionTest("management/test", {.page_url = "uninstall.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/uninstall"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, CreateAppShortcut) {
@@ -146,13 +144,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, CreateAppShortcut) {
   LoadNamedExtension(basedir, "packaged_app");
 
   extensions::ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(true);
-  ASSERT_TRUE(RunExtensionTest("management/test",
-                               {.page_url = "createAppShortcut.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/create_app_shortcut"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, GenerateAppForLink) {
-  ASSERT_TRUE(RunExtensionTest("management/test",
-                               {.page_url = "generateAppForLink.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -169,8 +165,7 @@ class GenerateAppForLinkWithLacrosWebAppsApiTest
 
 IN_PROC_BROWSER_TEST_F(GenerateAppForLinkWithLacrosWebAppsApiTest,
                        GenerateAppForLink) {
-  ASSERT_TRUE(RunExtensionTest("management/test",
-                               {.page_url = "generateAppForLinkLacros.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/generate_app_for_link_lacros"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -528,6 +523,5 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, MAYBE_LaunchType) {
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
   LoadNamedExtension(basedir, "packaged_app");
 
-  ASSERT_TRUE(
-      RunExtensionTest("management/test", {.page_url = "launchType.html"}));
+  ASSERT_TRUE(RunExtensionTest("management/launch_type"));
 }
