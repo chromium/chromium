@@ -2536,16 +2536,35 @@ TEST_P(HoldingSpaceKeyedServicePrintToPdfIntegrationTest, AddPrintedPdfItem) {
 }
 
 // Base class for tests of incognito profile integration. Parameterized by
-// whether the holding space incognito profile feature is enabled.
+// whether the holding space incognito profile feature is enabled and whether
+// the holding space in-progress downloads integration feature is enabled.
 class HoldingSpaceKeyedServiceIncognitoDownloadsTest
     : public HoldingSpaceKeyedServiceTest,
       public testing::WithParamInterface<
-          bool /* incognito_downloads_enabled */> {
+          std::tuple<bool /* incognito_downloads_enabled */,
+                     bool /* in_progress_downloads_enabled */>> {
  public:
   HoldingSpaceKeyedServiceIncognitoDownloadsTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceIncognitoProfileIntegration,
-        IncognitoDownloadsEnabled());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    if (IncognitoDownloadsEnabled()) {
+      enabled_features.push_back(
+          features::kHoldingSpaceIncognitoProfileIntegration);
+    } else {
+      disabled_features.push_back(
+          features::kHoldingSpaceIncognitoProfileIntegration);
+    }
+
+    if (InProgressDownloadsEnabled()) {
+      enabled_features.push_back(
+          features::kHoldingSpaceInProgressDownloadsIntegration);
+    } else {
+      disabled_features.push_back(
+          features::kHoldingSpaceInProgressDownloadsIntegration);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   // HoldingSpaceKeyedServiceTest:
@@ -2567,7 +2586,11 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
 
   // Returns true if the test should run with the incognito profile feature
   // enabled, false otherwise.
-  bool IncognitoDownloadsEnabled() const { return GetParam(); }
+  bool IncognitoDownloadsEnabled() const { return std::get<0>(GetParam()); }
+
+  // Returns true if the test should run with the in-progress downloads feature
+  // enabled, false otherwise.
+  bool InProgressDownloadsEnabled() const { return std::get<1>(GetParam()); }
 
   // Returns the incognito profile spawned from the test's main profile.
   TestingProfile* incognito_profile() { return incognito_profile_; }
@@ -2577,9 +2600,12 @@ class HoldingSpaceKeyedServiceIncognitoDownloadsTest
   TestingProfile* incognito_profile_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceIncognitoDownloadsTest,
-                         /*incognito_downloads_enabled=*/::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServiceIncognitoDownloadsTest,
+    ::testing::Combine(
+        /*incognito_downloads_enabled=*/::testing::Bool(),
+        /*in_progress_downloads_enabled=*/testing::Bool()));
 
 TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
@@ -2618,8 +2644,17 @@ TEST_P(HoldingSpaceKeyedServiceIncognitoDownloadsTest, AddDownloadItem) {
   current_path = downloads_mount->CreateFile(base::FilePath("tmp/temp_path"));
   UpdateFakeDownloadItem();
 
-  // Verify holding space is empty.
-  ASSERT_EQ(0u, model->items().size());
+  // Holding space should be empty if and only if either the incognito profile
+  // feature is disabled or the in-progress downloads feature is disabled.
+  if (!IncognitoDownloadsEnabled() || !InProgressDownloadsEnabled()) {
+    ASSERT_EQ(0u, model->items().size());
+  } else {
+    ASSERT_EQ(1u, model->items().size());
+    HoldingSpaceItem* download_item = model->items()[0].get();
+    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kDownload);
+    EXPECT_EQ(download_item->file_path(), current_path);
+    EXPECT_EQ(download_item->progress().GetValue(), 0.f);
+  }
 
   // Complete the download.
   current_state = download::DownloadItem::COMPLETE;
