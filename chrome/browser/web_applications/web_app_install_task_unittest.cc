@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/test_data_retriever.h"
-#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_install_finalizer.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"

@@ -13,8 +13,8 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -43,7 +43,7 @@ class WebFileTasksTest : public ::testing::Test {
     app_provider_->SetRegistrar(std::move(app_registrar));
 
     auto file_handler_manager =
-        std::make_unique<web_app::TestFileHandlerManager>(profile_.get());
+        std::make_unique<web_app::TestWebAppFileHandlerManager>(profile_.get());
     file_handler_manager_ = file_handler_manager.get();
     auto os_integration_manager =
         std::make_unique<web_app::TestOsIntegrationManager>(
@@ -59,7 +59,7 @@ class WebFileTasksTest : public ::testing::Test {
   void InstallFileHandler(
       const web_app::AppId& app_id,
       const GURL& install_url,
-      const web_app::TestFileHandlerManager::AcceptMap& accept) {
+      const web_app::TestWebAppFileHandlerManager::AcceptMap& accept) {
     auto web_app = CreateWebApp(app_id, install_url);
     RegisterApp(std::move(web_app));
     file_handler_manager_->InstallFileHandler(app_id, install_url, accept);
@@ -83,7 +83,7 @@ class WebFileTasksTest : public ::testing::Test {
   }
 
   Profile* profile() { return profile_.get(); }
-  web_app::TestFileHandlerManager* file_handler_manager() {
+  web_app::TestWebAppFileHandlerManager* file_handler_manager() {
     return file_handler_manager_;
   }
 
@@ -94,7 +94,7 @@ class WebFileTasksTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   web_app::TestWebAppProvider* app_provider_;
   web_app::WebAppRegistrarMutable* app_registrar_;
-  web_app::TestFileHandlerManager* file_handler_manager_;
+  web_app::TestWebAppFileHandlerManager* file_handler_manager_;
 };
 
 class WebFileTasksFileHandlingEnabledTests : public WebFileTasksTest {

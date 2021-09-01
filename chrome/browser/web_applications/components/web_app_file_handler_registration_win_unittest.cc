@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
 #include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
-#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/test/base/testing_browser_process.h"

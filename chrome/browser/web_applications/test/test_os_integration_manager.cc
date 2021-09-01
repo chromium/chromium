@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
-#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 
@@ -32,7 +32,8 @@ TestOsIntegrationManager::TestOsIntegrationManager(
     set_shortcut_manager(std::make_unique<TestShortcutManager>(profile));
   }
   if (!this->file_handler_manager()) {
-    set_file_handler_manager(std::make_unique<TestFileHandlerManager>(profile));
+    set_file_handler_manager(
+        std::make_unique<TestWebAppFileHandlerManager>(profile));
   }
   if (!this->protocol_handler_manager()) {
     set_protocol_handler_manager(

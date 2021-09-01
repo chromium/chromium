@@ -10,7 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/web_applications/test/test_file_handler_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -123,13 +123,14 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
         std::make_unique<TestWebAppRegistryController>();
     test_registry_controller_->SetUp(profile());
 
-    file_handler_manager_ = std::make_unique<TestFileHandlerManager>(profile());
+    file_handler_manager_ =
+        std::make_unique<TestWebAppFileHandlerManager>(profile());
     file_handler_manager_->SetSubsystems(&app_registrar());
 
     controller().Init();
   }
 
-  TestFileHandlerManager& file_handler_manager() {
+  TestWebAppFileHandlerManager& file_handler_manager() {
     return *file_handler_manager_.get();
   }
 
@@ -141,7 +142,7 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
 
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
-  std::unique_ptr<TestFileHandlerManager> file_handler_manager_;
+  std::unique_ptr<TestWebAppFileHandlerManager> file_handler_manager_;
 
   base::test::ScopedFeatureList features_;
 };
