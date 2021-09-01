@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryCapacityRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      async function runCapacityRoutine() {
+      async function runBatteryCapacityRoutine() {
         const response =
           await chrome.os.diagnostics.runBatteryCapacityRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryHealthRoutineSuccess) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
-      async function runCapacityRoutine() {
+      async function runBatteryHealthRoutine() {
         const response =
           await chrome.os.diagnostics.runBatteryHealthRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
