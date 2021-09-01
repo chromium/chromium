@@ -29,4 +29,7 @@ bool ShouldInstallURLBlocklistPolicyHandlers();
 // Returns true if URLBlocklist/URLAllowlist enterprise policies are enabled.
 bool IsURLBlocklistEnabled();
 
+// Returns true if the forced sign-in policy option is enabled.
+bool IsForcedBrowserSigninEnabled();
+
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_FEATURES_H_

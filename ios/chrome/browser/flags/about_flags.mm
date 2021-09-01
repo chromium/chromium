@@ -62,6 +62,7 @@
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -806,7 +807,8 @@ flags_ui::FlagsState& GetGlobalFlagsState() {
 }
 // Creates the experimental test policies map, used by AsyncPolicyLoader and
 // PolicyLoaderIOS to locally enable policies.
-NSMutableDictionary* CreateExperimentalTestingPolicies() {
+NSMutableDictionary* CreateExperimentalTestingPolicies(
+    base::CommandLine* command_line) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Shared variables for all enterprise experimental flags.
@@ -854,9 +856,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
       base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel) : @2,
 
       base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled) : @YES,
-
-      // 0 = browser sign-in disabled
-      base::SysUTF8ToNSString(policy::key::kBrowserSignin) : @0,
     }];
   }
 
@@ -924,6 +923,28 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     [allowed_experimental_policies addObject:restrict_key];
   }
 
+  // If the sign-in policy is set (not "None"), add the policy key to the list
+  // of enabled experimental policies, and set the value.
+  NSString* const kSigninPolicyKey = @"BrowserSignin";
+  NSInteger signin_policy_mode = [defaults integerForKey:kSigninPolicyKey];
+  if (signin_policy_mode) {
+    // Remove the mode offset that was used to represent the unset policy.
+    --signin_policy_mode;
+    DCHECK(signin_policy_mode >= 0);
+
+    if (signin_policy_mode ==
+        static_cast<NSInteger>(BrowserSigninMode::kForced)) {
+      // Allow the forced sign-in policy feature when the corresponding policy
+      // mode is specified.
+      command_line->AppendSwitch(switches::kEnableForcedSignInPolicy);
+    }
+
+    [allowed_experimental_policies addObject:kSigninPolicyKey];
+    [testing_policies addEntriesFromDictionary:@{
+      kSigninPolicyKey : @(signin_policy_mode),
+    }];
+  }
+
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
   // policy.
   if ([allowed_experimental_policies count] > 0) {
@@ -977,7 +998,8 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   // Shared variables for all enterprise experimental flags.
-  NSMutableDictionary* testing_policies = CreateExperimentalTestingPolicies();
+  NSMutableDictionary* testing_policies =
+      CreateExperimentalTestingPolicies(command_line);
 
   // If a CBCM enrollment token is provided, force Chrome Browser Cloud
   // Management to enabled and add the token to the list of policies.
@@ -1067,7 +1089,8 @@ void MonitorExperimentalSettingsChanges() {
         // Publish update.
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         NSMutableDictionary* testing_policies =
-            CreateExperimentalTestingPolicies();
+            CreateExperimentalTestingPolicies(
+                base::CommandLine::ForCurrentProcess());
         NSDictionary* registration_defaults =
             @{kPolicyLoaderIOSConfigurationKey : testing_policies};
         [defaults registerDefaults:registration_defaults];

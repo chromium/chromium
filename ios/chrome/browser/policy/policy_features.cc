@@ -50,3 +50,7 @@ bool IsURLBlocklistEnabled() {
   return ShouldInstallURLBlocklistPolicyHandlers() &&
          base::FeatureList::IsEnabled(kURLBlocklistIOS);
 }
+
+bool IsForcedBrowserSigninEnabled() {
+  return HasSwitch(switches::kEnableForcedSignInPolicy);
+}
