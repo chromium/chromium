@@ -69,7 +69,7 @@ bool DefinitionResultParser::Parse(const Value* result,
   return true;
 }
 
-const std::string* DefinitionResultParser::ExtractDefinition(
+const Value* DefinitionResultParser::ExtractFirstSenseFamily(
     const base::Value* definition_entry) {
   const Value* first_sense_family =
       GetFirstListElement(*definition_entry, kSenseFamiliesKey);
@@ -77,6 +77,32 @@ const std::string* DefinitionResultParser::ExtractDefinition(
     LOG(ERROR) << "Can't find a sense family.";
     return nullptr;
   }
+
+  return first_sense_family;
+}
+
+const Value* DefinitionResultParser::ExtractFirstPhonetics(
+    const base::Value* definition_entry) {
+  const Value* first_phonetics =
+      GetFirstListElement(*definition_entry, kPhoneticsKey);
+  if (first_phonetics)
+    return first_phonetics;
+
+  // It is is possible to have phonetics per sense family in case of heteronyms
+  // such as "arithmetic".
+  const Value* sense_family = ExtractFirstSenseFamily(definition_entry);
+  if (sense_family)
+    return GetFirstListElement(*sense_family, kPhoneticsKey);
+
+  LOG(ERROR) << "Can't find a phonetics.";
+  return nullptr;
+}
+
+const std::string* DefinitionResultParser::ExtractDefinition(
+    const base::Value* definition_entry) {
+  const Value* first_sense_family = ExtractFirstSenseFamily(definition_entry);
+  if (!first_sense_family)
+    return nullptr;
 
   const Value* first_sense =
       GetFirstListElement(*first_sense_family, kSensesKey);
@@ -90,24 +116,18 @@ const std::string* DefinitionResultParser::ExtractDefinition(
 
 const std::string* DefinitionResultParser::ExtractPhoneticsText(
     const base::Value* definition_entry) {
-  const Value* first_phonetics =
-      GetFirstListElement(*definition_entry, kPhoneticsKey);
-  if (!first_phonetics) {
-    LOG(WARNING) << "Can't find a phonetics.";
+  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
+  if (!first_phonetics)
     return nullptr;
-  }
 
   return first_phonetics->FindStringPath(kPhoneticsTextKey);
 }
 
 GURL DefinitionResultParser::ExtractPhoneticsAudio(
     const base::Value* definition_entry) {
-  const Value* first_phonetics =
-      GetFirstListElement(*definition_entry, kPhoneticsKey);
-  if (!first_phonetics) {
-    LOG(WARNING) << "Can't find a phonetics.";
+  const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
+  if (!first_phonetics)
     return GURL();
-  }
 
   return GURL(kHttpsPrefix +
               *first_phonetics->FindStringPath(kPhoneticsAudioKey));
