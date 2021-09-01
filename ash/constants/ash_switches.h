@@ -149,7 +149,7 @@ extern const char kEnterpriseEnableForcedReEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableInitialEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kEnterpriseUseFakePsmRlweClient[];
+extern const char kEnterpriseUseFakePsmRlweClientForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEnterpriseEnableZeroTouchEnrollment[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -340,7 +340,7 @@ bool AutoEnrollmentController::IsInitialEnrollmentEnabled() {
 // static
 bool AutoEnrollmentController::ShouldUseFakePsmRlweClient() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnterpriseUseFakePsmRlweClient);
+      switches::kEnterpriseUseFakePsmRlweClientForTesting);
 }
 
 // static

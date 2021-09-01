@@ -1450,7 +1450,8 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     // Enable usage of fake PSM RLWE client (for tests checking initial
     // enrollment).
-    command_line->AppendSwitch(switches::kEnterpriseUseFakePsmRlweClient);
+    command_line->AppendSwitch(
+        switches::kEnterpriseUseFakePsmRlweClientForTesting);
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,

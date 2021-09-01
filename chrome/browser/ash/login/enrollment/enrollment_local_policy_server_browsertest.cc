@@ -265,7 +265,8 @@ class InitialEnrollmentTest : public EnrollmentLocalPolicyServerBase {
     EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);
 
     // Enable usage of fake PSM RLWE client.
-    command_line->AppendSwitch(switches::kEnterpriseUseFakePsmRlweClient);
+    command_line->AppendSwitch(
+        switches::kEnterpriseUseFakePsmRlweClientForTesting);
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
