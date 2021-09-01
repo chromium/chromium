@@ -63,6 +63,8 @@ class PaintPreviewRecorderRenderViewTest
     // painting scrollbars when first calling LoadHTML().
     feature_list_.InitAndDisableFeature(features::kOverlayScrollbar);
     blink::WebTestingSupport::SaveRuntimeFeatures();
+    blink::WebRuntimeFeatures::EnableFeatureFromString(kCompositeAfterPaint,
+                                                       GetParam());
   }
 
   ~PaintPreviewRecorderRenderViewTest() override {
@@ -73,8 +75,6 @@ class PaintPreviewRecorderRenderViewTest
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     RenderViewTest::SetUp();
-    blink::WebRuntimeFeatures::EnableFeatureFromString(kCompositeAfterPaint,
-                                                       GetParam());
   }
 
   base::FilePath MakeTestFilePath(const std::string& filename) {
