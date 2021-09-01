@@ -328,8 +328,11 @@ void DoSafeBrowsingCheckOnUIThread(
 
   if (!item->web_contents) {
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (rfh)
+    if (rfh) {
+      DCHECK_NE(rfh->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kPrerendering);
       item->web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    }
   }
 
   sb_service->download_protection_service()->CheckFileSystemAccessWrite(
