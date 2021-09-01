@@ -92,14 +92,14 @@ uint32_t Trim(const std::string& fp) {
 }  // namespace
 
 ComponentMetricsProvider::ComponentMetricsProvider(
-    component_updater::ComponentUpdateService* component_update_service)
-    : component_update_service_(component_update_service) {}
+    std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate)
+    : components_info_delegate_(std::move(components_info_delegate)) {}
 
 ComponentMetricsProvider::~ComponentMetricsProvider() = default;
 
 void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
-  for (const auto& component : component_update_service_->GetComponents()) {
+  for (const auto& component : components_info_delegate_->GetComponents()) {
     const auto id = CrxIdToComponentId(component.id);
     // Ignore any unknown components - in practice these are the
     // SupervisedUserWhitelists, which we do not want to transmit to UMA or

@@ -68,6 +68,7 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
@@ -436,6 +437,22 @@ MakeDemographicMetricsProvider(
       std::make_unique<ProfileClientImpl>(), metrics_service_type);
 }
 
+class ChromeComponentMetricsProviderDelegate
+    : public metrics::ComponentMetricsProviderDelegate {
+ public:
+  explicit ChromeComponentMetricsProviderDelegate(
+      component_updater::ComponentUpdateService* component_updater_service)
+      : component_updater_service_(component_updater_service) {}
+  ~ChromeComponentMetricsProviderDelegate() override = default;
+
+  std::vector<component_updater::ComponentInfo> GetComponents() override {
+    return component_updater_service_->GetComponents();
+  }
+
+ private:
+  component_updater::ComponentUpdateService* component_updater_service_;
+};
+
 }  // namespace
 
 ChromeMetricsServiceClient::ChromeMetricsServiceClient(
@@ -688,7 +705,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ComponentMetricsProvider>(
-          g_browser_process->component_updater()));
+          std::make_unique<ChromeComponentMetricsProviderDelegate>(
+              g_browser_process->component_updater())));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<tracing::BackgroundTracingMetricsProvider>());
