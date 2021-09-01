@@ -2367,8 +2367,8 @@ source_set("chromeos") {
     "../ash/policy/reporting/single_extension_install_event_log.cc",
     "../ash/policy/reporting/single_extension_install_event_log.h",
     "../ash/policy/reporting/single_install_event_log.h",
-    "../ash/policy/reporting/user_event_reporter_base.cc",
-    "../ash/policy/reporting/user_event_reporter_base.h",
+    "../ash/policy/reporting/user_event_reporter_helper.cc",
+    "../ash/policy/reporting/user_event_reporter_helper.h",
     "../ash/policy/rsu/lookup_key_uploader.cc",
     "../ash/policy/rsu/lookup_key_uploader.h",
     "../ash/policy/scheduled_task_handler/device_scheduled_reboot_handler.cc",
@@ -3446,6 +3446,20 @@ static_library("arc_test_support") {
   ]
 }
 
+static_library("user_event_reporter_helper_test_support") {
+  testonly = true
+
+  sources = [
+    "../ash/policy/reporting/user_event_reporter_helper_testing.cc",
+    "../ash/policy/reporting/user_event_reporter_helper_testing.h",
+  ]
+
+  deps = [
+    ":chromeos",
+    "//base",
+  ]
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -4132,7 +4146,7 @@ source_set("unit_tests") {
     "../ash/policy/reporting/extension_install_event_logger_unittest.cc",
     "../ash/policy/reporting/install_event_log_util_unittest.cc",
     "../ash/policy/reporting/single_arc_app_install_event_log_unittest.cc",
-    "../ash/policy/reporting/user_event_reporter_base_unittest.cc",
+    "../ash/policy/reporting/user_event_reporter_helper_unittest.cc",
     "../ash/policy/rsu/lookup_key_uploader_unittest.cc",
     "../ash/policy/scheduled_task_handler/test/device_scheduled_reboot_handler_unittest.cc",
     "../ash/policy/scheduled_task_handler/test/device_scheduled_update_checker_unittest.cc",
@@ -4442,6 +4456,8 @@ source_set("unit_tests") {
     ":attestation_proto",
     ":test_support",
     ":user_activity_event_proto",
+    ":user_event_reporter_helper_test_support",
+    ":user_event_reporter_testing_record_proto",
     "//ash",
     "//ash/components/audio",
     "//ash/constants",
@@ -4640,6 +4656,11 @@ proto_library("print_job_info_proto") {
 
 proto_library("login_logout_record_proto") {
   sources = [ "../ash/login/reporting/login_logout_record.proto" ]
+}
+
+proto_library("user_event_reporter_testing_record_proto") {
+  sources =
+      [ "../ash/policy/reporting/user_event_reporter_testing_record.proto" ]
 }
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"

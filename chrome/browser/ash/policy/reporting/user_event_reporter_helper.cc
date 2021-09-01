@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/user_event_reporter_base.h"
+#include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 
 #include <utility>
 
@@ -15,50 +15,45 @@
 
 namespace reporting {
 
-UserEventReporterBase::UserEventReporterBase(
-    ::reporting::Destination destination)
-    : report_queue_(
-          std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
-              nullptr,
-              base::OnTaskRunnerDeleter(
-                  base::SequencedTaskRunnerHandle::Get()))),
-      destination_(destination) {
+UserEventReporterHelper::UserEventReporterHelper(Destination destination)
+    : report_queue_(std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()))) {
   policy::DMToken dm_token = GetDMToken();
   if (!dm_token.is_valid()) {
     DVLOG(1) << "Cannot initialize user event reporter. Invalid DMToken.";
     return;
   }
-  report_queue_ = ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
+  report_queue_ = ReportQueueFactory::CreateSpeculativeReportQueue(
       dm_token.value(), destination);
 }
 
-UserEventReporterBase::UserEventReporterBase(
-    ::reporting::Destination destination,
-    std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
-        report_queue)
-    : report_queue_(std::move(report_queue)), destination_(destination) {}
+UserEventReporterHelper::UserEventReporterHelper(
+    std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> report_queue)
+    : report_queue_(std::move(report_queue)) {}
 
-UserEventReporterBase::~UserEventReporterBase() = default;
+UserEventReporterHelper::~UserEventReporterHelper() = default;
 
-bool UserEventReporterBase::ShouldReportUser(const std::string& email) const {
-  return ash::ChromeUserManager::Get()->ShouldReportUser(email);
+bool UserEventReporterHelper::ShouldReportUser(const std::string& email) const {
+  return ash::ChromeUserManager::Get()->ShouldReportUser(std::string(email));
 }
 
-bool UserEventReporterBase::ReportingEnabled(
+bool UserEventReporterHelper::ReportingEnabled(
     const std::string& policy_path) const {
   bool enabled = false;
   chromeos::CrosSettings::Get()->GetBoolean(policy_path, &enabled);
   return enabled;
 }
 
-void UserEventReporterBase::ReportEvent(base::StringPiece record,
-                                        ::reporting::Priority priority) {
+void UserEventReporterHelper::ReportEvent(
+    const google::protobuf::MessageLite* record,
+    Priority priority) {
   if (!report_queue_) {
     DVLOG(1) << "Could not enqueue event: null reporting queue";
     return;
   }
 
-  auto enqueue_cb = base::BindOnce([](::reporting::Status status) {
+  auto enqueue_cb = base::BindOnce([](Status status) {
     if (!status.ok()) {
       DVLOG(1) << "Could not enqueue event to reporting queue because of: "
                << status;
@@ -68,7 +63,7 @@ void UserEventReporterBase::ReportEvent(base::StringPiece record,
 }
 
 // static
-policy::DMToken UserEventReporterBase::GetDMToken() {
+policy::DMToken UserEventReporterHelper::GetDMToken() {
   policy::DMToken dm_token(policy::DMToken::Status::kEmpty, "");
 
   auto* const connector =
