@@ -54,10 +54,13 @@ const load = {
     document.head.removeChild(link);
   },
 
-  // Returns a promise that settles once the given path has been fetched as an
-  // iframe.
-  iframe: async (path, validator) => {
+  iframe_with_attrs: async (path, attribute_map, validator) => {
     const frame = document.createElement("iframe");
+    if (attribute_map instanceof Object) {
+      for (const [key, value] in Object.entries(attribute_map)) {
+        frame[key] = value;
+      }
+    }
     const loaded = new Promise(resolve => {
       frame.onload = frame.onerror = resolve;
     });
@@ -68,6 +71,12 @@ const load = {
       validator(frame);
     }
     document.body.removeChild(frame);
+  },
+
+  // Returns a promise that settles once the given path has been fetched as an
+  // iframe.
+  iframe: async (path, validator) => {
+    return load.iframe_with_attrs(path, undefined, validator);
   },
 
   // Returns a promise that settles once the given path has been fetched as a

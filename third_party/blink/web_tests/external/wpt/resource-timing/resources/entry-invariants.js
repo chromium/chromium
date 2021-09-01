@@ -80,6 +80,38 @@ const invariants = {
     ]);
   },
 
+  // Like assert_tao_pass_no_redirect_http but for empty response bodies.
+  assert_tao_pass_no_redirect_http_empty: entry => {
+    assert_ordered_(entry, [
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+
+    assert_zeroed_(entry, [
+      "workerStart",
+      "secureConnectionStart",
+      "redirectStart",
+      "redirectEnd",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+
+    assert_not_negative_(entry, [
+      "duration",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "transferSize",
+    ]);
+  },
+
   // Like assert_tao_pass_no_redirect_http but for resources fetched over HTTPS
   assert_tao_pass_no_redirect_https: entry => {
     assert_ordered_(entry, [
