@@ -141,12 +141,6 @@ using signin_metrics::PromoAction;
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
-    if (syncSetupService->GetSyncServiceState() ==
-        SyncSetupService::kSyncSettingsNotConfirmed) {
-      // If Sync is still in aborted state, this means the user didn't turn on
-      // sync, and wants Sync off. To acknowledge, Sync has to be turned off.
-      syncSetupService->SetSyncEnabled(false);
-    }
     syncSetupService->CommitSyncChanges();
   }
   self.stopDone = YES;

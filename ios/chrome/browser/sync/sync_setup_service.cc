@@ -90,7 +90,6 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceUnrecoverableError:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
       return true;
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
       return IsEncryptEverythingEnabled();
@@ -162,8 +161,6 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
           ->IsPassphraseRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsPassphrase;
   }
-  if (!IsFirstSetupComplete() && CanSyncFeatureStart())
-    return kSyncSettingsNotConfirmed;
   if (sync_service_->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsTrustedVaultKey;

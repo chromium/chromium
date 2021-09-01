@@ -164,7 +164,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSetupNotCommitted) {
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -337,7 +337,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   // Set Sync disabled expectations.
   FirstSetupSyncOff();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -367,7 +367,7 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncEngineOffSignOutVisible) {
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 
@@ -385,7 +385,7 @@ TEST_F(ManageSyncSettingsMediatorTest,
   // Set Sync disabled expectations.
   FirstSetupSyncOnWithConsentDisabled();
   ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
-      .WillByDefault(Return(SyncSetupService::kSyncSettingsNotConfirmed));
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
 
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
 

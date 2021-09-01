@@ -371,7 +371,6 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return NO;
   }
@@ -699,7 +698,6 @@ NSString* const kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return absl::make_optional<SyncSettingsItemType>(
           SyncTrustedVaultRecoverabilityDegradedErrorItemType);
-    case SyncSetupService::kSyncSettingsNotConfirmed:
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceServiceUnavailable:

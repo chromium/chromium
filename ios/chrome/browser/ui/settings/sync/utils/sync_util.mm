@@ -69,9 +69,6 @@ NSString* GetSyncErrorDescriptionForSyncSetupService(
       // syncer::AlwaysEncryptedUserTypes().
       return l10n_util::GetNSString(
           IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
-    case SyncSetupService::kSyncSettingsNotConfirmed:
-      return l10n_util::GetNSString(
-          IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION);
     case SyncSetupService::kSyncServiceServiceUnavailable:
     case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceUnrecoverableError:
@@ -101,8 +98,6 @@ NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState) {
       return l10n_util::GetNSString(IDS_IOS_SYNC_ERROR_COULD_NOT_CONNECT);
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_ERROR_UNRECOVERABLE);
-    case SyncSetupService::kSyncSettingsNotConfirmed:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED);
   }
 }
 
@@ -123,8 +118,6 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
       return l10n_util::GetNSString(IDS_IOS_SYNC_VERIFY_ITS_YOU_BUTTON);
     case SyncSetupService::kSyncServiceUnrecoverableError:
       return l10n_util::GetNSString(IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON);
-    case SyncSetupService::kSyncSettingsNotConfirmed:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_BUTTON);
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceServiceUnavailable:
     case SyncSetupService::kSyncServiceCouldNotConnect:
@@ -146,7 +139,6 @@ bool ShouldShowSyncSettings(SyncSetupService::SyncServiceState syncState) {
     case SyncSetupService::kSyncServiceServiceUnavailable:
     case SyncSetupService::kSyncServiceUnrecoverableError:
     case SyncSetupService::kNoSyncServiceError:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
       return true;
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
@@ -204,13 +196,6 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
     case SyncSetupService::kSyncServiceUnrecoverableError:
       loggedErrorState = SYNC_UNRECOVERABLE_ERROR;
       break;
-    case SyncSetupService::kSyncSettingsNotConfirmed:
-      // Do not display sync not confirmed infobar if the user is in the MICE
-      // sign-in flow, since disabling Sync during sign-in is considered a
-      // valid end state.
-      // TODO(crbug.com/1084941): the kSyncSettingsNotConfirmed case should be
-      // removed following the launch of MICE.
-      return false;
   }
   UMA_HISTOGRAM_ENUMERATION("Sync.SyncErrorInfobarDisplayed", loggedErrorState);
 
@@ -233,7 +218,6 @@ bool IsTransientSyncError(SyncSetupService::SyncServiceState errorState) {
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
     case SyncSetupService::kSyncServiceUnrecoverableError:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
       return false;
   }
 }
