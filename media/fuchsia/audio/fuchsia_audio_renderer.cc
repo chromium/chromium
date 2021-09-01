@@ -76,6 +76,35 @@ GetFuchsiaSampleFormatFromSampleFormat(SampleFormat sample_format) {
   }
 }
 
+// Helper that converts a PCM stream in kStreamFormatS24 to the layout
+// expected by AudioConsumer (i.e. SIGNED_24_IN_32).
+scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
+    scoped_refptr<media::DecoderBuffer> buffer) {
+  static_assert(ARCH_CPU_LITTLE_ENDIAN,
+                "Only little-endian CPUs are supported.");
+
+  size_t samples = buffer->data_size() / 3;
+  scoped_refptr<media::DecoderBuffer> result =
+      base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
+  for (size_t i = 0; i < samples - 1; ++i) {
+    reinterpret_cast<uint32_t*>(result->writable_data())[i] =
+        *reinterpret_cast<const uint32_t*>(buffer->data() + i * 3) & 0x00ffffff;
+  }
+  size_t last_sample = samples - 1;
+  reinterpret_cast<uint32_t*>(result->writable_data())[last_sample] =
+      buffer->data()[last_sample * 3] |
+      (buffer->data()[last_sample * 3 + 1] << 8) |
+      (buffer->data()[last_sample * 3 + 2] << 16);
+
+  result->set_timestamp(buffer->timestamp());
+  result->set_duration(buffer->duration());
+
+  if (buffer->decrypt_config())
+    result->set_decrypt_config(buffer->decrypt_config()->Clone());
+
+  return result;
+}
+
 }  // namespace
 
 // Size of a single audio buffer: 100kB. It's enough to cover 100ms of PCM at
@@ -208,7 +237,7 @@ void FuchsiaAudioRenderer::InitializeStreamSink() {
   stream_type.frames_per_second = config.samples_per_second();
 
   // Set sample_format for uncompressed streams.
-  if (!compression) {
+  if (!compression.value()) {
     absl::optional<fuchsia::media::AudioSampleFormat> sample_format =
         GetFuchsiaSampleFormatFromSampleFormat(config.sample_format());
     if (!sample_format) {
@@ -577,6 +606,14 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
     last_packet_timestamp_ = buffer->timestamp();
     if (buffer->duration() != kNoTimestamp)
       last_packet_timestamp_ += buffer->duration();
+  }
+
+  // Update layout for 24-bit PCM streams.
+  if (!buffer->end_of_stream() &&
+      demuxer_stream_->audio_decoder_config().codec() == kCodecPCM &&
+      demuxer_stream_->audio_decoder_config().sample_format() ==
+          kSampleFormatS24) {
+    buffer = PreparePcm24Buffer(std::move(buffer));
   }
 
   sysmem_buffer_stream_->EnqueueBuffer(std::move(buffer));
