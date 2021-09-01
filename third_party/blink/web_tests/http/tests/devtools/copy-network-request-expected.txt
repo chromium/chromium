@@ -9,7 +9,7 @@ curl 'http://example.org/path' --compressed
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path"
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path"
 
 
 fetch (for browser):
@@ -40,7 +40,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -Body "123"
 
@@ -65,7 +65,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/x-www-form-urlencoded" ^
-  --data-raw "1^&b" ^
+  --data-raw "1&b" ^
   --compressed
 
 
@@ -77,7 +77,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/x-www-form-urlencoded" `
 -Body "1&b"
@@ -121,7 +121,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/json" `
 -Body "{`"a`":1}"
@@ -167,7 +167,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body ([System.Text.Encoding]::UTF8.GetBytes("1234$([char]13)$([char]10)00$([char]2)$([char]3)$([char]4)$([char]5)'`"!"))
@@ -213,7 +213,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body ([System.Text.Encoding]::UTF8.GetBytes("1234$([char]13)$([char]10)$([char]1)00$([char]2)$([char]3)$([char]4)$([char]5)'`"!"))
@@ -249,7 +249,7 @@ curl "http://example.org/path" ^
 
 ^%^%^OS^%^%^
 
-^\^"^\^\^\^"'^$^&^!^" ^
+^\^"^\^\^\^"'^$&^!^" ^
   --compressed
 
 
@@ -261,7 +261,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body ([System.Text.Encoding]::UTF8.GetBytes("%OS%$([char]13)$([char]10)%%OS%%$([char]13)$([char]10)`"\`"'`$&!"))
@@ -293,9 +293,7 @@ fetch("http://example.org/path", {
 cURL Windows:
 curl "http://example.org/path" ^
   -H "Content-Type: application/binary" ^
-  --data-raw ^"^!^@^#^$^%^^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^
-
-^<^>?^
+  --data-raw ^"^!^@^#^$^%^^&*()_+~`1234567890-=^[^]^{^};':^\^",./^<^>?^
 
 qwer^
 
@@ -315,7 +313,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body ([System.Text.Encoding]::UTF8.GetBytes("!@#`$%^&*()_+~``1234567890-=[]{};':`",./$([char]13)<>?$([char]13)$([char]10)qwer$([char]10)t$([char]10)$([char]10)yuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM"))
@@ -359,7 +357,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body ([System.Text.Encoding]::UTF8.GetBytes("$([char]127)$([char]128)$([char]144)$([char]255)$([char]9)$([char]1792)"))
@@ -397,7 +395,7 @@ curl 'http://labs.ft.com/?querystring=\[\]\{\}' --compressed
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://labs.ft.com/?querystring=[]{}"
+Invoke-WebRequest -UseBasicParsing -Uri "http://labs.ft.com/?querystring=[]{}"
 
 
 fetch (for browser):
@@ -432,7 +430,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/binary" `
 -Body "%PATH%`$PATH"
@@ -470,7 +468,7 @@ curl 'http://example.org/path' --compressed
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" -Headers @{
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" -Headers @{
 "version"="v"
 }
 
@@ -503,9 +501,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" -Headers @{
-"Cookie"="_x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117"
-}
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path"
 
 
 fetch (for browser):
@@ -539,7 +535,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" -Method "|evilcommand|"
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" -Method "|evilcommand|"
 
 
 fetch (for browser):
@@ -574,7 +570,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "application/x-www-form-urlencoded" `
 -Body "@/etc/passwd"
@@ -678,7 +674,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "foo/bar" `
 -Body "baz"
@@ -722,7 +718,7 @@ curl 'http://example.org/path' \
 
 
 Powershell:
-Invoke-WebRequest -Uri "http://example.org/path" `
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" `
 -Method "POST" `
 -ContentType "foo/bar" `
 -Body "baz"
