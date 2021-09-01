@@ -38,8 +38,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // among saved credentials. Uses the |prefs| to obtain information whether the
   // password manager and the leak detection feature is enabled. |done_call| is
   // run after all metrics reporting is done from the store.
-  StoreMetricsReporter(PasswordStore* profile_store,
-                       PasswordStore* account_store,
+  StoreMetricsReporter(PasswordStoreInterface* profile_store,
+                       PasswordStoreInterface* account_store,
                        const syncer::SyncService* sync_service,
                        const signin::IdentityManager* identity_manager,
                        PrefService* prefs,
@@ -65,8 +65,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
 
   // Since metrics reporting is run in a delayed task, we grab refptrs to the
   // stores, to ensure they're still alive when the delayed task runs.
-  scoped_refptr<PasswordStore> profile_store_;
-  scoped_refptr<PasswordStore> account_store_;
+  scoped_refptr<PasswordStoreInterface> profile_store_;
+  scoped_refptr<PasswordStoreInterface> account_store_;
 
   bool is_under_advanced_protection_;
 

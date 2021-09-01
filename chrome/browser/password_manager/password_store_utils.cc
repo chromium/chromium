@@ -19,7 +19,7 @@
 #include "components/safe_browsing/buildflags.h"
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 class PasswordReuseManager;
 }  // namespace password_manager
 
@@ -56,12 +56,12 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
  private:
   void StartMetricsReporting() {
-    password_manager::PasswordStore* profile_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+    password_manager::PasswordStoreInterface* profile_store =
+        PasswordStoreFactory::GetInterfaceForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
-    password_manager::PasswordStore* account_store =
-        AccountPasswordStoreFactory::GetForProfile(
+    password_manager::PasswordStoreInterface* account_store =
+        AccountPasswordStoreFactory::GetInterfaceForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =

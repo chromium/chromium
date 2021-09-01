@@ -377,8 +377,8 @@ void ReportMultiStoreMetrics(
 }  // namespace
 
 StoreMetricsReporter::StoreMetricsReporter(
-    PasswordStore* profile_store,
-    PasswordStore* account_store,
+    PasswordStoreInterface* profile_store,
+    PasswordStoreInterface* account_store,
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager,
     PrefService* prefs,
