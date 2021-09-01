@@ -158,8 +158,8 @@ class RealboxMatchElement extends PolymerElement {
   ready() {
     super.ready();
 
-    this.addEventListener('click', this.onMatchClick_.bind(this));
-    this.addEventListener('focusin', this.onMatchFocusin_.bind(this));
+    this.addEventListener('click', (event) => this.onMatchClick_(event));
+    this.addEventListener('focusin', (event) => this.onMatchFocusin_(event));
   }
 
   //============================================================================
