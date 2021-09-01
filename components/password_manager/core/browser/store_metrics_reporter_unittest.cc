@@ -804,18 +804,6 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
     // stores, i.e. to background task runners.
     RunUntilIdle();
 
-    // The original version of the metrics (without "2") is still recorded, even
-    // if the user isn't opted in to the account storage.
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStoreVsProfileStore.Additional", 2, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStoreVsProfileStore.Missing", 4, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStoreVsProfileStore.Identical", 2, 1);
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.AccountStoreVsProfileStore.Conflicting", 1, 1);
-
-    // Version "2" of the metrics is only recorded if the user is opted in.
     if (opted_in) {
       histogram_tester.ExpectUniqueSample(
           "PasswordManager.AccountStoreVsProfileStore2.Additional", 2, 1);

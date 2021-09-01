@@ -585,6 +585,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore.{DifferenceType}"
     units="accounts" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

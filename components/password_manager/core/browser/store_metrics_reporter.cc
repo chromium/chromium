@@ -353,15 +353,6 @@ void ReportMultiStoreMetrics(
     ++profile_it;
   }
 
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreVsProfileStore.Additional", additional);
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreVsProfileStore.Missing", missing);
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreVsProfileStore.Identical", identical);
-  base::UmaHistogramCounts100(
-      "PasswordManager.AccountStoreVsProfileStore.Conflicting", conflicting);
-
   if (is_opted_in) {
     base::UmaHistogramCounts100(
         "PasswordManager.AccountStoreVsProfileStore2.Additional", additional);
