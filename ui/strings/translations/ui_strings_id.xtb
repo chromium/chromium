@@ -43,7 +43,7 @@
 <translation id="1884435127456172652"><ph name="NUMBER" /> %</translation>
 <translation id="1901303067676059328">Pilih semu&amp;a</translation>
 <translation id="19085484004813472">Ini adalah fitur baru</translation>
-<translation id="2006524834898217237">Pastikan perangkat ini tersambung ke internet.</translation>
+<translation id="2006524834898217237">Pastikan perangkat ini terhubung ke internet.</translation>
 <translation id="208586643495776849">Coba lagi</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1h}other{#h}}</translation>
 <translation id="2148716181193084225">Hari ini</translation>
@@ -261,7 +261,7 @@
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
 <translation id="8926951137623668982">Rak selalu disembunyikan</translation>
-<translation id="8996630695507351249">Pastikan <ph name="TARGET_DEVICE_NAME" /> tersambung ke internet.</translation>
+<translation id="8996630695507351249">Pastikan <ph name="TARGET_DEVICE_NAME" /> terhubung ke internet.</translation>
 <translation id="9002566407876343676">buka</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 dtk}other{# dtk}}</translation>
 <translation id="9059834730836941392">Ciutkan notifikasi</translation>
