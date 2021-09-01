@@ -458,7 +458,6 @@ class FastPairGattServiceClientTest : public testing::Test {
   }
 
   void WriteRequestToKeyBased() {
-    fast_pair_data_encryptor_ = std::make_unique<FakeFastPairDataEncryptor>();
     gatt_service_client_->WriteRequestAsync(
         kMessageType, kFlags, kProviderAddress, kSeekersAddress,
         fast_pair_data_encryptor_.get(),
@@ -469,7 +468,7 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void WriteRequestToPasskey() {
     gatt_service_client_->WritePasskeyAsync(
-        kSeekerPasskey, kPasskey,
+        kSeekerPasskey, kPasskey, fast_pair_data_encryptor_.get(),
         base::BindRepeating(&::ash::quick_pair::FastPairGattServiceClientTest::
                                 WriteTestCallback,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -519,7 +518,8 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothDevice> device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
       fake_key_based_characteristic_;
-  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_;
+  std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor_ =
+      std::make_unique<FakeFastPairDataEncryptor>();
   std::unique_ptr<FakeBluetoothGattCharacteristic> fake_passkey_characteristic_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothGattService>>
       gatt_service_;

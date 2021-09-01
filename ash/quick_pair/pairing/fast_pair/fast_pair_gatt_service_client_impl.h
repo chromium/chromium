@@ -82,6 +82,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 
   void WritePasskeyAsync(uint8_t message_type,
                          uint32_t passkey,
+                         FastPairDataEncryptor* fast_pair_data_encryptor,
                          base::OnceCallback<void(std::vector<uint8_t>,
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;
@@ -102,8 +103,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       uint8_t flags,
       const std::string& provider_address,
       const std::string& seekers_address);
-  std::vector<uint8_t> CreatePasskeyBlock(uint8_t message_type,
-                                          uint32_t passkey);
+  const std::array<uint8_t, kBlockByteSize> CreatePasskeyBlock(
+      uint8_t message_type,
+      uint32_t passkey);
 
   // Callback from the adapter's call to create GATT connection.
   void OnGattConnection(

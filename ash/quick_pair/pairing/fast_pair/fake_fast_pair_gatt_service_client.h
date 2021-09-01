@@ -46,6 +46,7 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
 
   void WritePasskeyAsync(uint8_t message_type,
                          uint32_t passkey,
+                         FastPairDataEncryptor* fast_pair_data_encryptor,
                          base::OnceCallback<void(std::vector<uint8_t>,
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;

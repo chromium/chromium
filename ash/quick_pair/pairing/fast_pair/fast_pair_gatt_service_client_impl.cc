@@ -310,10 +310,8 @@ FastPairGattServiceClientImpl::CreateRequest(
     uint8_t flags,
     const std::string& provider_address,
     const std::string& seekers_address) {
-  // We can't use a std::array to start with because RAND_bytes only takes in
-  // C-style arrays, so we will convert at the end.
-  uint8_t data_to_write[kBlockByteSize];
-  RAND_bytes(data_to_write, kBlockByteSize);
+  std::array<uint8_t, kBlockByteSize> data_to_write;
+  RAND_bytes(data_to_write.data(), kBlockByteSize);
 
   data_to_write[0] = message_type;
   data_to_write[1] = flags;
@@ -326,17 +324,14 @@ FastPairGattServiceClientImpl::CreateRequest(
   std::copy(seekers_address.begin(), seekers_address.end(),
             std::begin(data_to_write) + kSeekerAddressStartIndex);
 
-  std::array<uint8_t, kBlockByteSize> std_data_to_write;
-  std::move(std::begin(data_to_write), std::end(data_to_write),
-            std_data_to_write.begin());
-  return std_data_to_write;
+  return data_to_write;
 }
 
-std::vector<uint8_t> FastPairGattServiceClientImpl::CreatePasskeyBlock(
-    uint8_t message_type,
-    uint32_t passkey) {
-  uint8_t data_to_write[kBlockByteSize];
-  RAND_bytes(data_to_write, kBlockByteSize);
+const std::array<uint8_t, kBlockByteSize>
+FastPairGattServiceClientImpl::CreatePasskeyBlock(uint8_t message_type,
+                                                  uint32_t passkey) {
+  std::array<uint8_t, kBlockByteSize> data_to_write;
+  RAND_bytes(data_to_write.data(), kBlockByteSize);
 
   data_to_write[0] = message_type;
 
@@ -344,9 +339,7 @@ std::vector<uint8_t> FastPairGattServiceClientImpl::CreatePasskeyBlock(
   data_to_write[1] = (passkey & 0x00ff0000) >> 16;
   data_to_write[2] = (passkey & 0x0000ff00) >> 8;
   data_to_write[3] = passkey & 0x000000ff;
-
-  return std::vector<uint8_t>(std::begin(data_to_write),
-                              std::end(data_to_write));
+  return data_to_write;
 }
 
 void FastPairGattServiceClientImpl::WriteRequestAsync(
@@ -401,6 +394,7 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
 void FastPairGattServiceClientImpl::WritePasskeyAsync(
     uint8_t message_type,
     uint32_t passkey,
+    FastPairDataEncryptor* fast_pair_data_encryptor,
     base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
         write_response_callback) {
   DCHECK(message_type == kSeekerPasskey);
@@ -418,8 +412,12 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
                      weak_ptr_factory_.GetWeakPtr(),
                      PairFailure::kPasskeyResponseTimeout));
 
+  const std::array<uint8_t, kBlockSizeBytes> data_to_write =
+      fast_pair_data_encryptor->EncryptBytes(
+          CreatePasskeyBlock(message_type, passkey));
+
   passkey_characteristic_->WriteRemoteCharacteristic(
-      CreatePasskeyBlock(message_type, passkey),
+      std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::OnWritePasskey,
                      weak_ptr_factory_.GetWeakPtr()),
