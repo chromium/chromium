@@ -2642,17 +2642,9 @@ class ComputedStyle : public ComputedStyleBase,
   // Load the images of CSS properties that were deferred by LazyLoad.
   void LoadDeferredImages(Document&) const;
 
-  mojom::blink::ColorScheme ComputedColorScheme() const {
+  mojom::blink::ColorScheme UsedColorScheme() const {
     return DarkColorScheme() ? mojom::blink::ColorScheme::kDark
                              : mojom::blink::ColorScheme::kLight;
-  }
-
-  mojom::blink::ColorScheme UsedColorScheme() const {
-    return ComputedColorScheme();
-  }
-
-  mojom::blink::ColorScheme UsedColorSchemeForInitialColors() const {
-    return ComputedColorScheme();
   }
 
   StyleColor InitialColorForColorScheme() const {

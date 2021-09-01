@@ -2422,7 +2422,7 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
         mojom::blink::ColorScheme::kLight;
     if (auto* root_element = GetDocument().documentElement()) {
       if (const ComputedStyle* style = root_element->GetComputedStyle())
-        root_color_scheme = style->UsedColorSchemeForInitialColors();
+        root_color_scheme = style->UsedColorScheme();
       else if (SupportsDarkColorScheme())
         root_color_scheme = mojom::blink::ColorScheme::kDark;
     }

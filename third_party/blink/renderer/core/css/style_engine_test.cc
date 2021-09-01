@@ -3080,7 +3080,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   EXPECT_EQ(Color::kWhite, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
-            root->GetComputedStyle()->UsedColorSchemeForInitialColors());
+            root->GetComputedStyle()->UsedColorScheme());
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
@@ -3089,7 +3089,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   EXPECT_EQ(Color::kBlack, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
   EXPECT_EQ(mojom::blink::ColorScheme::kLight,
-            root->GetComputedStyle()->UsedColorSchemeForInitialColors());
+            root->GetComputedStyle()->UsedColorScheme());
   EXPECT_EQ(MakeRGB(0, 128, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 
@@ -3097,7 +3097,7 @@ TEST_F(StyleEngineTest, PrintNoDarkColorScheme) {
   EXPECT_EQ(Color::kWhite, root->GetComputedStyle()->VisitedDependentColor(
                                GetCSSPropertyColor()));
   EXPECT_EQ(mojom::blink::ColorScheme::kDark,
-            root->GetComputedStyle()->UsedColorSchemeForInitialColors());
+            root->GetComputedStyle()->UsedColorScheme());
   EXPECT_EQ(MakeRGB(255, 0, 0), body->GetComputedStyle()->VisitedDependentColor(
                                     GetCSSPropertyColor()));
 }

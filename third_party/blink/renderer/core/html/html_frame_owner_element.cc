@@ -682,7 +682,7 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
-    return style->UsedColorSchemeForInitialColors();
+    return style->UsedColorScheme();
   return mojom::blink::ColorScheme::kLight;
 }
 

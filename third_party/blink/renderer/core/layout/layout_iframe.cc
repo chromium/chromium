@@ -68,11 +68,8 @@ void LayoutIFrame::UpdateLayout() {
 void LayoutIFrame::StyleWillChange(StyleDifference diff,
                                    const ComputedStyle& new_style) {
   NOT_DESTROYED();
-  if (Style() && StyleRef().UsedColorSchemeForInitialColors() !=
-                     new_style.UsedColorSchemeForInitialColors()) {
-    GetFrameOwnerElement()->SetColorScheme(
-        new_style.UsedColorSchemeForInitialColors());
-  }
+  if (Style() && StyleRef().UsedColorScheme() != new_style.UsedColorScheme())
+    GetFrameOwnerElement()->SetColorScheme(new_style.UsedColorScheme());
   LayoutEmbeddedContent::StyleWillChange(diff, new_style);
 }
 

@@ -1585,8 +1585,8 @@ void StyleBuilderConverter::CountSystemColorComputeToSelfUsage(
   // This is a superset of when the feature will change the resolved color
   // (inheriting the keyword is also required) but it should be a reasonable
   // approximation for use counting purposes.
-  if (state.Style()->ComputedColorScheme() !=
-      state.ParentStyle()->ComputedColorScheme()) {
+  if (state.Style()->UsedColorScheme() !=
+      state.ParentStyle()->UsedColorScheme()) {
     UseCounter::Count(state.GetDocument(),
                       WebFeature::kCSSSystemColorComputeToSelf);
   }
