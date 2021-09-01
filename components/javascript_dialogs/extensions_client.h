@@ -7,12 +7,10 @@
 
 #include <string>
 
+class GURL;
+
 namespace content {
 class WebContents;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace javascript_dialogs {
@@ -21,7 +19,7 @@ namespace javascript_dialogs {
 // that opened a JavaScript dialog.
 class ExtensionsClient {
  public:
-  virtual ~ExtensionsClient() = default;
+  virtual ~ExtensionsClient() {}
 
   // Called when the extension associated with |web_contents| opened
   // a dialog.
@@ -35,7 +33,7 @@ class ExtensionsClient {
   // |web_contents| in the |name_out| if there is one, returning true;
   // returns false otherwise.
   virtual bool GetExtensionName(content::WebContents* web_contents,
-                                const url::Origin& alerting_frame_origin,
+                                const GURL& alerting_frame_url,
                                 std::string* name_out) = 0;
 };
 

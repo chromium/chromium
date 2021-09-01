@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <vector>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
@@ -18,7 +15,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
-#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -380,50 +376,6 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, DismissalCauseUkm) {
       ukm::builders::AbusiveExperienceHeuristic_JavaScriptDialog::
           kDismissalCauseName,
       static_cast<int64_t>(DismissalCause::kDialogButtonClicked));
-}
-
-class JavaScriptDialogOriginTest
-    : public JavaScriptDialogTest,
-      public testing::WithParamInterface<const char*> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    JavaScriptDialogOriginTest,
-    ::testing::Values("data:text/html,<p></p>",
-                      "javascript:undefined",
-                      "about:blank"));
-
-// Tests that the title for a dialog generated from a page with a non-HTTP URL
-// that was spawned by an HTTP URL has that HTTP URL used for the title.
-IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
-  EXPECT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a subframe.
-  std::string script =
-      "var iframe = document.createElement('iframe');"
-      "iframe.src = '" +
-      std::string(GetParam()) +
-      "';"
-      "document.body.appendChild(iframe);";
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script),
-                                                 base::NullCallback());
-
-  std::vector<content::RenderFrameHost*> subframes =
-      tab->GetMainFrame()->GetFramesInSubtree();
-  ASSERT_EQ(1u, subframes.size());
-
-  // Verify the title that would be used for a dialog spawned by that subframe.
-  javascript_dialogs::AppModalDialogManager* dialog_manager =
-      javascript_dialogs::AppModalDialogManager::GetInstance();
-  EXPECT_EQ(
-      base::UTF8ToUTF16(
-          base::StringPrintf("a.com:%d says", embedded_test_server()->port())),
-      dialog_manager->GetTitle(tab, subframes[0]->GetLastCommittedOrigin()));
 }
 
 class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {

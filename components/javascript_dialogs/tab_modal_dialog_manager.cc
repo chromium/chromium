@@ -22,7 +22,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/gfx/text_elider.h"
-#include "url/origin.h"
 
 namespace javascript_dialogs {
 
@@ -69,19 +68,18 @@ enum class DialogOriginRelationship {
 DialogOriginRelationship GetDialogOriginRelationship(
     content::WebContents* web_contents,
     content::RenderFrameHost* alerting_frame) {
-  url::Origin main_frame_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  GURL main_frame_url = web_contents->GetLastCommittedURL();
 
-  if (!main_frame_origin.GetURL().SchemeIsHTTPOrHTTPS())
+  if (!main_frame_url.SchemeIsHTTPOrHTTPS())
     return DialogOriginRelationship::NON_HTTP_MAIN_FRAME;
 
   if (alerting_frame == web_contents->GetMainFrame())
     return DialogOriginRelationship::HTTP_MAIN_FRAME;
 
-  url::Origin alerting_frame_origin = alerting_frame->GetLastCommittedOrigin();
+  GURL alerting_frame_url = alerting_frame->GetLastCommittedURL();
 
-  if (alerting_frame_origin.GetURL().SchemeIsHTTPOrHTTPS()) {
-    if (main_frame_origin == alerting_frame_origin) {
+  if (alerting_frame_url.SchemeIsHTTPOrHTTPS()) {
+    if (main_frame_url.GetOrigin() == alerting_frame_url.GetOrigin()) {
       return DialogOriginRelationship::
           HTTP_MAIN_FRAME_HTTP_SAME_ORIGIN_ALERTING_FRAME;
     }
@@ -94,16 +92,16 @@ DialogOriginRelationship GetDialogOriginRelationship(
   // because the main frame has an HTTP(S) scheme.
   content::RenderFrameHost* nearest_http_ancestor_frame =
       alerting_frame->GetParent();
-  while (!nearest_http_ancestor_frame->GetLastCommittedOrigin()
-              .GetURL()
+  while (!nearest_http_ancestor_frame->GetLastCommittedURL()
               .SchemeIsHTTPOrHTTPS()) {
     nearest_http_ancestor_frame = nearest_http_ancestor_frame->GetParent();
   }
 
-  url::Origin nearest_http_ancestor_frame_origin =
-      nearest_http_ancestor_frame->GetLastCommittedOrigin();
+  GURL nearest_http_ancestor_frame_url =
+      nearest_http_ancestor_frame->GetLastCommittedURL();
 
-  if (main_frame_origin == nearest_http_ancestor_frame_origin) {
+  if (main_frame_url.GetOrigin() ==
+      nearest_http_ancestor_frame_url.GetOrigin()) {
     return DialogOriginRelationship::
         HTTP_MAIN_FRAME_NON_HTTP_ALERTING_FRAME_SAME_ORIGIN_ANCESTOR;
   }
@@ -160,11 +158,13 @@ void TabModalDialogManager::RunJavaScriptDialog(
   DCHECK_EQ(alerting_web_contents,
             content::WebContents::FromRenderFrameHost(render_frame_host));
 
+  GURL alerting_frame_url = render_frame_host->GetLastCommittedURL();
+
   content::WebContents* web_contents = WebContentsObserver::web_contents();
   DialogOriginRelationship origin_relationship =
       GetDialogOriginRelationship(alerting_web_contents, render_frame_host);
   navigation_metrics::Scheme scheme =
-      navigation_metrics::GetScheme(render_frame_host->GetLastCommittedURL());
+      navigation_metrics::GetScheme(alerting_frame_url);
   switch (dialog_type) {
     case content::JAVASCRIPT_DIALOG_TYPE_ALERT:
       UMA_HISTOGRAM_ENUMERATION("JSDialogs.OriginRelationship.Alert",
@@ -248,7 +248,7 @@ void TabModalDialogManager::RunJavaScriptDialog(
                    &truncated_default_prompt_text);
 
   std::u16string title = GetAppModalDialogManager()->GetTitle(
-      alerting_web_contents, render_frame_host->GetLastCommittedOrigin());
+      alerting_web_contents, alerting_frame_url);
   dialog_callback_ = std::move(callback);
   dialog_type_ = dialog_type;
   if (make_pending) {

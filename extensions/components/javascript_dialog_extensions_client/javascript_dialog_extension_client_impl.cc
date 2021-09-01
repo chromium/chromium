@@ -4,8 +4,8 @@
 
 #include "extensions/components/javascript_dialog_extensions_client/javascript_dialog_extension_client_impl.h"
 
-#include <memory>
-
+#include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/extensions_client.h"
 #include "content/public/browser/web_contents.h"
@@ -38,10 +38,6 @@ class JavaScriptDialogExtensionsClientImpl
  public:
   JavaScriptDialogExtensionsClientImpl() = default;
   ~JavaScriptDialogExtensionsClientImpl() override = default;
-  JavaScriptDialogExtensionsClientImpl(
-      const JavaScriptDialogExtensionsClientImpl&) = delete;
-  JavaScriptDialogExtensionsClientImpl& operator=(
-      const JavaScriptDialogExtensionsClientImpl&) = delete;
 
   // JavaScriptDialogExtensionsClient:
   void OnDialogOpened(content::WebContents* web_contents) override {
@@ -69,24 +65,27 @@ class JavaScriptDialogExtensionsClientImpl
           web_contents->GetLastCommittedURL().spec());
   }
   bool GetExtensionName(content::WebContents* web_contents,
-                        const url::Origin& alerting_frame_origin,
+                        const GURL& alerting_frame_url,
                         std::string* name_out) override {
     const Extension* extension = GetExtensionForWebContents(web_contents);
     if (extension &&
-        alerting_frame_origin.IsSameOriginWith(
-            web_contents->GetMainFrame()->GetLastCommittedOrigin())) {
+        url::IsSameOriginWith(alerting_frame_url,
+                              web_contents->GetLastCommittedURL())) {
       *name_out = extension->name();
       return true;
     }
     return false;
   }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogExtensionsClientImpl);
 };
 
 }  // namespace
 
 void InstallClient() {
   javascript_dialogs::AppModalDialogManager::GetInstance()->SetExtensionsClient(
-      std::make_unique<JavaScriptDialogExtensionsClientImpl>());
+      base::WrapUnique(new JavaScriptDialogExtensionsClientImpl));
 }
 
 }  // namespace javascript_dialog_extensions_client
