@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import androidx.core.util.AtomicFile;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -29,7 +30,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,13 +146,53 @@ public class MostVisitedSitesMetadataUtilsTest {
         CriteriaHelper.pollInstrumentationThread(isPendingRun::get);
     }
 
+    /**
+     * Test that if the allowlist icon path (a deprecated field) is set on an old site suggestion
+     * that the site suggestion is being deserialized correctly.
+     */
+    @Test
+    @SmallTest
+    public void testTileWithAllowlistIconPath() throws IOException {
+        // Create a site suggestion that has the allowlist icon path set.
+        SiteSuggestion expectedSiteSuggestion = createFakeSiteSuggestionTiles2().get(0).getData();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        DataOutputStream stream = new DataOutputStream(output);
+        stream.writeInt(/* topSitesCount= */ 1);
+        stream.writeInt(/* cacheVersion= */ 1);
+        stream.writeInt(/* index= */ 0);
+        stream.writeUTF(expectedSiteSuggestion.title);
+        stream.writeUTF(expectedSiteSuggestion.url.serialize());
+        // Hardcode this since the field is deprecated and can't be set in another way.
+        stream.writeUTF("allowlistIcon");
+        stream.writeInt(expectedSiteSuggestion.titleSource);
+        stream.writeInt(expectedSiteSuggestion.source);
+        stream.writeInt(expectedSiteSuggestion.sectionType);
+        stream.close();
+        byte[] listData = output.toByteArray();
+
+        // Save the site suggestion.
+        File topSitesDirectory = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
+        File topSitesFile = new File(topSitesDirectory, "top_sites");
+        AtomicFile file = new AtomicFile(topSitesFile);
+        FileOutputStream fileStream = null;
+        fileStream = file.startWrite();
+        fileStream.write(listData, 0, listData.length);
+        file.finishWrite(fileStream);
+
+        // Restore list from file after saving finished.
+        List<Tile> sitesAfterRestore = MostVisitedSitesMetadataUtils.restoreFileToSuggestionLists();
+        // Ensure that the new suggestion equals to old suggestion.
+        assertEquals(1, sitesAfterRestore.size());
+        assertEquals(sitesAfterRestore.get(0).getData(), expectedSiteSuggestion);
+    }
+
     private static List<Tile> createFakeSiteSuggestionTiles1() {
         List<Tile> suggestionTiles = new ArrayList<>();
-        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
+        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"),
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 0));
 
-        data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
+        data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"),
                 TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 1));
 
@@ -157,7 +201,7 @@ public class MostVisitedSitesMetadataUtilsTest {
 
     private static List<Tile> createFakeSiteSuggestionTiles2() {
         List<Tile> suggestionTiles = new ArrayList<>();
-        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.baz.com"), "",
+        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.baz.com"),
                 TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED);
         suggestionTiles.add(new Tile(data, 0));
 

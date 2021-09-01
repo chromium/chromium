@@ -103,12 +103,12 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * Utility function to convert JNI friendly site suggestion data to a Java friendly list of
      * {@link SiteSuggestion}s.
      */
-    public static List<SiteSuggestion> buildSiteSuggestions(String[] titles, GURL[] urls,
-            int[] sections, String[] allowlistIconPaths, int[] titleSources, int[] sources) {
+    public static List<SiteSuggestion> buildSiteSuggestions(
+            String[] titles, GURL[] urls, int[] sections, int[] titleSources, int[] sources) {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>(titles.length);
         for (int i = 0; i < titles.length; ++i) {
-            siteSuggestions.add(new SiteSuggestion(titles[i], urls[i], allowlistIconPaths[i],
-                    titleSources[i], sources[i], sections[i]));
+            siteSuggestions.add(new SiteSuggestion(
+                    titles[i], urls[i], titleSources[i], sources[i], sections[i]));
         }
         return siteSuggestions;
     }
@@ -121,20 +121,17 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * @param urls Array of most visited URLs, including popular URLs if
      *             available and necessary (i.e. there aren't enough most
      *             visited URLs).
-     * @param allowlistIconPaths The paths to the icon image files for allowlisted tiles, empty
-     *                           strings otherwise.
      * @param sources For each tile, the {@code TileSource} that generated the tile.
      */
     @CalledByNative
-    private void onURLsAvailable(String[] titles, GURL[] urls, int[] sections,
-            String[] allowlistIconPaths, int[] titleSources, int[] sources) {
+    private void onURLsAvailable(
+            String[] titles, GURL[] urls, int[] sections, int[] titleSources, int[] sources) {
         // Don't notify observer if we've already been destroyed.
         if (mNativeMostVisitedSitesBridge == 0) return;
 
         List<SiteSuggestion> suggestions = new ArrayList<>();
 
-        suggestions.addAll(buildSiteSuggestions(
-                titles, urls, sections, allowlistIconPaths, titleSources, sources));
+        suggestions.addAll(buildSiteSuggestions(titles, urls, sections, titleSources, sources));
 
         mWrappedObserver.onSiteSuggestionsAvailable(suggestions);
     }

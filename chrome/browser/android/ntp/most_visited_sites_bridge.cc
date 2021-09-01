@@ -153,7 +153,6 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
   JNIEnv* env = AttachCurrentThread();
   std::vector<std::u16string> titles;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
-  std::vector<std::string> allowlist_icons;
   std::vector<int> title_sources;
   std::vector<int> sources;
   std::vector<int> section_types;
@@ -164,7 +163,6 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
     for (const auto& tile : tiles) {
       titles.emplace_back(tile.title);
       urls.emplace_back(url::GURLAndroid::FromNativeGURL(env, tile.url));
-      allowlist_icons.emplace_back(tile.allowlist_icon_path.value());
       title_sources.emplace_back(static_cast<int>(tile.title_source));
       sources.emplace_back(static_cast<int>(tile.source));
     }
@@ -173,7 +171,6 @@ void MostVisitedSitesBridge::JavaObserver::OnURLsAvailable(
       env, observer_, ToJavaArrayOfStrings(env, titles),
       url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
       ToJavaIntArray(env, section_types),
-      ToJavaArrayOfStrings(env, allowlist_icons),
       ToJavaIntArray(env, title_sources), ToJavaIntArray(env, sources));
 }
 

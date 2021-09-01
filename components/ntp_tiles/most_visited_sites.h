@@ -16,7 +16,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -47,12 +46,6 @@ class IconCacher;
 // Shim interface for SupervisedUserService.
 class MostVisitedSitesSupervisor {
  public:
-  struct Allowlist {
-    std::u16string title;
-    GURL entry_point;
-    base::FilePath large_icon_path;
-  };
-
   class Observer {
    public:
     virtual void OnBlockedSitesChanged() = 0;
@@ -71,10 +64,6 @@ class MostVisitedSitesSupervisor {
 
   // If true, |url| should not be shown on the NTP.
   virtual bool IsBlocked(const GURL& url) = 0;
-
-  // TODO(crbug.com/1149782): Remove the allowlists from New Tab Page.
-  // Explicitly-specified sites to show on NTP.
-  virtual std::vector<Allowlist> GetAllowlists() = 0;
 
   // If true, be conservative about suggesting sites from outside sources.
   virtual bool IsChildProfile() = 0;
@@ -232,7 +221,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Workhorse for SaveNewTilesAndNotify. Implemented as a separate static and
   // public method for ease of testing.
   static NTPTilesVector MergeTiles(NTPTilesVector personal_tiles,
-                                   NTPTilesVector allowlist_tiles,
                                    NTPTilesVector popular_tiles,
                                    absl::optional<NTPTile> explore_tile);
 
@@ -263,9 +251,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Initialize the query to Top Sites.
   void InitiateTopSitesQuery();
 
-  // If there's a allowlist entry point for the URL, return the large icon path.
-  base::FilePath GetAllowlistLargeIconPath(const GURL& url);
-
   // Callback for when data is available from TopSites.
   void OnMostVisitedURLsAvailable(
       const history::MostVisitedURLList& visited_list);
@@ -273,11 +258,6 @@ class MostVisitedSites : public history::TopSitesObserver,
   // Builds the current tileset based on available caches and notifies the
   // observer.
   void BuildCurrentTiles();
-
-  // Creates allowlist entry point suggestions whose hosts weren't used yet.
-  NTPTilesVector CreateAllowlistEntryPointTiles(
-      const std::set<std::string>& used_hosts,
-      size_t num_actual_tiles);
 
   // Creates tiles for all popular site sections. Uses |num_actual_tiles| and
   // |used_hosts| to restrict results for the PERSONALIZED section.
@@ -303,8 +283,8 @@ class MostVisitedSites : public history::TopSitesObserver,
   // |SaveTilesAndNotify| in the end.
   void InitiateNotificationForNewTiles(NTPTilesVector new_tiles);
 
-  // Takes the personal tiles, creates and merges in allowlist and popular tiles
-  // if appropriate. Calls |SaveTilesAndNotify| at the end.
+  // Takes the personal tiles and merges in popular tiles if appropriate. Calls
+  // |SaveTilesAndNotify| at the end.
   void MergeMostVisitedTiles(NTPTilesVector personal_tiles);
 
   // Saves the new tiles and notifies the observer if the tiles were actually

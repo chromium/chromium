@@ -92,7 +92,6 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     disabled.SetBoolKey("topSites", false);
     disabled.SetBoolKey("popular", false);
     disabled.SetBoolKey("customLinks", false);
-    disabled.SetBoolKey("allowlist", false);
     client_->CallJavascriptFunction("cr.webUIListenerCallback",
                                     base::Value("receive-source-info"),
                                     disabled);
@@ -189,8 +188,6 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
                    most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
   value.SetBoolKey("customLinks", most_visited_sites_->DoesSourceExist(
                                       TileSource::CUSTOM_LINKS));
-  value.SetBoolKey("allowlist",
-                   most_visited_sites_->DoesSourceExist(TileSource::ALLOWLIST));
 
   if (most_visited_sites_->DoesSourceExist(TileSource::POPULAR)) {
     auto* popular_sites = most_visited_sites_->popular_sites();
@@ -231,8 +228,6 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     entry.SetStringKey("title", tile.title);
     entry.SetStringKey("url", tile.url.spec());
     entry.SetIntKey("source", static_cast<int>(tile.source));
-    entry.SetStringKey("allowlistIconPath",
-                       tile.allowlist_icon_path.LossyDisplayName());
     if (tile.source == TileSource::CUSTOM_LINKS) {
       entry.SetBoolKey("fromMostVisited", tile.from_most_visited);
     }

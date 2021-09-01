@@ -5,7 +5,6 @@
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -48,7 +47,6 @@ class SupervisorBridge : public ntp_tiles::MostVisitedSitesSupervisor,
 
   void SetObserver(Observer* observer) override;
   bool IsBlocked(const GURL& url) override;
-  std::vector<MostVisitedSitesSupervisor::Allowlist> GetAllowlists() override;
   bool IsChildProfile() override;
 
   // SupervisedUserServiceObserver implementation.
@@ -85,12 +83,6 @@ bool SupervisorBridge::IsBlocked(const GURL& url) {
   auto* url_filter = supervised_user_service->GetURLFilter();
   return url_filter->GetFilteringBehaviorForURL(url) ==
          SupervisedUserURLFilter::FilteringBehavior::BLOCK;
-}
-
-std::vector<ntp_tiles::MostVisitedSitesSupervisor::Allowlist>
-SupervisorBridge::GetAllowlists() {
-  // TODO(crbug.com/1149782): Remove allowlists from New Tab Page.
-  return {};
 }
 
 bool SupervisorBridge::IsChildProfile() {

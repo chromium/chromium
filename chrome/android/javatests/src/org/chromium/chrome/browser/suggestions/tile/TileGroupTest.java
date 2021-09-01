@@ -270,9 +270,9 @@ public class TileGroupTest {
         final ArrayList<SiteSuggestion> currentSuggestions =
                 new ArrayList<>(mMostVisitedSites.getCurrentSites());
 
-        SiteSuggestion exploreTile = new SiteSuggestion("chrome-native://explore",
-                new GURL("chrome-native://explore"), "", TileTitleSource.UNKNOWN,
-                TileSource.EXPLORE, TileSectionType.PERSONALIZED);
+        SiteSuggestion exploreTile =
+                new SiteSuggestion("chrome-native://explore", new GURL("chrome-native://explore"),
+                        TileTitleSource.UNKNOWN, TileSource.EXPLORE, TileSectionType.PERSONALIZED);
         currentSuggestions.add(exploreTile);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMostVisitedSites.setTileSuggestions(currentSuggestions));
