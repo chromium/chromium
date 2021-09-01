@@ -1923,13 +1923,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* guest_contents_;
 };
 
-// Flaky on Mac11 test builders. (crbug.com/1239995)
-#if defined(OS_MAC)
-#define MAYBE_CtrlLeft DISABLED_CtrlLeft
-#else
-#define MAYBE_CtrlLeft CtrlLeft
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, MAYBE_CtrlLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -2001,13 +1995,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-// Flaky on Mac11 test builders. (crbug.com/1239995)
-#if defined(OS_MAC)
-#define MAYBE_ShiftMiddle DISABLED_ShiftMiddle
-#else
-#define MAYBE_ShiftMiddle ShiftMiddle
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, MAYBE_ShiftMiddle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -2217,13 +2205,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, Middle) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-// TODO(crbug.com/1239995): Flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_ShiftLeft DISABLED_ShiftLeft
-#else
-#define MAYBE_ShiftLeft ShiftLeft
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, MAYBE_ShiftLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
