@@ -64,6 +64,7 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
+#include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/stream_socket.h"
@@ -150,6 +151,8 @@ class DnsAttempt {
   // the server.
   virtual const DnsResponse* GetResponse() const = 0;
 
+  virtual base::Value GetRawResponseBufferForLog() const = 0;
+
   // Returns the net log bound to the source of the socket.
   virtual const NetLogWithSource& GetSocketNetLog() const = 0;
 
@@ -160,13 +163,23 @@ class DnsAttempt {
   // Returns a Value representing the received response, along with a reference
   // to the NetLog source source of the UDP socket used.  The request must have
   // completed before this is called.
-  base::Value NetLogResponseParams() const {
-    DCHECK(GetResponse()->IsValid());
-
+  base::Value NetLogResponseParams(NetLogCaptureMode capture_mode) const {
     base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetIntKey("rcode", GetResponse()->rcode());
-    dict.SetIntKey("answer_count", GetResponse()->answer_count());
+
+    if (GetResponse()) {
+      DCHECK(GetResponse()->IsValid());
+      dict.SetIntKey("rcode", GetResponse()->rcode());
+      dict.SetIntKey("answer_count", GetResponse()->answer_count());
+      dict.SetIntKey("additional_answer_count",
+                     GetResponse()->additional_answer_count());
+    }
+
     GetSocketNetLog().source().AddToEventParameters(&dict);
+
+    if (capture_mode == NetLogCaptureMode::kEverything) {
+      dict.SetKey("response_buffer", GetRawResponseBufferForLog());
+    }
+
     return dict;
   }
 
@@ -211,6 +224,14 @@ class DnsUDPAttempt : public DnsAttempt {
   const DnsResponse* GetResponse() const override {
     const DnsResponse* resp = response_.get();
     return (resp != nullptr && resp->IsValid()) ? resp : nullptr;
+  }
+
+  base::Value GetRawResponseBufferForLog() const override {
+    if (!response_)
+      return base::Value();
+
+    return NetLogBinaryValue(response_->io_buffer()->data(),
+                             response_->io_buffer_size());
   }
 
   const NetLogWithSource& GetSocketNetLog() const override {
@@ -433,6 +454,13 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     const DnsResponse* resp = response_.get();
     return (resp != nullptr && resp->IsValid()) ? resp : nullptr;
   }
+  base::Value GetRawResponseBufferForLog() const override {
+    if (!response_)
+      return base::Value();
+
+    return NetLogBinaryValue(response_->io_buffer()->data(),
+                             response_->io_buffer_size());
+  }
   const NetLogWithSource& GetSocketNetLog() const override { return net_log_; }
 
   // URLRequest::Delegate overrides
@@ -627,6 +655,14 @@ class DnsTCPAttempt : public DnsAttempt {
   const DnsResponse* GetResponse() const override {
     const DnsResponse* resp = response_.get();
     return (resp != nullptr && resp->IsValid()) ? resp : nullptr;
+  }
+
+  base::Value GetRawResponseBufferForLog() const override {
+    if (!response_)
+      return base::Value();
+
+    return NetLogBinaryValue(response_->io_buffer()->data(),
+                             response_->io_buffer_size());
   }
 
   const NetLogWithSource& GetSocketNetLog() const override {
@@ -1423,9 +1459,11 @@ class DnsTransactionImpl : public DnsTransaction,
   }
 
   void LogResponse(const DnsAttempt* attempt) {
-    if (attempt && attempt->GetResponse()) {
+    if (attempt) {
       net_log_.AddEvent(NetLogEventType::DNS_TRANSACTION_RESPONSE,
-                        [&] { return attempt->NetLogResponseParams(); });
+                        [&](NetLogCaptureMode capture_mode) {
+                          return attempt->NetLogResponseParams(capture_mode);
+                        });
     }
   }
 

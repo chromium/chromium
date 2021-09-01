@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <iterator>
 #include <memory>
 #include <vector>
 
@@ -135,8 +136,12 @@ class DnsRequest {
   // Starts the DNS request, using a fuzzed set of parameters.
   int Start() {
     net::HostResolver::ResolveHostParameters parameters;
-    parameters.dns_query_type =
-        data_provider_->PickValueInArray(net::kDnsQueryTypes);
+
+    auto* query_types_it = net::kDnsQueryTypes.cbegin();
+    std::advance(query_types_it, data_provider_->ConsumeIntegralInRange<size_t>(
+                                     0, net::kDnsQueryTypes.size() - 1));
+    parameters.dns_query_type = query_types_it->first;
+
     parameters.initial_priority = static_cast<net::RequestPriority>(
         data_provider_->ConsumeIntegralInRange<int32_t>(net::MINIMUM_PRIORITY,
                                                         net::MAXIMUM_PRIORITY));

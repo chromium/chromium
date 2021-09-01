@@ -34,6 +34,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
+#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -312,27 +313,85 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
   return dict;
 }
 
+base::Value NetLogDnsTaskCreationParams(
+    bool secure,
+    const base::circular_deque<DnsQueryType>& transactions_needed) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("secure", secure);
+
+  base::Value transactions_needed_value(base::Value::Type::LIST);
+  for (DnsQueryType type : transactions_needed) {
+    base::Value transaction_dict(base::Value::Type::DICTIONARY);
+    transaction_dict.SetIntKey("dns_query_type", static_cast<int>(type));
+    transactions_needed_value.Append(std::move(transaction_dict));
+  }
+  dict.SetKey("transactions_needed", std::move(transactions_needed_value));
+
+  return dict;
+}
+
 // Creates NetLog parameters when the DnsTask failed.
-base::Value NetLogDnsTaskFailedParams(const HostCache::Entry& results,
-                                      int dns_error) {
+base::Value NetLogDnsTaskFailedParams(
+    int net_error,
+    absl::optional<DnsQueryType> failed_transaction_type,
+    absl::optional<base::TimeDelta> ttl,
+    const HostCache::Entry* saved_results) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("net_error", results.error());
-  if (dns_error)
-    dict.SetIntKey("dns_error", dns_error);
-  dict.SetKey("resolve_results", results.NetLogParams());
+  if (failed_transaction_type) {
+    dict.SetIntKey("dns_query_type",
+                   static_cast<int>(failed_transaction_type.value()));
+  }
+  if (ttl)
+    dict.SetIntKey("error_ttl_sec", ttl.value().InSeconds());
+  dict.SetIntKey("net_error", net_error);
+  if (saved_results)
+    dict.SetKey("saved_results", saved_results->NetLogParams());
   return dict;
 }
 
-// Creates NetLog parameters for the creation of a HostResolverManager::Job.
-base::Value NetLogJobCreationParams(const NetLogSource& source,
-                                    base::StringPiece host) {
+base::Value NetLogDnsTaskExtractionFailureParams(
+    DnsResponseResultExtractor::ExtractionError extraction_error,
+    DnsQueryType dns_query_type,
+    const HostCache::Entry& results) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  source.AddToEventParameters(&dict);
-  dict.SetStringKey("host", host);
+  dict.SetIntKey("extraction_error", static_cast<int>(extraction_error));
+  dict.SetIntKey("dns_query_type", static_cast<int>(dns_query_type));
+  dict.SetKey("results", results.NetLogParams());
   return dict;
 }
 
-// Creates NetLog parameters for HOST_RESOLVER_IMPL_JOB_ATTACH/DETACH events.
+base::Value NetLogDnsTaskTimeoutParams(
+    const base::flat_map<std::unique_ptr<DnsTransaction>,
+                         DnsQueryType,
+                         base::UniquePtrComparator>& started_transactions,
+    const base::circular_deque<DnsQueryType>& queued_transactions) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+
+  if (!started_transactions.empty()) {
+    base::Value list(base::Value::Type::LIST);
+    for (const auto& transaction : started_transactions) {
+      base::Value transaction_dict(base::Value::Type::DICTIONARY);
+      transaction_dict.SetIntKey("dns_query_type",
+                                 static_cast<int>(transaction.second));
+      list.Append(std::move(transaction_dict));
+    }
+    dict.SetKey("started_transactions", std::move(list));
+  }
+
+  if (!queued_transactions.empty()) {
+    base::Value list(base::Value::Type::LIST);
+    for (DnsQueryType type : queued_transactions) {
+      base::Value transaction_dict(base::Value::Type::DICTIONARY);
+      transaction_dict.SetIntKey("dns_query_type", static_cast<int>(type));
+      list.Append(std::move(transaction_dict));
+    }
+    dict.SetKey("queued_transactions", std::move(list));
+  }
+
+  return dict;
+}
+
+// Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
 base::Value NetLogJobAttachParams(const NetLogSource& source,
                                   RequestPriority priority) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -458,11 +517,10 @@ class PriorityTracker {
   size_t counts_[NUM_PRIORITIES];
 };
 
-void NetLogHostCacheEntry(const NetLogWithSource& net_log,
-                          NetLogEventType type,
-                          NetLogEventPhase phase,
-                          const HostCache::Entry& results) {
-  net_log.AddEntry(type, phase, [&] { return results.NetLogParams(); });
+base::Value NetLogResults(const HostCache::Entry& results) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("results", results.NetLogParams());
+  return dict;
 }
 
 base::Value ToLogStringValue(
@@ -471,6 +529,15 @@ base::Value ToLogStringValue(
     return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
 
   return base::Value(absl::get<HostPortPair>(host).ToString());
+}
+
+base::Value ToLogStringValue(
+    const absl::variant<url::SchemeHostPort, std::string>& host) {
+  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
+    return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
+  }
+
+  return base::Value(absl::get<std::string>(host));
 }
 
 // Returns empty string if `host` has no known scheme.
@@ -790,7 +857,7 @@ class HostResolverManager::RequestImpl
     request_time_ = tick_clock_->NowTicks();
 
     source_net_log_.BeginEvent(
-        NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, [this] {
+        NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST, [this] {
           base::Value dict(base::Value::Type::DICTIONARY);
           dict.SetKey("host", ToLogStringValue(request_host_));
           dict.SetIntKey("dns_query_type",
@@ -801,6 +868,8 @@ class HostResolverManager::RequestImpl
           dict.SetBoolKey("is_speculative", parameters_.is_speculative);
           dict.SetStringKey("network_isolation_key",
                             network_isolation_key_.ToDebugString());
+          dict.SetIntKey("secure_dns_policy",
+                         static_cast<int>(parameters_.secure_dns_policy));
           return dict;
         });
   }
@@ -809,7 +878,7 @@ class HostResolverManager::RequestImpl
   // callback is run).
   void LogFinishRequest(int net_error, bool async_completion) {
     source_net_log_.EndEventWithNetErrorCode(
-        NetLogEventType::HOST_RESOLVER_IMPL_REQUEST, net_error);
+        NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST, net_error);
 
     if (!parameters_.is_speculative) {
       DCHECK(!request_time_.is_null());
@@ -824,7 +893,7 @@ class HostResolverManager::RequestImpl
   // Logs when a request has been cancelled.
   void LogCancelRequest() {
     source_net_log_.AddEvent(NetLogEventType::CANCELLED);
-    source_net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_REQUEST);
+    source_net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST);
   }
 
   const NetLogWithSource source_net_log_;
@@ -985,13 +1054,13 @@ class HostResolverManager::ProcTask {
     // If this is cancellation, log the EndEvent (otherwise this was logged in
     // OnLookupComplete()).
     if (!was_completed())
-      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_PROC_TASK);
+      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_PROC_TASK);
   }
 
   void Start() {
     DCHECK(network_task_runner_->BelongsToCurrentThread());
     DCHECK(!was_completed());
-    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_IMPL_PROC_TASK);
+    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_PROC_TASK);
     StartLookupAttempt();
   }
 
@@ -1020,8 +1089,8 @@ class HostResolverManager::ProcTask {
                        std::move(completion_callback)));
 
     net_log_.AddEventWithIntParams(
-        NetLogEventType::HOST_RESOLVER_IMPL_ATTEMPT_STARTED, "attempt_number",
-        attempt_number_);
+        NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_STARTED,
+        "attempt_number", attempt_number_);
 
     // If the results aren't received within a given time, RetryIfNotComplete
     // will start a new attempt if none of the outstanding attempts have
@@ -1102,18 +1171,18 @@ class HostResolverManager::ProcTask {
     weak_ptr_factory_.InvalidateWeakPtrs();
 
     if (error != OK) {
-      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_PROC_TASK, [&] {
+      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_PROC_TASK, [&] {
         return NetLogProcTaskFailedParams(0, error, os_error);
       });
       net_log_.AddEvent(
-          NetLogEventType::HOST_RESOLVER_IMPL_ATTEMPT_FINISHED, [&] {
+          NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_FINISHED, [&] {
             return NetLogProcTaskFailedParams(attempt_number, error, os_error);
           });
     } else {
-      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_PROC_TASK,
+      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_PROC_TASK,
                         [&] { return results.NetLogParams(); });
       net_log_.AddEventWithIntParams(
-          NetLogEventType::HOST_RESOLVER_IMPL_ATTEMPT_FINISHED,
+          NetLogEventType::HOST_RESOLVER_MANAGER_ATTEMPT_FINISHED,
           "attempt_number", attempt_number);
     }
 
@@ -1238,8 +1307,11 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     DCHECK(needs_another_transaction());
 
     if (num_needed_transactions_ ==
-        static_cast<int>(transactions_needed_.size()))
-      net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK);
+        static_cast<int>(transactions_needed_.size())) {
+      net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
+        return NetLogDnsTaskCreationParams(secure(), transactions_needed_);
+      });
+    }
 
     DnsQueryType type = transactions_needed_.front();
     transactions_needed_.pop_front();
@@ -1357,6 +1429,12 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
   void OnTimeout() {
+    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_TIMEOUT,
+                      [&] {
+                        return NetLogDnsTaskTimeoutParams(transactions_started_,
+                                                          transactions_needed_);
+                      });
+
     for (auto& transaction : transactions_started_) {
       base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
 
@@ -1454,8 +1532,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         response = &fake_response.value();
       } else {
         // Fail completely on network failure.
-        OnFailure(net_error, DnsResponseResultExtractor::ExtractionError::kOk,
-                  absl::nullopt);
+        OnFailure(net_error, /*ttl=*/absl::nullopt, dns_query_type);
         return;
       }
     }
@@ -1468,6 +1545,12 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
               DnsResponseResultExtractor::ExtractionError::kUnexpected);
 
     if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
+      net_log_.AddEvent(
+          NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE,
+          [&] {
+            return NetLogDnsTaskExtractionFailureParams(
+                extraction_error, dns_query_type, results);
+          });
       if (dns_query_type == DnsQueryType::INTEGRITY ||
           dns_query_type == DnsQueryType::HTTPS ||
           dns_query_type == DnsQueryType::HTTPS_EXPERIMENTAL) {
@@ -1476,7 +1559,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         // the type. Instead, synthesize empty results.
         results = DnsResponseResultExtractor::CreateEmptyResult(dns_query_type);
       } else {
-        OnFailure(results.error(), extraction_error, results.GetOptionalTtl());
+        OnFailure(results.error(), results.GetOptionalTtl(), dns_query_type);
         return;
       }
     }
@@ -1509,9 +1592,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         dns_query_type == DnsQueryType::HTTPS && results.error() == OK &&
         (GetScheme(host_) == url::kHttpScheme ||
          GetScheme(host_) == url::kWsScheme)) {
-      OnFailure(ERR_DNS_NAME_HTTPS_ONLY,
-                DnsResponseResultExtractor::ExtractionError::kOk,
-                results.GetOptionalTtl());
+      OnFailure(ERR_DNS_NAME_HTTPS_ONLY, results.GetOptionalTtl(),
+                dns_query_type);
       return;
     }
 
@@ -1625,9 +1707,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     results.set_addresses(addr_list);
 
     if (!success) {
-      OnFailure(ERR_DNS_SORT_ERROR,
-                DnsResponseResultExtractor::ExtractionError::kOk,
-                results.GetOptionalTtl());
+      OnFailure(ERR_DNS_SORT_ERROR, results.GetOptionalTtl());
       return;
     }
 
@@ -1636,9 +1716,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         results.text_records().value_or(std::vector<std::string>()).empty() &&
         results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
-      OnFailure(ERR_NAME_NOT_RESOLVED,
-                DnsResponseResultExtractor::ExtractionError::kOk,
-                results.GetOptionalTtl());
+      OnFailure(ERR_NAME_NOT_RESOLVED, results.GetOptionalTtl());
       return;
     }
 
@@ -1648,26 +1726,27 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // TODO(crbug.com/1225776): Disallow fallback after a fatal HTTPS error.  Also
   // prevent A/AAAA errors from leading to immediate fallback if an HTTPS query
   // is still pending that may lead to a fatal HTTPS error.
-  void OnFailure(int net_error,
-                 DnsResponseResultExtractor::ExtractionError extraction_error,
-                 absl::optional<base::TimeDelta> ttl) {
+  void OnFailure(
+      int net_error,
+      absl::optional<base::TimeDelta> ttl = absl::nullopt,
+      absl::optional<DnsQueryType> failed_transaction_type = absl::nullopt) {
     if (httpssvc_metrics_)
       httpssvc_metrics_->SaveAddressQueryFailure();
 
     DCHECK_NE(OK, net_error);
-    HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
 
-    net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK, [&] {
-      return NetLogDnsTaskFailedParams(results,
-                                       static_cast<int>(extraction_error));
+    net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK, [&] {
+      return NetLogDnsTaskFailedParams(net_error, failed_transaction_type, ttl,
+                                       base::OptionalOrNullptr(saved_results_));
     });
 
+    HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);
     delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
   }
 
   void OnSuccess(HostCache::Entry results) {
-    NetLogHostCacheEntry(net_log_, NetLogEventType::HOST_RESOLVER_IMPL_DNS_TASK,
-                         NetLogEventPhase::END, results);
+    net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
+                      [&] { return NetLogResults(results); });
     delegate_->OnDnsTaskComplete(task_start_time_, std::move(results), secure_);
   }
 
@@ -1857,11 +1936,10 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         net_log_(
             NetLogWithSource::Make(source_net_log.net_log(),
                                    NetLogSourceType::HOST_RESOLVER_IMPL_JOB)) {
-    source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_CREATE_JOB);
+    source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_CREATE_JOB);
 
-    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB, [&] {
-      return NetLogJobCreationParams(source_net_log.source(),
-                                     GetHostname(key_.host));
+    net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB, [&] {
+      return NetLogJobCreationParams(source_net_log.source());
     });
   }
 
@@ -1872,13 +1950,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       proc_task_ = nullptr;
       // Clean up now for nice NetLog.
       KillDnsTask();
-      net_log_.EndEventWithNetErrorCode(NetLogEventType::HOST_RESOLVER_IMPL_JOB,
-                                        ERR_ABORTED);
+      net_log_.EndEventWithNetErrorCode(
+          NetLogEventType::HOST_RESOLVER_MANAGER_JOB, ERR_ABORTED);
     } else if (is_queued()) {
       // |resolver_| was destroyed without running this Job.
       // TODO(szym): is there any benefit in having this distinction?
       net_log_.AddEvent(NetLogEventType::CANCELLED);
-      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB);
+      net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB);
     }
     // else CompleteRequests logged EndEvent.
     while (!requests_.empty()) {
@@ -1924,9 +2002,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     priority_tracker_.Add(request->priority());
 
     request->source_net_log().AddEventReferencingSource(
-        NetLogEventType::HOST_RESOLVER_IMPL_JOB_ATTACH, net_log_.source());
+        NetLogEventType::HOST_RESOLVER_MANAGER_JOB_ATTACH, net_log_.source());
 
-    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB_REQUEST_ATTACH,
+    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH,
                       [&] {
                         return NetLogJobAttachParams(
                             request->source_net_log().source(), priority());
@@ -1960,7 +2038,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(!requests_.empty());
 
     priority_tracker_.Remove(request->priority());
-    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB_REQUEST_DETACH,
+    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH,
                       [&] {
                         return NetLogJobAttachParams(
                             request->source_net_log().source(), priority());
@@ -2029,7 +2107,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK(is_queued());
     handle_.Reset();
 
-    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB_EVICTED);
+    net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_EVICTED);
 
     // This signals to CompleteRequests that parts of this job never ran.
     // Job must be saved in |resolver_| to be completed asynchronously.
@@ -2115,7 +2193,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     }
 
     if (start_time_ == base::TimeTicks()) {
-      net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_IMPL_JOB_STARTED);
+      net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_JOB_STARTED);
       start_time_ = tick_clock_->NowTicks();
     }
     tasks_.pop_front();
@@ -2151,6 +2229,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   bool is_running() const { return job_running_; }
 
  private:
+  base::Value NetLogJobCreationParams(const NetLogSource& source) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    source.AddToEventParameters(&dict);
+    dict.SetKey("host", ToLogStringValue(key_.host));
+    dict.SetIntKey("dns_query_type", static_cast<int>(key_.query_type));
+    dict.SetIntKey("secure_dns_mode", static_cast<int>(key_.secure_dns_mode));
+    dict.SetStringKey("network_isolation_key",
+                      key_.network_isolation_key.ToDebugString());
+    return dict;
+  }
+
   void KillDnsTask() {
     if (dns_task_) {
       if (dispatcher_) {
@@ -2579,13 +2668,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     if (num_active_requests() == 0) {
       net_log_.AddEvent(NetLogEventType::CANCELLED);
-      net_log_.EndEventWithNetErrorCode(NetLogEventType::HOST_RESOLVER_IMPL_JOB,
-                                        OK);
+      net_log_.EndEventWithNetErrorCode(
+          NetLogEventType::HOST_RESOLVER_MANAGER_JOB, OK);
       return;
     }
 
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::HOST_RESOLVER_IMPL_JOB,
-                                      results.error());
+    net_log_.EndEventWithNetErrorCode(
+        NetLogEventType::HOST_RESOLVER_MANAGER_JOB, results.error());
 
     DCHECK(!requests_.empty());
 
@@ -3104,9 +3193,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     if (resolved) {
       // |MaybeServeFromCache()| will update |*out_stale_info| as needed.
       DCHECK(out_stale_info->has_value());
-      NetLogHostCacheEntry(source_net_log,
-                           NetLogEventType::HOST_RESOLVER_IMPL_CACHE_HIT,
-                           NetLogEventPhase::NONE, resolved.value());
+      source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_CACHE_HIT,
+                              [&] { return NetLogResults(resolved.value()); });
 
       return resolved.value();
     }
@@ -3118,9 +3206,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   resolved = ServeFromHosts(GetHostname(job_key.host), job_key.query_type,
                             default_family_due_to_no_ipv6, *out_tasks);
   if (resolved) {
-    NetLogHostCacheEntry(source_net_log,
-                         NetLogEventType::HOST_RESOLVER_IMPL_HOSTS_HIT,
-                         NetLogEventPhase::NONE, resolved.value());
+    source_net_log.AddEvent(NetLogEventType::HOST_RESOLVER_MANAGER_HOSTS_HIT,
+                            [&] { return NetLogResults(resolved.value()); });
     return resolved.value();
   }
 
@@ -3207,9 +3294,9 @@ absl::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
   }
   if (cache_result) {
     *out_stale_info = std::move(staleness);
-    NetLogHostCacheEntry(source_net_log,
-                         NetLogEventType::HOST_RESOLVER_IMPL_CACHE_HIT,
-                         NetLogEventPhase::NONE, cache_result->second);
+    source_net_log.AddEvent(
+        NetLogEventType::HOST_RESOLVER_MANAGER_CACHE_HIT,
+        [&] { return NetLogResults(cache_result->second); });
     return cache_result->second;
   }
   return absl::nullopt;
@@ -3559,7 +3646,7 @@ bool HostResolverManager::IsIPv6Reachable(const NetLogWithSource& net_log) {
     cached = false;
   }
   net_log.AddEvent(
-      NetLogEventType::HOST_RESOLVER_IMPL_IPV6_REACHABILITY_CHECK, [&] {
+      NetLogEventType::HOST_RESOLVER_MANAGER_IPV6_REACHABILITY_CHECK, [&] {
         return NetLogIPv6AvailableParams(last_ipv6_probe_result_, cached);
       });
   return last_ipv6_probe_result_;
