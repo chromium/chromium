@@ -31,6 +31,19 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
         type: String,
         value: null,
       },
+
+      /** @private */
+      isLoading_: {
+        type: Boolean,
+      },
+
+      /**
+       * @private
+       */
+      showError_: {
+        type: Boolean,
+        computed: 'computeShowError_(error_, isLoading_)',
+      },
     };
   }
 
@@ -38,11 +51,26 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
     this.watch('error_', state => state.error);
+    this.watch(
+        'isLoading_',
+        state => state.loading.setImage > 0 || state.loading.selected ||
+            state.loading.refreshWallpaper);
   }
 
   /** @private */
   onDismissClicked_() {
     this.dispatch(dismissErrorAction());
+  }
+
+  /**
+   * Show error when there is an error message and the app is not loading.
+   * @param {?string} error
+   * @param {boolean} loading
+   * @return {boolean}
+   * @private
+   */
+  computeShowError_(error, loading) {
+    return !!error && !loading;
   }
 }
 

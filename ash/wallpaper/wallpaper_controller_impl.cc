@@ -617,7 +617,6 @@ WallpaperControllerImpl::~WallpaperControllerImpl() {
     color_calculator_->RemoveObserver(this);
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 // static
@@ -998,10 +997,12 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     WallpaperLayout layout,
     bool preview_mode,
     SetCustomWallpaperCallback callback) {
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnCustomWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), account_id, file_path, layout,
-                     preview_mode, std::move(callback)),
+                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+                     file_path, layout, preview_mode, std::move(callback)),
       sequenced_task_runner_, file_path);
 }
 
@@ -1045,10 +1046,13 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     const OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
   DCHECK(callback);
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   SetOnlineWallpaperIfExists(
       params,
       base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
-                     weak_factory_.GetWeakPtr(), params, std::move(callback)));
+                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                     std::move(callback)));
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
@@ -1079,7 +1083,8 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
       sequenced_task_runner_.get(), FROM_HERE,
       base::BindOnce(&GetExistingOnlineWallpaperPath, params.url.spec()),
       base::BindOnce(&WallpaperControllerImpl::SetOnlineWallpaperFromPath,
-                     weak_factory_.GetWeakPtr(), std::move(callback), params));
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     std::move(callback), params));
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperFromData(
@@ -1887,8 +1892,8 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
 
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), params, /*save_file=*/false,
-                     std::move(callback)),
+                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                     /*save_file=*/false, std::move(callback)),
       sequenced_task_runner_, file_path);
 }
 
@@ -2456,8 +2461,8 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
   ImageDownloader::Get()->Download(
       GURL(url), NO_TRAFFIC_ANNOTATION_YET,
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
-                     weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
-                     std::move(callback)));
+                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
+                     /*save_file=*/true, std::move(callback)));
 }
 
 constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
@@ -2506,6 +2511,8 @@ std::string WallpaperControllerImpl::GetCollectionId() const {
 
 void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
     RefreshWallpaperCallback callback) {
+  // Invalidate weak ptrs to cancel prior requests to set wallpaper.
+  set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   if (!IsDailyRefreshEnabled()) {
     daily_refresh_timer_.Stop();
     std::move(callback).Run(false);
@@ -2518,8 +2525,8 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
     wallpaper_controller_client_->FetchDailyRefreshWallpaper(
         GetCollectionId(),
         base::BindOnce(&WallpaperControllerImpl::SetDailyWallpaper,
-                       weak_factory_.GetWeakPtr(), GetActiveAccountId(),
-                       GetCollectionId(),
+                       set_wallpaper_weak_factory_.GetWeakPtr(),
+                       GetActiveAccountId(), GetCollectionId(),
                        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                        /*preview_mode=*/false, std::move(callback)));
   } else {

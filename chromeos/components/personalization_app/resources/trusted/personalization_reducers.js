@@ -314,14 +314,6 @@ function pendingSelectedReducer(state, action) {
         return null;
       }
       return state;
-    case ActionName.END_SELECT_IMAGE:
-      const {success} =
-          /** @type {{name: string, success: boolean}} */ (action);
-      if (success) {
-        return state;
-      }
-      console.warn('pendingSelectedReducer: Failed to set image.');
-      return null;
     default:
       return state;
   }

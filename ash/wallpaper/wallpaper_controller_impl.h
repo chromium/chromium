@@ -742,6 +742,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 
+  // Used for setting different types of wallpaper.
+  base::WeakPtrFactory<WallpaperControllerImpl> set_wallpaper_weak_factory_{
+      this};
+
   DISALLOW_COPY_AND_ASSIGN(WallpaperControllerImpl);
 };
 
