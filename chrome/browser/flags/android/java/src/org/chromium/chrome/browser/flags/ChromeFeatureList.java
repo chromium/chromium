@@ -371,6 +371,8 @@ public abstract class ChromeFeatureList {
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String IMMERSIVE_UI_MODE = "ImmersiveUiMode";
     public static final String INCOGNITO_NTP_REVAMP = "IncognitoNtpRevamp";
+    public static final String INCOGNITO_REAUTHENTICATION_FOR_ANDROID =
+            "IncognitoReauthenticationForAndroid";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INLINE_UPDATE_FLOW = "InlineUpdateFlow";
     public static final String INSTALLABLE_AMBIENT_BADGE_INFOBAR = "InstallableAmbientBadgeInfoBar";

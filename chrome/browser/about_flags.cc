@@ -6757,7 +6757,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoReauthenticationForAndroidName,
      flag_descriptions::kIncognitoReauthenticationForAndroidDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kIncognitoReauthenticationForAndroid)},
+     FEATURE_VALUE_TYPE(chrome::android::kIncognitoReauthenticationForAndroid)},
 #endif
 
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \

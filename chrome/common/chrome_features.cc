@@ -546,11 +546,6 @@ const base::Feature kIncompatibleApplicationsWarning{
 // When enabled, keeps Incognito UI consistent regardless of any selected theme.
 const base::Feature kIncognitoBrandConsistencyForAndroid{
     "IncognitoBrandConsistencyForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, user gets a new setting which allows them to gate their
-// existing Incognito tabs behind a reauthentication flow.
-const base::Feature kIncognitoReauthenticationForAndroid{
-    "IncognitoReauthenticationForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // When enabled, users will see updated UI in Incognito NTP

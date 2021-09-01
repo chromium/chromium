@@ -354,9 +354,6 @@ extern const base::Feature kIncompatibleApplicationsWarning;
 #if defined(OS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoBrandConsistencyForAndroid;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kIncognitoReauthenticationForAndroid;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
