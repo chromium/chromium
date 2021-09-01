@@ -8117,14 +8117,17 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_TablePatternId:
-      // Despite the following documentation (as of August 2021)
-      //     https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcore/nn-uiautomationcore-itableprovider
-      // which mentions that ITableProvider must expose column and/or row
-      // headers, we should expose the Table pattern on all table-like roles.
-      // This will allow clients to detect such constructs as tables and expose
-      // row/column counts and navigation along with Table semantics.
-      if (IsTableLike(GetRole()))
-        return &PatternProvider<ITableProvider>;
+      // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcore/nn-uiautomationcore-itableprovider
+      // This control pattern is analogous to IGridProvider with the distinction
+      // that any control implementing ITableProvider must also expose a column
+      // and/or row header relationship for each child element.
+      if (IsTableLike(GetRole())) {
+        absl::optional<bool> table_has_headers =
+            GetDelegate()->GetTableHasColumnOrRowHeaderNode();
+        if (table_has_headers.has_value() && table_has_headers.value()) {
+          return &PatternProvider<ITableProvider>;
+        }
+      }
       break;
 
     case UIA_TableItemPatternId:

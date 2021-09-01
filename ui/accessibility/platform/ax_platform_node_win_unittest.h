@@ -127,8 +127,6 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   using PatternSet = std::unordered_set<LONG>;
   PatternSet GetSupportedPatternsFromNodeId(AXNodeID id);
 
-  void TestGetColumnHeadersForRole(ax::mojom::Role role);
-
   std::unique_ptr<AXFragmentRootWin> ax_fragment_root_;
 
   std::unique_ptr<TestFragmentRootDelegate> test_fragment_root_delegate_;

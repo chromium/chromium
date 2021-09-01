@@ -484,56 +484,6 @@ AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNodeID id) {
   return supported_patterns;
 }
 
-void AXPlatformNodeWinTest::TestGetColumnHeadersForRole(ax::mojom::Role role) {
-  ASSERT_TRUE(role == ax::mojom::Role::kTable ||
-              role == ax::mojom::Role::kGrid);
-  AXNodeData root;
-  root.id = 1;
-  root.role = role;
-
-  AXNodeData row1;
-  row1.id = 2;
-  row1.role = ax::mojom::Role::kRow;
-  root.child_ids.push_back(row1.id);
-
-  AXNodeData column_header;
-  column_header.id = 3;
-  column_header.role = ax::mojom::Role::kColumnHeader;
-  column_header.SetName(u"column_header");
-  row1.child_ids.push_back(column_header.id);
-
-  AXNodeData row_header;
-  row_header.id = 4;
-  row_header.role = ax::mojom::Role::kRowHeader;
-  row_header.SetName(u"row_header");
-  row1.child_ids.push_back(row_header.id);
-
-  Init(root, row1, column_header, row_header);
-
-  ComPtr<ITableProvider> root_itableprovider(
-      QueryInterfaceFromNode<ITableProvider>(GetRootAsAXNode()));
-
-  base::win::ScopedSafearray safearray;
-  EXPECT_HRESULT_SUCCEEDED(
-      root_itableprovider->GetColumnHeaders(safearray.Receive()));
-  EXPECT_NE(nullptr, safearray.Get());
-
-  std::vector<std::wstring> expected_names = {L"column_header"};
-  EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(safearray.Get(), UIA_NamePropertyId,
-                                   expected_names);
-
-  // Remove column_header's native event target and verify it's no longer
-  // returned.
-  TestAXNodeWrapper* column_header_wrapper = TestAXNodeWrapper::GetOrCreate(
-      GetTree(), GetRootAsAXNode()->children()[0]->children()[0]);
-  column_header_wrapper->ResetNativeEventTarget();
-
-  safearray.Release();
-  EXPECT_HRESULT_SUCCEEDED(
-      root_itableprovider->GetColumnHeaders(safearray.Receive()));
-  EXPECT_EQ(nullptr, safearray.Get());
-}
-
 TestFragmentRootDelegate::TestFragmentRootDelegate() = default;
 
 TestFragmentRootDelegate::~TestFragmentRootDelegate() = default;
@@ -3610,15 +3560,7 @@ TEST_F(AXPlatformNodeWinTest, IGridProviderGetItem) {
   EXPECT_EQ(cell1_irawelementprovidersimple.Get(), grid_item);
 }
 
-TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersForTable) {
-  TestGetColumnHeadersForRole(ax::mojom::Role::kTable);
-}
-
-TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeadersForGrid) {
-  TestGetColumnHeadersForRole(ax::mojom::Role::kGrid);
-}
-
-TEST_F(AXPlatformNodeWinTest, ITableProviderNoHeaders) {
+TEST_F(AXPlatformNodeWinTest, ITableProviderGetColumnHeaders) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kTable;
@@ -3628,7 +3570,19 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderNoHeaders) {
   row1.role = ax::mojom::Role::kRow;
   root.child_ids.push_back(row1.id);
 
-  Init(root, row1);
+  AXNodeData column_header;
+  column_header.id = 3;
+  column_header.role = ax::mojom::Role::kColumnHeader;
+  column_header.SetName(u"column_header");
+  row1.child_ids.push_back(column_header.id);
+
+  AXNodeData row_header;
+  row_header.id = 4;
+  row_header.role = ax::mojom::Role::kRowHeader;
+  row_header.SetName(u"row_header");
+  row1.child_ids.push_back(row_header.id);
+
+  Init(root, row1, column_header, row_header);
 
   ComPtr<ITableProvider> root_itableprovider(
       QueryInterfaceFromNode<ITableProvider>(GetRootAsAXNode()));
@@ -3636,10 +3590,21 @@ TEST_F(AXPlatformNodeWinTest, ITableProviderNoHeaders) {
   base::win::ScopedSafearray safearray;
   EXPECT_HRESULT_SUCCEEDED(
       root_itableprovider->GetColumnHeaders(safearray.Receive()));
-  EXPECT_EQ(nullptr, safearray.Get());
+  EXPECT_NE(nullptr, safearray.Get());
 
+  std::vector<std::wstring> expected_names = {L"column_header"};
+  EXPECT_UIA_ELEMENT_ARRAY_BSTR_EQ(safearray.Get(), UIA_NamePropertyId,
+                                   expected_names);
+
+  // Remove column_header's native event target and verify it's no longer
+  // returned.
+  TestAXNodeWrapper* column_header_wrapper = TestAXNodeWrapper::GetOrCreate(
+      GetTree(), GetRootAsAXNode()->children()[0]->children()[0]);
+  column_header_wrapper->ResetNativeEventTarget();
+
+  safearray.Release();
   EXPECT_HRESULT_SUCCEEDED(
-      root_itableprovider->GetRowHeaders(safearray.Receive()));
+      root_itableprovider->GetColumnHeaders(safearray.Receive()));
   EXPECT_EQ(nullptr, safearray.Get());
 }
 
@@ -6108,7 +6073,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
             GetSupportedPatternsFromNodeId(link_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridPatternId,
-                        UIA_TablePatternId, UIA_TextChildPatternId}),
+                        UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(table_without_header_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_GridItemPatternId,
@@ -6129,7 +6094,7 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
                         UIA_SelectionPatternId, UIA_GridPatternId,
-                        UIA_TablePatternId, UIA_TextChildPatternId}),
+                        UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(grid_without_header_id));
 
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ValuePatternId,
