@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <functional>
 #include <memory>
 #include <utility>
 
@@ -1771,11 +1770,7 @@ void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
   if (!initialized)
     return;
   MaybeShowWebUITabStripIPH();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
-                     base::Unretained(this)),
-      base::TimeDelta::FromMinutes(5));
+  MaybeShowReadingListInSidePanelIPH();
 }
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
