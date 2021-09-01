@@ -979,7 +979,7 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
 }
 
 void EventTargetWithInlineData::Trace(Visitor* visitor) const {
-  EventTargetData::Trace(visitor);
+  visitor->Trace(data_);
   EventTarget::Trace(visitor);
 }
 

@@ -2699,8 +2699,25 @@ void Node::RemoveAllEventListenersRecursively() {
   }
 }
 
+namespace {
+
+// Helper object to allocate EventTargetData which is otherwise only used
+// through EventTargetWithInlineData.
+class EventTargetDataObject final
+    : public GarbageCollected<EventTargetDataObject> {
+ public:
+  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
+
+  EventTargetData& GetEventTargetData() { return data_; }
+
+ private:
+  EventTargetData data_;
+};
+
+}  // namespace
+
 using EventTargetDataMap =
-    HeapHashMap<WeakMember<Node>, Member<EventTargetData>>;
+    HeapHashMap<WeakMember<Node>, Member<EventTargetDataObject>>;
 static EventTargetDataMap& GetEventTargetDataMap() {
   DEFINE_STATIC_LOCAL(Persistent<EventTargetDataMap>, map,
                       (MakeGarbageCollected<EventTargetDataMap>()));
@@ -2708,30 +2725,19 @@ static EventTargetDataMap& GetEventTargetDataMap() {
 }
 
 EventTargetData* Node::GetEventTargetData() {
-  return HasEventTargetData() ? GetEventTargetDataMap().at(this) : nullptr;
+  return HasEventTargetData()
+             ? &GetEventTargetDataMap().at(this)->GetEventTargetData()
+             : nullptr;
 }
-
-namespace {
-
-// Helper object to allocate EventTargetData which is otherwise only used
-// through EventTargetWithInlineData.
-class EventTargetDataObject final
-    : public GarbageCollected<EventTargetDataObject>,
-      public EventTargetData {
- public:
-  void Trace(Visitor* visitor) const final { EventTargetData::Trace(visitor); }
-};
-
-}  // namespace
 
 EventTargetData& Node::EnsureEventTargetData() {
   if (HasEventTargetData())
-    return *GetEventTargetDataMap().at(this);
+    return GetEventTargetDataMap().at(this)->GetEventTargetData();
   DCHECK(!GetEventTargetDataMap().Contains(this));
   auto* data = MakeGarbageCollected<EventTargetDataObject>();
   GetEventTargetDataMap().Set(this, data);
   SetHasEventTargetData(true);
-  return *data;
+  return data->GetEventTargetData();
 }
 
 const HeapVector<Member<MutationObserverRegistration>>*
