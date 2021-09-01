@@ -1079,6 +1079,34 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
 }
 
+TEST_F(UserDataUtilTextValueTest, RequestLocalizedProfileData) {
+  autofill::AutofillProfile contact(base::GenerateGUID(),
+                                    autofill::test::kEmptyOrigin);
+  autofill::test::SetProfileInfo(&contact, "John", /* middle name */ "", "Doe",
+                                 "", "", "", "", "", "", "", "CH", "");
+  user_model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(contact),
+      &user_data_);
+
+  AutofillValue autofill_value;
+  autofill_value.mutable_profile()->set_identifier("contact");
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::ADDRESS_HOME_COUNTRY));
+
+  std::string result_default;
+  EXPECT_TRUE(
+      GetFormattedClientValue(autofill_value, &user_data_, &result_default)
+          .ok());
+  EXPECT_EQ(result_default, "Switzerland");
+
+  autofill_value.set_locale("de-CH");
+  std::string result_localized;
+  EXPECT_TRUE(
+      GetFormattedClientValue(autofill_value, &user_data_, &result_localized)
+          .ok());
+  EXPECT_EQ(result_localized, "Schweiz");
+}
+
 TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownCreditCard) {
   AutofillValue autofill_value;
   autofill_value.mutable_value_expression()->add_chunk()->set_key(

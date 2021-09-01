@@ -36,6 +36,7 @@ ClientStatus ExtractDataAndFormatClientValue(
     const ValueExpression& value_expression,
     const UserData* user_data,
     bool quote_meta,
+    const std::string& locale,
     std::string* out_value) {
   if (value_expression.chunk().empty()) {
     VLOG(1) << "|value_expression| is empty";
@@ -43,6 +44,7 @@ ClientStatus ExtractDataAndFormatClientValue(
   }
 
   std::map<field_formatter::Key, std::string> data;
+  std::string localeOrDefault = locale.empty() ? kDefaultLocale : locale;
 
   if (client_value.has_profile()) {
     const auto& profile = client_value.profile();
@@ -58,14 +60,14 @@ ClientStatus ExtractDataAndFormatClientValue(
     }
 
     auto address_map =
-        field_formatter::CreateAutofillMappings(*address, kDefaultLocale);
+        field_formatter::CreateAutofillMappings(*address, localeOrDefault);
     data.insert(address_map.begin(), address_map.end());
   }
 
   const autofill::CreditCard* card = user_data->selected_card();
   if (card != nullptr) {
     auto card_map =
-        field_formatter::CreateAutofillMappings(*card, kDefaultLocale);
+        field_formatter::CreateAutofillMappings(*card, localeOrDefault);
     data.insert(card_map.begin(), card_map.end());
   }
 
@@ -506,7 +508,7 @@ ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
                                      std::string* out_value) {
   return ExtractDataAndFormatClientValue(
       autofill_value, autofill_value.value_expression(), user_data,
-      /* quote_meta= */ false, out_value);
+      /* quote_meta= */ false, autofill_value.locale(), out_value);
 }
 
 ClientStatus GetFormattedClientValue(
@@ -517,7 +519,7 @@ ClientStatus GetFormattedClientValue(
       autofill_value_regexp,
       autofill_value_regexp.value_expression_re2().value_expression(),
       user_data,
-      /* quote_meta= */ true, out_value);
+      /* quote_meta= */ true, autofill_value_regexp.locale(), out_value);
 }
 
 void GetPasswordManagerValue(

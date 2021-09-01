@@ -56,9 +56,14 @@ message AutofillValue {
   // The profile to be used. This has to be requested with a
   // |CollectUserDataAction| first.
   optional AutofillProfile profile = 1;
+  // If credit card fields are used, the card has to be requested with a
+  // |CollectUserDataAction| first.
 
   // The value expression.
   optional ValueExpression value_expression = 5;
+
+  // The locale, if not specified will default to "en-US".
+  optional string locale = 6;
 
   reserved 2 to 4;
 }
@@ -67,8 +72,14 @@ message AutofillValueRegexp {
   // The profile to be used. This has to be requested with a
   // |CollectUserDataAction| first.
   optional AutofillProfile profile = 1;
+  // If credit card fields are used, the card has to be requested with a
+  // |CollectUserDataAction| first.
 
+  // The regular expression value expression.
   optional ValueExpressionRegexp value_expression_re2 = 3;
+
+  // The locale. If not specified will default to "en-US".
+  optional string locale = 4;
 
   reserved 2;
 }
