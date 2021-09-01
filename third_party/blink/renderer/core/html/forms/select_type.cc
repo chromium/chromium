@@ -753,10 +753,12 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
     if (auto* layout_object = select_->GetLayoutObject()) {
       layout_object->GetFrameView()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kScroll);
-
+    }
+    // Lifecycle update could have detached the layout object.
+    if (auto* layout_object = select_->GetLayoutObject()) {
       if (Page* page = select_->GetDocument().GetPage()) {
         page->GetAutoscrollController().StartAutoscrollForSelection(
-            select_->GetLayoutObject());
+            layout_object);
       }
     }
     // Mousedown didn't happen in this element.
