@@ -646,7 +646,6 @@ source_set("unit_tests") {
     "leak_detection_dialog_utils_unittest.cc",
     "login_database_unittest.cc",
     "multi_store_form_fetcher_unittest.cc",
-    "multi_store_password_save_manager_unittest.cc",
     "old_google_credentials_cleaner_unittest.cc",
     "origin_credential_store_unittest.cc",
     "password_access_authenticator_unittest.cc",
