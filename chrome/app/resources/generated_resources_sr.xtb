@@ -2682,7 +2682,7 @@
 <translation id="3809280248639369696">Месечев зрак</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> може да прегледа датотеке у директоријумима у наставку</translation>
 <translation id="3810914450553844415">Администратор не дозвољава додатне Google налоге.</translation>
-<translation id="3810973564298564668">Промени</translation>
+<translation id="3810973564298564668">Управљај</translation>
 <translation id="381202950560906753">Додај други</translation>
 <translation id="3812525830114410218">Неисправан сертификат</translation>
 <translation id="3813296892522778813">Идите на <ph name="BEGIN_LINK_CHROMIUM" />страницу помоћи за Google Chrome<ph name="END_LINK_CHROMIUM" /> ако не можете да пронађете оно што тражите</translation>
@@ -5047,7 +5047,7 @@
 <translation id="6429384232893414837">Грешка при ажурирању</translation>
 <translation id="6430814529589430811">ASCII датотека шифрована методом „Base64“, један сертификат</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ће подесити аутоматска ажурирања за све кориснике овог рачунара.</translation>
-<translation id="6434104957329207050">Брзина прелажења садржаја по тачкама</translation>
+<translation id="6434104957329207050">Брзина скенирања садржаја по тачкама</translation>
 <translation id="6434309073475700221">Одбаци</translation>
 <translation id="6434325376267409267">Да бисте користили апликацију <ph name="APP_NAME" />, морате да ажурирате уређај.</translation>
 <translation id="6436164536244065364">Прикажи у Веб продавници</translation>

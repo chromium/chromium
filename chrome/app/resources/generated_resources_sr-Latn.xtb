@@ -2682,7 +2682,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3809280248639369696">Mesečev zrak</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> može da pregleda datoteke u direktorijumima u nastavku</translation>
 <translation id="3810914450553844415">Administrator ne dozvoljava dodatne Google naloge.</translation>
-<translation id="3810973564298564668">Promeni</translation>
+<translation id="3810973564298564668">Upravljaj</translation>
 <translation id="381202950560906753">Dodaj drugi</translation>
 <translation id="3812525830114410218">Neispravan sertifikat</translation>
 <translation id="3813296892522778813">Idite na <ph name="BEGIN_LINK_CHROMIUM" />stranicu pomoći za Google Chrome<ph name="END_LINK_CHROMIUM" /> ako ne možete da pronađete ono što tražite</translation>
@@ -5047,7 +5047,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6429384232893414837">Greška pri ažuriranju</translation>
 <translation id="6430814529589430811">ASCII datoteka šifrovana metodom „Base64“, jedan sertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> će podesiti automatska ažuriranja za sve korisnike ovog računara.</translation>
-<translation id="6434104957329207050">Brzina prelaženja sadržaja po tačkama</translation>
+<translation id="6434104957329207050">Brzina skeniranja sadržaja po tačkama</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6434325376267409267">Da biste koristili aplikaciju <ph name="APP_NAME" />, morate da ažurirate uređaj.</translation>
 <translation id="6436164536244065364">Prikaži u Veb prodavnici</translation>
