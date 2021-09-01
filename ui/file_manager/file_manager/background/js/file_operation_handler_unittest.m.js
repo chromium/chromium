@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { assertArrayEquals,assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertGT, assertLT, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
@@ -264,54 +264,134 @@ export function testCopyUnexpectedError() {
 }
 
 /**
- * Tests Speedometer moving average calculations.
+ * Tests Speedometer's speed calculations.
  */
 export function testSpeedometerMovingAverage() {
-  const bufferLength = 20;
-  const speedometer = new fileOperationUtil.Speedometer(bufferLength);
+  const speedometer = new fileOperationUtil.Speedometer();
   const mockDate = new MockDate();
 
   speedometer.setTotalBytes(2000);
+
+  // Time elapsed before the first sample shouldn't have any impact.
+  mockDate.tick(10000);
+
+  assertEquals(0, speedometer.getSampleCount());
+  assertTrue(isNaN(speedometer.getAverageSpeed()));
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
+
   mockDate.tick(1000);
   speedometer.update(100);
+
+  assertEquals(1, speedometer.getSampleCount());
+  assertTrue(isNaN(speedometer.getAverageSpeed()));
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
+
   mockDate.tick(1000);
   speedometer.update(300);
 
-  // Verify calculated instantaneous speeds.
-  assertArrayEquals([100, 200], speedometer.getBufferForTesting());
+  assertEquals(2, speedometer.getSampleCount());
+  assertEquals(200, speedometer.getAverageSpeed());
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
 
-  // Check moving average speed calculation.
-  assertEquals(150, speedometer.getCurrentSpeed());
+  mockDate.tick(1000);
+  speedometer.update(300);
 
-  // Check calculated remaining time.
-  assertEquals(12, speedometer.getRemainingTime());
+  assertEquals(3, speedometer.getSampleCount());
+  assertEquals(100, speedometer.getAverageSpeed());
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
+
+  mockDate.tick(2000);
+  speedometer.update(300);
+
+  assertEquals(4, speedometer.getSampleCount());
+  assertEquals(50, speedometer.getAverageSpeed());
+  assertTrue(isNaN(speedometer.getCurrentSpeed()));
+  assertTrue(isNaN(speedometer.getRemainingTime()));
+
+  mockDate.tick(1000);
+  speedometer.update(600);
+
+  assertEquals(5, speedometer.getSampleCount());
+  assertEquals(100, speedometer.getAverageSpeed());
+  assertEquals(73, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(20, Math.round(speedometer.getRemainingTime()));
+
+  // Elapsed time should be taken in account by getRemainingTime().
+  mockDate.tick(12000);
+  assertEquals(8, Math.round(speedometer.getRemainingTime()));
+
+  // getRemainingTime() can return a negative value.
+  mockDate.tick(12000);
+  assertEquals(-4, Math.round(speedometer.getRemainingTime()));
 
   mockDate.stop();
 }
 
 /**
- * Tests Speedometer buffer ring rotate and substitute.
+ * Tests Speedometer's sample queue.
  */
 export function testSpeedometerBufferRing() {
-  const bufferLength = 20;
-  const speedometer = new fileOperationUtil.Speedometer(bufferLength);
+  const maxSamples = 20;
+  const speedometer = new fileOperationUtil.Speedometer(maxSamples);
   const mockDate = new MockDate();
 
-  for (let i = 0; i < bufferLength; i++) {
+  speedometer.setTotalBytes(20000);
+
+  // Slow speed of 100 bytes per second.
+  for (let i = 0; i < maxSamples; i++) {
+    assertEquals(i, speedometer.getSampleCount());
     mockDate.tick(1000);
     speedometer.update(i * 100);
   }
 
-  mockDate.tick(1000);
-  speedometer.update(2200);
+  assertEquals(maxSamples, speedometer.getSampleCount());
+  assertEquals(100, Math.round(speedometer.getAverageSpeed()));
+  assertEquals(100, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(181, Math.round(speedometer.getRemainingTime()));
 
-  const buffer = speedometer.getBufferForTesting();
+  let previousSpeed = speedometer.getCurrentSpeed();
 
-  // Check buffer not expanded more than the specified length.
-  assertEquals(bufferLength, buffer.length);
+  // Faster speed of 300 bytes per second.
+  for (let i = 0; i < maxSamples; i++) {
+    // Check buffer not expanded more than the specified length.
+    assertEquals(maxSamples, speedometer.getSampleCount());
+    mockDate.tick(1000);
+    speedometer.update(2100 + i * 300);
 
-  // Check first element replaced by recent calculated speed.
-  assertEquals(300, buffer[0]);
+    // Current speed should be seen as accelerating.
+    const speed = speedometer.getCurrentSpeed();
+    assertGT(speed, previousSpeed);
+    previousSpeed = speed;
+  }
+
+  assertEquals(maxSamples, speedometer.getSampleCount());
+  assertEquals(200, Math.round(speedometer.getAverageSpeed()));
+  assertEquals(300, Math.round(speedometer.getCurrentSpeed()));
+  assertEquals(41, Math.round(speedometer.getRemainingTime()));
+
+  // Stalling.
+  for (let i = 0; i < maxSamples; i++) {
+    // Check buffer not expanded more than the specified length.
+    assertEquals(maxSamples, speedometer.getSampleCount());
+    mockDate.tick(1000);
+    speedometer.update(7965);
+
+    // Current speed should be seen as decelerating.
+    const speed = speedometer.getCurrentSpeed();
+    assertLT(speed, previousSpeed);
+    previousSpeed = speed;
+  }
+
+  assertEquals(maxSamples, speedometer.getSampleCount());
+  assertEquals(135, Math.round(speedometer.getAverageSpeed()));
+  assertEquals(0, Math.round(speedometer.getCurrentSpeed()));
+
+  // getRemainingTime() can return an infinite value.
+  assertEquals(Infinity, Math.round(speedometer.getRemainingTime()));
 
   mockDate.stop();
 }
