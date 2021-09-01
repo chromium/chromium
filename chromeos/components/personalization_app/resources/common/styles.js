@@ -214,7 +214,7 @@ styles.innerHTML = `
       height: 50%;
       z-index: 1;
       background: linear-gradient(rgba(var(--google-grey-900-rgb), 0%),
-          rgba(var(--google-grey-900-rgb), 50%));
+          rgba(var(--google-grey-900-rgb), 55%));
     }
   </style>
 </template>`;
