@@ -174,13 +174,13 @@ public class AutofillAssistantFormActionTest {
         // TODO(b/144690738) Remove the isDisplayed() condition.
         onView(allOf(withId(R.id.value), withEffectiveVisibility(VISIBLE),
                        hasSibling(hasDescendant(withText("Counter 1")))))
-                .check(matches(hasTextColor(R.color.modern_grey_800_alpha_38)));
+                .check(matches(hasTextColor(R.color.baseline_neutral_900_alpha_38)));
         onView(allOf(withId(R.id.increase_button), withEffectiveVisibility(VISIBLE),
                        hasSibling(hasDescendant(withText("Counter 1")))))
                 .check(matches(hasTintColor(R.color.modern_blue_600)));
         onView(allOf(withId(R.id.decrease_button), withEffectiveVisibility(VISIBLE),
                        hasSibling(hasDescendant(withText("Counter 1")))))
-                .check(matches(hasTintColor(R.color.modern_grey_800_alpha_38)));
+                .check(matches(hasTintColor(R.color.baseline_neutral_900_alpha_38)));
         // Click on Counter 1 +, increase from 0 to 1.
         onView(allOf(withId(R.id.increase_button), withEffectiveVisibility(VISIBLE),
                        hasSibling(hasDescendant(withText("Counter 1")))))
@@ -190,7 +190,7 @@ public class AutofillAssistantFormActionTest {
                 .check(matches(hasTextColor(R.color.modern_blue_600)));
         onView(allOf(withId(R.id.increase_button), withEffectiveVisibility(VISIBLE),
                        hasSibling(hasDescendant(withText("Counter 1")))))
-                .check(matches(hasTintColor(R.color.modern_grey_800_alpha_38)));
+                .check(matches(hasTintColor(R.color.baseline_neutral_900_alpha_38)));
         // Decrease button is still disabled due to the minCountersSum requirement.
 
         // Click expand label to make Counter 2 visible.
