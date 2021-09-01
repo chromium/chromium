@@ -314,14 +314,22 @@ void LinkWebBundle::ReleaseBundleLoader() {
 }
 
 // static
-KURL LinkWebBundle::ParseResourceUrl(const AtomicString& str) {
+KURL LinkWebBundle::CompleteURL(const KURL& base_url, const String& str) {
+  if (str.IsNull())
+    return KURL();
+  return KURL(base_url, str);
+}
+
+// static
+KURL LinkWebBundle::ParseResourceUrl(const AtomicString& str,
+                                     CompleteURLCallback callback) {
   // The implementation is almost copy and paste from ParseExchangeURL() defined
   // in services/data_decoder/web_bundle_parser.cc, replacing GURL with KURL.
 
-  // TODO(hayato): Consider to support a relative URL.
-  KURL url(str);
-  if (!url.IsValid())
+  KURL url = callback.Run(str);
+  if (!url.IsValid()) {
     return KURL();
+  }
 
   // Exchange URL must not have a fragment or credentials.
   if (url.HasFragmentIdentifier() || !url.User().IsEmpty() ||

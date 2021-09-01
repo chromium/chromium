@@ -26,6 +26,8 @@ class WebBundleLoader;
 class CORE_EXPORT LinkWebBundle final : public LinkResource,
                                         public SubresourceWebBundle {
  public:
+  using CompleteURLCallback = base::RepeatingCallback<KURL(const String&)>;
+
   static bool IsFeatureEnabled(const ExecutionContext*);
 
   explicit LinkWebBundle(HTMLLinkElement* owner);
@@ -51,12 +53,24 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
   const KURL& GetBundleUrl() const override;
   const base::UnguessableToken& WebBundleToken() const override;
 
+  // Returns a valid absolute URL if |str| can be parsed as a valid
+  // absolute URL, or a relative URL with a given |base_url|.
+  // Document::CompleteURL(const String&) does the same thing, however we use
+  // this function instead, because we do not always have a Document present,
+  // like in html_preload_scanner (only document url).
+  // TODO(crbug.com/1244483): For now we ignore Encoding of the document here,
+  // as we don't have it available in the html_preload_scanner (the only user
+  // of this function as of now). Investigate if this is even fixable and how
+  // much it actually impacts the construction of the complete URL.
+  static KURL CompleteURL(const KURL& base_url, const String& str);
+
   // Parse the given |str| as a url. If |str| doesn't meet the criteria which
   // WebBundles specification requires, this returns invalid empty KURL as an
-  // error.
-  // See
-  // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html#name-parsing-the-index-section
-  static KURL ParseResourceUrl(const AtomicString& str);
+  // error. |complete_url_callback| acts as a callable constructor that
+  // returns a complete url, accounting for both cases of |str| being a
+  // relative URL and absolute one.
+  static KURL ParseResourceUrl(const AtomicString& str,
+                               CompleteURLCallback complete_url_callback);
 
  private:
   bool ResourcesOrScopesMatch(const KURL& url) const;

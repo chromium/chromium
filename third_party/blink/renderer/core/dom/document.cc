@@ -6323,6 +6323,9 @@ KURL Document::CompleteURLWithOverride(const String& url,
   // Always return a null URL when passed a null string.
   // FIXME: Should we change the KURL constructor to have this behavior?
   // See also [CSS]StyleSheet::completeURL(const String&)
+  // TODO(crbug.com/1244483): Make sure that LinkWebBundle::CompleteURL
+  // implementation stays in line with this one (disregarding the encoding
+  // part).
   if (url.IsNull())
     return KURL();
   if (!Encoding().IsValid())

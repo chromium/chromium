@@ -15,7 +15,10 @@ namespace blink {
 namespace {
 
 void TestParseResourceUrl(const AtomicString& url, bool is_valid) {
-  ASSERT_EQ(LinkWebBundle::ParseResourceUrl(url).IsValid(), is_valid);
+  ASSERT_EQ(LinkWebBundle::ParseResourceUrl(
+                url, base::BindRepeating(&LinkWebBundle::CompleteURL, KURL()))
+                .IsValid(),
+            is_valid);
 }
 
 }  // namespace
