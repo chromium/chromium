@@ -33,6 +33,9 @@ DictationE2ETest = class extends E2ETestBase {
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
+    this.lastSetTimeoutCallback = null;
+    this.lastSetDelay = -1;
+
     // Re-initialize AccessibilityCommon with mock APIs.
     const reinit = module => {
       accessibilityCommon = new module.AccessibilityCommon();
@@ -167,6 +170,13 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
     this.mockAccessibilityPrivate.callOnToggleDictation(true);
     this.mockInputIme.callOnFocus(contextID);
     mockSpeechRecognition.callOnStart();
+  }
+
+  mockSetTimeoutMethod() {
+    setTimeout = (callback, delay) => {
+      this.lastSetTimeoutCallback = callback;
+      this.lastSetDelay = delay;
+    };
   }
 
   /**
@@ -421,5 +431,70 @@ SYNC_TEST_F(
       assertFalse(!!this.mockInputIme.getLastCommittedParameters());
     });
 
-// TODO(crbug.com/1216111): Add tests for speech timeouts:
-// recognition ends with no speech, partial speech, or finalized speech.
+SYNC_TEST_F('DictationE2ETest', 'TimesOutWithNoSpeech', async function() {
+  this.mockSetTimeoutMethod();
+  await this.waitForDictationModule();
+  this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  assertTrue(!!this.lastSetTimeoutCallback);
+  assertEquals(this.lastSetDelay, Dictation.SpeechTimeouts.NO_SPEECH_MS);
+
+  // Triggering the timeout should cause a request to toggle Dictation, but
+  // nothing should be committed after AccessibilityPrivate toggle is received.
+  this.lastSetTimeoutCallback();
+  this.lastSetTimeoutCallback = null;
+  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
+  this.mockAccessibilityPrivate.callOnToggleDictation(false);
+
+  // Nothing was committed.
+  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+});
+
+SYNC_TEST_F(
+    'DictationE2ETest', 'TimesOutAfterInterimResultsAndCommits',
+    async function() {
+      this.mockSetTimeoutMethod();
+      await this.toggleDictationAndStartListening(6);
+      // Send some interim result.
+      mockSpeechRecognition.callOnResult('sheep sleep', false);
+      this.assertImeCompositionParameters('sheep sleep', 6);
+      this.mockInputIme.clearLastParameters();
+
+      // The timeout should be set based on the interim result.
+      assertTrue(!!this.lastSetTimeoutCallback);
+      assertEquals(
+          this.lastSetDelay, Dictation.SpeechTimeouts.NO_NEW_SPEECH_MS);
+
+      // Triggering the timeout should cause a request to toggle Dictation, and
+      // after AccessibilityPrivate calls toggleDictation, to commit the interim
+      // text.
+      this.lastSetTimeoutCallback();
+      this.lastSetTimeoutCallback = null;
+      assertFalse(this.mockAccessibilityPrivate.getDictationActive());
+      this.mockAccessibilityPrivate.callOnToggleDictation(false);
+      this.assertImeCommitParameters('sheep sleep', 6);
+      assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+    });
+
+SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
+  this.mockSetTimeoutMethod();
+  await this.toggleDictationAndStartListening(7);
+  // Send some final result.
+  mockSpeechRecognition.callOnResult('bats bounce', true);
+  this.assertImeCommitParameters('bats bounce', 7);
+  this.mockInputIme.clearLastParameters();
+
+  // The timeout should be set based on the final result.
+  assertTrue(!!this.lastSetTimeoutCallback);
+  assertEquals(this.lastSetDelay, Dictation.SpeechTimeouts.NO_SPEECH_MS);
+
+  // Triggering the timeout should stop listening.
+  this.lastSetTimeoutCallback();
+  this.lastSetTimeoutCallback = null;
+  assertFalse(this.mockAccessibilityPrivate.getDictationActive());
+  this.mockAccessibilityPrivate.callOnToggleDictation(false);
+
+  // Nothing new was committed.
+  assertFalse(!!this.mockInputIme.getLastCommittedParameters());
+  assertFalse(!!this.mockInputIme.getLastCompositionParameters());
+});
