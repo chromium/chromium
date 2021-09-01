@@ -224,11 +224,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
 - (void)testInvalidURL {
-  if (@available(iOS 13, *)) {
-  } else {
-    // TODO(crbug.com/1217121): This test is failing on iOS 12.4.
-    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 12.4 as it is failing.");
-  }
 
   NSString* URL = @"app-settings://test-test-test/";
 
@@ -256,11 +251,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
 - (void)testOmniboxWidthRotation {
-  if (@available(iOS 13, *)) {
-  } else {
-    // TODO(crbug.com/1217121): This test is failing on iOS 12.4.
-    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 12.4 as it is failing.");
-  }
 
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
@@ -302,11 +292,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that the fake omnibox width is correctly updated after a rotation done
 // while the settings screen is shown.
 - (void)testOmniboxWidthRotationBehindSettings {
-  if (@available(iOS 13, *)) {
-  } else {
-    // TODO(crbug.com/1217121): This test is failing on iOS 12.4.
-    EARL_GREY_TEST_DISABLED(@"Disabled on iOS 12.4 as it is failing.");
-  }
 
   // TODO(crbug.com/652465): Enable the test for iPad when rotation bug is
   // fixed.
@@ -734,8 +719,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
-// TODO(crbug.com/1217121): This test is failing on iOS 14.5 and iOS 12.4.
-- (void)DISABLED_testInitialPositionAndOrientationChange {
+- (void)testInitialPositionAndOrientationChange {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
