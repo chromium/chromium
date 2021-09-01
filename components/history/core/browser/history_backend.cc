@@ -634,11 +634,17 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
         request_transition | ui::PAGE_TRANSITION_CHAIN_START |
         ui::PAGE_TRANSITION_CHAIN_END);
 
+    VisitID opener_visit = 0;
+    if (request.opener) {
+      opener_visit = tracker_.GetLastVisit(request.opener->context_id,
+                                           request.opener->nav_entry_id,
+                                           request.opener->url);
+    }
+
     // No redirect case (one element means just the page itself).
-    last_ids =
-        AddPageVisit(request.url, request.time, last_ids.second, t,
-                     request.hidden, request.visit_source, IsTypedIncrement(t),
-                     request.floc_allowed, request.title);
+    last_ids = AddPageVisit(request.url, request.time, last_ids.second, t,
+                            request.hidden, request.visit_source,
+                            IsTypedIncrement(t), opener_visit, request.title);
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
     // result in changing most visited, so we don't update segments (most
@@ -948,7 +954,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     bool hidden,
     VisitSource visit_source,
     bool should_increment_typed_count,
-    bool floc_allowed,
+    VisitID opener_visit,
     absl::optional<std::u16string> title) {
   // See if this URL is already in the DB.
   URLRow url_info(url);
@@ -988,7 +994,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
 
   // Add the visit with the time to the database.
   VisitRow visit_info(url_id, time, referring_visit, transition, 0,
-                      should_increment_typed_count, floc_allowed);
+                      should_increment_typed_count, opener_visit);
   VisitID visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
@@ -1042,12 +1048,12 @@ void HistoryBackend::AddPagesWithDetails(const URLRows& urls,
     if (visit_source != SOURCE_SYNCED) {
       // Make up a visit to correspond to the last visit to the page.
       VisitRow visit_info(
-          url_id, i->last_visit(), /*referring_visit=*/0,
+          url_id, i->last_visit(), /*arg_referring_visit=*/0,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                     ui::PAGE_TRANSITION_CHAIN_START |
                                     ui::PAGE_TRANSITION_CHAIN_END),
-          /*segment_id=*/0, /*incremented_omnibox_typed_score=*/false,
-          /*floc_allowed=*/false);
+          /*arg_segment_id=*/0, /*arg_incremented_omnibox_typed_score=*/false,
+          /*arg_opener_visit=*/0);
       if (!db_->AddVisit(&visit_info, visit_source)) {
         NOTREACHED() << "Adding visit failed.";
         return;
@@ -1208,7 +1214,7 @@ bool HistoryBackend::AddVisits(const GURL& url,
       if (!AddPageVisit(url, visit.first, 0, visit.second,
                         !ui::PageTransitionIsMainFrame(visit.second),
                         visit_source, IsTypedIncrement(visit.second),
-                        /*floc_allowed=*/false)
+                        /*opener_visit=*/0)
                .first) {
         return false;
       }

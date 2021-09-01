@@ -318,6 +318,7 @@ std::string GetDebugJSONForVisits(
                           static_cast<int>(visit.visit_row.transition));
     debug_visit.SetIntKey("referringVisitId",
                           visit.referring_visit_of_redirect_chain_start);
+    debug_visit.SetIntKey("openerVisitId", visit.visit_row.opener_visit);
     debug_visits_list.Append(std::move(debug_visit));
   }
 

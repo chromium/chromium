@@ -104,6 +104,11 @@ VisitDatabase::~VisitDatabase() = default;
 
 bool VisitDatabase::InitVisitTable() {
   if (!GetDB().DoesTableExist("visits")) {
+    // Note that it is possible that expiration code could leave both
+    // `from_visit` and `opener_visit` to refer to IDs that don't exist in the
+    // database. As such, this code should not use AUTOINCREMENT. If it did, we
+    // will need to ensure expiring resets from_visit and opener_visit fields
+    // for each row.
     if (!GetDB().Execute(
             "CREATE TABLE visits("
             "id INTEGER PRIMARY KEY,"
@@ -116,11 +121,7 @@ bool VisitDatabase::InitVisitTable() {
             // longer used and should NOT be read or written from any longer.
             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
-            // "publicly_routable" is no longer used and should NOT be read or
-            // written from any longer.
-            // TODO(yaoxia): during the next migration of visits, we should drop
-            // the "publicly_routable" column.
-            "publicly_routable BOOLEAN DEFAULT FALSE NOT NULL)"))
+            "opener_visit INTEGER)"))
       return false;
   }
 
@@ -173,6 +174,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->visit_duration =
       base::TimeDelta::FromInternalValue(statement.ColumnInt64(6));
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
+  visit->opener_visit = statement.ColumnInt64(8);
 }
 
 // static
@@ -232,8 +234,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       SQL_FROM_HERE,
       "INSERT INTO visits "
       "(url, visit_time, from_visit, transition, segment_id, "
-      "visit_duration, incremented_omnibox_typed_score) "
-      "VALUES (?,?,?,?,?,?,?)"));
+      "visit_duration, incremented_omnibox_typed_score, opener_visit) "
+      "VALUES (?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit->url_id);
   statement.BindInt64(1, visit->visit_time.ToInternalValue());
   statement.BindInt64(2, visit->referring_visit);
@@ -241,6 +243,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(4, visit->segment_id);
   statement.BindInt64(5, visit->visit_duration.ToInternalValue());
   statement.BindBool(6, visit->incremented_omnibox_typed_score);
+  statement.BindInt64(7, visit->opener_visit);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -322,7 +325,7 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       SQL_FROM_HERE,
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
-      "visit_duration=?,incremented_omnibox_typed_score=? "
+      "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=? "
       "WHERE id=?"));
   statement.BindInt64(0, visit.url_id);
   statement.BindInt64(1, visit.visit_time.ToInternalValue());
@@ -331,7 +334,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(4, visit.segment_id);
   statement.BindInt64(5, visit.visit_duration.ToInternalValue());
   statement.BindBool(6, visit.incremented_omnibox_typed_score);
-  statement.BindInt64(7, visit.visit_id);
+  statement.BindInt64(7, visit.opener_visit);
+  statement.BindInt64(8, visit.visit_id);
 
   return statement.Run();
 }
@@ -929,7 +933,14 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
         "incremented_omnibox_typed_score FROM visits"));
     while (read.is_valid() && read.Step()) {
       VisitRow row;
-      FillVisitRow(read, &row);
+      row.visit_id = read.ColumnInt64(0);
+      row.url_id = read.ColumnInt64(1);
+      row.visit_time = base::Time::FromInternalValue(read.ColumnInt64(2));
+      row.referring_visit = read.ColumnInt64(3);
+      row.transition = ui::PageTransitionFromInt(read.ColumnInt(4));
+      row.segment_id = read.ColumnInt64(5);
+      row.visit_duration =
+          base::TimeDelta::FromInternalValue(read.ColumnInt64(6));
       // Check if the visit row is in an invalid state and if it is then
       // leave the new field as the default value.
       if (row.visit_id == row.referring_visit)
@@ -991,6 +1002,40 @@ bool VisitDatabase::CanMigrateFlocAllowed() {
   }
 
   return true;
+}
+
+bool VisitDatabase::
+    MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("visits", "opener_visit"))
+    return true;
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE visits_tmp("
+             "id INTEGER PRIMARY KEY,"
+             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
+             "visit_time INTEGER NOT NULL,"
+             "from_visit INTEGER,"
+             "transition INTEGER DEFAULT 0 NOT NULL,"
+             "segment_id INTEGER,"
+             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
+             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT "
+             "NULL)") &&
+         GetDB().Execute(
+             "INSERT INTO visits_tmp SELECT "
+             "id, url, visit_time, from_visit, transition, segment_id, "
+             "visit_duration, incremented_omnibox_typed_score FROM visits") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN opener_visit INTEGER") &&
+         GetDB().Execute("DROP TABLE visits") &&
+         GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
+         transaction.Commit();
 }
 
 bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(

@@ -42,6 +42,10 @@ class HistoryTabHelper : public content::WebContentsObserver,
  private:
   explicit HistoryTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HistoryTabHelper>;
+  FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
+                           CreateAddPageArgsHasOpenerWebContentsFirstPage);
+  FRIEND_TEST_ALL_PREFIXES(HistoryTabHelperTest,
+                           CreateAddPageArgsHasOpenerWebContentseNotFirstPage);
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
@@ -52,6 +56,14 @@ class HistoryTabHelper : public content::WebContentsObserver,
                      const GURL& validated_url) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
   void WebContentsDestroyed() override;
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override;
 
   // Helper function to return the history service.  May return null.
   history::HistoryService* GetHistoryService();
@@ -73,6 +85,10 @@ class HistoryTabHelper : public content::WebContentsObserver,
 
   // Set to true in unit tests to avoid need for a Browser instance.
   bool force_eligibile_tab_for_testing_ = false;
+
+  // The `WebContents` that opened the `WebContents` associated with `this` via
+  // "Open in New Tab", "Open in New Window", window.open(), etc.
+  base::WeakPtr<content::WebContents> opener_web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

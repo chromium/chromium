@@ -268,6 +268,11 @@ class VisitDatabase {
   // "publicly_routable" in the schema) column to another table.
   bool CanMigrateFlocAllowed();
 
+  // Called by the derived classes to migrate the older visits table which
+  // which doesn't have `opener_visit` column and also drops `publicly_routable`
+  // column which is no longer used.
+  bool MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn();
+
   // A subprocedure in the process of migration to version 40.
   bool GetAllVisitedURLRowidsForMigrationToVersion40(
       std::vector<URLID>* visited_url_rowids_sorted);
@@ -279,7 +284,7 @@ class VisitDatabase {
 // Columns, in order, of the visit table.
 #define HISTORY_VISIT_ROW_FIELDS                                        \
   " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
-  "incremented_omnibox_typed_score,publicly_routable "
+  "incremented_omnibox_typed_score,opener_visit "
 
 }  // namespace history
 
