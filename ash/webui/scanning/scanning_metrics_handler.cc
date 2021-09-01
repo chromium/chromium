@@ -57,7 +57,7 @@ void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   base::UmaHistogramCounts100("Scanning.NumScanSettingChanges",
                               args->GetList()[0].GetInt());
 }
@@ -66,7 +66,7 @@ void ScanningMetricsHandler::HandleRecordScanCompleteAction(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   base::UmaHistogramEnumeration(
       "Scanning.ScanCompleteAction",
       static_cast<scanning::ScanCompleteAction>(args->GetList()[0].GetInt()));
@@ -77,7 +77,7 @@ void ScanningMetricsHandler::HandleRecordScanJobSettings(
   AllowJavascript();
 
   const base::DictionaryValue* scan_job_settings = nullptr;
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   CHECK(args->GetDictionary(0, &scan_job_settings));
 
   base::UmaHistogramEnumeration(
@@ -109,7 +109,7 @@ void ScanningMetricsHandler::HandleRecordNumCompletedScans(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   base::UmaHistogramCounts100("Scanning.NumCompletedScansInSession",
                               args->GetList()[0].GetInt());
 }

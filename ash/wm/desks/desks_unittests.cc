@@ -1968,7 +1968,7 @@ void VerifyDesksRestoreData(PrefService* user_prefs,
                             const std::vector<std::string>& desks_names) {
   const base::ListValue* desks_restore_names =
       user_prefs->GetList(prefs::kDesksNamesList);
-  ASSERT_EQ(desks_names.size(), desks_restore_names->GetSize());
+  ASSERT_EQ(desks_names.size(), desks_restore_names->GetList().size());
 
   size_t index = 0;
   for (const auto& value : desks_restore_names->GetList())

@@ -133,7 +133,7 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
   if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
     return;
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   DCHECK(args->GetList()[0].is_list());
   const base::Value::ConstListView& value_list = args->GetList()[0].GetList();
   DCHECK(!value_list.empty());
@@ -147,7 +147,7 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue* args) {
 }
 
 void ScanningHandler::HandleRequestScanToLocation(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   scan_location_callback_id_ = args->GetList()[0].GetString();
 
   content::WebContents* web_contents = web_ui()->GetWebContents();
@@ -169,7 +169,7 @@ void ScanningHandler::HandleShowFileInLocation(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const std::string callback = args->GetList()[0].GetString();
   const base::FilePath file_location(args->GetList()[1].GetString());
   const bool files_app_opened =
@@ -182,7 +182,7 @@ void ScanningHandler::HandleGetPluralString(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   const std::string callback = args->GetList()[0].GetString();
   const std::string name = args->GetList()[1].GetString();
   const int count = args->GetList()[2].GetInt();
@@ -197,7 +197,7 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const std::string& callback = args->GetList()[0].GetString();
 
   const base::FilePath my_files_path = scanning_app_delegate_->GetMyFilesPath();
@@ -210,7 +210,7 @@ void ScanningHandler::HandleSaveScanSettings(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const std::string& scan_settings = args->GetList()[0].GetString();
   scanning_app_delegate_->SaveScanSettingsToPrefs(scan_settings);
 }
@@ -220,7 +220,7 @@ void ScanningHandler::HandleGetScanSettings(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const std::string& callback = args->GetList()[0].GetString();
 
   ResolveJavascriptCallback(
@@ -232,7 +232,7 @@ void ScanningHandler::HandleEnsureValidFilePath(const base::ListValue* args) {
   if (!IsJavascriptAllowed())
     return;
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const std::string callback = args->GetList()[0].GetString();
   const base::FilePath file_path(args->GetList()[1].GetString());
 
