@@ -12,9 +12,6 @@ namespace web_app {
 // manifest served by the PWA.
 // Please maintain the alphabetical order when adding new app IDs.
 
-// TODO(crbug.com/1198418): Update when app URL is finalized.
-const char kA4AppId[] = "apignacaigpffemhdbhmnajajaccbckh";
-
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "chrome://camera-app/views/main.html"))
 const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
@@ -22,6 +19,10 @@ const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://canvas.apps.chrome/"))
 const char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "https://cursive.apps.chrome/"))
+const char kCursiveAppId[] = "apignacaigpffemhdbhmnajajaccbckh";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
 // GURL("chrome://diagnostics/"))

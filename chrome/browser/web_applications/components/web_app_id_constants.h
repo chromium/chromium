@@ -9,9 +9,9 @@
 
 namespace web_app {
 
-extern const char kA4AppId[];
 extern const char kCameraAppId[];
 extern const char kCanvasAppId[];
+extern const char kCursiveAppId[];
 extern const char kDiagnosticsAppId[];
 extern const char kGmailAppId[];
 extern const char kGoogleCalendarAppId[];

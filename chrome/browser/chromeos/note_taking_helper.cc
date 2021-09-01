@@ -64,7 +64,7 @@ NoteTakingHelper* g_helper = nullptr;
 
 // Allowed note-taking app IDs.
 const char* const kDefaultAllowedAppIds[] = {
-    web_app::kA4AppId,
+    web_app::kCursiveAppId,
     // TODO(jdufault): Remove dev version? See crbug.com/640828.
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
@@ -201,7 +201,7 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(
   // is parsed from the manifest (|kWebAppNoteTaking| is always enabled).
   if (app_id == NoteTakingHelper::kNoteTakingWebAppIdTest ||
       app_id == NoteTakingHelper::kNoteTakingWebAppIdDev ||
-      app_id == web_app::kA4AppId) {
+      app_id == web_app::kCursiveAppId) {
     launch_params.override_url = web_app->start_url().Resolve("/new");
   }
   if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking) &&
