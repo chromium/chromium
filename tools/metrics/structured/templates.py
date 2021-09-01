@@ -14,6 +14,7 @@ HEADER_FILE_TEMPLATE = """\
 #include <cstdint>
 #include <string>
 
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_base.h"
 
 namespace metrics {{

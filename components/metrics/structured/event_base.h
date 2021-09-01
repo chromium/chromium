@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "components/metrics/structured/enums.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
@@ -20,23 +22,6 @@ class EventBase {
  public:
   EventBase(const EventBase& other);
   virtual ~EventBase();
-
-  // Specifies the type of identifier attached to an event.
-  enum class IdType {
-    // Events are attached to a per-event (or per-project) id.
-    kProjectId = 0,
-    // Events are attached to the UMA client_id.
-    kUmaId = 1,
-    // Events are attached to no id.
-    kUnidentified = 2,
-  };
-
-  // Specifies whether an identifier is used different for each profile, or is
-  // shared for all profiles on a device.
-  enum class IdScope {
-    kPerProfile = 0,
-    kPerDevice = 1,
-  };
 
   // Specifies which value type a Metric object holds.
   enum class MetricType {

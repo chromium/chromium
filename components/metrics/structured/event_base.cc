@@ -4,6 +4,7 @@
 
 #include "components/metrics/structured/event_base.h"
 
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/recorder.h"
 
 namespace metrics {

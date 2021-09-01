@@ -45,7 +45,10 @@ static_library("events") {
     "event.cc",
     "event.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":common",
+    "//base",
+  ]
 }
 
 proto_library("storage") {
@@ -67,6 +70,7 @@ proto_library("storage") {
 # Sources used by all static libraries in this BUILD file.
 source_set("common") {
   sources = [
+    "enums.h",
     "event_base.cc",
     "event_base.h",
     "histogram_util.cc",

@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -204,7 +205,7 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // kUmaId events should go in the UMA upload, and all others in the non-UMA
   // upload.
   StructuredEventProto* event_proto;
-  if (event.id_type() == EventBase::IdType::kUmaId ||
+  if (event.id_type() == IdType::kUmaId ||
       !IsIndependentMetricsUploadEnabled()) {
     event_proto = events_.get()->get()->add_uma_events();
   } else {
@@ -214,10 +215,10 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   // Choose which KeyData to use for this event.
   KeyData* key_data;
   switch (event.id_scope()) {
-    case EventBase::IdScope::kPerProfile:
+    case IdScope::kPerProfile:
       key_data = profile_key_data_.get();
       break;
-    case EventBase::IdScope::kPerDevice:
+    case IdScope::kPerDevice:
       key_data = device_key_data_.get();
       break;
     default:
@@ -227,14 +228,14 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
 
   // Set the ID for this event, if any.
   switch (event.id_type()) {
-    case EventBase::IdType::kProjectId:
+    case IdType::kProjectId:
       event_proto->set_profile_event_id(
           key_data->Id(event.project_name_hash()));
       break;
-    case EventBase::IdType::kUmaId:
+    case IdType::kUmaId:
       // TODO(crbug.com/1148168): Unimplemented.
       break;
-    case EventBase::IdType::kUnidentified:
+    case IdType::kUnidentified:
       // Do nothing.
       break;
     default:
