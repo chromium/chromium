@@ -32,7 +32,8 @@ enum Codec {
   CODEC_VIDEO_H264,
   CODEC_VIDEO_REMOTE,
   CODEC_VIDEO_VP9,
-  CODEC_LAST = CODEC_VIDEO_VP9
+  CODEC_VIDEO_AV1,
+  CODEC_LAST = CODEC_VIDEO_AV1
 };
 
 // Describes the content being transported over RTP streams.
@@ -63,7 +64,9 @@ enum class RtpPayloadType {
 
   VIDEO_VP9 = 103,
 
-  LAST = VIDEO_VP9
+  VIDEO_AV1 = 104,
+
+  LAST = VIDEO_AV1
 };
 
 // TODO(miu): Eliminate these after moving "default config" into the top-level
