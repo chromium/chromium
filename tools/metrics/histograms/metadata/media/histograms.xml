@@ -1432,7 +1432,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.ConfigChangeDecoderSelectionTime" units="ms"
-    expires_after="2021-09-25">
+    expires_after="2022-06-25">
   <owner>cassew@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -2472,7 +2472,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
-    expires_after="2021-09-25">
+    expires_after="2022-06-25">
   <owner>cassew@google.com</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
