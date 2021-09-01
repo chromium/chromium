@@ -10,6 +10,7 @@
 namespace os.diagnostics {
   enum RoutineType {
     battery_capacity,
+    battery_charge,
     battery_discharge,
     battery_health
   };
@@ -31,6 +32,12 @@ namespace os.diagnostics {
 
   dictionary GetAvailableRoutinesResponse {
     RoutineType[] routines;
+  };
+
+  dictionary RunBatteryChargeRoutineRequest {
+    long length_seconds;
+
+    long minimum_charge_percent_required;
   };
 
   dictionary RunBatteryDischargeRoutineRequest {
@@ -55,6 +62,10 @@ namespace os.diagnostics {
 
     // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+
+    // Starts battery charge routine.
+    [supportsPromises] static void runBatteryChargeRoutine(RunBatteryChargeRoutineRequest request,
+                                                           RunRoutineCallback callback);
 
     // Starts battery discharge routine.
     [supportsPromises] static void runBatteryDischargeRoutine(RunBatteryDischargeRoutineRequest request,

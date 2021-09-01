@@ -87,6 +87,25 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
   ResponseAction Run() override;
 };
 
+class OsDiagnosticsRunBatteryChargeRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryChargeRoutine",
+                             OS_DIAGNOSTICS_RUNBATTERYCHARGEROUTINE)
+
+  OsDiagnosticsRunBatteryChargeRoutineFunction();
+  OsDiagnosticsRunBatteryChargeRoutineFunction(
+      const OsDiagnosticsRunBatteryChargeRoutineFunction&) = delete;
+  OsDiagnosticsRunBatteryChargeRoutineFunction& operator=(
+      const OsDiagnosticsRunBatteryChargeRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunBatteryChargeRoutineFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class OsDiagnosticsRunBatteryDischargeRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

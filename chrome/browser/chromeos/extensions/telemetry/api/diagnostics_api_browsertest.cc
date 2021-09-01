@@ -17,6 +17,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
   cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
       {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth});
 
@@ -29,6 +30,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
           {
             routines: [
               "battery_capacity",
+              "battery_charge",
               "battery_discharge",
               "battery_health"
             ]
@@ -53,6 +55,27 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
   EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBatteryChargeRoutineSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBatteryChargeRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBatteryChargeRoutine(
+            {
+              length_seconds: 1000,
+              minimum_charge_percent_required: 1
+            }
+          );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+            cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge);
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
