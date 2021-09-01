@@ -216,7 +216,8 @@ class AutofillTest : public InProcessBrowserTest {
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
-
+    // Shortcut explicit save prompts and automatically accept.
+    personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
     WindowedPersonalDataManagerObserver observer(browser());
 
     std::string js = GetJSToFillForm(data) + submit_js;
@@ -246,12 +247,12 @@ class AutofillTest : public InProcessBrowserTest {
     std::vector<std::string> lines = base::SplitString(
         data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     int parsed_profiles = 0;
-    for (size_t i = 0; i < lines.size(); ++i) {
-      if (base::StartsWith(lines[i], "#", base::CompareCase::SENSITIVE))
+    for (const auto& line : lines) {
+      if (base::StartsWith(line, "#", base::CompareCase::SENSITIVE))
         continue;
 
       std::vector<std::string> fields = base::SplitString(
-          lines[i], "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+          line, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       if (fields.empty())
         continue;  // Blank line.
 
@@ -425,8 +426,8 @@ IN_PROC_BROWSER_TEST_F(AutofillTest, ProfileSavedWithValidCountryPhone) {
   data4["PHONE_HOME_WHOLE_NUMBER"] = "+21 08450 777 777";
   profiles.push_back(data4);
 
-  for (size_t i = 0; i < profiles.size(); ++i)
-    FillFormAndSubmit("autofill_test_form.html", profiles[i]);
+  for (const auto& profile : profiles)
+    FillFormAndSubmit("autofill_test_form.html", profile);
 
   ASSERT_EQ(2u, personal_data_manager()->GetProfiles().size());
   int us_address_index = personal_data_manager()->GetProfiles()[0]->GetRawInfo(

@@ -474,6 +474,15 @@ class PersonalDataManager : public KeyedService,
   // updates. Does nothing if the strike database is not available.
   void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
 
+  // Used to automatically import addresses without a prompt. Should only be
+  // set to true in tests.
+  void set_auto_accept_address_imports_for_testing(bool auto_accept) {
+    auto_accept_address_imports_for_testing_ = auto_accept;
+  }
+  bool auto_accept_address_imports_for_testing() {
+    return auto_accept_address_imports_for_testing_;
+  }
+
  protected:
   // Only PersonalDataManagerFactory and certain tests can create instances of
   // PersonalDataManager.
@@ -817,6 +826,10 @@ class PersonalDataManager : public KeyedService,
   // Stores the country code that was provided from the variations service
   // during construction.
   std::string variations_country_code_;
+
+  // If true, new addresses imports are automatically accepted without a prompt.
+  // Only to be used for testing.
+  bool auto_accept_address_imports_for_testing_ = false;
 
   // The default country code for new addresses.
   mutable std::string default_country_code_;

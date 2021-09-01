@@ -28,6 +28,7 @@ const base::Feature kAutofillAddressEnhancementVotes{
 // storing any detected address profile.
 const base::Feature kAutofillAddressProfileSavePrompt{
     "AutofillAddressProfileSavePrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This parameter controls if save profile prompts are automatically blocked for
 // a given domain after N (default is 3) subsequent declines.
 const base::FeatureParam<bool> kAutofillAutoBlockSaveAddressProfilePrompt{

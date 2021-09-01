@@ -71,6 +71,13 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     case AutofillProfileImportType::kNewProfile:
     case AutofillProfileImportType::kConfirmableMerge:
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+      // Emulates manually accepting new profiles and profile updates for
+      // testing purposes. This should only be applied in tests.
+      if (personal_data_manager_->auto_accept_address_imports_for_testing()) {
+        import_process->AcceptWithoutEdits();
+        FinalizeProfileImport(std::move(import_process));
+        return;
+      }
       OfferSavePrompt(std::move(import_process));
       return;
 
