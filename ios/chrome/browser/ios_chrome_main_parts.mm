@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 
+#import <Foundation/Foundation.h>
+
 #include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -58,7 +60,6 @@
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/network_change_notifier.h"

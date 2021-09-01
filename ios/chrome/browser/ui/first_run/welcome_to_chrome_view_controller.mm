@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/common/string_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 

@@ -9,7 +9,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/version_info/version_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

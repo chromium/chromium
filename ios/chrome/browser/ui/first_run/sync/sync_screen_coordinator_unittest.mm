@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
-#include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
