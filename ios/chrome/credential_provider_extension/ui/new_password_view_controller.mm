@@ -5,9 +5,6 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
 #include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/password_manager/core/browser/generation/password_generator.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -18,10 +15,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using autofill::GeneratePassword;
-using autofill::PasswordRequirementsSpec;
-using base::SysUTF16ToNSString;
 
 @interface NewPasswordViewController () <UITableViewDataSource,
                                          NewPasswordTableCellDelegate>
@@ -126,15 +119,7 @@ using base::SysUTF16ToNSString;
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   // There is no need to check which cell has been selected because all the
   // other cells are unselectable from |-tableView:willSelectRowAtIndexPath:|.
-
-  NewPasswordTableCell* passwordCell = [self passwordCell];
-
-  // TODO(crbug.com/1224986): Fetch password spec.
-  PasswordRequirementsSpec spec;
-  passwordCell.textField.text = SysUTF16ToNSString(GeneratePassword(spec));
-
-  [self updateSaveButtonState];
-
+  [self.credentialHandler userDidRequestGeneratedPassword];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -226,6 +211,12 @@ using base::SysUTF16ToNSString;
 }
 
 #pragma mark - NewPasswordUIHandler
+
+- (void)setPassword:(NSString*)password {
+  NewPasswordTableCell* passwordCell = [self passwordCell];
+  passwordCell.textField.text = password;
+  [self updateSaveButtonState];
+}
 
 // Alerts the user that saving their password failed.
 - (void)alertSavePasswordFailed {

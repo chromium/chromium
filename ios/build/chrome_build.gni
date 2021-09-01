@@ -29,6 +29,9 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
+  # The API key to query Google services in the Credential Provider Extension.
+  ios_credential_provider_extension_api_key = ""
+
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = true
 

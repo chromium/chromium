@@ -8,6 +8,9 @@
 // Protocol to allow the NewPasswordMediator to interact with the UI
 @protocol NewPasswordUIHandler
 
+// Sets the password in the respective field to whatever value is passed.
+- (void)setPassword:(NSString*)password;
+
 // Asks the UI to alert the user that the credential they are trying to create
 // already exists.
 - (void)alertUserCredentialExists;

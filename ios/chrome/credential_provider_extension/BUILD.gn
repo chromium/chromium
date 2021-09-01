@@ -4,6 +4,7 @@
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
@@ -116,12 +117,16 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "metrics_util_unittest.mm",
+    "password_spec_fetcher_unittest.mm",
     "password_util_unittest.mm",
   ]
   deps = [
     ":metrics_util",
+    ":password_spec_fetcher",
     ":password_util",
     "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser/proto",
     "//ios/chrome/common/app_group",
     "//testing/gtest",
   ]
@@ -140,6 +145,26 @@ source_set("reauthentication_handler") {
     "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/ui/reauthentication",
   ]
+}
+
+buildflag_header("password_spec_fetcher_buildflags") {
+  header = "password_spec_fetcher_buildflags.h"
+  flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
+}
+
+source_set("password_spec_fetcher") {
+  sources = [
+    "password_spec_fetcher.h",
+    "password_spec_fetcher.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":password_spec_fetcher_buildflags",
+    "//base",
+    "//components/autofill/core/browser/proto",
+    "//components/password_manager/core/browser:password_generator",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {

@@ -6,6 +6,9 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#include "base/strings/sys_string_conversions.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/password_manager/core/browser/generation/password_generator.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
@@ -14,12 +17,18 @@
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/password_spec_fetcher.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_ui_handler.h"
+#import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using autofill::GeneratePassword;
+using autofill::PasswordRequirementsSpec;
+using base::SysUTF16ToNSString;
 
 @interface NewPasswordMediator ()
 
@@ -28,6 +37,9 @@
 
 // The NSUserDefaults new credentials should be stored to.
 @property(nonatomic, strong) NSUserDefaults* userDefaults;
+
+// Fetcher for password specs.
+@property(nonatomic, strong) PasswordSpecFetcher* fetcher;
 
 @end
 
@@ -40,11 +52,26 @@
   if (self) {
     _userDefaults = userDefaults;
     _serviceIdentifier = serviceIdentifier;
+    NSString* host = HostForServiceIdentifier(serviceIdentifier);
+    _fetcher = [[PasswordSpecFetcher alloc] initWithHost:host];
+    [_fetcher fetchSpecWithCompletion:nil];
   }
   return self;
 }
 
 #pragma mark - NewCredentialHandler
+
+- (void)userDidRequestGeneratedPassword {
+  if (self.fetcher.didFetchSpec) {
+    PasswordRequirementsSpec spec = self.fetcher.spec;
+    [self.uiHandler setPassword:SysUTF16ToNSString(GeneratePassword(spec))];
+    return;
+  }
+  __weak __typeof__(self) weakSelf = self;
+  [self.fetcher fetchSpecWithCompletion:^(PasswordRequirementsSpec spec) {
+    [weakSelf.uiHandler setPassword:SysUTF16ToNSString(GeneratePassword(spec))];
+  }];
+}
 
 - (void)saveCredentialWithUsername:(NSString*)username
                           password:(NSString*)password
