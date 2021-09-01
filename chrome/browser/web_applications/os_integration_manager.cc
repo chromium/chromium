@@ -628,10 +628,7 @@ void OsIntegrationManager::UpdateFileHandlers(
 
   // Update file handlers via complete uninstallation, then potential
   // reinstallation.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&OsIntegrationManager::UnregisterFileHandlers,
-                                weak_ptr_factory_.GetWeakPtr(), app_id,
-                                std::move(callback_after_removal)));
+  UnregisterFileHandlers(app_id, std::move(callback_after_removal));
 }
 
 void OsIntegrationManager::UpdateProtocolHandlers(const AppId& app_id) {
