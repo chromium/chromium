@@ -68,6 +68,7 @@ group("closure_compile") {
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
     "//chromeos/components/personalization_app:closure_compile",
     "//chromeos/components/print_management:closure_compile",
+    "//chromeos/components/projector_app/resources:closure_compile",
     "//chromeos/components/system_apps:closure_compile",
   ]
 

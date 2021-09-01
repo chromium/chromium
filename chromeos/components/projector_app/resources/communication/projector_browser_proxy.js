@@ -62,7 +62,7 @@ export class ProjectorBrowserProxy {
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<bool>}
+   * @return {Promise<boolean>}
    */
   canStartProjectorSession() {}
 
@@ -71,7 +71,7 @@ export class ProjectorBrowserProxy {
    * recording session was successfully launched.
    * @param {string} storageDir, the directory name in which the screen cast
    *     will be saved in.
-   * @param {Promise<bool>}
+   * @return {Promise<boolean>}
    */
   startProjectorSession(storageDir) {}
 
@@ -86,7 +86,7 @@ export class ProjectorBrowserProxy {
    * Sends 'error' message to handler.
    * The Handler will log the message. If the error is not a recoverable error,
    * the handler closes the corresponding WebUI.
-   * @param {Array<string>} msg Error messages.
+   * @param {!Array<string>} msg Error messages.
    */
   onError(msg) {}
 }
@@ -117,7 +117,7 @@ export class ProjectorBrowserProxyImpl {
 
   /** @override */
   onError(msg) {
-    return chrome.send(err, [msg])
+    return chrome.send("onError", msg)
   }
 }
 

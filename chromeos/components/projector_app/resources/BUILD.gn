@@ -8,6 +8,33 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Projector is ChromeOS only")
 
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":annotator_embedder_impl",
+    ":projector_browser_proxy",
+    ":selfie_cam",
+  ]
+}
+
+js_library("annotator_embedder_impl") {
+  sources = [ "annotator/annotator_embedder_impl.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
+js_library("projector_browser_proxy") {
+  sources = [ "communication/projector_browser_proxy.js" ]
+  deps = []
+}
+
+js_library("selfie_cam") {
+  sources = [ "selfie_cam/selfie_cam.js" ]
+  deps = []
+}
+
 generate_grd("build_untrusted_grd") {
   input_files = [ "annotator/annotator.html" ]
   input_files_base_dir = rebase_path(".", "//")
