@@ -7,22 +7,39 @@
 #include <string>
 
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "base/strings/strcat.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 namespace chromeos {
+namespace {
+
+std::string GetUrlForPage(DiagnosticsDialog::DiagnosticsPage page) {
+  switch (page) {
+    case DiagnosticsDialog::DiagnosticsPage::kDefault:
+      return kChromeUIDiagnosticsAppUrl;
+    case DiagnosticsDialog::DiagnosticsPage::kOverview:
+      return base::StrCat({kChromeUIDiagnosticsAppUrl, "?overview"});
+    case DiagnosticsDialog::DiagnosticsPage::kConnectivity:
+      return base::StrCat({kChromeUIDiagnosticsAppUrl, "?connectivity"});
+    case DiagnosticsDialog::DiagnosticsPage::kInput:
+      return base::StrCat({kChromeUIDiagnosticsAppUrl, "?input"});
+  }
+}
+
+}  // namespace
 
 // Scale factor for size of the diagnostics dialog, based on display size.
 const float kDiagnosticsDialogScale = .8;
 
 // static
-void DiagnosticsDialog::ShowDialog() {
-  DiagnosticsDialog* dialog = new DiagnosticsDialog();
+void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page) {
+  DiagnosticsDialog* dialog = new DiagnosticsDialog(page);
   dialog->ShowSystemDialog();
 }
 
-DiagnosticsDialog::DiagnosticsDialog()
-    : SystemWebDialogDelegate(GURL(kChromeUIDiagnosticsAppUrl),
+DiagnosticsDialog::DiagnosticsDialog(DiagnosticsDialog::DiagnosticsPage page)
+    : SystemWebDialogDelegate(GURL(GetUrlForPage(page)),
                               /*title=*/std::u16string()) {}
 
 DiagnosticsDialog::~DiagnosticsDialog() = default;

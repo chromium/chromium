@@ -12,10 +12,23 @@ namespace chromeos {
 
 class DiagnosticsDialog : public SystemWebDialogDelegate {
  public:
-  static void ShowDialog();
+  // Denotes different sub-pages of the diagnostics app.
+  enum class DiagnosticsPage {
+    // The default page.
+    kDefault,
+    // The overview page.
+    kOverview,
+    // The connectivity page.
+    kConnectivity,
+    // The input page.
+    kInput
+  };
+
+  // |page| is the initial page shown when the app is opened.
+  static void ShowDialog(DiagnosticsPage page = DiagnosticsPage::kDefault);
 
  protected:
-  DiagnosticsDialog();
+  explicit DiagnosticsDialog(DiagnosticsPage page);
   ~DiagnosticsDialog() override;
 
   DiagnosticsDialog(const DiagnosticsDialog&) = delete;
