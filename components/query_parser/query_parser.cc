@@ -14,6 +14,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace query_parser {
@@ -83,7 +84,7 @@ class QueryNodeWord : public QueryNode {
   bool Matches(const std::u16string& word, bool exact) const override;
   bool HasMatchIn(const QueryWordVector& words,
                   Snippet::MatchPositions* match_positions) const override;
-  bool HasMatchIn(const QueryWordVector& words) const override;
+  bool HasMatchIn(const QueryWordVector& words, bool exact) const override;
   void AppendWords(std::vector<std::u16string>* words) const override;
 
  private:
@@ -125,24 +126,21 @@ bool QueryNodeWord::Matches(const std::u16string& word, bool exact) const {
 bool QueryNodeWord::HasMatchIn(const QueryWordVector& words,
                                Snippet::MatchPositions* match_positions) const {
   bool matched = false;
-  for (size_t i = 0; i < words.size(); ++i) {
-    if (Matches(words[i].word, false)) {
-      size_t match_start = words[i].position;
-      match_positions->push_back(
-          Snippet::MatchPosition(match_start,
-                                 match_start + static_cast<int>(word_.size())));
+  for (const auto& queryWord : words) {
+    if (Matches(queryWord.word, false)) {
+      size_t match_start = queryWord.position;
+      match_positions->push_back(Snippet::MatchPosition(
+          match_start, match_start + static_cast<int>(word_.size())));
       matched = true;
     }
   }
   return matched;
 }
 
-bool QueryNodeWord::HasMatchIn(const QueryWordVector& words) const {
-  for (size_t i = 0; i < words.size(); ++i) {
-    if (Matches(words[i].word, false))
-      return true;
-  }
-  return false;
+bool QueryNodeWord::HasMatchIn(const QueryWordVector& words, bool exact) const {
+  return base::ranges::any_of(words, [&](const auto& query_word) {
+    return Matches(query_word.word, exact);
+  });
 }
 
 void QueryNodeWord::AppendWords(std::vector<std::u16string>* words) const {
@@ -168,7 +166,7 @@ class QueryNodeList : public QueryNode {
   bool Matches(const std::u16string& word, bool exact) const override;
   bool HasMatchIn(const QueryWordVector& words,
                   Snippet::MatchPositions* match_positions) const override;
-  bool HasMatchIn(const QueryWordVector& words) const override;
+  bool HasMatchIn(const QueryWordVector& words, bool exact) const override;
   void AppendWords(std::vector<std::u16string>* words) const override;
 
  protected:
@@ -224,7 +222,7 @@ bool QueryNodeList::HasMatchIn(const QueryWordVector& words,
   return false;
 }
 
-bool QueryNodeList::HasMatchIn(const QueryWordVector& words) const {
+bool QueryNodeList::HasMatchIn(const QueryWordVector& words, bool exact) const {
   NOTREACHED();
   return false;
 }
@@ -254,7 +252,7 @@ class QueryNodePhrase : public QueryNodeList {
   int AppendToSQLiteQuery(std::u16string* query) const override;
   bool HasMatchIn(const QueryWordVector& words,
                   Snippet::MatchPositions* match_positions) const override;
-  bool HasMatchIn(const QueryWordVector& words) const override;
+  bool HasMatchIn(const QueryWordVector& words, bool exact) const override;
 
  private:
   bool MatchesAll(const QueryWordVector& words,
@@ -312,7 +310,8 @@ bool QueryNodePhrase::HasMatchIn(
   return false;
 }
 
-bool QueryNodePhrase::HasMatchIn(const QueryWordVector& words) const {
+bool QueryNodePhrase::HasMatchIn(const QueryWordVector& words,
+                                 bool exact) const {
   const QueryWord* first_word;
   const QueryWord* last_word;
   return MatchesAll(words, &first_word, &last_word);
@@ -398,15 +397,13 @@ bool QueryParser::DoesQueryMatch(const std::u16string& find_in_text,
 
 // static
 bool QueryParser::DoesQueryMatch(const QueryWordVector& find_in_words,
-                                 const QueryNodeVector& find_nodes) {
+                                 const QueryNodeVector& find_nodes,
+                                 bool exact) {
   if (find_nodes.empty() || find_in_words.empty())
     return false;
-
-  for (auto& find_node : find_nodes) {
-    if (!find_node->HasMatchIn(find_in_words))
-      return false;
-  }
-  return true;
+  return base::ranges::all_of(find_nodes, [&](const auto& find_node) {
+    return find_node->HasMatchIn(find_in_words, exact);
+  });
 }
 
 // static

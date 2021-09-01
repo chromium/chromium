@@ -159,7 +159,7 @@ absl::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
         node->HasMatchIn(title_words, &title_matches);
     const bool has_url_matches = node->HasMatchIn(url_words, &url_matches);
     const bool has_ancestor_matches =
-        match_ancestor_titles && node->HasMatchIn(ancestor_words);
+        match_ancestor_titles && node->HasMatchIn(ancestor_words, false);
     query_has_ancestor_matches =
         query_has_ancestor_matches || has_ancestor_matches;
     if (!has_title_matches && !has_url_matches && !has_ancestor_matches)

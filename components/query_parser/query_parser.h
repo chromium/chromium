@@ -38,9 +38,9 @@ enum class MatchingAlgorithm {
 
 using QueryWordVector = std::vector<query_parser::QueryWord>;
 
-// QueryNode is used by QueryParser to represent the elements that constitute a
-// query. While QueryNode is exposed by way of ParseQuery, it really isn't meant
-// for external usage.
+// `QueryNode` is used by `QueryParser` to represent the elements that
+// constitute a query. While `QueryNode` is exposed by way of `ParseQuery`, it
+// really isn't meant for external usage.
 class QueryNode {
  public:
   virtual ~QueryNode() {}
@@ -49,23 +49,24 @@ class QueryNode {
   // the number of words in this node.
   virtual int AppendToSQLiteQuery(std::u16string* query) const = 0;
 
-  // Return true if this is a QueryNodeWord, false if it's a QueryNodeList.
+  // Return true if this is a `QueryNodeWord`, false if it's a `QueryNodeList`.
   virtual bool IsWord() const = 0;
 
-  // Returns true if this node matches |word|. If |exact| is true, the string
-  // must exactly match. Otherwise, this uses a starts with comparison.
+  // Returns true if this node matches `word`. If `exact` is true, the string
+  // must exactly match. Otherwise, this uses a starts-with comparison.
   virtual bool Matches(const std::u16string& word, bool exact) const = 0;
 
-  // Returns true if this node matches at least one of the words in |words|. An
-  // entry is added to |match_positions| for all matching words giving the
-  // matching regions.
+  // Returns true if this node matches at least one of the words in `words`. An
+  // entry is added to `match_positions` for all matching words giving the
+  // matching regions. Uses a starts-with comparison.
   virtual bool HasMatchIn(const QueryWordVector& words,
                           Snippet::MatchPositions* match_positions) const = 0;
 
-  // Returns true if this node matches at least one of the words in |words|.
-  virtual bool HasMatchIn(const QueryWordVector& words) const = 0;
+  // Returns true if this node matches at least one of the words in `words`.
+  // If `exact` is true, at least one of the words must be an exact match.
+  virtual bool HasMatchIn(const QueryWordVector& words, bool exact) const = 0;
 
-  // Appends the words that make up this node in |words|.
+  // Appends the words that make up this node in `words`.
   virtual void AppendWords(std::vector<std::u16string>* words) const = 0;
 };
 
@@ -119,9 +120,11 @@ class QueryParser {
                              Snippet::MatchPositions* match_positions);
 
   // Returns true if all of the |find_nodes| are found in |find_in_words|.
-  // find_nodes| should have been created by calling |ParseQuery()|.
+  // |find_nodes| should have been created by calling |ParseQuery()|.
+  // If |exact| is set to true, only exact matches are considered matches.
   static bool DoesQueryMatch(const QueryWordVector& find_in_words,
-                             const QueryNodeVector& find_nodes);
+                             const QueryNodeVector& find_nodes,
+                             bool exact = false);
 
   // Extracts the words from |text|, placing each word into |words|.
   // |text| must already be lowercased by the caller, as otherwise the output

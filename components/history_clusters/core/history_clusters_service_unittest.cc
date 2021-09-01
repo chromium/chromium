@@ -564,7 +564,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
 
   // Verify that initially, the test keyword doesn't match anything, but this
   // query should have kicked off a cache population request.
-  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
   // Providing the response and running the task loop should populate the cache.
   AwaitAndVerifyTestClusteringBackendRequest();
@@ -576,18 +576,25 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"apples"}));
+                       {u"apples", u"oranges"}));
   test_clustering_backend_->FulfillCallback(clusters);
 
-  // Now the query should match the populated cache.
-  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
+  // Now the exact query should match the populated cache.
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
-  // Also verify that queries that are too short don't match clusters.
+  // Too-short queries rejected.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("ap"));
 
-  // But verify that it's okay to accept a short second query word.
-  // We need this to prevent flicker as the user types in the omnibox.
-  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("appl ap"));
+  // Non-exact matches are rejected too.
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
+
+  // Adding a second non-exact query word also should make it no longer match.
+  EXPECT_FALSE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("apples oran"));
+
+  // Multi-word queries with all exact matches should still work.
+  EXPECT_TRUE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("apples oranges"));
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }

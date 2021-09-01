@@ -538,19 +538,14 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         &cache_query_task_tracker_);
   }
 
-  // Early exit for short queries after kicking off the populate request.
-  if (query.length() <= 3)
-    return false;
-
-  // Use `ALWAYS_PREFIX_SEARCH` to avoid flickering the omnibox when typing:
-  // "iron " (visible) to "iron s" (not visible) to "iron sto" (visible).
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(
-      base::UTF8ToUTF16(query),
-      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH, &query_nodes);
+      base::UTF8ToUTF16(query), query_parser::MatchingAlgorithm::DEFAULT,
+      &query_nodes);
 
   return query_parser::QueryParser::DoesQueryMatch(all_keywords_cache_,
-                                                   query_nodes);
+                                                   query_nodes,
+                                                   /*exact=*/true);
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
