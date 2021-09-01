@@ -116,8 +116,6 @@ class ExtensionFrameHelper
                                 const std::string& script_id,
                                 const GURL& url) override;
 
-  void UpdateBrowserWindowId(int32_t window_id) override;
-
   void set_did_create_script_context() { did_create_script_context_ = true; }
   bool did_create_script_context() const { return did_create_script_context_; }
 
@@ -179,6 +177,7 @@ class ExtensionFrameHelper
   void OnExtensionDispatchOnDisconnect(int worker_thread_id,
                                        const PortId& id,
                                        const std::string& error_message);
+  void OnUpdateBrowserWindowId(int browser_window_id);
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;

@@ -143,8 +143,8 @@ void ChromeExtensionWebContentsObserver::InitializeRenderFrame(
   ExtensionWebContentsObserver::InitializeRenderFrame(render_frame_host);
   WindowController* controller = dispatcher()->GetExtensionWindowController();
   if (controller) {
-    GetLocalFrame(render_frame_host)
-        ->UpdateBrowserWindowId(controller->GetWindowId());
+    render_frame_host->Send(new ExtensionMsg_UpdateBrowserWindowId(
+        render_frame_host->GetRoutingID(), controller->GetWindowId()));
   }
 }
 

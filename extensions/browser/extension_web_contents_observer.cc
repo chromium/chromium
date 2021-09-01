@@ -35,9 +35,8 @@ namespace extensions {
 // static
 ExtensionWebContentsObserver* ExtensionWebContentsObserver::GetForWebContents(
     content::WebContents* web_contents) {
-  auto* client = ExtensionsBrowserClient::Get();
-  return client ? client->GetExtensionWebContentsObserver(web_contents)
-                : nullptr;
+  return ExtensionsBrowserClient::Get()->GetExtensionWebContentsObserver(
+      web_contents);
 }
 
 // static
