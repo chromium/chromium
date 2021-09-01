@@ -46,7 +46,7 @@ const gaHelper = (async () => {
 
 /**
  * Send the event to GA backend.
- * @param {!ga.Fields} event The event to send.
+ * @param {!UniversalAnalytics.FieldsObject} event The event to send.
  * @param {?Map<number, !Object>=} dimen Optional object contains dimension
  *     information.
  */

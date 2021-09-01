@@ -13,3 +13,8 @@ var NodeListOf;
 
 /** @typedef {Event} */
 var BeforeUnloadEvent;
+
+const UniversalAnalytics = {};
+
+/** @typedef {ga.Fields} */
+UniversalAnalytics.FieldsObject;

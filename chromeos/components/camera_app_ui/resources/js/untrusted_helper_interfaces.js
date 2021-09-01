@@ -5,7 +5,7 @@
 /**
  * @typedef {{
  *   initGA: function(string, string, function(string): void): !Promise,
- *   sendGAEvent: function(!ga.Fields): !Promise,
+ *   sendGAEvent: function(!UniversalAnalytics.FieldsObject): !Promise,
  *   setMetricsEnabled: function(string, boolean): !Promise,
  * }}
  */

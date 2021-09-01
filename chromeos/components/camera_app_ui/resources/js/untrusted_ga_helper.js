@@ -57,7 +57,7 @@ async function initGA(id, clientId, setClientIdCallback) {
 
 /**
  * Sends event to GA.
- * @param {!ga.Fields} event Event to send.
+ * @param {!UniversalAnalytics.FieldsObject} event Event to send.
  * @return {!Promise}
  */
 async function sendGAEvent(event) {
