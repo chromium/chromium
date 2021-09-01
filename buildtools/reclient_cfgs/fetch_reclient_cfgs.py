@@ -32,15 +32,13 @@ def NaclRevision():
         cwd= nacl_dir,
     ).decode('utf-8').strip()
 
-def CipdInstall(pkg_name, ref, directory):
-    print('install %s %s in %s' % (pkg_name, ref, directory))
-    if not os.path.exists(directory):
-      os.makedirs(directory, mode=0o755)
-    if not os.path.exists(os.path.join(directory, '.cipd')):
-      subprocess.check_call(['cipd', 'init', '-force'], cwd=directory)
-    subprocess.check_call(
-        ['cipd', 'install', '-force', pkg_name, ref],
-        cwd=directory)
+def CipdEnsure(pkg_name, ref, directory):
+    print('ensure %s %s in %s' % (pkg_name, ref, directory))
+    output = subprocess.check_output(
+        ['cipd', 'ensure', '-root', directory,
+         '-ensure-file', '-'],
+        input=('%s %s' % (pkg_name, ref)).encode('utf-8'))
+    print(output)
 
 def RbeProjectFromEnv():
     instance = os.environ.get('RBE_instance')
@@ -79,7 +77,7 @@ def main():
         print('failed to detect %s revision' % toolchain)
         continue
 
-      CipdInstall(posixpath.join(cipd_prefix, toolchain),
+      CipdEnsure(posixpath.join(cipd_prefix, toolchain),
                   ref='revision/' + revision,
                   directory=os.path.join(THIS_DIR, toolchain))
       if os.path.exists(os.path.join(THIS_DIR,
