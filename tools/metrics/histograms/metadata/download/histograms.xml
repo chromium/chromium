@@ -224,6 +224,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The size of successfully completed downloads.</summary>
 </histogram>
 
+<histogram name="Download.DuplicateDialogEvent.{Type}"
+    enum="DuplicateDownloadEvent" expires_after="M99">
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@chromium.org</owner>
+  <summary>
+    Records user interactions on the duplicate download dialog on Android,
+    either for a regular download or an offline page. One user interaction could
+    trigger multiple histograms to be recorded. For example, clicking the text
+    link could record both the link click histogram and the dialog dismiss
+    histogram.
+  </summary>
+  <token key="Type">
+    <variant name="Download"/>
+    <variant name="OfflinePage"/>
+  </token>
+</histogram>
+
+<histogram name="Download.DuplicateInfobarEvent.{Type}"
+    enum="DuplicateDownloadEvent" expires_after="M99">
+  <owner>qinmin@chromium.org</owner>
+  <owner>clank-downloads@chromium.org</owner>
+  <summary>
+    Records user interactions on the duplicate download infobar on Android,
+    either for a regular download or an offline page.
+  </summary>
+  <token key="Type">
+    <variant name="Download"/>
+    <variant name="OfflinePage"/>
+  </token>
+</histogram>
+
 <histogram name="Download.DuplicateInProgressDownloadIdCount"
     units="duplicates" expires_after="2019-07-30">
   <owner>qinmin@chromium.org</owner>
