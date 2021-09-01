@@ -182,6 +182,27 @@ public class SiteSettingsTest {
         }
     }
 
+    private int getTabCount() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mPermissionRule.getActivity().getTabModelSelector().getTotalTabCount());
+    }
+
+    private void doTestSiteSettingPermissions(final String testName,
+            @SiteSettingsCategory.Type final int siteSettingsType,
+            @ContentSettingsType final int contentSettingsType, final boolean enabled) {
+        final String exceptionString = "Test <" + testName + ">: Content setting <"
+                + contentSettingsType + "> should be " + (enabled ? "enabled" : "disabled")
+                + " with Site Settings <" + siteSettingsType + ">.";
+
+        setGlobalToggleForCategory(siteSettingsType, enabled);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertEquals(exceptionString,
+                    WebsitePreferenceBridge.isCategoryEnabled(
+                            getBrowserContextHandle(), contentSettingsType),
+                    enabled);
+        });
+    }
+
     /**
      * Sets Allow Location Enabled to be true and make sure it is set correctly.
      */
@@ -979,242 +1000,152 @@ public class SiteSettingsTest {
                 "getUserMediaAndStop({video: false, audio: true});", 0, true, true);
     }
 
-    /**
-     * Helper function to test allowing and blocking background sync.
-     * @param enabled true to test enabling background sync, false to test disabling the feature.
-     */
-    private void doTestBackgroundSyncPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.BACKGROUND_SYNC, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Background Sync should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.BACKGROUND_SYNC),
-                    enabled);
-        });
-    }
-
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowBackgroundSync() {
-        doTestBackgroundSyncPermission(true);
+        doTestSiteSettingPermissions("BackgroundSync", SiteSettingsCategory.Type.BACKGROUND_SYNC,
+                ContentSettingsType.BACKGROUND_SYNC, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockBackgroundSync() {
-        doTestBackgroundSyncPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking the USB chooser.
-     * @param enabled true to test enabling the USB chooser, false to test disabling the feature.
-     */
-    private void doTestUsbGuardPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.USB, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("USB should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.USB_GUARD),
-                    enabled);
-        });
+        doTestSiteSettingPermissions("BackgroundSync", SiteSettingsCategory.Type.BACKGROUND_SYNC,
+                ContentSettingsType.BACKGROUND_SYNC, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowUsb() {
-        doTestUsbGuardPermission(true);
+        doTestSiteSettingPermissions(
+                "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockUsb() {
-        doTestUsbGuardPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking automatic downloads.
-     * @param enabled true to test enabling automatic downloads, false to test disabling the
-     * feature.
-     */
-    private void doTestAutomaticDownloadsPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    "Automatic Downloads should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.AUTOMATIC_DOWNLOADS),
-                    enabled);
-        });
+        doTestSiteSettingPermissions(
+                "USB", SiteSettingsCategory.Type.USB, ContentSettingsType.USB_GUARD, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowAutomaticDownloads() {
-        doTestAutomaticDownloadsPermission(true);
+        doTestSiteSettingPermissions("AutomaticDownloads",
+                SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS,
+                ContentSettingsType.AUTOMATIC_DOWNLOADS, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockAutomaticDownloads() {
-        doTestAutomaticDownloadsPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking the Bluetooth scanning.
-     * @param enabled true to test enabling the Bluetooth scanning, false to test disabling the
-     *         feature.
-     */
-    private void doTestBluetoothScanningPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.BLUETOOTH_SCANNING, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    "Bluetooth scanning should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.BLUETOOTH_SCANNING),
-                    enabled);
-        });
+        doTestSiteSettingPermissions("AutomaticDownloads",
+                SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS,
+                ContentSettingsType.AUTOMATIC_DOWNLOADS, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowBluetoothScanning() {
-        doTestBluetoothScanningPermission(true);
+        doTestSiteSettingPermissions("BluetoothScanning",
+                SiteSettingsCategory.Type.BLUETOOTH_SCANNING,
+                ContentSettingsType.BLUETOOTH_SCANNING, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockBluetoothScanning() {
-        doTestBluetoothScanningPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking the Bluetooth chooser.
-     * @param enabled true to test enabling the Bluetooth chooser, false to test disabling the
-     *         feature.
-     */
-    private void doTestBluetoothGuardPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.BLUETOOTH, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    "Bluetooth scanning should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.BLUETOOTH_GUARD),
-                    enabled);
-        });
+        doTestSiteSettingPermissions("BluetoothScanning",
+                SiteSettingsCategory.Type.BLUETOOTH_SCANNING,
+                ContentSettingsType.BLUETOOTH_SCANNING, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowBluetoothGuard() {
-        doTestBluetoothScanningPermission(true);
+        doTestSiteSettingPermissions("BluetoothGuard", SiteSettingsCategory.Type.BLUETOOTH,
+                ContentSettingsType.BLUETOOTH_GUARD, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockBluetoothGuard() {
-        doTestBluetoothScanningPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking NFC feature.
-     * @param enabled true to test enabling NFC feature, false to test disabling the
-     *         feature.
-     */
-    private void doTestNfcPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.NFC, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("NFC should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.NFC),
-                    enabled);
-        });
+        doTestSiteSettingPermissions("BluetoothGuard", SiteSettingsCategory.Type.BLUETOOTH,
+                ContentSettingsType.BLUETOOTH_GUARD, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowNfc() {
-        doTestNfcPermission(true);
+        doTestSiteSettingPermissions(
+                "NFC", SiteSettingsCategory.Type.NFC, ContentSettingsType.NFC, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockNfc() {
-        doTestNfcPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking AUGMENTED_REALITY feature.
-     * @param enabled true to test enabling AUGMENTED_REALITY feature, false to test disabling the
-     *         feature.
-     */
-    private void doTestArPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.AUGMENTED_REALITY, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("AR should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.AR),
-                    enabled);
-        });
+        doTestSiteSettingPermissions(
+                "NFC", SiteSettingsCategory.Type.NFC, ContentSettingsType.NFC, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowAr() {
-        doTestArPermission(true);
+        doTestSiteSettingPermissions(
+                "AR", SiteSettingsCategory.Type.AUGMENTED_REALITY, ContentSettingsType.AR, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockAr() {
-        doTestArPermission(false);
-    }
-
-    /**
-     * Helper function to test allowing and blocking VIRTUAL_REALITY feature.
-     * @param enabled true to test enabling VIRTUAL_REALITY feature, false to test disabling the
-     *         feature.
-     */
-    private void doTestVrPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.VIRTUAL_REALITY, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("VR should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.VR),
-                    enabled);
-        });
+        doTestSiteSettingPermissions(
+                "AR", SiteSettingsCategory.Type.AUGMENTED_REALITY, ContentSettingsType.AR, false);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testAllowVr() {
-        doTestVrPermission(true);
+        doTestSiteSettingPermissions(
+                "VR", SiteSettingsCategory.Type.VIRTUAL_REALITY, ContentSettingsType.VR, true);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testBlockVr() {
-        doTestVrPermission(false);
+        doTestSiteSettingPermissions(
+                "VR", SiteSettingsCategory.Type.VIRTUAL_REALITY, ContentSettingsType.VR, false);
     }
 
-    private int getTabCount() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mPermissionRule.getActivity().getTabModelSelector().getTotalTabCount());
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testAllowIdleDetection() {
+        doTestSiteSettingPermissions("IdleDetection", SiteSettingsCategory.Type.IDLE_DETECTION,
+                ContentSettingsType.IDLE_DETECTION, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockIdleDetection() {
+        doTestSiteSettingPermissions("IdleDetection", SiteSettingsCategory.Type.IDLE_DETECTION,
+                ContentSettingsType.IDLE_DETECTION, false);
     }
 
     @Test
@@ -1380,34 +1311,5 @@ public class SiteSettingsTest {
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/android/eme_permissions.html", "requestEME()", 0, true, true);
-    }
-
-    /**
-     * Helper function to test allowing and blocking IDLE_DETECTION feature.
-     * @param enabled true to test enabling IDLE_DETECTION feature, false to test disabling the
-     *         feature.
-     */
-    private void doTestIdleDetectionPermission(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.IDLE_DETECTION, enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Idle detection should be " + (enabled ? "enabled" : "disabled"),
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.IDLE_DETECTION),
-                    enabled);
-        });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testAllowIdleDetection() {
-        doTestIdleDetectionPermission(true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    public void testBlockIdleDetection() {
-        doTestIdleDetectionPermission(false);
     }
 }
