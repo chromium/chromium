@@ -518,6 +518,10 @@ which is renderer-side code, and in JavaScript by the [automation API]. The API
 is defined by [automation.idl], which must be kept synchronized with
 [ax_enums.mojom].
 
+## Further reading
+
+For more detail, read [How Chrome Accessibility Works](how_a11y_works.md).
+
 [ax.mojom.AXActionData]: https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/mojom/ax_action_data.mojom;l=13
 [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=47
 [ax.mojom.RenderAccessibility.PerformAction()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=86

@@ -11,7 +11,8 @@ all: \
 	other_multi_process_browser.png \
 	proxy_approach.png \
 	caching_approach.png \
-	multi_process_ax.png
+	multi_process_ax.png \
+	focus_race.png
 
 %.png: %.gv Makefile
 	dot -Tpng $< -o $@
