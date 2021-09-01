@@ -40,8 +40,6 @@ class CORE_EXPORT PaintWorkletInput : public cc::PaintWorkletInput {
   virtual PaintWorkletInputType GetType() const = 0;
 
  protected:
-  PaintWorkletInput(const FloatSize& container_size, int worklet_id)
-      : container_size_(container_size), worklet_id_(worklet_id) {}
   PaintWorkletInput(const FloatSize& container_size,
                     int worklet_id,
                     cc::PaintWorkletInput::PropertyKeys property_keys)
