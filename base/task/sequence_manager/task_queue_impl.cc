@@ -565,8 +565,6 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task* task =
         const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
-    // TODO(crbug.com/990245): Remove after the crash has been resolved.
-    sequence_manager_->RecordCrashKeys(*task);
     if (!task->task || task->task.IsCancelled()) {
       main_thread_only().delayed_incoming_queue.pop();
       continue;
@@ -1368,11 +1366,7 @@ size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
   // std::vector. We poke at that vector directly here to filter out canceled
   // tasks in place.
   size_t num_high_res_tasks_swept = 0u;
-  auto keep_task = [sequence_manager,
-                    &num_high_res_tasks_swept](const Task& task) {
-    // TODO(crbug.com/1155905): Remove after figuring out the cause of the
-    // crash.
-    sequence_manager->RecordCrashKeys(task);
+  auto keep_task = [&num_high_res_tasks_swept](const Task& task) {
     if (!task.task.IsCancelled())
       return true;
     if (task.is_high_res)

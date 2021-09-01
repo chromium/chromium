@@ -378,6 +378,9 @@ class BASE_EXPORT SequenceManagerImpl
   TaskQueue::TaskTiming::TimeRecordingPolicy ShouldRecordTaskTiming(
       const internal::TaskQueueImpl* task_queue);
   bool ShouldRecordCPUTimeForTask();
+
+  // Write the async stack trace onto a crash key as whitespace-delimited hex
+  // addresses.
   void RecordCrashKeys(const PendingTask&);
 
   // Helper to terminate all scoped trace events to allow starting new ones
