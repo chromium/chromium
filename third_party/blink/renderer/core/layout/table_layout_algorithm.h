@@ -29,9 +29,7 @@ namespace blink {
 
 class LayoutTable;
 
-class TableLayoutAlgorithm {
-  USING_FAST_MALLOC(TableLayoutAlgorithm);
-
+class TableLayoutAlgorithm : public GarbageCollected<TableLayoutAlgorithm> {
  public:
   explicit TableLayoutAlgorithm(LayoutTable* table) : table_(table) {}
   TableLayoutAlgorithm(const TableLayoutAlgorithm&) = delete;
@@ -48,13 +46,15 @@ class TableLayoutAlgorithm {
   virtual void UpdateLayout() = 0;
   virtual void WillChangeTableLayout() = 0;
 
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(table_); }
+
  protected:
   // FIXME: Once we enable SATURATED_LAYOUT_ARITHMETHIC, this should just be
   // LayoutUnit::nearlyMax(). Until then though, using nearlyMax causes
   // overflow in some tests, so we just pick a large number.
   const static int kTableMaxWidth = 1000000;
 
-  UntracedMember<LayoutTable> table_;
+  Member<LayoutTable> table_;
 };
 
 }  // namespace blink

@@ -87,6 +87,7 @@ void LayoutTable::Trace(Visitor* visitor) const {
   visitor->Trace(head_);
   visitor->Trace(foot_);
   visitor->Trace(first_body_);
+  visitor->Trace(table_layout_);
   LayoutBlock::Trace(visitor);
 }
 
@@ -117,9 +118,9 @@ void LayoutTable::StyleDidChange(StyleDifference diff,
     // explicit width is specified on the table. Auto width implies auto table
     // layout.
     if (StyleRef().IsFixedTableLayout())
-      table_layout_ = std::make_unique<TableLayoutAlgorithmFixed>(this);
+      table_layout_ = MakeGarbageCollected<TableLayoutAlgorithmFixed>(this);
     else
-      table_layout_ = std::make_unique<TableLayoutAlgorithmAuto>(this);
+      table_layout_ = MakeGarbageCollected<TableLayoutAlgorithmAuto>(this);
   }
 
   if (!old_style)

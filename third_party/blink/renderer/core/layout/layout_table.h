@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -603,7 +602,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   //
   // As the algorithm is dependent on the style, this field is nullptr before
   // the first style is applied in styleDidChange().
-  std::unique_ptr<TableLayoutAlgorithm> table_layout_;
+  Member<TableLayoutAlgorithm> table_layout_;
 
   // Collapsed borders are SUPER EXPENSIVE to compute. The reason is that we
   // need to compare a cells border against all the adjoining cells, rows,
