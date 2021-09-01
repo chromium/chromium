@@ -128,6 +128,10 @@ const char kDriveReadOnlyOAuth2Scope[] =
 const char kAssistantOAuth2Scope[] =
     "https://www.googleapis.com/auth/assistant-sdk-prototype";
 
+// OAuth2 scope for access to nearby devices (fast pair) APIs.
+const char kCloudPlatformProjectsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cloudplatformprojects";
+
 // OAuth2 scope for access to nearby sharing.
 const char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
