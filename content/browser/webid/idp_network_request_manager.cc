@@ -549,13 +549,7 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
 void IdpNetworkRequestManager::OnLogoutCompleted(
     std::unique_ptr<std::string> response_body) {
   url_loader_.reset();
-
-  if (!response_body) {
-    std::move(logout_callback_).Run(LogoutResponse::kError);
-    return;
-  }
-
-  std::move(logout_callback_).Run(LogoutResponse::kSuccess);
+  std::move(logout_callback_).Run();
 }
 
 void IdpNetworkRequestManager::FetchClientIdMetadata(

@@ -5,11 +5,14 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include "base/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/common/content_client.h"
@@ -134,20 +137,34 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
 // if there is a good way to not have to resource contention between requests.
 // https://crbug.com/1200581
 void FederatedAuthRequestImpl::Logout(
-    const std::vector<std::string>& logout_endpoints,
+    std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
     LogoutCallback callback) {
   if (logout_callback_ || auth_request_callback_) {
     std::move(callback).Run(LogoutStatus::kErrorTooManyRequests);
     return;
   }
 
-  if (logout_endpoints.empty()) {
-    std::move(callback).Run(LogoutStatus::kError);
+  DCHECK(logout_requests_.empty());
+
+  logout_callback_ = std::move(callback);
+
+  if (logout_requests.empty()) {
+    CompleteLogoutRequest(LogoutStatus::kError);
     return;
   }
 
-  logout_callback_ = std::move(callback);
-  logout_endpoints_ = std::move(logout_endpoints);
+  if (base::ranges::any_of(logout_requests, [](auto& request) {
+        return !request->endpoint.is_valid();
+      })) {
+    bad_message::ReceivedBadMessage(render_frame_host()->GetProcess(),
+                                    bad_message::FARI_LOGOUT_BAD_ENDPOINT);
+    CompleteLogoutRequest(LogoutStatus::kError);
+    return;
+  }
+
+  for (auto& request : logout_requests) {
+    logout_requests_.push(std::move(request));
+  }
 
   network_manager_ = CreateNetworkManager(origin().GetURL());
   if (!network_manager_) {
@@ -491,6 +508,11 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
             url::Origin::Create(provider_), origin(), account_id_);
       }
 
+      if (GetActiveSessionPermissionContext()) {
+        GetActiveSessionPermissionContext()->GrantActiveSession(
+            origin(), url::Origin::Create(provider_), account_id_);
+      }
+
       id_token_ = id_token;
       CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
       return;
@@ -499,19 +521,28 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
 }
 
 void FederatedAuthRequestImpl::DispatchOneLogout() {
-  GURL endpoint = GURL(logout_endpoints_.back());
-  logout_endpoints_.pop_back();
+  auto logout_request = std::move(logout_requests_.front());
+  DCHECK(logout_request->endpoint.is_valid());
+  std::string account_id = logout_request->account_id;
+  auto endpoint_origin = url::Origin::Create(logout_request->endpoint);
+  logout_requests_.pop();
 
-  if (endpoint.is_valid() && GetRequestPermissionContext() &&
-      GetRequestPermissionContext()->HasRequestPermission(
-          url::Origin::Create(endpoint), origin())) {
+  if (!GetActiveSessionPermissionContext()) {
+    CompleteLogoutRequest(LogoutStatus::kError);
+    return;
+  }
+
+  if (GetActiveSessionPermissionContext()->HasActiveSession(
+          endpoint_origin, origin(), account_id)) {
     network_manager_->SendLogout(
-        endpoint, base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
-                                 weak_ptr_factory_.GetWeakPtr()));
+        logout_request->endpoint,
+        base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
+                       weak_ptr_factory_.GetWeakPtr()));
+    GetActiveSessionPermissionContext()->RevokeActiveSession(
+        endpoint_origin, origin(), account_id);
   } else {
-    logout_status_ = blink::mojom::LogoutStatus::kError;
-    if (logout_endpoints_.empty()) {
-      CompleteLogoutRequest(logout_status_);
+    if (logout_requests_.empty()) {
+      CompleteLogoutRequest(LogoutStatus::kSuccess);
       return;
     }
 
@@ -519,12 +550,9 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   }
 }
 
-void FederatedAuthRequestImpl::OnLogoutCompleted(
-    IdpNetworkRequestManager::LogoutResponse status) {
-  // |status| is deliberately ignored because we don't want to tell the
-  // calling page whether this cross-origin load succeeded or not.
-  if (logout_endpoints_.empty()) {
-    CompleteLogoutRequest(logout_status_);
+void FederatedAuthRequestImpl::OnLogoutCompleted() {
+  if (logout_requests_.empty()) {
+    CompleteLogoutRequest(LogoutStatus::kSuccess);
     return;
   }
 
@@ -561,6 +589,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 void FederatedAuthRequestImpl::CompleteLogoutRequest(
     blink::mojom::LogoutStatus status) {
   network_manager_.reset();
+  base::queue<blink::mojom::LogoutRequestPtr>().swap(logout_requests_);
   if (logout_callback_)
     std::move(logout_callback_).Run(status);
 }
@@ -591,6 +620,12 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
   mock_dialog_controller_ = std::move(controller);
 }
 
+void FederatedAuthRequestImpl::SetActiveSessionPermissionDelegateForTests(
+    FederatedIdentityActiveSessionPermissionContextDelegate*
+        active_session_permission_delegate) {
+  active_session_permission_delegate_ = active_session_permission_delegate;
+}
+
 void FederatedAuthRequestImpl::SetRequestPermissionDelegateForTests(
     FederatedIdentityRequestPermissionContextDelegate*
         request_permission_delegate) {
@@ -601,6 +636,17 @@ void FederatedAuthRequestImpl::SetSharingPermissionDelegateForTests(
     FederatedIdentitySharingPermissionContextDelegate*
         sharing_permission_delegate) {
   sharing_permission_delegate_ = sharing_permission_delegate;
+}
+
+FederatedIdentityActiveSessionPermissionContextDelegate*
+FederatedAuthRequestImpl::GetActiveSessionPermissionContext() {
+  if (!active_session_permission_delegate_) {
+    active_session_permission_delegate_ =
+        render_frame_host()
+            ->GetBrowserContext()
+            ->GetFederatedIdentityActiveSessionPermissionContext();
+  }
+  return active_session_permission_delegate_;
 }
 
 FederatedIdentityRequestPermissionContextDelegate*

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
@@ -21,6 +22,7 @@
 
 namespace content {
 
+class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class RenderFrameHost;
@@ -55,13 +57,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       blink::mojom::RequestMode mode,
                       bool prefer_auto_sign_in,
                       RequestIdTokenCallback) override;
-  void Logout(const std::vector<std::string>& logout_endpoints,
+  void Logout(std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
               LogoutCallback) override;
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
   void SetDialogControllerForTests(
       std::unique_ptr<IdentityRequestDialogController> controller);
+  void SetActiveSessionPermissionDelegateForTests(
+      FederatedIdentityActiveSessionPermissionContextDelegate*);
   void SetRequestPermissionDelegateForTests(
       FederatedIdentityRequestPermissionContextDelegate*);
   void SetSharingPermissionDelegateForTests(
@@ -88,7 +92,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnTokenResponseReceived(IdpNetworkRequestManager::TokenResponse status,
                                const std::string& id_token);
   void DispatchOneLogout();
-  void OnLogoutCompleted(IdpNetworkRequestManager::LogoutResponse status);
+  void OnLogoutCompleted();
   std::unique_ptr<WebContents> CreateIdpWebContents();
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
@@ -98,6 +102,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const GURL& provider);
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 
+  FederatedIdentityActiveSessionPermissionContextDelegate*
+  GetActiveSessionPermissionContext();
   FederatedIdentityRequestPermissionContextDelegate*
   GetRequestPermissionContext();
   FederatedIdentitySharingPermissionContextDelegate*
@@ -141,6 +147,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // chrome/browser/ui machinery to be used to load IDP sign-in content.
   std::unique_ptr<WebContents> idp_web_contents_;
 
+  FederatedIdentityActiveSessionPermissionContextDelegate*
+      active_session_permission_delegate_ = nullptr;
   FederatedIdentityRequestPermissionContextDelegate*
       request_permission_delegate_ = nullptr;
   FederatedIdentitySharingPermissionContextDelegate*
@@ -152,9 +160,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   std::string id_token_;
   RequestIdTokenCallback auth_request_callback_;
 
-  std::vector<std::string> logout_endpoints_;
-  blink::mojom::LogoutStatus logout_status_ =
-      blink::mojom::LogoutStatus::kSuccess;
+  base::queue<blink::mojom::LogoutRequestPtr> logout_requests_;
   LogoutCallback logout_callback_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};

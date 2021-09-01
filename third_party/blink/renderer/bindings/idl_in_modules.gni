@@ -1032,6 +1032,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webgpu/worker_navigator_gpu.idl",
           "//third_party/blink/renderer/modules/webid/navigator_web_id.idl",
           "//third_party/blink/renderer/modules/webid/web_id.idl",
+          "//third_party/blink/renderer/modules/webid/web_id_logout_request.idl",
           "//third_party/blink/renderer/modules/webid/web_id_request_options.idl",
           "//third_party/blink/renderer/modules/webmidi/midi_access.idl",
           "//third_party/blink/renderer/modules/webmidi/midi_connection_event.idl",

@@ -116,7 +116,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(AccountsResponse, AccountList)>;
   using TokenRequestCallback =
       base::OnceCallback<void(TokenResponse, const std::string&)>;
-  using LogoutCallback = base::OnceCallback<void(LogoutResponse)>;
+  using LogoutCallback = base::OnceCallback<void()>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       const GURL& provider,
