@@ -1548,31 +1548,31 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
   int target_col = source_index.slot % cols_;
 
   if (target_row < 0) {
+    // In folders, vertical keys should not flip between pages (because the
+    // folder grid is paged horizontally) - set the target page to -1, so the
+    // focus gets moved to the reversed next focusable view.
     if (folder_delegate_) {
-      // Move focus to search box if we are in folder.
-      contents_view_->GetSearchBoxView()->search_box()->RequestFocus();
-      return true;
+      target_page = -1;
+    } else {
+      // Move focus to the last row of previous page if target row is negative.
+      --target_page;
+
+      // |target_page| may be invalid which makes |target_row| invalid, but
+      // |target_row| will not be used if |target_page| is invalid.
+      target_row = (GetNumberOfItemsOnPage(target_page) - 1) / cols_;
     }
-
-    // Move focus to the last row of previous page if target row is negative.
-    --target_page;
-
-    // |target_page| may be invalid which makes |target_row| invalid, but
-    // |target_row| will not be used if |target_page| is invalid.
-    target_row = (GetNumberOfItemsOnPage(target_page) - 1) / cols_;
   } else if (target_row > (GetNumberOfItemsOnPage(target_page) - 1) / cols_) {
     if (folder_delegate_) {
-      // Move focus to folder name if we are in folder.
-      contents_view_->apps_container_view()
-          ->app_list_folder_view()
-          ->folder_header_view()
-          ->SetTextFocus();
-      return true;
+      // In folders, vertical keys should not flip between pages (because the
+      // folder grid is paged horizontally) - set the target page beyond the
+      // number of pages in the grid so the focus gets moved to the next
+      // focusable view.
+      target_page = pagination_model_.total_pages();
+    } else {
+      // Move focus to the first row of next page if target row is beyond range.
+      ++target_page;
+      target_row = 0;
     }
-
-    // Move focus to the first row of next page if target row is beyond range.
-    ++target_page;
-    target_row = 0;
   }
 
   if (target_page < 0) {
