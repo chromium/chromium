@@ -39,6 +39,11 @@ NearbyShareSettings::NearbyShareSettings(
       prefs::kNearbySharingAllowedContactsPrefName,
       base::BindRepeating(&NearbyShareSettings::OnAllowedContactsPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kNearbySharingOnboardingCompletePrefName,
+      base::BindRepeating(
+          &NearbyShareSettings::OnIsOnboardingCompletePrefChanged,
+          base::Unretained(this)));
 
   local_device_data_manager_->AddObserver(this);
 
@@ -245,5 +250,12 @@ void NearbyShareSettings::OnAllowedContactsPrefChanged() {
   std::vector<std::string> visible_contacts = GetAllowedContacts();
   for (auto& remote : observers_set_) {
     remote->OnAllowedContactsChanged(visible_contacts);
+  }
+}
+
+void NearbyShareSettings::OnIsOnboardingCompletePrefChanged() {
+  bool is_complete = IsOnboardingComplete();
+  for (auto& remote : observers_set_) {
+    remote->OnIsOnboardingCompleteChanged(is_complete);
   }
 }

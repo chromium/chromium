@@ -183,6 +183,28 @@
           $i18n{nearbyShareEditDataUsage}
         </cr-button>
       </div>
+      <template is="dom-if" if="[[isBackgroundScanningEnabled_]]" restamp>
+        <div class="settings-box two-line" id="fastInitiationNotificationRow">
+          <div class="start">
+            <div id="fastInitiationNotificationRowTitle" aria-hidden="true">
+              $i18n{fastInitiationNotificationToggleTitle}
+            </div>
+            <div aria-hidden="true" class="secondary"
+                id="fastInitiationNotificationRowDescription">
+              $i18n{fastInitiationNotificationToggleDescription}
+            </div>
+          </div>
+          <cr-toggle
+              id="fastInitiationNotificationToggle"
+              aria-labelledby="fastInitiationNotificationRowTitle"
+              aria-describedby="fastInitiationNotificationRowDescription"
+              checked="[[settings.fastInitiationNotificationEnabled]]"
+              disabled="[[shouldDisableFastInitiationNotificationToggle_(
+                  settings.enabled,  settings.isOnboardingComplete)]]"
+              on-change="onFastInitiationNotificationToggledByUser_">
+          </cr-toggle>
+        </div>
+      </template>
     </template>
     <template is="dom-if" if="[[showDataUsageDialog_]]" restamp>
       <nearby-share-data-usage-dialog prefs="{{prefs}}" id="dataUsageDialog"

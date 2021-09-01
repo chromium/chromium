@@ -127,6 +127,13 @@ cr.define('nearby_share', function() {
     },
 
     /**
+     * @param {!boolean} is_complete
+     */
+    onIsOnboardingCompleteChanged(is_complete) {
+      this.set('settings.isOnboardingComplete', is_complete);
+    },
+
+    /**
      * TODO(vecore): Type is actually PolymerDeepPropertyChange but the externs
      *    definition needs to be fixed so the value can be cast to primitive
      *    types.

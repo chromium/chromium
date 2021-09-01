@@ -58,9 +58,13 @@ class FakeNearbyShareSettingsObserver
       const std::vector<std::string>& allowed_contacts) override {
     this->allowed_contacts = allowed_contacts;
   }
+  void OnIsOnboardingCompleteChanged(bool is_complete) override {
+    this->is_onboarding_complete = is_complete;
+  }
 
   bool enabled = false;
   bool fast_initiation_notification_enabled = true;
+  bool is_onboarding_complete = false;
   std::string device_name = "uncalled";
   nearby_share::mojom::DataUsage data_usage =
       nearby_share::mojom::DataUsage::kUnknown;
@@ -94,6 +98,11 @@ class NearbyShareSettingsTest : public ::testing::Test {
 
   NearbyShareSettingsAsyncWaiter* settings_waiter() {
     return nearby_share_settings_waiter_.get();
+  }
+
+  void SetIsOnboardingComplete(bool is_complete) {
+    pref_service_.SetBoolean(prefs::kNearbySharingOnboardingCompletePrefName,
+                             is_complete);
   }
 
  protected:
@@ -146,6 +155,18 @@ TEST_F(NearbyShareSettingsTest, GetAndSetFastInitiationNotificationEnabled) {
   bool enabled = true;
   settings_waiter()->GetFastInitiationNotificationEnabled(&enabled);
   EXPECT_FALSE(enabled);
+}
+
+TEST_F(NearbyShareSettingsTest, GetAndSetIsOnboardingComplete) {
+  EXPECT_FALSE(observer_.is_onboarding_complete);
+  SetIsOnboardingComplete(true);
+  EXPECT_TRUE(settings()->IsOnboardingComplete());
+  FlushMojoMessages();
+  EXPECT_TRUE(observer_.is_onboarding_complete);
+
+  bool is_complete = false;
+  settings_waiter()->IsOnboardingComplete(&is_complete);
+  EXPECT_TRUE(is_complete);
 }
 
 TEST_F(NearbyShareSettingsTest, ValidateDeviceName) {

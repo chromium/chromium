@@ -75,6 +75,7 @@ class NearbyShareDelegateImpl
       nearby_share::mojom::Visibility visibility) override {}
   void OnAllowedContactsChanged(
       const std::vector<std::string>& visible_contact_ids) override {}
+  void OnIsOnboardingCompleteChanged(bool is_complete) override {}
 
   // NearbyShareService::Observer
   void OnHighVisibilityChangeRequested() override;

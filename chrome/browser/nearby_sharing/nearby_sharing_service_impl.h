@@ -161,6 +161,7 @@ class NearbySharingServiceImpl
   void OnVisibilityChanged(nearby_share::mojom::Visibility visibility) override;
   void OnAllowedContactsChanged(
       const std::vector<std::string>& allowed_contacts) override;
+  void OnIsOnboardingCompleteChanged(bool is_complete) override {}
 
   // NearbyShareCertificateManager::Observer:
   void OnPublicCertificatesDownloaded() override;

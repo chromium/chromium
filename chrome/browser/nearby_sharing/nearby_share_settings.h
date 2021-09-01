@@ -103,6 +103,7 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   void OnDataUsagePrefChanged();
   void OnVisibilityPrefChanged();
   void OnAllowedContactsPrefChanged();
+  void OnIsOnboardingCompletePrefChanged();
 
   mojo::RemoteSet<nearby_share::mojom::NearbyShareSettingsObserver>
       observers_set_;

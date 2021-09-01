@@ -91,6 +91,13 @@ Polymer({
         chromeos.settings.mojom.Setting.kNearbyShareDataUsage,
       ]),
     },
+
+    /** @private */
+    isBackgroundScanningEnabled_: {
+      type: Boolean,
+      value: () =>
+          loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled')
+    },
   },
 
   listeners: {'onboarding-cancelled': 'onOnboardingCancelled_'},
@@ -419,5 +426,23 @@ Polymer({
   onOnboardingCancelled_() {
     // Return to main settings page multidevice section
     settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
+  },
+
+  /** @private */
+  onFastInitiationNotificationToggledByUser_() {
+    this.set(
+        'settings.fastInitiationNotificationEnabled',
+        !this.get('settings.fastInitiationNotificationEnabled'));
+  },
+
+  /**
+   * @param {boolean} isNearbySharingEnabled
+   * @param {boolean} isOnboardingComplete
+   * @return {boolean}
+   * @private
+   */
+  shouldDisableFastInitiationNotificationToggle_(
+      isNearbySharingEnabled, isOnboardingComplete) {
+    return !isNearbySharingEnabled && isOnboardingComplete;
   },
 });

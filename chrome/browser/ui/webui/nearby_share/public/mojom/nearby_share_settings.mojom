@@ -59,6 +59,8 @@ interface NearbyShareSettingsObserver {
   OnVisibilityChanged(Visibility visibility);
   // Called when the contacts the user wants to be visible to changes.
   OnAllowedContactsChanged(array<string> visible_contact_ids);
+  // Called when the onboarded state changes.
+  OnIsOnboardingCompleteChanged(bool is_complete);
 };
 
 // An interface over Nearby Share's user settings which will need to be used

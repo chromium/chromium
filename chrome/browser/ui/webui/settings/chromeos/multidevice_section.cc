@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/android_sms/android_sms_service.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -459,6 +460,12 @@ void MultiDeviceSection::AddLoadTimeData(
       "isNearbyShareSupported",
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile()));
+  // Background scanning depends on Bluetooth Advertisement Monitoring.
+  html_source->AddBoolean(
+      "isNearbyShareBackgroundScanningEnabled",
+      chromeos::features::IsBluetoothAdvertisementMonitoringEnabled() &&
+          base::FeatureList::IsEnabled(
+              ::features::kNearbySharingBackgroundScanning));
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
