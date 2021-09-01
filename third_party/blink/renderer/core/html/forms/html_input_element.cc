@@ -45,8 +45,10 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -83,6 +85,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/base/ui_base_features.h"
 
@@ -1734,30 +1737,61 @@ HTMLInputElement::FilteredDataListOptions() const {
   if (!data_list)
     return filtered;
 
-  String value = InnerEditorValue();
+  String editor_value = InnerEditorValue();
   if (Multiple() && type() == input_type_names::kEmail) {
     Vector<String> emails;
-    value.Split(',', true, emails);
+    editor_value.Split(',', true, emails);
     if (!emails.IsEmpty())
-      value = emails.back().StripWhiteSpace();
+      editor_value = emails.back().StripWhiteSpace();
   }
 
   HTMLDataListOptionsCollection* options = data_list->options();
   filtered.ReserveCapacity(options->length());
-  value = value.FoldCase();
+  editor_value = editor_value.FoldCase();
+
+  TextBreakIterator* iter =
+      WordBreakIterator(editor_value, 0, editor_value.length());
+
+  Vector<bool> filtering_flag(options->length(), true);
+  if (iter) {
+    for (int word_start = iter->current(), word_end = iter->next();
+         word_end != kTextBreakDone; word_end = iter->next()) {
+      String value = editor_value.Substring(word_start, word_end - word_start);
+      word_start = word_end;
+
+      if (!IsWordBreak(value[0]))
+        continue;
+
+      for (unsigned i = 0; i < options->length(); ++i) {
+        if (!filtering_flag[i])
+          continue;
+        HTMLOptionElement* option = options->Item(i);
+        DCHECK(option);
+        if (!value.IsEmpty()) {
+          // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
+          // with matches values. We show both.
+          if (!(option->value()
+                        .FoldCase()
+                        .RemoveCharacters(IsWhitespace)
+                        .Find(value) == kNotFound &&
+                option->label()
+                        .FoldCase()
+                        .RemoveCharacters(IsWhitespace)
+                        .Find(value) == kNotFound))
+            continue;
+        }
+        filtering_flag[i] = false;
+      }
+    }
+  }
+
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option = options->Item(i);
     DCHECK(option);
-    if (!value.IsEmpty()) {
-      // Firefox shows OPTIONs with matched labels, Edge shows OPTIONs
-      // with matches values. We show both.
-      if (option->value().FoldCase().Find(value) == kNotFound &&
-          option->label().FoldCase().Find(value) == kNotFound)
-        continue;
-    }
     if (option->value().IsEmpty() || option->IsDisabledFormControl())
       continue;
-    filtered.push_back(option);
+    if (filtering_flag[i])
+      filtered.push_back(option);
   }
   return filtered;
 }

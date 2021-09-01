@@ -84,6 +84,37 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
   EXPECT_EQ("tkent@chromium.org", options[0]->value().Utf8());
 }
 
+TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='40m auto reel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  auto options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(1u, options.size());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[0]->value().Utf8());
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='autoreel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(4u, options.size());
+  EXPECT_EQ("Hozelock 10m Mini Auto Reel - 2485", options[0]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 20m - 2401", options[1]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 30m - 2403", options[2]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[3]->value().Utf8());
+}
+
 TEST_F(HTMLInputElementTest, create) {
   auto* input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());

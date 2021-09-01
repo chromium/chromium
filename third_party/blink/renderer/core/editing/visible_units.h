@@ -135,6 +135,7 @@ CORE_EXPORT PositionWithAffinity NextWordPosition(
 CORE_EXPORT PositionInFlatTreeWithAffinity NextWordPosition(
     const PositionInFlatTree&,
     PlatformWordBehavior = PlatformWordBehavior::kWordDontSkipSpaces);
+bool IsWordBreak(UChar);
 
 // sentences
 CORE_EXPORT Position StartOfSentencePosition(const Position&);

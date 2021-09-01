@@ -49,11 +49,6 @@ static bool IsLineBreak(UChar ch) {
   return ch == kNewlineCharacter || ch == kCarriageReturnCharacter;
 }
 
-static bool IsWordBreak(UChar ch) {
-  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
-         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
-}
-
 PositionInFlatTree EndOfWordPositionInternal(const PositionInFlatTree& position,
                                              WordSide side) {
   class Finder final : public TextSegments::Finder {
@@ -339,4 +334,8 @@ Position StartOfWordPosition(const Position& position, WordSide side) {
       StartOfWordPosition(ToPositionInFlatTree(position), side));
 }
 
+bool IsWordBreak(UChar ch) {
+  return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
+         U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
+}
 }  // namespace blink
