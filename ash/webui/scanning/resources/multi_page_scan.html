@@ -7,7 +7,6 @@
   .container {
     align-items: center;
     color: var(--scanning-done-section-option-text-color);
-    cursor: pointer;
     display: flex;
     font-family: var(--scanning-done-section-option-font-family);
     font-size: var(--scanning-done-section-option-font-size);
@@ -40,16 +39,24 @@
     margin-inline-start: 8px;
   }
 </style>
-<div class="container">
-  <span class="label">
+<div id="multiPageScanText" class="container">
+  <span class="label" hidden$="[[showCancelButton_]]">
     [[i18n('multiPageScanInstructionsText')]]
+  </span>
+  <span class="label" hidden$="[[!showCancelButton_]]">
+    [[getProgressText_(pageNumber)]]
   </span>
 </div>
 <div id="buttonContainer">
-  <cr-button id="saveButton" on-click="onSaveClick_">
-    [[i18n('saveButtonLabel')]]
-  </cr-button>
-  <cr-button id="scanButton" class="action-button" on-click="onScanClick_">
-    [[scanButtonText_]]
+  <div hidden$="[[showCancelButton_]]">
+    <cr-button id="saveButton" on-click="onSaveClick_">
+      [[i18n('saveButtonLabel')]]
+    </cr-button>
+    <cr-button id="scanButton" class="action-button" on-click="onScanClick_">
+      [[scanButtonText_]]
+    </cr-button>
+  </div>
+  <cr-button id="cancelButton" hidden$="[[!showCancelButton_]]">
+    [[i18n('cancelButtonText')]]
   </cr-button>
 </div>

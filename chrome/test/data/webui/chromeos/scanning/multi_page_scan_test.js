@@ -4,10 +4,12 @@
 
 import 'chrome://scanning/multi_page_scan.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
@@ -74,5 +76,31 @@ export function multiPageScanTest() {
 
     multiPageScan.$$('#saveButton').click();
     assertTrue(completeMultiPageScanEventFired);
+  });
+
+  // Verify the cancel button and progress text show while scanning.
+  test('cancelButtonShowsWhileScanning', () => {
+    const scanButton =
+        /** @type {!HTMLElement} */ (multiPageScan.$$('#scanButton'));
+    const cancelButton =
+        /** @type {!HTMLElement} */ (multiPageScan.$$('#cancelButton'));
+    const pageNumber = 4;
+
+    // Scan button should be visible.
+    multiPageScan.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+    assertTrue(isVisible(scanButton));
+    assertFalse(isVisible(cancelButton));
+    assertEquals(
+        loadTimeData.getString('multiPageScanInstructionsText'),
+        multiPageScan.$$('#multiPageScanText').innerText.trim());
+
+    // Cancel button should be visible while scanning.
+    multiPageScan.pageNumber = pageNumber;
+    multiPageScan.appState = AppState.MULTI_PAGE_SCANNING;
+    assertFalse(isVisible(scanButton));
+    assertTrue(isVisible(cancelButton));
+    assertEquals(
+        loadTimeData.getStringF('multiPageScanProgressText', pageNumber),
+        multiPageScan.$$('#multiPageScanText').innerText.trim());
   });
 }

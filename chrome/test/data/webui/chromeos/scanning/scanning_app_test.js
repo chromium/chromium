@@ -881,6 +881,14 @@ export function scanningAppTest() {
           return fakeMultiPageScanController_.whenCalled('scanNextPage');
         })
         .then(() => {
+          // Cancel button should be visible while scanning.
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('multi-page-scan').$$('#scanButton'))));
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (
+                  scanningApp.$$('multi-page-scan').$$('#cancelButton'))));
+
           return fakeScanService_.simulatePageComplete(
               /*pageNumber=*/ 1, newPageIndex++);
         })

@@ -8,6 +8,7 @@ import './scanning_fonts_css.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppState} from './scanning_app_types.js';
 import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
 /**
@@ -22,6 +23,12 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    /** @type {!AppState} */
+    appState: {
+      type: Number,
+      observer: 'onAppStateChange_',
+    },
+
     /** @type {number} */
     pageNumber: {
       type: Number,
@@ -30,6 +37,17 @@ Polymer({
 
     /** @private {string} */
     scanButtonText_: String,
+
+    /** @private {boolean} */
+    showCancelButton_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  /** @private */
+  onAppStateChange_() {
+    this.showCancelButton_ = this.appState === AppState.MULTI_PAGE_SCANNING;
   },
 
   /** @private */
@@ -50,5 +68,13 @@ Polymer({
   /** @private */
   onSaveClick_() {
     this.fire('complete-multi-page-scan');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getProgressText_() {
+    return this.i18n('multiPageScanProgressText', this.pageNumber);
   },
 });

@@ -77,6 +77,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
       {"multiPageScanInstructionsText",
        IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT},
+      {"multiPageScanProgressText",
+       IDS_SCANNING_APP_MULTI_PAGE_SCAN_PROGRESS_TEXT},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
       {"noScannersSubtext", IDS_SCANNING_APP_NO_SCANNERS_SUBTEXT},

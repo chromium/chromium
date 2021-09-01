@@ -240,7 +240,7 @@
         </scan-done-section>
       </template>
       <template is="dom-if" if="[[showMultiPageScan_]]">
-        <multi-page-scan page-number="[[pageNumber_]]"
+        <multi-page-scan page-number="[[pageNumber_]]" app-state="[[appState_]]"
             on-scan-next-page="onScanNextPage_"
             on-complete-multi-page-scan="onCompleteMultiPageScan_">
         </multi-page-scan>
