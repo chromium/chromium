@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
 #endif
 
   // ResourceType::kPrefetch
-  EXPECT_EQ("application/signed-exchange;v=b3;q=0.9,*/*;q=0.8",
+  EXPECT_EQ("application/signed-exchange;v=b3;q=0.7,*/*;q=0.8",
             GetFor("/prefetch"));
 
   // ResourceType::kXhr
