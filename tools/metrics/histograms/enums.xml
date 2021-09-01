@@ -29139,6 +29139,7 @@ Called by update_extension_histograms.py.-->
   <int value="1577" label="LOGIN_ENDSHAREDSESSION"/>
   <int value="1578" label="AUTOTESTPRIVATE_GETDEFAULTPINNEDAPPIDS"/>
   <int value="1579" label="LOGIN_SETDATAFORNEXTLOGINATTEMPT"/>
+  <int value="1580" label="OS_DIAGNOSTICS_GETAVAILABLEROUTINES"/>
 </enum>
 
 <enum name="ExtensionIconState">

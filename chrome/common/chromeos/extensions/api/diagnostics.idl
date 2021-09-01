@@ -8,6 +8,10 @@
 // chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
 namespace os.diagnostics {
+  enum RoutineType {
+    battery_capacity
+  };
+
   enum RoutineStatus {
     ready,
     running,
@@ -23,15 +27,24 @@ namespace os.diagnostics {
     not_run
   };
 
+  dictionary GetAvailableRoutinesResponse {
+    RoutineType[] routines;
+  };
+
   dictionary RunRoutineResponse {
     long id;
 
     RoutineStatus status;
   };
 
+  callback GetAvailableRoutinesCallback = void (GetAvailableRoutinesResponse response);
+
   callback RunRoutineCallback = void (RunRoutineResponse response);
 
   interface Functions {
+    // Starts battery capacity routine.
+    [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
+
     // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
   };

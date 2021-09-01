@@ -1640,6 +1640,7 @@ enum HistogramValue {
   LOGIN_ENDSHAREDSESSION = 1577,
   AUTOTESTPRIVATE_GETDEFAULTPINNEDAPPIDS = 1578,
   LOGIN_SETDATAFORNEXTLOGINATTEMPT = 1579,
+  OS_DIAGNOSTICS_GETAVAILABLEROUTINES = 1580,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

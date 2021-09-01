@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,6 +12,23 @@ namespace chromeos {
 
 using TelemetryExtensionDiagnosticsApiBrowserTest =
     BaseTelemetryExtensionBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       GetAvailableRoutinesSuccess) {
+  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
+      {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity});
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getAvailableRoutines() {
+        const response =
+          await chrome.os.diagnostics.getAvailableRoutines();
+        chrome.test.assertEq({routines: ["battery_capacity"]}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        RunBatteryCapacityRoutineSuccess) {

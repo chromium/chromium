@@ -13,8 +13,48 @@
 
 namespace chromeos {
 
+class DiagnosticsApiFunctionBase : public ExtensionFunction {
+ public:
+  DiagnosticsApiFunctionBase();
+
+  DiagnosticsApiFunctionBase(const DiagnosticsApiFunctionBase&) = delete;
+  DiagnosticsApiFunctionBase& operator=(const DiagnosticsApiFunctionBase&) =
+      delete;
+
+ protected:
+  ~DiagnosticsApiFunctionBase() override;
+
+  mojo::Remote<ash::health::mojom::DiagnosticsService>
+      remote_diagnostics_service_;
+
+ private:
+  DiagnosticsService diagnostics_service_;
+};
+
+class OsDiagnosticsGetAvailableRoutinesFunction
+    : public DiagnosticsApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.getAvailableRoutines",
+                             OS_DIAGNOSTICS_GETAVAILABLEROUTINES)
+
+  OsDiagnosticsGetAvailableRoutinesFunction();
+  OsDiagnosticsGetAvailableRoutinesFunction(
+      const OsDiagnosticsGetAvailableRoutinesFunction&) = delete;
+  OsDiagnosticsGetAvailableRoutinesFunction& operator=(
+      const OsDiagnosticsGetAvailableRoutinesFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsGetAvailableRoutinesFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnResult(
+      const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines);
+};
+
 class OsDiagnosticsRunBatteryCapacityRoutineFunction
-    : public ExtensionFunction {
+    : public DiagnosticsApiFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryCapacityRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE)
@@ -32,11 +72,6 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
   ResponseAction Run() override;
 
   void OnResult(ash::health::mojom::RunRoutineResponsePtr ptr);
-
-  mojo::Remote<ash::health::mojom::DiagnosticsService>
-      remote_diagnostics_service_;
-
-  DiagnosticsService diagnostics_service_;
 };
 
 }  // namespace chromeos
