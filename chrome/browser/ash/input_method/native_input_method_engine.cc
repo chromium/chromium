@@ -468,6 +468,19 @@ void NativeInputMethodEngine::Initialize(
                                 profile);
 }
 
+void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
+  // The parent implementation will try to convert `index` into a candidate ID.
+  // The native Mojo engine doesn't use candidate IDs, so we just treat `index`
+  // as the ID, without doing a mapping.
+  if (ShouldRouteToNativeMojoEngine(GetActiveComponentId())) {
+    GetNativeObserver()->OnCandidateClicked(
+        GetActiveComponentId(), index,
+        InputMethodEngineBase::MOUSE_BUTTON_LEFT);
+  } else {
+    InputMethodEngine::CandidateClicked(index);
+  }
+}
+
 void NativeInputMethodEngine::OnKeyboardEnabledChanged(bool enabled) {
   // Re-activate the engine whenever the virtual keyboard is enabled or disabled
   // so that the native or extension state is reset correctly.

@@ -49,6 +49,7 @@ class NativeInputMethodEngine
   void Initialize(std::unique_ptr<InputMethodEngineBase::Observer> observer,
                   const char* extension_id,
                   Profile* profile) override;
+  void CandidateClicked(uint32_t index) override;
 
   // ChromeKeyboardControllerClient:
   void OnKeyboardEnabledChanged(bool enabled) override;
