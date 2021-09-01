@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
@@ -59,12 +60,14 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
     public static final String CUSTOM_THEMES = "custom_themes";
     public static final String RESOURCES_VERSION = "resources_version";
 
+    private static final String DUMP_LOCATION_SWITCH = "breakpad-dump-location";
     private static final String CRASH_DUMP_DIR = "Crash Reports";
     private static final String FILE_PREFIX = "chromium-browser-minidump-";
     private static final String FILE_SUFFIX = ".dmp";
     private static final String RN = "\r\n";
     private static final String FORM_DATA_MESSAGE = "Content-Disposition: form-data; name=\"";
 
+    private boolean mUpload;
     protected File mMinidumpFile;
     private FileOutputStream mMinidumpFileStream;
     private final String mLocalId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
@@ -117,9 +120,17 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
     private void createReport(Throwable javaException) {
         try {
             String minidumpFileName = FILE_PREFIX + mLocalId + FILE_SUFFIX;
-            mMinidumpFile = new File(
-                    new File(ContextUtils.getApplicationContext().getCacheDir(), CRASH_DUMP_DIR),
-                    minidumpFileName);
+            File minidumpDir =
+                    new File(ContextUtils.getApplicationContext().getCacheDir(), CRASH_DUMP_DIR);
+            // Tests disable minidump uploading by not creating the minidump directory.
+            mUpload = minidumpDir.exists();
+            String overrideMinidumpDirPath =
+                    CommandLine.getInstance().getSwitchValue(DUMP_LOCATION_SWITCH);
+            if (overrideMinidumpDirPath != null) {
+                minidumpDir = new File(overrideMinidumpDirPath);
+                minidumpDir.mkdirs();
+            }
+            mMinidumpFile = new File(minidumpDir, minidumpFileName);
             mMinidumpFileStream = new FileOutputStream(mMinidumpFile);
         } catch (FileNotFoundException e) {
             mMinidumpFile = null;
@@ -210,7 +221,7 @@ public class PureJavaExceptionReporter implements PureJavaExceptionHandler.JavaE
 
     @VisibleForTesting
     public void uploadReport() {
-        if (mMinidumpFile == null) return;
+        if (mMinidumpFile == null || !mUpload) return;
         LogcatExtractionRunnable logcatExtractionRunnable =
                 new LogcatExtractionRunnable(mMinidumpFile);
         logcatExtractionRunnable.uploadMinidumpWithLogcat(true);

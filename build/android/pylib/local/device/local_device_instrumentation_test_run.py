@@ -566,6 +566,16 @@ class LocalDeviceInstrumentationTestRun(
       coverage_device_file = os.path.join(coverage_directory, coverage_basename)
       coverage_device_file += '.exec'
       extras['coverageFile'] = coverage_device_file
+
+    if self._test_instance.enable_breakpad_dump:
+      # Use external storage directory so that the breakpad dump can be accessed
+      # by the test APK in addition to the apk_under_test.
+      breakpad_dump_directory = os.path.join(device.GetExternalStoragePath(),
+                                             'chromium_dumps')
+      if device.PathExists(breakpad_dump_directory):
+        device.RemovePath(breakpad_dump_directory, recursive=True)
+      flags_to_add.append('--breakpad-dump-location=' + breakpad_dump_directory)
+
     # Save screenshot if screenshot dir is specified (save locally) or if
     # a GS bucket is passed (save in cloud).
     screenshot_device_file = device_temp_file.DeviceTempFile(
@@ -843,14 +853,14 @@ class LocalDeviceInstrumentationTestRun(
       logging.info('detected failure in %s. raw output:', test_display_name)
       for l in output:
         logging.info('  %s', l)
-      if (not self._env.skip_clear_data
-          and self._test_instance.package_info):
-        permissions = (
-            self._test_instance.apk_under_test.GetPermissions()
-            if self._test_instance.apk_under_test
-            else None)
-        device.ClearApplicationState(self._test_instance.package_info.package,
-                                     permissions=permissions)
+      if not self._env.skip_clear_data:
+        if self._test_instance.package_info:
+          permissions = (self._test_instance.apk_under_test.GetPermissions()
+                         if self._test_instance.apk_under_test else None)
+          device.ClearApplicationState(self._test_instance.package_info.package,
+                                       permissions=permissions)
+        if self._test_instance.enable_breakpad_dump:
+          device.RemovePath(breakpad_dump_directory, recursive=True)
     else:
       logging.debug('raw output from %s:', test_display_name)
       for l in output:

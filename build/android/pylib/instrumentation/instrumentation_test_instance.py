@@ -653,6 +653,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._store_tombstones = False
     self._symbolizer = None
+    self._enable_breakpad_dump = False
     self._enable_java_deobfuscation = False
     self._deobfuscator = None
     self._initializeLogAttributes(args)
@@ -849,6 +850,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._coverage_directory = args.coverage_dir
 
   def _initializeLogAttributes(self, args):
+    self._enable_breakpad_dump = args.enable_breakpad_dump
     self._enable_java_deobfuscation = args.enable_java_deobfuscation
     self._store_tombstones = args.store_tombstones
     self._symbolizer = stack_symbolizer.Symbolizer(
@@ -919,6 +921,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def edit_shared_prefs(self):
     return self._edit_shared_prefs
+
+  @property
+  def enable_breakpad_dump(self):
+    return self._enable_breakpad_dump
 
   @property
   def external_shard_index(self):

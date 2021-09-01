@@ -3117,6 +3117,7 @@ android_test_apk("chrome_smoke_test_apk") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/ub-uiautomator:ub_uiautomator_java",
   ]
@@ -3126,6 +3127,10 @@ instrumentation_test_runner("chrome_public_smoke_test") {
   apk_under_test = ":chrome_public_apk"
   android_test_apk = ":chrome_smoke_test_apk"
   android_test_apk_name = "ChromeSmokeTest"
+  extra_args = [
+    "--enable-breakpad-dump",
+    "--use-apk-under-test-flags-file",
+  ]
 }
 
 # Public webview targets don't work with non-public sdks.
@@ -3139,6 +3144,10 @@ instrumentation_test_runner("monochrome_public_smoke_test") {
   android_test_apk = ":chrome_smoke_test_apk"
   android_test_apk_name = "ChromeSmokeTest"
   never_incremental = true
+  extra_args = [
+    "--enable-breakpad-dump",
+    "--use-apk-under-test-flags-file",
+  ]
 }
 
 android_test_apk("chrome_bundle_smoke_test_apk") {

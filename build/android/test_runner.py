@@ -476,6 +476,11 @@ def AddInstrumentationTestOptions(parser):
       dest='exclude_annotation_str',
       help='Comma-separated list of annotations. Exclude tests with these '
            'annotations.')
+  parser.add_argument(
+      '--enable-breakpad-dump',
+      action='store_true',
+      help='Stores any breakpad dumps till the end of the test.')
+
   def package_replacement(arg):
     split_arg = arg.split(',')
     if len(split_arg) != 2:
