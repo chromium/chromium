@@ -72,11 +72,6 @@ const bool kWithLicense = true;
 
 const char kNoLicenseType[] = "";
 
-// This is modulus power value used in initial enrollment to detect that the
-// server is outdated and does not support initial enrollment. See the
-// |DetectOutdatedServer| test case.
-const int kInitialEnrollmentModulusPowerOutdatedServer = 14;
-
 // Start and limit powers for the hash dance clients.
 const int kPowerStart = 4;
 const int kPowerLimit = 8;
@@ -748,30 +743,6 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
   EXPECT_FALSE(HasCachedDecision());
-  EXPECT_FALSE(HasServerBackedState());
-}
-
-TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
-  CreateClient(
-      /*power_initial=*/0,
-      /*power_limit=*/kInitialEnrollmentModulusPowerOutdatedServer + 1);
-  InSequence sequence;
-  ServerWillReply(/*modulus=*/1 << kInitialEnrollmentModulusPowerOutdatedServer,
-                  /*with_hashes=*/false,
-                  /*with_id_hash=*/false);
-
-  // For FRE, such a detection does not exist. The client will do the second
-  // round and upload bits of its device identifier hash.
-  ServerWillReply(/*modulus=*/-1, /*with_hashes=*/false,
-                  /*with_id_hash=*/false);
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                        /*dm_status_count=*/2);
-  EXPECT_EQ(auto_enrollment_job_type_,
-            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-  EXPECT_TRUE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
 
