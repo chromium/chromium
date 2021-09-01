@@ -21,11 +21,6 @@
       "all"
     ]
   },
-  "Linux Builder (core-32) (runsc) (reclient)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "Linux Builder (deps-cache) (reclient)": {
     "additional_compile_targets": [
       "all"
@@ -506,11 +501,6 @@
     ]
   },
   "TSAN Release (reclient)": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
-  "TSAN Release (runsc-exp) (reclient)": {
     "additional_compile_targets": [
       "chromium_builder_asan"
     ]

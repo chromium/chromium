@@ -192,16 +192,6 @@
       "use_rbe": true
     }
   },
-  "Linux Builder (core-32) (runsc) (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_rbe": true
-    }
-  },
   "Linux Builder (deps-cache) (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -387,16 +377,6 @@
     }
   },
   "TSAN Release (reclient)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_tsan": true,
-      "use_rbe": true
-    }
-  },
-  "TSAN Release (runsc-exp) (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,
       "enable_nacl": false,
