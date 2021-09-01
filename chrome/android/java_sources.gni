@@ -42,6 +42,7 @@ chrome_test_java_sources += start_surface_test_java_sources
 chrome_junit_test_java_sources += start_surface_junit_java_sources
 chrome_junit_test_java_sources += tab_management_junit_java_sources
 chrome_test_java_sources += omnibox_test_java_sources
+chrome_junit_test_java_sources += price_tracking_junit_test_java_sources
 chrome_test_java_sources += price_tracking_test_java_sources
 chrome_test_java_sources += tab_management_test_java_sources
 chrome_test_java_sources += share_test_java_sources

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,17 +13,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.Browser;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -41,23 +46,67 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  * Manage price drop notifications.
  */
 public class PriceDropNotificationManager {
+    private static final String TAG = "PriceDropNotif";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private static final String EXTRA_APP_PACKAGE = "app_package";
     private static final String EXTRA_APP_UID = "app_uid";
     // The action ids should be the same as defined in the server, see {@link
     // HandleProductUpdateEventsProducerModule}.
-    private static final String ACTION_ID_VISIT_SITE = "visit_site";
-    private static final String ACTION_ID_TURN_OFF_ALERT = "turn_off_alert";
+    static final String ACTION_ID_VISIT_SITE = "visit_site";
+    static final String ACTION_ID_TURN_OFF_ALERT = "turn_off_alert";
+
+    static final String EXTRA_DESTINATION_URL =
+            "org.chromium.chrome.browser.price_tracking.DESTINATION_URL";
+    static final String EXTRA_ACTION_ID = "org.chromium.chrome.browser.price_tracking.ACTION_ID";
+    static final String EXTRA_OFFER_ID = "org.chromium.chrome.browser.price_tracking.OFFER_ID";
 
     private static NotificationManagerProxy sNotificationManagerForTesting;
+
+    /**
+     * Used to host click logic for "turn off alert" action intent.
+     */
+    public static class TrampolineActivity extends Activity {
+        @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Intent intent = getIntent();
+            String destinationUrl = IntentUtils.safeGetStringExtra(intent, EXTRA_DESTINATION_URL);
+            String actionId = IntentUtils.safeGetStringExtra(intent, EXTRA_ACTION_ID);
+            String offerId = IntentUtils.safeGetStringExtra(intent, EXTRA_OFFER_ID);
+
+            if (TextUtils.isEmpty(offerId)) {
+                Log.e(TAG, "No offer id is provided when handling turn off alert action.");
+                finish();
+                return;
+            }
+
+            // Handles "turn off alert" action button click.
+            ChromeBrowserInitializer.getInstance().runNowOrAfterFullBrowserStarted(() -> {
+                PriceDropNotificationManager priceDropNotificationManager =
+                        new PriceDropNotificationManager();
+                assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
+                    : "Currently only turn off alert action uses this activity.";
+                priceDropNotificationManager.onNotificationActionClicked(
+                        actionId, destinationUrl, offerId);
+                // Finish immediately. Could be better to have a callback from shopping backend.
+                finish();
+            });
+        }
+    }
 
     private final Context mContext;
     private final NotificationManagerProxy mNotificationManager;
 
     public PriceDropNotificationManager() {
-        mContext = ContextUtils.getApplicationContext();
-        mNotificationManager = new NotificationManagerProxyImpl(mContext);
+        this(ContextUtils.getApplicationContext(),
+                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+    }
+
+    public PriceDropNotificationManager(
+            Context context, NotificationManagerProxy notificationManagerProxy) {
+        mContext = context;
+        mNotificationManager = notificationManagerProxy;
     }
 
     /**
@@ -141,13 +190,13 @@ public class PriceDropNotificationManager {
      */
     public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId) {
         if (actionId.equals(ACTION_ID_VISIT_SITE)) {
+            // TODO(xingliu): Split uma tracker calls into separate functions.
             NotificationUmaTracker.getInstance().onNotificationActionClick(
                     NotificationUmaTracker.ActionType.PRICE_DROP_VISIT_SITE,
                     NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
                     NotificationIntentInterceptor.INVALID_CREATE_TIME);
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
             if (offerId == null) return;
-            // TODO(xingliu): Ensure native is loaded. Or it may crash.
             SubscriptionsManagerImpl subscriptionsManager =
                     (new CommerceSubscriptionsServiceFactory())
                             .getForLastUsedProfile()
@@ -187,9 +236,27 @@ public class PriceDropNotificationManager {
      *
      * @param actionId the id used to identify certain action.
      * @param url of the tab which triggered the notification.
+     * @param offerId The offer id of the product.
      */
+    public Intent getNotificationActionClickIntent(String actionId, String url, String offerId) {
+        if (ACTION_ID_VISIT_SITE.equals(actionId)) return getNotificationClickIntent(url);
+        if (ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
+            Intent intent = new Intent(mContext, TrampolineActivity.class);
+            intent.putExtra(EXTRA_DESTINATION_URL, url);
+            intent.putExtra(EXTRA_ACTION_ID, actionId);
+            intent.putExtra(EXTRA_OFFER_ID, offerId);
+            return intent;
+        }
+        return null;
+    }
+
+    /**
+     * See {@link #getNotificationActionClickIntent(String, String)}, without an offer id.
+     */
+    @Deprecated
     public Intent getNotificationActionClickIntent(String actionId, String url) {
-        return actionId.equals(ACTION_ID_VISIT_SITE) ? getNotificationClickIntent(url) : null;
+        // TODO(xingliu): Make changes in downstream and delete this function. OfferId is needed.
+        return getNotificationActionClickIntent(actionId, url, /*offerId=*/null);
     }
 
     /**

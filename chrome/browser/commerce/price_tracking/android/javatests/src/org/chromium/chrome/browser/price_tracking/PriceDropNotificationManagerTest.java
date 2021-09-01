@@ -35,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -72,6 +73,7 @@ public class PriceDropNotificationManagerTest {
     private static final String ACTION_ID_VISIT_SITE = "visit_site";
     private static final String ACTION_ID_TURN_OFF_ALERT = "turn_off_alert";
     private static final String TEST_URL = "www.test.com";
+    private static final String OFFER_ID = "offer_id";
 
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
@@ -208,9 +210,21 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testGetNotificationActionClickIntent() {
         verifyClickIntent(mPriceDropNotificationManager.getNotificationActionClickIntent(
-                ACTION_ID_VISIT_SITE, TEST_URL));
-        assertNull(mPriceDropNotificationManager.getNotificationActionClickIntent(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL));
+                ACTION_ID_VISIT_SITE, TEST_URL, OFFER_ID));
+        Intent turnOffAlertIntent = mPriceDropNotificationManager.getNotificationActionClickIntent(
+                ACTION_ID_TURN_OFF_ALERT, TEST_URL, OFFER_ID);
+        assertNotNull(turnOffAlertIntent);
+        assertEquals(PriceDropNotificationManager.TrampolineActivity.class.getName(),
+                turnOffAlertIntent.getComponent().getClassName());
+        assertEquals(OFFER_ID,
+                IntentUtils.safeGetStringExtra(
+                        turnOffAlertIntent, PriceDropNotificationManager.EXTRA_OFFER_ID));
+        assertEquals(TEST_URL,
+                IntentUtils.safeGetStringExtra(
+                        turnOffAlertIntent, PriceDropNotificationManager.EXTRA_DESTINATION_URL));
+        assertEquals(ACTION_ID_TURN_OFF_ALERT,
+                IntentUtils.safeGetStringExtra(
+                        turnOffAlertIntent, PriceDropNotificationManager.EXTRA_ACTION_ID));
     }
 
     @Test
