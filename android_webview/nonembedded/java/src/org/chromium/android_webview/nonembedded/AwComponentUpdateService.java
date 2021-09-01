@@ -8,6 +8,7 @@ import android.app.job.JobService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.ResultReceiver;
 import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
@@ -16,6 +17,7 @@ import org.chromium.android_webview.services.ComponentUpdaterSafeModeUtils;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -32,6 +34,8 @@ import java.io.File;
 @JNINamespace("android_webview")
 public class AwComponentUpdateService extends JobService {
     private static final String TAG = "AwCUS";
+
+    private ResultReceiver mFinishCallback;
 
     // Histogram names.
     public static final String HISTOGRAM_COMPONENT_UPDATER_CPS_DIRECTORY_SIZE =
@@ -93,16 +97,20 @@ public class AwComponentUpdateService extends JobService {
         return /*reschedule= */ true;
     }
 
-    // For testing only. To manually start the service on Android builds <= M where force running
-    // the job service doesn't work. The service isn't exported, so other apps won't be able to
-    // force start the service.
-    // Note: This can be simpilified when we stop supporting Android M in WebView or when manually
-    // starting the service on M isn't needed.
+    /**
+     * Overridden to manually start the service via devui {@link
+     * org.chromium.android_webview.devui.ComponentsListFragment}. The service isn't exported, so
+     * other apps won't be able to force start the service.
+     *
+     * The service accepts a {@link ResultReceiver} callback in the intent which will be called
+     * when the service finishes updating and/or being stopped.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // Always keep the most recent startId as this is the one that should be used to stop
         // the service.
         mServiceStartedId = startId;
+        mFinishCallback = IntentUtils.safeGetParcelableExtra(intent, "SERVICE_FINISH_CALLBACK");
         if (!maybeStartUpdates()) {
             stopSelf(startId);
             mServiceStartedId = 0;
@@ -152,8 +160,11 @@ public class AwComponentUpdateService extends JobService {
     // Call the appropriate stop method according to how the service is launched.
     private void stopService() {
         mIsUpdating = false;
-        ComponentUpdaterSafeModeUtils.executeSafeModeIfEnabled(
-                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
+
+        if (mFinishCallback != null) {
+            mFinishCallback.send(0, null);
+            mFinishCallback = null;
+        }
 
         // Service is launched as a started service.
         if (mServiceStartedId > 0) {

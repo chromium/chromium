@@ -7,22 +7,29 @@ package org.chromium.android_webview.devui;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.devui.util.ComponentInfo;
 import org.chromium.android_webview.devui.util.ComponentsInfoLoader;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -36,7 +43,11 @@ import java.util.Locale;
 public class ComponentsListFragment extends DevUiBaseFragment {
     private Context mContext;
     private ComponentInfoListAdapter mComponentInfoListAdapter;
+    private TextView mComponentsSummaryView;
+    private Toast mUpdatingToast;
+    private Toast mUpdatedToast;
 
+    private static String sComponentUpdateServiceName;
     private static @Nullable Runnable sComponentInfoLoadedListener;
 
     @Override
@@ -47,6 +58,7 @@ public class ComponentsListFragment extends DevUiBaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        sComponentUpdateServiceName = ServiceNames.AW_COMPONENT_UPDATE_SERVICE;
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
@@ -61,12 +73,13 @@ public class ComponentsListFragment extends DevUiBaseFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Activity activity = (Activity) mContext;
         activity.setTitle("WebView Components");
-
-        TextView componentsSummaryView = view.findViewById(R.id.components_summary_textview);
+        mComponentsSummaryView = view.findViewById(R.id.components_summary_textview);
+        ListView mComponentInfoListView = view.findViewById(R.id.components_list);
         mComponentInfoListAdapter = new ComponentInfoListAdapter(new ArrayList<ComponentInfo>());
-        updateComponentInfoList(componentsSummaryView);
-        ListView componentInfoListView = view.findViewById(R.id.components_list);
-        componentInfoListView.setAdapter(mComponentInfoListAdapter);
+        mComponentInfoListView.setAdapter(mComponentInfoListAdapter);
+        updateComponentInfoList(/* showToast= */ false);
+        mUpdatingToast = Toast.makeText(mContext, "Updating Components...", Toast.LENGTH_SHORT);
+        mUpdatedToast = Toast.makeText(mContext, "Components Updated!", Toast.LENGTH_SHORT);
     }
 
     /**
@@ -87,7 +100,6 @@ public class ComponentsListFragment extends DevUiBaseFragment {
             if (view == null) {
                 view = getLayoutInflater().inflate(R.layout.components_list_item, null, true);
             }
-
             ComponentInfo item = getItem(position);
             TextView name = view.findViewById(android.R.id.text1);
             TextView version = view.findViewById(android.R.id.text2);
@@ -106,7 +118,7 @@ public class ComponentsListFragment extends DevUiBaseFragment {
      * Asynchronously load components info on a background thread and then update the UI when the
      * data is loaded.
      */
-    private void updateComponentInfoList(TextView componentsSummaryView) {
+    public void updateComponentInfoList(Boolean showToast) {
         AsyncTask<ArrayList<ComponentInfo>> asyncTask = new AsyncTask<ArrayList<ComponentInfo>>() {
             @Override
             @WorkerThread
@@ -122,8 +134,18 @@ public class ComponentsListFragment extends DevUiBaseFragment {
             protected void onPostExecute(ArrayList<ComponentInfo> retrievedComponentInfoList) {
                 mComponentInfoListAdapter.clear();
                 mComponentInfoListAdapter.addAll(retrievedComponentInfoList);
-                componentsSummaryView.setText(String.format(
+                mComponentsSummaryView.setText(String.format(
                         Locale.US, "Components (%d)", retrievedComponentInfoList.size()));
+
+                // show toast only if the user is viewing current fragment
+                if (showToast && ComponentsListFragment.this.isVisible()) {
+                    // show toast only if it is not already showing, prevent toast spam
+                    if (mUpdatedToast.getView() != null
+                            && mUpdatedToast.getView().getWindowVisibility() != View.VISIBLE) {
+                        mUpdatedToast.show();
+                    }
+                }
+
                 if (sComponentInfoLoadedListener != null) sComponentInfoLoadedListener.run();
             }
         };
@@ -133,9 +155,46 @@ public class ComponentsListFragment extends DevUiBaseFragment {
     /**
      * Notifies the caller when all ComponentInfo is reloaded in the ListView.
      */
-    @MainThread
     @VisibleForTesting
     public static void setComponentInfoLoadedListenerForTesting(@Nullable Runnable listener) {
+        ThreadUtils.assertOnUiThread();
         sComponentInfoLoadedListener = listener;
+    }
+
+    @VisibleForTesting
+    public static void setComponentUpdateServiceNameForTesting(String name) {
+        ThreadUtils.assertOnUiThread();
+        sComponentUpdateServiceName = name;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.components_options_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.options_menu_refresh) {
+            MainActivity.logMenuSelection(MainActivity.MenuChoice.COMPONENTS_UPDATE);
+            Intent intent = new Intent();
+            intent.setClassName(mContext.getPackageName(), sComponentUpdateServiceName);
+            intent.putExtra("SERVICE_FINISH_CALLBACK", new ResultReceiver(null) {
+                @Override
+                public void onReceiveResult(int resultCode, Bundle resultData) {
+                    updateComponentInfoList(/* showToast= */ true);
+                }
+            });
+            // show toast only if the user is viewing current fragment
+            if (ComponentsListFragment.this.isVisible()) {
+                // show toast only if it is not already showing, prevent toast spam
+                if (mUpdatingToast.getView() != null
+                        && mUpdatingToast.getView().getWindowVisibility() != View.VISIBLE) {
+                    mUpdatingToast.show();
+                }
+            }
+            mContext.startService(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

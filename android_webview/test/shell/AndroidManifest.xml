@@ -95,6 +95,9 @@
              android:permission="android.permission.BIND_JOB_SERVICE"
              android:exported="false"
              android:process=":webview_apk"/>
+    <service android:name="org.chromium.android_webview.test.services.MockAwComponentUpdateService"
+             android:exported="false"
+             android:process=":webview_apk"/>
     <!-- Components for Developer UI, make sure that any changes in these components reflect
          the corresponding original components in nonembedded/java/AndroidManifest.xml -->
     <activity android:name="org.chromium.android_webview.devui.MainActivity"

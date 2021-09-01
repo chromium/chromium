@@ -51,7 +51,8 @@ public class MainActivity extends FragmentActivity {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({MenuChoice.SWITCH_PROVIDER, MenuChoice.REPORT_BUG, MenuChoice.CHECK_UPDATES,
-            MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI})
+            MenuChoice.CRASHES_REFRESH, MenuChoice.ABOUT_DEVTOOLS, MenuChoice.COMPONENTS_UI,
+            MenuChoice.COMPONENTS_UPDATE})
     public @interface MenuChoice {
         int SWITCH_PROVIDER = 0;
         int REPORT_BUG = 1;
@@ -59,7 +60,8 @@ public class MainActivity extends FragmentActivity {
         int CRASHES_REFRESH = 3;
         int ABOUT_DEVTOOLS = 4;
         int COMPONENTS_UI = 5;
-        int COUNT = 6;
+        int COMPONENTS_UPDATE = 6;
+        int COUNT = 7;
     }
 
     public static void logMenuSelection(@MenuChoice int selectedMenuItem) {
