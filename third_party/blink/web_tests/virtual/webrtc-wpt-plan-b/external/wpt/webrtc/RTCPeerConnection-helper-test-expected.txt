@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
 FAIL Setting up a connection using helpers and defaults should work promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL A test video track transmits at least 40 Kbits/sec of data at 480x360 size promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'state')"
 Harness: the test ran to completion.
 
