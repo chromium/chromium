@@ -146,6 +146,7 @@
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="409427325554347132">Guardar detalhes do teste</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
-<translation id="4652335678334611408">Guardar registo da sessão</translation>
 <translation id="4654549501020883054">Alterar diariamente</translation>
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As palavras-passe não correspondem.</translation>

@@ -130,7 +130,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="6963936880795878952">A távoli számítógéphez való csatlakozás ideiglenesen le van tiltva, mert valaki érvénytelen PIN-kóddal próbált csatlakozni hozzá. Kérjük, próbálja újra később.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Biztosan le szeretné tiltani a távoli kapcsolatokat a(z) <ph name="HOSTNAME" /> gazdagéppel? Ha meggondolja magát, akkor azon a számítógépen kell majd újból engedélyeznie a kapcsolatokat.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> felhasználó hozzáférési engedélyt kért az Ön számítógépének megtekintésére és vezérlésére. Nyomja meg a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” gombot, ha nem ismeri a felhasználót, vagy ha bármilyen változtatást szeretne eszközölni a megosztás előtt.  Ha engedélyezni szeretné a kapcsolatot, válassza a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” lehetőséget.</translation>
 <translation id="7019153418965365059">Ismeretlen gazdagéphiba: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Távsegítség</translation>
 <translation id="7026930240735156896">Az utasításokat követve beállíthatja a számítógépet a távoli hozzáféréshez.</translation>

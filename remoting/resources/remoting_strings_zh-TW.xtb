@@ -70,7 +70,7 @@
 <translation id="4176825807642096119">存取碼</translation>
 <translation id="4227991223508142681">主機帳戶管理公用程式</translation>
 <translation id="4240294130679914010">Chromoting 主機解除安裝程式</translation>
-<translation id="4257751272692708833"><ph name="PRODUCT_NAME" />轉址工具</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL 轉發工具</translation>
 <translation id="4277736576214464567">存取碼無效，請再試一次。</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4405930547258349619">核心資料庫</translation>
@@ -130,7 +130,6 @@
 <translation id="6963936880795878952">有人嘗試使用無效的 PIN 連線至遠端電腦，因此您的連線暫時遭到封鎖。請稍後再試。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985691951107243942">你是否確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線？如果之後改變心意的話，你必須親身前往該電腦所在位置並修改設定後，才能重新啟用連線。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> 要求你授予電腦的瀏覽及控制權限。如果你不認識對方，或是需要在授予權限前進行變更，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]，否則請選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="7019153418965365059">不明主機錯誤：<ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">遠端協助</translation>
 <translation id="7026930240735156896">請按照操作說明設定電腦，以便執行遠端存取作業</translation>

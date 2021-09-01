@@ -351,6 +351,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Kargatzen…</translation>
+<translation id="3708186454126126312">Aurretik konektatutakoak</translation>
 <translation id="371370241367527062">Aurreko mikrofonoa</translation>
 <translation id="3713734891607377840">Deskarga amaitzen denean irekiko da</translation>
 <translation id="3742055079367172538">Pantaila-argazkia hartu da</translation>
@@ -571,6 +572,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5308380583665731573">Konektatu</translation>
 <translation id="5313326810920013265">Bluetooth-aren ezarpenak</translation>
 <translation id="5314219114274263156">Grabatu da pantaila</translation>
+<translation id="5319712128756744240">Parekatu beste gailu batekin</translation>
 <translation id="5322611492012084517">Ezin da aurkitu telefonoa</translation>
 <translation id="5329548388331921293">Konektatzen…</translation>
 <translation id="5331975486040154427">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
@@ -787,7 +789,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7067196344162293536">Biratu automatikoki</translation>
 <translation id="7068360136237591149">Ireki fitxategiak</translation>
 <translation id="7076293881109082629">Saioa hasten</translation>
-<translation id="7088960765736518739">Etengailu bidezko sarbidea</translation>
+<translation id="7088960765736518739">Erabilerraztasun-osagarria</translation>
 <translation id="7098389117866926363">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
 <translation id="7106330611027933926">Erakutsi lan-eremuen barra</translation>
 <translation id="7118268675952955085">pantaila-argazkia</translation>
@@ -1007,6 +1009,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8818320199597151042">Profila kentzen. Itxaron minutu batzuk.</translation>
 <translation id="8825863694328519386">Atzera egiteko, pasatu hatza ezkerretik eskuinera</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">Konektatuta daudenak</translation>
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8843682306134542540">Aldatu biratzearen blokeoa. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Bilaketa + Ihes</translation>

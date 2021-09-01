@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli çıxarılıb.</translation>
 <translation id="1473110567575736769">3 saniyəlik taymer</translation>
-<translation id="1478594628797167447">Skaner</translation>
 <translation id="1545749641540134597">QR Kodunu skan edin</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktivdir</translation>
 <translation id="2144806332417375165">Fərdi video parametrləri</translation>
 <translation id="2175927920773552910">QR Kod</translation>
-<translation id="2268107369530950373">Skaner rejiminə keçin</translation>
 <translation id="229579744168541441">Diskə eksport edin</translation>
 <translation id="2320741269052147773">Solu görüntüləyin</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2501853267655415902">Çəkim dayandırılıb</translation>
 <translation id="2501953888035679275">Kameranız ilə foto və video çəkin.</translation>
+<translation id="2517472476991765520">Skan edin</translation>
 <translation id="2549985041256363841">Çəkməyə başlayın</translation>
 <translation id="2599796128805996109">Arxa kamera</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
@@ -43,8 +42,10 @@
 <translation id="3259149966178251584">Kameranın ayırdetmə dəqiqliyi</translation>
 <translation id="3260401663013584785">Sənədi aşkar etmək mümkün olmadı</translation>
 <translation id="3448774564454087943">Çox qısa olduğuna görə video saxlanılmadı</translation>
+<translation id="346539236881580388">Yenidən çəkin</translation>
 <translation id="3517926952904427380">Portret fotosu çəkmək alınmadı</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> faylını silmək istəyirsiniz?</translation>
+<translation id="3573890771273113519">Skan rejiminə keçin</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barkodu skan edin</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
@@ -68,6 +69,7 @@
 <translation id="5268823927180092501">Bütün kameralarda sənəd rejimini aktivləşdirin</translation>
 <translation id="5444515100983837161">Sənədin bütün kənarlarını çərçivənin daxilinə yerləşdirin. Sənəd və arxa fon fərqli rənglərdə olduqda skanlama daha keyfiyyətli olur.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5746169159649715125">PDF olaraq saxlayın</translation>
 <translation id="5753488212459587150">Ekspert rejimini aktiv edin</translation>
 <translation id="5759254179196327752">Sənədi skan edin</translation>
 <translation id="5775960006311140197">Ekspert rejimi</translation>
@@ -104,6 +106,7 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="8120146556401698679">Kənarları yığma, əymə, miqyası dəyişmə</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8145038249676204903">"Foto çəkin" rejiminə keçin</translation>
+<translation id="8167081290930651932">Foto olaraq yadda saxlayın</translation>
 <translation id="8239780215768881278">Video snepşotu çəkin</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8425673304802773841">Aşağı əyin</translation>

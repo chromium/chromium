@@ -146,6 +146,7 @@
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4034824040120875894">Stampante</translation>
+<translation id="409427325554347132">Salva dettagli del test</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
-<translation id="4652335678334611408">Salva log sessione</translation>
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
 <translation id="4665014895760275686">Produttore</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>

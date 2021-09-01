@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">60% வரை டேட்டாவைச் சேமிக்கலாம், இன்றைய செய்திகளைப் படிக்கலாம்</translation>
 <translation id="1303339473099049190">கடவுச்சொல்லைக் கண்டறிய முடியவில்லை. எழுத்துப்பிழையைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> சாதனத்திலிருந்து அனுப்பப்பட்டது</translation>
-<translation id="130581733275749598">ஹைலைட் செய்வதற்கான டெம்ப்ளேட்டைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="1310482092992808703">தாவல்களைக் குழுவாக்கு</translation>
 <translation id="1311657260431405215">இந்த QR குறியீடு URL இல்லை: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">கடவுச்சொற்றொடரை உருவாக்கு</translation>
 <translation id="2996809686854298943">URL தேவை</translation>
 <translation id="3006881078666935414">பயன்பாட்டுத் தரவு இல்லை</translation>
+<translation id="301080557829842765">தனியுரிமை வழிகாட்டி</translation>
 <translation id="3016635187733453316">இந்தச் சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதை உறுதி செய்யவும்</translation>
+<translation id="3026955690410463085">இணைப்பைச் சேர்க்கும்</translation>
 <translation id="3029704984691124060">கடவுத்தொடர்கள் பொருந்தவில்லை</translation>
 <translation id="3031225630520268969">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் ui</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />உதவி பெறுக<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">கடவுச்சொற்களை ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="3227557059438308877">Google Chromeமைப் பாதுகாப்பு விசையாகப் பயன்படுத்தும் வசதி</translation>
 <translation id="3232754137068452469">இணைய ஆப்ஸ்</translation>
+<translation id="3234978181857588512">சாதனத்தில் சேமி</translation>
 <translation id="3236059992281584593">1 நிமிடம் மீதமுள்ளது</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">வைஃபையுடன் இணைத்ததும் பட விளக்கங்கள் மீண்டும் தொடங்கும்</translation>
@@ -481,6 +483,7 @@
 <translation id="3988213473815854515">இருப்பிடம் அனுமதிக்கப்படும்</translation>
 <translation id="3988466920954086464">இந்தப் பேனலில் உடனடித் தேடல் முடிவுகளைப் பார்க்கவும்</translation>
 <translation id="4000212216660919741">Home ஆஃப்லைனில் உள்ளது</translation>
+<translation id="4001236013802615636">பக்கத்திலுள்ள சில வார்த்தைகளையும் தேடலில் Google சேர்த்துக்கொள்ளும்</translation>
 <translation id="4016425174436051808">பின்தொடர முடியவில்லை. ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# மணிநேரம்}other{# மணிநேரம்}}</translation>
 <translation id="4045764304651014138">உபயோகத் தரவு</translation>
@@ -527,6 +530,7 @@
 <translation id="4335835283689002019">பாதுகாப்பு உலாவல் முடக்கப்பட்டுள்ளது</translation>
 <translation id="4351244548802238354">அறிவிப்பை மூடு</translation>
 <translation id="4378154925671717803">மொபைல்</translation>
+<translation id="438319986296050901">கார்டை மட்டும் பகிரும்</translation>
 <translation id="4384468725000734951">தேடலுக்கு Sogouஐப் பயன்படுத்துகிறீர்கள்</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - மொழியைப் பதிவிறக்குகிறது…</translation>
 <translation id="4404568932422911380">புக்மார்க்குகள் இல்லை</translation>
@@ -590,6 +594,7 @@
 <translation id="4738836084190194332">கடைசியாக ஒத்திசைத்தது: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">ஹைலைட்டை அகற்று</translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
+<translation id="4758061975920522644">படத்தை மட்டும் பகிரும்</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
 <translation id="4763480195061959176">வீடியோ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் முடிந்தது.}other{# பதிவிறக்கங்கள் முடிந்தன.}}</translation>
@@ -753,6 +758,7 @@
 <translation id="5748802427693696783">இயல்பான தாவல்களுக்கு மாற்றப்பட்டது</translation>
 <translation id="5749068826913805084">ஃபைல்களைப் பதிவிறக்க Chromeக்கு சேமிப்பிட அணுகல் தேவை.</translation>
 <translation id="5749237766298580851">முடக்கப்பட்டுள்ளது <ph name="SEPARATOR" /> பரிந்துரைக்கப்படவில்லை</translation>
+<translation id="5752232708629533680">GIF படங்களை மட்டும் பகிரும்</translation>
 <translation id="5754350196967618083">Discoverரைப் புதுப்பிக்க முடியவில்லை</translation>
 <translation id="5763382633136178763">மறைநிலைத் தாவல்கள்</translation>
 <translation id="5763514718066511291">இந்த ஆப்ஸின் URLஐ நகலெடுக்க, தட்டவும்</translation>
@@ -815,6 +821,7 @@
 <translation id="604996488070107836">அறியப்படாதப் பிழை காரணமாக <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">உங்கள் செய்திகளையும் செயல்பாட்டையும் இங்கே கட்டுப்படுத்தலாம்</translation>
+<translation id="6069177176307973611">தனியுரிமை மற்றும் பாதுகாப்பு அமைப்புகளைத் தெரிந்துகொள்ளலாம்</translation>
 <translation id="6085886413119427067">பாதுகாப்பான இணைப்பின் மூலம் இணையதளங்களில் இணைவது எப்படி என்பதைக் கண்டறியும்</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> மணிநேரம் மீதமுள்ளது</translation>
 <translation id="6108923351542677676">அமைவு செயலிலுள்ளது...</translation>
@@ -900,6 +907,7 @@
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
 <translation id="6546511553472444032">ஃபைல் தீங்கிழைப்பதாக இருக்கக்கூடும்</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_ONE" /> பக்கம் மூடப்படும்}other{<ph name="TAB_TITLE" />, மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்கள் மூடப்படும்}}</translation>
+<translation id="6560066289487134861">ஹைலைட் செய்வதற்கான டெம்ப்ளேட்டைத் தேர்ந்தெடுங்கள். முதன்மை உரையாடலுக்கு மீண்டும் திரும்ப, மேல்நோக்கி ஸ்வைப் செய்துவிட்டு கீழ்நோக்கி ஸ்வைப் செய்யும் சைகையைப் பயன்படுத்திய பிறகு 'அடுத்து' என்பதைத் தட்டவும்.</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6565959834589222080">வைஃபை இணைப்பு கிடைக்கும்போது பயன்படுத்தப்படும்</translation>
@@ -962,6 +970,7 @@
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6900532703269623216">மேம்பட்ட பாதுகாப்பு</translation>
 <translation id="6903907808598579934">ஒத்திசைவை இயக்கு</translation>
+<translation id="6924672435311694692">சிறந்த முடிவுகளைக் காட்டு</translation>
 <translation id="6929699136511445623">Android சிஸ்டம் ஒத்திசைவை இயக்கு</translation>
 <translation id="6942665639005891494">அமைப்புகள் மெனு விருப்பத்தைப் பயன்படுத்தி எப்போது வேண்டுமானாலும் இயல்புப் பதிவிறக்க இடத்தை மாற்றலாம்</translation>
 <translation id="694267552845942083">தற்போது ஒத்திசைவு அமைப்புகளைப் பிரத்தியேகமாக்குகிறீர்கள். ஒத்திசைவை இயக்க திரையின் கீழ்ப்பகுதிக்கு அருகிலுள்ள ‘உறுதிப்படுத்து’ பட்டனைத் தட்டவும். மேலே செல்</translation>
@@ -980,6 +989,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> மீட்டெடுக்கப்பட்டது</translation>
 <translation id="7029390216614421513">இந்த ஃபிரேமில் QR/பார் குறியீடு தெரியும்படி வைக்கவும்.</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">பட விளக்கங்களைப் பெற வேண்டுமா?</translation>
 <translation id="7055152154916055070">திசைதிருப்புதல் தடுக்கப்பட்டது:</translation>
 <translation id="7063006564040364415">ஒத்திசைவு சேவையகத்துடன் இணைக்க முடியவில்லை.</translation>
@@ -1208,6 +1218,7 @@
 <translation id="8424781820952413435">பக்கம் அனுப்பப்பட்டது. அதைப் பார்க்க, <ph name="DEVICE_TYPE" /> Chromeமைத் திறக்கவும்</translation>
 <translation id="8427875596167638501">மாதிரிக்காட்சித் தாவல் பாதியளவு திறந்துள்ளது</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>
+<translation id="8430824733382774043">ஸ்கிரீன்ஷாட்டை மட்டும் பகிரும்</translation>
 <translation id="8438566539970814960">தேடல்களையும் உலாவலையும் மேலும் சிறப்பாக்குக</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - பதிவிறக்கப்பட்டது, <ph name="APP_NAME" /> ஆப்ஸை மீண்டும் தொடங்கவும்.</translation>
 <translation id="8442258441309440798">புதிய கட்டுரைகள் எதுவுமில்லை</translation>
@@ -1264,7 +1275,6 @@
 <translation id="8683081248374354009">குழு ஐடியை மீட்டமை</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
-<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
 <translation id="8746155870861185046">ஹைலைட் செய்த உரையைப் பகிர்</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9137013805542155359">அசலைக் காண்பி</translation>
 <translation id="9148126808321036104">மீண்டும் உள்நுழைக</translation>
 <translation id="9155898266292537608">ஒரு சொல்லைத் தட்டி உடனடியாகவும் தேடலாம்</translation>
+<translation id="9158770349521403363">உள்ளடக்கத்தை மட்டும் பகிரும்</translation>
 <translation id="9169507124922466868">வழிசெலுத்தல் வரலாறு பாதியளவு திறந்துள்ளது</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{சரிபார்த்தது: 1 நிமிடத்திற்கு முன்பு}other{சரிபார்த்தது: # நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="9204836675896933765">1 ஃபைல் மீதமுள்ளது</translation>

@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4034824040120875894">Impressora</translation>
+<translation id="409427325554347132">Desa els detalls de la prova</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="4145784616224233563">Tallafoc HTTP</translation>
 <translation id="4155551848414053977">Comprova que l'escàner estigui encès i disponible a través de la teva xarxa o d'una connexió directa</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>
-<translation id="4652335678334611408">Desa el registre de sessió</translation>
 <translation id="4654549501020883054">Canvia cada dia</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="467510802200863975">Les contrasenyes no coincideixen</translation>

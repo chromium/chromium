@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
 <translation id="1813278315230285598">Dịch vụ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Chú ý:<ph name="END_BOLD" /> Các tệp này là tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="183183971458492120">Đang tải thông tin...</translation>
 <translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
@@ -580,6 +579,7 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Để lưu tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Bướm</translation>
+<translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Tiếng Hungary</translation>
 <translation id="6189412234224385711">Mở bằng <ph name="EXTENSION_NAME" /></translation>

@@ -146,6 +146,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
 <translation id="4131410914670010031">Ağ və qara</translation>
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
-<translation id="4652335678334611408">Sessiya jurnalını yadda saxlayın</translation>
 <translation id="4654549501020883054">Gündəlik dəyişdirin</translation>
 <translation id="4665014895760275686">İstehsalçı</translation>
 <translation id="467510802200863975">Parollar üst-üstə düşmür</translation>

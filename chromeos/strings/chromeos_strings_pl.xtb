@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
 <translation id="4034824040120875894">Drukarka</translation>
+<translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="4145784616224233563">Zapora sieciowa HTTP</translation>
 <translation id="4155551848414053977">Upewnij się, że skaner jest włączony i dostępny przez sieć lub połączenie bezpośrednie</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
-<translation id="4652335678334611408">Zapisz dziennik sesji</translation>
 <translation id="4654549501020883054">Zmieniaj codziennie</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Hasła nie są zgodne</translation>

@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1467231725790366244">Kamera „<ph name="CAMERA" />“ atjungta.</translation>
 <translation id="1473110567575736769">3 sek. laikmatis</translation>
-<translation id="1478594628797167447">Skaitytuvas</translation>
 <translation id="1545749641540134597">Nuskaitykite QR kodą</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktyvus</translation>
 <translation id="2144806332417375165">Tinkinti vaizdo įrašų parametrai</translation>
 <translation id="2175927920773552910">QR kodas</translation>
-<translation id="2268107369530950373">Perjungti į skaitytuvo režimą</translation>
 <translation id="229579744168541441">Eksportuoti į diską</translation>
 <translation id="2320741269052147773">Pastumti kairėn</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2501853267655415902">Įrašas sustabdytas</translation>
 <translation id="2501953888035679275">Fotografuokite ir filmuokite naudodami fotoaparatą.</translation>
+<translation id="2517472476991765520">Nuskaityti</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
 <translation id="2599796128805996109">Užpakalinis fotoaparatas</translation>
 <translation id="2879583609344924966">Kamera „<ph name="CAMERA" />“ prijungta.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Fotoaparato skyra</translation>
 <translation id="3260401663013584785">Nepavyko aptikti dokumento</translation>
 <translation id="3448774564454087943">Vaizdo įrašas neišsaugotas, nes yra per trumpas</translation>
+<translation id="346539236881580388">Perfotografuoti</translation>
 <translation id="3517926952904427380">Nepavyko nufotografuoti portretinės nuotraukos</translation>
 <translation id="3569311554794739032">Ar tikrai norite pašalinti „<ph name="FILE" />“?</translation>
+<translation id="3573890771273113519">Perjungti į nuskaitymo režimą</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3838931309141338733">Nuskaityti brūkšninį kodą</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Įgalinti dokumento režimą visuose fotoaparatuose</translation>
 <translation id="5444515100983837161">Visi dokumento kraštai turi būti rėmelyje. Geriausia nuskaitymo kokybė užtikrinama, kai dokumento ir fono spalvos skiriasi.</translation>
 <translation id="5671277269877808209">Kvadratas</translation>
+<translation id="5746169159649715125">Išsaugoti kaip PDF</translation>
 <translation id="5753488212459587150">Įgalinti eksperto režimą</translation>
 <translation id="5759254179196327752">Nuskaityti dokumentą</translation>
 <translation id="5775960006311140197">Eksperto režimas</translation>
@@ -106,6 +108,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8120146556401698679">Pastumti, pakreipti, keisti mastelį</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8145038249676204903">Perjungti į fotografavimo režimą</translation>
+<translation id="8167081290930651932">Išsaugoti kaip nuotrauką</translation>
 <translation id="8239780215768881278">Užfiksuoti momentinę vaizdo įrašo nuotrauką</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
 <translation id="8425673304802773841">Nukreipti žemyn</translation>

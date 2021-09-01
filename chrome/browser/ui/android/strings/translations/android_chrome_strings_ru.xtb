@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Экономьте до 60 % трафика и читайте ежедневные новости.</translation>
 <translation id="1303339473099049190">Пароль не найден. Убедитесь, что он указан правильно, и повторите попытку.</translation>
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
-<translation id="130581733275749598">Выберите шаблон для выделенного текста</translation>
 <translation id="1310482092992808703">Сгруппировать вкладки</translation>
 <translation id="1311657260431405215">В этом QR-коде нет URL: <ph name="QRCODEVALUE" />.</translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">Придумайте кодовую фразу</translation>
 <translation id="2996809686854298943">Необходимо указать URL</translation>
 <translation id="3006881078666935414">Нет данных об использовании</translation>
+<translation id="301080557829842765">Конфиденциальность</translation>
 <translation id="3016635187733453316">Убедитесь, что устройство подключено к Интернету.</translation>
+<translation id="3026955690410463085">Добавить ссылку</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
 <translation id="3031225630520268969">Окно, где требуется разрешить использование Ассистента для голосового поиска</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">Чтобы синхронизировать пароли, подтвердите свою личность.</translation>
 <translation id="3227557059438308877">Google Chrome в качестве электронного ключа</translation>
 <translation id="3232754137068452469">Веб-приложение</translation>
+<translation id="3234978181857588512">Сохранить на устройстве</translation>
 <translation id="3236059992281584593">Осталась 1 мин.</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3250563604907490871">Описания изображений станут доступны при подключении к сети Wi-Fi.</translation>
@@ -481,6 +483,7 @@
 <translation id="3988213473815854515">Доступ к геоданным разрешен</translation>
 <translation id="3988466920954086464">Результаты поиска появятся на этой панели.</translation>
 <translation id="4000212216660919741">Офлайн</translation>
+<translation id="4001236013802615636">Google будет учитывать текст на странице</translation>
 <translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
@@ -527,6 +530,7 @@
 <translation id="4335835283689002019">Отключено</translation>
 <translation id="4351244548802238354">Закрыть</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="438319986296050901">Поделиться только карточкой</translation>
 <translation id="4384468725000734951">Sogou используется как поисковая система по умолчанию</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – скачивание…</translation>
 <translation id="4404568932422911380">Нет закладок</translation>
@@ -590,6 +594,7 @@
 <translation id="4738836084190194332">Последняя синхронизация: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4749960740855309258">Открыть новую вкладку</translation>
+<translation id="4758061975920522644">Поделиться только изображением</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4763480195061959176">видео</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{Скачивание 1 файла завершено.}one{Скачивание # файла завершено.}few{Скачивание # файлов завершено.}many{Скачивание # файлов завершено.}other{Скачивание # файла завершено.}}</translation>
@@ -753,6 +758,7 @@
 <translation id="5748802427693696783">Переключено на обычные вкладки</translation>
 <translation id="5749068826913805084">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
 <translation id="5749237766298580851">Отключено <ph name="SEPARATOR" /> Не рекомендуется</translation>
+<translation id="5752232708629533680">Поделиться только GIF</translation>
 <translation id="5754350196967618083">Не удается обновить рекомендации</translation>
 <translation id="5763382633136178763">Вкладки в режиме инкогнито</translation>
 <translation id="5763514718066511291">Нажмите, чтобы скопировать URL этого приложения.</translation>
@@ -815,6 +821,7 @@
 <translation id="604996488070107836">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неизвестной ошибки.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управление рекомендациями</translation>
+<translation id="6069177176307973611">Проверить настройки конфиденциальности и безопасности</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
 <translation id="60923314841986378">Осталось <ph name="HOURS" /> ч.</translation>
 <translation id="6108923351542677676">Настройка…</translation>
@@ -900,6 +907,7 @@
 <translation id="6545017243486555795">Удалить все данные</translation>
 <translation id="6546511553472444032">Файл может быть опасным</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
+<translation id="6560066289487134861">Выберите шаблон для выделенного текста. Чтобы вернуться в основное диалоговое окно, проведите пальцем вверх, а затем вниз. После этого нажмите "Далее".</translation>
 <translation id="6560414384669816528">Поиск в Sogou</translation>
 <translation id="656065428026159829">Ещё</translation>
 <translation id="6565959834589222080">Использовать сеть Wi-Fi, когда она доступна</translation>
@@ -962,6 +970,7 @@
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
 <translation id="6903907808598579934">Включить</translation>
+<translation id="6924672435311694692">Показывать более точные результаты</translation>
 <translation id="6929699136511445623">Включить синхронизацию системы Android</translation>
 <translation id="6942665639005891494">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию, воспользовавшись меню "Настройки".</translation>
 <translation id="694267552845942083">Сейчас вы находитесь на странице настроек синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
@@ -980,6 +989,7 @@
 <translation id="7027549951530753705">Восстановлен объект "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029390216614421513">Поместите QR-код или штрихкод в эту рамку.</translation>
 <translation id="7029809446516969842">Пароли</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
 <translation id="7055152154916055070">Заблокирована попытка переадресации:</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>
@@ -1208,6 +1218,7 @@
 <translation id="8424781820952413435">Страница отправлена. Чтобы ее открыть, запустите Chrome на своем <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8427875596167638501">Вкладка предпросмотра открыта на половину высоты</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8430824733382774043">Поделиться только скриншотом</translation>
 <translation id="8438566539970814960">Помогать улучшить просмотр страниц и поиск</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> – языковой пакет скачан. Перезапустите <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Нет рекомендаций</translation>
@@ -1264,7 +1275,6 @@
 <translation id="8683081248374354009">Сбросить настройки группы</translation>
 <translation id="869891660844655955">Срок действия</translation>
 <translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
-<translation id="8712637175834984815">Готово</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9137013805542155359">Показать оригинал</translation>
 <translation id="9148126808321036104">Повторите вход</translation>
 <translation id="9155898266292537608">Также можно выполнить поиск, нажав на слово.</translation>
+<translation id="9158770349521403363">Поделиться без ссылки</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204836675896933765">Остался 1 файл</translation>

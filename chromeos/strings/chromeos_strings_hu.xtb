@@ -146,6 +146,7 @@
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
 <translation id="4034824040120875894">Nyomtató</translation>
+<translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="4145784616224233563">HTTP-tűzfal</translation>
 <translation id="4155551848414053977">Győződjön meg arról, hogy a szkenner be van kapcsolva, és hogy hozzáférhető a hálózaton vagy közvetlen kapcsolaton keresztül</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Proxyhitelesítés szükséges</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
 <translation id="4646949265910132906">Biztonságos Wi-Fi-kapcsolat</translation>
-<translation id="4652335678334611408">Munkamenetnapló mentése</translation>
 <translation id="4654549501020883054">Minden nap más</translation>
 <translation id="4665014895760275686">Gyártó</translation>
 <translation id="467510802200863975">A jelszavak nem egyeznek</translation>

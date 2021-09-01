@@ -146,6 +146,7 @@
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4034824040120875894">מדפסת</translation>
+<translation id="409427325554347132">שמירה של פרטי הבדיקה</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
-<translation id="4652335678334611408">לשמירת יומן הפעילות</translation>
 <translation id="4654549501020883054">שינוי מדי יום</translation>
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>

@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Εξοικονομήστε έως και το 60% των δεδομένων, διαβάστε τις σημερινές ειδήσεις</translation>
 <translation id="1303339473099049190">Δεν είναι δυνατή η εύρεση αυτού του κωδικού πρόσβασης. Ελέγξτε για τυχόν ορθογραφικά λάθη και δοκιμάστε ξανά.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
-<translation id="130581733275749598">Επιλέξτε ένα πρότυπο για την επισήμανσή σας</translation>
 <translation id="1310482092992808703">Ομαδοποίηση καρτελών</translation>
 <translation id="1311657260431405215">Αυτός ο κωδικός QR δεν είναι URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">Δημιουργία φράσης πρόσβασης</translation>
 <translation id="2996809686854298943">Απαιτείται διεύθυνση URL</translation>
 <translation id="3006881078666935414">Δεν υπάρχουν δεδομένα χρήσης</translation>
+<translation id="301080557829842765">Οδηγός απορρήτου</translation>
 <translation id="3016635187733453316">Βεβαιωθείτε ότι η συσκευή είναι συνδεδεμένη στο διαδίκτυο.</translation>
+<translation id="3026955690410463085">Συμπερίληψη συνδέσμου</translation>
 <translation id="3029704984691124060">Οι φράσεις πρόσβασης δεν συμφωνούν</translation>
 <translation id="3031225630520268969">Διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Λάβετε βοήθεια<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">Για να συγχρονίσετε τους κωδικούς πρόσβασής σας, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="3227557059438308877">Google Chrome ως κλειδί ασφαλείας</translation>
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
+<translation id="3234978181857588512">Αποθήκευση στη συσκευή</translation>
 <translation id="3236059992281584593">Απομένει 1 λεπτό</translation>
 <translation id="3244271242291266297">ΜΜ</translation>
 <translation id="3250563604907490871">Οι περιγραφές εικόνων θα συνεχιστούν όταν συνδεθείτε σε δίκτυο Wi-Fi.</translation>
@@ -481,6 +483,7 @@
 <translation id="3988213473815854515">Η τοποθεσία επιτρέπεται</translation>
 <translation id="3988466920954086464">Προβολή αποτελεσμάτων αναζήτησης Instant σε αυτό το πλαίσιο</translation>
 <translation id="4000212216660919741">Η αρχική σελίδα είναι εκτός σύνδεσης</translation>
+<translation id="4001236013802615636">Να επιτρέπεται επίσης στην Google να λαμβάνει υπόψη μέρος του κειμένου της σελίδας</translation>
 <translation id="4016425174436051808">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4045764304651014138">Δεδομένα χρήσης</translation>
@@ -527,6 +530,7 @@
 <translation id="4335835283689002019">Η ασφαλής περιήγηση είναι απενεργοποιημένη.</translation>
 <translation id="4351244548802238354">Κλείσιμο παραθύρου διαλόγου</translation>
 <translation id="4378154925671717803">Τηλέφωνο</translation>
+<translation id="438319986296050901">Κοινοποίηση μόνο κάρτας</translation>
 <translation id="4384468725000734951">Χρήση του Sogou για αναζήτηση</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Λήψη…</translation>
 <translation id="4404568932422911380">Δεν υπάρχουν σελιδοδείκτες</translation>
@@ -590,6 +594,7 @@
 <translation id="4738836084190194332">Τελευταίος συγχρονισμός: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">Κατάργηση επισήμανσης</translation>
 <translation id="4749960740855309258">Άνοιγμα νέας καρτέλας</translation>
+<translation id="4758061975920522644">Κοινοποίηση μόνο εικόνας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4763480195061959176">βίντεο</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ολοκληρωμένη λήψη.}other{# ολοκληρωμένες λήψεις.}}</translation>
@@ -753,6 +758,7 @@
 <translation id="5748802427693696783">Έγινε εναλλαγή σε τυπικές καρτέλες</translation>
 <translation id="5749068826913805084">Το Chrome χρειάζεται πρόσβαση στο χώρο αποθήκευσης για τη λήψη αρχείων.</translation>
 <translation id="5749237766298580851">Ανενεργό <ph name="SEPARATOR" /> Δεν συνιστάται</translation>
+<translation id="5752232708629533680">Κοινοποίηση μόνο GIF</translation>
 <translation id="5754350196967618083">Δεν είναι δυνατή η ανανέωση του Discover</translation>
 <translation id="5763382633136178763">Καρτέλες ανώνυμης περιήγησης</translation>
 <translation id="5763514718066511291">Πατήστε για αντιγραφή του URL για αυτήν την εφαρμογή</translation>
@@ -815,6 +821,7 @@
 <translation id="604996488070107836">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω άγνωστου σφάλματος.</translation>
 <translation id="605721222689873409">ΕΕ</translation>
 <translation id="6059830886158432458">Ελέγξτε τις ειδήσεις και τη δραστηριότητά σας εδώ</translation>
+<translation id="6069177176307973611">Έλεγχος ρυθμίσεων απορρήτου και ασφαλείας</translation>
 <translation id="6085886413119427067">Καθορίζει τον τρόπο σύνδεσης σε ιστοτόπους μέσω μιας ασφαλούς σύνδεσης.</translation>
 <translation id="60923314841986378">Απομένουν <ph name="HOURS" /> ώρες</translation>
 <translation id="6108923351542677676">Ρύθμιση σε εξέλιξη…</translation>
@@ -900,6 +907,7 @@
 <translation id="6545017243486555795">Διαγραφή όλων των δεδομένων</translation>
 <translation id="6546511553472444032">Το αρχείο μπορεί να είναι επιβλαβές</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα}other{Πρόκειται να κλείσει η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες}}</translation>
+<translation id="6560066289487134861">Επιλέξτε ένα πρότυπο για την επισήμανσή σας. Για να επιστρέψετε στο κύριο παράθυρο διαλόγου, χρησιμοποιήστε την κίνηση προς τα πάνω και μετά κάτω και πατήστε Επόμενο.</translation>
 <translation id="6560414384669816528">Αναζήτηση με το Sogou</translation>
 <translation id="656065428026159829">Δείτε περισσότερα</translation>
 <translation id="6565959834589222080">Το Wi-Fi χρησιμοποιείται όταν είναι διαθέσιμο</translation>
@@ -962,6 +970,7 @@
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6900532703269623216">Βελτιωμένη ασφάλεια</translation>
 <translation id="6903907808598579934">Ενεργοποίηση συγχρονισμού</translation>
+<translation id="6924672435311694692">Εμφάνιση καλύτερων αποτελεσμάτων</translation>
 <translation id="6929699136511445623">Ενεργοποίηση συγχρονισμού συστήματος Android</translation>
 <translation id="6942665639005891494">Αλλάξτε την προεπιλεγμένη τοποθεσία λήψης ανά πάσα στιγμή χρησιμοποιώντας την επιλογή μενού "Ρυθμίσεις"</translation>
 <translation id="694267552845942083">Αυτήν τη στιγμή, προσαρμόζετε τις ρυθμίσεις συγχρονισμού σας. Για να ολοκληρώσετε την ενεργοποίηση του συγχρονισμού, πατήστε το κουμπί Επιβεβαίωσης κοντά στην κορυφή της οθόνης. Πλοήγηση προς τα επάνω</translation>
@@ -980,6 +989,7 @@
 <translation id="7027549951530753705">Έγινε επαναφορά του στοιχείου <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029390216614421513">Τοποθετήστε τον κωδικό QR ή τον γραμμωτό κώδικα σε αυτό το πλαίσιο.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Λήψη περιγραφών εικόνων;</translation>
 <translation id="7055152154916055070">Αποκλεισμένη ανακατεύθυνση:</translation>
 <translation id="7063006564040364415">Δεν ήταν δυνατή η σύνδεση στον διακομιστή συγχρονισμού.</translation>
@@ -1208,6 +1218,7 @@
 <translation id="8424781820952413435">Η σελίδα στάλθηκε. Για να τη δείτε, ανοίξτε το Chrome σε <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Η καρτέλα προεπισκόπησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
+<translation id="8430824733382774043">Κοινοποίηση μόνο στιγμιότυπου οθόνης</translation>
 <translation id="8438566539970814960">Βελτιώστε τις αναζητήσεις και την περιήγηση</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Η γλώσσα είναι έτοιμη. Επανεκκινήστε την εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Δεν υπάρχουν διαθέσιμες ιστορίες</translation>
@@ -1264,7 +1275,6 @@
 <translation id="8683081248374354009">Επαναφορά ομάδας</translation>
 <translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8699120352855309748">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των γλωσσών</translation>
-<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8746155870861185046">Κοινοποίηση επισήμανσης</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9137013805542155359">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9155898266292537608">Επίσης, μπορείτε να κάνετε αναζήτηση με ένα γρήγορο πάτημα σε μια λέξη</translation>
+<translation id="9158770349521403363">Κοινοποίηση μόνο περιεχομένου</translation>
 <translation id="9169507124922466868">Το ιστορικό πλοήγησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ελέγχθηκε πριν από ένα λεπτό}other{Ελέγχθηκε πριν από # λεπτά}}</translation>
 <translation id="9204836675896933765">1 αρχείο απομένει</translation>

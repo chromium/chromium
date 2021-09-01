@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4034824040120875894">Tulostin</translation>
+<translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
-<translation id="4652335678334611408">Tallenna käyttökertaloki</translation>
 <translation id="4654549501020883054">Vaihda päivittäin</translation>
 <translation id="4665014895760275686">Valmistaja</translation>
 <translation id="467510802200863975">Salasanat eivät täsmää</translation>

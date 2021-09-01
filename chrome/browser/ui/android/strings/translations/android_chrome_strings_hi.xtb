@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">60% तक डेटा बचाएं, आज की खबरें पढ़ें</translation>
 <translation id="1303339473099049190">वह पासवर्ड नहीं मिला. अपनी वर्तनी की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> से भेजा गया</translation>
-<translation id="130581733275749598">अपनी हाइलाइट के लिए टेंप्लेट चुनें</translation>
 <translation id="1310482092992808703">टैब को समूह में लगाएं</translation>
 <translation id="1311657260431405215">यह क्यूआर कोड, यूआरएल नहीं है: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">'पासफ़्रेज़' बनाएं</translation>
 <translation id="2996809686854298943">URL ज़रूरी है</translation>
 <translation id="3006881078666935414">कोई उपयोग डेटा नहीं</translation>
+<translation id="301080557829842765">निजता गाइड</translation>
 <translation id="3016635187733453316">पक्का करें कि इस डिवाइस को इंटरनेट से कनेक्ट किया गया है</translation>
+<translation id="3026955690410463085">लिंक जोड़ें</translation>
 <translation id="3029704984691124060">पासफ़्रेज़ मिलान नहीं करते</translation>
 <translation id="3031225630520268969">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="3227557059438308877">Google Chrome, सुरक्षा कुंजी के रूप में</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
+<translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">वाई-फ़ाई से कनेक्ट करने पर, इमेज की जानकारी जोड़ने की सुविधा फिर से शुरू हो जाएगी</translation>
@@ -481,6 +483,7 @@
 <translation id="3988213473815854515">स्‍थान अनुमत है</translation>
 <translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
+<translation id="4001236013802615636">Google को पेज के टेक्स्ट को ढूंढ़ने की भी अनुमति दें</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
@@ -527,6 +530,7 @@
 <translation id="4335835283689002019">सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
+<translation id="438319986296050901">सिर्फ़ कार्ड शेयर करें</translation>
 <translation id="4384468725000734951">खोज के लिए Sogou का इस्तेमाल कर रहे हैं</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड हो रही है…</translation>
 <translation id="4404568932422911380">कोई बुकमार्क नहीं</translation>
@@ -590,6 +594,7 @@
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
+<translation id="4758061975920522644">सिर्फ़ इमेज शेयर करें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4763480195061959176">वीडियो</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 डाउनलोड पूरा हुआ.}one{# डाउनलोड पूरे हुए.}other{# डाउनलोड पूरे हुए.}}</translation>
@@ -753,6 +758,7 @@
 <translation id="5748802427693696783">मानक टैब पर स्विच कर दिया गया</translation>
 <translation id="5749068826913805084">फ़ाइलें डाउनलोड करने के लिए Chrome को मेमोरी के ऐक्‍सेस की ज़रूरत होगी.</translation>
 <translation id="5749237766298580851"><ph name="SEPARATOR" /> को बंद करने का सुझाव नहीं दिया गया</translation>
+<translation id="5752232708629533680">सिर्फ़ GIF शेयर करें</translation>
 <translation id="5754350196967618083">'डिस्कवर' को रीफ़्रेश नहीं किया जा सकता</translation>
 <translation id="5763382633136178763">गुप्त टैब</translation>
 <translation id="5763514718066511291">इस ऐप्लिकेशन का यूआरएल कॉपी करने के लिए टैप करें</translation>
@@ -815,6 +821,7 @@
 <translation id="604996488070107836">किसी अज्ञात गड़बड़ी के कारण <ph name="FILE_NAME" /> का डाउनलोड विफल रहा.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">अपनी खबरों और गतिविधि को यहां नियंत्रित करें</translation>
+<translation id="6069177176307973611">निजता और सुरक्षा सेटिंग की समीक्षा करें</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> घंटे शेष</translation>
 <translation id="6108923351542677676">सेटअप प्रगति में है…</translation>
@@ -900,6 +907,7 @@
 <translation id="6545017243486555795">सभी डेटा साफ़ करें</translation>
 <translation id="6546511553472444032">यह फ़ाइल नुकसान पहुंचा सकती है</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="TAB_TITLE" /> और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>
+<translation id="6560066289487134861">अपनी हाइलाइट के लिए टेंप्लेट चुनें. मुख्य डायलॉग पर वापस जाने के लिए, पहले 'ऊपर' फिर 'नीचे' जेस्चर का इस्तेमाल करें. इसके बाद 'आगे बढ़ें' पर टैप करें.</translation>
 <translation id="6560414384669816528">Sogou से खोजें</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6565959834589222080">उपलब्ध होने पर वाई-फ़ाई का इस्तेमाल किया जाता है</translation>
@@ -962,6 +970,7 @@
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6900532703269623216">बेहतर सुरक्षा मोड</translation>
 <translation id="6903907808598579934">समन्वयन चालू करें</translation>
+<translation id="6924672435311694692">बेहतर नतीजे देखें</translation>
 <translation id="6929699136511445623">Android सिस्टम सिंक चालू करें</translation>
 <translation id="6942665639005891494">सेटिंग मेन्यू विकल्प का इस्तेमाल करके डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
 <translation id="694267552845942083">फ़िलहाल, आप अपनी सिंक सेटिंग पसंद के मुताबिक इस्तेमाल कर रहे हैं. सिंक की सुविधा चालू करने की प्रोसेस पूरी करने के लिए, स्क्रीन पर सबसे नीचे मौजूद 'पुष्टि करें' बटन पर टैप करें. ऊपर जाएं</translation>
@@ -980,6 +989,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> को पहले जैसा किया गया</translation>
 <translation id="7029390216614421513">इस फ़्रेम में क्यूआर/बार कोड रखें.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">क्या आप इमेज की जानकारी पाना चाहते हैं?</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7063006564040364415">समन्‍वयन सर्वर से कनेक्‍ट नहीं किया जा सका.</translation>
@@ -1208,6 +1218,7 @@
 <translation id="8424781820952413435">पेज भेजा गया. इसे देखने के लिए, अपने <ph name="DEVICE_TYPE" /> पर Chrome खोलें</translation>
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
+<translation id="8430824733382774043">सिर्फ़ स्क्रीनशॉट शेयर करें</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा इस्तेमाल के लिए तैयार है. <ph name="APP_NAME" /> को रीस्टार्ट करें.</translation>
 <translation id="8442258441309440798">कोई भी कहानी उपलब्ध नहीं है</translation>
@@ -1264,7 +1275,6 @@
 <translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
 <translation id="869891660844655955">समय समाप्ति तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
-<translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8730621377337864115">हो गया</translation>
 <translation id="8746155870861185046">हाइलाइट किया गया टेक्स्ट शेयर करें</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9148126808321036104">फिर से साइन इन करें</translation>
 <translation id="9155898266292537608">आप किसी शब्द पर बस एक टैप करके भी खोज सकते हैं</translation>
+<translation id="9158770349521403363">सिर्फ़ कॉन्टेंट शेयर करें</translation>
 <translation id="9169507124922466868">नेविगेशन का इतिहास आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{जांच 1 मिनट पहले की गई}one{जांच # मिनट पहले की गई}other{जांच # मिनट पहले की गई}}</translation>
 <translation id="9204836675896933765">1 फ़ाइल बची है</translation>

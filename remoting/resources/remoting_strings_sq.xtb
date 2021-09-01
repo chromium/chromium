@@ -130,7 +130,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="6963936880795878952">Lidhjet me kompjuterin në largësi janë të bllokuara përkohësisht sepse dikush po përpiqej të lidhej me të nëpërmjet një kodi PIN të pavlefshëm. Provo përsëri më vonë.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6985691951107243942">Je i sigurt se dëshiron të çaktivizosh lidhjet në distancë me <ph name="HOSTNAME" />? Nëse ndryshon mendje, do të të duhet të shkosh te ai kompjuter dhe të riaktivizosh lidhjet.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ka kërkuar qasje për të parë dhe kontrolluar kompjuterin tënd. Shtyp ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' nëse nuk e njeh këtë person ose nëse duhet të bësh ndonjë ndryshim përpara shpërndarjes.  Përndryshe zgjidh ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' për të lejuar lidhjen.</translation>
 <translation id="7019153418965365059">Gabim i panjohur i strehuesit: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Ndihma në largësi</translation>
 <translation id="7026930240735156896">Ndiq udhëzimet për konfigurimin e kompjuterit për qasje në distancë</translation>

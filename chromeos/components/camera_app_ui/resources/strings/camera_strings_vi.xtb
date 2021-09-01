@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">In</translation>
 <translation id="1467231725790366244">Đã rút <ph name="CAMERA" /> khỏi thiết bị.</translation>
 <translation id="1473110567575736769">Đồng hồ hẹn giờ 3 giây</translation>
-<translation id="1478594628797167447">Máy quét</translation>
 <translation id="1545749641540134597">Quét mã QR</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> đang hoạt động</translation>
 <translation id="2144806332417375165">Thông số video tùy chỉnh</translation>
 <translation id="2175927920773552910">Mã QR</translation>
-<translation id="2268107369530950373">Chuyển sang chế độ máy quét</translation>
 <translation id="229579744168541441">Xuất ra đĩa</translation>
 <translation id="2320741269052147773">Xoay trái</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2501853267655415902">Đã dừng quay</translation>
 <translation id="2501953888035679275">Chụp ảnh và quay video bằng máy ảnh.</translation>
+<translation id="2517472476991765520">Quét</translation>
 <translation id="2549985041256363841">Bắt đầu ghi</translation>
 <translation id="2599796128805996109">Máy ảnh mặt sau</translation>
 <translation id="2879583609344924966">Đã cắm <ph name="CAMERA" /> vào thiết bị.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Độ phân giải của máy ảnh</translation>
 <translation id="3260401663013584785">Không thể phát hiện tài liệu</translation>
 <translation id="3448774564454087943">Không lưu được video vì thời lượng quá ngắn</translation>
+<translation id="346539236881580388">Chụp lại</translation>
 <translation id="3517926952904427380">Không thể chụp ảnh chân dung</translation>
 <translation id="3569311554794739032">Bạn có thực sự muốn xóa <ph name="FILE" /> không?</translation>
+<translation id="3573890771273113519">Chuyển sang chế độ quét</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Quét mã vạch</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Bật chế độ tài liệu trên tất cả máy ảnh</translation>
 <translation id="5444515100983837161">Đặt tất cả cạnh của tài liệu vào trong khung. Tính năng quét hoạt động hiệu quả nhất khi màu của tài liệu và nền khác nhau.</translation>
 <translation id="5671277269877808209">Vuông</translation>
+<translation id="5746169159649715125">Lưu dưới dạng PDF</translation>
 <translation id="5753488212459587150">Bật chế độ chuyên gia</translation>
 <translation id="5759254179196327752">Quét tài liệu</translation>
 <translation id="5775960006311140197">Chế độ Chuyên gia</translation>
@@ -106,6 +108,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8120146556401698679">Xoay, nghiêng, thu phóng</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>
+<translation id="8167081290930651932">Lưu dưới dạng Ảnh</translation>
 <translation id="8239780215768881278">Chụp ảnh từ video</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="8425673304802773841">Xoay xuống</translation>

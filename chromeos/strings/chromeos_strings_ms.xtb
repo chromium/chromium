@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
 <translation id="4034824040120875894">Pencetak</translation>
+<translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
 <translation id="4145784616224233563">Tembok Api HTTP</translation>
 <translation id="4155551848414053977">Pastikan pengimbas dihidupkan dan tersedia melalui rangkaian anda atau sambungan langsung</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
-<translation id="4652335678334611408">Simpan log sesi</translation>
 <translation id="4654549501020883054">Tukar Setiap Hari</translation>
 <translation id="4665014895760275686">Pengeluar</translation>
 <translation id="467510802200863975">Kata laluan tidak sepadan</translation>

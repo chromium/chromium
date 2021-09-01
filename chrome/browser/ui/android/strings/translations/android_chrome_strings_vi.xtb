@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Tiết kiệm tới 60% dữ liệu, đọc tin tức hôm nay</translation>
 <translation id="1303339473099049190">Không tìm thấy mật khẩu đó. Hãy kiểm tra chính tả rồi thử lại.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Gửi từ <ph name="DEVICE_NAME" /></translation>
-<translation id="130581733275749598">Hãy chọn một mẫu cho nội dung nổi bật của bạn</translation>
 <translation id="1310482092992808703">Nhóm các thẻ</translation>
 <translation id="1311657260431405215">Mã QR này không phải là URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">nội_dung_nổi_bật_được_cách_điệu_trên_chrome_</translation>
@@ -900,6 +899,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6545017243486555795">Xóa tất cả dữ liệu</translation>
 <translation id="6546511553472444032">Tệp có thể gây hại</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_ONE" /> thẻ khác sẽ đóng}other{Thẻ <ph name="TAB_TITLE" /> và <ph name="TAB_COUNT_MANY" /> thẻ khác sẽ đóng}}</translation>
+<translation id="6560066289487134861">Hãy chọn một mẫu cho nội dung nổi bật của bạn. Để quay lại hộp thoại chính, hãy sử dụng cử chỉ vuốt lên rồi vuốt xuống, sau đó nhấn vào Tiếp theo.</translation>
 <translation id="6560414384669816528">Tìm kiếm với Sogou</translation>
 <translation id="656065428026159829">Xem thêm</translation>
 <translation id="6565959834589222080">Dùng mạng Wi-Fi khi có sẵn</translation>
@@ -1264,7 +1264,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8683081248374354009">Đặt lại nhóm</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699120352855309748">Không đề xuất dịch những ngôn ngữ này</translation>
-<translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8746155870861185046">Chia sẻ nội dung được làm nổi bật</translation>

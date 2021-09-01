@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Uklonit će se zadaci ispisa stariji od <ph name="NUMBER_OF_DAYS" /> dana</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Pisač</translation>
+<translation id="409427325554347132">Spremi pojedinosti testa</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipku Enter da biste otkazali zadatak ispisa.</translation>
 <translation id="4646949265910132906">Sigurna Wi-Fi veza</translation>
-<translation id="4652335678334611408">Spremi zapisnik sesije</translation>
 <translation id="4654549501020883054">Promijeni svakodnevno</translation>
 <translation id="4665014895760275686">Proizvođač</translation>
 <translation id="467510802200863975">Zaporke se ne podudaraju</translation>

@@ -146,6 +146,7 @@
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
 <translation id="4034824040120875894">打印機</translation>
+<translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4155551848414053977">請確認掃瞄器已開啟，並可供透過網絡或直接連線使用</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
-<translation id="4652335678334611408">儲存工作階段記錄</translation>
 <translation id="4654549501020883054">每日變更</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="467510802200863975">密碼不相符</translation>

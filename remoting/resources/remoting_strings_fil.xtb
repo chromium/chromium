@@ -130,7 +130,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="6963936880795878952">Pansamantalang naka-block ang mga koneksyon sa malayuang computer dahil may sumubok na kumonekta rito gamit ang di-wastong PIN. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Sigurado ka bang nais mong hindi paganahin ang mga malayuang koneksyon sa <ph name="HOSTNAME" />? Kung magbago ang iyong isip, kakailanganin mong bisitahin ang computer na iyon upang muling paganahin ang mga koneksyon.</translation>
-<translation id="6998890551706945177">Humiling si <ph name="CLIENT_USERNAME" /> ng access para tingnan at kontrolin ang iyong computer. Pindutin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' kung hindi mo kilala ang taong ito o kung kailangan mong gumawa ng anumang pagbabago bago magbahagi.  Kung hindi, piliin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para payagan ang koneksyon.</translation>
 <translation id="7019153418965365059">Hindi alam na error sa host: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Malayuang Tulong</translation>
 <translation id="7026930240735156896">Sundin ang mga tagubilin para i-set up ang iyong computer para sa malayuang pag-access</translation>

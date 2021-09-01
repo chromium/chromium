@@ -146,6 +146,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> günden eski yazdırma işleri silinir</translation>
 <translation id="4003384961948020559">İşlem başarısız - Çıkış dolu</translation>
 <translation id="4034824040120875894">Yazıcı</translation>
+<translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
 <translation id="4131410914670010031">Siyah beyaz</translation>
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Yazdırma işini iptal etmek için enter tuşuna basın.</translation>
 <translation id="4646949265910132906">Güvenli Kablosuz Bağlantı</translation>
-<translation id="4652335678334611408">Oturum günlüğünü kaydet</translation>
 <translation id="4654549501020883054">Günlük Olarak Değiştir</translation>
 <translation id="4665014895760275686">Üretici</translation>
 <translation id="467510802200863975">Şifreler eşleşmiyor</translation>

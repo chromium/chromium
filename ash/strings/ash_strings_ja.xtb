@@ -351,6 +351,7 @@
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
+<translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="371370241367527062">前方のマイク</translation>
 <translation id="3713734891607377840">完了したら開く</translation>
 <translation id="3742055079367172538">スクリーンショット撮影完了</translation>
@@ -570,6 +571,7 @@
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
+<translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5322611492012084517">スマートフォンが見つかりません</translation>
 <translation id="5329548388331921293">接続中…</translation>
 <translation id="5331975486040154427">USB-C デバイス（左奥のポート）</translation>
@@ -1007,6 +1009,7 @@
 <translation id="8818320199597151042">プロファイルを削除しています。数分お待ちください。</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">現在接続中のデバイス</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

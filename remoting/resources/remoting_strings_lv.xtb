@@ -130,7 +130,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="6963936880795878952">Savienojumi ar attālo datoru īslaicīgi ir bloķēti, jo kāda persona mēģināja izveidot savienojumu, izmantojot nederīgu PIN. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6985691951107243942">Vai tiešām vēlaties atspējot attālos savienojumus ar saimniekdatoru <ph name="HOSTNAME" />? Ja pārdomāsiet, savienojumus ar šo datoru varēsiet iespējot tikai klātienē.</translation>
-<translation id="6998890551706945177">Lietotājs <ph name="CLIENT_USERNAME" /> ir pieprasījis piekļuvi, lai skatītu un pārvaldītu jūsu datoru. Nospiediet “<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”, ja nezināt šo personu vai pirms kopīgošanas ir nepieciešams veikt izmaiņas.  Pretējā gadījumā atlasiet “<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”, lai atļautu savienojumu.</translation>
 <translation id="7019153418965365059">Neatpazīta saimniekdatora kļūda: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Attālā palīdzība</translation>
 <translation id="7026930240735156896">Sekojiet norādījumiem, lai iestatītu datoru attālai piekļuvei</translation>

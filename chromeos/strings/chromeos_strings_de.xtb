@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
 <translation id="4034824040120875894">Drucker</translation>
+<translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="4131410914670010031">Schwarz-Weiß</translation>
 <translation id="4145784616224233563">HTTP-Firewall</translation>
 <translation id="4155551848414053977">Achte darauf, dass der Scanner eingeschaltet und entweder über das Netzwerk oder direkt verbunden ist</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Proxy-Authentifizierung erforderlich</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> von <ph name="TOTAL_PAGE_NUMBER" />. Wenn Sie den Druckauftrag abbrechen möchten, drücken Sie die Eingabetaste.</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
-<translation id="4652335678334611408">Sitzungsprotokoll speichern</translation>
 <translation id="4654549501020883054">Täglich ändern</translation>
 <translation id="4665014895760275686">Hersteller</translation>
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>

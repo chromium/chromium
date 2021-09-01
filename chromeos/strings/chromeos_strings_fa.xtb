@@ -146,6 +146,7 @@
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4034824040120875894">چاپگر</translation>
+<translation id="409427325554347132">ذخیره کردن جزئیات آزمایش</translation>
 <translation id="4131410914670010031">سیاه و سفید</translation>
 <translation id="4145784616224233563">‏دیوار آتش HTTPS</translation>
 <translation id="4155551848414053977">مطمئن شوید اسکنر روشن باشد و ازطریق شبکه یا اتصال مستقیم دردسترس باشد</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>
-<translation id="4652335678334611408">ذخیره گزارش جلسه</translation>
 <translation id="4654549501020883054">تغییر روزانه</translation>
 <translation id="4665014895760275686">سازنده</translation>
 <translation id="467510802200863975">گذرواژه‌ها با هم مطابقت ندارند</translation>

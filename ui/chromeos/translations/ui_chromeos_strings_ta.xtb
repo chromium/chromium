@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">மாதிரிக்காட்சி இல்லை</translation>
 <translation id="1812302367230252929">அம்ஹரிக் ஒலிபெயர்ப்பு</translation>
 <translation id="1813278315230285598">சேவைகள்</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />எச்சரிக்கை:<ph name="END_BOLD" />  இந்த ஃபைல்கள் தற்காலிகமானவை. மேலும் வட்டில் இடத்தை ஏற்படுத்துவதற்காக தானாகவே அழியக்கூடியது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">பென்குயின்</translation>
 <translation id="183183971458492120">தகவலை ஏற்றுகிறது...</translation>
 <translation id="1834290891154666894">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம் தவறாக உள்ளது</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">ஃபிரெஞ்சு (கனடா)</translation>
 <translation id="3003189754374775221">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="3003633581067744647">சிறுபடக் காட்சிக்கு மாறு</translation>
+<translation id="3016566519832145558">எச்சரிக்கை: இந்த ஃபைல்கள் தற்காலிகமானவை, டிஸ்க்கில் இடத்தைக் காலியாக்கும் வகையில் இவை தானாகவே நீக்கப்படலாம்.</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slides ஆகியவற்றை ஆஃப்லைனில் பயன்படுத்த 'Google Docs ஆஃப்லைன்' நீட்டிப்பை இயக்கவும்.</translation>
 <translation id="303198083543495566">புவியியல்</translation>
 <translation id="3047197340186497470">சீனம் (தூயே)</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">வீடியோக்கள்</translation>
 <translation id="6150853954427645995">இந்த ஃபைலை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிப்பதற்கு, இணைய இணைப்பை இயக்கி, ஃபைலில் வலது கிளிக் செய்து, பின்னர் <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="6164412158936057769">வண்ணத்துப்பூச்சிகள்</translation>
+<translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6170470584681422115">சாண்ட்விச்</translation>
 <translation id="6187719147498869044">ஹங்கேரியன்</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> மூலம் திற</translation>

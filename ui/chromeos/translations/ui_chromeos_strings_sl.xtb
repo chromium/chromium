@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Predogled ni na voljo</translation>
 <translation id="1812302367230252929">amharščina (transkripcija)</translation>
 <translation id="1813278315230285598">Storitve</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Pozor:<ph name="END_BOLD" /> Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Nalaganje podatkov …</translation>
 <translation id="1834290891154666894">Neveljaven vnos za ujemanje nadomestnega imena subjekta</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">francoščina (Kanada)</translation>
 <translation id="3003189754374775221">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="3003633581067744647">Preklop na pogled sličic</translation>
+<translation id="3016566519832145558">Pozor: Te datoteke so začasne in bodo morda samodejno izbrisane, da se sprosti prostor na disku.</translation>
 <translation id="3029114385395636667">Omogočite Google Dokumente brez povezave, da bodo Dokumenti, Preglednice in Predstavitve na voljo brez povezave.</translation>
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3047197340186497470">kitajščina (način vnosa daji)</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">Videoposnetki</translation>
 <translation id="6150853954427645995">Če želite to datoteko shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteko in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Metulji</translation>
+<translation id="6165508094623778733">Več o tem</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">madžarščina</translation>
 <translation id="6189412234224385711">Odpiranje z: <ph name="EXTENSION_NAME" /></translation>

@@ -130,7 +130,6 @@
 <translation id="6963936880795878952">無効な PIN を使用した接続が試みられたため、リモートのパソコンへの接続が一時的にブロックされています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> へのリモート接続を無効にしてもよろしいですか？元に戻す場合は、該当のパソコンにアクセスして接続を再び有効にする必要があります。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> さんがあなたのパソコンを参照および操作する権限をリクエストしています。このユーザーを知らない場合、または共有する前に変更を加える必要がある場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />] を押してください。それ以外の場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] を選択して接続を許可してください。</translation>
 <translation id="7019153418965365059">不明なホストエラー: <ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">リモート サポート</translation>
 <translation id="7026930240735156896">画面の説明に沿ってパソコンをリモート アクセス用に設定します</translation>

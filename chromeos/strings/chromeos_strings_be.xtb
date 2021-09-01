@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4034824040120875894">Прынтар</translation>
+<translation id="409427325554347132">Захаваць даныя тэста</translation>
 <translation id="4131410914670010031">Чорна-белы друк</translation>
 <translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4155551848414053977">Упэўніцеся, што сканер уключаны і даступны праз вашу сетку або прамое падключэнне.</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Каб скасаваць заданне друку, націсніце Enter.</translation>
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
-<translation id="4652335678334611408">Захаваць журнал сеанса</translation>
 <translation id="4654549501020883054">Змяняць штодня</translation>
 <translation id="4665014895760275686">Вытворца</translation>
 <translation id="467510802200863975">Паролі не супадаюць</translation>

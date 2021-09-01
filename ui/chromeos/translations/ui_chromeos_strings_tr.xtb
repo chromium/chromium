@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Önizleme yok</translation>
 <translation id="1812302367230252929">Amharca Harf Çevirisi</translation>
 <translation id="1813278315230285598">Hizmetler</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Dikkat:<ph name="END_BOLD" />  Bu dosyalar geçicidir ve disk alanından kazanmak için otomatik olarak silinebilir. <ph name="BEGIN_LINK" />Daha Fazla Bilgi Edinin<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguen</translation>
 <translation id="183183971458492120">Bilgiler yükleniyor...</translation>
 <translation id="1834290891154666894">Alternatif konu adı eşleşme girişi geçersiz</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">Fransızca (Kanada)</translation>
 <translation id="3003189754374775221">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Bağlan</translation>
 <translation id="3003633581067744647">Küçük resim görünümüne geç</translation>
+<translation id="3016566519832145558">Dikkat: Bu dosyalar geçici olup diskte yer açmak için otomatik olarak silinebilir.</translation>
 <translation id="3029114385395636667">Dokümanlar, E-Tablolar ve Slaytlar'ı çevrimdışı kullanılabilir hale getirmek için Google Dokümanlar Offline özelliğini etkinleştirin.</translation>
 <translation id="303198083543495566">Coğrafya</translation>
 <translation id="3047197340186497470">Çince Dayi</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu dosyayı çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyayı sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
 <translation id="6164412158936057769">Kelebekler</translation>
+<translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6170470584681422115">Sandviç</translation>
 <translation id="6187719147498869044">Macarca</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ile aç</translation>

@@ -118,7 +118,6 @@
 <translation id="6963936880795878952">Povezave z oddaljenim računalnikom so začasno onemogočene, ker je nekdo poskušal vzpostaviti povezavo z njim z neveljavno kodo PIN. Poskusite znova pozneje.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6985691951107243942">Ali ste prepričani, da želite onemogočiti oddaljene povezave z gostiteljem <ph name="HOSTNAME" />? Če si premislite, boste morali v tistem računalniku znova omogočiti povezave.</translation>
-<translation id="6998890551706945177">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled in nadziranje računalnika. Pritisnite »<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />«, če te osebe ne poznate ali če želite pred deljenjem narediti spremembe.  V nasprotnem primeru izberite »<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />«, če želite dovoliti povezavo.</translation>
 <translation id="7019153418965365059">Neprepoznana napaka gostitelja: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Oddaljena pomoč</translation>
 <translation id="7026930240735156896">Upoštevajte navodila za nastavitev računalnika za oddaljeni dostop</translation>

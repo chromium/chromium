@@ -33,7 +33,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1190609913194133056">Centre de notificacions</translation>
 <translation id="1195412055398077112">ajusta la mida</translation>
 <translation id="119944043368869598">Esborra-ho tot</translation>
-<translation id="1199716647557067911">Confirmes que vols desactivar l'accés amb interruptors?</translation>
+<translation id="1199716647557067911">Confirmes que vols desactivar Accés amb interruptors?</translation>
 <translation id="1210557957257435379">gravació de pantalla</translation>
 <translation id="121097972571826261">Endavant per paraula</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
@@ -351,6 +351,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3702846122927433391">Quants habitants té Nigèria?</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">S'està carregant...</translation>
+<translation id="3708186454126126312">Connectats anteriorment</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
@@ -570,6 +571,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5319712128756744240">Vincula un dispositiu nou</translation>
 <translation id="5322611492012084517">No es troba el telèfon</translation>
 <translation id="5329548388331921293">S'està connectant...</translation>
 <translation id="5331975486040154427">Dispositiu USB-C (port posterior esquerre)</translation>
@@ -1006,6 +1008,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8818320199597151042">S'està suprimint el perfil. Espera uns minuts.</translation>
 <translation id="8825863694328519386">Llisca des de l'esquerra per tornar enrere</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">Connectats actualment</translation>
 <translation id="8841375032071747811">Botó Enrere</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueig de rotació. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>

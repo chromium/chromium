@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4034824040120875894">Printeris</translation>
+<translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="4145784616224233563">HTTP ugunsmūris</translation>
 <translation id="4155551848414053977">Skenerim ir jābūt ieslēgtam un ar to ir jāizveido savienojums tīklā vai tiešs savienojums.</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />: <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> no <ph name="TOTAL_PAGE_NUMBER" /> lapas(-ām). Lai atceltu drukas uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="4646949265910132906">Drošs Wi-Fi savienojums</translation>
-<translation id="4652335678334611408">Saglabāt sesijas žurnālu</translation>
 <translation id="4654549501020883054">Mainīt katru dienu</translation>
 <translation id="4665014895760275686">Ražotājs</translation>
 <translation id="467510802200863975">Paroles nav vienādas</translation>

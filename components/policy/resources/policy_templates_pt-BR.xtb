@@ -10,6 +10,7 @@
       Se esta política for definida como uma string que representa um nome de domínio, uma opção de preenchimento automático será exibida no <ph name="PRODUCT_OS_NAME" /> durante o login, permitindo que o usuário digite apenas o nome dele sem a extensão de nome de domínio.  O usuário não poderá substituir essa extensão de nome de domínio.
       Se o valor da política não for um domínio válido, a política não será aplicada.</translation>
 <translation id="1004590217607585595">Configurações de gerenciamento de apps da Web</translation>
+<translation id="1006218396155867129">Impedir que usuários de acesso remoto transfiram arquivos do host remoto e para ele</translation>
 <translation id="1010151305531217567">Usar o botão direito do mouse como o principal</translation>
 <translation id="1011266755572744012">Especifica o número máximo de páginas que o usuário pode imprimir para um único trabalho de impressão.
 
@@ -178,6 +179,7 @@
       O padrão é RollbackDisabled.</translation>
 <translation id="1221359380862872747">Carrega os urls especificados no login de demonstração</translation>
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
+<translation id="123018742985150697">Exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
 <translation id="1240722269871366886">Esta política permite que o <ph name="PRODUCT_OS_NAME" /> sugira emojis quando os usuários digitam com o teclado virtual ou físico.
       Se ela for definida como verdadeira, o recurso será ativado e os usuários poderão mudá-lo.
@@ -412,9 +414,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
 <translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
-<translation id="1534690481294492142">Se a política for definida como "Ativada" ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá atuar como um proxy entre <ph name="CLOUD_PRINT_NAME" /> e impressoras legadas conectadas à máquina. Os usuários podem ativar o proxy de impressão na nuvem por autenticação usando a Conta do Google deles.
-
-      Se a política for definida como "Desativada", os usuários não poderão ativar o proxy e a máquina não poderá compartilhar as impressoras com o <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="1552418937045050762">Se esta configuração estiver ativada, os usuários poderão usar o recurso "Compartilhar por proximidade", que permite que eles enviem e recebam arquivos de pessoas próximas.
 
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Compartilhar por proximidade".
@@ -742,6 +741,9 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Esta política comercial fica desativada por padrão.</translation>
 <translation id="1960416154405676350">Ativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1961091374249454164">Esta política se aplica apenas a sessões de visitante gerenciadas.
+      Se ela for definida, uma lista de IDs de extensão isentos do processo de limpeza da sessão de visitante gerenciada restrita será especificada. Consulte <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />.
+      Se deixada sem definição, nenhuma extensão será isenta do processo de redefinição.</translation>
 <translation id="1962273523772270623">Permite a coleta de logs de eventos WebRTC dos serviços do Google</translation>
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
@@ -1045,9 +1047,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida como falsa, a <ph name="BOREALIS_NAME" /> ficará indisponível para todos os usuários do dispositivo. Caso contrário, quando a política for definida como verdadeira ou deixada sem definição, a <ph name="BOREALIS_NAME" /> ficará disponível se, e apenas se, nenhuma outra política ou configuração a desativar.</translation>
 <translation id="225340736558643885">Ativar alertas para formulários não seguros</translation>
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
-<translation id="2261329877420573811">Se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
-
-      Esta política está suspensa. Use a <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="2261648512244797294">Desativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="2266422599396179941">Permitir que os usuários enviem feedback</translation>
 <translation id="2269319728625047531">Ativa a exibição do consentimento de sincronização durante o login</translation>
@@ -1130,14 +1129,10 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2349117476121456297">Se esta política for definida como verdadeira, a primeira linha de teclas do teclado funcionará como comandos de teclas de função. Pressionar a tecla de pesquisa faz com que elas voltem a funcionar como teclas de mídia.
 
       Se esta política for definida como falsa, as teclas funcionarão como comandos de teclas de mídia por padrão. Pressionar a tecla de pesquisa faz com que elas funcionem como teclas de função.</translation>
+<translation id="2355876547176311490">Desativar o uso de servidores de redirecionamento pelo host de acesso remoto</translation>
 <translation id="2358176879566587521">Esta política foi removida. Ela não é compatível com esta versão do <ph name="PRODUCT_NAME" />. Leia mais em https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
 <translation id="2364639863953745682">Modo da experiência de integração do Assistente</translation>
-<translation id="2365764204944230431">Esta política foi descontinuada. É recomendável usar a BrowserSignin.
-
-      Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
-
-      Se a política for definida, será possível configurar se o usuário poderá fazer login no <ph name="PRODUCT_NAME" />. Se ela for definida como falsa, o funcionamento de apps e extensões que usam a API chrome.identity será impedido, então é recomendável usar a política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="2384233438419344179">Se a política for definida como "Ativada", os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como "Desativada", os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
 
       Se ela não for definida, os cookies de terceiros serão ativados, mas os usuários poderão mudar essa configuração.</translation>
@@ -2025,6 +2020,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
 
       Se a política for definida como "Desativada" ou não for definida, o histórico de navegação será salvo.</translation>
+<translation id="3389088527709746815">Ativar a autenticação gnubby para o host de acesso remoto</translation>
 <translation id="3391457705621770207">A definição da política determina o tempo (em milissegundos) sem atividade do usuário até o login automático na conta local do dispositivo especificada pela <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
       Se a política não for definida, o tempo limite de 0 milissegundos será usado.
@@ -2589,6 +2585,9 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="4087476676669545471">Se a política for definida como verdadeira ou deixada sem definição, os usuários poderão compartilhar ou salvar a página da Web atual usando ações do hub de compartilhamento da área de trabalho. Esse hub pode ser acessado por um ícone da omnibox ou pelo menu de três pontos.
 
        Se a política for definida como falsa, o ícone de compartilhamento será removido da omnibox, assim como a entrada do menu de três pontos.</translation>
+<translation id="4087778345310035432">Se a <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+
+      Esta política foi descontinuada. Use a <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="4088589230932595924">Modo de navegação anônima forçado</translation>
 <translation id="4089849819635523136">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> especificará a palavra-chave ou o atalho utilizados na barra de endereço para acionar a pesquisa desse provedor.
 
@@ -3505,6 +3504,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se esta política for definida como uma lista de identificadores de método de entrada, os métodos de entrada fornecidos ficarão disponíveis na tela de login. O primeiro método de entrada fornecido será pré-selecionado. Enquanto um grupo de usuários estiver focado na tela de login, o último método de entrada usado pelo usuário ficará disponível juntamente com os métodos de entrada fornecidos por esta política. Se esta política não for definida, os métodos de entrada na tela de login serão derivados da localidade em que a tela de login é exibida. Os valores que não forem identificadores de método de entrada válidos serão ignorados.</translation>
 <translation id="5407008856008996384">Permitir o acesso a impressoras CUPS</translation>
+<translation id="5413051574966911176">Desativar IUs relacionadas à conexão no computador do host remoto quando uma conexão estiver ativa</translation>
 <translation id="5417597818300833094">Se a política for definida, o usuário poderá escolher um dos métodos de entrada para as sessões do <ph name="PRODUCT_OS_NAME" /> que você especificar.
 
        Se ela for deixada sem definição ou for definida como uma lista vazia, o usuário poderá selecionar todos os métodos de entrada que têm suporte.
@@ -3648,6 +3648,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Os IDs precisam corresponder ao campo "id" no arquivo especificado na <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Se esta política não for definida, a filtragem será omitida e todos os servidores de impressão fornecidos por <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> serão considerados.</translation>
+<translation id="5573207364545428684">Permitir que usuários de acesso remoto transfiram arquivos do host remoto e para ele</translation>
 <translation id="557360560705413259">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> usará o commonName de um certificado de servidor para ser associado a um nome de host se o certificado estiver sem uma extensão subjectAlternativeName, contanto que ele seja validado e vinculado a certificados de CA (Autoridade de certificação) instalados localmente.
 
       Isso não é recomendado, pois a extensão nameConstraints, que restringe os nomes de host para os quais um determinado certificado pode ser autorizado, pode ser ignorada.
@@ -3692,15 +3693,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
-<translation id="5636088574608432506">Esta política controla o comportamento de login do navegador. Ela permite especificar se o usuário pode fazer login no <ph name="PRODUCT_NAME" /> com a conta dele e usar serviços relacionados à conta, como a Sincronização do <ph name="PRODUCT_NAME" />.
-
-      Se a política for definida como "Desativar login no navegador", o usuário não poderá fazer login no navegador e usar os serviços da conta. Nesse caso, recursos do navegador como a Sincronização do <ph name="PRODUCT_NAME" /> não poderão ser usados e não estarão disponíveis. No <ph name="IOS_NAME" />, se o usuário fizer login e a política estiver definida como "Disabled", a conta será desconectada imediatamente. Em outras plataformas, a conta será desconectada na próxima vez que o <ph name="PRODUCT_NAME" /> for executado. Em todas as outras plataformas, os dados locais do perfil, como favoritos, senhas etc., serão mantidos e poderão ser usados. O usuário ainda poderá fazer login e usar serviços da Web do Google, como o Gmail.
-
-      Se a política for definida como "Ativar login no navegador", o usuário poderá fazer login no navegador. Em todas as plataformas, exceto no <ph name="IOS_NAME" />, a conta do usuário será conectada automaticamente no navegador quando ele fizer login nos serviços da Web do Google, como o Gmail. Estar conectado significa que as informações da conta do usuário serão mantidas pelo navegador. Entretanto, isso não significa que a Sincronização do <ph name="PRODUCT_NAME" /> será ativada por padrão. O usuário precisará ativar esse recurso separadamente. A ativação desta política impedirá que o usuário desative a configuração que permite o login no navegador. Para controlar a disponibilidade da Sincronização do <ph name="PRODUCT_NAME" />, use a política <ph name="SYNC_POLICY_NAME" />.
-
-      Se ela estiver definida como "Forçar o login no navegador", o usuário verá uma caixa de diálogo de seleção de contas. Ele precisará escolher uma e fazer login para usar o navegador. Isso garante que, para as contas gerenciadas, as políticas associadas à conta sejam aplicadas. Por padrão, isso ativará a Sincronização do <ph name="PRODUCT_NAME" /> na conta, exceto quando esse recurso do <ph name="PRODUCT_NAME" /> for desativado pelo administrador do domínio ou pela política <ph name="SYNC_POLICY_NAME" />. O valor padrão da <ph name="GUEST_MODE_POLICY_NAME" /> será definido como "Desativado". Os perfis existentes não conectados serão bloqueados e ficarão inacessíveis após a ativação dessa política. Para mais informações, consulte o artigo da Central de Ajuda: https://support.google.com/chrome/a/answer/7572556. Essa opção não é compatível com <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ou <ph name="IOS_NAME" />. Se for usada, ela será substituída por "Ativar login no navegador".
-
-      Se a política não for definida, o usuário poderá decidir se quer ativar o login no navegador nas configurações do <ph name="PRODUCT_NAME" /> e usar esse recurso da maneira que achar melhor.</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Use a <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.
 
       Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
@@ -3825,6 +3817,11 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="5749396052108288586">Essa política está obsoleta. Use a <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.</translation>
 <translation id="574983287620584622">Ativar atalhos de recursos de acessibilidade na tela de login</translation>
+<translation id="5749873635525257317">Esta política foi descontinuada. É recomendável usar a BrowserSignin.
+
+      Permite que o usuário faça login no <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida, será possível configurar se o usuário poderá fazer login no <ph name="PRODUCT_NAME" />. Se ela for definida como "Falsa", o funcionamento de apps e extensões que usam a API chrome.identity será impedido. Por isso, é recomendável usar a política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
 <translation id="5755002458331714762"> As APIs Web Components v0 (Shadow DOM v0, Custom Elements v0 e HTML Imports) se tornaram obsoletas em 2018 e estão desativadas por padrão desde o M80. Esta política permite que esses recursos sejam seletivamente reativados até o M84.
 
       Se esta política for definida como verdadeira, os recursos da Web Components v0 serão ativados para todos os sites.
@@ -3924,6 +3921,9 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Clientes de acesso remoto não são afetados pela definição desta política. Eles sempre usam "chromoting-client.talkgadget.google.com" para acessar o TalkGadget.</translation>
 <translation id="5888645257599699215">Informar o status do áudio do dispositivo</translation>
 <translation id="5890063326284543943">Controlar o uso da API Serial</translation>
+<translation id="5893303508158298667">Se a <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> for ativada, definir <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição permitirá que clientes remotos usem servidores de redirecionamento para se conectar a esta máquina por uma restrição de firewall, por exemplo, quando uma conexão direta não estiver disponível.
+
+      Se a política for desativada, o acesso remoto não será desativado, mas apenas conexões da mesma rede serão permitidas (e não conexões NAT transversal ou de redirecionamento).</translation>
 <translation id="5897913798715600338">Carregar a bateria usando tecnologia de carregamento rápido.</translation>
 <translation id="5898486742390981550">Quando vários usuários estão conectados, somente o usuário principal pode usar os apps Android.</translation>
 <translation id="5899751601113377553">Evitar que os usuários usem o <ph name="LACROS_NAME" /></translation>
@@ -3994,6 +3994,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
       Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
+<translation id="6019606564278029236">Ativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="6022948604095165524">Ação na inicialização</translation>
 <translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para ouvir</translation>
 <translation id="6025267044008029374">Bloquear downloads maliciosos (recomendado)</translation>
@@ -4120,6 +4121,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6198947200418556248">Esta política foi descontinuada. Se você ainda precisa de um comportamento de cookies legado, use a <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Com ela, é possível reverter todos os cookies para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito de que cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> precisam ter o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e ignora a comparação do esquema ao avaliar se dois sites são o mesmo. Para ver uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
 
           Quando esta política não é definida, o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> padrão para cookies depende da configuração pessoal do usuário para os recursos <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> e <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, que podem ser definidos por um teste de campo ou ativando e desativando as sinalizações <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> ou <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivamente.</translation>
+<translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Todas as impressoras são mostradas, exceto as da lista de proibições.</translation>
@@ -4211,6 +4213,12 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Observação: se <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6319198883324703402">Definir o horário da primeira notificação de reinicialização para o usuário</translation>
+<translation id="6319907968994678054">Se a política for ativada, a sincronização de dados no <ph name="PRODUCT_NAME" /> usando serviços de sincronização hospedados pelo Google será desativada.
+      Para desativar completamente os serviços da <ph name="CHROME_SYNC_NAME" />, recomendamos que você desative o serviço no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Se a política for desativada ou deixada sem definição, os usuários poderão escolher se vão ou não usar a <ph name="CHROME_SYNC_NAME" />.
+
+      Observação: não ative esta política quando a <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver ativada, porque esse recurso usa a mesma funcionalidade do lado do cliente. Nesse caso, a sincronização hospedada pelo Google será completamente desativada.</translation>
 <translation id="6327643515544933974">Configurações de USB na Web</translation>
 <translation id="6330882599388782338">Permite que os sites acessem sensores</translation>
 <translation id="6331167725613770725">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
@@ -4421,6 +4429,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se a política não for definida ou houver uma lista vazia, não haverá contas locais de dispositivo.</translation>
 <translation id="6584541828182430328">Desativar a exibição de alertas de tela cheia</translation>
+<translation id="6594372503585248865">Ativar IUs relacionadas à conexão no computador do host remoto quando uma conexão estiver ativa</translation>
 <translation id="6598235178374410284">Imagem do avatar do usuário</translation>
 <translation id="6600377630856879433">Permitir captura de janela e guia por estas origens</translation>
 <translation id="6603004149426829878">Sempre enviar qualquer sinal de localização disponível para o servidor ao determinar o fuso horário</translation>
@@ -4833,6 +4842,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7003746348783715221">Preferências do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Uma sinalização booleana indicando se o gerenciador de protocolos precisa ser definido como padrão.</translation>
 <translation id="7008308728445338159">Verificação de interceptações de DNS ativada</translation>
+<translation id="7010006999849135962">Ativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="7016736684656067099">Se a política for definida como 1, todos os sites exibirão imagens. Se ela for definida como 2, as imagens não serão exibidas.
 
       Se não for definida, as imagens serão permitidas, mas os usuários poderão mudar essa configuração.</translation>
@@ -4886,6 +4896,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7063895219334505671">Permitir pop-ups nestes sites</translation>
+<translation id="7066292150801784098">Desativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="706669471845501145">Permitir que os sites exibam notificações da área de trabalho</translation>
 <translation id="7070525176564511548">A senha precisa ser digitada uma vez por semana (a cada 168 horas).</translation>
 <translation id="7072208053150563108">Taxa de alteração da senha da máquina</translation>
@@ -4969,6 +4980,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="7149042336307555519"> Os tipos de conexão permitidos para uso em atualizações de SO. Atualizações de SO podem gerar uma grande sobrecarga na conexão devido ao tamanho e podem incorrer em custo adicional. Portanto, elas não são, por padrão, ativadas para tipos de conexão considerados caros (atualmente apenas "celular").
 
       Os identificadores de tipo de conexão reconhecidos são <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> e <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
+<translation id="7150722575502017208">Não exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="7152605873936173525">Controla o modo do resolvedor de DNS sobre HTTPS. Esta política definirá apenas o modo padrão para cada consulta. O modo pode ser modificado para tipos especiais de consultas, como solicitações para resolver um nome do host de servidor DNS sobre HTTPS.
 
       O modo <ph name="SECURE_DNS_MODE_OFF" /> desativará o DNS sobre HTTPS.
@@ -5218,6 +5230,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se ela for desativada ou não for definida, os usuários poderão mudar essa configuração.
 
       Observação: use a política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> no Android.</translation>
+<translation id="7507553960917214561">Desativar cortinas do host de acesso remoto</translation>
 <translation id="7508067364927180229">Essa configuração apresenta várias opções de disponibilidade para o navegador <ph name="LACROS_NAME" />.
 
       Se a política for definida como <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />, o usuário poderá ativar o <ph name="LACROS_NAME" /> e torná-lo o navegador principal.
@@ -5253,6 +5266,9 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.</translation>
 <translation id="754176366378585605">Controlar o uso da API File Handling</translation>
 <translation id="7543109906499122922">Horário em que o dispositivo começará a usar energia da bateria, interpretado no fuso horário local do dispositivo.</translation>
+<translation id="7544392541165889987">Se a política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá atuar como um proxy entre o <ph name="CLOUD_PRINT_NAME" /> e impressoras legadas conectadas à máquina. Os usuários podem ativar o proxy de impressão na nuvem por autenticação usando a Conta do Google deles.
+
+      Se a política for desativada, os usuários não poderão ativar o proxy e a máquina não poderá compartilhar as impressoras com o <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="7547549430720182663">Mesclar</translation>
 <translation id="7553535237300701827">Quando esta política está definida, o fluxo de autenticação de login acontece em uma das seguintes formas, dependendo do valor da configuração:
 
@@ -5278,6 +5294,15 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       * "Substituir" troca a política do usuário nos GPOs do usuário pela referente aos GPOs do computador. Os GPOs do usuário serão ignorados.</translation>
 <translation id="7570291542739287032">Somente no Cloud</translation>
+<translation id="7571530187275708765">Esta política controla o comportamento de login do navegador. Ela permite especificar se o usuário pode fazer login no <ph name="PRODUCT_NAME" /> com a conta dele e usar serviços relacionados à conta, como a Sincronização do <ph name="PRODUCT_NAME" />.
+
+      Se a política for definida como "Desativar login no navegador", o usuário não poderá fazer login no navegador e usar os serviços da conta. Nesse caso, recursos do navegador como a Sincronização do <ph name="PRODUCT_NAME" /> não poderão ser usados e não estarão disponíveis. No <ph name="IOS_NAME" />, se o usuário fizer login e a política estiver desativada, a conta será desconectada imediatamente. Em outras plataformas, a conta será desconectada na próxima vez que o <ph name="PRODUCT_NAME" /> for executado. Em todas as outras plataformas, os dados locais do perfil, como favoritos, senhas etc., serão mantidos e poderão ser usados. O usuário ainda poderá fazer login e usar serviços da Web do Google, como o Gmail.
+
+      Se a política for definida como "Ativar login no navegador", o usuário poderá fazer login no navegador. Em todas as plataformas, exceto no <ph name="IOS_NAME" />, a conta do usuário será conectada automaticamente no navegador quando ele fizer login nos serviços da Web do Google, como o Gmail. Estar conectado significa que as informações da conta do usuário serão mantidas pelo navegador. Entretanto, isso não significa que a Sincronização do <ph name="PRODUCT_NAME" /> será ativada por padrão. O usuário precisará ativar esse recurso separadamente. A ativação desta política impedirá que o usuário desative a configuração que permite o login no navegador. Para controlar a disponibilidade da Sincronização do <ph name="PRODUCT_NAME" />, use a política <ph name="SYNC_POLICY_NAME" />.
+
+      Se ela estiver definida como "Forçar o login no navegador", o usuário verá uma caixa de diálogo de seleção de contas. Ele precisará escolher uma e fazer login para usar o navegador. Isso garante que, para as contas gerenciadas, as políticas associadas à conta sejam aplicadas. O valor padrão da <ph name="GUEST_MODE_POLICY_NAME" /> será definido como "Desativado". Os perfis existentes não conectados serão bloqueados e ficarão inacessíveis após a ativação dessa política. Para mais informações, consulte o artigo da Central de Ajuda: https://support.google.com/chrome/a/answer/7572556. Essa opção não é compatível com <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ou <ph name="IOS_NAME" />. Se for usada, ela será substituída por "Ativar login no navegador".
+
+      Se a política não for definida, o usuário poderá decidir se quer ativar o login no navegador nas configurações do <ph name="PRODUCT_NAME" /> e usar esse recurso da maneira que achar melhor.</translation>
 <translation id="757395965347379751">Quando esta configuração está ativada, o <ph name="PRODUCT_NAME" /> permite certificados SHA-1 assinados, desde que eles sejam validados e estejam vinculados a certificados de CA instalados localmente.
 
       Esta política depende da permissão de assinaturas SHA-1 pela pilha de verificação de certificados do sistema operacional. Se a atualização de um SO alterar o modo como esse sistema lida com certificados SHA-1, talvez esta política deixe de ter efeito. Além disso, esta política é usada como alternativa temporária para dar às empresas mais tempo para deixar de usar SHA-1. Esta política será removida no dia 1 de janeiro de 2019 ou em uma data próxima a essa.
@@ -5568,9 +5593,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Se você ativar ou desativar esta política, os usuários não poderão alterar ou substituir essa configuração no <ph name="PRODUCT_NAME" />.
 
 Se a política não for definida, a configuração ficará ativada, mas o usuário poderá alterá-la.</translation>
-<translation id="7955263399078148032">Se <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> for definida como "Ativada", definir <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> como "ativada" ou deixá-la sem definição permitirá que clientes remotos usem servidores de redirecionamento para se conectar a esta máquina quando uma conexão direta não estiver disponível, por uma restrição de firewall, por exemplo.
-
-      Se a política for definida como "Desativada", o acesso remoto não será desativado, mas apenas conexões da mesma rede serão permitidas (e não conexões NAT transversal ou de redirecionamento).</translation>
 <translation id="7956210013490975468">Configura o serviço de proxy do sistema para o <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">A senha precisa ser digitada a cada 12 horas</translation>
 <translation id="7959035883875301444">Controlar o uso do JIT do JavaScript</translation>
@@ -6232,6 +6254,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8821678641132607468">Se a política for definida como ativada, o histórico de navegação será importado do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, o histórico de navegação não será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção do histórico de navegação estará marcada ou desmarcada de acordo com o valor da política.</translation>
+<translation id="8825154502356129120">Desativar a autenticação gnubby para o host de acesso remoto</translation>
 <translation id="8825782996899863372">O aviso de proteção de senha é acionado pela reutilização de senhas em uma página de phishing</translation>
 <translation id="8826172502287946476">Se definida, a política especificará uma lista de apps e extensões com instalação silenciosa, sem interação do usuário, e que não podem ser desinstalados ou desativados. As permissões são concedidas implicitamente, inclusive para as APIs de extensão enterprise.deviceAttributes e enterprise.platformKeys. Essas duas APIs não estão disponíveis para apps e extensões que não sejam de instalação forçada.
 
@@ -6567,12 +6590,6 @@ Web e PWAs.
 <translation id="913195841488580904">Bloquear acesso a uma lista de URLs</translation>
 <translation id="9135033364005346124">Ativar proxy do <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136399279941091445">Intervalos de horas de inatividade quando as políticas do dispositivo específicas são lançadas</translation>
-<translation id="9150385995327221969">"Se a política for ativada, a sincronização de dados no <ph name="PRODUCT_NAME" /> usando serviços de sincronização hospedados pelo Google será desativada.
-      Para desativar completamente os serviços de <ph name="CHROME_SYNC_NAME" />, recomendamos que você desative o serviço no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Se a política for desativada ou deixada sem definição, os usuários poderão escolher se vão ou não usar a <ph name="CHROME_SYNC_NAME" />.
-
-      Observação: não ative esta política quando a <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver ativada, porque esse recurso usa a mesma funcionalidade do lado do cliente. Nesse caso, a sincronização hospedada pelo Google será completamente desativada."</translation>
 <translation id="9150416707757015439">Esta política é obsoleta. Utilize IncognitoModeAvailability em seu lugar, que ativa o modo de navegação anônima em <ph name="PRODUCT_NAME" />. Caso esta configuração seja ativada ou não configurada, os usuários podem abrir páginas da Web no modo de navegação anônima. Se essa configuração for desativada, os usuários não podem abrir páginas da Web usando o modo de navegação anônima. Se esta política for deixada sem definição, esta opção será ativada e o usuário será capaz de usar o modo de navegação anônima.</translation>
 <translation id="9152473318295429890">Ativa sugestões contextuais de páginas da Web relacionadas</translation>
 <translation id="9153446010242995516">Faça a reversão e permaneça na versão de destino se a versão do SO for mais recente que a de destino. Se possível, tente transferir a configuração do dispositivo (incluindo as credenciais de rede) por meio do processo de reversão. Porém, faça a reversão com o Powerwash completo mesmo se não for possível restaurar os dados, seja porque a versão de destino não é compatível com a restauração de dados ou devido a uma alteração incompatível com versões anteriores.
@@ -6608,10 +6625,8 @@ Web e PWAs.
 
       Se ela não for definida ou for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />", o modo usado para a experiência de integração será o padrão.
       Se ela for definida como "<ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />", o modo usado será o EDU.</translation>
+<translation id="9192220384862917760">Ativar cortinas do host de acesso remoto</translation>
 <translation id="9194447412184412480">Controla as configurações para usuários autenticados por SAML com um IdP externo</translation>
-<translation id="9194474490249548275">Esta política se aplica apenas a sessões de visitante gerenciadas.
-      Se ela for definida, uma lista de IDs de extensão isenta do processo de limpeza da sessão de visitante gerenciada restrita será especificada. Consulte <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />.
-      Se deixada sem definição, nenhuma extensão será isenta do processo de redefinição.</translation>
 <translation id="9197740283131855199">Percentual pelo qual calcular o intervalo de escurecimento da tela se o usuário ficar ativo após o escurecimento</translation>
 <translation id="9200828125069750521">Parâmetros para URL de imagens que usa POST</translation>
 <translation id="9204863016826119209">Chaves corporativas poderão ser usadas por apps Android instalados e listados nesta política.</translation>

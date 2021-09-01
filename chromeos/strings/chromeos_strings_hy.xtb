@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
+<translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
-<translation id="4652335678334611408">Պահել աշխատաշրջանի տվյալները</translation>
 <translation id="4654549501020883054">Փոխել ամեն օր</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>

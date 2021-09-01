@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">कमाल ६०% डेटाची बचत करा, आजच्या बातम्या वाचा</translation>
 <translation id="1303339473099049190">तो पासवर्ड सापडत नाही. तुमचे शब्दलेखन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> वरून पाठवले</translation>
-<translation id="130581733275749598">तुमच्या हायलाइटसाठी टेम्पलेट निवडा</translation>
 <translation id="1310482092992808703">टॅबची गटामध्ये विभागणी करा</translation>
 <translation id="1311657260431405215">हा QR कोड म्हणजे URL नाही: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
 <translation id="3006881078666935414">वापराचा कोणताही डेटा नाही</translation>
+<translation id="301080557829842765">गोपनीयता मार्गदर्शक</translation>
 <translation id="3016635187733453316">हे डिव्हाइस इंटरनेटशी कनेक्ट केले असल्याची खात्री करा</translation>
+<translation id="3026955690410463085">लिंकचा समावेश करा</translation>
 <translation id="3029704984691124060">सांकेतिक वाक्यांश जुळत नाहीत</translation>
 <translation id="3031225630520268969">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मदत मिळवा<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="3227557059438308877">सिक्युरिटी की म्हणून Google Chrome</translation>
 <translation id="3232754137068452469">वेब अ‍ॅप</translation>
+<translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
 <translation id="3236059992281584593">1 मिनिट शिल्लक</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">तुम्ही वाय-फायशी कनेक्ट करता तेव्हा इमेजची वर्णने पुन्हा सुरू होतील</translation>
@@ -481,6 +483,7 @@
 <translation id="3988213473815854515">स्थानास अनुमती आहे</translation>
 <translation id="3988466920954086464">या पॅनलमध्ये इंस्टंट शोध परिणाम पहा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
+<translation id="4001236013802615636">Google ला पेजवरील काही मजकूरदेखील विचारात घेऊ द्या</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
@@ -527,6 +530,7 @@
 <translation id="4335835283689002019">सुरक्षित ब्राउझिंग बंद आहे</translation>
 <translation id="4351244548802238354">डायलॉग बंद करा</translation>
 <translation id="4378154925671717803">फोन</translation>
+<translation id="438319986296050901">फक्त कार्ड शेअर करा</translation>
 <translation id="4384468725000734951">शोध करण्‍यासाठी Sogou वापरत आहे</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड करत आहे…</translation>
 <translation id="4404568932422911380">कोणतेही बुकमार्क नाहीत</translation>
@@ -590,6 +594,7 @@
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
+<translation id="4758061975920522644">फक्त इमेज शेअर करा</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4763480195061959176">व्हिडिओ</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{एक डाउनलोड पूर्ण झाला आहे.}other{# डाउनलोड पूर्ण झाले आहेत.}}</translation>
@@ -753,6 +758,7 @@
 <translation id="5748802427693696783">मानक टॅबवर स्विच केले</translation>
 <translation id="5749068826913805084">Chrome ला फाइल डाउनलोड करण्यासाठी स्टोरेज ॲक्सेस आवश्यक आहे.</translation>
 <translation id="5749237766298580851">बंद <ph name="SEPARATOR" /> शिफारस केली जात नाही</translation>
+<translation id="5752232708629533680">फक्त GIF शेअर करा</translation>
 <translation id="5754350196967618083">Discover रिफ्रेश करू शकत नाही</translation>
 <translation id="5763382633136178763">गुप्त टॅब</translation>
 <translation id="5763514718066511291">या ॲपची URL कॉपी करण्यासाठी टॅप करा</translation>
@@ -815,6 +821,7 @@
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">तुमच्या स्टोरी आणि अ‍ॅक्टिव्हिटी येथे नियंत्रित करा</translation>
+<translation id="6069177176307973611">गोपनीयता आणि सुरक्षा सेटिंग्जचे पुनरावलोकन करा</translation>
 <translation id="6085886413119427067">वेबसाइटशी सुरक्षित कनेक्शनवरून कसे कनेक्ट करावे ते निर्धारित करते</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> तास शिल्लक</translation>
 <translation id="6108923351542677676">सेटअप प्रगती पथावर आहे...</translation>
@@ -900,6 +907,7 @@
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
 <translation id="6546511553472444032">फाइल हानिकारक असू शकते</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_ONE" /> टॅब बंद केला जाईल}other{<ph name="TAB_TITLE" /> आणि आणखी <ph name="TAB_COUNT_MANY" /> टॅब बंद केले जातील}}</translation>
+<translation id="6560066289487134861">तुमच्या हायलाइटसाठी टेम्पलेट निवडा. मुख्य डायलॉगवर परत जाण्यासाठी, आधी वर नंतर खाली होणारे जेश्चर वापरा, त्यानंतर पुढील वर टॅप करा.</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
@@ -962,6 +970,7 @@
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>
 <translation id="6903907808598579934">सिंक सुरू करा</translation>
+<translation id="6924672435311694692">आणखी चांगले परिणाम पहा</translation>
 <translation id="6929699136511445623">Android सिस्‍टमचे सिंक सुरू करा</translation>
 <translation id="6942665639005891494">सेटिंग्ज मेनू पर्याय वापरून केव्हाही डीफॉल्ट डाउनलोड स्थान बदला</translation>
 <translation id="694267552845942083">तुम्ही सध्या तुमची सिंक सेटिंग्ज कस्टमाइझ करत आहात. सिंक सुरू करणे पूर्ण करण्यासाठी, स्क्रीनच्या तळाशी असलेल्या कंफर्म करा बटणावर टॅप करा. वर नेव्‍हिगेट करा</translation>
@@ -980,6 +989,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> रिस्टोअर केले</translation>
 <translation id="7029390216614421513">QR कोड/बारकोड या फ्रेममध्‍ये बसवा.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
 <translation id="7063006564040364415">संकालित सर्व्हरशी कनेक्ट करू शकलो नाही.</translation>
@@ -1208,6 +1218,7 @@
 <translation id="8424781820952413435">पेज पाठवले आहे. ते पाहण्यासाठी, तुमच्या <ph name="DEVICE_TYPE" /> वर Chrome उघडा</translation>
 <translation id="8427875596167638501">पूर्वावलोकन टॅब अर्धा उघडा आहे</translation>
 <translation id="8428213095426709021">सेटिंग्ज</translation>
+<translation id="8430824733382774043">फक्त स्क्रीनशॉट शेअर करा</translation>
 <translation id="8438566539970814960">शोध आणि ब्राउझ करणे चांगले करा</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा वापरासाठी तयार आहे, <ph name="APP_NAME" /> रीस्टार्ट करा.</translation>
 <translation id="8442258441309440798">कोणत्याही बातम्या उपलब्ध नाहीत</translation>
@@ -1264,7 +1275,6 @@
 <translation id="8683081248374354009">गट रीसेट करा</translation>
 <translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
-<translation id="8712637175834984815">समजले</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8746155870861185046">हायलाइट करा</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9155898266292537608">तुम्ही शब्दावर जलद टॅप करूनदेखील शोधू शकता</translation>
+<translation id="9158770349521403363">फक्त आशय शेअर करा</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>

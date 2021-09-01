@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Peržiūra negalima</translation>
 <translation id="1812302367230252929">Amharų k. transliteracija</translation>
 <translation id="1813278315230285598">Paslaugos</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perspėjimas:<ph name="END_BOLD" /> šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="183183971458492120">Įkeliama informacija...</translation>
 <translation id="1834290891154666894">Netinkama alternatyvaus subjekto pavadinimo atitikties įvestis</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">Prancūzų k. (Kanada)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
 <translation id="3003633581067744647">Perjungti į miniatiūrų rodinį</translation>
+<translation id="3016566519832145558">Perspėjimas: šie failai yra laikini ir gali būti automatiškai ištrinti, kad būtų atlaisvinta vietos diske.</translation>
 <translation id="3029114385395636667">Įgalinkite „Google“ dokumentų neprisijungus funkciją, kad Dokumentai, Skaičiuoklės ir Skaidrės būtų pasiekiami neprisijungus.</translation>
 <translation id="303198083543495566">Geografija</translation>
 <translation id="3047197340186497470">Kinų k. „Dayi“</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">Vaizdo įrašai</translation>
 <translation id="6150853954427645995">Jei norite išsaugoti šį failą ir naudoti jį be interneto ryšio, vėl prisijunkite prie interneto, spustelėkite failą dešiniuoju pelės klavišu ir pasirinkite parinktį „<ph name="OFFLINE_CHECKBOX_NAME" />“.</translation>
 <translation id="6164412158936057769">Drugeliai</translation>
+<translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6170470584681422115">Sumuštinis</translation>
 <translation id="6187719147498869044">Vengrų k.</translation>
 <translation id="6189412234224385711">Atidaryti naudojant „<ph name="EXTENSION_NAME" />“</translation>

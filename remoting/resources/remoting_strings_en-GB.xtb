@@ -130,7 +130,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="6963936880795878952">Connections to the remote computer are temporarily blocked because somebody was trying to connect to it with an invalid PIN. Please try again later.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Are you sure you want to disable remote connections to <ph name="HOSTNAME" />? If you change your mind, you'll need to visit that computer to re-enable connections.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> has requested access to see and control your computer. Press '<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />' if you do not know this person or if you need to make any changes before sharing.  Otherwise, select '<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />' to allow connection.</translation>
 <translation id="7019153418965365059">Unrecognised host error: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Remote Assistance</translation>
 <translation id="7026930240735156896">Follow the instructions to set up your computer for remote access</translation>

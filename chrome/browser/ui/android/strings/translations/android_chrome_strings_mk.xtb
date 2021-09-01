@@ -54,7 +54,6 @@
 <translation id="1298077576058087471">Прочитајте ги денешните вести и заштедете до 60 % мобилен интернет</translation>
 <translation id="1303339473099049190">Лозинката не може да се најде. Проверете дали ја внесувате правилно и обидете се повторно.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Испратено од <ph name="DEVICE_NAME" /></translation>
-<translation id="130581733275749598">Изберете шаблон за клучните точки</translation>
 <translation id="1310482092992808703">Групирај картички</translation>
 <translation id="1311657260431405215">Овој QR-код не е URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -324,7 +323,9 @@
 <translation id="2996291259634659425">Создајте лозинка</translation>
 <translation id="2996809686854298943">Потребен е URL</translation>
 <translation id="3006881078666935414">Нема податоци за користење</translation>
+<translation id="301080557829842765">Водич за приватност</translation>
 <translation id="3016635187733453316">Проверете дали уредов е поврзан на интернет</translation>
+<translation id="3026955690410463085">Вклучи линк</translation>
 <translation id="3029704984691124060">Лозинките-фрази не се совпаѓаат</translation>
 <translation id="3031225630520268969">Кориснички интерфејс за согласност за гласовно пребарување со „Помошникот“</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
@@ -354,6 +355,7 @@
 <translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
 <translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
+<translation id="3234978181857588512">Зачувај на уредот</translation>
 <translation id="3236059992281584593">Остана 1 минута</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">Описите на сликите ќе продолжат кога ќе се поврзете на Wi-Fi</translation>
@@ -481,6 +483,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3988213473815854515">Локацијата е дозволена</translation>
 <translation id="3988466920954086464">Гледајте инстант резултати од пребарување на таблава</translation>
 <translation id="4000212216660919741">Офлајн</translation>
+<translation id="4001236013802615636">Дозволете Google да зема предвид дел од текстот на страницата</translation>
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
@@ -527,6 +530,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4335835283689002019">„Безбедното прелистување“ е исклучено</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4378154925671717803">Телефон</translation>
+<translation id="438319986296050901">Сподели само картичка</translation>
 <translation id="4384468725000734951">Се користи Sogou за пребарување</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Се презема…</translation>
 <translation id="4404568932422911380">Нема обележувачи</translation>
@@ -590,6 +594,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4738836084190194332">Последна синхронизација: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">Отстрани нагласување</translation>
 <translation id="4749960740855309258">Отворете нова картичка</translation>
+<translation id="4758061975920522644">Сподели само слика</translation>
 <translation id="4759238208242260848">Преземања</translation>
 <translation id="4763480195061959176">видео</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 преземање е завршено.}one{# преземање е завршено.}other{# преземања се завршени.}}</translation>
@@ -753,6 +758,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5748802427693696783">Префрлено на стандардни картички</translation>
 <translation id="5749068826913805084">На Chrome му треба пристап до меморијата за да презема датотеки.</translation>
 <translation id="5749237766298580851">Исклучено <ph name="SEPARATOR" /> Не се препорачува</translation>
+<translation id="5752232708629533680">Сподели само GIF</translation>
 <translation id="5754350196967618083">Не може да се освежи Discover</translation>
 <translation id="5763382633136178763">Инкогнито картички</translation>
 <translation id="5763514718066511291">Допрете за да ја копирате URL-адресата за апликацијава</translation>
@@ -815,6 +821,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="604996488070107836">Преземањето на <ph name="FILE_NAME" /> не успеа поради непозната грешка.</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Контролирајте ги сториите и активноста тука</translation>
+<translation id="6069177176307973611">Прегледајте ги поставките за приватност и безбедност</translation>
 <translation id="6085886413119427067">Определува како да се поврзуваат веб-сајтовите преку безбедна врска</translation>
 <translation id="60923314841986378">Останаа <ph name="HOURS" /> часа</translation>
 <translation id="6108923351542677676">Поставувањето е во тек…</translation>
@@ -900,6 +907,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6545017243486555795">Избриши ги сите податоци</translation>
 <translation id="6546511553472444032">Датотеката може да е штетна</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_ONE" /> една картичка ќе се затворат}one{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_MANY" /> картичка ќе се затворат}other{<ph name="TAB_TITLE" /> и уште <ph name="TAB_COUNT_MANY" /> картички ќе се затворат}}</translation>
+<translation id="6560066289487134861">Изберете шаблон за клучните точки. За да се вратите на главниот дијалог, движете се нагоре, па надолу, а потоа притиснете „Следно“.</translation>
 <translation id="6560414384669816528">Пребарување со Sogou</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6565959834589222080">Се користи Wi-Fi кога е достапна</translation>
@@ -962,6 +970,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6900532703269623216">Подобрена заштита</translation>
 <translation id="6903907808598579934">Вклучи синхронизирање</translation>
+<translation id="6924672435311694692">Гледајте подобри резултати</translation>
 <translation id="6929699136511445623">Овозможете синхронизација на системот Android</translation>
 <translation id="6942665639005891494">Променете ја стандардната локација за преземање во секое време со помош на опцијата „Поставки“ од менито</translation>
 <translation id="694267552845942083">Во моментов ги приспособувате „Поставките за синхронизација“. За да го завршите вклучувањето на синхронизацијата, допрете на копчето „Потврди“ на долниот дел од екранот. Движете се нагоре</translation>
@@ -980,6 +989,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
 <translation id="7029390216614421513">Ставете го QR-кодот/бар-кодот во оваа рамка.</translation>
 <translation id="7029809446516969842">Лозинки</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Сакате ли да добивате описи на слики?</translation>
 <translation id="7055152154916055070">Пренасочувањето е блокирано:</translation>
 <translation id="7063006564040364415">Не може да се поврзе на серверот за синхронизација.</translation>
@@ -1208,6 +1218,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8424781820952413435">Страницата е испратена. За да ја видите, отворете ја Chrome на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">Картичката за преглед е отворена на половина екран</translation>
 <translation id="8428213095426709021">Поставки</translation>
+<translation id="8430824733382774043">Сподели само слика од екранот</translation>
 <translation id="8438566539970814960">Подобрете ги пребарувањата и прелистувањето</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Јазикот е подготвен, рестартирајте ја <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Нема достапни статии</translation>
@@ -1264,7 +1275,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8683081248374354009">Ресетирај група</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
-<translation id="8712637175834984815">Сфатив</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8746155870861185046">Споделете го нагласениот текст</translation>
@@ -1334,6 +1344,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9155898266292537608">Може да пребарувате и со брзо допирање збор</translation>
+<translation id="9158770349521403363">Сподели само содржини</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>
 <translation id="9204836675896933765">Преостанува 1 датотека</translation>

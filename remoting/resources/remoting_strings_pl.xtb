@@ -130,7 +130,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="6963936880795878952">Połączenia z komputerem zdalnym są chwilowo zablokowane, bo ktoś próbował się z nim połączyć, podając nieprawidłowy kod PIN. Spróbuj ponownie później.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Na pewno chcesz wyłączyć połączenia zdalne z: <ph name="HOSTNAME" />? Jeśli zmienisz zdanie, połączenia będzie trzeba włączyć na tamtym komputerze.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający przeglądanie zawartości Twojego komputera i sterowanie nim. Jeśli nie znasz tej osoby lub jeśli przed udostępnieniem musisz wprowadzić jakieś zmiany, naciśnij „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”.  W innym przypadku wybierz „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”, aby zezwolić na połączenie.</translation>
 <translation id="7019153418965365059">Nieznany błąd hosta: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Pomoc zdalna</translation>
 <translation id="7026930240735156896">Wykonaj te instrukcje, by skonfigurować komputer do dostępu zdalnego</translation>

@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Esikatselu ei saatavilla</translation>
 <translation id="1812302367230252929">translitteroitu amhara</translation>
 <translation id="1813278315230285598">Palvelut</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Huomaa:<ph name="END_BOLD" /> nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviini</translation>
 <translation id="183183971458492120">Ladataan tietoja…</translation>
 <translation id="1834290891154666894">Virheellinen aiheen vaihtoehtoisen nimen vastaavuusarvo</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">ranska (Kanada)</translation>
 <translation id="3003189754374775221">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="3003633581067744647">Vaihda pikkukuvanäkymään</translation>
+<translation id="3016566519832145558">Varoitus: Nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi.</translation>
 <translation id="3029114385395636667">Ota Google Docs Offline käyttöön, niin Docs, Sheets ja Slides ovat käytettävissä offline-tilassa.</translation>
 <translation id="303198083543495566">Sijainti</translation>
 <translation id="3047197340186497470">kiina (dayi)</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">Videot</translation>
 <translation id="6150853954427645995">Jos haluat tallentaa tämän tiedoston offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Perhoset</translation>
+<translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6170470584681422115">Voileipä</translation>
 <translation id="6187719147498869044">unkari</translation>
 <translation id="6189412234224385711">Avaa laajennuksella <ph name="EXTENSION_NAME" /></translation>

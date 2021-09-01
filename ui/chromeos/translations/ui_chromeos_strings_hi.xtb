@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />चेतावनी:<ph name="END_BOLD" />  ये फ़ाइलें अस्‍थायी हैं और डि‍स्‍क का स्थान खाली करने के लि‍ए अपने आप हटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1834290891154666894">विषय के दूसरे नाम से मिलती-जुलती एंट्री अमान्य है</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">फ़्रेंच (कनाडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="3003633581067744647">थंबनेल व्यू में स्विच करें</translation>
+<translation id="3016566519832145558">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए, अपने-आप मिटाई जा सकती हैं.</translation>
 <translation id="3029114385395636667">Docs, Sheets, और Slides का ऑफ़लाइन इस्तेमाल करने के लिए, 'Google Docs ऑफ़लाइन' को चालू करें.</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चाइनीज़ डाई</translation>
@@ -580,6 +580,7 @@
 <translation id="6146563240635539929">वीडियो</translation>
 <translation id="6150853954427645995">इस फ़ाइल को ऑफ़लाइन देखने को सेव करने के लिए, फिर से ऑनलाइन होकर, फ़ाइल पर राइट-क्‍लिक करें और <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्‍प को चुनें.</translation>
 <translation id="6164412158936057769">तितलियां</translation>
+<translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> से खोलें</translation>

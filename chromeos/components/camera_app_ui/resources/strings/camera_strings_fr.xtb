@@ -8,7 +8,6 @@
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuteur de 3 secondes</translation>
-<translation id="1478594628797167447">Scanner</translation>
 <translation id="1545749641540134597">Scanner le code QR</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1627744224761163218">4 x 4</translation>
@@ -24,12 +23,12 @@
 <translation id="2064538373111010176">Option <ph name="CAMERA" /> activée</translation>
 <translation id="2144806332417375165">Paramètres vidéo personnalisés</translation>
 <translation id="2175927920773552910">Code QR</translation>
-<translation id="2268107369530950373">Passer en mode scanner</translation>
 <translation id="229579744168541441">Exporter vers le disque</translation>
 <translation id="2320741269052147773">Pano à gauche</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2501853267655415902">Enregistrement interrompu</translation>
 <translation id="2501953888035679275">Prenez des photos et enregistrez des vidéos avec votre appareil photo.</translation>
+<translation id="2517472476991765520">Scanner</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
 <translation id="2599796128805996109">Caméra arrière</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> est branchée.</translation>
@@ -45,8 +44,10 @@
 <translation id="3259149966178251584">Résolution de la caméra</translation>
 <translation id="3260401663013584785">Impossible de détecter un document</translation>
 <translation id="3448774564454087943">Impossible d'enregistrer la vidéo, car elle est trop courte</translation>
+<translation id="346539236881580388">Reprendre</translation>
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" /> ?</translation>
+<translation id="3573890771273113519">Passer au mode de numérisation</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -70,6 +71,7 @@
 <translation id="5268823927180092501">Activer le mode document sur toutes les caméras</translation>
 <translation id="5444515100983837161">Placez le document dans le cadre. L'image scannée sera de meilleure qualité si les couleurs du document et de l'arrière-plan sont différentes.</translation>
 <translation id="5671277269877808209">Carré</translation>
+<translation id="5746169159649715125">Enregistrer au format PDF</translation>
 <translation id="5753488212459587150">Activer le mode Expert</translation>
 <translation id="5759254179196327752">Analyse de document</translation>
 <translation id="5775960006311140197">Mode Expert</translation>
@@ -106,6 +108,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8120146556401698679">Panoramique, inclinaison, zoom</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8145038249676204903">Passer à la prise de photo</translation>
+<translation id="8167081290930651932">Enregistrer en tant que photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8425673304802773841">Incliner</translation>

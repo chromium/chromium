@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Pastikan pemindai dinyalakan dan tersedia melalui jaringan Anda atau koneksi langsung</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Autentikasi Proxy dibutuhkan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> dari <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas pencetakan.</translation>
 <translation id="4646949265910132906">Koneksi Wi-Fi aman</translation>
-<translation id="4652335678334611408">Simpan log sesi</translation>
 <translation id="4654549501020883054">Ubah Tiap Hari</translation>
 <translation id="4665014895760275686">Produsen</translation>
 <translation id="467510802200863975">Sandi tidak cocok</translation>

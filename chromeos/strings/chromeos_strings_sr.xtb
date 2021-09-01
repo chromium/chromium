@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Задаци штампања старији од <ph name="NUMBER_OF_DAYS" /> дана се уклањају</translation>
 <translation id="4003384961948020559">Није успело – излаз је пун</translation>
 <translation id="4034824040120875894">Штампач</translation>
+<translation id="409427325554347132">Сачувај детаље теста</translation>
 <translation id="4131410914670010031">Црно-бело</translation>
 <translation id="4145784616224233563">HTTP заштитни зид</translation>
 <translation id="4155551848414053977">Проверите да ли је скенер укључен и доступан преко мреже или директне везе</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="4646949265910132906">Безбедна WiFi веза</translation>
-<translation id="4652335678334611408">Сачувај евиденцију сесије</translation>
 <translation id="4654549501020883054">Мењај сваког дана</translation>
 <translation id="4665014895760275686">Произвођач</translation>
 <translation id="467510802200863975">Лозинке се не подударају</translation>

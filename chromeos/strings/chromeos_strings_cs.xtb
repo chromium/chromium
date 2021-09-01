@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Tiskové úlohy starší než <ph name="NUMBER_OF_DAYS" /> dní budou odstraněny</translation>
 <translation id="4003384961948020559">Tisk selhal – výstupní zásobník je plný</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
+<translation id="409427325554347132">Uložit podrobnosti testu</translation>
 <translation id="4131410914670010031">Černobíle</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Zkontrolujte, zda je skener zapnutý a dostupný v síti nebo přes přímé připojení.</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="4646949265910132906">Zabezpečené připojení k Wi-Fi</translation>
-<translation id="4652335678334611408">Uložit protokol relace</translation>
 <translation id="4654549501020883054">Měnit denně</translation>
 <translation id="4665014895760275686">Výrobce</translation>
 <translation id="467510802200863975">Hesla se neshodují</translation>

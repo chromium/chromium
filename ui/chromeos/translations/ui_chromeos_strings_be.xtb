@@ -95,7 +95,6 @@
 <translation id="1810764548349082891">Перадпрагляд недаступны</translation>
 <translation id="1812302367230252929">Амхарская (транслітарацыя)</translation>
 <translation id="1813278315230285598">Сэрвісы</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Увага!<ph name="END_BOLD" />  Гэта часовыя файлы, яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пінгвін</translation>
 <translation id="183183971458492120">Ідзе загрузка інфармацыі...</translation>
 <translation id="1834290891154666894">Несапраўдны запіс супадзення па альтэрнатыўным імені суб'екта</translation>
@@ -225,6 +224,7 @@
 <translation id="299638574917407533">Французская (Канада)</translation>
 <translation id="3003189754374775221">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцеся да сеткі</translation>
 <translation id="3003633581067744647">Пераключыцца на выгляд з мініяцюрамі</translation>
+<translation id="3016566519832145558">Увага! Гэта часовыя файлы, і яны могуць быць аўтаматычна выдалены для вызвалення месца на дыску.</translation>
 <translation id="3029114385395636667">Каб працаваць з файламі Дакументаў, Табліц і Прэзентацый без падключэння да інтэрнэту, уключыце пашырэнне "Дакументы Google у пазасеткавым рэжыме".</translation>
 <translation id="303198083543495566">Геаграфія</translation>
 <translation id="3047197340186497470">Кітайская (метад уводу Dayi)</translation>
@@ -579,6 +579,7 @@
 <translation id="6146563240635539929">Відэа</translation>
 <translation id="6150853954427645995">Каб захаваць гэты файл для выкарыстання ў пазасеткавым рэжыме, падключыцеся зноў да інтэрнэту, націсніце правай кнопкай мышы на патрэбны файл і выберыце пункт <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Матылькі</translation>
+<translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6170470584681422115">Сандвіч</translation>
 <translation id="6187719147498869044">Венгерская</translation>
 <translation id="6189412234224385711">Адкрыць у пашырэнні <ph name="EXTENSION_NAME" /></translation>

@@ -130,7 +130,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="6963936880795878952">由於有人嘗試使用無效的 PIN 連線至遠端電腦，因此系統暫時封鎖您的連線，請稍後再試。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985691951107243942">您是否確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線？如果其後改變主意，您必須親自前往該電腦所在位置修改設定，才能重新啟用連線。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> 要求您授予電腦的瀏覽及控制權限。如果您不認識不認識對方，或需要在授予權限前進行變更，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]，否則請選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="7019153418965365059">不明主機錯誤：<ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">遠端協助</translation>
 <translation id="7026930240735156896">按照指示設定電腦，即可使用遠端存取功能</translation>

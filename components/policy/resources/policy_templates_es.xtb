@@ -10,6 +10,7 @@
       Si se le asigna una cadena que representa un nombre de dominio, <ph name="PRODUCT_OS_NAME" /> mostrará la opción de autocompletar los datos durante el inicio de sesión del usuario, por lo que el usuario podrá introducir únicamente su nombre de usuario sin la extensión de nombre de dominio.  El usuario podrá sobrescribir esta extensión de nombre de dominio.
       Si el valor de esta política no es un dominio válido, no se aplicará la política.</translation>
 <translation id="1004590217607585595">Configuración de gestión de aplicaciones web</translation>
+<translation id="1006218396155867129">Impedir que los usuarios con acceso remoto puedan transferir archivos al host remoto y desde él</translation>
 <translation id="1010151305531217567">Cambiar el botón principal del ratón al derecho</translation>
 <translation id="1011266755572744012">Especifica el número máximo de hojas que el usuario puede imprimir en un mismo trabajo de impresión.
 
@@ -182,6 +183,7 @@
       El valor predeterminado es RollbackDisabled.</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
 <translation id="1223789468190631420">Estado habilitado de Navegación segura con fuentes de confianza</translation>
+<translation id="123018742985150697">Requerir que el usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="123081309365616809">Habilita el envío de contenido al dispositivo</translation>
 <translation id="1240722269871366886">Esta política permite que <ph name="PRODUCT_OS_NAME" /> sugiera emojis cuando los usuarios escriben texto utilizando sus teclados físicos o virtuales.
       Si se asigna el valor "verdadero" a esta política, se habilitará esta función y los usuarios podrán cambiarla.
@@ -416,9 +418,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si no se establece esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="1530812829012954197">Mostrar siempre los patrones de URL que se indican a continuación en el navegador del host</translation>
-<translation id="1534690481294492142">Si se habilita la política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras anteriores conectadas al ordenador. Los usuarios pueden activar el proxy de impresión en la nube utilizando su cuenta de Google para el proceso de autenticación.
-
-      Si se inhabilita esta opción, los usuarios no podrán activar el proxy y el ordenador no podrá compartir las impresoras conectadas con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="1552418937045050762">Si se habilita esta opción, los usuarios podrán usar Compartir con Nearby, lo que les permitirá enviar y recibir archivos de personas cercanas.
 
       Si se inhabilita esta opción, los usuarios no podrán usar Compartir con Nearby.
@@ -749,6 +748,9 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Esta política de empresa está inhabilitada de forma predeterminada.</translation>
 <translation id="1960416154405676350">Habilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1961091374249454164">Esta política solo se aplica a las sesiones de invitado gestionadas.
+      Si se establece esta política, se especificará una lista de IDs de extensiones que quedarán exentas del proceso de borrado de la sesiones de invitado gestionadas y restringidas (consulta <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
+      Si no se establece esta política, ninguna extensión quedará exenta del proceso de borrado.</translation>
 <translation id="1962273523772270623">Permitir la recogida de registros de eventos WebRTC de servicios de Google</translation>
 <translation id="1962864958436828230">Establecer un límite de tamaño mínimo para la restricción del portapapeles que previene la filtración de datos</translation>
 <translation id="1964634611280150550">Modo de incógnito inhabilitado</translation>
@@ -1052,9 +1054,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible para ningún usuario del dispositivo. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="225340736558643885">Habilitar advertencias en formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
-<translation id="2261329877420573811">Si se utiliza <ph name="PRINTERS_WHITELIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
-
-      Esta política está obsoleta. Usa <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
 <translation id="2266422599396179941">Permitir que los usuarios archiven sugerencias</translation>
 <translation id="2269319728625047531">Habilitar Sync Consent durante el inicio de sesión</translation>
@@ -1137,14 +1136,10 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2349117476121456297">Si se asigna el valor "true" a esta política, las teclas de la fila superior del teclado actúan como comandos de teclas de funciones. Cuando se pulsa la tecla de búsqueda, su comportamiento cambia al de teclas multimedia.
 
       Si se le asigna el valor "false" o no se le asigna ningún valor, las teclas del teclado vuelven a producir comandos de teclas multimedia. Cuando se pulsa la tecla de búsqueda, su comportamiento cambia al de teclas de funciones.</translation>
+<translation id="2355876547176311490">Inhabilitar el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="2358176879566587521">Se ha retirado esta política. No es compatible con esta versión de <ph name="PRODUCT_NAME" />. Consulta https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">Periodo de reinicio</translation>
 <translation id="2364639863953745682">Modo de la experiencia de incorporación del Asistente</translation>
-<translation id="2365764204944230431">Esta política está obsoleta, pero puedes utilizar BrowserSignin en su lugar.
-
-      Permite a los usuarios iniciar sesión en <ph name="PRODUCT_NAME" />.
-
-      Esta política sirve para establecer si un usuario tiene permiso para iniciar sesión en <ph name="PRODUCT_NAME" />. Si se le asigna el valor "False", impedirá que funcionen las aplicaciones y extensiones que usen la API chrome.identity, así que te recomendamos que uses la política <ph name="SYNC_DISABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="2384233438419344179">Si se habilita esta política, los elementos de sitios web que no pertenezcan al dominio que aparece en la barra de direcciones del navegador no podrán establecer cookies. Si se inhabilita esta política, estos elementos podrán establecer cookies y los usuarios no podrán cambiar esta opción.
 
       Si no se le asigna ningún valor, las cookies de terceros estarán activadas, pero los usuarios podrán cambiar esta opción.</translation>
@@ -2036,6 +2031,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3387211681524224831">Si la política se habilita, no se almacenará el historial de navegación y se inhabilitará la sincronización de pestañas. Los usuarios no pueden cambiar esta opción.
 
       Si esta política se inhabilita o no se define, se guardará el historial de navegación.</translation>
+<translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
 <translation id="3391457705621770207">Si se define esta política, determinará la cantidad de tiempo (en milisegundos) que debe pasar sin actividad de usuario para que se inicie sesión automáticamente en la cuenta local del dispositivo especificada en la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
       Si no se le asigna ningún valor, el tiempo de espera será de 0 (cero) milisegundos.
@@ -2604,6 +2600,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="4087476676669545471">Si se asigna el valor True a esta política o no se establece, los usuarios podrán compartir o guardar la página web actual usando acciones proporcionadas por el centro para compartir escritorio. Se puede acceder al centro para compartir desde un icono del omnibox o desde el menú de 3 puntos.
 
        Si se le asigna el valor False, se eliminará el icono para compartir del omnibox y el acceso del menú de 3 puntos.</translation>
+<translation id="4087778345310035432">Si se utiliza <ph name="PRINTERS_WHITELIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> y se establece <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos IDs coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los IDs deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+
+      Esta política está obsoleta. Usa <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="4088589230932595924">Modo de incógnito forzado</translation>
 <translation id="4089849819635523136">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, se especificarán la palabra clave y el acceso directo que se utilizan en la barra de direcciones para activar una búsqueda con este proveedor.
 
@@ -3523,6 +3522,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se asigna una lista de identificadores de métodos de introducción a esta política, esos métodos estarán disponibles en la pantalla de inicio de sesión. El primer método de introducción estará preseleccionado. El grupo de un usuario aparece centrado en la pantalla de inicio de sesión, pero también se mostrará el último método de introducción por el usuario junto a los métodos de introducción proporcionados por esta política. Si esta política no se configura, los métodos de introducción de la pantalla de inicio de sesión procederán de la configuración regional en la que se muestre esa pantalla. Los valores que no sean identificadores de métodos de introducción válidos se ignorarán.</translation>
 <translation id="5407008856008996384">Permitir acceso a impresoras CUPS</translation>
+<translation id="5413051574966911176">Inhabilitar la UI relacionada con la conexión en el escritorio del host remoto cuando una conexión esté activa</translation>
 <translation id="5417597818300833094">Si se establece esta política, los usuarios podrán elegir uno de los métodos de introducción de texto para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
 
        Si no se establece o se le asigna una lista vacía, los usuarios podrán seleccionar todos los métodos de introducción de texto admitidos.
@@ -3667,6 +3667,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Los ID deben coincidir con el campo "id" del archivo definido en la política <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Si no se define esta política, no se realizará ningún filtrado y se tendrán en cuenta todos los servidores de impresión proporcionados por <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.</translation>
+<translation id="5573207364545428684">Habilitar que los usuarios con acceso remoto transfieran archivos al host remoto y desde él</translation>
 <translation id="557360560705413259">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> usará commonName de un certificado de servidor para buscar concordancias con un nombre de host si el certificado no tiene ninguna extensión subjectAlternativeName, siempre que se valide correctamente y se vincule a certificados AC instalados localmente.
 
       Recuerda que no se recomienda esta opción, ya que puede permitir que se omita la extensión nameConstraints que restringe los nombres de host para los que puede estar autorizado un certificado concreto.
@@ -3711,15 +3712,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5625771176514429288">Se permitirá ejecutar aplicaciones de Chrome en estas plataformas.</translation>
 <translation id="5630352020869108293">Restaurar la última sesión</translation>
 <translation id="5633871703004128675">Habilitar la función de accesibilidad de resaltado del símbolo de intercalación de texto</translation>
-<translation id="5636088574608432506">Esta política controla el comportamiento del navegador cuando se inicia sesión. Permite definir si los usuarios pueden iniciar sesión en <ph name="PRODUCT_NAME" /> con su cuenta y usar los servicios asociados, como la función Sincronización de <ph name="PRODUCT_NAME" />.
-
-      Si se asigna el valor "Inhabilitar inicio de sesión en el navegador" a esta política, el usuario no podrá iniciar sesión en el navegador ni utilizar los servicios asociados a su cuenta. Además, las funciones del navegador, como Sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar ni estarán disponibles. En <ph name="IOS_NAME" />, si el usuario ha iniciado sesión y la política está inhabilitada, se cerrará la sesión inmediatamente. En otras plataformas, se cerrará sesión la próxima vez que ejecuten <ph name="PRODUCT_NAME" />. En todas las plataformas, se conservarán y se podrán seguir usando los datos del perfil local, como los marcadores, las contraseñas, etc. Además, el usuario podrá iniciar sesión en servicios web de Google y usarlos (por ejemplo, Gmail).
-
-      Si se asigna el valor "Habilitar inicio de sesión en el navegador" a esta política, el usuario podrá iniciar sesión en el navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, cuando el usuario inicie sesión en servicios web de Google, como Gmail, también iniciará sesión automáticamente en el navegador. Si el usuario ha iniciado sesión en el navegador, la información de la cuenta del usuario se conservará en el navegador. Sin embargo, la función Sincronización de <ph name="PRODUCT_NAME" /> no se activará de forma predeterminada; el usuario deberá activar esta función por separado. Si se habilita esta política, se impedirá que el usuario desactive la opción que permite iniciar sesión en el navegador. Para controlar la disponibilidad de Sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
-
-      Si se asigna el valor "Forzar a los usuarios a iniciar sesión para usar el navegador" a esta política, se mostrará un cuadro de diálogo de selección de cuenta al usuario para que elija una e inicie sesión en el navegador. De este modo, se asegura que, en el caso de las cuentas gestionadas, se apliquen y se cumplan las políticas asociadas a la cuenta. Además, se activará de forma predeterminada la función Sincronización de <ph name="PRODUCT_NAME" /> de la cuenta, excepto si el administrador del dominio ha inhabilitado Sincronización de <ph name="PRODUCT_NAME" /> o si la política <ph name="SYNC_POLICY_NAME" /> está activada. De forma predeterminada, la política <ph name="GUEST_MODE_POLICY_NAME" /> estará inhabilitada. Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta este artículo del Centro de Ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ni <ph name="IOS_NAME" />. Si se usa, cambiará a "Habilitar inicio de sesión en el navegador".
-
-      Si no se asigna ningún valor a esta política, el usuario podrá decidir si quiere habilitar el inicio sesión en el navegador en la configuración de <ph name="PRODUCT_NAME" /> y usar esta opción cuando lo crea oportuno.</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Usa la política <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> en su lugar.
 
       Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
@@ -3846,6 +3838,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="5749396052108288586">Esta política está obsoleta. Se debe usar la política <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> en su lugar.</translation>
 <translation id="574983287620584622">Habilitar las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión</translation>
+<translation id="5749873635525257317">Esta política está obsoleta, pero puedes utilizar BrowserSignin en su lugar.
+
+      Permite a los usuarios iniciar sesión en <ph name="PRODUCT_NAME" />.
+
+      Esta política sirve para establecer si un usuario tiene permiso para iniciar sesión en <ph name="PRODUCT_NAME" />. Si se le asigna el valor "False", impedirá que funcionen las aplicaciones y extensiones que usen la API chrome.identity, así que te recomendamos que uses la política <ph name="SYNC_DISABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5755002458331714762"> Las API v0 de componentes web (Shadow DOM v0, Custom Elements v0 y HTML Imports) están obsoletas desde 2018 y se han inhabilitado de forma predeterminada desde M80. Esta política permite volver a habilitar estas funciones de forma selectiva hasta M84.
 
       Si se le asigna el valor "true" a esta política, las funciones v0 de los componentes web se habilitarán para todos los sitios web.
@@ -3945,6 +3942,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           La configuración de esta política no afecta a los clientes de acceso remoto, ya que siempre utilizan "chromoting-client.talkgadget.google.com" para acceder a TalkGadget.</translation>
 <translation id="5888645257599699215">Informar sobre el estado del audio del dispositivo</translation>
 <translation id="5890063326284543943">Controlar el uso de la API Serial</translation>
+<translation id="5893303508158298667">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
+
+      Si se inhabilita esta política, el acceso remoto no se desactivará, pero solo se permitirán las conexiones procedentes de la misma red (sin NAT transversal ni retransmisión).</translation>
 <translation id="5897913798715600338">Carga la batería usando la tecnología de carga rápida.</translation>
 <translation id="5898486742390981550">Si varios usuarios han iniciado sesión, solo podrá utilizar las aplicaciones para Android el usuario principal.</translation>
 <translation id="5899751601113377553">Evitar que los usuarios utilicen <ph name="LACROS_NAME" /></translation>
@@ -4015,6 +4015,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="6019606564278029236">Habilitar la interacción de los usuarios remotos con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
 <translation id="602318745029752898">Permitir las voces de conversión de texto a voz de red mejorada en Enunciar selección</translation>
 <translation id="6025267044008029374">Bloquear descargas maliciosas (recomendado)</translation>
@@ -4140,6 +4141,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6198947200418556248">Esta política está obsoleta. Si necesitas que las cookies tengan el comportamiento antiguo, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Te permite revertir todas las cookies al comportamiento antiguo de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si restableces el comportamiento antiguo, las cookies que no especifiquen un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si fueran <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />. Además, se eliminará el requisito de que las cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> tengan el atributo <ph name="ATTRIBUTE_SECURE_NAME" /> y se omitirá la comparación de esquemas cuando se evalúe si dos sitios son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Si no se establece esta política, el comportamiento predeterminado de <ph name="ATTRIBUTE_SAMESITE_NAME" /> correspondiente a las cookies dependerá de la configuración personal del usuario en las funciones <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> y <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, que pueden definirse mediante una prueba pública o mediante la habilitación o la inhabilitación de las marcas <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> (respectivamente).</translation>
+<translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6212868225782276239">Se muestran todas las impresas excepto las que se incluyen en la lista negra.</translation>
@@ -4234,6 +4236,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Nota: <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> anula esta política si se especifica la anterior.</translation>
 <translation id="6319198883324703402">Define cuándo se envía la primera notificación para que el usuario reinicie</translation>
+<translation id="6319907968994678054">Si se habilita esta política, se desactivará la sincronización de datos en <ph name="PRODUCT_NAME" /> al usar los servicios de sincronización alojados por Google.
+      Para desactivar los servicios de <ph name="CHROME_SYNC_NAME" /> por completo, te recomendamos que desactives el servicio en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Si se inhabilita esta política o no se establece, los usuarios podrán elegir si quieren usar <ph name="CHROME_SYNC_NAME" />.
+
+      Nota: No actives esta política si se ha habilitado <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, ya que ambas comparten la misma funcionalidad del cliente. La sincronización alojada por Google se desactivará por completo en este caso.</translation>
 <translation id="6327643515544933974">Configuración de USB web</translation>
 <translation id="6330882599388782338">Permitir a los sitios web acceder a los sensores</translation>
 <translation id="6331167725613770725">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
@@ -4444,6 +4452,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se define esta política o se le asigna una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
 <translation id="6584541828182430328">Inhabilitar que se muestre la alerta en pantalla completa</translation>
+<translation id="6594372503585248865">Habilitar la UI relacionada con la conexión en el escritorio del host remoto cuando una conexión esté activa</translation>
 <translation id="6598235178374410284">Imagen de avatar del usuario</translation>
 <translation id="6600377630856879433">Permitir la captura de ventanas y pestañas de estos orígenes</translation>
 <translation id="6603004149426829878">Enviar siempre cualquier señal de ubicación disponible al servidor mientras se detecta la zona horaria</translation>
@@ -4858,6 +4867,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="7003746348783715221">Preferencias de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7007283257527015835">Un indicador booleano que especifica si el controlador de protocolos debe ser la opción predeterminada.</translation>
 <translation id="7008308728445338159">Comprobaciones de interceptación de DNS habilitadas</translation>
+<translation id="7010006999849135962">Habilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="7016736684656067099">Si se asigna el valor 1 a esta política, todos los sitios web podrán mostrar imágenes. Si se le asigna el valor 2, se denegará la visualización de imágenes.
 
       Si no se le asigna ningún valor, podrán mostrarse imágenes, pero los usuarios podrán cambiar esta opción.</translation>
@@ -4911,6 +4921,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="7063895219334505671">Permitir pop-ups en estos sitios</translation>
+<translation id="7066292150801784098">Inhabilitar la interacción de los usuarios remotos con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio</translation>
 <translation id="7070525176564511548">Es obligatorio introducir la contraseña cada semana (cada 168 horas)</translation>
 <translation id="7072208053150563108">Frecuencia de cambio de contraseña de dispositivo</translation>
@@ -4994,6 +5005,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7149042336307555519"> Indica los tipos de conexiones que se pueden utilizar para actualizar el sistema operativo. Estas actualizaciones pueden constituir un lastre para la conexión debido a su tamaño y pueden suponer costes adicionales. Por tanto, están inhabilitadas de forma predeterminada en los tipos de conexión que se consideran más costosos (actualmente, solo las redes móviles).
 
       Los identificadores de tipos de conexión reconocidos son <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> y <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
+<translation id="7150722575502017208">No requerir que el usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="7152605873936173525">Controla el modo de resolución de DNS-over-HTTPS. Ten en cuenta que esta política solo definirá el modo predeterminado de cada solicitud. El modo se puede anular en tipos de solicitudes especiales, como las que se usan para resolver el nombre de host de un servidor con el protocolo DNS-over-HTTPS.
 
       El modo <ph name="SECURE_DNS_MODE_OFF" /> inhabilitará DNS-over-HTTPS.
@@ -5246,6 +5258,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si se desactiva o no se le asigna ningún valor, los usuarios podrán cambiar esta opción.
 
       Nota: Usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> en Android.</translation>
+<translation id="7507553960917214561">Inhabilitar el modo de cortina en hosts de acceso remoto</translation>
 <translation id="7508067364927180229">Este ajuste proporciona varias opciones de disponibilidad que se aplican al navegador <ph name="LACROS_NAME" />.
 
       Si se asigna <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" /> a esta política, el usuario podrá habilitar <ph name="LACROS_NAME" /> y establecer que sea el navegador principal.
@@ -5281,6 +5294,9 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si esta política no se define o se le asigna una lista vacía, no habrá ningún modo de desbloqueo rápido disponible para los dispositivos administrados.</translation>
 <translation id="754176366378585605">Controlar el uso de la API File Handling</translation>
 <translation id="7543109906499122922">Hora a la que el dispositivo empezará a funcionar usando la batería, interpretada en la zona horaria local del dispositivo.</translation>
+<translation id="7544392541165889987">Si se habilita la política o no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> podrá actuar como proxy entre <ph name="CLOUD_PRINT_NAME" /> y las impresoras anteriores conectadas al ordenador. Los usuarios pueden activar el proxy de impresión en la nube utilizando su cuenta de Google para el proceso de autenticación.
+
+      Si se inhabilita esta opción, los usuarios no podrán activar el proxy y el ordenador no podrá compartir las impresoras conectadas con <ph name="CLOUD_PRINT_NAME" />.</translation>
 <translation id="7547549430720182663">Combinar</translation>
 <translation id="7553535237300701827">El flujo de autenticación de inicio de sesión puede ser de dos formas diferentes, en función del valor que se asigne a esta política:
 
@@ -5306,6 +5322,15 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       * "Replace" hará que la política de usuarios de los GPO del usuario se sustituya por la de los GPO del ordenador. Se ignorarán los GPO del usuario.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
+<translation id="7571530187275708765">Esta política controla el comportamiento del navegador cuando se inicia sesión. Permite definir si los usuarios pueden iniciar sesión en <ph name="PRODUCT_NAME" /> con su cuenta y usar los servicios asociados, como la función Sincronización de <ph name="PRODUCT_NAME" />.
+
+      Si se le asigna el valor "Inhabilitar inicio de sesión en el navegador" a esta política, el usuario no podrá iniciar sesión en el navegador ni utilizar los servicios asociados a su cuenta. Además, las funciones del navegador, como Sincronización de <ph name="PRODUCT_NAME" />, no se podrán usar ni estarán disponibles. En <ph name="IOS_NAME" />, si el usuario ha iniciado sesión y la política está inhabilitada, se cerrará la sesión inmediatamente. En otras plataformas, se cerrará sesión la próxima vez que ejecuten <ph name="PRODUCT_NAME" />. En todas las plataformas, se conservarán y se podrán seguir usando los datos del perfil local, como los marcadores, las contraseñas, etc. Además, el usuario podrá iniciar sesión en servicios web de Google y usarlos (por ejemplo, Gmail).
+
+      Si se asigna el valor "Habilitar inicio de sesión en el navegador" a esta política, el usuario podrá iniciar sesión en el navegador. En todas las plataformas excepto <ph name="IOS_NAME" />, cuando el usuario inicie sesión en servicios web de Google, como Gmail, también iniciará sesión automáticamente en el navegador. Si el usuario ha iniciado sesión en el navegador, la información de la cuenta del usuario se conservará en el navegador. Sin embargo, la función Sincronización de <ph name="PRODUCT_NAME" /> no se activará de forma predeterminada; el usuario deberá activar esta función por separado. Si se habilita esta política, se impedirá que el usuario desactive la opción que permite iniciar sesión en el navegador. Para controlar la disponibilidad de Sincronización de <ph name="PRODUCT_NAME" />, usa la política <ph name="SYNC_POLICY_NAME" />.
+
+      Si se selecciona que se fuerce el inicio de sesión en esta política, se mostrará un cuadro de diálogo de selección de cuenta al usuario para que elija una e inicie sesión en el navegador. De este modo, se asegura de que, en el caso de las cuentas gestionadas, se apliquen y se cumplan las políticas asociadas a la cuenta. De forma predeterminada, la política <ph name="GUEST_MODE_POLICY_NAME" /> estará inhabilitada. Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta este artículo del Centro de Ayuda: https://support.google.com/chrome/a/answer/7572556. Esta opción no es compatible con <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> ni <ph name="IOS_NAME" />. Si se usa, cambiará a "Habilitar inicio de sesión en el navegador".
+
+      Si no se asigna ningún valor a esta política, el usuario podrá decidir si quiere habilitar el inicio de sesión en el navegador en la configuración de <ph name="PRODUCT_NAME" /> y usar esta opción cuando lo crea oportuno.</translation>
 <translation id="757395965347379751">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> permitirá los certificados SHA-1 firmados siempre que se validen correctamente y se vinculen a certificados AC instalados localmente.
 
       Ten en cuenta que esta política depende de la pila de verificación de certificados del sistema operativo que permite las firmas SHA-1. Si una actualización del sistema operativo cambia la forma en que este gestiona los certificados SHA-1, es posible que la política deje de estar efectiva. Además, el objetivo de esta política es proporcionar a las empresas una solución temporal para que tengan más tiempo para abandonar los certificados SHA-1. Esta política se retirará sobre el 1 de enero de 2019.
@@ -5596,9 +5621,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si habilitas o inhabilitas esta opción, los usuarios no podrán cambiar ni anular esta configuración en <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, se habilitará pero el usuario no podrá cambiarla.</translation>
-<translation id="7955263399078148032">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
-
-      Si se inhabilita esta política, el acceso remoto no se desactivará, pero solo se permitirán las conexiones procedentes de la misma red (sin NAT transversal ni retransmisión).</translation>
 <translation id="7956210013490975468">Configura el servicio de proxy del sistema en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">Es obligatorio introducir la contraseña cada doce horas</translation>
 <translation id="7959035883875301444">Controlar el uso de JavaScript con JIT</translation>
@@ -6266,6 +6288,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8821678641132607468">Si se asigna el valor "Habilitada" a esta política, se importará el historial de navegación del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará el historial de navegación al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla del historial de navegación aparecerá marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="8825154502356129120">Inhabilitar la autenticación gnubby para el host de acceso remoto</translation>
 <translation id="8825782996899863372">La advertencia de protección de contraseña se activa al reutilizar la contraseña en una página de phishing</translation>
 <translation id="8826172502287946476">Si se define esta política, se especificará una lista de aplicaciones y extensiones que se instalarán de forma silenciosa, sin intervención del usuario, y que los usuarios no podrán desinstalar ni desactivar. Los permisos se concederán de forma implícita, incluidas las API de extensión enterprise.deviceAttributes y enterprise.platformKeys. Estas dos API no estarán disponibles para las aplicaciones y extensiones que no se instalen de manera forzada.
 
@@ -6603,12 +6626,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="913195841488580904">Bloquear el acceso a una lista de URLs</translation>
 <translation id="9135033364005346124">Habilitar el proxy de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="9136399279941091445">Intervalos fuera del horario en los que se publican las políticas de dispositivos especificadas</translation>
-<translation id="9150385995327221969">"Si se habilita esta política, se desactivará la sincronización de datos en <ph name="PRODUCT_NAME" /> al usar los servicios de sincronización alojados por Google.
-      Para desactivar los servicios de <ph name="CHROME_SYNC_NAME" /> por completo, te recomendamos que desactives el servicio en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-
-      Si se inhabilita esta política o no se establece, los usuarios podrán elegir si quieren usar <ph name="CHROME_SYNC_NAME" />.
-
-      Nota: No actives esta política si se ha habilitado <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, ya que ambas comparten la misma funcionalidad del cliente. La sincronización alojada por Google se desactivará por completo en este caso".</translation>
 <translation id="9150416707757015439">Esta política está obsoleta. Te recomendamos que uses IncognitoModeAvailability en su lugar.
       Permite habilitar el modo de incógnito en <ph name="PRODUCT_NAME" />.
 
@@ -6651,10 +6668,8 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       Si no se asigna ningún valor a esta política o se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />, se usará el modo predeterminado de la experiencia de incorporación del Asistente.
       Si se le asigna el valor <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />, se usará el modo EDU de la experiencia de incorporación del Asistente.</translation>
+<translation id="9192220384862917760">Habilitar el modo de cortina en hosts de acceso remoto</translation>
 <translation id="9194447412184412480">Determina la configuración de los usuarios autenticados a través de SAML con un proveedor de identidad externo</translation>
-<translation id="9194474490249548275">Esta política solo se aplica a las sesiones de invitado gestionadas.
-      Si se establece esta política, se especificará una lista de IDs de extensiones que quedarán exentas del proceso de borrado de la sesiones de invitado gestionadas y restringidas (consulta <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
-      Si no se establece esta política, ninguna extensión quedará exenta del proceso de borrado.</translation>
 <translation id="9197740283131855199">Porcentaje que permite ajustar el tiempo de espera de inactividad de la pantalla si el usuario vuelve a ser activo después de la inactividad</translation>
 <translation id="9200828125069750521">Parámetros para URL de imagen que utiliza POST</translation>
 <translation id="9204863016826119209">Las aplicaciones Android que estén instaladas y aparezcan en esta política pueden usar claves corporativas.</translation>

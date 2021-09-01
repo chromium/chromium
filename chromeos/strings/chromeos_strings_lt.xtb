@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Senesnės nei <ph name="NUMBER_OF_DAYS" /> d. spausdinimo užduotys bus pašalintos</translation>
 <translation id="4003384961948020559">Nepavyko – išvestis pilna</translation>
 <translation id="4034824040120875894">Spausdintuvas</translation>
+<translation id="409427325554347132">Išsaugoti išsamią testo informaciją</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, „<ph name="PRINTER_NAME" />“, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> iš <ph name="TOTAL_PAGE_NUMBER" /> psl. Paspauskite „Enter“, jei norite atšaukti spausdinimo užduotį.</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
-<translation id="4652335678334611408">Išsaugoti seanso žurnalą</translation>
 <translation id="4654549501020883054">Keisti kasdien</translation>
 <translation id="4665014895760275686">Gamintojas</translation>
 <translation id="467510802200863975">Slaptažodžiai neatitinka</translation>

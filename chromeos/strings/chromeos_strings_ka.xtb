@@ -146,6 +146,7 @@
 <translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
+<translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
 <translation id="4131410914670010031">შავი და თეთრი</translation>
 <translation id="4145784616224233563">HTTP ქსელის დაცვა</translation>
 <translation id="4155551848414053977">დარწმუნდით, რომ სკანერი ჩართულია და ხელმისაწვდომია თქვენი ქსელისა თუ პირდაპირი კავშირის მეშვეობით</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> / <ph name="TOTAL_PAGE_NUMBER" />. გთხოვთ დააჭიროთ შეყვანის ღილაკს ამ ბეჭდვის დავალების გასაუქმებლად.</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
-<translation id="4652335678334611408">სესიის ჟურნალის შენახვა</translation>
 <translation id="4654549501020883054">ყოველდღიურად შეცვლა</translation>
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>

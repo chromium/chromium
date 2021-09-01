@@ -146,6 +146,7 @@
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="4003384961948020559">Handlingen mislykkedes – Fuld udskriftsbakke</translation>
 <translation id="4034824040120875894">Printer</translation>
+<translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4155551848414053977">Tjek, at scanneren er tændt og tilgængelig via dit netværk eller en direkte forbindelse</translation>
@@ -179,7 +180,6 @@
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
-<translation id="4652335678334611408">Gem sessionslog</translation>
 <translation id="4654549501020883054">Skift på daglig basis</translation>
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>

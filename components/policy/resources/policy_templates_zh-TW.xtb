@@ -10,6 +10,7 @@
       如果將這項政策設為代表網域名稱的字串，<ph name="PRODUCT_OS_NAME" />將會在使用者登入流程中顯示自動完成選項，使用者只需輸入自己的使用者名稱 (不含網域名稱延伸部分) 即可。使用者可以覆寫這個網域名稱的延伸部分。
       如果這項政策的值不是有效網域，系統就不會套用這項政策。</translation>
 <translation id="1004590217607585595">網頁應用程式管理設定</translation>
+<translation id="1006218396155867129">禁止遠端存取使用者向遠端主機傳輸檔案，或從遠端主機接收檔案</translation>
 <translation id="1010151305531217567">將滑鼠的主要按鈕切換為右鍵</translation>
 <translation id="1011266755572744012">指定使用者執行單一列印工作時，可列印的紙張數量上限。
 
@@ -181,6 +182,7 @@
       預設值為 RollbackDisabled。</translation>
 <translation id="1221359380862872747">在示範登入時載入指定的網址</translation>
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
+<translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
 <translation id="1240722269871366886">這項政策可讓 <ph name="PRODUCT_OS_NAME" />在使用者透過虛擬或實體鍵盤輸入文字時提供表情符號建議。
       如果將這項政策設為 True，系統會啟用這項功能，且使用者將可變更這項設定。
@@ -414,9 +416,6 @@
 
       如果不設定這項政策，所有網站都將使用全域預設值 (不會自動取得存取權)。</translation>
 <translation id="1530812829012954197">一律在瀏覽器中算繪以下網址模式</translation>
-<translation id="1534690481294492142">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 將成為 <ph name="CLOUD_PRINT_NAME" />和連接到電腦的舊款印表機之間的 Proxy。使用者可透過 Google 帳戶驗證來啟用雲端列印 Proxy。
-
-      如果將這項政策設為停用，則使用者無法啟用 Proxy，電腦也無法與 <ph name="CLOUD_PRINT_NAME" />共用印表機。</translation>
 <translation id="1552418937045050762">如果啟用這項設定，使用者將可使用「鄰近分享」功能，與附近的使用者互相傳送檔案。
 
       如果停用這項設定，使用者就無法使用「鄰近分享」功能。
@@ -746,6 +745,9 @@
 
       在預設狀態下，系統會停用這項企業政策。</translation>
 <translation id="1960416154405676350">啟用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
+<translation id="1961091374249454164">這項政策僅適用於受管理的訪客工作階段。
+      你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
+如果不設定這項政策，系統就不會從重設程序中排除任何擴充功能。</translation>
 <translation id="1962273523772270623">允許從 Google 服務收集 WebRTC 事件記錄</translation>
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
@@ -1034,9 +1036,6 @@
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於此裝置的所有使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這部裝置。</translation>
 <translation id="225340736558643885">啟用不安全表單的警告功能</translation>
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
-<translation id="2261329877420573811">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_WHITELIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
-
-      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
 <translation id="2266422599396179941">允許使用者提出意見回饋</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
@@ -1121,14 +1120,10 @@
 <translation id="2349117476121456297">這項政策設為 True 時，鍵盤最上排的按鍵會做為功能鍵指令使用。按下搜尋鍵即可將按鍵行為改回媒體鍵。
 
       設為 False 或不予設定時，鍵盤預設會產生媒體鍵指令。按下搜尋鍵即可將按鍵改為功能鍵。</translation>
+<translation id="2355876547176311490">停用遠端存取主機所使用的轉送伺服器</translation>
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
 <translation id="2364639863953745682">Google 助理入門使用體驗的模式</translation>
-<translation id="2365764204944230431">這項政策已遭到淘汰，請考慮改用 BrowserSignin。
-
-      允許使用者登入 <ph name="PRODUCT_NAME" />。
-
-      如果設定這項政策，你可以設定是否允許使用者登入 <ph name="PRODUCT_NAME" />。將這項政策設為「False」後，將會導致使用 chrome.identity API 的應用程式和擴充功能無法運作，因此建議你改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
@@ -1995,6 +1990,7 @@
 <translation id="3387211681524224831">如果將這項政策設為啟用，系統不會儲存瀏覽記錄，並會停用分頁同步功能，且使用者無法變更這項設定。
 
       如果將這項政策設為停用或不設定，系統會儲存瀏覽記錄。</translation>
+<translation id="3389088527709746815">針對遠端存取主機啟用 gnubby 驗證機制</translation>
 <translation id="3391457705621770207">你可以透過這項政策，決定使用者多久 (以毫秒為單位) 沒有執行活動，才會自動登入由 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策所指定的裝置本機帳戶。
 
       如果不設定，系統會使用 0 毫秒做為逾時時間。
@@ -2545,6 +2541,9 @@
 <translation id="4087476676669545471">如果將這項政策設為 True 或不設定，使用者可以選取網址列圖示或三點選單存取桌面分享中心，透過其中提供的動作分享或儲存目前的網頁。
 
        如果將這項政策設為 False，則會移除網址列中的分享圖示，以及三點選單內的相關項目。</translation>
+<translation id="4087778345310035432">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_WHITELIST" />，系統會根據 <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。
+
+      這項政策已遭淘汰，請改用 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />。</translation>
 <translation id="4088589230932595924">強制使用無痕模式</translation>
 <translation id="4089849819635523136">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 政策來指定關鍵字或快速鍵，之後就可以在網址列中輸入內容搜尋這個搜尋引擎。
 
@@ -3459,6 +3458,7 @@
 
       如果將這項政策設為輸入法 ID 清單，登入畫面即可顯示指定的輸入法。系統會預先選取第一個指定的輸入法。在特定使用者視窗的登入畫面中，除了這項政策指定的輸入法之外，還會提供使用者最後一次使用的輸入法。如果未設定這項政策，系統會根據登入畫面顯示的語言代碼提供登入畫面的輸入法。如果值不是有效的輸入法 ID，則會遭到忽略。</translation>
 <translation id="5407008856008996384">允許存取 CUPS 印表機</translation>
+<translation id="5413051574966911176">連線時，在遠端主機桌面停用連線相關 UI</translation>
 <translation id="5417597818300833094">透過這項政策，你可以讓使用者為 <ph name="PRODUCT_OS_NAME" /> 工作階段選擇你指定的其中一種輸入法。
 
        如果不設定這項政策或將清單設為空白，使用者可以選取任何支援的輸入法。
@@ -3600,6 +3600,7 @@
       這些 ID 必須與 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策中指定檔案的「id」欄位相符。
 
       如果不設定這項政策，系統不會進行篩選，並且會納入 <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" /> 政策提供的所有列印伺服器。</translation>
+<translation id="5573207364545428684">允許遠端存取使用者向遠端主機傳輸檔案，或從遠端主機接收檔案</translation>
 <translation id="557360560705413259">啟用這項設定後，即使憑證缺少 subjectAlternativeName 延伸，只要能順利驗證並鏈結至本機上安裝的 CA 憑證，<ph name="PRODUCT_NAME" /> 仍會使用伺服器憑證的 commonName 比對主機名稱。
 
       請注意，這項設定可能會允許略過 nameConstraints 延伸 (用於限制指定的憑證可授權的主機名稱)，因此不建議啟用。
@@ -3644,16 +3645,6 @@
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
-<translation id="5636088574608432506">這項政策可控管瀏覽器的登入行為，讓你指定使用者是否能用帳戶登入 <ph name="PRODUCT_NAME" />，並使用帳戶相關服務 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。
-
-
-      如果將這項政策設為「禁止登入瀏覽器」，使用者將無法登入瀏覽器，也無法使用帳戶相關服務。在這種情況下，使用者無法使用瀏覽器層級的功能 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。在 <ph name="IOS_NAME" /> 上，如果這項政策在使用者登入瀏覽器後才設為「停用」，系統會立即將他們登出；在其他平台上，已登入的使用者則會在下次執行 <ph name="PRODUCT_NAME" /> 時被強制登出，但他們在所有平台上的本機設定檔資料 (例如書籤、密碼等) 都會保留下來，並能繼續使用。使用者仍然可以登入並使用 Gmail 等 Google 網路服務。
-
-      如果將這項政策設為「允許登入瀏覽器」，則使用者可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者會在登入 Gmail 等 Google 網路服務後自動登入瀏覽器。在登入瀏覽器的狀態下，瀏覽器會保留使用者的帳戶資訊。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另外選擇啟用這項功能。啟用這項政策後，使用者將無法關閉允許登入瀏覽器的設定。如要控管是否提供 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
-
-      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統在與該帳戶關聯的所有受管理帳戶中套用並強制執行相關政策。根據預設，這項設定會開啟帳戶的 <ph name="PRODUCT_NAME" /> 同步功能 (除非網域管理員已停用 <ph name="PRODUCT_NAME" /> 同步功能，或是另外設定了 <ph name="SYNC_POLICY_NAME" /> 政策)。<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。請注意，啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/a/answer/7572556。這個選項不支援 <ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 和 <ph name="IOS_NAME" />。如果你採用這個選項，系統將改為使用「允許登入瀏覽器」。
-
-      如果不設定這項政策，使用者可以決定是否要在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項，並視需要自行選用。</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。
 
       你可以透過這項政策指定允許整合驗證的伺服器。只有當 Proxy 或這份許可清單中的伺服器傳送驗證要求給 <ph name="PRODUCT_NAME" /> 時，系統才會啟用整合驗證。
@@ -3760,6 +3751,11 @@
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="5749396052108288586">這項政策已遭淘汰，請改用 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> 政策。</translation>
 <translation id="574983287620584622">在登入畫面上啟用無障礙功能快速鍵</translation>
+<translation id="5749873635525257317">這項政策已遭淘汰，請考慮改用 BrowserSignin。
+
+      允許使用者登入 <ph name="PRODUCT_NAME" />。
+
+      如果設定這項政策，你可以設定是否允許使用者登入 <ph name="PRODUCT_NAME" />。將這項政策設為「False」後，將會導致使用 chrome.identity API 的應用程式和擴充功能無法運作，因此建議你改用 <ph name="SYNC_DISABLED_POLICY_NAME" />。</translation>
 <translation id="5755002458331714762"> Web Components v0 API (Shadow DOM v0、Custom Elements v0 和 HTML Imports) 已在 2018 年淘汰，並從 M80 版開始預設為停用。這項政策可讓你選擇性地重新啟用這些功能，直到 M84 版為止。
 
       如果將這項政策設為 True，系統會在所有網站上啟用 Web Components v0 功能。
@@ -3857,6 +3853,9 @@
           遠端存取用戶端不受這項政策設定所影響，而會一律採用「chromoting-client.talkgadget.google.com」來存取 TalkGadget。</translation>
 <translation id="5888645257599699215">回報裝置音訊狀態</translation>
 <translation id="5890063326284543943">控管 Serial API 的使用</translation>
+<translation id="5893303508158298667">在 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 設為 Enabled 的情況下，如果將 <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> 設為 Enabled 或不設定，遠端用戶端可在無法直接連線時 (例如受到防火牆限制)，使用轉送伺服器連線至這部裝置。
+
+      如果將這項政策設為 Disabled，系統不會停用遠端存取權，但只會允許來自相同網路的連線，禁止網路位址轉譯 (NAT) 穿越或轉送而來的連線。</translation>
 <translation id="5897913798715600338">使用快速充電技術為電池充電。</translation>
 <translation id="5898486742390981550">如有多位使用者同時登入，只有主要使用者可以使用 Android 應用程式。</translation>
 <translation id="5899751601113377553">禁止使用者使用 <ph name="LACROS_NAME" /></translation>
@@ -3927,6 +3926,7 @@
 
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
+<translation id="6019606564278029236">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="6022948604095165524">起始動作</translation>
 <translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
 <translation id="6025267044008029374">封鎖惡意的下載內容 (建議)</translation>
@@ -4038,6 +4038,7 @@
 <translation id="6198947200418556248">這項政策已淘汰；如果仍需要舊版 Cookie 行為，請改用 <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />。這項政策可以將所有 Cookie 還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站的網址是否相同時，略過網路通訊協定的比較。如需完整說明，請參閱 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
 
           如果不設定這項政策，系統對 Cookie 採取的預設 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為會取決於使用者對於 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 和 <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" /> 功能的個人配置。使用者可以透過公開實驗，或是分別啟用或停用 <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />、<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> 或 <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> 旗標，來設定這些功能的個人配置。</translation>
+<translation id="6207607210601267301">針對遠端存取主機停用無 PIN 碼驗證機制</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>
@@ -4129,6 +4130,12 @@
 
        注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />，這項政策會遭到覆寫。</translation>
 <translation id="6319198883324703402">設定第一次通知使用者重新啟動的時間</translation>
+<translation id="6319907968994678054">如果將這項政策設為 Enabled，系統會關閉在 <ph name="PRODUCT_NAME" /> 中使用 Google 代管同步服務的資料同步作業。
+      如要完全關閉 <ph name="CHROME_SYNC_NAME" />服務，建議你前往 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />關閉這項服務。
+
+      如果將這項政策設為 Disabled 或不設定，使用者就可以選擇是否要使用 <ph name="CHROME_SYNC_NAME" />。
+
+      注意：在 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 設為 Enabled 的情況下，請不要啟用這項政策，因為該功能會共用同一個用戶端功能。如果發生這種情況，Google 代管的同步功能會完全關閉。</translation>
 <translation id="6327643515544933974">網路 USB 設定</translation>
 <translation id="6330882599388782338">允許網站存取感應器</translation>
 <translation id="6331167725613770725">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
@@ -4337,6 +4344,7 @@
 
       如果不設定這項政策或設為空白清單，系統不會顯示任何裝置本機帳戶。</translation>
 <translation id="6584541828182430328">停用顯示全螢幕警示的功能</translation>
+<translation id="6594372503585248865">連線時，在遠端主機桌面啟用連線相關 UI</translation>
 <translation id="6598235178374410284">使用者顯示圖片</translation>
 <translation id="6600377630856879433">依這些來源允許執行視窗和分頁擷取功能</translation>
 <translation id="6603004149426829878">偵測時區時一律將任何可用的位置標記傳送至伺服器</translation>
@@ -4752,6 +4760,7 @@
 <translation id="7003746348783715221"><ph name="PRODUCT_NAME" /> 偏好設定</translation>
 <translation id="7007283257527015835">布林值標記，表示是否應將通訊協定處理常式設為預設值。</translation>
 <translation id="7008308728445338159">已啟用 DNS 攔截檢查功能</translation>
+<translation id="7010006999849135962">針對遠端存取主機啟用無 PIN 碼驗證機制</translation>
 <translation id="7016736684656067099">如果將這項政策設為 1，所有網站皆可顯示圖片。如果將這項政策設為 2，所有網站都無法顯示圖片。
 
       如果不設定，所有網站皆可顯示圖片，但使用者可以變更這項設定。</translation>
@@ -4805,6 +4814,7 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7063895219334505671">允許這些網站的彈出式視窗</translation>
+<translation id="7066292150801784098">禁止遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="706669471845501145">允許網站顯示桌面通知</translation>
 <translation id="7070525176564511548">每週 (168 小時) 需輸入一次密碼</translation>
 <translation id="7072208053150563108">裝置密碼變更頻率</translation>
@@ -4888,6 +4898,7 @@
 <translation id="7149042336307555519">允許用來進行作業系統更新的連線類型。由於作業系統更新檔案較大，可能會對連線流量造成沉重負荷，也可能會產生額外費用。因此當使用者使用較昂貴的連線類型 (目前僅有「cellular」) 時，系統預設不會啟用作業系統更新。
 
       系統可識別的連線類型 ID 包括 <ph name="CONNECTION_TYPE_ETHERNET_NAME" />、<ph name="CONNECTION_TYPE_WIFI_NAME" /> 和 <ph name="CONNECTION_TYPE_CELLULAR_NAME" />。</translation>
+<translation id="7150722575502017208">不要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="7152605873936173525">控管 DNS-over-HTTPS 解析器的模式。請注意，這項政策只會設定每次查詢的預設模式。系統可能會覆寫特殊查詢類型的模式，例如解析 DNS-over-HTTPS 伺服器主機名稱的要求。
 
       <ph name="SECURE_DNS_MODE_OFF" /> 模式會停用 DNS-over-HTTPS。
@@ -5137,6 +5148,7 @@
       如果將這項政策設為關閉或不設定，則使用者可以變更這項設定。
 
       注意：在 Android 上請改用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 政策。</translation>
+<translation id="7507553960917214561">停用遠端存取主機遮幕</translation>
 <translation id="7508067364927180229">這項設定針對 <ph name="LACROS_NAME" /> 瀏覽器提供了多個可用性選項。
 
       如果將這項政策設為 <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE" />，使用者就可以啟用 <ph name="LACROS_NAME" />，並將其設為主要瀏覽器。
@@ -5172,6 +5184,9 @@
       如果不設定這項政策或設為空白清單，受管理的裝置將無法使用任何快速解鎖模式。</translation>
 <translation id="754176366378585605">控管 File Handling API 使用權限</translation>
 <translation id="7543109906499122922">裝置開始使用電池供電的時間 (根據裝置當地時區)。</translation>
+<translation id="7544392541165889987">如果將這項政策設為 Enabled 或不設定，<ph name="PRODUCT_NAME" /> 將成為 <ph name="CLOUD_PRINT_NAME" />和連接到電腦的舊款印表機之間的 Proxy。使用者可透過 Google 帳戶驗證來啟用雲端列印 Proxy。
+
+      如果將這項政策設為 Disabled，則使用者無法啟用 Proxy，電腦也無法與 <ph name="CLOUD_PRINT_NAME" />共用印表機。</translation>
 <translation id="7547549430720182663">合併</translation>
 <translation id="7553535237300701827">設定這項政策後，系統會根據設定值採用下列其中一種登入驗證流程：
 
@@ -5197,6 +5212,15 @@
 
       * 設為 Replace：系統會用電腦 GPO 中的使用者政策取代使用者 GPO 中的使用者政策，並忽略使用者 GPO。</translation>
 <translation id="7570291542739287032">僅限雲端</translation>
+<translation id="7571530187275708765">這項政策可控管瀏覽器的登入行為，讓你指定使用者是否能用帳戶登入 <ph name="PRODUCT_NAME" />，並使用帳戶相關服務 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。
+
+      如果將這項政策設為「禁止登入瀏覽器」，使用者將無法登入瀏覽器，也無法使用帳戶相關服務。在這種情況下，使用者無法使用瀏覽器層級的功能 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。在 <ph name="IOS_NAME" /> 上，如果這項政策在使用者登入瀏覽器後才設為「停用」，系統會立即將他們登出；在其他平台上，已登入的使用者則會在下次執行 <ph name="PRODUCT_NAME" /> 時被強制登出，但他們在所有平台上的本機設定檔資料 (例如書籤、密碼等) 都會保留下來，並能繼續使用。使用者仍然可以登入並使用 Gmail 等 Google 網路服務。
+
+      如果將這項政策設為「允許登入瀏覽器」，則使用者可以登入瀏覽器。在 <ph name="IOS_NAME" /> 以外的所有平台上，使用者會在登入 Gmail 等 Google 網路服務後自動登入瀏覽器。在登入瀏覽器的狀態下，瀏覽器會保留使用者的帳戶資訊。不過，<ph name="PRODUCT_NAME" /> 同步功能不會因此預設為開啟，使用者必須另外選擇啟用這項功能。啟用這項政策後，使用者將無法關閉允許登入瀏覽器的設定。如要控管是否提供 <ph name="PRODUCT_NAME" /> 同步功能，請使用 <ph name="SYNC_POLICY_NAME" /> 政策。
+
+      如果將這項政策設為「強制登入瀏覽器」，使用者會看到選取帳戶的對話方塊，而且必須選擇帳戶並登入才能使用瀏覽器。這樣可以確保系統在與該帳戶關聯的所有受管理帳戶中套用並強制執行相關政策。<ph name="GUEST_MODE_POLICY_NAME" /> 的預設值將設為已停用。請注意，啟用這項政策後，未登入的現有設定檔會遭到鎖定，無法再使用。詳情請參閱說明中心文章：https://support.google.com/chrome/a/answer/7572556。這個選項不支援 <ph name="LINUX_OS_NAME" />、<ph name="ANDROID_NAME" /> 和 <ph name="IOS_NAME" />。如果你採用這個選項，系統將改為使用「允許登入瀏覽器」。
+
+      如果不設定這項政策，使用者可以決定是否要在 <ph name="PRODUCT_NAME" /> 設定中啟用瀏覽器登入選項，並視需要自行選用。</translation>
 <translation id="757395965347379751">啟用這項設定時，只要 SHA-1 簽署憑證成功通過驗證並鏈結至本機安裝的 CA 憑證，即可在 <ph name="PRODUCT_NAME" /> 中使用。
 
       請注意，這項政策取決於允許 SHA-1 簽名的作業系統憑證驗證堆疊。如果作業系統更新變更了作業系統的 SHA-1 憑證處理方式，這項政策可能就會失效。此外，這項政策是暫時性的解決方案，目的是讓使用 SHA-1 憑證的企業有更多時間尋找其他解決方案。我們將於 2019 年 1 月 1 日左右移除這項政策。
@@ -5479,9 +5503,6 @@
       無論是否啟用這項政策，使用者都無法在 <ph name="PRODUCT_NAME" /> 中變更或覆寫這項政策。
 
       如果不設定這項政策，系統會啟用網路預測功能，但使用者可以自行變更。</translation>
-<translation id="7955263399078148032">在 <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> 設為啟用的情況下，如果將 <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> 設為啟用或不設定，遠端用戶端可在無法直接連線時 (例如受到防火牆限制)，使用轉送伺服器連線至這部裝置。
-
-      如果將這項政策設為停用，系統不會停用遠端存取權，但只會允許來自相同網路的連線，禁止網路位址轉譯 (NAT) 穿越或轉送而來的連線。</translation>
 <translation id="7956210013490975468">設定 <ph name="PRODUCT_OS_NAME" />的系統 Proxy 服務。</translation>
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7959035883875301444">控管 JavaScript JIT 的使用情形</translation>
@@ -6128,6 +6149,7 @@
 <translation id="8821678641132607468">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入瀏覽記錄。如果將這項政策設為停用或不設定，瀏覽器首次執行時不會匯入任何瀏覽記錄。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，來勾選或取消勾選瀏覽記錄的核取方塊。</translation>
+<translation id="8825154502356129120">針對遠端存取主機停用 gnubby 驗證機制</translation>
 <translation id="8825782996899863372">密碼在網路詐騙網頁上遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8826172502287946476">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的應用程式和擴充功能清單；使用者無法解除安裝或停用這些應用程式和擴充功能。系統會直接授予 enterprise.deviceAttributes 和 enterprise.platformKeys 擴充功能 API 等權限。(非強制安裝的應用程式和擴充功能無法取得這 2 個 API 的權限。)
 
@@ -6450,12 +6472,6 @@
 <translation id="913195841488580904">禁止存取清單中的網址</translation>
 <translation id="9135033364005346124">啟用 <ph name="CLOUD_PRINT_NAME" /> Proxy</translation>
 <translation id="9136399279941091445">發布指定裝置政策時的停機時間間隔</translation>
-<translation id="9150385995327221969">「如果將這項政策設為 Enabled，系統會透過 Google 代管的同步服務，關閉 <ph name="PRODUCT_NAME" /> 的資料同步作業。
-      如要完全關閉 <ph name="CHROME_SYNC_NAME" />服務，建議你前往 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />關閉這項服務。
-
-      如果將這項政策設為 Disabled 或不設定，使用者就可以選擇是否要使用 <ph name="CHROME_SYNC_NAME" />。
-
-      注意：在 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 設為 Enabled 的情況下，請不要啟用這項政策，因為該功能會共用同一個用戶端功能。如果發生這種情況，Google 代管的同步功能會完全關閉。」</translation>
 <translation id="9150416707757015439">這項政策已被取代，請改用 IncognitoModeAvailability。在「<ph name="PRODUCT_NAME" />」中啟用無痕模式。如果這項設定已啟用或尚未設定，使用者皆可在無痕模式中開啟網頁。如果這項設定已停用，使用者就無法在無痕模式中開啟網頁。如果未設定這項政策，系統會啟用這項設定，且使用者可以使用無痕模式。</translation>
 <translation id="9152473318295429890">允許根據目前網頁內容建議相關的網頁</translation>
 <translation id="9153446010242995516">如果 OS 版本比目標版本還新，則復原並維持在目標版本。系統會在版本復原過程中儘可能嘗試沿用網路憑證等裝置層級設定，但即使因故無法還原資料 (例如目標版本不支援還原資料，或變更內容與舊版不相容)，系統仍會復原至目標版本，並執行完整的 Powerwash。
@@ -6491,10 +6507,8 @@
 
       如果不設定這項政策或設為 <ph name="ASSISTANT_ONBOARDING_MODE_DEFAULT" />，系統會使用 Google 助理入門使用體驗的預設模式。
       如果將這項政策設為 <ph name="ASSISTANT_ONBOARDING_MODE_EDUCATION" />，系統會使用 Google 助理入門使用體驗的 EDU 模式。</translation>
+<translation id="9192220384862917760">啟用遠端存取主機遮幕</translation>
 <translation id="9194447412184412480">控管使用外部 IdP 透過 SAML 進行驗證的使用者設定</translation>
-<translation id="9194474490249548275">這項政策僅適用於受管理的訪客工作階段。
-      你可以透過本政策指定擴充功能 ID 清單，從有限制的受管理訪客工作階段清除程序中排除這些擴充功能 (請見 <ph name="RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />)。
-如果不設定這項政策，系統就不會從重設程序中排除任何擴充功能。</translation>
 <translation id="9197740283131855199">使用者在螢幕調暗後繼續使用裝置時的螢幕調暗時間延長百分比</translation>
 <translation id="9200828125069750521">使用 POST 的圖片網址參數</translation>
 <translation id="9204863016826119209">這項政策中列出的已安裝 Android 應用程式可以使用企業金鑰。</translation>

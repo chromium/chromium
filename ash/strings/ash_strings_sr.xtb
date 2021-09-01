@@ -351,6 +351,7 @@
 <translation id="3702846122927433391">Популација Нигерије</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Учитава се...</translation>
+<translation id="3708186454126126312">Претходно повезани</translation>
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
@@ -570,6 +571,7 @@
 <translation id="5308380583665731573">Повезивање</translation>
 <translation id="5313326810920013265">Подешавања Bluetooth-а</translation>
 <translation id="5314219114274263156">Екран је снимљен</translation>
+<translation id="5319712128756744240">Упарите нови уређај</translation>
 <translation id="5322611492012084517">Проналажење телефона није успело</translation>
 <translation id="5329548388331921293">Повезује се...</translation>
 <translation id="5331975486040154427">Уређај са USB прикључком типа C (леви задњи порт)</translation>
@@ -635,7 +637,7 @@
 <translation id="5876666360658629066">Унесите кôд родитеља</translation>
 <translation id="5881540930187678962">Подесите Phone Hub касније</translation>
 <translation id="5895138241574237353">Покрени поново</translation>
-<translation id="589817443623831496">Прелажење садржаја по тачкама</translation>
+<translation id="589817443623831496">Скенирање садржаја по тачкама</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5909862606227538307">Неактивна радна површина.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
@@ -1006,6 +1008,7 @@
 <translation id="8818320199597151042">Профил се уклања. Сачекајте неколико минута.</translation>
 <translation id="8825863694328519386">Превуците са леве стране да бисте се вратили</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">Тренутно повезани</translation>
 <translation id="8841375032071747811">Дугме Назад</translation>
 <translation id="8843682306134542540">Укључите/искључите закључавање ротације. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
