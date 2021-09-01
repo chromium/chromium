@@ -20008,6 +20008,7 @@ Called by update_debug_scenarios.py.-->
   <int value="103" label="layers.down"/>
   <int value="104" label="layers.left"/>
   <int value="105" label="layers.right"/>
+  <int value="106" label="help.report-translation-issue"/>
 </enum>
 
 <enum name="DevToolsLanguage">
