@@ -5,5 +5,6 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("crostini_installer_types_mojom") {
+  webui_module_path = "/"
   sources = [ "crostini_types.mojom" ]
 }

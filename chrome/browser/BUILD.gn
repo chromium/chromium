@@ -7048,6 +7048,7 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/account_manager:web_components",
       "//chrome/browser/resources/chromeos/account_manager/components:web_components",
       "//chrome/browser/resources/chromeos/add_supervision:web_components",
+      "//chrome/browser/resources/chromeos/crostini_installer:crostini_installer",
       "//chrome/browser/resources/chromeos/crostini_installer:web_components",
       "//chrome/browser/resources/chromeos/crostini_upgrader:web_components",
       "//chrome/browser/resources/chromeos/edu_coexistence:edu_coexistence_controller",
