@@ -224,16 +224,6 @@ class WebAppInstallManagerTest
     return *externally_installed_app_prefs_;
   }
 
-  std::unique_ptr<WebApplicationInfo> CreateWebAppInfo(const GURL& url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
-    web_app_info->start_url = url;
-    apps::IconInfo icon_info;
-    icon_info.url = GURL(kIconUrl);
-    icon_info.square_size_px = icon_size::k256;
-    web_app_info->icon_infos.push_back(std::move(icon_info));
-    return web_app_info;
-  }
-
   std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                        Source::Type source,
                                        DisplayMode user_display_mode) {

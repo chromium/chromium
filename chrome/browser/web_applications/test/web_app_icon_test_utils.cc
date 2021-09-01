@@ -198,6 +198,31 @@ GeneratedIconsInfo::GeneratedIconsInfo(IconPurpose purpose,
 
 GeneratedIconsInfo::~GeneratedIconsInfo() = default;
 
+void AddIconsToWebApplicationInfo(
+    WebApplicationInfo* web_application_info,
+    const GURL& icons_base_url,
+    const std::vector<GeneratedIconsInfo>& icons_info) {
+  for (const GeneratedIconsInfo& info : icons_info) {
+    DCHECK_EQ(info.sizes_px.size(), info.colors.size());
+
+    std::map<SquareSizePx, SkBitmap> generated_bitmaps;
+
+    for (size_t i = 0; i < info.sizes_px.size(); ++i) {
+      AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
+
+      apps::IconInfo apps_icon_info;
+      apps_icon_info.url = icons_base_url.Resolve(
+          "icon-" + base::NumberToString(info.sizes_px[i]) + ".png");
+      apps_icon_info.square_size_px = info.sizes_px[i];
+      apps_icon_info.purpose = ManifestPurposeToIconInfoPurpose(info.purpose);
+      web_application_info->icon_infos.push_back(std::move(apps_icon_info));
+    }
+
+    web_application_info->icon_bitmaps.SetBitmapsForPurpose(
+        info.purpose, std::move(generated_bitmaps));
+  }
+}
+
 void IconManagerWriteGeneratedIcons(
     WebAppIconManager& icon_manager,
     const AppId& app_id,
@@ -247,6 +272,24 @@ void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
       }));
   icon_manager.Start();
   run_loop.Run();
+}
+
+SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
+                                    const AppId& app_id,
+                                    SquareSizePx size_px,
+                                    int x,
+                                    int y) {
+  SkColor result;
+  base::RunLoop run_loop;
+  icon_manager.ReadIcons(
+      app_id, IconPurpose::ANY, {size_px},
+      base::BindLambdaForTesting(
+          [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+            run_loop.Quit();
+            result = icon_bitmaps.at(size_px).getColor(x, y);
+          }));
+  run_loop.Run();
+  return result;
 }
 
 }  // namespace web_app

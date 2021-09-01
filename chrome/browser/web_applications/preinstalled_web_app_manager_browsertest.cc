@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -76,10 +77,11 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void ExpectInitialManifestFieldsFromBasicWebApp(Profile* profile,
-                                                const WebApp* web_app,
-                                                const GURL& expect_start_url,
-                                                const GURL& expect_scope) {
+void ExpectInitialManifestFieldsFromBasicWebApp(
+    const WebAppIconManager& icon_manager,
+    const WebApp* web_app,
+    const GURL& expect_start_url,
+    const GURL& expect_scope) {
   // Manifest fields:
   EXPECT_EQ(web_app->name(), "Basic web app");
   EXPECT_EQ(web_app->start_url().spec(), expect_start_url);
@@ -106,8 +108,8 @@ void ExpectInitialManifestFieldsFromBasicWebApp(Profile* profile,
             web_app->sync_fallback_data().icon_infos[1].purpose);
 
   // Manifest Resources: This is chrome/test/data/web_apps/basic-192.png
-  EXPECT_EQ(ReadAppIconPixel(profile, web_app->app_id(), /*size=*/192,
-                             /*x=*/0, /*y=*/0),
+  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager, web_app->app_id(),
+                                        /*size=*/192),
             SK_ColorBLACK);
 
   // User preferences:
@@ -166,6 +168,10 @@ class PreinstalledWebAppManagerBrowserTest
 
   const WebAppRegistrar& registrar() {
     return WebAppProvider::GetForTest(browser()->profile())->registrar();
+  }
+
+  const WebAppIconManager& icon_manager() {
+    return WebAppProvider::GetForTest(browser()->profile())->icon_manager();
   }
 
   const PreinstalledWebAppManager& manager() {
@@ -615,8 +621,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
+  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
             SK_ColorBLUE);
 }
 
@@ -713,8 +718,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
+  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
             SK_ColorBLUE);
 }
 
@@ -765,8 +769,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(ReadAppIconPixel(profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
+  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
             SK_ColorBLUE);
 }
 
@@ -1010,8 +1013,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   {
     SCOPED_TRACE("Expect initial manifest fields from basic.html web app.");
-    ExpectInitialManifestFieldsFromBasicWebApp(profile(), web_app, start_url,
-                                               scope);
+    ExpectInitialManifestFieldsFromBasicWebApp(icon_manager(), web_app,
+                                               start_url, scope);
   }
 
   constexpr char kAppConfigTemplate[] =
@@ -1045,8 +1048,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   {
     SCOPED_TRACE(
         "Expect same manifest fields from basic.html web app, no overwrites.");
-    ExpectInitialManifestFieldsFromBasicWebApp(profile(), web_app, start_url,
-                                               scope);
+    ExpectInitialManifestFieldsFromBasicWebApp(icon_manager(), web_app,
+                                               start_url, scope);
   }
 }
 

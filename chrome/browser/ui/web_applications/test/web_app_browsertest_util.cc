@@ -35,7 +35,6 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -384,24 +383,6 @@ void UninstallWebAppWithCallback(Profile* profile,
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu, std::move(callback));
-}
-
-SkColor ReadAppIconPixel(Profile* profile,
-                         const AppId& app_id,
-                         SquareSizePx size,
-                         int x,
-                         int y) {
-  SkColor result;
-  base::RunLoop run_loop;
-  WebAppProvider::GetForTest(profile)->icon_manager().ReadIcons(
-      app_id, IconPurpose::ANY, {size},
-      base::BindLambdaForTesting(
-          [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            run_loop.Quit();
-            result = icon_bitmaps.at(size).getColor(x, y);
-          }));
-  run_loop.Run();
-  return result;
 }
 
 }  // namespace web_app

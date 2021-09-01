@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -94,7 +93,8 @@ AppId InstallDummyWebApp(Profile* profile,
 
 AppId InstallWebApp(Profile* profile,
                     std::unique_ptr<WebApplicationInfo> web_app_info,
-                    bool overwrite_existing_manifest_fields) {
+                    bool overwrite_existing_manifest_fields,
+                    webapps::WebappInstallSource install_source) {
   // The sync system requires that sync entity name is never empty.
   if (web_app_info->title.empty())
     web_app_info->title = u"WebApplicationInfo App Name";
@@ -106,8 +106,7 @@ AppId InstallWebApp(Profile* profile,
   WaitUntilReady(provider);
   provider->install_manager().InstallWebAppFromInfo(
       std::move(web_app_info), overwrite_existing_manifest_fields,
-      ForInstallableSite::kYes,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      ForInstallableSite::kYes, install_source,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);

@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -353,6 +354,15 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
   WebAppProvider& GetProvider() {
     return *WebAppProvider::GetForTest(browser()->profile());
+  }
+
+  SkColor ReadAppIconPixel(const AppId& app_id,
+                           SquareSizePx size,
+                           int x = 0,
+                           int y = 0) {
+    return IconManagerReadAppIconPixel(
+        WebAppProvider::GetForTest(browser()->profile())->icon_manager(),
+        app_id, size, x, y);
   }
 
  protected:
@@ -1371,9 +1381,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                                       ManifestUpdateResult::kAppUpdated, 0);
   CheckShortcutInfoUpdated(app_id, kBasicIconTopLeftColor);
 
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
-            SK_ColorBLACK);
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLACK);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -2458,9 +2466,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
   // the same).
   CheckShortcutInfoUpdated(app_id, SK_ColorBLUE);
 
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
-            SK_ColorBLUE);
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLUE);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
@@ -2539,12 +2545,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
 
   // Since one request failed, none of the icons should be updated. So the '192'
   // size here is not updated to blue.
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/48, /*x=*/0,
-                             /*y=*/0),
-            SK_ColorBLACK);
-  EXPECT_EQ(ReadAppIconPixel(browser()->profile(), app_id, /*size=*/192,
-                             /*x=*/0, /*y=*/0),
-            SK_ColorBLACK);
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/48), SK_ColorBLACK);
+  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLACK);
 }
 
 class ManifestUpdateManagerBrowserTest_UrlHandlers

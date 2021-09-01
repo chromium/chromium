@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/buildflags.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -45,7 +46,9 @@ AppId InstallDummyWebApp(Profile* profile,
 // used in unit tests and browser tests.
 AppId InstallWebApp(Profile* profile,
                     std::unique_ptr<WebApplicationInfo> web_app_info,
-                    bool overwrite_existing_manifest_fields = false);
+                    bool overwrite_existing_manifest_fields = false,
+                    webapps::WebappInstallSource install_source =
+                        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))

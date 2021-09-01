@@ -88,6 +88,11 @@ struct GeneratedIconsInfo {
   std::vector<SkColor> colors;
 };
 
+void AddIconsToWebApplicationInfo(
+    WebApplicationInfo* web_application_info,
+    const GURL& icons_base_url,
+    const std::vector<GeneratedIconsInfo>& icons_info);
+
 void IconManagerWriteGeneratedIcons(
     WebAppIconManager& icon_manager,
     const AppId& app_id,
@@ -102,6 +107,13 @@ void IconManagerStartAndAwaitFaviconAny(WebAppIconManager& icon_manager,
 // WebAppIconManager::favicon_monochrome_read_callback_ synchronously.
 void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
                                                const AppId& app_id);
+
+// Synchronous read of an app icon pixel.
+SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
+                                    const AppId& app_id,
+                                    SquareSizePx size_px,
+                                    int x = 0,
+                                    int y = 0);
 
 }  // namespace web_app
 
