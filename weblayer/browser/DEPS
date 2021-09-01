@@ -60,6 +60,7 @@ include_rules = [
   "+components/no_state_prefetch/common",
   "+components/resources/android",
   "+components/safe_browsing/android",
+  "+components/safe_browsing/content/browser",
   "+components/safe_browsing/core",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials",
