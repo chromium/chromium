@@ -5,6 +5,7 @@
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/v8_target_cpu.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -202,6 +203,9 @@ template("gcc_toolchain") {
                (!defined(invoker_toolchain_args.needs_gomacc_path_arg) ||
                 !invoker_toolchain_args.needs_gomacc_path_arg)) {
       compiler_prefix = "${goma_path} "
+      if (use_goma_rust) {
+        rust_compiler_prefix = compiler_prefix
+      }
     } else {
       compiler_prefix = "${toolchain_cc_wrapper} "
     }
@@ -471,12 +475,12 @@ template("gcc_toolchain") {
       command = "$python_path \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
-        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group"
+        rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group {{rlibs}}"
       } else if (current_os == "aix") {
         # --whole-archive, --no-whole-archive flags are not available on the aix ld.
-        rspfile_content = "{{inputs}} {{solibs}} {{libs}}"
+        rspfile_content = "{{inputs}} {{solibs}} {{libs}} {{rlibs}}"
       } else {
-        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}}"
+        rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} {{rlibs}}"
       }
 
       description = "SOLINK $sofile"
@@ -556,7 +560,7 @@ template("gcc_toolchain") {
         strip_command = "${invoker.strip} -o \"$sofile\" \"$unstripped_sofile\""
         command += " && " + strip_command
       }
-      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}}"
+      rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} {{rlibs}}"
 
       description = "SOLINK_MODULE $sofile"
 
@@ -632,7 +636,7 @@ template("gcc_toolchain") {
       command = "$python_path \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
 
       description = "LINK $outfile"
-      rspfile_content = "{{inputs}}"
+      rspfile_content = "{{inputs}} {{rlibs}}"
       outputs = [ outfile ]
       if (outfile != unstripped_outfile) {
         outputs += [ unstripped_outfile ]
@@ -674,6 +678,58 @@ template("gcc_toolchain") {
 
     tool("action") {
       pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+
+    if (toolchain_has_rust) {
+      rustc = ""
+      if (defined(rust_compiler_prefix)) {
+        rustc += rust_compiler_prefix
+      }
+      rustc += rust_prefix
+      rustc += "rustc"
+
+      # RSP files not used due to https://bugs.chromium.org/p/gn/issues/detail?id=249
+      tool("rust_staticlib") {
+        rust_outfile = "{{target_out_dir}}/{{crate_name}}.a"
+        depfile = "{{output}}.d"
+        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      tool("rust_rlib") {
+        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        depfile = "{{output}}.d"
+        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      if (rustc_can_link) {
+        tool("rust_bin") {
+          rust_outfile = "{{root_out_dir}}/{{crate_name}}"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_cdylib") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.so"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_macro") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.so"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -Clinker=$ld -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+      }
     }
 
     forward_variables_from(invoker, [ "deps" ])

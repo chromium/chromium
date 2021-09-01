@@ -825,6 +825,7 @@
           'chrome_nocompile_tests',
           'cronet_test_instrumentation_apk',
           'monochrome_static_initializers',
+          'rust_build_tests',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
@@ -842,6 +843,7 @@
         'additional_compile_targets': [
           'monochrome_static_initializers',
           'weblayer_shell',
+          'rust_build_tests',
         ],
         'test_suites': {
           'gtest_tests': 'android_marshmallow_device_gtests',
@@ -862,7 +864,10 @@
         'test_suites': {
           'gtest_tests': 'android_marshmallow_emulator_gtests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
-        }
+        },
+        'additional_compile_targets': [
+          'rust_build_tests',
+        ]
       },
       'android-marshmallow-x86-rel-non-cq': {
         'mixins': [
@@ -933,6 +938,7 @@
         'additional_compile_targets': [
           'monochrome_static_initializers',
           'weblayer_shell',
+          'rust_build_tests',
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_rel_gtests',

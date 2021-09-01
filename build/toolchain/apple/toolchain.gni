@@ -10,6 +10,7 @@ import("//build/config/apple/symbols.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/rust.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
@@ -134,6 +135,9 @@ template("apple_toolchain") {
       assert(toolchain_cc_wrapper == "",
              "Goma and cc_wrapper can't be used together.")
       compiler_prefix = "$goma_dir/gomacc "
+      if (use_goma_rust) {
+        rust_compiler_prefix = compiler_prefix
+      }
     } else if (toolchain_cc_wrapper != "") {
       compiler_prefix = toolchain_cc_wrapper + " "
     } else {
@@ -221,6 +225,59 @@ template("apple_toolchain") {
 
     if (_save_unstripped_output) {
       _unstripped_output = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.unstripped"
+    }
+
+    if (toolchain_has_rust) {
+      if (!defined(rust_compiler_prefix)) {
+        rust_compiler_prefix = ""
+      }
+      rustc = "$rust_compiler_prefix${rust_prefix}rustc"
+
+      # Ideally, we'd add  -Clink-args=\"{{ldflags}}\" to each of the Rust
+      # tools below which may link (i.e. rust_bin, rust_cdylib, rust_macro).
+      # However, it seems -fuse-ld=lld causes difficulties.
+
+      tool("rust_staticlib") {
+        rust_outfile = "{{target_out_dir}}/{{crate_name}}.a"
+        depfile = "{{output}}.d"
+        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      tool("rust_rlib") {
+        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        depfile = "{{output}}.d"
+        command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      if (rustc_can_link) {
+        tool("rust_bin") {
+          rust_outfile = "{{root_out_dir}}/{{crate_name}}"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_cdylib") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_macro") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dylib"
+          depfile = "{{output}}.d"
+          command = "$rustc $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+      }
     }
 
     tool("cc") {
@@ -342,7 +399,7 @@ template("apple_toolchain") {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
-      link_command += "{{ldflags}} -o \"$dylib\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
+      link_command += "{{ldflags}} -o \"$dylib\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
 
       replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
       extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
@@ -391,7 +448,8 @@ template("apple_toolchain") {
 
       link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,-filelist,\"$rspfile\""
       link_command += dsym_switch
-      link_command += " {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
+      link_command +=
+          " {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
       command = link_command
 
       rspfile_content = "{{inputs_newline}}"
@@ -427,7 +485,7 @@ template("apple_toolchain") {
       # do for command-line arguments. Thus any source names with spaces, or
       # label names with spaces (which GN bases the output paths on) will be
       # corrupted by this process. Don't use spaces for source files or labels.
-      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
+      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}} {{rlibs}}"
       description = "LINK $outfile"
       rspfile_content = "{{inputs_newline}}"
       outputs = [ outfile ]

@@ -12,6 +12,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/gn_logs.gni")
@@ -869,6 +870,13 @@ group("gn_all") {
 
   # OpenCV
   deps += [ "//third_party/opencv:opencv_emd_fuzzer" ]
+
+  # Minimal binaries to exercise Rust toolchain.
+  deps += [ ":rust_build_tests" ]
+}
+
+group("rust_build_tests") {
+  deps = [ "//build/rust/tests" ]
 }
 
 # TODO(https://crbug.com/1112776): ensure remoting is functional on Linux builds with

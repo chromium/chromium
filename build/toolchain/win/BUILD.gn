@@ -4,6 +4,7 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/win/visual_studio_version.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -299,6 +300,50 @@ template("msvc_toolchain") {
       outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
     }
 
+    if (toolchain_has_rust) {
+      tool("rust_staticlib") {
+        rust_outfile = "{{target_out_dir}}/{{crate_name}}.lib"
+        depfile = "{{crate_name}}.d"
+        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      tool("rust_rlib") {
+        rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.rlib"
+        depfile = "{{crate_name}}.d"
+        command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+        description = "RUST $rust_outfile"
+        outputs = [ rust_outfile ]
+      }
+
+      if (rustc_can_link) {
+        tool("rust_bin") {
+          rust_outfile = "{{root_out_dir}}/{{crate_name}}.exe"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_cdylib") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_macro") {
+          rust_outfile = "{{target_out_dir}}/lib{{crate_name}}.dll"
+          depfile = "{{crate_name}}.d"
+          command = "${rust_prefix}/rustc $rustc_common_args --emit=dep-info={{target_out_dir}}/$depfile,link -o $rust_outfile"
+          description = "RUST $rust_outfile"
+          outputs = [ rust_outfile ]
+        }
+      }
+    }
+
     tool("alink") {
       rspfile = "{{output}}.rsp"
       command = "$linker_wrapper$lib /OUT:{{output}} /nologo ${sys_lib_flags}{{arflags}} @$rspfile"
@@ -348,7 +393,8 @@ template("msvc_toolchain") {
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
     }
 
     tool("solink_module") {
@@ -371,7 +417,8 @@ template("msvc_toolchain") {
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
     }
 
     tool("link") {
@@ -393,7 +440,8 @@ template("msvc_toolchain") {
 
       # The use of inputs_newline is to work around a fixed per-line buffer
       # size in the linker.
-      rspfile_content = "{{inputs_newline}} {{libs}} {{solibs}} {{ldflags}}"
+      rspfile_content =
+          "{{inputs_newline}} {{libs}} {{solibs}} {{ldflags}} {{rlibs}}"
     }
 
     # These two are really entirely generic, but have to be repeated in

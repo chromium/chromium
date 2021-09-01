@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
+
+# A future CL will provide a gn template to generate all the following
+# automatically. We anticipate calling that template "rust_source_set"
+# which is why this test component is named the way it is.
+
+# Dependent Rust targets should depend on this.
+rust_library("test_rust_source_set") {
+  crate_name = "test_rust_source_set"
+  crate_root = "main.rs"
+  rustflags = [
+    "--edition",
+    "2018",
+  ]
+}
+
+# Dependent C++ targets should depend on this,
+# rather than the rlib above
+group("test_rust_source_set_lib") {
+  deps = [
+    ":test_rust_source_set",
+    "//build/rust/std",
+  ]
+}
+
+if (build_rust_unit_tests) {
+  executable("test_rust_source_set_unittests") {
+    crate_root = "main.rs"
+    rustflags = [
+      "--cfg",
+      "feature=\"test\"",
+      "--test",
+      "--edition",
+      "2018",
+    ]
+  }
+}

@@ -1567,6 +1567,10 @@
     "label": "//android_webview:resource_sizes_system_webview_bundle",
     "type": "generated_script",
   },
+  "rust_build_tests": {
+    "label": "//build/rust/tests",
+    "type": "additional_compile_target",
+  },
   "sandbox_linux_unittests": {
     "label": "//sandbox/linux:sandbox_linux_unittests",
     "type": "console_test_launcher",

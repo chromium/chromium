@@ -15,6 +15,7 @@ import("//build/config/coverage/coverage.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/host_byteorder.gni")
+import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -794,6 +795,35 @@ config("compiler") {
   if (is_posix || is_fuchsia) {
     asmflags += cflags
     asmflags += cflags_c
+  }
+
+  # Rust compiler flags setup.
+  # ---------------------------
+  rustflags = [
+    # Overflow checks are optional in Rust, but even if switched
+    # off they do not cause undefined behavior (the overflowing
+    # behavior is defined). Because containers are bounds-checked
+    # in safe Rust, they also can't provoke buffer overflows.
+    # As such these checks may be less important in Rust than C++.
+    # But in (simplistic) testing they have negligible performance
+    # overhead, and this helps to provide consistent behavior
+    # between different configurations, so we'll keep them on until
+    # we discover a reason to turn them off.
+    "-Coverflow-checks=on",
+
+    # To make Rust .d files compatible with ninja
+    "-Z",
+    "dep-info-omit-d-target",
+  ]
+  if (rust_abi_target != "") {
+    rustflags += [ "--target=$rust_abi_target" ]
+  }
+  if (use_lto_in_rustc_linking) {
+    rustflags += [ "-Clinker-plugin-lto" ]
+  }
+  if (!use_thin_lto) {
+    # Optimization - don't include bitcode if it won't be used.
+    rustflags += [ "-Cembed-bitcode=no" ]
   }
 }
 
@@ -2102,6 +2132,11 @@ config("optimize") {
   } else {
     cflags = [ "-O2" ] + common_optimize_on_cflags
   }
+  if (optimize_for_size) {
+    rustflags = [ "-Copt-level=s" ]
+  } else {
+    rustflags = [ "-Copt-level=3" ]
+  }
   ldflags = common_optimize_on_ldflags
 }
 
@@ -2168,6 +2203,7 @@ config("optimize_max") {
     } else {
       cflags = [ "-O2" ] + common_optimize_on_cflags
     }
+    rustflags = [ "-Copt-level=3" ]
   }
 }
 
@@ -2200,11 +2236,13 @@ config("optimize_speed") {
     } else {
       cflags = [ "-O3" ] + common_optimize_on_cflags
     }
+    rustflags = [ "-Copt-level=3" ]
   }
 }
 
 config("optimize_fuzzing") {
   cflags = [ "-O1" ] + common_optimize_on_cflags
+  rustflags = [ "-Copt-level=1" ]
   ldflags = common_optimize_on_ldflags
   visibility = [ ":default_optimization" ]
 }
@@ -2430,6 +2468,7 @@ config("symbols") {
       ]
     }
   }
+  rustflags = [ "-g" ]
 }
 
 # Minimal symbols.
@@ -2501,6 +2540,7 @@ config("minimal_symbols") {
 
     asmflags = cflags
   }
+  rustflags = [ "-Cdebuginfo=1" ]
 }
 
 # This configuration contains function names only. That is, the compiler is

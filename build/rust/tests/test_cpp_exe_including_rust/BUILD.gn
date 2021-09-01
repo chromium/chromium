@@ -1,0 +1,8 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("test_cpp_exe_including_rust") {
+  sources = [ "main.cc" ]
+  deps = [ "//build/rust/tests/test_rust_source_set:test_rust_source_set_lib" ]
+}
