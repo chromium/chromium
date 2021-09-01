@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -92,4 +92,4 @@ bool SearchResponseParser::ProcessResult(const Value* result,
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

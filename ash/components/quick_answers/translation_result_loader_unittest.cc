@@ -19,7 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -122,4 +122,4 @@ TEST_F(TranslationResultLoaderTest, EmptyResponse) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

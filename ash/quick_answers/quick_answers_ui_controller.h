@@ -10,19 +10,15 @@
 #include "ash/ash_export.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
-namespace quick_answers {
-struct QuickAnswer;
-}  // namespace quick_answers
-}  // namespace chromeos
-
 namespace ash {
+
 class QuickAnswersView;
 class QuickAnswersControllerImpl;
 
 namespace quick_answers {
 class UserNoticeView;
 class UserConsentView;
+struct QuickAnswer;
 }  // namespace quick_answers
 
 // A controller to show/hide and handle interactions for quick
@@ -51,7 +47,7 @@ class ASH_EXPORT QuickAnswersUiController {
   // |bounds| is the bound of context menu.
   void RenderQuickAnswersViewWithResult(
       const gfx::Rect& bounds,
-      const chromeos::quick_answers::QuickAnswer& quick_answer);
+      const quick_answers::QuickAnswer& quick_answer);
 
   void SetActiveQuery(const std::string& query);
 

@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 TranslationResponseParser::TranslationResponseParser(
@@ -71,4 +71,4 @@ void TranslationResponseParser::OnJsonParsed(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

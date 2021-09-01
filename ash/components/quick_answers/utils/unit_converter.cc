@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -106,4 +106,4 @@ const Value* UnitConverter::GetPossibleUnitsForCategory(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

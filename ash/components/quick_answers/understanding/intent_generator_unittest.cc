@@ -19,18 +19,18 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
-using chromeos::machine_learning::FakeServiceConnectionImpl;
-using machine_learning::mojom::TextAnnotation;
-using machine_learning::mojom::TextAnnotationPtr;
-using machine_learning::mojom::TextEntity;
-using machine_learning::mojom::TextEntityData;
-using machine_learning::mojom::TextEntityPtr;
-using machine_learning::mojom::TextLanguage;
-using machine_learning::mojom::TextLanguagePtr;
+using ::chromeos::machine_learning::FakeServiceConnectionImpl;
+using ::chromeos::machine_learning::mojom::TextAnnotation;
+using ::chromeos::machine_learning::mojom::TextAnnotationPtr;
+using ::chromeos::machine_learning::mojom::TextEntity;
+using ::chromeos::machine_learning::mojom::TextEntityData;
+using ::chromeos::machine_learning::mojom::TextEntityPtr;
+using ::chromeos::machine_learning::mojom::TextLanguage;
+using ::chromeos::machine_learning::mojom::TextLanguagePtr;
 
 TextLanguagePtr DefaultLanguage() {
   return TextLanguage::New("en", /* confidence */ 1);
@@ -52,10 +52,9 @@ class IntentGeneratorTest : public testing::Test {
 
     intent_generator_->UseTextAnnotatorForTesting();
 
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kQuickAnswersTextAnnotator,
-         chromeos::features::kQuickAnswersTranslation},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kQuickAnswersTextAnnotator,
+                                           features::kQuickAnswersTranslation},
+                                          {});
   }
 
   void TearDown() override { intent_generator_.reset(); }
@@ -82,8 +81,7 @@ class IntentGeneratorTest : public testing::Test {
   std::unique_ptr<IntentGenerator> intent_generator_;
   IntentInfo intent_info_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  chromeos::machine_learning::FakeServiceConnectionImpl
-      fake_service_connection_;
+  FakeServiceConnectionImpl fake_service_connection_;
 };
 
 TEST_F(IntentGeneratorTest, TranslationIntent) {
@@ -224,9 +222,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
 
 TEST_F(IntentGeneratorTest, TranslationIntentNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kQuickAnswersTextAnnotator},
-      {chromeos::features::kQuickAnswersTranslation});
+  scoped_feature_list.InitWithFeatures({features::kQuickAnswersTextAnnotator},
+                                       {features::kQuickAnswersTranslation});
   std::vector<TextLanguagePtr> languages;
   languages.push_back(DefaultLanguage());
   UseFakeServiceConnection({}, languages);
@@ -512,4 +509,4 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentUnSupportedEntity) {
   EXPECT_EQ("the unfathomable reaches of space", intent_info_.intent_text);
 }
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

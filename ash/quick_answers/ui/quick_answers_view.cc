@@ -43,11 +43,11 @@
 namespace ash {
 namespace {
 
-using chromeos::quick_answers::QuickAnswer;
-using chromeos::quick_answers::QuickAnswerText;
-using chromeos::quick_answers::QuickAnswerUiElement;
-using chromeos::quick_answers::QuickAnswerUiElementType;
-using chromeos::quick_answers::ResultType;
+using quick_answers::QuickAnswer;
+using quick_answers::QuickAnswerText;
+using quick_answers::QuickAnswerUiElement;
+using quick_answers::QuickAnswerUiElementType;
+using quick_answers::ResultType;
 using views::Button;
 using views::Label;
 using views::View;

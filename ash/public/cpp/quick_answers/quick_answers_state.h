@@ -71,7 +71,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   void OnConsentResult(ConsentResultType result);
 
   bool settings_enabled() const { return settings_enabled_; }
-  chromeos::quick_answers::prefs::ConsentStatus consent_status() const {
+  quick_answers::prefs::ConsentStatus consent_status() const {
     return consent_status_;
   }
   bool definition_enabled() const { return definition_enabled_; }
@@ -100,8 +100,8 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   bool settings_enabled_ = false;
 
   // Status of the user's consent for the Quick Answers feature.
-  chromeos::quick_answers::prefs::ConsentStatus consent_status_ =
-      chromeos::quick_answers::prefs::ConsentStatus::kUnknown;
+  quick_answers::prefs::ConsentStatus consent_status_ =
+      quick_answers::prefs::ConsentStatus::kUnknown;
 
   // Whether the Quick Answers definition is enabled.
   bool definition_enabled_ = true;

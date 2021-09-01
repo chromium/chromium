@@ -15,7 +15,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -108,4 +108,4 @@ void SearchResultLoader::ProcessResponse(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

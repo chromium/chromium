@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -70,4 +70,4 @@ bool UnitConversionResultParser::Parse(const Value* result,
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

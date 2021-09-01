@@ -9,7 +9,7 @@
 
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 // Utility class for unit conversion.
@@ -46,6 +46,6 @@ class UnitConverter {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_UTILS_UNIT_CONVERTER_H_

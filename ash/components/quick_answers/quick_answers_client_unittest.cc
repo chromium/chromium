@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 namespace {
@@ -235,7 +235,7 @@ TEST_F(QuickAnswersClientTest, PreprocessDefinitionIntent) {
 TEST_F(QuickAnswersClientTest, PreprocessTranslationIntent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      chromeos::features::kQuickAnswersTranslationCloudAPI);
+      features::kQuickAnswersTranslationCloudAPI);
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
   quick_answers_request->selected_text = "sel";
@@ -281,4 +281,4 @@ TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

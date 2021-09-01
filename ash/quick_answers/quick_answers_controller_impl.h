@@ -15,20 +15,19 @@
 #include "ash/quick_answers/quick_answers_state_controller.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace quick_answers {
 class QuickAnswersNotice;
 }  // namespace quick_answers
-}  // namespace chromeos
 
-namespace ash {
 class QuickAnswersUiController;
 
 // Implementation of QuickAnswerController. It fetches quick answers
 // result via QuickAnswersClient and manages quick answers UI.
 class ASH_EXPORT QuickAnswersControllerImpl
     : public QuickAnswersController,
-      public chromeos::quick_answers::QuickAnswersDelegate {
+      public quick_answers::QuickAnswersDelegate {
  public:
   explicit QuickAnswersControllerImpl();
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
@@ -37,36 +36,33 @@ class ASH_EXPORT QuickAnswersControllerImpl
   ~QuickAnswersControllerImpl() override;
 
   // QuickAnswersController:
-  void SetClient(std::unique_ptr<chromeos::quick_answers::QuickAnswersClient>
-                     client) override;
+  void SetClient(
+      std::unique_ptr<quick_answers::QuickAnswersClient> client) override;
 
   // SetClient is required to be called before using these methods.
   // TODO(yanxiao): refactor to delegate to browser.
-  void MaybeShowQuickAnswers(
-      const gfx::Rect& anchor_bounds,
-      const std::string& title,
-      const chromeos::quick_answers::Context& context) override;
+  void MaybeShowQuickAnswers(const gfx::Rect& anchor_bounds,
+                             const std::string& title,
+                             const quick_answers::Context& context) override;
 
   void DismissQuickAnswers(
-      chromeos::quick_answers::QuickAnswersExitPoint exit_point) override;
+      quick_answers::QuickAnswersExitPoint exit_point) override;
 
   // Update the bounds of the anchor view.
   void UpdateQuickAnswersAnchorBounds(const gfx::Rect& anchor_bounds) override;
 
   void SetPendingShowQuickAnswers() override;
 
-  chromeos::quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate()
-      override;
+  quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() override;
 
   QuickAnswersVisibility GetVisibilityForTesting() const override;
 
   // QuickAnswersDelegate:
   void OnQuickAnswerReceived(
-      std::unique_ptr<chromeos::quick_answers::QuickAnswer> answer) override;
+      std::unique_ptr<quick_answers::QuickAnswer> answer) override;
   void OnNetworkError() override;
   void OnRequestPreprocessFinished(
-      const chromeos::quick_answers::QuickAnswersRequest& processed_request)
-      override;
+      const quick_answers::QuickAnswersRequest& processed_request) override;
 
   // Retry sending quick answers request to backend.
   void OnRetryQuickAnswersRequest();
@@ -95,7 +91,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
     return quick_answers_ui_controller_.get();
   }
 
-  chromeos::quick_answers::QuickAnswersNotice* GetNoticeControllerForTesting() {
+  quick_answers::QuickAnswersNotice* GetNoticeControllerForTesting() {
     return notice_controller_.get();
   }
 
@@ -108,7 +104,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
   void MaybeDismissQuickAnswersConsent();
 
   void HandleQuickAnswerRequest(
-      const chromeos::quick_answers::QuickAnswersRequest& request);
+      const quick_answers::QuickAnswersRequest& request);
 
   bool ShouldShowUserNotice() const;
   // Show the user notice view. Does nothing if the view is already
@@ -121,7 +117,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
   void ShowUserConsent(const std::u16string& intent_type,
                        const std::u16string& intent_text);
 
-  chromeos::quick_answers::QuickAnswersRequest BuildRequest();
+  quick_answers::QuickAnswersRequest BuildRequest();
 
   // Bounds of the anchor view.
   gfx::Rect anchor_bounds_;
@@ -133,19 +129,17 @@ class ASH_EXPORT QuickAnswersControllerImpl
   std::string title_;
 
   // Context information, including surrounding text and device properties.
-  chromeos::quick_answers::Context context_;
+  quick_answers::Context context_;
 
-  std::unique_ptr<chromeos::quick_answers::QuickAnswersClient>
-      quick_answers_client_;
-  std::unique_ptr<chromeos::quick_answers::QuickAnswersNotice>
-      notice_controller_;
+  std::unique_ptr<quick_answers::QuickAnswersClient> quick_answers_client_;
+  std::unique_ptr<quick_answers::QuickAnswersNotice> notice_controller_;
 
   QuickAnswersStateController quick_answers_state_controller_;
 
   std::unique_ptr<QuickAnswersUiController> quick_answers_ui_controller_;
 
   // The last received QuickAnswer from client.
-  std::unique_ptr<chromeos::quick_answers::QuickAnswer> quick_answer_;
+  std::unique_ptr<quick_answers::QuickAnswer> quick_answer_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 };

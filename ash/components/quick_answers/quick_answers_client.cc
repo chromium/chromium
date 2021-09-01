@@ -12,7 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -152,4 +152,4 @@ base::TimeDelta QuickAnswersClient::GetImpressionDuration() const {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

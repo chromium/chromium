@@ -8,7 +8,7 @@
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 const PreprocessedOutput PreprocessRequest(const IntentInfo& intent_info);
@@ -42,6 +42,6 @@ std::string UnescapeStringForHTML(const std::string& string);
 absl::optional<double> GetRatio(const double value1, const double value2);
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_UTILS_H_

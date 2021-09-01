@@ -11,7 +11,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 enum class NoticeInteractionType;
@@ -71,6 +71,6 @@ class QuickAnswersNotice {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_NOTICE_H_

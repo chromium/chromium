@@ -525,20 +525,19 @@ std::string SetWhitelistedPref(Profile* profile,
     DCHECK(value.is_bool());
   } else if (pref_name == prefs::kPrintingAPIExtensionsAllowlist) {
     DCHECK(value.is_list());
-  } else if (pref_name ==
-             chromeos::quick_answers::prefs::kQuickAnswersEnabled) {
+  } else if (pref_name == ash::quick_answers::prefs::kQuickAnswersEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name ==
-             chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled) {
+             ash::quick_answers::prefs::kQuickAnswersDefinitionEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name ==
-             chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled) {
-    DCHECK(value.is_bool());
-  } else if (pref_name == chromeos::quick_answers::prefs::
-                              kQuickAnswersUnitConverstionEnabled) {
+             ash::quick_answers::prefs::kQuickAnswersTranslationEnabled) {
     DCHECK(value.is_bool());
   } else if (pref_name ==
-             chromeos::quick_answers::prefs::kQuickAnswersConsentStatus) {
+             ash::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled) {
+    DCHECK(value.is_bool());
+  } else if (pref_name ==
+             ash::quick_answers::prefs::kQuickAnswersConsentStatus) {
     DCHECK(value.is_int());
   } else {
     return "The pref " + pref_name + " is not whitelisted.";

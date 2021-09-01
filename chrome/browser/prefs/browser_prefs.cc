@@ -1297,7 +1297,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::Preferences::RegisterProfilePrefs(registry);
   chromeos::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
   ash::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
-  chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
+  ash::quick_answers::prefs::RegisterProfilePrefs(registry);
   ash::quick_unlock::RegisterProfilePrefs(registry);
   ash::RegisterSamlProfilePrefs(registry);
   ash::ScreenTimeController::RegisterProfilePrefs(registry);

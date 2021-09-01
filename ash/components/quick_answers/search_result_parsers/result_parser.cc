@@ -11,12 +11,10 @@
 #include "base/notreached.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
-
 using base::Value;
-
 }  // namespace
 
 const Value* ResultParser::GetFirstListElement(const Value& value,
@@ -59,4 +57,4 @@ std::unique_ptr<ResultParser> ResultParserFactory::Create(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

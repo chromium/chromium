@@ -24,12 +24,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
-using chromeos::quick_answers::QuickAnswer;
-using chromeos::quick_answers::QuickAnswersExitPoint;
-
 namespace ash {
 
 namespace {
+
+using quick_answers::QuickAnswer;
+using quick_answers::QuickAnswersExitPoint;
 
 constexpr char kGoogleSearchUrlPrefix[] = "https://www.google.com/search?q=";
 

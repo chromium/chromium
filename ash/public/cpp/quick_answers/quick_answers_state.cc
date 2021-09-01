@@ -21,13 +21,13 @@ namespace {
 
 using chromeos::assistant::prefs::kAssistantContextEnabled;
 using chromeos::assistant::prefs::kAssistantEnabled;
-using chromeos::quick_answers::prefs::ConsentStatus;
-using chromeos::quick_answers::prefs::kQuickAnswersConsentStatus;
-using chromeos::quick_answers::prefs::kQuickAnswersDefinitionEnabled;
-using chromeos::quick_answers::prefs::kQuickAnswersEnabled;
-using chromeos::quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
-using chromeos::quick_answers::prefs::kQuickAnswersTranslationEnabled;
-using chromeos::quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
+using quick_answers::prefs::ConsentStatus;
+using quick_answers::prefs::kQuickAnswersConsentStatus;
+using quick_answers::prefs::kQuickAnswersDefinitionEnabled;
+using quick_answers::prefs::kQuickAnswersEnabled;
+using quick_answers::prefs::kQuickAnswersNoticeImpressionCount;
+using quick_answers::prefs::kQuickAnswersTranslationEnabled;
+using quick_answers::prefs::kQuickAnswersUnitConverstionEnabled;
 
 QuickAnswersState* g_quick_answers_state = nullptr;
 

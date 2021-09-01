@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 QuickAnswersNotice::QuickAnswersNotice(PrefService* prefs) : prefs_(prefs) {}
@@ -86,4 +86,4 @@ base::TimeDelta QuickAnswersNotice::GetImpressionDuration() const {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

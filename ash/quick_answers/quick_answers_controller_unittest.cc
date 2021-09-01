@@ -35,7 +35,7 @@ class QuickAnswersControllerTest : public AshTestBase {
  protected:
   QuickAnswersControllerTest() {
     scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kQuickAnswersTextAnnotator);
+        features::kQuickAnswersTextAnnotator);
   }
   QuickAnswersControllerTest(const QuickAnswersControllerTest&) = delete;
   QuickAnswersControllerTest& operator=(const QuickAnswersControllerTest&) =
@@ -48,10 +48,8 @@ class QuickAnswersControllerTest : public AshTestBase {
 
     QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
-    controller()->SetClient(
-        std::make_unique<chromeos::quick_answers::QuickAnswersClient>(
-            &test_url_loader_factory_,
-            controller()->GetQuickAnswersDelegate()));
+    controller()->SetClient(std::make_unique<quick_answers::QuickAnswersClient>(
+        &test_url_loader_factory_, controller()->GetQuickAnswersDelegate()));
 
     controller()->SetVisibilityForTesting(QuickAnswersVisibility::kPending);
   }
@@ -98,19 +96,19 @@ class QuickAnswersControllerTest : public AshTestBase {
   void AcceptNotice() {
     notice_controller()->StartNotice();
     notice_controller()->AcceptNotice(
-        chromeos::quick_answers::NoticeInteractionType::kAccept);
+        quick_answers::NoticeInteractionType::kAccept);
   }
 
   void DismissQuickAnswers() {
     controller()->DismissQuickAnswers(
-        chromeos::quick_answers::QuickAnswersExitPoint::kUnspecified);
+        quick_answers::QuickAnswersExitPoint::kUnspecified);
   }
 
   QuickAnswersUiController* ui_controller() {
     return controller()->quick_answers_ui_controller();
   }
 
-  chromeos::quick_answers::QuickAnswersNotice* notice_controller() {
+  quick_answers::QuickAnswersNotice* notice_controller() {
     return controller()->GetNoticeControllerForTesting();
   }
 

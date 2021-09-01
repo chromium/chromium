@@ -11,7 +11,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 class UnitConversionResultParser : public ResultParser {
@@ -21,6 +21,6 @@ class UnitConversionResultParser : public ResultParser {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_UNIT_CONVERSION_RESULT_PARSER_H_

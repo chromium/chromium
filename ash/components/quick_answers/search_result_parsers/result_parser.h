@@ -12,9 +12,9 @@
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 // Parser interface.
@@ -41,5 +41,6 @@ class ResultParserFactory {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
+
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_RESULT_PARSER_H_

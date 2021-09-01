@@ -8,12 +8,10 @@
 #include "ash/components/quick_answers/quick_answers_model.h"
 
 namespace base {
-
 class TimeDelta;
-
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 // Record the status of loading quick answers with status and duration.
@@ -53,6 +51,6 @@ void RecordIntentType(IntentType intent_type);
 void RecordNetworkError(IntentType intent_type);
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_UTILS_QUICK_ANSWERS_METRICS_H_

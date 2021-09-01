@@ -4,8 +4,7 @@
 
 #include "ash/components/quick_answers/quick_answers_model.h"
 
-
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 QuickAnswer::QuickAnswer() = default;
@@ -35,4 +34,4 @@ QuickAnswersRequest::QuickAnswersRequest(const QuickAnswersRequest& other) =
 QuickAnswersRequest::~QuickAnswersRequest() = default;
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

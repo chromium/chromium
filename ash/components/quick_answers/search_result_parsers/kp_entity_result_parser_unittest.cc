@@ -12,11 +12,11 @@
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 using base::Value;
-}
+}  // namespace
 
 class KpEntityResultParserTest : public testing::Test {
  public:
@@ -136,4 +136,4 @@ TEST_F(KpEntityResultParserTest, IncorrectPath) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

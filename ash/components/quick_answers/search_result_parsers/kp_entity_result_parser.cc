@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -62,4 +62,4 @@ bool KpEntityResultParser::Parse(const Value* result,
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

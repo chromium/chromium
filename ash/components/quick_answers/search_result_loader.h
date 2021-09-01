@@ -17,7 +17,7 @@ class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 class SearchResultLoader : public ResultLoader {
@@ -42,6 +42,6 @@ class SearchResultLoader : public ResultLoader {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_LOADER_H_

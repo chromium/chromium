@@ -14,7 +14,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 class QuickAnswersNoticeTest : public testing::Test {
@@ -100,4 +100,4 @@ TEST_F(QuickAnswersNoticeTest, DismissNotice) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

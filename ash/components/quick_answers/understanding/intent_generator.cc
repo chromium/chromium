@@ -18,14 +18,15 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
-using chromeos::machine_learning::mojom::LoadModelResult;
-using machine_learning::mojom::TextAnnotationPtr;
-using machine_learning::mojom::TextAnnotationRequestPtr;
-using machine_learning::mojom::TextClassifier;
+using ::chromeos::machine_learning::mojom::LoadModelResult;
+using ::chromeos::machine_learning::mojom::TextAnnotationPtr;
+using ::chromeos::machine_learning::mojom::TextAnnotationRequest;
+using ::chromeos::machine_learning::mojom::TextAnnotationRequestPtr;
+using ::chromeos::machine_learning::mojom::TextClassifier;
 
 // TODO(llin): Finalize on the threshold based on user feedback.
 constexpr int kUnitConversionIntentAndSelectionLengthDiffThreshold = 5;
@@ -167,7 +168,7 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
 
   if (text_classifier_) {
     TextAnnotationRequestPtr text_annotation_request =
-        machine_learning::mojom::TextAnnotationRequest::New();
+        TextAnnotationRequest::New();
 
     // TODO(b/159664194): There is a issue with text classifier that some
     // capitalized words are not annotated properly. Convert the text to lower
@@ -284,4 +285,4 @@ void IntentGenerator::LanguageDetectorCallback(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

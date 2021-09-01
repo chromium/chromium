@@ -27,4 +27,12 @@ extern const char kServiceIdRequestPayload[];
 }  // namespace assistant
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace assistant {
+using ::chromeos::assistant::kKnowledgeApiEndpoint;
+using ::chromeos::assistant::kPayloadParamName;
+}  // namespace assistant
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_ASSISTANT_PUBLIC_SHARED_CONSTANTS_H_

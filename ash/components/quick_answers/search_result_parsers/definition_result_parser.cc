@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -114,4 +114,4 @@ GURL DefinitionResultParser::ExtractPhoneticsAudio(
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash

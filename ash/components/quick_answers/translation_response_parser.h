@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 struct QuickAnswer;
@@ -48,6 +48,6 @@ class TranslationResponseParser {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_TRANSLATION_RESPONSE_PARSER_H_

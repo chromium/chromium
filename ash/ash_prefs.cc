@@ -92,7 +92,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {
     chromeos::assistant::prefs::RegisterProfilePrefs(registry);
-    chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
+    quick_answers::prefs::RegisterProfilePrefs(registry);
     registry->RegisterBooleanPref(
         prefs::kMouseReverseScroll, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);

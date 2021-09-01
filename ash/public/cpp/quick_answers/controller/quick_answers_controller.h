@@ -10,16 +10,14 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace quick_answers {
 class QuickAnswersClient;
 class QuickAnswersDelegate;
 enum class QuickAnswersExitPoint;
 struct Context;
 }  // namespace quick_answers
-}  // namespace chromeos
-
-namespace ash {
 
 enum class QuickAnswersVisibility {
   // Quick Answers UI is hidden and the previous session has finished.
@@ -43,7 +41,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
 
   // Passes in a client instance for the controller to use.
   virtual void SetClient(
-      std::unique_ptr<chromeos::quick_answers::QuickAnswersClient> client) = 0;
+      std::unique_ptr<quick_answers::QuickAnswersClient> client) = 0;
 
   // Show the quick-answers view (and/or any accompanying/associated views like
   // user-consent view instead, if consent is not yet granted). |anchor_bounds|
@@ -51,16 +49,15 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
   // |title| is the text selected by the user. |context| is the context
   // information which will be used as part of the request for getting more
   // relevant result.
-  virtual void MaybeShowQuickAnswers(
-      const gfx::Rect& anchor_bounds,
-      const std::string& title,
-      const chromeos::quick_answers::Context& context) = 0;
+  virtual void MaybeShowQuickAnswers(const gfx::Rect& anchor_bounds,
+                                     const std::string& title,
+                                     const quick_answers::Context& context) = 0;
 
   // Dismiss the quick-answers view (and/or any associated views like
   // user-consent view) currently shown. |exit_point| indicates the exit point
   // of the quick-answers view.
   virtual void DismissQuickAnswers(
-      chromeos::quick_answers::QuickAnswersExitPoint exit_point) = 0;
+      quick_answers::QuickAnswersExitPoint exit_point) = 0;
 
   // Update the bounds of the anchor view.
   virtual void UpdateQuickAnswersAnchorBounds(
@@ -70,8 +67,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersController {
   // still pending.
   virtual void SetPendingShowQuickAnswers() = 0;
 
-  virtual chromeos::quick_answers::QuickAnswersDelegate*
-  GetQuickAnswersDelegate() = 0;
+  virtual quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() = 0;
 
   virtual QuickAnswersVisibility GetVisibilityForTesting() const = 0;
 };

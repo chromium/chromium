@@ -13,7 +13,7 @@
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_answers {
 
 // Utility class for language detection.
@@ -42,11 +42,13 @@ class LanguageDetector {
   void FindLanguagesForSelectedTextCallback(
       const std::string& surrounding_text,
       DetectLanguageCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+      std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>
+          languages);
 
   void FindLanguagesForSurroundingTextCallback(
       DetectLanguageCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+      std::vector<chromeos::machine_learning::mojom::TextLanguagePtr>
+          languages);
 
   // Owned by IntentGenerator.
   chromeos::machine_learning::mojom::TextClassifier* text_classifier_ = nullptr;
@@ -55,6 +57,6 @@ class LanguageDetector {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_QUICK_ANSWERS_UTILS_LANGUAGE_DETECTOR_H_

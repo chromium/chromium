@@ -37,9 +37,9 @@
 
 namespace {
 
-using chromeos::quick_answers::Context;
-using chromeos::quick_answers::QuickAnswersClient;
-using chromeos::quick_answers::QuickAnswersExitPoint;
+using ::ash::quick_answers::Context;
+using ::ash::quick_answers::QuickAnswersClient;
+using ::ash::quick_answers::QuickAnswersExitPoint;
 
 constexpr int kMaxSurroundingTextLength = 300;
 
