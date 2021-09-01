@@ -12,7 +12,9 @@ import android.content.ClipDescription;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Process;
+import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextLinks;
+import android.view.textclassifier.TextSelection;
 
 import androidx.annotation.NonNull;
 
@@ -74,5 +76,21 @@ public final class ApiHelperForS {
     public static void setAutoEnterEnabled(
             PictureInPictureParams.Builder builder, boolean enabled) {
         builder.setAutoEnterEnabled(enabled);
+    }
+
+    /**
+     * See {@link android.view.textclassifier.TextSelection.Request.
+     * Builder#setIncludeTextClassification(boolean)}
+     */
+    public static TextSelection.Request.Builder setIncludeTextClassification(
+            TextSelection.Request.Builder builder, boolean includeTextClassification) {
+        return builder.setIncludeTextClassification(includeTextClassification);
+    }
+
+    /**
+     * See {@link android.view.textclassifier.TextSelection#getTextClassification()}
+     */
+    public static TextClassification getTextClassification(TextSelection textSelection) {
+        return textSelection.getTextClassification();
     }
 }
