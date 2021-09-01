@@ -17,6 +17,7 @@
 // Version 3 maintains backwards compatibility with version 2 and supports
 // OEMCrypto v15.
 // Version 4 maintains backwards compatibility and supports OEMCrypto v16.
+// Version 5 adds the v16 CopyBuffer variant.
 
 module arc.mojom;
 
@@ -245,7 +246,7 @@ struct SubSampleDescription {
 
 // This is the interface that implements all the calls that map to the
 // OEMCrypto API itself.
-// Next method ID: 76
+// Next method ID: 77
 [Stable, Uuid="ed3807bc-7bce-472d-be4f-68774e613ace"]
 interface OemCryptoService {
   InitializeDeprecated@0() => (OemCryptoResult result);
@@ -295,7 +296,7 @@ interface OemCryptoService {
   GenericVerify@15(uint32 session, array<uint8> data,
                    OemCryptoAlgorithm algorithm, array<uint8> signature) =>
                   (OemCryptoResult result);
-  CopyBuffer@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
+  CopyBufferV14@16(array<uint8> data, OemCryptoSecureBuffer out_buffer)
       => (OemCryptoResult result);
   LoadTestKeyboxV13@17() => (OemCryptoResult result);
   IsRootKeyCertificateValid@18() => (OemCryptoResult result);
@@ -469,6 +470,10 @@ interface OemCryptoService {
                                 OemCryptoCencEncryptPatternDesc pattern,
                                 OemCryptoSecureBuffer? secure_buffer)
       => (OemCryptoResult result, array<uint8>? decrypted_data);
+  [MinVersion=5] CopyBuffer@76(uint32 session, array<uint8> data,
+                               OemCryptoSecureBuffer out_buffer,
+                               uint8 subsample_flags)
+      => (OemCryptoResult result);
 };
 
 // OemCryptoService is implemented as another service outside of the Browser
