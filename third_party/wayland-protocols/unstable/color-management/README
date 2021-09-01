@@ -1,0 +1,10 @@
+Color management and HDR protocol
+
+CHROMIUM NOTE:
+  As of 08/2021, this is a prototype being pulled from an upstream PR:
+  https://gitlab.freedesktop.org/wayland/wayland-protocols/-/merge_requests/14
+
+Maintainers:
+Sebastian Wick <sebastian at sebastianwick.net>
+Pekka Paalanen <pekka.paalanen@collabora.com>
+Jim Shargo <jshargo@chromium.org>

@@ -133,6 +133,10 @@ wayland_protocol("color_space_protocol") {
   sources = [ "unstable/color-space/color-space-unstable-v1.xml" ]
 }
 
+wayland_protocol("color_management_protocol") {
+  sources = [ "unstable/color-management/color-management-unstable-v1.xml" ]
+}
+
 wayland_protocol("xdg_foreign") {
   sources = [ "src/unstable/xdg-foreign/xdg-foreign-unstable-v1.xml" ]
 }
