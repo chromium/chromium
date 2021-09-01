@@ -468,6 +468,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       IgnoredReasons* = nullptr) const;
   bool IsInert() const;
   bool IsAriaHidden() const;
+  bool CachedIsAriaHidden() { return cached_is_aria_hidden_; }
   const AXObject* AriaHiddenRoot() const;
   bool ComputeIsInert(IgnoredReasons* = nullptr) const;
   bool ComputeIsAriaHidden(IgnoredReasons* = nullptr) const;

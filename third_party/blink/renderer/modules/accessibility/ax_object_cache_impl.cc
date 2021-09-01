@@ -1855,7 +1855,7 @@ void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Element* element) {
   if (!obj)
     return;
 
-  if (obj->AriaHiddenRoot()) {
+  if (obj->IsAriaHidden()) {
     // Elements that are hidden but focusable are not ignored. Therefore, if a
     // hidden element's focusable state changes, it's ignored state must be
     // recomputed. It may be newly included in the tree, which means the
@@ -2633,8 +2633,12 @@ void AXObjectCacheImpl::LocationChanged(const LayoutObject* layout_object) {
   // Note that if the node is ignored for other reasons, it still might
   // be important to send this notification if any of its children are
   // visible - but in the case of aria-hidden we can safely ignore it.
+  // Use CachedIsAriaHidden() instead of IsAriaHidden() because layout is not
+  // clean here, and it's better to do the optimization up front. This is okay
+  // because if the cached aria-hidden becomes stale, then the entire subtree
+  // will be invalidated anyway.
   AXObject* obj = Get(layout_object);
-  if (obj && obj->AriaHiddenRoot())
+  if (obj && obj->CachedIsAriaHidden())
     return;
 
   PostNotification(layout_object, ax::mojom::Event::kLocationChanged);
