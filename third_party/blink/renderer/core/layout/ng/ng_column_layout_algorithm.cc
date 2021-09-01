@@ -324,7 +324,7 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
 
   PositionAnyUnclaimedListMarker();
 
-  if (ConstraintSpace().HasBlockFragmentation()) {
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // In addition to establishing one, we're nested inside another
     // fragmentation context.
     FinishFragmentation(Node(), ConstraintSpace(), BorderPadding().block_end,
@@ -337,6 +337,12 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
     if (container_builder_.HasOutOfFlowFragmentainerDescendants()) {
       container_builder_.AddMulticolWithPendingOOFs(Node());
     }
+  } else {
+#if DCHECK_IS_ON()
+    // If we're not participating in a fragmentation context, no block
+    // fragmentation related fields should have been set.
+    container_builder_.CheckNoBlockFragmentation();
+#endif
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

@@ -123,10 +123,16 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(all_fragments_block_size);
   container_builder_.SetIsFieldsetContainer();
 
-  if (ConstraintSpace().HasBlockFragmentation()) {
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     FinishFragmentation(Node(), ConstraintSpace(), borders_.block_end,
                         FragmentainerSpaceAtBfcStart(ConstraintSpace()),
                         &container_builder_);
+  } else {
+#if DCHECK_IS_ON()
+    // If we're not participating in a fragmentation context, no block
+    // fragmentation related fields should have been set.
+    container_builder_.CheckNoBlockFragmentation();
+#endif
   }
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();

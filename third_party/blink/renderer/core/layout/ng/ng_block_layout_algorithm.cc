@@ -963,16 +963,15 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
       DCHECK_EQ(status, NGBreakStatus::kDisableFragmentation);
       return container_builder_.Abort(NGLayoutResult::kDisableFragmentation);
     }
-  }
-
-  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
-
+  } else {
 #if DCHECK_IS_ON()
   // If we're not participating in a fragmentation context, no block
   // fragmentation related fields should have been set.
-  if (!InvolvedInBlockFragmentation(container_builder_))
-    container_builder_.CheckNoBlockFragmentation();
+  container_builder_.CheckNoBlockFragmentation();
 #endif
+  }
+
+  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   // Adjust the position of the final baseline if needed.
   container_builder_.SetLastBaselineToBlockEndMarginEdgeIfNeeded();
