@@ -333,7 +333,7 @@ class SystemConfigurationRemoverTests(Base):
     def __init__(self, testFunc):
         super(SystemConfigurationRemoverTests, self).__init__(testFunc)
         self._port.configuration_specifier_macros_dict = {
-            'mac': ['mac10.10', 'mac10.11', 'mac10.12'],
+            'mac': ['mac10.10', 'mac10.11', 'mac10.12', 'mac10.13'],
             'win': ['win7', 'win10'],
             'linux': ['precise', 'trusty']
         }
@@ -346,6 +346,7 @@ class SystemConfigurationRemoverTests(Base):
         expectations_dict = {self._general_exp_filename: content}
         test_expectations = TestExpectations(self._port, expectations_dict)
         self._system_config_remover = SystemConfigurationRemover(
+            self._port.host.filesystem,
             test_expectations)
 
     def test_remove_mac_version_from_mac_expectation(self):

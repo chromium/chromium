@@ -498,7 +498,7 @@ class SystemConfigurationRemover(object):
     versions of an OS into an expectation with the OS specifier.
     """
 
-    def __init__(self, test_expectations):
+    def __init__(self, fs, test_expectations):
         self._test_expectations = test_expectations
         self._configuration_specifiers_dict = {}
         for os, os_versions in (list(
@@ -515,6 +515,17 @@ class SystemConfigurationRemover(object):
         self._deleted_lines = set()
         self._generic_exp_file_path = \
             self._test_expectations.port.path_to_generic_test_expectations_file()
+        self._tags_in_expectation = self._tags_in_expectation_file(
+            self._generic_exp_file_path,
+            fs.read_text_file(self._generic_exp_file_path))
+
+    def _tags_in_expectation_file(self, path, content):
+        test_expectations = typ_types.TestExpectations()
+        ret, errors = test_expectations.parse_tagged_list(
+            content, path)
+        if not ret:
+            return set().union(*test_expectations.tag_sets)
+        return set()
 
     def _split_configuration(self, exp, versions_to_remove):
         build_specifiers = set()
@@ -533,6 +544,9 @@ class SystemConfigurationRemover(object):
                 set(version for version in self.
                     _configuration_specifiers_dict[os_specifier]) -
                 versions_to_remove)
+            # Skip tags not listed in TestExpectations
+            system_specifiers = system_specifiers & self._tags_in_expectation
+
         elif self._os_specifiers & exp.tags:
             # If there is an OS tag in the expectation's tag list which does not have
             # versions in the versions_to_remove list then return the expectation.
@@ -549,6 +563,9 @@ class SystemConfigurationRemover(object):
                     for version in os_versions:
                         system_specifiers.remove(version)
                     system_specifiers.add(os)
+            # Skip tags not listed in TestExpectations
+            system_specifiers = system_specifiers & self._tags_in_expectation
+
         return [
             typ_types.Expectation(
                 tags=set([specifier]) | build_specifiers,
