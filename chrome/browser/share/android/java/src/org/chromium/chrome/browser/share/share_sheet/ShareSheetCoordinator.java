@@ -414,15 +414,32 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
 
         models.put(MORE_TARGET_NAME, createMorePropertyModel(activity, params, saveLastUsed));
 
-        // TODO(ellyjones): Compute the fold from the device size.
-        int fold = 4;
+        int length = numberOf3PTilesToShow(activity);
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
         boolean persist = !profile.isOffTheRecord() && saveLastUsed;
 
-        ShareRankingBridge.rank(profile, type, availableActivities, fold, persist,
+        ShareRankingBridge.rank(profile, type, availableActivities, length, persist,
                 ranking -> { onThirdPartyShareTargetsReceived(callback, models, ranking); });
+    }
+
+    private int numberOf3PTilesToShow(Activity activity) {
+        final boolean shouldFixMore =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING_FIXED_MORE);
+
+        if (!shouldFixMore) return ShareSheetPropertyModelBuilder.MAX_NUM_APPS;
+
+        int screenWidth =
+                ContextUtils.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
+        int tileWidth =
+                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_width);
+        int tileMargin =
+                activity.getResources().getDimensionPixelSize(R.dimen.sharing_hub_tile_margin);
+        // In 'fix more' mode, ask for as many tiles as can fit; this will probably end up looking a
+        // bit strange since there will likely be an uneven amount of padding on the right edge.
+        // When not in that mode, the default is 10 tiles.
+        return (screenWidth - (2 * tileMargin)) / (tileWidth + tileMargin);
     }
 
     private String contentTypesToTypeForRanking(Set<Integer> contentTypes) {

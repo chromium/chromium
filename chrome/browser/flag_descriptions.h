@@ -1912,6 +1912,8 @@ extern const char kRelatedSearchesUiDescription[];
 
 extern const char kShareUsageRankingName[];
 extern const char kShareUsageRankingDescription[];
+extern const char kShareUsageRankingFixedMoreName[];
+extern const char kShareUsageRankingFixedMoreDescription[];
 
 extern const char kSingleTouchSelectName[];
 extern const char kSingleTouchSelectDescription[];

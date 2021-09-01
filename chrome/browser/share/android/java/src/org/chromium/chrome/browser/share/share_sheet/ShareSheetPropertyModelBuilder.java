@@ -62,7 +62,7 @@ public class ShareSheetPropertyModelBuilder {
         int IMAGE_AND_LINK = 7;
     }
 
-    private static final int MAX_NUM_APPS = 7;
+    public static final int MAX_NUM_APPS = 7;
     private static final String IMAGE_TYPE = "image/";
     // Variations parameter name for the comma-separated list of third-party activity names.
     private static final String PARAM_SHARING_HUB_THIRD_PARTY_APPS = "sharing-hub-third-party-apps";

@@ -49356,6 +49356,7 @@ from previous Chrome versions.
   <int value="-43980455" label="MobileIdentityConsistencyFRE:enabled"/>
   <int value="-43650386" label="WindowsFollowCursor:enabled"/>
   <int value="-43428597" label="ClickToCallDetectionV2:enabled"/>
+  <int value="-42175674" label="ShareUsageRankingFixedMore:disabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
@@ -51687,6 +51688,7 @@ from previous Chrome versions.
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
+  <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>
   <int value="1838990777" label="V8Future:enabled"/>
