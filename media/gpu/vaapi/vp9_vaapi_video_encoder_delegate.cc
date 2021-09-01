@@ -388,7 +388,7 @@ bool VP9VaapiVideoEncoderDelegate::ApplyPendingUpdateRates() {
   if (!pending_update_rates_)
     return true;
 
-  VLOGF(2) << "New bitrate: " << pending_update_rates_->first.GetSumBps()
+  VLOGF(2) << "New bitrate: " << pending_update_rates_->first.ToString()
            << ", New framerate: " << pending_update_rates_->second;
 
   current_params_.bitrate_allocation = pending_update_rates_->first;
