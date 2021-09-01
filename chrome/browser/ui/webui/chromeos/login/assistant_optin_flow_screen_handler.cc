@@ -368,6 +368,8 @@ void AssistantOptInFlowScreenHandler::StopSpeakerIdEnrollment() {
   DCHECK(voice_match_enrollment_started_);
   voice_match_enrollment_started_ = false;
   assistant::AssistantSettings::Get()->StopSpeakerIdEnrollment();
+  // Reset the mojom receiver of |SpeakerIdEnrollmentClient|.
+  ResetReceiver();
 }
 
 void AssistantOptInFlowScreenHandler::ReloadContent(const base::Value& dict) {

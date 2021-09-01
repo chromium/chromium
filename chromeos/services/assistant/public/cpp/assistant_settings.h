@@ -25,6 +25,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) SpeakerIdEnrollmentClient
   mojo::PendingRemote<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
   BindNewPipeAndPassRemote();
 
+  void ResetReceiver();
+
  private:
   mojo::Receiver<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
       client_{this};

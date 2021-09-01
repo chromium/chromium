@@ -21,6 +21,10 @@ SpeakerIdEnrollmentClient::BindNewPipeAndPassRemote() {
   return client_.BindNewPipeAndPassRemote();
 }
 
+void SpeakerIdEnrollmentClient::ResetReceiver() {
+  client_.reset();
+}
+
 // static
 AssistantSettings* AssistantSettings::Get() {
   return g_instance;
