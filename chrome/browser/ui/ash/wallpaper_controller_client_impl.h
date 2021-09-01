@@ -55,7 +55,7 @@ class WallpaperControllerClientImpl
   void MaybeClosePreviewWallpaper() override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
-  void MigrateCollectionIdFromChromeApp(const AccountId& account_id) override;
+  void MigrateCollectionIdFromChromeApp() override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
@@ -66,7 +66,6 @@ class WallpaperControllerClientImpl
   void GetFilesId(const AccountId& account_id,
                   base::OnceCallback<void(const std::string&)>
                       files_id_callback) const override;
-  bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -124,8 +123,7 @@ class WallpaperControllerClientImpl
   bool IsActiveUserWallpaperControlledByPolicy();
   ash::WallpaperInfo GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
-  void MigrateCollectionIdFromValueStoreForTesting(const AccountId& account_id,
-                                                   ValueStore* storage);
+  void MigrateCollectionIdFromValueStoreForTesting(ValueStore* storage);
 
  private:
   // Initialize the controller for this client and some wallpaper directories.
@@ -148,12 +146,10 @@ class WallpaperControllerClientImpl
   // |SetDailyRefreshCollectionId| on main task runner.
   void OnGetWallpaperChromeAppValueStore(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      const AccountId& account_id,
       ValueStore* value_store);
 
   // Passes |collection_id| to wallpaper controller on main task runner.
-  void SetDailyRefreshCollectionId(const AccountId& account_id,
-                                   const std::string& collection_id);
+  void SetDailyRefreshCollectionId(const std::string& collection_id);
 
   void OnDailyImageInfoFetched(DailyWallpaperUrlFetchedCallback callback,
                                bool success,

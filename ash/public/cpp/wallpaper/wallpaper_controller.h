@@ -278,7 +278,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Set and store the collection id used to update refreshable wallpapers.
   // Empty if daily refresh is not enabled.
   virtual void SetDailyRefreshCollectionId(
-      const AccountId& account_id,
       const std::string& collection_id) = 0;
 
   // Get the daily refresh collection id. Empty if daily refresh is not enabled;
