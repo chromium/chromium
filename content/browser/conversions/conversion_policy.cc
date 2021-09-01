@@ -13,96 +13,52 @@ namespace content {
 
 namespace {
 
-// Maximum number of allowed conversion metadata values. Higher entropy
-// conversion metadata is stripped to these lower bits.
-const int kMaxAllowedConversionValues = 8;
-
-// Maximum number of allowed event source trigger data values. Higher entropy
-// event source trigger data is stripped to these lower bits.
-const int kMaxAllowedEventSourceTriggerDataValues = 2;
+WARN_UNUSED_RESULT
+uint64_t MaxAllowedValueForSourceType(
+    StorableImpression::SourceType source_type) {
+  switch (source_type) {
+    case StorableImpression::SourceType::kNavigation:
+      return 8;
+    case StorableImpression::SourceType::kEvent:
+      return 2;
+  }
+}
 
 }  // namespace
 
-uint64_t ConversionPolicy::NoiseProvider::GetNoisedConversionData(
-    uint64_t conversion_data) const {
-  // Return |conversion_data| without any noise 95% of the time.
-  if (base::RandDouble() > .05)
-    return conversion_data;
-
-  // 5% of the time return a random number in the allowed range. Note that the
-  // value is noised 5% of the time, but only wrong 5 *
-  // (kMaxAllowedConversionValues - 1) / kMaxAllowedConversionValues percent of
-  // the time.
-  return static_cast<uint64_t>(base::RandInt(0, kMaxAllowedConversionValues));
-}
-
-// static
-uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerDataImpl(
-    uint64_t event_source_trigger_data) {
-  // Return |event_source_trigger_data| without any noise 95% of the time.
-  if (base::RandDouble() > .05)
-    return event_source_trigger_data;
-
-  // 5% of the time return a random number in the allowed range. Note that the
-  // value is noised 5% of the time, but only wrong 5 *
-  // (kMaxAllowedEventSourceTriggerDataValues - 1) /
-  // kMaxAllowedEventSourceTriggerDataValues percent of the time.
-  return static_cast<uint64_t>(
-      base::RandInt(0, kMaxAllowedEventSourceTriggerDataValues));
-}
-
-uint64_t ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerData(
-    uint64_t event_source_trigger_data) const {
-  return GetNoisedEventSourceTriggerDataImpl(event_source_trigger_data);
-}
-
-// static
-std::unique_ptr<ConversionPolicy> ConversionPolicy::CreateForTesting(
-    std::unique_ptr<NoiseProvider> noise_provider) {
-  return base::WrapUnique<ConversionPolicy>(
-      new ConversionPolicy(std::move(noise_provider)));
-}
-
-ConversionPolicy::ConversionPolicy(bool debug_mode)
-    : debug_mode_(debug_mode),
-      noise_provider_(debug_mode ? nullptr
-                                 : std::make_unique<NoiseProvider>()) {}
-
-ConversionPolicy::ConversionPolicy(
-    std::unique_ptr<ConversionPolicy::NoiseProvider> noise_provider)
-    : debug_mode_(false), noise_provider_(std::move(noise_provider)) {}
+ConversionPolicy::ConversionPolicy(bool debug_mode) : debug_mode_(debug_mode) {}
 
 ConversionPolicy::~ConversionPolicy() = default;
 
+bool ConversionPolicy::ShouldNoiseConversionData() const {
+  return base::RandDouble() <= .05;
+}
+
+uint64_t ConversionPolicy::MakeNoisedConversionData(uint64_t max) const {
+  return base::RandGenerator(max);
+}
+
 uint64_t ConversionPolicy::GetSanitizedConversionData(
-    uint64_t conversion_data) const {
+    uint64_t conversion_data,
+    StorableImpression::SourceType source_type) const {
+  const uint64_t max_allowed_values = MaxAllowedValueForSourceType(source_type);
+
   // Add noise to the conversion when the value is first sanitized from a
   // conversion registration event. This noised data will be used for all
   // associated impressions that convert.
-  if (noise_provider_)
-    conversion_data = noise_provider_->GetNoisedConversionData(conversion_data);
-
-  // Allow at most 3 bits of entropy in conversion data.
-  return conversion_data % kMaxAllowedConversionValues;
-}
-
-bool ConversionPolicy::IsConversionDataInRange(uint64_t conversion_data) const {
-  return conversion_data < kMaxAllowedConversionValues;
-}
-
-uint64_t ConversionPolicy::GetSanitizedEventSourceTriggerData(
-    uint64_t event_source_trigger_data) const {
-  // Add noise to the conversion when the value is first sanitized from a
-  // conversion registration event. This noised data will be used for all
-  // associated impressions that convert.
-  if (noise_provider_) {
-    event_source_trigger_data =
-        noise_provider_->GetNoisedEventSourceTriggerData(
-            event_source_trigger_data);
+  if (!debug_mode_ && ShouldNoiseConversionData()) {
+    const uint64_t noised_data = MakeNoisedConversionData(max_allowed_values);
+    DCHECK_LT(noised_data, max_allowed_values);
+    return noised_data;
   }
 
-  // Allow at most 1 bit of entropy in event source trigger data.
-  return event_source_trigger_data % kMaxAllowedEventSourceTriggerDataValues;
+  return conversion_data % max_allowed_values;
+}
+
+bool ConversionPolicy::IsConversionDataInRange(
+    uint64_t conversion_data,
+    StorableImpression::SourceType source_type) const {
+  return conversion_data < MaxAllowedValueForSourceType(source_type);
 }
 
 uint64_t ConversionPolicy::GetSanitizedImpressionData(

@@ -96,8 +96,8 @@ ConversionStorageDelegateImpl::SelectAttributionLogic(
 
 uint64_t ConversionStorageDelegateImpl::GetFakeEventSourceTriggerData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ConversionPolicy::NoiseProvider::GetNoisedEventSourceTriggerDataImpl(
-      base::RandUint64());
+  return ConversionPolicy().GetSanitizedConversionData(
+      base::RandUint64(), StorableImpression::SourceType::kEvent);
 }
 
 base::TimeDelta

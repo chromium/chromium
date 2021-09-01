@@ -289,7 +289,8 @@ void ConversionHost::RegisterConversion(
   net::SchemefulSite conversion_destination(main_frame_origin);
 
   if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
-          conversion->conversion_data)) {
+          conversion->conversion_data,
+          StorableImpression::SourceType::kNavigation)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
         render_frame_host,
         devtools_instrumentation::AttributionReportingIssueType::
@@ -300,11 +301,12 @@ void ConversionHost::RegisterConversion(
 
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
-          conversion->conversion_data),
+          conversion->conversion_data,
+          StorableImpression::SourceType::kNavigation),
       conversion_destination, conversion->reporting_origin,
-      conversion_manager->GetConversionPolicy()
-          .GetSanitizedEventSourceTriggerData(
-              conversion->event_source_trigger_data),
+      conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
+          conversion->event_source_trigger_data,
+          StorableImpression::SourceType::kEvent),
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt

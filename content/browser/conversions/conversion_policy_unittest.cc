@@ -21,46 +21,40 @@ const StorableImpression::SourceType kSourceTypes[] = {
     StorableImpression::SourceType::kEvent,
 };
 
-// Fake ConversionNoiseProvider that return un-noised conversion data.
-class EmptyNoiseProvider : public ConversionPolicy::NoiseProvider {
+class ConfigurableConversionPolicy : public ConversionPolicy {
  public:
-  uint64_t GetNoisedConversionData(uint64_t conversion_data) const override {
-    return conversion_data;
-  }
+  explicit ConfigurableConversionPolicy(bool should_noise)
+      : should_noise_(should_noise) {}
 
-  uint64_t GetNoisedEventSourceTriggerData(
-      uint64_t event_source_trigger_data) const override {
-    return event_source_trigger_data;
-  }
+ protected:
+  bool ShouldNoiseConversionData() const override { return should_noise_; }
+
+  uint64_t MakeNoisedConversionData(uint64_t max) const override { return 1; }
+
+ private:
+  bool should_noise_;
 };
-
-// Mock ConversionNoiseProvider that always noises values by +1.
-class IncrementingNoiseProvider : public ConversionPolicy::NoiseProvider {
- public:
-  uint64_t GetNoisedConversionData(uint64_t conversion_data) const override {
-    return conversion_data + 1;
-  }
-
-  uint64_t GetNoisedEventSourceTriggerData(
-      uint64_t event_source_trigger_data) const override {
-    return event_source_trigger_data + 1;
-  }
-};
-
-}  // namespace
 
 class ConversionPolicyTest : public testing::Test {
  public:
   ConversionPolicyTest() = default;
 };
 
-TEST_F(ConversionPolicyTest, HighEntropyConversionData_StrippedToLowerBits) {
-  uint64_t conversion_data = 8LU;
+}  // namespace
 
-  // The policy should strip the data to the lower 3 bits.
-  EXPECT_EQ(0LU, ConversionPolicy::CreateForTesting(
-                     std::make_unique<EmptyNoiseProvider>())
-                     ->GetSanitizedConversionData(conversion_data));
+TEST_F(ConversionPolicyTest, HighEntropyConversionData_StrippedToLowerBits) {
+  std::unique_ptr<ConversionPolicy> policy =
+      std::make_unique<ConfigurableConversionPolicy>(/*should_noise=*/false);
+
+  EXPECT_EQ(0u, policy->GetSanitizedConversionData(
+                    8, StorableImpression::SourceType::kNavigation));
+  EXPECT_EQ(1u, policy->GetSanitizedConversionData(
+                    9, StorableImpression::SourceType::kNavigation));
+
+  EXPECT_EQ(0u, policy->GetSanitizedConversionData(
+                    2, StorableImpression::SourceType::kEvent));
+  EXPECT_EQ(1u, policy->GetSanitizedConversionData(
+                    3, StorableImpression::SourceType::kEvent));
 }
 
 TEST_F(ConversionPolicyTest, SanitizeHighEntropyImpressionData_Unchanged) {
@@ -72,69 +66,40 @@ TEST_F(ConversionPolicyTest, SanitizeHighEntropyImpressionData_Unchanged) {
             ConversionPolicy().GetSanitizedImpressionData(impression_data));
 }
 
-TEST_F(ConversionPolicyTest, ThreeBitConversionData_Unchanged) {
-  std::unique_ptr<ConversionPolicy> policy = ConversionPolicy::CreateForTesting(
-      std::make_unique<EmptyNoiseProvider>());
+TEST_F(ConversionPolicyTest, LowEntropyConversionData_Unchanged) {
+  std::unique_ptr<ConversionPolicy> policy =
+      std::make_unique<ConfigurableConversionPolicy>(/*should_noise=*/false);
+
   for (uint64_t conversion_data = 0; conversion_data < 8; conversion_data++) {
+    EXPECT_EQ(
+        conversion_data,
+        policy->GetSanitizedConversionData(
+            conversion_data, StorableImpression::SourceType::kNavigation));
+  }
+  for (uint64_t conversion_data = 0; conversion_data < 2; conversion_data++) {
     EXPECT_EQ(conversion_data,
-              policy->GetSanitizedConversionData(conversion_data));
+              policy->GetSanitizedConversionData(
+                  conversion_data, StorableImpression::SourceType::kEvent));
   }
 }
 
 TEST_F(ConversionPolicyTest, SanitizeConversionData_OutputHasNoise) {
   // The policy should include noise when sanitizing data.
-  EXPECT_EQ(5LU, ConversionPolicy::CreateForTesting(
-                     std::make_unique<IncrementingNoiseProvider>())
-                     ->GetSanitizedConversionData(4UL));
+  for (auto source_type : kSourceTypes) {
+    EXPECT_EQ(1LU, ConfigurableConversionPolicy(/*should_noise=*/true)
+                       .GetSanitizedConversionData(0UL, source_type));
+  }
 }
 
 // This test will fail flakily if noise is used.
 TEST_F(ConversionPolicyTest, DebugMode_ConversionDataNotNoised) {
-  uint64_t conversion_data = 0UL;
-  for (int i = 0; i < 100; i++) {
-    EXPECT_EQ(conversion_data,
-              ConversionPolicy(/*debug_mode=*/true)
-                  .GetSanitizedConversionData(conversion_data));
-  }
-}
-
-TEST_F(ConversionPolicyTest,
-       HighEntropyEventSourceTriggerData_StrippedToLowerBits) {
-  uint64_t event_source_trigger_data = 4LU;
-
-  // The policy should strip the data to the lower 1 bit.
-  EXPECT_EQ(
-      0LU,
-      ConversionPolicy::CreateForTesting(std::make_unique<EmptyNoiseProvider>())
-          ->GetSanitizedEventSourceTriggerData(event_source_trigger_data));
-}
-
-TEST_F(ConversionPolicyTest, OneBitEventSourceTriggerData_Unchanged) {
-  std::unique_ptr<ConversionPolicy> policy = ConversionPolicy::CreateForTesting(
-      std::make_unique<EmptyNoiseProvider>());
-  for (uint64_t event_source_trigger_data = 0; event_source_trigger_data < 2;
-       event_source_trigger_data++) {
-    EXPECT_EQ(
-        event_source_trigger_data,
-        policy->GetSanitizedEventSourceTriggerData(event_source_trigger_data));
-  }
-}
-
-TEST_F(ConversionPolicyTest, SanitizeEventSourceTriggerData_OutputHasNoise) {
-  // The policy should include noise when sanitizing data.
-  EXPECT_EQ(0LU, ConversionPolicy::CreateForTesting(
-                     std::make_unique<IncrementingNoiseProvider>())
-                     ->GetSanitizedEventSourceTriggerData(1UL));
-}
-
-// This test will fail flakily if noise is used.
-TEST_F(ConversionPolicyTest, DebugMode_EventSourceTriggerDataNotNoised) {
-  uint64_t event_source_trigger_data = 0UL;
-  for (int i = 0; i < 100; i++) {
-    EXPECT_EQ(
-        event_source_trigger_data,
-        ConversionPolicy(/*debug_mode=*/true)
-            .GetSanitizedEventSourceTriggerData(event_source_trigger_data));
+  const uint64_t conversion_data = 0UL;
+  for (auto source_type : kSourceTypes) {
+    for (int i = 0; i < 100; i++) {
+      EXPECT_EQ(conversion_data,
+                ConversionPolicy(/*debug_mode=*/true)
+                    .GetSanitizedConversionData(conversion_data, source_type));
+    }
   }
 }
 
