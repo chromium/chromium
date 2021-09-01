@@ -158,7 +158,7 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
 }
 
 void ApkWebAppInstaller::DoInstall() {
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
   DCHECK(provider);
 
   GURL start_url = web_app_info_->start_url;

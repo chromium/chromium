@@ -86,7 +86,7 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
   if (arc_app_list_prefs_)
     arc_app_list_prefs_observer_.Observe(arc_app_list_prefs_);
 
-  provider_ = web_app::WebAppProvider::Get(profile);
+  provider_ = web_app::WebAppProvider::GetDeprecated(profile);
   DCHECK(provider_);
   registrar_observer_.Observe(&provider_->registrar());
 }
@@ -131,7 +131,7 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const GURL& url) {
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile_)->registrar();
+      web_app::WebAppProvider::GetDeprecated(profile_)->registrar();
   absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(url);
   if (!app_id)
     return absl::nullopt;

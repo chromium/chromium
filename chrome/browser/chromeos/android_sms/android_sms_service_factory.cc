@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/web_applications/components/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -82,7 +83,7 @@ KeyedService* AndroidSmsServiceFactory::BuildServiceInstanceFor(
       profile, HostContentSettingsMapFactory::GetForProfile(profile),
       chromeos::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
           profile),
-      web_app::WebAppProviderFactory::GetForProfile(profile),
+      web_app::WebAppProvider::GetDeprecated(profile),
       app_list::AppListSyncableServiceFactory::GetForProfile(profile));
 }
 

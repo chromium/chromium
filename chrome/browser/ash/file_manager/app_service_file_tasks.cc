@@ -141,7 +141,8 @@ void FindAppServiceTasks(Profile* profile,
       // Check the origin trial and feature flag for file handling in web apps.
       // TODO(1240018): Remove when this feature is fully launched. This check
       // will not work for lacros web apps.
-      web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
+      web_app::WebAppProvider* provider =
+          web_app::WebAppProvider::GetDeprecated(profile);
       web_app::OsIntegrationManager& os_integration_manager =
           provider->os_integration_manager();
       if (!os_integration_manager.IsFileHandlingAPIAvailable(

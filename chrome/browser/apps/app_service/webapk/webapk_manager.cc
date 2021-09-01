@@ -35,7 +35,8 @@ namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      web_app_registrar_(web_app::WebAppProvider::Get(profile_)->registrar()),
+      web_app_registrar_(
+          web_app::WebAppProvider::GetDeprecated(profile_)->registrar()),
       initialized_(false),
       install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {

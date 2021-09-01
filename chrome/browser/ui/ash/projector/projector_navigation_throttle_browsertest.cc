@@ -44,7 +44,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
       : scoped_feature_list_(features::kProjector) {}
 
   void SetUpOnMainThread() override {
-    web_app::WebAppProvider::Get(profile())
+    web_app::WebAppProvider::GetDeprecated(profile())
         ->system_web_app_manager()
         .InstallSystemAppsForTesting();
   }

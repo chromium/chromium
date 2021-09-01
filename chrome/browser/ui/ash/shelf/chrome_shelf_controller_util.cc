@@ -61,7 +61,7 @@ std::string GetPolicyValueFromAppId(const std::string& app_id,
   // Handle Web App ids
   //
   // WebAppProvider is absent in some cases e.g. Arc++ Kiosk Mode.
-  if (auto* provider = web_app::WebAppProvider::Get(profile)) {
+  if (auto* provider = web_app::WebAppProvider::GetDeprecated(profile)) {
     std::map<web_app::AppId, GURL> installed_apps =
         provider->registrar().GetExternallyInstalledApps(
             web_app::ExternalInstallSource::kExternalPolicy);

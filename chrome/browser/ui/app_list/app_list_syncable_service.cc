@@ -1331,7 +1331,7 @@ bool AppListSyncableService::AppIsOem(const std::string& id) {
   if (arc_prefs && arc_prefs->IsOem(id))
     return true;
 
-  auto* provider = web_app::WebAppProvider::Get(profile_);
+  auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
   if (provider && provider->registrar().WasInstalledByOem(id))
     return true;
 

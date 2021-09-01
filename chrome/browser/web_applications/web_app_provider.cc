@@ -53,7 +53,7 @@ WebAppProvider::OsIntegrationManagerFactory
 }  // namespace
 
 // static
-WebAppProvider* WebAppProvider::Get(Profile* profile) {
+WebAppProvider* WebAppProvider::GetDeprecated(Profile* profile) {
   return WebAppProviderFactory::GetForProfile(profile);
 }
 

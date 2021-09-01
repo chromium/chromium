@@ -153,8 +153,9 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
   auto local_app_id =
-      web_app::WebAppProvider::Get(profile)->registrar().FindAppWithUrlInScope(
-          web_contents()->GetLastCommittedURL());
+      web_app::WebAppProvider::GetDeprecated(profile)
+          ->registrar()
+          .FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
   if (app_id == local_app_id)
     SetShouldShowIcon(web_contents(), false);
 }

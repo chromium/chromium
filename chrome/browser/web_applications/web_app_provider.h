@@ -57,7 +57,7 @@ class WebAppMover;
 class WebAppProvider : public KeyedService {
  public:
   // Deprecated: Use GetForWebApps or GetForSystemWebApps instead.
-  static WebAppProvider* Get(Profile* profile);
+  static WebAppProvider* GetDeprecated(Profile* profile);
 
   // On Chrome OS: if Lacros Web App (WebAppsCrosapi) is enabled, returns
   // WebAppProvider in Lacros and nullptr in Ash. Otherwise does the reverse

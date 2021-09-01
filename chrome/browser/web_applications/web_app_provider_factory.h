@@ -19,21 +19,25 @@ namespace web_app {
 class WebAppProvider;
 
 // Singleton that owns all WebAppProviderFactories and associates them with
-// Profile.
+// Profile. Clients of WebAppProvider cannot use this class to obtain
+// WebAppProvider instances, instead they should call WebAppProvider static
+// methods.
 class WebAppProviderFactory : public BrowserContextKeyedServiceFactory {
  public:
   WebAppProviderFactory(const WebAppProviderFactory&) = delete;
   WebAppProviderFactory& operator=(const WebAppProviderFactory&) = delete;
 
-  static WebAppProvider* GetForProfile(Profile* profile);
-
   static WebAppProviderFactory* GetInstance();
 
  private:
   friend struct base::DefaultSingletonTraits<WebAppProviderFactory>;
+  friend class WebAppProvider;
 
   WebAppProviderFactory();
   ~WebAppProviderFactory() override;
+
+  // Called by WebAppProvider static methods.
+  static WebAppProvider* GetForProfile(Profile* profile);
 
   void DependsOnExtensionsSystem();
 

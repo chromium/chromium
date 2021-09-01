@@ -651,7 +651,7 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case syncer::WEB_APPS: {
-      auto* provider = web_app::WebAppProvider::Get(profile_);
+      auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
       DCHECK(provider);
 
       return provider->sync_bridge()
