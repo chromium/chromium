@@ -34,9 +34,18 @@ static_library("structured") {
     ":structured_metrics_validator",
     "//base",
     "//components/metrics",
+    "//components/metrics/structured/mojom",
     "//components/prefs",
     "//crypto",
   ]
+}
+
+static_library("events") {
+  sources = [
+    "event.cc",
+    "event.h",
+  ]
+  deps = [ "//base" ]
 }
 
 proto_library("storage") {
@@ -196,6 +205,7 @@ source_set("unit_tests") {
     ":storage",
     ":structured",
     ":structured_events",
+    ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
     "//components/prefs",
@@ -209,6 +219,7 @@ test("structured_metrics_unittests") {
     ":unit_tests",
     "//base",
     "//base/test:test_support",
+    "//components/metrics/structured/mojom:unit_tests",
     "//components/test:run_all_unittests",
   ]
 }
