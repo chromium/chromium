@@ -37,8 +37,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
@@ -352,16 +352,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             return;
         }
 
-        assert mTabCreatorManager != null;
         assert mTabSupplier != null;
-
         Tab tab = mTabSupplier.get();
         assert tab != null;
+
         if (createNewTab) {
-            TabCreator tabCreator =
-                    mTabCreatorManager.getTabCreator(isIncognito != null && isIncognito);
-            tabCreator.createNewTab(
-                    new LoadUrlParams(url, PAGE_TRANSITION_TYPE), TabLaunchType.FROM_LINK, tab);
+            new TabDelegate(isIncognito != null ? isIncognito : mIsIncognito)
+                    .createNewTab(new LoadUrlParams(url, PAGE_TRANSITION_TYPE),
+                            TabLaunchType.FROM_LINK, tab);
         } else {
             tab.loadUrl(new LoadUrlParams(url, PAGE_TRANSITION_TYPE));
         }

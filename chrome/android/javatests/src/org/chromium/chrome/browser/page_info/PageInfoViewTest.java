@@ -80,6 +80,8 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -118,7 +120,7 @@ public class PageInfoViewTest {
     // June 4, 2021 12:00:00 GMT+00:00
     private static long sTimestampJune4 = 1622808000000L;
     // April 4, 2021 12:00:00 GMT+00:00
-    private static long sTimestampApril = 1617537600000L;
+    private static long sTimestampApril4 = 1617537600000L;
 
     /**
      * Parameter provider for testing the different timestamps for the history section's "last
@@ -153,10 +155,10 @@ public class PageInfoViewTest {
                                                    offset))
                                    .name("XDaysAgo"));
             parameters.add(new ParameterSet()
-                                   .value(sTimestampApril,
+                                   .value(sTimestampApril4,
                                            res.getString(R.string.page_info_history_last_visit_date,
                                                    StringUtils.dateToHeaderString(
-                                                           new Date(sTimestampApril))))
+                                                           new Date(sTimestampApril4))))
                                    .name("ExactDay"));
             return parameters;
         }
@@ -291,7 +293,7 @@ public class PageInfoViewTest {
     private void addSomeHistoryEntries() {
         StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
         // Need to always have the same dates for render tests.
-        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril));
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampApril4));
         historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
         HistoryContentManager.setProviderForTests(historyProvider);
         PageInfoHistoryController.setProviderForTests(historyProvider);
@@ -700,6 +702,39 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
         onViewWaiting(allOf(withText(containsString(expectedSummary)), isDisplayed()));
+    }
+
+    /**
+     * Tests clicking on a history item from the history page of the PageInfo UI.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatures.PAGE_INFO_HISTORY_NAME)
+    public void testHistorySubpageItemClick() throws Exception {
+        StubbedHistoryProvider historyProvider = new StubbedHistoryProvider();
+        historyProvider.addItem(StubbedHistoryProvider.createHistoryItem(1, sTimestampJune4));
+        HistoryContentManager.setProviderForTests(historyProvider);
+        PageInfoHistoryController.setProviderForTests(historyProvider);
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
+
+        final CallbackHelper onDidStartNavigationHelper = new CallbackHelper();
+        final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return new WebContentsObserver(sActivityTestRule.getWebContents()) {
+                @Override
+                public void didStartNavigation(NavigationHandle navigationHandle) {
+                    if (navigationHandle.getUrl().getHost().equals("www.example.com")) {
+                        onDidStartNavigationHelper.notifyCalled();
+                    }
+                }
+            };
+        });
+        onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
+        onView(withId(R.id.page_info_history_row)).perform(click());
+        onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
+        int callCount = onDidStartNavigationHelper.getCallCount();
+        onView(withText("www.example.com")).perform(click());
+        onDidStartNavigationHelper.waitForCallback(callCount);
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.
