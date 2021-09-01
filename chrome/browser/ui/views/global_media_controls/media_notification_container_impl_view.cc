@@ -571,6 +571,8 @@ void MediaNotificationContainerImplView::AddDeviceSelectorView(
 
 void MediaNotificationContainerImplView::StopCasting(
     CastMediaNotificationItem* cast_item) {
+  stop_cast_button_->SetEnabled(false);
+
   media_router::MediaRouterFactory::GetApiForBrowserContext(
       cast_item->profile())
       ->TerminateRoute(cast_item->route_id());
