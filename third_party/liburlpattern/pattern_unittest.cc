@@ -52,6 +52,14 @@ TEST(PatternRegexTest, NameWithOptionalModifier) {
   RunRegexTest(":foo?", R"(^([^\/#\?]+?)?[\/#\?]?$)", {"foo"});
 }
 
+TEST(PatternRegexTest, NameWithZeroOrMoreModifier) {
+  RunRegexTest(":foo*", R"(^((?:[^\/#\?]+?)*)[\/#\?]?$)", {"foo"});
+}
+
+TEST(PatternRegexTest, NameWithOneOrMoreModifier) {
+  RunRegexTest(":foo+", R"(^((?:[^\/#\?]+?)+)[\/#\?]?$)", {"foo"});
+}
+
 TEST(PatternRegexTest, NameWithPrefix) {
   RunRegexTest("/foo/:bar", R"(^\/foo(?:\/([^\/#\?]+?))[\/#\?]?$)", {"bar"});
 }

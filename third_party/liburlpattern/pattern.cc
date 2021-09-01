@@ -239,15 +239,29 @@ std::string Pattern::GenerateRegexString(
     else if (part.type == PartType::kFullWildcard)
       regex_value = kFullWildcardRegex;
 
-    // If there are no prefix or suffix values then we simply wrap the Part
-    // regex value in a capturing group.  Any modifier is simply appended to
-    // the end.  For example:
+    // Handle the case where there is no prefix or suffix value.  This varies a
+    // bit depending on the modifier.
+    //
+    // If there is no modifier or an optional modifier, then we simply wrap the
+    // regex value in a capturing group:
     //
     //  (<regex-value>)<modifier>
     //
+    // If there is a modifier, then we need to use a non-capturing group for the
+    // regex value and an outer capturing group that includes the modifier as
+    // well.  Like:
+    //
+    //  ((?:<regex-value>)<modifier>)
     if (part.prefix.empty() && part.suffix.empty()) {
-      absl::StrAppendFormat(&result, "(%s)", regex_value);
-      AppendModifier(part.modifier, result);
+      if (part.modifier == Modifier::kNone ||
+          part.modifier == Modifier::kOptional) {
+        absl::StrAppendFormat(&result, "(%s)", regex_value);
+        AppendModifier(part.modifier, result);
+      } else {
+        absl::StrAppendFormat(&result, "((?:%s)", regex_value);
+        AppendModifier(part.modifier, result);
+        result += ")";
+      }
       continue;
     }
 

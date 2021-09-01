@@ -2189,5 +2189,47 @@
   {
     "pattern": [{ "pathname": "/foo" }, "https://example.com" ],
     "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "pathname": ":name*" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":name+" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
+  },
+  {
+    "pattern": [{ "pathname": ":name" }],
+    "inputs": [{ "pathname": "foobar" }],
+    "expected_match": {
+      "pathname": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
+  },
+  {
+    "pattern": [{ "protocol": ":name*" }],
+    "inputs": [{ "protocol": "foobar" }],
+    "expected_match": {
+      "protocol": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
+  },
+  {
+    "pattern": [{ "protocol": ":name+" }],
+    "inputs": [{ "protocol": "foobar" }],
+    "expected_match": {
+      "protocol": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
+  },
+  {
+    "pattern": [{ "protocol": ":name" }],
+    "inputs": [{ "protocol": "foobar" }],
+    "expected_match": {
+      "protocol": { "input": "foobar", "groups": { "name": "foobar" }}
+    }
   }
 ]
