@@ -111,22 +111,17 @@ class YUVReadbackTest : public testing::Test {
         << ") JSON data:" << std::endl
         << json_data;
 
-    base::ListValue* list;
-    CHECK(parsed_json.value->GetAsList(&list));
-    for (size_t i = 0; i < list->GetSize(); i++) {
-      base::Value* item = nullptr;
-      if (list->Get(i, &item)) {
-        base::DictionaryValue* dict;
-        CHECK(item->GetAsDictionary(&dict));
-        std::string name;
-        CHECK(dict->GetString("name", &name));
-        std::string trace_type;
-        CHECK(dict->GetString("ph", &trace_type));
-        // Count all except END traces, as they come in BEGIN/END pairs.
-        if (trace_type != "E" && trace_type != "e")
-          (*event_counts)[name]++;
-        VLOG(1) << "trace name: " << name;
-      }
+    CHECK(parsed_json.value->is_list());
+    for (const base::Value& dict : parsed_json.value->GetList()) {
+      CHECK(dict.is_dict());
+      const std::string* name = dict.FindStringPath("name");
+      CHECK(name);
+      const std::string* trace_type = dict.FindStringPath("ph");
+      CHECK(trace_type);
+      // Count all except END traces, as they come in BEGIN/END pairs.
+      if (*trace_type != "E" && *trace_type != "e")
+        (*event_counts)[*name]++;
+      VLOG(1) << "trace name: " << *name;
     }
   }
 

@@ -274,33 +274,31 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::TimeoutForTests() {
 void GaiaCookieManagerService::ExternalCcResultFetcher::
     OnGetCheckConnectionInfoSuccess(const std::string& data) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
-  const base::ListValue* list;
-  if (!value || !value->GetAsList(&list)) {
+  if (!value || !value->is_list()) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(false);
     return;
   }
 
   // If there is nothing to check, terminate immediately.
-  if (list->GetSize() == 0) {
+  if (value->GetList().size() == 0) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(true);
     return;
   }
 
   // Start a fetcher for each connection URL that needs to be checked.
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    const base::DictionaryValue* dict;
-    if (list->GetDictionary(i, &dict)) {
-      std::string token;
-      std::string url;
-      if (dict->GetString("carryBackToken", &token) &&
-          dict->GetString("url", &url)) {
-        results_[token] = "null";
-        network::SimpleURLLoader* loader =
-            CreateAndStartLoader(GURL(url)).release();
-        loaders_[loader] = token;
-      }
+  for (const base::Value& elem : value->GetList()) {
+    if (!elem.is_dict())
+      continue;
+
+    const std::string* token = elem.FindStringPath("carryBackToken");
+    const std::string* url = elem.FindStringPath("url");
+    if (token && url) {
+      results_[*token] = "null";
+      network::SimpleURLLoader* loader =
+          CreateAndStartLoader(GURL(*url)).release();
+      loaders_[loader] = *token;
     }
   }
 }
