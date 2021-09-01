@@ -133,15 +133,15 @@ class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
 
 class WebTriggeredIsolatedOriginsPolicyTest : public SiteIsolationPolicyTest {
  public:
-  explicit WebTriggeredIsolatedOriginsPolicyTest(
-      content::BrowserTaskEnvironment::TimeSource time_source =
-          content::BrowserTaskEnvironment::TimeSource::DEFAULT)
-      : SiteIsolationPolicyTest(time_source) {}
+  WebTriggeredIsolatedOriginsPolicyTest()
+      : SiteIsolationPolicyTest(
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void PersistOrigin(const std::string& origin) {
     SiteIsolationPolicy::PersistIsolatedOrigin(
         browser_context(), url::Origin::Create(GURL(origin)),
         IsolatedOriginSource::WEB_TRIGGERED);
+    task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   }
 
   std::vector<std::string> GetStoredOrigins() {
@@ -258,19 +258,9 @@ TEST_F(WebTriggeredIsolatedOriginsPolicyTest, UpdatedMaxSize) {
                   "https://foo4.com", "https://foo5.com", "https://foo6.com"));
 }
 
-// WebTriggeredIsolatedOriginsPolicyTest subclass for tests that want to use
-// mock time.
-class WebTriggeredIsolatedOriginsPolicyTestWithMockTime
-    : public WebTriggeredIsolatedOriginsPolicyTest {
- public:
-  WebTriggeredIsolatedOriginsPolicyTestWithMockTime()
-      : WebTriggeredIsolatedOriginsPolicyTest(
-            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME) {}
-};
-
 // Verify that when origins stored in prefs expire, we don't apply them when
 // loading persisted isolated origins, and we remove them from prefs.
-TEST_F(WebTriggeredIsolatedOriginsPolicyTestWithMockTime, Expiration) {
+TEST_F(WebTriggeredIsolatedOriginsPolicyTest, Expiration) {
   // Running this test with a command-line --site-per-process flag (which might
   // be the case on some bots) conflicts with the feature configuration in this
   // test.
