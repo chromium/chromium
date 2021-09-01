@@ -51,6 +51,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -75,6 +79,14 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUp();
   }
 #endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUp() override {
+    // On CrOS, Language Settings Update 2 will be the norm going forward.
+    // Forcibly enable it here in case it is disabled in the future.
+    feature_list_.InitAndEnableFeature(ash::features::kLanguageSettingsUpdate2);
+    InProcessBrowserTest::SetUp();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetUpOnMainThread() override {
     renderer_ = std::make_unique<content::MockRenderProcessHost>(GetContext());
@@ -244,9 +256,9 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   // Quits the RunLoop on Mojo request flow completion.
   base::OnceClosure quit_;
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList feature_list_;
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   // Mocked RenderProcessHost.
@@ -347,6 +359,40 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
 }
 #endif  // !defined(OS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests related to CrOS Language Settings Update 2.
+// Spell check languages and accept languages are decoupled with Update 2.
+// All tests which rely on the coupling should use the below class.
+// TODO(crbug.com/1177519): Remove this once Update 2 is fully launched.
+class SpellcheckServiceLanguageSettingsUpdate2DisabledBrowserTest
+    : public SpellcheckServiceBrowserTest {
+  void SetUp() override {
+    feature_list_.InitAndDisableFeature(
+        ash::features::kLanguageSettingsUpdate2);
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+// Removing a spellcheck language from accept languages should not remove it
+// from spellcheck languages list with Update 2 enabled.
+IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
+                       RemoveSpellcheckLanguageFromAcceptLanguages) {
+  InitSpellcheck(true, "", "en-US,fr");
+  SetAcceptLanguages("en-US,es,ru");
+  EXPECT_EQ("en-US,fr", GetMultilingualDictionaries());
+}
+
+// Removing a spellcheck language from accept languages should remove it from
+// spellcheck languages list as well with Update 2 disabled.
+// TODO(crbug.com/1177519): Remove this once Update 2 is fully launched.
+IN_PROC_BROWSER_TEST_F(
+    SpellcheckServiceLanguageSettingsUpdate2DisabledBrowserTest,
+    RemoveSpellcheckLanguageFromAcceptLanguages) {
+  InitSpellcheck(true, "", "en-US,fr");
+  SetAcceptLanguages("en-US,es,ru");
+  EXPECT_EQ("en-US", GetMultilingualDictionaries());
+}
+#else
 // Removing a spellcheck language from accept languages should remove it from
 // spellcheck languages list as well.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
@@ -355,6 +401,7 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   SetAcceptLanguages("en-US,es,ru");
   EXPECT_EQ("en-US", GetMultilingualDictionaries());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Keeping spellcheck languages in accept languages should not alter spellcheck
 // languages list.
