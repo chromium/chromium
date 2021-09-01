@@ -54,6 +54,7 @@ LayoutMultiColumnFlowThread::~LayoutMultiColumnFlowThread() = default;
 void LayoutMultiColumnFlowThread::Trace(Visitor* visitor) const {
   visitor->Trace(last_set_worked_on_);
   LayoutFlowThread::Trace(visitor);
+  FragmentationContext::Trace(visitor);
 }
 
 LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(

@@ -131,6 +131,7 @@ LayoutView::~LayoutView() = default;
 
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(fragmentation_context_);
   visitor->Trace(compositor_);
   visitor->Trace(layout_quote_head_);
   visitor->Trace(hit_test_cache_);
@@ -350,11 +351,11 @@ void LayoutView::UpdateLayout() {
     intrinsic_logical_widths_ = LogicalWidth();
     if (!fragmentation_context_) {
       fragmentation_context_ =
-          std::make_unique<ViewFragmentationContext>(*this);
+          MakeGarbageCollected<ViewFragmentationContext>(*this);
       pagination_state_changed_ = true;
     }
   } else if (fragmentation_context_) {
-    fragmentation_context_.reset();
+    fragmentation_context_.Clear();
     pagination_state_changed_ = true;
   }
 

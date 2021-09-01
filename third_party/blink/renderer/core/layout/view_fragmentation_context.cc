@@ -24,4 +24,9 @@ LayoutUnit ViewFragmentationContext::RemainingLogicalHeightAt(
   return page_logical_height - IntMod(block_offset, page_logical_height);
 }
 
+void ViewFragmentationContext::Trace(Visitor* visitor) const {
+  visitor->Trace(view_);
+  FragmentationContext::Trace(visitor);
+}
+
 }  // namespace blink

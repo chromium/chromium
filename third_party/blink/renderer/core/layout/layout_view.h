@@ -212,7 +212,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
 
   ViewFragmentationContext* FragmentationContext() const {
     NOT_DESTROYED();
-    return fragmentation_context_.get();
+    return fragmentation_context_;
   }
 
   LayoutUnit PageLogicalHeight() const {
@@ -390,7 +390,7 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
   // See the class comment for more details.
   LayoutState* layout_state_;
 
-  std::unique_ptr<ViewFragmentationContext> fragmentation_context_;
+  Member<ViewFragmentationContext> fragmentation_context_;
   std::unique_ptr<NamedPagesMapper> named_pages_mapper_;
   Member<PaintLayerCompositor> compositor_;
   scoped_refptr<IntervalArena> interval_arena_;
