@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,17 +59,14 @@ class LeakDetectionDelegateHelperTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    // TODO(crbug.com/1223022): Use StrickMock after MockPasswordStore is
-    // replaced with the MockPasswordStoreInterface.
-    store_ = base::MakeRefCounted<testing::NiceMock<MockPasswordStore>>();
-    CHECK(store_->Init(nullptr));
+    store_ =
+        base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
 
     delegate_helper_ = std::make_unique<LeakDetectionDelegateHelper>(
         store_, /*account_store=*/nullptr, callback_.Get());
   }
 
   void TearDown() override {
-    store_->ShutdownOnUIThread();
     store_ = nullptr;
   }
 
@@ -104,7 +101,7 @@ class LeakDetectionDelegateHelperTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockCallback<LeakDetectionDelegateHelper::LeakTypeReply> callback_;
-  scoped_refptr<MockPasswordStore> store_;
+  scoped_refptr<MockPasswordStoreInterface> store_;
   std::unique_ptr<LeakDetectionDelegateHelper> delegate_helper_;
 };
 

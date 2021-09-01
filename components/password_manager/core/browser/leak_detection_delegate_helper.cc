@@ -8,13 +8,13 @@
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 LeakDetectionDelegateHelper::LeakDetectionDelegateHelper(
-    scoped_refptr<PasswordStore> profile_store,
-    scoped_refptr<PasswordStore> account_store,
+    scoped_refptr<PasswordStoreInterface> profile_store,
+    scoped_refptr<PasswordStoreInterface> account_store,
     LeakTypeReply callback)
     : profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)),
@@ -54,7 +54,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResults(
   for (const auto& form : partial_results_) {
     if (CanonicalizeUsername(form->username_value) == canonicalized_username &&
         form->password_value == password_) {
-      PasswordStore& store =
+      PasswordStoreInterface& store =
           form->IsUsingAccountStore() ? *account_store_ : *profile_store_;
       PasswordForm form_to_update = *form.get();
       form_to_update.password_issues.insert_or_assign(
