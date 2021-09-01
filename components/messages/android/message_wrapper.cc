@@ -11,6 +11,11 @@
 
 namespace messages {
 
+MessageWrapper::MessageWrapper(MessageIdentifier message_identifier)
+    : MessageWrapper(message_identifier,
+                     base::NullCallback(),
+                     base::NullCallback()) {}
+
 MessageWrapper::MessageWrapper(MessageIdentifier message_identifier,
                                base::OnceClosure action_callback,
                                DismissCallback dismiss_callback)
@@ -142,6 +147,14 @@ void MessageWrapper::SetSecondaryActionCallback(base::OnceClosure callback) {
 void MessageWrapper::SetDuration(long customDuration) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_setDuration(env, java_message_wrapper_, customDuration);
+}
+
+void MessageWrapper::SetActionClick(base::OnceClosure callback) {
+  action_callback_ = std::move(callback);
+}
+
+void MessageWrapper::SetDismissCallback(DismissCallback callback) {
+  dismiss_callback_ = std::move(callback);
 }
 
 void MessageWrapper::HandleActionClick(JNIEnv* env) {
