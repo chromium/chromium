@@ -111,38 +111,39 @@ _SHARED_LIB_OFFSET_IN_APK = re.compile(' \(offset 0x(?P<offset>[0-9a-f]{0,16})\)
 def PrintTraceLines(trace_lines):
   """Print back trace."""
   maxlen = min(80, max(map(lambda tl: len(tl[1]), trace_lines)))
-  print
-  print 'Stack Trace:'
-  print '  RELADDR   ' + 'FUNCTION'.ljust(maxlen) + '  FILE:LINE'
+  print()
+  print('Stack Trace:')
+  print('  RELADDR   ' + 'FUNCTION'.ljust(maxlen) + '  FILE:LINE')
   for tl in trace_lines:
     (addr, symbol_with_offset, location) = tl
     normalized = os.path.normpath(location)
-    print '  %8s  %s  %s' % (addr, symbol_with_offset.ljust(maxlen), normalized)
+    print('  %8s  %s  %s' % (addr, symbol_with_offset.ljust(maxlen),
+        normalized))
   return
 
 
 def PrintValueLines(value_lines):
   """Print stack data values."""
   maxlen = min(80, max(map(lambda tl: len(tl[2]), value_lines)))
-  print
-  print 'Stack Data:'
-  print '  ADDR      VALUE     ' + 'FUNCTION'.ljust(maxlen) + '  FILE:LINE'
+  print()
+  print('Stack Data:')
+  print('  ADDR      VALUE     ' + 'FUNCTION'.ljust(maxlen) + '  FILE:LINE')
   for vl in value_lines:
     (addr, value, symbol_with_offset, location) = vl
-    print '  %8s  %8s  %s  %s' % (addr, value, symbol_with_offset.ljust(maxlen),
-                                  location)
+    print('  %8s  %8s  %s  %s' % (addr, value, symbol_with_offset.ljust(maxlen),
+                                  location))
   return
 
 
 def PrintJavaLines(java_lines):
   """Print java stderr lines."""
-  print
+  print()
   print('Java stderr from crashing pid '
         '(may identify underlying Java exception):')
   for l in java_lines:
     if l.startswith('at'):
-      print ' ',
-    print l
+      print(' ')
+    print(l)
 
 def PrintOutput(trace_lines, value_lines, java_lines, more_info):
   if trace_lines:
@@ -159,8 +160,8 @@ def PrintOutput(trace_lines, value_lines, java_lines, more_info):
     PrintJavaLines(java_lines)
 
 def PrintDivider():
-  print
-  print '-----------------------------------------------------\n'
+  print()
+  print('-----------------------------------------------------\n')
 
 
 def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
@@ -181,13 +182,13 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
     if not arch_defined:
       arch = _FindAbi(useful_lines)
       if arch:
-        print 'Symbolizing stack using ABI=' + arch
+        print('Symbolizing stack using ABI=' + arch)
         symbol.ARCH = arch
     ResolveCrashSymbol(list(useful_lines), more_info, llvm_symbolizer)
 
   preprocessor = PreProcessLog(load_vaddrs, apks_directory)
   for line in iter(sys.stdin.readline, b''):
-    print line,
+    print(line)
     maybe_line, maybe_so_dir = preprocessor([line])
     useful_lines.extend(maybe_line)
     so_dirs.extend(maybe_so_dir)
@@ -214,7 +215,7 @@ def ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
     _FALLBACK_SO = 'libmonochrome.so'
   start = time.time()
 
-  chunks = [lines[i: i+_CHUNK_SIZE] for i in xrange(0, len(lines), _CHUNK_SIZE)]
+  chunks = [lines[i: i+_CHUNK_SIZE] for i in range(0, len(lines), _CHUNK_SIZE)]
 
   use_multiprocessing = len(chunks) > 1 and (
       os.environ.get('STACK_DISABLE_ASYNC') != '1')
@@ -243,7 +244,7 @@ def ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
   if not arch_defined:
     arch = _FindAbi(useful_log)
     if arch:
-      print 'Symbolizing stack using ABI:', arch
+      print('Symbolizing stack using ABI:', arch)
       symbol.ARCH = arch
 
   ResolveCrashSymbol(list(useful_log), more_info, llvm_symbolizer)
@@ -276,7 +277,7 @@ class PreProcessLog:
       return
     offset = offset_match.group('offset')
     key = '%s:%s' % (lib, offset)
-    if self._shared_libraries_mapping.has_key(key):
+    if key in self._shared_libraries_mapping:
       soname = self._shared_libraries_mapping[key]
     else:
       soname, host_so = _FindSharedLibraryFromAPKs(constants.GetOutDirectory(),
@@ -302,7 +303,7 @@ class PreProcessLog:
     Returns:
       address+load_vaddrs[key] if lib ends with /key, otherwise address
     """
-    for key, offset in self._load_vaddrs.iteritems():
+    for key, offset in self._load_vaddrs.items():
       if lib.endswith('/' + key):
         # Add offset to address, and return the result as a hexadecimal string
         # with the same number of digits as the original. This allows the
@@ -320,7 +321,7 @@ class PreProcessLog:
     """
     useful_log = []
     for ln in lines:
-      line = unicode(ln, errors='ignore')
+      line = ln.encode().decode(encoding='utf8', errors='ignore')
       if (_PROCESS_INFO_LINE.search(line)
           or _SIGNAL_LINE.search(line)
           or _REGISTER_LINE.search(line)
@@ -417,27 +418,28 @@ def ResolveCrashSymbol(lines, more_info, llvm_symbolizer):
       if process_header:
         # Track the last reported pid to find java exceptions.
         pid = _PROCESS_INFO_PID.search(process_header.group(1)).group(1)
-        print process_header.group(1)
+        print(process_header.group(1))
       if signal_header:
-        print signal_header.group(1)
+        print(signal_header.group(1))
       if register_header:
-        print register_header.group(1)
+        print(register_header.group(1))
       if thread_header:
-        print thread_header.group(1)
+        print(thread_header.group(1))
       if dalvik_jni_thread_header:
-        print dalvik_jni_thread_header.group(1)
+        print(dalvik_jni_thread_header.group(1))
       if dalvik_native_thread_header:
-        print dalvik_native_thread_header.group(1)
+        print(dalvik_native_thread_header.group(1))
       if log_fatal_header:
-        print log_fatal_header.group(1)
+        print(log_fatal_header.group(1))
       if misc_header:
-        print misc_header.group(0)
+        print(misc_header.group(0))
       continue
 
     match = _TRACE_LINE.match(line) or _DEBUG_TRACE_LINE.match(line)
     if match:
       frame, code_addr, area, _, symbol_name = match.group(
           'frame', 'address', 'lib', 'symbol_present', 'symbol_name')
+      frame = int(frame)
       logging.debug('Found trace line: %s' % line.strip())
 
       if frame <= last_frame and (trace_lines or value_lines):
@@ -529,7 +531,7 @@ def GetUncompressedSharedLibraryFromAPK(apkname, offset):
             file_offset = (infoList.header_offset + FILE_NAME_OFFSET +
                            file_name_len + extra_field_len)
             f.seek(file_offset)
-            if offset == file_offset and f.read(4) == "\x7fELF":
+            if offset == file_offset and f.read(4) == b"\x7fELF":
               soname = infoList.filename.replace('crazy.', '')
               sosize = infoList.file_size
               break

@@ -44,58 +44,58 @@ _ANDROID_M_MAJOR_VERSION=6
 
 def PrintUsage():
   """Print usage and exit with error."""
-  print
-  print "  usage: " + sys.argv[0] + " [options] [FILE]"
-  print
-  print "  --symbols-dir=path"
-  print "       the path to a symbols dir, such as"
-  print "       =/tmp/out/target/product/dream/symbols"
-  print
-  print "  --chrome-symbols-dir=path"
-  print "       the path to a Chrome symbols dir (can be absolute or relative"
-  print "       to src), such as =out/Debug/lib.unstripped"
-  print
-  print "  --output-directory=path"
-  print "       the path to the build output directory, such as out/Debug."
-  print "       Ignored if --chrome-symbols-dir is passed."
-  print
-  print "  --apks-directory=path"
-  print "       Overrides the default apks directory. Useful if a bundle APKS"
-  print "       file has been unzipped into a temporary directory."
-  print
-  print "  --symbols-zip=path"
-  print "       the path to a symbols zip file, such as"
-  print "       =dream-symbols-12345.zip"
-  print
-  print "  --more-info"
-  print "  --less-info"
-  print "       Change the level of detail in the output."
-  print "       --more-info is slower and more verbose, but more functions will"
-  print "       be fully qualified with namespace/classname and have full"
-  print "       argument information. Also, the 'stack data' section will be"
-  print "       printed."
-  print
-  print "  --arch=arm|arm64|x64|x86|mips"
-  print "       the target architecture"
-  print
-  print "  --fallback-monochrome"
-  print "       fallback to monochrome instead of chrome if fail to detect"
-  print "       shared lib which is loaded from APK, this doesn't work for"
-  print "       component build."
-  print
-  print "  --quiet"
-  print "       Show less logging"
-  print
-  print "  --verbose"
-  print "       enable extra logging, particularly for debugging failed"
-  print "       symbolization"
-  print
-  print "  FILE should contain a stack trace in it somewhere"
-  print "       the tool will find that and re-print it with"
-  print "       source files and line numbers.  If you don't"
-  print "       pass FILE, or if file is -, it reads from"
-  print "       stdin."
-  print
+  print()
+  print("  usage: " + sys.argv[0] + " [options] [FILE]")
+  print()
+  print("  --symbols-dir=path")
+  print("       the path to a symbols dir, such as")
+  print("       =/tmp/out/target/product/dream/symbols")
+  print()
+  print("  --chrome-symbols-dir=path")
+  print("       the path to a Chrome symbols dir (can be absolute or relative")
+  print("       to src), such as =out/Debug/lib.unstripped")
+  print()
+  print("  --output-directory=path")
+  print("       the path to the build output directory, such as out/Debug.")
+  print("       Ignored if --chrome-symbols-dir is passed.")
+  print()
+  print("  --apks-directory=path")
+  print("       Overrides the default apks directory. Useful if a bundle APKS")
+  print("       file has been unzipped into a temporary directory.")
+  print()
+  print("  --symbols-zip=path")
+  print("       the path to a symbols zip file, such as")
+  print("       =dream-symbols-12345.zip")
+  print()
+  print("  --more-info")
+  print("  --less-info")
+  print("       Change the level of detail in the output.")
+  print("       --more-info is slower and more verbose, but more functions")
+  print("       will be fully qualified with namespace/classname and have full")
+  print("       argument information. Also, the 'stack data' section will be")
+  print("       printed.")
+  print()
+  print("  --arch=arm|arm64|x64|x86|mips")
+  print("       the target architecture")
+  print()
+  print("  --fallback-monochrome")
+  print("       fallback to monochrome instead of chrome if fail to detect")
+  print("       shared lib which is loaded from APK, this doesn't work for")
+  print("       component build.")
+  print()
+  print("  --quiet")
+  print("       Show less logging")
+  print()
+  print("  --verbose")
+  print("       enable extra logging, particularly for debugging failed")
+  print("       symbolization")
+  print()
+  print("  FILE should contain a stack trace in it somewhere")
+  print("       the tool will find that and re-print it with")
+  print("       source files and line numbers.  If you don't")
+  print("       pass FILE, or if file is -, it reads from")
+  print("       stdin.")
+  print()
   sys.exit(1)
 
 def UnzipSymbols(symbolfile, symdir=None):
@@ -147,7 +147,7 @@ def main(argv, test_symbolizer=None):
         "apks-directory=", "symbols-dir=", "symbols-zip=", "arch=",
         "fallback-monochrome", "verbose", "quiet", "help",
     ])
-  except getopt.GetoptError, _:
+  except getopt.GetoptError:
     PrintUsage()
 
   zip_arg = None

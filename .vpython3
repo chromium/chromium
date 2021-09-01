@@ -253,6 +253,13 @@ wheel: <
 >
 
 # Used by:
+#   //tools/infra/find_bad_builds.py
+wheel: <
+  name: "infra/python/wheels/pytz-py2_py3"
+  version: "version:2018.4"
+>
+
+# Used by:
 #   //third_party/blink/tools/blinkpy/web_tests/port/server_process.py
 wheel: <
   name: "infra/python/wheels/pywin32/${vpython_platform}"

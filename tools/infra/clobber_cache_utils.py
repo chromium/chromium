@@ -121,7 +121,7 @@ def clobber_caches(swarming_server,
   for bot in bots:
     print('  %s' % bot)
   print()
-  val = raw_input('Proceed? [Y/n] ')
+  val = input('Proceed? [Y/n] ')
   if val and not val[0] in ('Y', 'y'):
     print('Cancelled.')
     return 1
@@ -129,3 +129,4 @@ def clobber_caches(swarming_server,
   for bot in bots:
     _trigger_clobber(swarming_server, pool, realm, cache, bot, mount_rel_path,
                      dry_run)
+  return 0
