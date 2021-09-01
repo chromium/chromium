@@ -1770,7 +1770,11 @@ void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
   if (!initialized)
     return;
   MaybeShowWebUITabStripIPH();
-  MaybeShowReadingListInSidePanelIPH();
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
+                     GetAsWeakPtr()),
+      base::TimeDelta::FromMinutes(5));
 }
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
