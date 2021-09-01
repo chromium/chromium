@@ -72,17 +72,7 @@ js2gtest("enhanced_network_tts_extjs_tests") {
 }
 
 js_type_check("closure_compile") {
-  deps = [
-    ":background",
-    ":enhanced_network_tts",
-  ]
-}
-
-js_library("background") {
-  deps = [
-    ":enhanced_network_tts",
-    "//ash/components/enhanced_network_tts/mojom:mojom_js_library_for_compile",
-  ]
+  deps = [ ":enhanced_network_tts" ]
 }
 
 js_library("enhanced_network_tts") {

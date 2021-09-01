@@ -87,7 +87,7 @@ SYNC_TEST_F(
         assertEqualsJSON(expectedBuffer, receivedBuffer);
       };
 
-      await EnhancedNetworkTts.onSpeakWithAudioStreamEvent(
+      await enhancedNetworkTts.onSpeakWithAudioStreamEvent(
           utterance, options, audioStreamOptions, sendTtsAudio);
     });
 
