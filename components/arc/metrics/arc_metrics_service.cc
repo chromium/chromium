@@ -581,6 +581,13 @@ absl::optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
   }
   return absl::nullopt;
 }
+
+void ArcMetricsService::ReportMemoryPressureArcVmKills(int count,
+                                                       int estimated_freed_kb) {
+  for (auto& obs : app_kill_observers_)
+    obs.OnArcMemoryPressureKill(count, estimated_freed_kb);
+}
+
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)
     : arc_metrics_service_(arc_metrics_service) {}

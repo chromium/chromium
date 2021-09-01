@@ -997,8 +997,10 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'fa5ade41ee480003d9c5af6f43567ba22e4e17e6',
 
   # For Linux and Chromium OS.
+  # Manually rolled to include:
+  # system_api: resource_manager: Add signal MemoryPressureArcvm
   'src/third_party/cros_system_api': {
-      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + '49bf56977ad867ac62db27cb15dcf5c5c8c46701',
+      'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + 'e0d5d0b8a64df82d436d34eade5e044441e22dc4',
       'condition': 'checkout_linux',
   },
 

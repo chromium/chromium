@@ -1960,6 +1960,38 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledNoSystemMemoryInfo) {
   EXPECT_EQ(request.memory_mib(), 0u);
 }
 
+// Test that the correct BalloonPolicyOptions are set on StartArcVmRequest when
+// kVmBalloonPolicy is enabled.
+TEST_F(ArcVmClientAdapterTest, ArcVmBalloonPolicyEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["moderate_kib"] = "1";
+  params["critical_kib"] = "2";
+  params["reclaim_kib"] = "3";
+  feature_list.InitAndEnableFeatureWithParameters(kVmBalloonPolicy, params);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.has_balloon_policy());
+  const auto& policy = request.balloon_policy();
+  EXPECT_EQ(policy.moderate_target_cache(), 1024);
+  EXPECT_EQ(policy.critical_target_cache(), 2048);
+  EXPECT_EQ(policy.reclaim_target_cache(), 3072);
+}
+
+// Test that BalloonPolicyOptions are not set on StartArcVmRequest when
+// kVmBalloonPolicy is disabled.
+TEST_F(ArcVmClientAdapterTest, ArcVmBalloonPolicyDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kVmBalloonPolicy);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.has_balloon_policy());
+}
+
 // Tests that OnConnectionReady() calls the MakeRtVcpu call D-Bus method.
 TEST_F(ArcVmClientAdapterTest, OnConnectionReady) {
   StartParams start_params(GetPopulatedStartParams());

@@ -3942,6 +3942,12 @@ const char kArcUseHighMemoryDalvikProfileDesc[] =
     "Allow Android to use high-memory dalvik profile when applicable for "
     "high-memory devices.";
 
+const char kArcVmBalloonPolicyName[] =
+    "Enable ARCVM limit cache balloon policy";
+const char kArcVmBalloonPolicyDesc[] =
+    "Trigger reclaim in ARCVM to reduce memory use when ChromeOS is running "
+    "low on memory.";
+
 const char kArcWebAppShareName[] = "Enable sharing to Web Apps from ARC";
 const char kArcWebAppShareDescription[] =
     "Allow Android apps to send shared text and files to web apps. When "

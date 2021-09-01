@@ -34,6 +34,12 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
   void RemoveObserver(Observer* observer) override;
 
+  void AddArcVmObserver(ArcVmObserver* observer) override;
+  void RemoveArcVmObserver(ArcVmObserver* observer) override;
+
+  void FakeArcVmMemoryPressure(PressureLevelArcVm level,
+                               uint64_t reclaim_target_kb);
+
  private:
   absl::optional<bool> set_game_mode_response_;
 
@@ -41,6 +47,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   int exit_game_mode_count_ = 0;
 
   base::ObserverList<Observer> observers_;
+  base::ObserverList<ArcVmObserver> arcvm_observers_;
 };
 
 }  // namespace chromeos

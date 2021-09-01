@@ -38,6 +38,10 @@ extern const base::Feature kVideoDecoder;
 extern const base::Feature kVmMemorySize;
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
+extern const base::Feature kVmBalloonPolicy;
+extern const base::FeatureParam<int> kVmBalloonPolicyModerateKiB;
+extern const base::FeatureParam<int> kVmBalloonPolicyCriticalKiB;
+extern const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB;
 
 }  // namespace arc
 

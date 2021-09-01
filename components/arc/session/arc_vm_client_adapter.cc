@@ -408,6 +408,18 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     }
   }
 
+  // Specify balloon policy.
+  if (base::FeatureList::IsEnabled(kVmBalloonPolicy)) {
+    vm_tools::concierge::BalloonPolicyOptions* balloon_policy =
+        request.mutable_balloon_policy();
+    balloon_policy->set_moderate_target_cache(
+        static_cast<int64_t>(kVmBalloonPolicyModerateKiB.Get()) * 1024);
+    balloon_policy->set_critical_target_cache(
+        static_cast<int64_t>(kVmBalloonPolicyCriticalKiB.Get()) * 1024);
+    balloon_policy->set_reclaim_target_cache(
+        static_cast<int64_t>(kVmBalloonPolicyReclaimKiB.Get()) * 1024);
+  }
+
   return request;
 }
 

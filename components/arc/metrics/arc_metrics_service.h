@@ -60,6 +60,7 @@ class ArcMetricsService : public KeyedService,
    public:
     virtual void OnArcLowMemoryKill() = 0;
     virtual void OnArcOOMKillCount(unsigned long count) = 0;
+    virtual void OnArcMemoryPressureKill(int count, int estimated_freed_kb) = 0;
     virtual void OnArcMetricsServiceDestroyed() {}
   };
 
@@ -153,6 +154,10 @@ class ArcMetricsService : public KeyedService,
   // purposes.
   absl::optional<base::TimeTicks> GetArcStartTimeFromEvents(
       std::vector<mojom::BootProgressEventPtr>& events);
+
+  // Forwards reports of app kills resulting from a MemoryPressureArcvm signal
+  // to MemoryKillsMonitor via ArcMetricsServiceProxy.
+  void ReportMemoryPressureArcVmKills(int count, int estimated_freed_kb);
 
  private:
   // Adapter to be able to also observe ProcessInstance events.
