@@ -350,6 +350,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       is_painted_atomically_(false),
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_baseline_(false),
+      has_last_baseline_(false),
       break_token_(std::move(builder->break_token_)),
       oof_positioned_descendants_(
           builder->oof_positioned_descendants_.IsEmpty()
