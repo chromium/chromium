@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_federatedidentityprovider_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlformelement_passwordcredentialdata.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1011,8 +1012,13 @@ ScriptPromise CredentialsContainer::get(
 
   Vector<KURL> providers;
   if (options->hasFederated() && options->federated()->hasProviders()) {
-    for (const auto& string : options->federated()->providers()) {
-      KURL url = KURL(NullURL(), string);
+    for (const auto& provider : options->federated()->providers()) {
+      if (!provider->IsString() && !RuntimeEnabledFeatures::WebIDEnabled()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
+        return promise;
+      }
+      KURL url = KURL(NullURL(), provider->GetAsString());
       if (url.IsValid())
         providers.push_back(std::move(url));
     }

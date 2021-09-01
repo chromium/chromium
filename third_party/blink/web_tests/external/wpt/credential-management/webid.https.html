@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Credential Management API: create() basics.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(function(t) {
+    // Expects the credential manager to throw a NotSupportedError while
+    // attemping to use the WebID when it is not yet enabled.
+    return promise_rejects_dom(t, "NotSupportedError",
+            navigator.credentials.get({
+              federated: {
+                providers: [{
+                  provider: "bar"
+                }]
+              }
+            }));
+}, "navigator.credentials.get() with invalid providers.");
+</script>
