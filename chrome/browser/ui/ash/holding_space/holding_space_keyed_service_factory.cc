@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -53,8 +52,7 @@ HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "HoldingSpaceService",
           BrowserContextDependencyManager::GetInstance()) {
-  if (features::IsHoldingSpaceArcIntegrationEnabled())
-    DependsOn(arc::ArcIntentHelperBridge::GetFactory());
+  DependsOn(arc::ArcIntentHelperBridge::GetFactory());
   DependsOn(chromeos::FileChangeServiceFactory::GetInstance());
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());

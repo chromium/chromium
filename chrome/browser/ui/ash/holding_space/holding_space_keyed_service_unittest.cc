@@ -1686,6 +1686,42 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveOlderFilesFromPersistence) {
             persisted_holding_space_items_after_restoration);
 }
 
+TEST_F(HoldingSpaceKeyedServiceTest, AddArcDownloadItem) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test downloads mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Create a fake download file on the local file system.
+  const base::FilePath file_path = downloads_mount->CreateFile(
+      /*relative_path=*/base::FilePath("Download.png"), /*content=*/"foo");
+
+  // Simulate an event from ARC to indicate that the Android application with
+  // package `com.bar.foo` added a download at `file_path`.
+  auto* arc_intent_helper_bridge =
+      arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
+  ASSERT_TRUE(arc_intent_helper_bridge);
+  arc_intent_helper_bridge->OnDownloadAdded(
+      /*relative_path=*/"Download/Download.png",
+      /*owner_package_name=*/"com.bar.foo");
+
+  // Verify that an item of type `kArcDownload` was added to holding space.
+  ASSERT_EQ(1u, model->items().size());
+  const HoldingSpaceItem* arc_download_item = model->items()[0].get();
+  EXPECT_EQ(arc_download_item->type(), HoldingSpaceItem::Type::kArcDownload);
+  EXPECT_EQ(arc_download_item->file_path(),
+            file_manager::util::GetDownloadsFolderForProfile(profile).Append(
+                base::FilePath("Download.png")));
+}
+
 TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   // This test is only relevant if in-progress download integration is disabled.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2287,54 +2323,6 @@ TEST_P(HoldingSpaceKeyedServiceAddItemTest, AddItem) {
   // Attempts to add already represented items should be ignored.
   ASSERT_EQ(model->items().size(), 1u);
   EXPECT_EQ(model->items()[0].get(), item);
-}
-
-class HoldingSpaceKeyedServiceArcIntegrationTest
-    : public HoldingSpaceKeyedServiceTest {
- public:
-  HoldingSpaceKeyedServiceArcIntegrationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kHoldingSpaceArcIntegration);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(HoldingSpaceKeyedServiceArcIntegrationTest, AddArcDownloadItem) {
-  // Wait for the holding space model to attach.
-  TestingProfile* profile = GetProfile();
-  HoldingSpaceModelAttachedWaiter(profile).Wait();
-
-  // Verify the holding space `model` is empty.
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
-
-  // Create a test downloads mount point.
-  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
-      ScopedTestMountPoint::CreateAndMountDownloads(profile);
-  ASSERT_TRUE(downloads_mount->IsValid());
-
-  // Create a fake download file on the local file system.
-  const base::FilePath file_path = downloads_mount->CreateFile(
-      /*relative_path=*/base::FilePath("Download.png"), /*content=*/"foo");
-
-  // Simulate an event from ARC to indicate that the Android application with
-  // package `com.bar.foo` added a download at `file_path`.
-  auto* arc_intent_helper_bridge =
-      arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-  ASSERT_TRUE(arc_intent_helper_bridge);
-  arc_intent_helper_bridge->OnDownloadAdded(
-      /*relative_path=*/"Download/Download.png",
-      /*owner_package_name=*/"com.bar.foo");
-
-  // Verify that an item of type `kArcDownload` was added to holding space.
-  ASSERT_EQ(1u, model->items().size());
-  const HoldingSpaceItem* arc_download_item = model->items()[0].get();
-  EXPECT_EQ(arc_download_item->type(), HoldingSpaceItem::Type::kArcDownload);
-  EXPECT_EQ(arc_download_item->file_path(),
-            file_manager::util::GetDownloadsFolderForProfile(profile).Append(
-                base::FilePath("Download.png")));
 }
 
 class HoldingSpaceKeyedServiceNearbySharingTest

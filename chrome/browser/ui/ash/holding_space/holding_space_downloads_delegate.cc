@@ -584,14 +584,12 @@ bool HoldingSpaceDownloadsDelegate::OpenWhenComplete(
 
 void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   // ARC downloads.
-  if (features::IsHoldingSpaceArcIntegrationEnabled()) {
-    // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
-    // is not allowed to use ARC, e.g. if the `profile()` is OTR.
-    auto* const arc_intent_helper_bridge =
-        arc::ArcIntentHelperBridge::GetForBrowserContext(profile());
-    if (arc_intent_helper_bridge)
-      arc_intent_helper_observation_.Observe(arc_intent_helper_bridge);
-  }
+  // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
+  // is not allowed to use ARC, e.g. if the `profile()` is OTR.
+  auto* const arc_intent_helper_bridge =
+      arc::ArcIntentHelperBridge::GetForBrowserContext(profile());
+  if (arc_intent_helper_bridge)
+    arc_intent_helper_observation_.Observe(arc_intent_helper_bridge);
 
   // Ash Chrome downloads.
   download_notifier_.AddProfile(profile());
@@ -685,7 +683,6 @@ bool HoldingSpaceDownloadsDelegate::ShouldObserveProfile(Profile* profile) {
 void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
     const base::FilePath& relative_path,
     const std::string& owner_package_name) {
-  DCHECK(features::IsHoldingSpaceArcIntegrationEnabled());
   if (is_restoring_persistence())
     return;
 
