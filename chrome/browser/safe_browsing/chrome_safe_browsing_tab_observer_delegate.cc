@@ -39,8 +39,7 @@ ChromeSafeBrowsingTabObserverDelegate::GetClientSideDetectionServiceIfExists(
 #endif
 }
 
-SafeBrowsingServiceInterface*
-ChromeSafeBrowsingTabObserverDelegate::GetSafeBrowsingServiceIfExists() {
+bool ChromeSafeBrowsingTabObserverDelegate::DoesSafeBrowsingServiceExist() {
   return g_browser_process->safe_browsing_service();
 }
 

@@ -19,7 +19,6 @@ namespace safe_browsing {
 
 class ClientSideDetectionHost;
 class ClientSideDetectionService;
-class SafeBrowsingServiceInterface;
 
 // Per-tab class to handle safe-browsing functionality.
 class SafeBrowsingTabObserver
@@ -44,9 +43,8 @@ class SafeBrowsingTabObserver
     virtual ClientSideDetectionService* GetClientSideDetectionServiceIfExists(
         content::BrowserContext* browser_context) = 0;
 
-    // Returns the SafeBrowsingServiceInterface instance used by the embedder.
-    // May return null (e.g., in testing contexts).
-    virtual SafeBrowsingServiceInterface* GetSafeBrowsingServiceIfExists() = 0;
+    // Returns true if the embedder-specific safe browsing service exists.
+    virtual bool DoesSafeBrowsingServiceExist() = 0;
 
     // Creates a ClientSideDetectionHost instance that has been configured for
     // the embedder.

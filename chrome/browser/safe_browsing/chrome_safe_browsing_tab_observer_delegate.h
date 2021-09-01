@@ -25,7 +25,7 @@ class ChromeSafeBrowsingTabObserverDelegate
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   ClientSideDetectionService* GetClientSideDetectionServiceIfExists(
       content::BrowserContext* browser_context) override;
-  SafeBrowsingServiceInterface* GetSafeBrowsingServiceIfExists() override;
+  bool DoesSafeBrowsingServiceExist() override;
   std::unique_ptr<ClientSideDetectionHost> CreateClientSideDetectionHost(
       content::WebContents* web_contents) override;
 };
