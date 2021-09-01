@@ -17,6 +17,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
   cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
       {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
        cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth});
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -25,7 +26,13 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         const response =
           await chrome.os.diagnostics.getAvailableRoutines();
         chrome.test.assertEq(
-          {routines: ["battery_capacity", "battery_health"]}, response);
+          {
+            routines: [
+              "battery_capacity",
+              "battery_discharge",
+              "battery_health"
+            ]
+          }, response);
         chrome.test.succeed();
       }
     ]);
@@ -46,6 +53,27 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
   EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBatteryDischargeRoutineSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runBatteryDischargeRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBatteryDischargeRoutine(
+            {
+              length_seconds: 10,
+              maximum_discharge_percent_allowed: 15
+            }
+          );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+            cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge);
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,

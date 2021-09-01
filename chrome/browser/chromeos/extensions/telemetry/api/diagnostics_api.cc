@@ -32,6 +32,9 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
     case ash::health::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_CAPACITY;
       return true;
+    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryDischarge:
+      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_DISCHARGE;
+      return true;
     case ash::health::mojom::DiagnosticRoutineEnum::kBatteryHealth:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_HEALTH;
       return true;
@@ -145,6 +148,32 @@ OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunBatteryCapacityRoutine(std::move(cb));
+
+  return RespondLater();
+}
+
+// runBatteryDischargeRoutine --------------------------------------------------
+
+OsDiagnosticsRunBatteryDischargeRoutineFunction::
+    OsDiagnosticsRunBatteryDischargeRoutineFunction() = default;
+OsDiagnosticsRunBatteryDischargeRoutineFunction::
+    ~OsDiagnosticsRunBatteryDischargeRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction
+OsDiagnosticsRunBatteryDischargeRoutineFunction::Run() {
+  std::unique_ptr<api::os_diagnostics::RunBatteryDischargeRoutine::Params>
+      params(api::os_diagnostics::RunBatteryDischargeRoutine::Params::Create(
+          args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunBatteryDischargeRoutine(
+      params->request.length_seconds,
+      params->request.maximum_discharge_percent_allowed, std::move(cb));
 
   return RespondLater();
 }
