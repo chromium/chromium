@@ -40,9 +40,6 @@ const char kChromeUIComponentsHost[] = "components";
 const char kChromeUIConflictsHost[] = "conflicts";
 const char kChromeUIConstrainedHTMLTestURL[] = "chrome://constrained-test/";
 const char kChromeUIContentSettingsURL[] = "chrome://settings/content";
-// TODO(crbug/1107816): Remove deprecated cookie URL redirection.
-const char kChromeUICookieSettingsDeprecatedURL[] =
-    "chrome://settings/content/cookies";
 const char kChromeUICookieSettingsURL[] = "chrome://settings/cookies";
 const char kChromeUICrashHost[] = "crash";
 const char kChromeUICrashesHost[] = "crashes";
