@@ -158,6 +158,7 @@ class COMPONENT_EXPORT(LIBURLPATTERN) Pattern {
 
   // Utility methods to help with direct matching.
   bool IsOnlyFullWildcard() const;
+  bool IsOnlyFixedText() const;
 
   std::vector<Part> part_list_;
   Options options_;
