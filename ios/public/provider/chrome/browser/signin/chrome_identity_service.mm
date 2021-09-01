@@ -172,9 +172,7 @@ void ChromeIdentityService::CanOfferExtendedSyncPromos(
 }
 
 bool ChromeIdentityService::IsServiceSupported() {
-  // TODO(crbug.com/1234966): Needs to return false, once
-  // ChromeIdentityServiceImpl::IsServiceSupported() is implemented.
-  return true;
+  return false;
 }
 
 MDMDeviceStatus ChromeIdentityService::GetMDMDeviceStatus(
