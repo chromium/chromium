@@ -529,10 +529,10 @@ class AutoEnrollmentClientImplTest
     EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
 
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceProtocolTimeStr + kUMASuffixInitialEnrollment,
+        kUMAHashDanceProtocolTimeStr + GetAutoEnrollmentProtocolUmaSuffix(),
         expected_time_recorded, /*expected_count=*/1);
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceSuccessTimeStr + kUMASuffixInitialEnrollment,
+        kUMAHashDanceSuccessTimeStr + GetAutoEnrollmentProtocolUmaSuffix(),
         expected_time_recorded, success_time_recorded ? 1 : 0);
   }
 
