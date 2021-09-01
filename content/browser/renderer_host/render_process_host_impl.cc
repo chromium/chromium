@@ -2150,6 +2150,7 @@ void RenderProcessHostImpl::ForceCrash() {
   child_process_->CrashHungProcess();
 }
 
+// TODO(https://crbug.com/1242911): replace origin with StorageKey param.
 void RenderProcessHostImpl::BindFileSystemManager(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) {
@@ -2164,11 +2165,8 @@ void RenderProcessHostImpl::BindFileSystemManager(
                      std::move(receiver)));
 }
 
-// TODO(https://crbug.com/1240755): Refactor BindFileSystemAccessManager to use
-// StorageKey rather than url::Origin; replace in-line construction with the
-// piped in 3rd-party StorageKey.
 void RenderProcessHostImpl::BindFileSystemAccessManager(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // This code path is only for workers, hence always pass in
@@ -2179,12 +2177,12 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
   auto* manager = storage_partition->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
-          blink::StorageKey(origin),
+          storage_key,
           // TODO(https://crbug.com/989323): Obtain and use a better
           // URL for workers instead of the origin as source url.
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
-          origin.GetURL(), GetID()),
+          storage_key.origin().GetURL(), GetID()),
       std::move(receiver));
 }
 

@@ -61,7 +61,7 @@ namespace base {
 class PersistentMemoryAllocator;
 class TimeDelta;
 class Token;
-}
+}  // namespace base
 
 namespace blink {
 class StorageKey;
@@ -69,11 +69,11 @@ class StorageKey;
 
 namespace network {
 struct CrossOriginEmbedderPolicy;
-}
+}  // namespace network
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace content {
 class BrowserContext;
@@ -88,7 +88,7 @@ enum class ChildProcessImportance;
 
 namespace mojom {
 class Renderer;
-}
+}  // namespace mojom
 
 // Interface that represents the browser side of the browser <-> renderer
 // communication channel. There will generally be one RenderProcessHost per
@@ -491,11 +491,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
           coep_reporter_remote,
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
+  // TODO(https://crbug.com/1242911): replace origin with StorageKey param.
   virtual void BindFileSystemManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) = 0;
   virtual void BindFileSystemAccessManager(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager>
           receiver) = 0;
 

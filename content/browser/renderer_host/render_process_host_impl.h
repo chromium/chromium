@@ -98,15 +98,15 @@ class RenderProcessHost;
 
 namespace tracing {
 class SystemTracingService;
-}
+}  // namespace tracing
 
 namespace url {
 class Origin;
-}
+}  // namespace url
 
 namespace viz {
 class GpuClient;
-}
+}  // namespace viz
 
 namespace content {
 class AgentSchedulingGroupHost;
@@ -543,14 +543,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Binds |receiver| to the FileSystemManager instance owned by the render
   // process host, and is used by workers via BrowserInterfaceBroker.
+  // TODO(https://crbug.com/1242911): replace origin with StorageKey param.
   void BindFileSystemManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) override;
 
-  // Binds |receiver| to the FileSystemAccessManager instance owned by the
+  // Binds `receiver` to the FileSystemAccessManager instance owned by the
   // render process host, and is used by workers via BrowserInterfaceBroker.
   void BindFileSystemAccessManager(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override;
 
