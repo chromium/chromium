@@ -554,6 +554,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "assistiveAutoCorrect",
       base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
   features.Append(GenerateFeatureFlag(
+      "systemchinesephysicaltyping",
+      chromeos::features::IsSystemChinesePhysicalTypingEnabled()));
+  features.Append(GenerateFeatureFlag(
       "systemkoreanphysicaltyping",
       chromeos::features::IsSystemKoreanPhysicalTypingEnabled()));
   features.Append(GenerateFeatureFlag(

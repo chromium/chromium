@@ -1036,6 +1036,11 @@ const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables using the system input engine for physical typing in
+// Chinese.
+const base::Feature kSystemChinesePhysicalTyping{
+    "SystemChinesePhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables using the system input engine for physical typing in
 // Korean.
 const base::Feature kSystemKoreanPhysicalTyping{
     "SystemKoreanPhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1610,6 +1615,11 @@ bool IsSyncConsentOptionalEnabled() {
 
 bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
+}
+
+bool IsSystemChinesePhysicalTypingEnabled() {
+  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
+         base::FeatureList::IsEnabled(kSystemChinesePhysicalTyping);
 }
 
 bool IsSystemKoreanPhysicalTypingEnabled() {

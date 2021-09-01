@@ -4980,6 +4980,12 @@ const char kSplitSettingsSyncDescription[] =
     "OS settings UI to provide controls for OS data types. Requires "
     "#split-settings to be enabled.";
 
+const char kSystemChinesePhysicalTypingName[] =
+    "Use system IME for Chinese typing";
+const char kSystemChinesePhysicalTypingDescription[] =
+    "Use the system input engine instead of the Chrome extension for physical "
+    "typing in Chinese.";
+
 const char kSystemKoreanPhysicalTypingName[] =
     "Use system IME for Korean typing";
 const char kSystemKoreanPhysicalTypingDescription[] =

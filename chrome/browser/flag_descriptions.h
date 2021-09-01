@@ -2875,6 +2875,9 @@ extern const char kSpectreVariant2MitigationDescription[];
 extern const char kSplitSettingsSyncName[];
 extern const char kSplitSettingsSyncDescription[];
 
+extern const char kSystemChinesePhysicalTypingName[];
+extern const char kSystemChinesePhysicalTypingDescription[];
+
 extern const char kSystemKoreanPhysicalTypingName[];
 extern const char kSystemKoreanPhysicalTypingDescription[];
 

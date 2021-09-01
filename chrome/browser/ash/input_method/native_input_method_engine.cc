@@ -59,6 +59,16 @@ bool IsKoreanEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "ko-", base::CompareCase::SENSITIVE);
 }
 
+bool IsChineseEngine(const std::string& engine_id) {
+  return engine_id == "zh-t-i0-pinyin" || engine_id == "zh-hant-t-i0-pinyin" ||
+         engine_id == "zh-hant-t-i0-cangjie-1987" ||
+         engine_id == "zh-hant-t-i0-cangjie-1987-x-m0-simplified" ||
+         engine_id == "yue-hant-t-i0-und" || engine_id == "zh-t-i0-wubi-1986" ||
+         engine_id == "zh-hant-t-i0-array-1992" ||
+         engine_id == "zh-hant-t-i0-dayi-1988" ||
+         engine_id == "zh-hant-t-i0-und";
+}
+
 bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
@@ -68,7 +78,9 @@ bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
     return false;
   }
 
-  return (features::IsSystemKoreanPhysicalTypingEnabled() &&
+  return (features::IsSystemChinesePhysicalTypingEnabled() &&
+          IsChineseEngine(engine_id)) ||
+         (features::IsSystemKoreanPhysicalTypingEnabled() &&
           IsKoreanEngine(engine_id)) ||
          (features::IsSystemLatinPhysicalTypingEnabled() &&
           IsFstEngine(engine_id));
