@@ -53,8 +53,23 @@ class OsDiagnosticsGetAvailableRoutinesFunction
       const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines);
 };
 
+class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
+ public:
+  DiagnosticsApiRunRoutineFunctionBase();
+
+  DiagnosticsApiRunRoutineFunctionBase(
+      const DiagnosticsApiRunRoutineFunctionBase&) = delete;
+  DiagnosticsApiRunRoutineFunctionBase& operator=(
+      const DiagnosticsApiRunRoutineFunctionBase&) = delete;
+
+  void OnResult(ash::health::mojom::RunRoutineResponsePtr ptr);
+
+ protected:
+  ~DiagnosticsApiRunRoutineFunctionBase() override;
+};
+
 class OsDiagnosticsRunBatteryCapacityRoutineFunction
-    : public DiagnosticsApiFunctionBase {
+    : public DiagnosticsApiRunRoutineFunctionBase {
  public:
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryCapacityRoutine",
                              OS_DIAGNOSTICS_RUNBATTERYCAPACITYROUTINE)
@@ -70,8 +85,25 @@ class OsDiagnosticsRunBatteryCapacityRoutineFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
+};
 
-  void OnResult(ash::health::mojom::RunRoutineResponsePtr ptr);
+class OsDiagnosticsRunBatteryHealthRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBatteryHealthRoutine",
+                             OS_DIAGNOSTICS_RUNBATTERYHEALTHROUTINE)
+
+  OsDiagnosticsRunBatteryHealthRoutineFunction();
+  OsDiagnosticsRunBatteryHealthRoutineFunction(
+      const OsDiagnosticsRunBatteryHealthRoutineFunction&) = delete;
+  OsDiagnosticsRunBatteryHealthRoutineFunction& operator=(
+      const OsDiagnosticsRunBatteryHealthRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunBatteryHealthRoutineFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
 };
 
 }  // namespace chromeos

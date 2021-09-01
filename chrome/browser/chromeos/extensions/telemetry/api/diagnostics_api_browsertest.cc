@@ -16,14 +16,16 @@ using TelemetryExtensionDiagnosticsApiBrowserTest =
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
   cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
-      {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity});
+      {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth});
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
       async function getAvailableRoutines() {
         const response =
           await chrome.os.diagnostics.getAvailableRoutines();
-        chrome.test.assertEq({routines: ["battery_capacity"]}, response);
+        chrome.test.assertEq(
+          {routines: ["battery_capacity", "battery_health"]}, response);
         chrome.test.succeed();
       }
     ]);
@@ -37,6 +39,20 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runCapacityRoutine() {
         const response =
           await chrome.os.diagnostics.runBatteryCapacityRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunBatteryHealthRoutineSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runCapacityRoutine() {
+        const response =
+          await chrome.os.diagnostics.runBatteryHealthRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

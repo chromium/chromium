@@ -14,6 +14,8 @@
 
 namespace chromeos {
 
+// DiagnosticsApiFunctionBase --------------------------------------------------
+
 DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
     : diagnostics_service_(
           remote_diagnostics_service_.BindNewPipeAndPassReceiver()) {}
@@ -29,6 +31,9 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
   switch (in) {
     case ash::health::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_CAPACITY;
+      return true;
+    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryHealth:
+      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_HEALTH;
       return true;
     default:
       return false;
@@ -68,7 +73,7 @@ void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
       api::os_diagnostics::GetAvailableRoutines::Results::Create(result)));
 }
 
-// runBatteryCapacityRoutine ---------------------------------------------------
+// DiagnosticsApiRunRoutineFunctionBase ----------------------------------------
 
 namespace {
 
@@ -105,24 +110,12 @@ api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
 
 }  // namespace
 
-OsDiagnosticsRunBatteryCapacityRoutineFunction::
-    OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
-OsDiagnosticsRunBatteryCapacityRoutineFunction::
-    ~OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
+DiagnosticsApiRunRoutineFunctionBase::DiagnosticsApiRunRoutineFunctionBase() =
+    default;
+DiagnosticsApiRunRoutineFunctionBase::~DiagnosticsApiRunRoutineFunctionBase() =
+    default;
 
-ExtensionFunction::ResponseAction
-OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
-  auto cb = base::BindOnce(
-      &OsDiagnosticsRunBatteryCapacityRoutineFunction::OnResult, this);
-
-  remote_diagnostics_service_->RunBatteryCapacityRoutine(std::move(cb));
-
-  return RespondLater();
-}
-
-void OsDiagnosticsRunBatteryCapacityRoutineFunction::OnResult(
+void DiagnosticsApiRunRoutineFunctionBase::OnResult(
     ash::health::mojom::RunRoutineResponsePtr ptr) {
   if (!ptr) {
     // |ptr| should never be null, otherwise Mojo validation will fail.
@@ -134,8 +127,45 @@ void OsDiagnosticsRunBatteryCapacityRoutineFunction::OnResult(
   api::os_diagnostics::RunRoutineResponse result;
   result.id = ptr->id;
   result.status = ConvertRoutineStatus(ptr->status);
-  Respond(ArgumentList(
-      api::os_diagnostics::RunBatteryCapacityRoutine::Results::Create(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
+}
+
+// runBatteryCapacityRoutine ---------------------------------------------------
+
+OsDiagnosticsRunBatteryCapacityRoutineFunction::
+    OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
+OsDiagnosticsRunBatteryCapacityRoutineFunction::
+    ~OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction
+OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunBatteryCapacityRoutine(std::move(cb));
+
+  return RespondLater();
+}
+
+// runBatteryHealthRoutine -----------------------------------------------------
+
+OsDiagnosticsRunBatteryHealthRoutineFunction::
+    OsDiagnosticsRunBatteryHealthRoutineFunction() = default;
+OsDiagnosticsRunBatteryHealthRoutineFunction::
+    ~OsDiagnosticsRunBatteryHealthRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction
+OsDiagnosticsRunBatteryHealthRoutineFunction::Run() {
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunBatteryHealthRoutine(std::move(cb));
+
+  return RespondLater();
 }
 
 }  // namespace chromeos

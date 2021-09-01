@@ -9,7 +9,8 @@
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"]
 namespace os.diagnostics {
   enum RoutineType {
-    battery_capacity
+    battery_capacity,
+    battery_health
   };
 
   enum RoutineStatus {
@@ -47,5 +48,8 @@ namespace os.diagnostics {
 
     // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);
+
+    // Starts battery health routine.
+    [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
   };
 };
