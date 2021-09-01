@@ -143,11 +143,12 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
  protected:
   explicit AnimationEffect(const Timing&, EventDelegate* = nullptr);
 
-  // When AnimationEffect receives a new inherited time via updateInheritedTime
+  // When AnimationEffect receives a new inherited time via UpdateInheritedTime
   // it will (if necessary) recalculate timings and (if necessary) call
-  // updateChildrenAndEffects.
+  // UpdateChildrenAndEffects.
   void UpdateInheritedTime(absl::optional<AnimationTimeDelta> inherited_time,
                            absl::optional<TimelinePhase> inherited_phase,
+                           double inherited_playback_rate,
                            TimingUpdateReason) const;
   void Invalidate() const { needs_update_ = true; }
   void InvalidateAndNotifyOwner() const;

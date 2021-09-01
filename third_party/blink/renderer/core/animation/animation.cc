@@ -2262,7 +2262,8 @@ bool Animation::Update(TimingUpdateReason reason) {
       inherited_phase = CurrentPhaseInternal();
     }
 
-    content_->UpdateInheritedTime(inherited_time, inherited_phase, reason);
+    content_->UpdateInheritedTime(inherited_time, inherited_phase,
+                                  playback_rate_, reason);
 
     // After updating the animation time if the animation is no longer current
     // blink will no longer composite the element (see

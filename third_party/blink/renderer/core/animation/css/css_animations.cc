@@ -726,7 +726,8 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                   CreateKeyframeEffectModel(resolver, element, &style,
                                             parent_style, name,
                                             keyframe_timing_function.get(), i),
-                  timing, is_paused, inherited_time, inherited_phase),
+                  timing, is_paused, inherited_time, inherited_phase,
+                  animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList());
           if (toggle_pause_state)
@@ -749,7 +750,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                 CreateKeyframeEffectModel(resolver, element, &style,
                                           parent_style, name,
                                           keyframe_timing_function.get(), i),
-                timing, is_paused, inherited_time, inherited_phase),
+                timing, is_paused, inherited_time, inherited_phase, 1.0),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList());
       }
@@ -1216,8 +1217,8 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
-      *MakeGarbageCollected<InertEffect>(model, timing, false,
-                                         AnimationTimeDelta(), absl::nullopt));
+      *MakeGarbageCollected<InertEffect>(
+          model, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0));
   DCHECK(!state.animating_element.GetElementAnimations() ||
          !state.animating_element.GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -1413,7 +1414,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
           effect->Model(), effect->SpecifiedTiming(), false, current_time,
-          absl::nullopt);
+          absl::nullopt, animation->playbackRate());
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);

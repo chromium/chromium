@@ -53,6 +53,15 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element* target,
   Timing timing;
   timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1000);
 
+  auto* model =
+      CreateSimpleKeyframeEffectModelForTest(property, value_start, value_end);
+  return MakeGarbageCollected<KeyframeEffect>(target, model, timing);
+}
+
+KeyframeEffectModelBase* CreateSimpleKeyframeEffectModelForTest(
+    CSSPropertyID property,
+    String value_start,
+    String value_end) {
   StringKeyframe* start_keyframe = MakeGarbageCollected<StringKeyframe>();
   start_keyframe->SetOffset(0.0);
   start_keyframe->SetCSSPropertyValue(
@@ -67,8 +76,7 @@ KeyframeEffect* CreateSimpleKeyframeEffectForTest(Element* target,
   keyframes.push_back(start_keyframe);
   keyframes.push_back(end_keyframe);
 
-  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
-  return MakeGarbageCollected<KeyframeEffect>(target, model, timing);
+  return MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
 }
 
 void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,

@@ -46,7 +46,8 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
               const Timing&,
               bool paused,
               absl::optional<AnimationTimeDelta> inherited_time,
-              absl::optional<TimelinePhase> inherited_phase);
+              absl::optional<TimelinePhase> inherited_phase,
+              double playback_rate);
 
   void Sample(HeapVector<Member<Interpolation>>&) const;
   KeyframeEffectModelBase* Model() const { return model_.Get(); }
@@ -68,6 +69,7 @@ class CORE_EXPORT InertEffect final : public AnimationEffect {
   bool paused_;
   absl::optional<AnimationTimeDelta> inherited_time_;
   absl::optional<TimelinePhase> inherited_phase_;
+  double playback_rate_;
 };
 
 template <>

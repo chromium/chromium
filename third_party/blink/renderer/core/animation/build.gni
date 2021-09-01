@@ -23,6 +23,7 @@ blink_core_tests_animation = [
   "effect_stack_test.cc",
   "interpolable_value_test.cc",
   "interpolation_effect_test.cc",
+  "inert_effect_test.cc",
   "keyframe_effect_model_test.cc",
   "keyframe_effect_test.cc",
   "list_interpolation_functions_test.cc",

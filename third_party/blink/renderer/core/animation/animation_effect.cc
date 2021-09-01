@@ -267,14 +267,11 @@ absl::optional<Timing::Phase> TimelinePhaseToTimingPhase(
 void AnimationEffect::UpdateInheritedTime(
     absl::optional<AnimationTimeDelta> inherited_time,
     absl::optional<TimelinePhase> inherited_timeline_phase,
+    double inherited_playback_rate,
     TimingUpdateReason reason) const {
-  absl::optional<double> playback_rate = absl::nullopt;
-  if (GetAnimation())
-    playback_rate = GetAnimation()->playbackRate();
   const Timing::AnimationDirection direction =
-      (playback_rate && playback_rate.value() < 0)
-          ? Timing::AnimationDirection::kBackwards
-          : Timing::AnimationDirection::kForwards;
+      (inherited_playback_rate < 0) ? Timing::AnimationDirection::kBackwards
+                                    : Timing::AnimationDirection::kForwards;
 
   absl::optional<Timing::Phase> timeline_phase =
       TimelinePhaseToTimingPhase(inherited_timeline_phase);
@@ -289,7 +286,7 @@ void AnimationEffect::UpdateInheritedTime(
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
         inherited_time, timeline_phase, NormalizedTiming(), direction,
-        IsA<KeyframeEffect>(this), playback_rate);
+        IsA<KeyframeEffect>(this), inherited_playback_rate);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;
