@@ -239,12 +239,17 @@ void SortStrings16(const std::string& locale,
 COMPONENT_EXPORT(UI_BASE)
 const std::vector<std::string>& GetAvailableICULocales();
 
-// Returns a vector of locale codes for which we have translation strings for,
-// including locales which have valid fallbacks.
-// E.g., a vector containing en-US, en-CA, en-GB, es, fr, pt-PT, pt-BR, etc.
-// This is a strict subset of the vector returned from GetAcceptLanguages.
+// Returns whether we should show a locale to the user as a supported UI locale.
+// This is similar to CheckAndResolveLocale, except that it excludes some
+// languages from being shown.
 COMPONENT_EXPORT(UI_BASE)
-const std::vector<std::string>& GetLocalesWithStrings();
+bool IsUserFacingUILocale(const std::string& locale);
+
+// Returns the subset of locales from GetAcceptLanguages which we should show
+// to the user as a supported UI locale.
+// E.g., a vector containing en-US, en-CA, en-GB, es, fr, pt-PT, pt-BR, etc.
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<std::string>& GetUserFacingUILocaleList();
 
 // Returns a vector of locale codes usable for accept-languages.
 COMPONENT_EXPORT(UI_BASE)

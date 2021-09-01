@@ -465,7 +465,7 @@ std::unique_ptr<base::ListValue> GetUILanguageList(
   input_method::InputMethodDescriptors descriptors =
       manager->GetXkbIMEAsInputMethodDescriptor();
   std::unique_ptr<base::ListValue> languages_list(GetLanguageList(
-      descriptors, l10n_util::GetLocalesWithStrings(),
+      descriptors, l10n_util::GetUserFacingUILocaleList(),
       most_relevant_language_codes
           ? *most_relevant_language_codes
           : StartupCustomizationDocument::GetInstance()->configured_locales(),

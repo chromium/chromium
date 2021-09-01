@@ -938,26 +938,34 @@ const std::vector<std::string>& GetAvailableICULocales() {
   return g_available_locales.Get();
 }
 
-const std::vector<std::string>& GetLocalesWithStrings() {
+bool IsUserFacingUILocale(const std::string& locale) {
+  std::string resolved_locale;
+  // As there are many callers of IsUserFacingUILocale and
+  // GetUserFacingUILocaleList from threads where I/O is prohibited, do not
+  // perform I/O here.
+  if (!l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+                                        /*perform_io=*/false)) {
+    return false;
+  }
+
+  // Chinese locales (other than the ones that have strings on disk, i.e. when
+  // resolved_locale == locale) should not be shown.
+  if (resolved_locale != locale &&
+      base::LowerCaseEqualsASCII(l10n_util::GetLanguage(locale), "zh")) {
+    return false;
+  }
+
+  return true;
+}
+
+const std::vector<std::string>& GetUserFacingUILocaleList() {
   static base::NoDestructor<std::vector<std::string>> available_locales([] {
     std::vector<std::string> locales;
     for (const char* accept_language : kAcceptLanguageList) {
       std::string locale(accept_language);
-      std::string resolved_locale;
-
-      // As there are many callers of GetLocalesWithStrings from threads where
-      // I/O is prohibited, we cannot perform I/O here.
-      if (!l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
-                                            /*perform_io=*/false))
-        continue;
-
-      // We shouldn't show the user any other Chinese locales other than the
-      // ones that we have strings for (i.e. when resolved_locale == locale).
-      if (resolved_locale != locale &&
-          base::LowerCaseEqualsASCII(l10n_util::GetLanguage(locale), "zh"))
-        continue;
-
-      locales.push_back(locale);
+      if (IsUserFacingUILocale(locale)) {
+        locales.push_back(locale);
+      }
     }
     return locales;
   }());

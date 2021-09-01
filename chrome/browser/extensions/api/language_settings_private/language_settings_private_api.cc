@@ -270,8 +270,7 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
       language.supports_translate = std::make_unique<bool>(true);
     }
 
-    std::string temp_locale = entry.code;
-    if (language::ConvertToActualUILocale(&temp_locale)) {
+    if (l10n_util::IsUserFacingUILocale(entry.code)) {
       language.supports_ui = std::make_unique<bool>(true);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)

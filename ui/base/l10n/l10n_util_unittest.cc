@@ -594,16 +594,18 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   }
 }
 
-TEST_F(L10nUtilTest, GetLocalesWithStrings) {
+TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Convert the vector to a set for easy lookup.
   const base::flat_set<std::string> locales =
-      l10n_util::GetLocalesWithStrings();
+      l10n_util::GetUserFacingUILocaleList();
 
   // Common locales which should be available on all platforms.
   EXPECT_TRUE(locales.contains("en") || locales.contains("en-US"));
   EXPECT_TRUE(locales.contains("en-GB"));
   EXPECT_TRUE(locales.contains("es") || locales.contains("es-ES"));
   EXPECT_TRUE(locales.contains("fr") || locales.contains("fr-FR"));
+  EXPECT_TRUE(locales.contains("zh-CN"));
+  EXPECT_TRUE(locales.contains("zh-TW"));
 
   // Locales that we should have valid fallbacks for.
   EXPECT_TRUE(locales.contains("en-CA"));
@@ -611,6 +613,12 @@ TEST_F(L10nUtilTest, GetLocalesWithStrings) {
   EXPECT_TRUE(locales.contains("fr-CA"));
 
   // Locales that should not be included:
+  // Chinese and Chinese (Hong Kong), as we do not have specific strings for
+  // them (except on Android).
+  EXPECT_FALSE(locales.contains("zh"));
+#if !defined(OS_ANDROID)
+  EXPECT_FALSE(locales.contains("zh-HK"));
+#endif
   // English (Germany). A valid locale and in ICU's list of locales, but not in
   // our list of Accept-Language locales.
   EXPECT_FALSE(locales.contains("en-DE"));

@@ -414,6 +414,15 @@ void LanguageSettingsPrivateApiTest::RunGetLanguageListTest() {
         break;
       }
     }
+
+    // Check that zh and zh-HK aren't shown as supporting UI.
+    if (language_code == "zh" || language_code == "zh-HK") {
+      const absl::optional<bool> maybe_supports_ui =
+          language_val.FindBoolKey("supportsUI");
+      const bool supports_ui =
+          maybe_supports_ui.has_value() ? maybe_supports_ui.value() : false;
+      EXPECT_FALSE(supports_ui) << language_code << " should not support UI";
+    }
   }
 
   EXPECT_EQ(languages_to_test.size(), languages_to_test_found_count);
