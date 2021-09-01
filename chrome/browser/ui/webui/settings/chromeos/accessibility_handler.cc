@@ -153,9 +153,7 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (soda_installer->IsSodaInstalled(GetDictationLocale())) {
-    OnSodaInstalled();
-  } else {
+  if (!soda_installer->IsSodaInstalled(GetDictationLocale())) {
     // Add self as an observer. If this was a page refresh we don't want to
     // get added twice.
     soda_observation_.Observe(soda_installer);
@@ -171,9 +169,10 @@ void AccessibilityHandler::OnSodaInstallSucceeded() {
   // Only show the success message if both the SODA binary and the language pack
   // matching the Dictation locale have been downloaded.
   FireWebUIListener(
-      "dictation-setting-subtitle-changed",
-      base::Value(l10n_util::GetStringUTF16(
-          IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_COMPLETE)));
+      "dictation-locale-menu-subtitle-changed",
+      base::Value(l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_SUB_LABEL_OFFLINE,
+          GetDictationLocaleDisplayName())));
 }
 
 void AccessibilityHandler::OnSodaInstallProgress(
@@ -185,7 +184,7 @@ void AccessibilityHandler::OnSodaInstallProgress(
   // Only show the progress message if this applies to the language pack
   // matching the Dictation locale.
   FireWebUIListener(
-      "dictation-setting-subtitle-changed",
+      "dictation-locale-menu-subtitle-changed",
       base::Value(l10n_util::GetStringFUTF16Int(
           IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS,
           progress)));
@@ -198,9 +197,10 @@ void AccessibilityHandler::OnSodaInstallFailed(
     // Show the failed message if either the Dictation locale failed or the SODA
     // binary failed (encoded by LanguageCode::kNone).
     FireWebUIListener(
-        "dictation-setting-subtitle-changed",
-        base::Value(l10n_util::GetStringUTF16(
-            IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR)));
+        "dictation-locale-menu-subtitle-changed",
+        base::Value(l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR,
+            GetDictationLocaleDisplayName())));
   }
 }
 
@@ -294,6 +294,16 @@ speech::LanguageCode AccessibilityHandler::GetDictationLocale() {
   const std::string dictation_locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
   return speech::GetLanguageCode(dictation_locale);
+}
+
+std::u16string AccessibilityHandler::GetDictationLocaleDisplayName() {
+  const std::string dictation_locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+
+  return l10n_util::GetDisplayNameForLocale(
+      /*locale=*/dictation_locale,
+      /*display_locale=*/g_browser_process->GetApplicationLocale(),
+      /*is_ui=*/true);
 }
 
 }  // namespace settings

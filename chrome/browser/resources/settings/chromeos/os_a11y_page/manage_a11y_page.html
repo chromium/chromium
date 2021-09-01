@@ -50,6 +50,11 @@
       #screenMagnifierZoomHintLabel {
         white-space: pre-line;
       }
+
+      #dictationLocaleMenuSubtitle {
+        max-width: 450px;
+        overflow-wrap: break-word;
+      }
     </style>
     <template is="dom-if" if="[[!isKioskModeActive_]]">
       <div class="settings-box row first">
@@ -224,10 +229,10 @@
       <template is="dom-if" if="[[prefs.settings.a11y.dictation.value]]">
         <div class="settings-box continuation indented">
           <div class="flex start settings-box-text" id="labelWrapper">
-            <div class="label" aria-hidden="true">
+            <div class="label" aria-hidden="true" id="dictationLocaleMenuLabel">
                 $i18n{dictationLocaleMenuLabel}
             </div>
-            <div class="secondary label">
+            <div class="secondary label" id="dictationLocaleMenuSubtitle">
                 [[dictationLocaleMenuSubtitle_]]
             </div>
           </div>

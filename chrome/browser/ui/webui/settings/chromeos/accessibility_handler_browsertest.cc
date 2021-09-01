@@ -157,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledNotification) {
   soda_installer()->NotifyOnSodaLanguagePackInstalledForTesting(fr_fr());
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
-      "dictation-setting-subtitle-changed", "Speech files downloaded"));
+      "dictation-locale-menu-subtitle-changed",
+      "French (France) is processed locally and works offline."));
 }
 
 // Verifies that the correct string is sent to the JavaScript end of the web UI.
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaProgressNotification) {
   soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(50, en_us());
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
-      "dictation-setting-subtitle-changed",
+      "dictation-locale-menu-subtitle-changed",
       "Downloading speech recognition files… 50%"));
 }
 
@@ -184,9 +185,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaErrorNotification) {
   soda_installer()->NotifySodaErrorForTesting();
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
-      "dictation-setting-subtitle-changed",
-      "Can't download speech files. Dictation will continue to work by sending "
-      "your voice to Google."));
+      "dictation-locale-menu-subtitle-changed",
+      "Couldn’t download English (United States) speech files. Download will "
+      "be attempted later. Speech is sent to Google for processing for now."));
 }
 
 // Verifies that the correct listener is fired when the language pack matching
@@ -203,9 +204,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
   soda_installer()->NotifyOnSodaLanguagePackErrorForTesting(en_us());
   AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
-      "dictation-setting-subtitle-changed",
-      "Can't download speech files. Dictation will continue to work by sending "
-      "your voice to Google."));
+      "dictation-locale-menu-subtitle-changed",
+      "Couldn’t download English (United States) speech files. Download will "
+      "be attempted later. Speech is sent to Google for processing for now."));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {

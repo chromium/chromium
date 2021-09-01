@@ -499,8 +499,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_LARGE},
       {"autoclickMovementThresholdExtraLarge",
        IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_LARGE},
-      {"dictationDescription",
-       IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION},
       {"dictationLabel", IDS_SETTINGS_ACCESSIBILITY_DICTATION_LABEL},
       {"dictationLocaleMenuLabel",
        IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL},
@@ -763,6 +761,12 @@ void AccessibilitySection::AddLoadTimeData(
                                   ui::DeviceUsesKeyboardLayout2()
                                       ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
                                       : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
+
+  html_source->AddLocalizedString(
+      "dictationDescription",
+      ::features::IsExperimentalAccessibilityDictationOfflineEnabled()
+          ? IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION
+          : IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION);
 
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);

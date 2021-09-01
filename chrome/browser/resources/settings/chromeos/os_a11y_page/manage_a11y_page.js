@@ -227,7 +227,21 @@ Polymer({
     /** @private */
     dictationSubtitle_: {
       type: String,
-      value: loadTimeData.getString('dictationDescription'),
+      value() {
+        return loadTimeData.getString('dictationDescription');
+      }
+    },
+
+    /** @private */
+    dictationLocaleSubtitleOverride_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
+    useDictationLocaleSubtitleOverride_: {
+      type: Boolean,
+      value: false,
     },
 
     /** @private */
@@ -235,14 +249,17 @@ Polymer({
       type: String,
       computed: 'computeDictationLocaleSubtitle_(' +
           'dictationLocaleOptions_, ' +
-          'prefs.settings.a11y.dictation_locale.value)',
+          'prefs.settings.a11y.dictation_locale.value, ' +
+          'dictationLocaleSubtitleOverride_)',
     },
 
     /** @private */
     areDictationLocalePrefsAllowed_: {
-      type: String,
+      type: Boolean,
       readOnly: true,
-      value: loadTimeData.getBoolean('areDictationLocalePrefsAllowed'),
+      value() {
+        return loadTimeData.getBoolean('areDictationLocalePrefsAllowed');
+      }
     },
 
     /** @private */
@@ -367,27 +384,31 @@ Polymer({
   /** @override */
   attached() {
     this.addWebUIListener(
-        'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
+        'has-mouse-changed', (exists) => this.set('hasMouse_', exists));
     this.addWebUIListener(
-        'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
+        'has-pointing-stick-changed',
+        (exists) => this.set('hasPointingStick_', exists));
     this.addWebUIListener(
-        'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
+        'has-touchpad-changed', (exists) => this.set('hasTouchpad_', exists));
     this.deviceBrowserProxy_.initializePointers();
-
     this.addWebUIListener(
-        'has-hardware-keyboard', this.set.bind(this, 'hasKeyboard_'));
+        'has-hardware-keyboard',
+        (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
   },
 
   /** @override */
   ready() {
     this.addWebUIListener(
-        'initial-data-ready', this.onManageAllyPageReady_.bind(this));
+        'initial-data-ready',
+        (startup_sound_enabled) =>
+            this.onManageAllyPageReady_(startup_sound_enabled));
     this.addWebUIListener(
-        'dictation-setting-subtitle-changed',
-        this.onDictationSettingSubtitleChanged_.bind(this));
+        'dictation-locale-menu-subtitle-changed',
+        (result) => this.onDictationLocaleMenuSubtitleChanged_(result));
     this.addWebUIListener(
-        'dictation-locales-set', this.onDictationLocalesSet_.bind(this));
+        'dictation-locales-set',
+        (locales) => this.onDictationLocalesSet_(locales));
     this.manageBrowserProxy_.manageA11yPageReady();
 
     const r = settings.routes;
@@ -638,8 +659,9 @@ Polymer({
    * @param {string} subtitle
    * @private
    */
-  onDictationSettingSubtitleChanged_(subtitle) {
-    this.dictationSubtitle_ = subtitle;
+  onDictationLocaleMenuSubtitleChanged_(subtitle) {
+    this.useDictationLocaleSubtitleOverride_ = true;
+    this.dictationLocaleSubtitleOverride_ = subtitle;
   },
 
 
@@ -683,6 +705,13 @@ Polymer({
    * @private
    */
   computeDictationLocaleSubtitle_() {
+    if (this.useDictationLocaleSubtitleOverride_) {
+      // Only use the subtitle override once, since we still want the subtitle
+      // to repsond to changes to the dictation locale.
+      this.useDictationLocaleSubtitleOverride_ = false;
+      return this.dictationLocaleSubtitleOverride_;
+    }
+
     const currentLocale =
         this.get('prefs.settings.a11y.dictation_locale.value');
     const locale = this.dictationLocaleOptions_.find(

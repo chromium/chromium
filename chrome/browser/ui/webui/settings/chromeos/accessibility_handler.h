@@ -64,6 +64,7 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
 
   void MaybeAddDictationLocales();
   speech::LanguageCode GetDictationLocale();
+  std::u16string GetDictationLocaleDisplayName();
 
   Profile* profile_;  // Weak pointer.
 

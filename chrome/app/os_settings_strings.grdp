@@ -1111,14 +1111,14 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LABEL" desc="Label for checkbox which enables the ability to speak into text fields">
     Enable dictation (speak to type)
   </message>
-  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_COMPLETE" desc="Description explaining that the speech recognition library download has completed.">
-    Speech files downloaded
+  <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION" desc="Description explaining what Dictation does and how to use it. Is only user-visible if the kEnableExperimentalAccessibilityDictationOffline flag is enabled.">
+    Type with your voice. Press Search + D, then start speaking.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_PROGRESS" desc="Description explaining the progress for the speech recognition library download.">
     Downloading speech recognition files... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_SUBTITLE_SODA_DOWNLOAD_ERROR" desc="Description explaining that there was an error with the speech recognition library download.">
-    Can't download speech files. Dictation will continue to work by sending your voice to Google.
+    Couldn’t download <ph name="language">$1<ex>English</ex></ph> speech files. Download will be attempted later. Speech is sent to Google for processing for now.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DICTATION_LOCALE_MENU_LABEL" desc="Description of a drop-down menu to select the language to use for Dictation's speech recognition.">
     Language
