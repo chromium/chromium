@@ -87,6 +87,12 @@ class NET_EXPORT SSLInfo {
   // set for server sockets.
   bool early_data_received = false;
 
+  // True if the connection negotiated the Encrypted ClientHello extension.
+  //
+  // TODO(crbug.com/1091403): Serialize this field in net_ipc_param_traits.cc
+  // and expose in DevTools Security Panel.
+  bool encrypted_client_hello = false;
+
   HandshakeType handshake_type = HANDSHAKE_UNKNOWN;
 
   // The hashes, in several algorithms, of the SubjectPublicKeyInfos from

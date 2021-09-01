@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -14,6 +15,7 @@
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {
 
@@ -111,6 +113,31 @@ struct NET_EXPORT SSLServerConfig {
 
   // If non-empty, the DER-encoded OCSP response to staple.
   std::vector<uint8_t> ocsp_response;
+
+  // This is a workaround for BoringSSL's scopers not being copyable. See
+  // https://crbug.com/boringssl/431.
+  class NET_EXPORT ECHKeysContainer {
+   public:
+    ECHKeysContainer();
+    // Intentionally allow implicit conversion from bssl::UniquePtr.
+    ECHKeysContainer(bssl::UniquePtr<SSL_ECH_KEYS> keys);
+    ~ECHKeysContainer();
+
+    ECHKeysContainer(const ECHKeysContainer& other);
+    ECHKeysContainer& operator=(const ECHKeysContainer& other);
+
+    // Forward APIs from bssl::UniquePtr.
+    SSL_ECH_KEYS* get() const { return keys_.get(); }
+    explicit operator bool() const { return static_cast<bool>(keys_); }
+    // This is defined out-of-line to avoid an ssl.h include.
+    void reset(SSL_ECH_KEYS* keys = nullptr);
+
+   private:
+    bssl::UniquePtr<SSL_ECH_KEYS> keys_;
+  };
+
+  // If not nullptr, an ECH configuration to use on the server.
+  ECHKeysContainer ech_keys;
 };
 
 }  // namespace net

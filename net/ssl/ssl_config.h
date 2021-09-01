@@ -138,6 +138,12 @@ struct NET_EXPORT SSLConfig {
   // session cache is partitioned by this value.
   NetworkIsolationKey network_isolation_key;
 
+  // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
+  //
+  // TODO(crbug.com/1091403): Support is currently incomplete. Implement the
+  // recovery flow and document what this does to the socket behavior.
+  std::vector<uint8_t> ech_config_list;
+
   // An additional boolean to partition the session cache by.
   //
   // TODO(https://crbug.com/775438, https://crbug.com/951205): This should

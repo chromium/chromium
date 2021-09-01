@@ -584,6 +584,7 @@ bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
   ssl_info->pkp_bypassed = pkp_bypassed_;
   ssl_info->public_key_hashes = server_cert_verify_result_.public_key_hashes;
   ssl_info->client_cert_sent = send_client_cert_ && client_cert_.get();
+  ssl_info->encrypted_client_hello = SSL_ech_accepted(ssl_.get());
   ssl_info->pinning_failure_log = pinning_failure_log_;
   ssl_info->ocsp_result = server_cert_verify_result_.ocsp_result;
   ssl_info->is_fatal_cert_error = is_fatal_cert_error_;
@@ -911,6 +912,14 @@ int SSLClientSocketImpl::Init() {
         host_and_port_, &client_cert_, &client_private_key_);
   }
 
+  // TODO(https://crbug.com/1091403): Also enable ECH GREASE, gated on SSLConfig
+  // or a base::Feature, for when we don't have an ECHConfig.
+  if (!ssl_config_.ech_config_list.empty() &&
+      !SSL_set1_ech_config_list(ssl_.get(), ssl_config_.ech_config_list.data(),
+                                ssl_config_.ech_config_list.size())) {
+    return ERR_UNEXPECTED;
+  }
+
   return OK;
 }
 
@@ -1099,6 +1108,18 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
     // cert_verification_result_, return it instead of triggering
     // another verify.
     return HandleVerifyResult();
+  }
+
+  // TODO(crbug.com/1091403): Implement the recovery flow.
+  const char* ech_name_override;
+  size_t ech_name_override_len;
+  SSL_get0_ech_name_override(ssl_.get(), &ech_name_override,
+                             &ech_name_override_len);
+  if (ech_name_override_len > 0) {
+    DCHECK(!ssl_config_.ech_config_list.empty());
+    NOTIMPLEMENTED();
+    OpenSSLPutNetError(FROM_HERE, ERR_FAILED);
+    return ssl_verify_invalid;
   }
 
   // In this configuration, BoringSSL will perform exactly one certificate

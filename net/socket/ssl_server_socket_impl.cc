@@ -605,6 +605,7 @@ bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
                                 &ssl_info->connection_status);
 
   ssl_info->early_data_received = early_data_received_;
+  ssl_info->encrypted_client_hello = SSL_ech_accepted(ssl_.get());
   ssl_info->handshake_type = SSL_session_reused(ssl_.get())
                                  ? SSLInfo::HANDSHAKE_RESUME
                                  : SSLInfo::HANDSHAKE_FULL;
@@ -1053,6 +1054,11 @@ void SSLServerContextImpl::Init() {
     SSL_CTX_set_ocsp_response(ssl_ctx_.get(),
                               ssl_server_config_.ocsp_response.data(),
                               ssl_server_config_.ocsp_response.size());
+  }
+
+  if (ssl_server_config_.ech_keys) {
+    CHECK(SSL_CTX_set1_ech_keys(ssl_ctx_.get(),
+                                ssl_server_config_.ech_keys.get()));
   }
 }
 

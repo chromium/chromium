@@ -23,6 +23,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,6 +97,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/boringssl/src/include/openssl/pem.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
@@ -810,6 +812,8 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     server->AddDefaultHandlers(base::FilePath());
     server->RegisterRequestHandler(
         base::BindRepeating(&ManySmallRecordsHttpResponse::HandleRequest));
+    server->RegisterRequestHandler(
+        base::BindRepeating(&HandleSSLInfoRequest, base::Unretained(this)));
   }
 
   // Starts the spawned test server with SSL configuration |ssl_options|.
@@ -896,6 +900,15 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
   }
 
+  absl::optional<SSLInfo> LastSSLInfoFromServer() {
+    // EmbeddedTestServer callbacks run on another thread, so protect this
+    // with a lock.
+    base::AutoLock lock(server_ssl_info_lock_);
+    auto result = server_ssl_info_;
+    server_ssl_info_ = absl::nullopt;
+    return result;
+  }
+
   RecordingTestNetLog log_;
   ClientSocketFactory* socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
@@ -907,8 +920,25 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<SSLClientSocket> sock_;
 
  private:
+  static std::unique_ptr<test_server::HttpResponse> HandleSSLInfoRequest(
+      SSLClientSocketTest* test,
+      const test_server::HttpRequest& request) {
+    if (request.relative_url != "/ssl-info") {
+      return nullptr;
+    }
+    {
+      // EmbeddedTestServer callbacks run on another thread, so protect this
+      // with a lock.
+      base::AutoLock lock(test->server_ssl_info_lock_);
+      test->server_ssl_info_ = request.ssl_info;
+    }
+    return std::make_unique<test_server::BasicHttpResponse>();
+  }
+
   std::unique_ptr<SpawnedTestServer> spawned_test_server_;
   std::unique_ptr<EmbeddedTestServer> embedded_test_server_;
+  base::Lock server_ssl_info_lock_;
+  absl::optional<SSLInfo> server_ssl_info_ GUARDED_BY(server_ssl_info_lock_);
   TestCompletionCallback callback_;
   AddressList addr_;
   HostPortPair host_port_pair_;
@@ -1269,8 +1299,8 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
 
 // Sends an HTTP request on the socket and reads the response. This may be used
 // to ensure some data has been consumed from the server.
-int MakeHTTPRequest(StreamSocket* socket) {
-  base::StringPiece request = "GET / HTTP/1.0\r\n\r\n";
+int MakeHTTPRequest(StreamSocket* socket, const char* path = "/") {
+  std::string request = base::StringPrintf("GET %s HTTP/1.0\r\n\r\n", path);
   TestCompletionCallback callback;
   while (!request.empty()) {
     auto request_buffer =
@@ -1492,6 +1522,41 @@ class HangingCertVerifier : public CertVerifier {
   base::RunLoop run_loop_;
   int num_active_requests_ = 0;
 };
+
+bssl::UniquePtr<SSL_ECH_KEYS> MakeTestECHKeys(
+    const char* public_name,
+    size_t max_name_len,
+    std::vector<uint8_t>* ech_config_list) {
+  bssl::ScopedEVP_HPKE_KEY key;
+  if (!EVP_HPKE_KEY_generate(key.get(), EVP_hpke_x25519_hkdf_sha256())) {
+    return nullptr;
+  }
+
+  uint8_t* ech_config;
+  size_t ech_config_len;
+  if (!SSL_marshal_ech_config(&ech_config, &ech_config_len,
+                              /*config_id=*/1, key.get(), public_name,
+                              max_name_len)) {
+    return nullptr;
+  }
+  bssl::UniquePtr<uint8_t> scoped_ech_config(ech_config);
+
+  uint8_t* ech_config_list_raw;
+  size_t ech_config_list_len;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys(SSL_ECH_KEYS_new());
+  if (!keys ||
+      !SSL_ECH_KEYS_add(keys.get(), /*is_retry_config=*/1, ech_config,
+                        ech_config_len, key.get()) ||
+      !SSL_ECH_KEYS_marshal_retry_configs(keys.get(), &ech_config_list_raw,
+                                          &ech_config_list_len)) {
+    return nullptr;
+  }
+  bssl::UniquePtr<uint8_t> scoped_ech_config_list(ech_config_list_raw);
+
+  ech_config_list->assign(ech_config_list_raw,
+                          ech_config_list_raw + ech_config_list_len);
+  return keys;
+}
 
 }  // namespace
 
@@ -5485,6 +5550,87 @@ TEST_F(SSLClientSocketTest, Tag) {
   sock->ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);
 #endif  // OS_ANDROID
+}
+
+TEST_F(SSLClientSocketTest, ECH) {
+  SSLServerConfig server_config;
+  SSLConfig client_config;
+  server_config.ech_keys = MakeTestECHKeys(
+      "public.example", /*max_name_len=*/64, &client_config.ech_config_list);
+  ASSERT_TRUE(server_config.ech_keys);
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // Connecting with the client should use ECH.
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_TRUE(ssl_info.encrypted_client_hello);
+
+  // TLS 1.3 causes the ticket to arrive later. Use the socket to ensure we have
+  // a ticket. This also populates the SSLInfo from the server.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get(), "/ssl-info"), IsOk());
+  absl::optional<SSLInfo> server_ssl_info = LastSSLInfoFromServer();
+  ASSERT_TRUE(server_ssl_info);
+  EXPECT_TRUE(server_ssl_info->encrypted_client_hello);
+
+  // Reconnect. ECH should not interfere with resumption.
+  sock_.reset();
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+  EXPECT_TRUE(ssl_info.encrypted_client_hello);
+
+  // Check SSLInfo from the server.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get(), "/ssl-info"), IsOk());
+  server_ssl_info = LastSSLInfoFromServer();
+  ASSERT_TRUE(server_ssl_info);
+  EXPECT_TRUE(server_ssl_info->encrypted_client_hello);
+
+  // Connecting without ECH should not report ECH was used.
+  client_config.ech_config_list.clear();
+  sock_.reset();
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(ssl_info.encrypted_client_hello);
+
+  // Check SSLInfo from the server.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get(), "/ssl-info"), IsOk());
+  server_ssl_info = LastSSLInfoFromServer();
+  ASSERT_TRUE(server_ssl_info);
+  EXPECT_FALSE(server_ssl_info->encrypted_client_hello);
+}
+
+TEST_F(SSLClientSocketTest, ECHWrongKeys) {
+  std::vector<uint8_t> ech_config_list1, ech_config_list2;
+  bssl::UniquePtr<SSL_ECH_KEYS> keys1 =
+      MakeTestECHKeys("public.example", /*max_name_len=*/64, &ech_config_list1);
+  ASSERT_TRUE(keys1);
+  bssl::UniquePtr<SSL_ECH_KEYS> keys2 =
+      MakeTestECHKeys("public.example", /*max_name_len=*/64, &ech_config_list2);
+  ASSERT_TRUE(keys2);
+
+  // Configure the client and server with different keys.
+  SSLServerConfig server_config;
+  server_config.ech_keys = std::move(keys1);
+  SSLConfig client_config;
+  client_config.ech_config_list = std::move(ech_config_list2);
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // Connecting with the client should use ECH.
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(client_config, &rv));
+  // TODO(crbug.com/1091403): Implement the recovery flow. Test that this both
+  // verifies against the public name and exposes retry configs.
+  EXPECT_THAT(rv, IsError(ERR_FAILED));
 }
 
 class TLS13DowngradeTest
