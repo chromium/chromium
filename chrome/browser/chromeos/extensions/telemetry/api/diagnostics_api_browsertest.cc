@@ -15,11 +15,13 @@ using TelemetryExtensionDiagnosticsApiBrowserTest =
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
                        GetAvailableRoutinesSuccess) {
-  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting(
-      {cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
-       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
-       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
-       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth});
+  cros_healthd::FakeCrosHealthdClient::Get()->SetAvailableRoutinesForTesting({
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryDischarge,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
+  });
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -32,7 +34,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "battery_capacity",
               "battery_charge",
               "battery_discharge",
-              "battery_health"
+              "battery_health",
+              "cpu_stress"
             ]
           }, response);
         chrome.test.succeed();
@@ -113,6 +116,26 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
   EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunCpuStressRoutineSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runCpuStressRoutine() {
+        const response =
+          await chrome.os.diagnostics.runCpuStressRoutine(
+            {
+              length_seconds: 120
+            }
+          );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+            cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress);
 }
 
 }  // namespace chromeos

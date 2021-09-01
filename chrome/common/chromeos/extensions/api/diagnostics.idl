@@ -12,7 +12,8 @@ namespace os.diagnostics {
     battery_capacity,
     battery_charge,
     battery_discharge,
-    battery_health
+    battery_health,
+    cpu_stress
   };
 
   enum RoutineStatus {
@@ -46,6 +47,10 @@ namespace os.diagnostics {
     long maximum_discharge_percent_allowed;
   };
 
+  dictionary RunCpuStressRoutineRequest {
+    long length_seconds;
+  };
+
   dictionary RunRoutineResponse {
     long id;
 
@@ -73,5 +78,9 @@ namespace os.diagnostics {
 
     // Starts battery health routine.
     [supportsPromises] static void runBatteryHealthRoutine(RunRoutineCallback callback);
+
+    // Starts CPU stress routine.
+    [supportsPromises] static void runCpuStressRoutine(RunCpuStressRoutineRequest request,
+                                                       RunRoutineCallback callback);
   };
 };

@@ -41,6 +41,9 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
     case ash::health::mojom::DiagnosticRoutineEnum::kBatteryHealth:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_HEALTH;
       return true;
+    case ash::health::mojom::DiagnosticRoutineEnum::kCpuStress:
+      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_STRESS;
+      return true;
     default:
       return false;
   }
@@ -221,6 +224,30 @@ OsDiagnosticsRunBatteryHealthRoutineFunction::Run() {
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
   remote_diagnostics_service_->RunBatteryHealthRoutine(std::move(cb));
+
+  return RespondLater();
+}
+
+// runCpuStressRoutine ---------------------------------------------------------
+
+OsDiagnosticsRunCpuStressRoutineFunction::
+    OsDiagnosticsRunCpuStressRoutineFunction() = default;
+OsDiagnosticsRunCpuStressRoutineFunction::
+    ~OsDiagnosticsRunCpuStressRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction
+OsDiagnosticsRunCpuStressRoutineFunction::Run() {
+  std::unique_ptr<api::os_diagnostics::RunCpuStressRoutine::Params> params(
+      api::os_diagnostics::RunCpuStressRoutine::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  // We don't need Unretained() or WeakPtr because ExtensionFunction is
+  // ref-counted.
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunCpuStressRoutine(
+      params->request.length_seconds, std::move(cb));
 
   return RespondLater();
 }
