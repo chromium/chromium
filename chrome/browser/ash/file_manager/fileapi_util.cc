@@ -460,6 +460,10 @@ const GURL GetFileManagerURL() {
   return extensions::Extension::GetBaseURLFromExtensionId(kFileManagerAppId);
 }
 
+bool IsFileManagerURL(const GURL& source_url) {
+  return GetFileManagerURL() == source_url.GetOrigin();
+}
+
 storage::FileSystemContext* GetFileManagerFileSystemContext(Profile* profile) {
   return GetFileSystemContextForSourceURL(profile, GetFileManagerURL());
 }

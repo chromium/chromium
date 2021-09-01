@@ -17,7 +17,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
@@ -29,7 +29,9 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/features/feature.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -198,7 +200,8 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
 
   // Inform the native Wallpaper Picker Application that the current wallpaper
   // has been modified by a third party application.
-  if (extension()->id() != extension_misc::kWallpaperManagerId) {
+  const extensions::Extension* ext = extension();
+  if (!ext || ext->id() != extension_misc::kWallpaperManagerId) {
     Profile* profile = Profile::FromBrowserContext(browser_context());
     extensions::EventRouter* event_router =
         extensions::EventRouter::Get(profile);
@@ -216,8 +219,15 @@ void WallpaperSetWallpaperFunction::OnWallpaperDecoded(
     // But we should not display the 'wallpaper-set-by-mesage' since it might
     // introduce confusion as shown in crbug.com/599407.
     base::StringPiece ext_name;
-    if (extension()->id() != file_manager::kFileManagerAppId)
-      ext_name = extension()->name();
+    bool is_file_manager =
+        (source_context_type() ==
+             extensions::Feature::BLESSED_EXTENSION_CONTEXT ||
+         source_context_type() == extensions::Feature::WEBUI_CONTEXT) &&
+        file_manager::util::IsFileManagerURL(
+            GetSenderWebContents()->GetLastCommittedURL());
+    if (!is_file_manager) {
+      ext_name = ext->name();
+    }
     event_args.push_back(base::Value(ext_name));
     std::unique_ptr<extensions::Event> event(new extensions::Event(
         extensions::events::WALLPAPER_PRIVATE_ON_WALLPAPER_CHANGED_BY_3RD_PARTY,

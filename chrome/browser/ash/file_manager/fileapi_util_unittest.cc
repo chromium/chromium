@@ -180,7 +180,7 @@ class FileManagerFileAPIUtilTest
         },
         std::move(temp_file_system), std::move(errors), run_loop.QuitClosure());
     ConvertFileDefinitionListToEntryDefinitionList(
-        file_manager::util::GetFileSystemContextForSourceURL(profile_, appURL),
+        GetFileSystemContextForSourceURL(profile_, appURL),
         url::Origin::Create(appURL), file_definitions, std::move(callback));
     run_loop.Run();
   }
@@ -351,7 +351,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       temp_file_system->CreateFileSystemURL(".");
   FileDefinition x_fd = {.virtual_path = x_file_url.virtual_path()};
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      file_manager::util::GetFileSystemContextForSourceURL(profile, appURL);
+      GetFileSystemContextForSourceURL(profile, appURL);
 
   base::RunLoop run_loop;
   EntryDefinitionListCallback callback = base::BindOnce(
@@ -375,6 +375,23 @@ TEST_P(FileManagerFileAPIUtilTest,
   file_system_context.reset();
 
   run_loop.Run();
+}
+
+TEST_P(FileManagerFileAPIUtilTest, IsFileManagerURL) {
+  EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL()));
+  EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL().Resolve("/some/path")));
+  EXPECT_TRUE(IsFileManagerURL(
+      GetFileManagerURL().Resolve("/some/path").Resolve("#anchor")));
+  EXPECT_TRUE(IsFileManagerURL(GetFileManagerURL()
+                                   .Resolve("/some/path")
+                                   .Resolve("#anchor")
+                                   .Resolve("?a=b")));
+  EXPECT_FALSE(IsFileManagerURL(GURL("chrome://not-file-manager")));
+  EXPECT_FALSE(IsFileManagerURL(GURL("chrome://not-file-manager/")));
+  EXPECT_FALSE(IsFileManagerURL(
+      GURL("chrome-extension://iamnotafilemanagerextensionid")));
+  EXPECT_FALSE(IsFileManagerURL(
+      GURL("chrome-extension://iamnotafilemanagerextensionid/")));
 }
 
 INSTANTIATE_TEST_SUITE_P(FilesAppMode,

@@ -904,10 +904,16 @@
     "dependencies": ["permission:virtualKeyboardPrivate"],
     "contexts": ["blessed_extension"]
   },
-  "wallpaper": {
+  "wallpaper": [{
     "dependencies": ["permission:wallpaper"],
     "contexts": ["blessed_extension"]
-  },
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://file-manager/*"
+    ]
+  }],
   "wallpaperPrivate": {
     "dependencies": ["permission:wallpaperPrivate"],
     "contexts": ["blessed_extension"]

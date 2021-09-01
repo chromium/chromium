@@ -95,6 +95,10 @@ typedef base::OnceCallback<void(FileChooserFileInfoList)>
 // TODO(crbug/1184927): Replace with dynamic listener URL.
 const GURL GetFileManagerURL();
 
+// Returns whether the given URL identifies the File Manager as a source. This
+// can be used to see if a private API calls come from the File Manager or not.
+bool IsFileManagerURL(const GURL& source_url);
+
 // Returns the default file system context for Files app. This is a convenience
 // method that should be used only if you are ABSOLUTELY CERTAIN that you are
 // performing some functions on the behalf of the Files app yet your code does
