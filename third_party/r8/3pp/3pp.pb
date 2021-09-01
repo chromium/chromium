@@ -3,13 +3,8 @@ create {
     git {
       repo: "https://r8.googlesource.com/r8"
       tag_pattern: "%s-dev"
-      version_restriction {
-          op: EQ
-          val: "3.1.16"
-      }
     }
     patch_dir: "patches"
-    patch_version: "crbug1214915"
   }
 
   build {
