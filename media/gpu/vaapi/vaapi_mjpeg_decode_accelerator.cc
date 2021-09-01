@@ -262,7 +262,6 @@ bool VaapiMjpegDecodeAccelerator::OutputPictureLibYuvOnTaskRunner(
   const gfx::Size src_size(base::strict_cast<int>(image->width),
                            base::strict_cast<int>(image->height));
   DCHECK(gfx::Rect(src_size).Contains(crop_rect));
-  const gfx::Size& dst_size = video_frame->visible_rect().size();
 
   // Wrap |image| into VideoFrame.
   std::vector<int32_t> strides(image->num_planes);
