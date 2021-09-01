@@ -42,7 +42,7 @@
     [NotEnumerable] getter (RadioNodeList or Element) (DOMString name);
 
     [ImplementedAs=submitFromJavaScript] void submit();
-    [RaisesException] void requestSubmit(optional HTMLElement submitter);
+    [RaisesException] void requestSubmit(optional HTMLElement? submitter = null);
     [CEReactions] void reset();
     boolean checkValidity();
     boolean reportValidity();
