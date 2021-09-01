@@ -42,13 +42,6 @@ Polymer({
     }
   },
 
-  onClickExtensionsSettingsButton_() {
-    app_management.BrowserProxy.getInstance().handler.openNativeSettings(
-        this.app_.id);
-    app_management.util.recordAppManagementUserAction(
-        this.app_.type, AppManagementUserAction.NativeSettingsOpened);
-  },
-
   /**
    * @param {!Array<ExtensionAppPermissionMessage>} messages
    * @return {Array<string>}

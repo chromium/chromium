@@ -24,6 +24,7 @@ js_type_check("closure_compile_module") {
     ":fake_page_handler.m",
     ":icons.m",
     ":main_view.m",
+    ":more_permissions_item.m",
     ":permission_item.m",
     ":pin_to_shelf_item.m",
     ":pwa_detail_view.m",
@@ -107,6 +108,7 @@ js_library("arc_detail_view.m") {
   deps = [
     ":constants.m",
     ":fake_page_handler.m",
+    ":more_permissions_item.m",
     ":permission_item.m",
     ":pin_to_shelf_item.m",
     ":store_client.m",
@@ -130,6 +132,7 @@ js_library("chrome_app_detail_view.m") {
   deps = [
     ":browser_proxy.m",
     ":fake_page_handler.m",
+    ":more_permissions_item.m",
     ":pin_to_shelf_item.m",
     ":store_client.m",
     ":util.m",
@@ -181,6 +184,12 @@ js_library("main_view.m") {
   extra_deps = [ ":main_view_module" ]
 }
 
+js_library("more_permissions_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/more_permissions_item.m.js" ]
+  deps = [ "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m" ]
+  extra_deps = [ ":more_permissions_item_module" ]
+}
+
 js_library("permission_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_apps_page/app_management_page/permission_item.m.js" ]
   deps = [
@@ -213,6 +222,7 @@ js_library("pwa_detail_view.m") {
   deps = [
     ":constants.m",
     ":fake_page_handler.m",
+    ":more_permissions_item.m",
     ":permission_item.m",
     ":pin_to_shelf_item.m",
     ":store_client.m",
@@ -357,6 +367,7 @@ group("polymer3_elements") {
     ":icons_module",
     ":main_view_module",
     ":modulize",
+    ":more_permissions_item_module",
     ":permission_item_module",
     ":pin_to_shelf_item_module",
     ":pwa_detail_view_module",
@@ -433,6 +444,15 @@ polymer_modulizer("icons") {
 polymer_modulizer("main_view") {
   js_file = "main_view.js"
   html_file = "main_view.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("more_permissions_item") {
+  js_file = "more_permissions_item.js"
+  html_file = "more_permissions_item.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

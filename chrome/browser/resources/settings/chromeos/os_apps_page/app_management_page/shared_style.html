@@ -35,7 +35,7 @@
       }
 
       .permission-text-row {
-        border-top: var(--card-separator);
+        border-bottom: var(--card-separator);
         display: flex;
         flex-direction: column;
         height: var(--text-permission-list-row-height);
@@ -93,7 +93,7 @@
         height: 48px;
       }
 
-      .subpermission-row[available_]:last-of-type {
+      .subpermission-row:nth-last-child(1) {
         border-bottom: none;
       }
 
