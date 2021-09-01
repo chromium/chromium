@@ -653,10 +653,10 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     base::OnceClosure callback,
     const base::ListValue& result) {
   const std::string kClearPropertiesFailedError("Error.ClearPropertiesFailed");
-  DCHECK(names.size() == result.GetSize())
+  DCHECK(names.size() == result.GetList().size())
       << "Incorrect result size from ClearProperties.";
 
-  for (size_t i = 0; i < result.GetSize(); ++i) {
+  for (size_t i = 0; i < result.GetList().size(); ++i) {
     bool success = false;
     result.GetBoolean(i, &success);
     if (!success) {

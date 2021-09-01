@@ -46,7 +46,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateManagedList(ManagedState::ManagedType type,
                          const base::ListValue& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
-            << "]: " << entries.GetSize();
+            << "]: " << entries.GetList().size();
     UpdateEntries(GetTypeString(type), entries);
   }
 

@@ -1251,7 +1251,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   CHECK(!notifying_network_observers_);
   ManagedStateList* managed_list = GetManagedList(type);
   NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetSize();
+                 << ": " << entries.GetList().size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;

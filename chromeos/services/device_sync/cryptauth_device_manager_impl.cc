@@ -299,7 +299,7 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
 void AddBeaconSeedsToExternalDevice(
     const base::ListValue& beacon_seeds,
     cryptauth::ExternalDeviceInfo* external_device) {
-  for (size_t i = 0; i < beacon_seeds.GetSize(); i++) {
+  for (size_t i = 0; i < beacon_seeds.GetList().size(); i++) {
     const base::DictionaryValue* seed_dictionary = nullptr;
     if (!beacon_seeds.GetDictionary(i, &seed_dictionary)) {
       PA_LOG(WARNING) << "Unable to retrieve BeaconSeed dictionary; "
@@ -757,7 +757,7 @@ void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
   const base::ListValue* unlock_key_list =
       pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   synced_devices_.clear();
-  for (size_t i = 0; i < unlock_key_list->GetSize(); ++i) {
+  for (size_t i = 0; i < unlock_key_list->GetList().size(); ++i) {
     const base::DictionaryValue* unlock_key_dictionary;
     if (unlock_key_list->GetDictionary(i, &unlock_key_dictionary)) {
       cryptauth::ExternalDeviceInfo unlock_key;

@@ -426,7 +426,7 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
   std::set<std::string>& requested_updates = requested_updates_[type];
   std::set<std::string> new_requested_updates;
   NET_LOG(DEBUG) << "UpdateProperties: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetSize();
+                 << ": " << entries.GetList().size();
   for (const auto& entry : entries.GetList()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())

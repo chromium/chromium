@@ -272,7 +272,7 @@ void ProximityAuthWebUIHandler::ClearLogBuffer(const base::ListValue* args) {
 void ProximityAuthWebUIHandler::ToggleUnlockKey(const base::ListValue* args) {
   std::string public_key_b64, public_key;
   bool make_unlock_key;
-  if (args->GetSize() != 2 || !args->GetString(0, &public_key_b64) ||
+  if (args->GetList().size() != 2 || !args->GetString(0, &public_key_b64) ||
       !args->GetBoolean(1, &make_unlock_key) ||
       !base::Base64UrlDecode(public_key_b64,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
@@ -311,7 +311,7 @@ void ProximityAuthWebUIHandler::ForceDeviceSync(const base::ListValue* args) {
 void ProximityAuthWebUIHandler::ToggleConnection(const base::ListValue* args) {
   std::string b64_public_key;
   std::string public_key;
-  if (!args->GetSize() || !args->GetString(0, &b64_public_key) ||
+  if (!args->GetList().size() || !args->GetString(0, &b64_public_key) ||
       !base::Base64UrlDecode(b64_public_key,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &public_key)) {
@@ -543,9 +543,9 @@ void ProximityAuthWebUIHandler::OnFindEligibleDevices(
     ineligible_devices_list_value.Append(RemoteDeviceToDictionary(device));
   }
 
-  PA_LOG(VERBOSE) << "Found " << eligible_devices_list_value.GetSize()
+  PA_LOG(VERBOSE) << "Found " << eligible_devices_list_value.GetList().size()
                   << " eligible devices and "
-                  << ineligible_devices_list_value.GetSize()
+                  << ineligible_devices_list_value.GetList().size()
                   << " ineligible devices.";
   web_ui()->CallJavascriptFunctionUnsafe(
       "CryptAuthInterface.onGotEligibleDevices", eligible_devices_list_value,
