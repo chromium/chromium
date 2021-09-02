@@ -5760,7 +5760,7 @@
   {
     "name": "webui-feedback",
     "owners": [ "xiangdongkong@google.com", "dpapad@chromium.org" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 106
   },
   {
     "name": "webui-tab-strip",
