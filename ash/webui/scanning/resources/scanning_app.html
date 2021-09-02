@@ -242,7 +242,8 @@
       <template is="dom-if" if="[[showMultiPageScan_]]">
         <multi-page-scan page-number="[[pageNumber_]]" app-state="[[appState_]]"
             on-scan-next-page="onScanNextPage_"
-            on-complete-multi-page-scan="onCompleteMultiPageScan_">
+            on-complete-multi-page-scan="onCompleteMultiPageScan_"
+            on-cancel-click="onCancelClick_">
         </multi-page-scan>
       </template>
     </div>

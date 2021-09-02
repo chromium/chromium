@@ -74,6 +74,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"legalOptionText", IDS_SCANNING_APP_LEGAL_OPTION_TEXT},
       {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
+      {"multiPageCancelingScanningText",
+       IDS_SCANNING_APP_MULTI_PAGE_CANCELING_SCANNING_TEXT},
       {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
       {"multiPageScanInstructionsText",
        IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT},

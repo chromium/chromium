@@ -729,6 +729,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_MULTI_PAGE_SCAN_PROGRESS_TEXT" desc="The text displayed in the multi-page scan section to indicate which page is currently being scanned.">
         Scanning page <ph name="PAGE_NUMBER">$1<ex>4</ex></ph>...
       </message>
+      <message name="IDS_SCANNING_APP_MULTI_PAGE_CANCELING_SCANNING_TEXT" desc="The text displayed in the multi-page scan section to indicate the scan is being canceled.">
+        Canceling scanning...
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

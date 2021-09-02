@@ -135,6 +135,13 @@ export function scanPreviewTest() {
         /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
         /*isCancelingProgressVisible*/ true);
 
+    scanPreview.appState = AppState.MULTI_PAGE_CANCELING;
+    flush();
+    assertVisible(
+        /*isHelpOrProgressVisible*/ true, /*isHelperTextVisible*/ false,
+        /*isScanProgressVisible*/ false, /*isScannedImagesVisible*/ false,
+        /*isCancelingProgressVisible*/ true);
+
     scanPreview.objectUrls = ['image'];
     scanPreview.appState = AppState.DONE;
     flush();

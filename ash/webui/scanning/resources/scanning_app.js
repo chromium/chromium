@@ -410,7 +410,8 @@ Polymer({
     assert(
         this.appState_ === AppState.SCANNING ||
         this.appState_ === AppState.MULTI_PAGE_SCANNING ||
-        this.appState_ === AppState.CANCELING);
+        this.appState_ === AppState.CANCELING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING);
 
     // The Scan app increments |this.pageNumber_| itself during a multi-page
     // scan.
@@ -429,7 +430,8 @@ Polymer({
     assert(
         this.appState_ === AppState.SCANNING ||
         this.appState_ === AppState.MULTI_PAGE_SCANNING ||
-        this.appState_ === AppState.CANCELING);
+        this.appState_ === AppState.CANCELING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING);
 
     const blob = new Blob([Uint8Array.from(pageData)], {'type': 'image/png'});
     const objectUrl = URL.createObjectURL(blob);
@@ -474,13 +476,26 @@ Polymer({
   onCancelComplete(success) {
     // If the cancel request fails, continue showing the scan progress page.
     if (!success) {
-      this.setAppState_(AppState.SCANNING);
       this.showToast_('cancelFailedToastText');
+      this.setAppState_(
+          this.appState_ === AppState.MULTI_PAGE_CANCELING ?
+              AppState.MULTI_PAGE_SCANNING :
+              AppState.SCANNING);
       return;
     }
 
+    if (this.appState_ === AppState.MULTI_PAGE_CANCELING) {
+      // For multi-page scans |pageNumber_| needs to be set to the number of
+      // existing scanned images since the next scan isn't guaranteed to be the
+      // first page. So when the next scan is started, |pageNumber_| will get
+      // incremented and the preview area will show 'Scanning length+1'.
+      this.pageNumber_ = this.objectUrls_.length;
+      this.setAppState_(AppState.MULTI_PAGE_NEXT_ACTION);
+    } else {
+      this.setAppState_(AppState.READY);
+    }
+
     this.showToast_('scanCanceledToastText');
-    this.setAppState_(AppState.READY);
   },
 
   /**
@@ -777,8 +792,13 @@ Polymer({
 
   /** @private */
   onCancelClick_() {
-    assert(this.appState_ === AppState.SCANNING);
-    this.setAppState_(AppState.CANCELING);
+    assert(
+        this.appState_ === AppState.SCANNING ||
+        this.appState_ === AppState.MULTI_PAGE_SCANNING);
+    this.setAppState_(
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ?
+            AppState.MULTI_PAGE_CANCELING :
+            AppState.CANCELING);
     this.scanService_.cancelScan();
   },
 
@@ -843,10 +863,20 @@ Polymer({
       case (AppState.NO_SCANNERS):
         assert(this.appState_ === AppState.GETTING_SCANNERS);
         break;
+      case (AppState.MULTI_PAGE_SCANNING):
+        assert(
+            this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION ||
+            this.appState_ === AppState.MULTI_PAGE_CANCELING);
+        break;
       case (AppState.MULTI_PAGE_NEXT_ACTION):
         assert(
             this.appState_ === AppState.SCANNING ||
-            this.appState_ === AppState.MULTI_PAGE_SCANNING);
+            this.appState_ === AppState.CANCELING ||
+            this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+            this.appState_ === AppState.MULTI_PAGE_CANCELING);
+        break;
+      case (AppState.MULTI_PAGE_CANCELING):
+        assert(this.appState_ === AppState.MULTI_PAGE_SCANNING);
         break;
     }
 
@@ -864,7 +894,8 @@ Polymer({
     this.showDoneSection_ = this.appState_ === AppState.DONE;
     this.showMultiPageScan_ =
         this.appState_ === AppState.MULTI_PAGE_NEXT_ACTION ||
-        this.appState_ === AppState.MULTI_PAGE_SCANNING;
+        this.appState_ === AppState.MULTI_PAGE_SCANNING ||
+        this.appState_ === AppState.MULTI_PAGE_CANCELING;
     this.showScanSettings_ = !this.showDoneSection_ && !this.showMultiPageScan_;
 
     // Need to wait for elements to render after updating their disabled and

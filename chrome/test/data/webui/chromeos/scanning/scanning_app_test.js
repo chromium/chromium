@@ -1015,6 +1015,60 @@ export function scanningAppTest() {
         });
   });
 
+  // Verify a scan can be canceled during a multi-page scan session.
+  test('MultiPageCancelScan', () => {
+    let newPageIndex = 0;
+
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          scanningApp.selectedSource = PLATEN;
+          scanningApp.selectedFileType = FileType.PDF.toString();
+          return flushTasks();
+        })
+        .then(() => {
+          scanningApp.multiPageScanChecked = true;
+          scanningApp.$$('#scanButton').click();
+          return fakeScanService_.whenCalled('startMultiPageScan');
+        })
+        .then(() => {
+          return fakeScanService_.simulatePageComplete(
+              /*pageNumber=*/ 1, newPageIndex++);
+        })
+        .then(() => {
+          scanningApp.$$('multi-page-scan').$$('#scanButton').click();
+          return fakeMultiPageScanController_.whenCalled('scanNextPage');
+        })
+        .then(() => {
+          // Click the Cancel button to cancel the scan.
+          scanningApp.$$('multi-page-scan').$$('#cancelButton').click();
+          return fakeScanService_.whenCalled('cancelScan');
+        })
+        .then(() => {
+          // Cancel button should be disabled while canceling is in progress.
+          assertTrue(
+              scanningApp.$$('multi-page-scan').$$('#cancelButton').disabled);
+
+          // Simulate cancel completing successfully.
+          return fakeScanService_.simulateCancelComplete(true);
+        })
+        .then(() => {
+          // After canceling is complete, the Scan Next Page button should be
+          // visible and showing the correct page number to scan. The cancel
+          // button should be hidden.
+          const scanNextPageButton =
+              scanningApp.$$('multi-page-scan').$$('#scanButton');
+          assertTrue(
+              isVisible(/** @type {!CrButtonElement} */ (scanNextPageButton)));
+          assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
+          assertFalse(isVisible(/** @type {!CrButtonElement} */ (
+              scanningApp.$$('multi-page-scan').$$('#cancelButton'))));
+          assertTrue(scanningApp.$$('#toast').open);
+        });
+  });
+
   // Verify the correct page can be removed from a multi-page scan job by
   // scanning three pages then removing the second page.
   test('MultiPageScanPageRemoved', () => {

@@ -43,11 +43,27 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {boolean} */
+    cancelButtonDisabled_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    showCancelingText_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private */
   onAppStateChange_() {
-    this.showCancelButton_ = this.appState === AppState.MULTI_PAGE_SCANNING;
+    this.showCancelButton_ = this.appState === AppState.MULTI_PAGE_SCANNING ||
+        this.appState === AppState.MULTI_PAGE_CANCELING;
+    this.cancelButtonDisabled_ =
+        this.appState === AppState.MULTI_PAGE_CANCELING;
+    this.showCancelingText_ = this.appState === AppState.MULTI_PAGE_CANCELING;
   },
 
   /** @private */
@@ -68,6 +84,11 @@ Polymer({
   /** @private */
   onSaveClick_() {
     this.fire('complete-multi-page-scan');
+  },
+
+  /** @private */
+  onCancelClick_() {
+    this.fire('cancel-click');
   },
 
   /**

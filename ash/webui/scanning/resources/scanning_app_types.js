@@ -18,6 +18,7 @@ export const AppState = {
   NO_SCANNERS: 8,
   MULTI_PAGE_NEXT_ACTION: 9,
   MULTI_PAGE_SCANNING: 10,
+  MULTI_PAGE_CANCELING: 11,
 };
 
 /**

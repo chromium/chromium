@@ -103,4 +103,30 @@ export function multiPageScanTest() {
         loadTimeData.getStringF('multiPageScanProgressText', pageNumber),
         multiPageScan.$$('#multiPageScanText').innerText.trim());
   });
+
+  // Verify the cancel button and canceling text are shown while canceling a
+  // scan.
+  test('cancelButtonShowsWhileCanceling', () => {
+    const cancelButton =
+        /** @type {!HTMLElement} */ (multiPageScan.$$('#cancelButton'));
+
+    // Cancel button should be visible and disabled.
+    multiPageScan.appState = AppState.MULTI_PAGE_CANCELING;
+    assertTrue(isVisible(cancelButton));
+    assertTrue(cancelButton.disabled);
+    assertEquals(
+        loadTimeData.getString('multiPageCancelingScanningText'),
+        multiPageScan.$$('#multiPageScanText').innerText.trim());
+  });
+
+  // Verify clicking the cancel button fires the 'cancel-click' event.
+  test('clickCancelButton', () => {
+    let clickCancelEventFired = false;
+    multiPageScan.addEventListener('cancel-click', function() {
+      clickCancelEventFired = true;
+    });
+
+    multiPageScan.$$('#cancelButton').click();
+    assertTrue(clickCancelEventFired);
+  });
 }
