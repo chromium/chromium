@@ -661,7 +661,10 @@ static_assert(kSerializedScriptValueVersion ==
               "Update WebSerializedScriptValueVersion.h.");
 
 bool SerializedScriptValue::IsOriginCheckRequired() const {
-  return file_system_access_tokens_.size() > 0;
+  return file_system_access_tokens_.size() > 0 ||
+         (!RuntimeEnabledFeatures::
+              CrossOriginWebAssemblyModuleSharingAllowedEnabled() &&
+          wasm_modules_.size() > 0);
 }
 
 }  // namespace blink

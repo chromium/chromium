@@ -6763,6 +6763,12 @@ crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback
 # Depends on fixing WPT cross-origin iframe click flake in crbug.com/1066891.
 crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.https.html [ Failure Pass ]
 
+# Cross-origin WebAssembly module sharing is getting deprecated.
+crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Skip ]
+crbug.com/1224804 http/tests/inspector-protocol/issues/wasm-co-sharing-issue.js [ Skip ]
+crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Skip ]
+
+
 # Sheriff 2021-07-13
 crbug.com/1220114 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1228772 [ Linux ] external/wpt/webrtc/simulcast/h264.https.html [ Crash Failure Pass Skip Timeout ]

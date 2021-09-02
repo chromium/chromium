@@ -606,6 +606,7 @@
       "external/wpt/html/browsers/the-windowproxy-exotic-object/windowproxy-prototype-setting-same-origin-domain.sub.html",
       "external/wpt/wasm/serialization/module/window-domain-success.sub.html",
       "external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html",
+      "external/wpt/wasm/serialization/module/share-module-cross-origin-fails.sub.html",
 
       "http/tests/printing/cross-site-frame-scrolled.html",
       "http/tests/printing/cross-site-frame.html"],

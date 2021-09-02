@@ -57,6 +57,8 @@ CONTENT_EXPORT extern const base::Feature kConsolidatedMovementXY;
 CONTENT_EXPORT extern const base::Feature kCooperativeScheduling;
 CONTENT_EXPORT extern const base::Feature kCrashReporting;
 CONTENT_EXPORT extern const base::Feature kCriticalClientHint;
+CONTENT_EXPORT extern const base::Feature
+    kCrossOriginWebAssemblyModuleSharingEnabled;
 CONTENT_EXPORT extern const base::Feature kDataSaverHoldback;
 CONTENT_EXPORT extern const base::Feature
     kDebugHistoryInterventionNoUserActivation;

@@ -205,11 +205,13 @@ RenderProcessImpl::RenderProcessImpl()
 
   // The cross-origin-webassembly-module-sharing-allowed flag is used to pass
   // the kCrossOriginWebAssemblyModuleSharingEnabled enterprise policy from the
-  // browser process to the renderer process. This switch should be enabled by
-  // default for now, but once cross origin module sharing is deprecated, this
-  // switch will only get enabled by the enterprise policy.
+  // browser process to the renderer process. The feature flag
+  // features::kCrossOriginWebAssemblyModuleSharingEnabled exists to allow a
+  // potential finch trial to roll back the deprecation if necessary.
   if (command_line->HasSwitch(
-          switches::kCrossOriginWebAssemblyModuleSharingAllowed)) {
+          switches::kCrossOriginWebAssemblyModuleSharingAllowed) ||
+      base::FeatureList::IsEnabled(
+          features::kCrossOriginWebAssemblyModuleSharingEnabled)) {
     blink::WebRuntimeFeatures::EnableCrossOriginWebAssemblyModuleSharingAllowed(
         true);
   }

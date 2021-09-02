@@ -2970,7 +2970,7 @@
         "policies": {},
         "prefs": {
           "profile.cross_origin_webassembly_module_sharing_enabled": {
-            "default_value": true
+            "default_value": false
           }
         }
       }

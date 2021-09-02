@@ -18729,7 +18729,7 @@
         },
       ],
       'example_value': True,
-      'default': True,
+      'default': False,
       'id': 878,
       'caption': '''Specifies whether WebAssembly modules can be sent cross-origin''',
       'tags': ['system-security'],
@@ -18744,8 +18744,8 @@
       When set to True, sites can send WebAssembly modules also cross-origin
       without restrictions.
 
-      When set to False, sites can only send WebAssembly modules to windows
-      and workers in the same origin.''',
+      When set to False or not set, sites can only send WebAssembly modules to
+      windows and workers in the same origin.''',
     },
     {
       'name': 'DisplayCapturePermissionsPolicyEnabled',
