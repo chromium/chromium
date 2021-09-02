@@ -47,7 +47,7 @@ audio {
 }
 
 body {
-  background: black;
+  background: var(--grey-900);
   bottom: 0;
   font-family: var(--default-font-family);
   height: 100%;
@@ -224,7 +224,7 @@ body.tablet-landscape .actions-group {
 
 #mode-selector::before,
 #mode-selector::after {
-  background: linear-gradient(to right, black, transparent);
+  background: linear-gradient(to right, var(--grey-900), transparent);
   content: '';
   display: block;
   height: calc(100% - var(--scrollbar-height));
@@ -1360,7 +1360,7 @@ html[dir=rtl] .icon.end {
 }
 
 #view-warning {
-  background: black;
+  background: var(--grey-900);
   color: white;
 }
 
@@ -1452,7 +1452,7 @@ body.tab-navigation .dialog-buttons button:focus::after {
 }
 
 #view-splash {
-  background: no-repeat center url(/images/camera_mode_photo.svg), black;
+  background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
   z-index: 2;
 }
 
