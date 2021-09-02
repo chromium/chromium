@@ -4828,6 +4828,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Include non-standard port in generated Kerberos SPN',
+        },
+        {
+          'value': False,
+          'caption': 'Do not include port in generated Kerberos SPN',
+        },
+      ],
       'example_value': False,
       'id': 28,
       'caption': '''Include non-standard port in Kerberos SPN''',
@@ -4959,6 +4969,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use KDC policy approval during HTTP authentication',
+        },
+        {
+          'value': False,
+          'caption': 'Ignore KDC policy approval during HTTP authentication',
+        },
+      ],
       'example_value': True,
       'id': 528,
       'caption': '''Use KDC policy to delegate credentials.''',
@@ -5046,6 +5066,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow third-party images to show an authentication prompt',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent third-party images from showing an authentication prompt',
+        },
+      ],
       'example_value': False,
       'id': 89,
       'caption': '''Cross-origin HTTP Authentication prompts''',
@@ -5255,6 +5285,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow installation and updates for extensions hosted outside of Chrome Web Store',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent installation and updates for extensions hosted outside of Chrome Web Store',
+        },
+      ],
       'example_value': False,
       'id': 516,
       'caption': '''Allow insecure algorithms in integrity checks on extension updates and installs''',
@@ -5486,6 +5526,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Block installation of external extensions',
+        },
+        {
+          'value': False,
+          'caption': 'Allow installation of external extensions',
+        },
+      ],
       'example_value': True,
       'id': 637,
       'caption': '''Blocks external extensions from being installed''',
@@ -5510,6 +5560,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show the Home button on the toolbar',
+        },
+        {
+          'value': False,
+          'caption': 'Hide the Home button from the toolbar',
+        },
+      ],
       'example_value': True,
       'id': 35,
       'caption': '''Show Home button on toolbar''',
@@ -5528,6 +5588,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable Developer Tools',
+        },
+        {
+          'value': False,
+          'caption': 'Enable Developer Tools',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 36,
