@@ -355,6 +355,9 @@ Polymer({
   /** @private {?mojom.CrosNetworkConfigRemote} */
   networkConfig_: null,
 
+  /** @private {!Array<string>} */
+  supportedVpnTypes_: [],
+
   /** @override */
   created() {
     this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
@@ -376,6 +379,10 @@ Polymer({
     this.propertiesSent_ = false;
     this.selectedServerCaHash_ = undefined;
     this.selectedUserCertHash_ = undefined;
+
+    this.networkConfig_.getSupportedVpnTypes().then(response => {
+      this.supportedVpnTypes_ = response.vpnTypes;
+    });
 
     if (this.guid) {
       this.networkConfig_.getManagedProperties(this.guid).then(response => {
@@ -530,6 +537,16 @@ Polymer({
   hasGuid_() {
     return !!this.guid;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isWireGuardSupported_() {
+    return this.supportedVpnTypes_ &&
+        this.supportedVpnTypes_.includes('wireguard');
+  },
+
 
   /** NetworkListenerBehavior override */
   onNetworkCertificatesChanged() {

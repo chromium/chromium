@@ -94,6 +94,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void GetNetworkCertificates(GetNetworkCertificatesCallback callback) override;
   void GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) override;
   void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) override;
+  void GetSupportedVpnTypes(GetSupportedVpnTypesCallback callback) override;
   void RequestTrafficCounters(const std::string& guid,
                               RequestTrafficCountersCallback callback) override;
   void ResetTrafficCounters(const std::string& guid) override;
@@ -160,6 +161,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
                         std::string mode,
                         std::string service_path);
+  void OnGetSupportedVpnTypes(GetSupportedVpnTypesCallback callback,
+                              absl::optional<base::Value> manager_properties);
   void PopulateTrafficCounters(RequestTrafficCountersCallback callback,
                                absl::optional<base::Value> traffic_counters);
 

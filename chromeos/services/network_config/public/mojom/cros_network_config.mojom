@@ -1118,6 +1118,9 @@ interface CrosNetworkConfig {
   // |properties.service_guid|. The service GUID must match a VPN service.
   SetAlwaysOnVpn(AlwaysOnVpnProperties properties);
 
+  // Returns the list of supported VPN types.
+  GetSupportedVpnTypes() => (array<string> vpn_types);
+
   // Requests traffic counters for a service with ID |guid|.
   RequestTrafficCounters(string guid) =>
     (array<TrafficCounter> traffic_counters);

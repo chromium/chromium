@@ -139,6 +139,7 @@
      'startConnect',
      'configureNetwork',
      'getAlwaysOnVpn',
+     'getSupportedVpnTypes',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -517,6 +518,16 @@
     return new Promise(resolve => {
       this.methodCalled('getVpnProviders');
       resolve({providers: this.vpnProviders_});
+    });
+  }
+
+  /**
+   * @return {!Promise<{result: !Array<string>}>}
+   */
+  getSupportedVpnTypes() {
+    return new Promise(resolve => {
+      this.methodCalled('getSupportedVpnTypes');
+      resolve({vpnTypes: ['l2tpipsec', 'openvpn', 'thirdpartyvpn', 'arcvpn']});
     });
   }
 

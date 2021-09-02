@@ -7,6 +7,7 @@
 #include <cmath>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
@@ -16,6 +17,7 @@
 #include "chromeos/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_utils.h"
@@ -58,6 +60,9 @@ const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
 const char kErrorInvalidONCConfiguration[] = "Error.InvalidONCConfiguration";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
 const char kErrorNotReady[] = "Error.NotReady";
+
+// WireGuard string from Shill SupportedVPNType property.
+const char kWireGuardVPNType[] = "wireguard";
 
 std::string ShillToOnc(const std::string& shill_string,
                        const onc::StringTranslationEntry table[]) {
@@ -3039,6 +3044,33 @@ void CrosNetworkConfig::SetAlwaysOnVpn(
     return;
   }
   network_profile_handler_->SetAlwaysOnVpnService(profile->path, service_path);
+}
+
+void CrosNetworkConfig::GetSupportedVpnTypes(
+    GetSupportedVpnTypesCallback callback) {
+  ShillManagerClient::Get()->GetProperties(
+      base::BindOnce(&CrosNetworkConfig::OnGetSupportedVpnTypes,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrosNetworkConfig::OnGetSupportedVpnTypes(
+    GetSupportedVpnTypesCallback callback,
+    absl::optional<base::Value> properties) {
+  std::vector<std::string> result;
+  const base::Value* value =
+      properties->FindKey(shill::kSupportedVPNTypesProperty);
+  if (value) {
+    result =
+        base::SplitString(*value->GetIfString(), ",", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+  }
+  if (!base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
+    auto iter = std::find(result.begin(), result.end(), kWireGuardVPNType);
+    if (iter != result.end()) {
+      result.erase(iter);
+    }
+  }
+  std::move(callback).Run(result);
 }
 
 void CrosNetworkConfig::RequestTrafficCounters(
