@@ -99,7 +99,7 @@ bool DevToolsProtocolTest::HasListItem(const std::string& path_to_list,
   if (!result_->GetList(path_to_list, &list))
     return false;
 
-  for (size_t i = 0; i != list->GetSize(); i++) {
+  for (size_t i = 0; i != list->GetList().size(); i++) {
     base::DictionaryValue* item;
     if (!list->GetDictionary(i, &item))
       return false;

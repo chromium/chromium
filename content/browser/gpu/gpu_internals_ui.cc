@@ -744,7 +744,7 @@ void GpuMessageHandler::RegisterMessages() {
 }
 
 void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
-  DCHECK_GE(args->GetSize(), static_cast<size_t>(2));
+  DCHECK_GE(args->GetList().size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
   bool ok;
   const base::Value* requestId;
@@ -756,7 +756,7 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
   DCHECK(ok);
 
   auto submessageArgs = std::make_unique<base::ListValue>();
-  for (size_t i = 2; i < args->GetSize(); ++i) {
+  for (size_t i = 2; i < args->GetList().size(); ++i) {
     const base::Value* arg;
     ok = args->Get(i, &arg);
     DCHECK(ok);

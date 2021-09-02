@@ -136,7 +136,7 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
     EXPECT_TRUE(list_value->is_list()) << typed_array_type;
     base::ListValue* list;
     ASSERT_TRUE(list_value->GetAsList(&list)) << typed_array_type;
-    EXPECT_EQ(1u, list->GetSize()) << typed_array_type;
+    EXPECT_EQ(1u, list->GetList().size()) << typed_array_type;
 
     const base::Value* value;
     list->Get(0, &value);

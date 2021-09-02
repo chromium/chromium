@@ -253,7 +253,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::ListValue* list_request =
         static_cast<base::ListValue*>(value_requests.get());
-    EXPECT_EQ(requests.size(), list_request->GetSize());
+    EXPECT_EQ(requests.size(), list_request->GetList().size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
       base::DictionaryValue* dict = nullptr;
@@ -478,7 +478,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       pc_dump->Get("updateLog", &value);
       EXPECT_EQ(base::Value::Type::LIST, value->type());
       base::ListValue* list = static_cast<base::ListValue*>(value);
-      EXPECT_EQ((size_t) update_number, list->GetSize());
+      EXPECT_EQ((size_t)update_number, list->GetList().size());
 
       // Verifies the number of stats tables.
       pc_dump->Get("stats", &value);

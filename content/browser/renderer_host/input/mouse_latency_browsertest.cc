@@ -251,7 +251,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   std::string ShowTraceEventsWithId(const std::string& id_to_show,
                                     const base::ListValue* traceEvents) {
     std::stringstream stream;
-    for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
+    for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
       const base::DictionaryValue* traceEvent;
       if (!traceEvents->GetDictionary(i, &traceEvent))
         continue;
@@ -276,7 +276,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
 
     std::map<std::string, int> trace_ids;
 
-    for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
+    for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
       const base::DictionaryValue* traceEvent;
       ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
 
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
 
   std::vector<std::string> trace_event_names;
 
-  for (size_t i = 0; i < traceEvents->GetSize(); ++i) {
+  for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
     const base::DictionaryValue* traceEvent;
     ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
 

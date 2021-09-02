@@ -111,7 +111,7 @@ bool GinJavaMethodInvocationHelper::AppendObjectRef(
 void GinJavaMethodInvocationHelper::Invoke() {
   JNIEnv* env = AttachCurrentThread();
   const JavaMethod* method =
-      object_->FindMethod(method_name_, arguments_->GetSize());
+      object_->FindMethod(method_name_, arguments_->GetList().size());
   if (!method) {
     SetInvocationError(kGinJavaBridgeMethodNotFound);
     return;

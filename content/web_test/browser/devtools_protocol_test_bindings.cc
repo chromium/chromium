@@ -100,7 +100,8 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
   dict->GetInteger("id", &request_id);
   dict->GetList("params", &params);
 
-  if (method == "dispatchProtocolMessage" && params && params->GetSize() == 1) {
+  if (method == "dispatchProtocolMessage" && params &&
+      params->GetList().size() == 1) {
     std::string protocol_message;
     if (!params->GetString(0, &protocol_message))
       return;

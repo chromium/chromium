@@ -472,7 +472,7 @@ TEST_F(V8ValueConverterImplTest, ArrayExceptions) {
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(converted.get());
   // http://code.google.com/p/v8/issues/detail?id=1342
-  EXPECT_EQ(2u, converted->GetSize());
+  EXPECT_EQ(2u, converted->GetList().size());
   EXPECT_TRUE(IsNull(converted.get(), 0));
 
   // Converting to v8 value should not be affected by the getter/setter
@@ -742,7 +742,7 @@ TEST_F(V8ValueConverterImplTest, RecursiveObjects) {
   std::unique_ptr<base::ListValue> list_result(
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(list_result.get());
-  EXPECT_EQ(2u, list_result->GetSize());
+  EXPECT_EQ(2u, list_result->GetList().size());
   EXPECT_TRUE(IsNull(list_result.get(), 1));
 }
 
@@ -803,7 +803,7 @@ TEST_F(V8ValueConverterImplTest, ArrayGetters) {
   std::unique_ptr<base::ListValue> result(
       base::ListValue::From(converter.FromV8Value(array, context)));
   ASSERT_TRUE(result.get());
-  EXPECT_EQ(2u, result->GetSize());
+  EXPECT_EQ(2u, result->GetList().size());
 }
 
 TEST_F(V8ValueConverterImplTest, UndefinedValueBehavior) {
@@ -993,8 +993,8 @@ TEST_F(V8ValueConverterImplTest, ReuseObjects) {
     std::unique_ptr<base::ListValue> list_result(
         base::ListValue::From(converter.FromV8Value(array, context)));
     ASSERT_TRUE(list_result.get());
-    ASSERT_EQ(2u, list_result->GetSize());
-    for (size_t i = 0; i < list_result->GetSize(); ++i) {
+    ASSERT_EQ(2u, list_result->GetList().size());
+    for (size_t i = 0; i < list_result->GetList().size(); ++i) {
       ASSERT_FALSE(IsNull(list_result.get(), i));
       base::DictionaryValue* dict_value = nullptr;
       ASSERT_TRUE(list_result->GetDictionary(0u, &dict_value));
