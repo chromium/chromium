@@ -6827,7 +6827,6 @@ crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-p
 crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Failure Pass ]
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
 crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Failure Pass ]
-crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
 
 # Sheriff 2021-07-21
