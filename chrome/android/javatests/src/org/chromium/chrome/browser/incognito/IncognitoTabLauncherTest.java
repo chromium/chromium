@@ -23,6 +23,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -104,6 +105,7 @@ public class IncognitoTabLauncherTest {
     @Test
     @Feature("Incognito")
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1246132")
     @Features.DisableFeatures({ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS})
     public void testLaunchIncognitoNewTab_omniboxFocused_disabled_firstParty()
             throws TimeoutException {
