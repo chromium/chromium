@@ -61,8 +61,6 @@ OsDiagnosticsGetAvailableRoutinesFunction::
 
 ExtensionFunction::ResponseAction
 OsDiagnosticsGetAvailableRoutinesFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb = base::BindOnce(&OsDiagnosticsGetAvailableRoutinesFunction::OnResult,
                            this);
 
@@ -151,8 +149,6 @@ OsDiagnosticsRunBatteryCapacityRoutineFunction::
 
 ExtensionFunction::ResponseAction
 OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
@@ -174,8 +170,6 @@ OsDiagnosticsRunBatteryChargeRoutineFunction::Run() {
       api::os_diagnostics::RunBatteryChargeRoutine::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
@@ -200,8 +194,6 @@ OsDiagnosticsRunBatteryDischargeRoutineFunction::Run() {
           args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
@@ -221,8 +213,6 @@ OsDiagnosticsRunBatteryHealthRoutineFunction::
 
 ExtensionFunction::ResponseAction
 OsDiagnosticsRunBatteryHealthRoutineFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
@@ -244,8 +234,6 @@ OsDiagnosticsRunCpuCacheRoutineFunction::Run() {
       api::os_diagnostics::RunCpuCacheRoutine::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 
@@ -268,8 +256,6 @@ OsDiagnosticsRunCpuStressRoutineFunction::Run() {
       api::os_diagnostics::RunCpuStressRoutine::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb =
       base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
 

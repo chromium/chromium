@@ -24,8 +24,6 @@ OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
 OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
 ExtensionFunction::ResponseAction OsTelemetryGetVpdInfoFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
@@ -70,8 +68,6 @@ OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
 OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
 ExtensionFunction::ResponseAction OsTelemetryGetOemDataFunction::Run() {
-  // We don't need Unretained() or WeakPtr because ExtensionFunction is
-  // ref-counted.
   auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
 
   remote_probe_service_->GetOemData(std::move(cb));
