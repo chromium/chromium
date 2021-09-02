@@ -44,7 +44,8 @@ class EventModelImpl : public EventModel {
       const std::string& event_name) const override;
   uint32_t GetSnoozeCount(const std::string& event_name,
                           uint32_t window,
-                          uint32_t current_day) override;
+                          uint32_t current_day) const override;
+  bool IsSnoozeDismissed(const std::string& event_name) const override;
 
  private:
   // Callback for loading the underlying store.

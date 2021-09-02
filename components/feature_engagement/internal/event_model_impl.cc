@@ -130,9 +130,14 @@ base::Time EventModelImpl::GetLastSnoozeTimestamp(
 
 uint32_t EventModelImpl::GetSnoozeCount(const std::string& event_name,
                                         uint32_t window,
-                                        uint32_t current_day) {
+                                        uint32_t current_day) const {
   return GetEventCountOrSnooze(event_name, current_day, window,
                                /*is_snooze=*/true);
+}
+
+bool EventModelImpl::IsSnoozeDismissed(const std::string& event_name) const {
+  const Event* event = GetEvent(event_name);
+  return event ? event->snooze_dismissed() : false;
 }
 
 void EventModelImpl::OnStoreLoaded(OnModelInitializationFinished callback,

@@ -103,6 +103,12 @@ SessionRateImpact::SessionRateImpact(const SessionRateImpact& other) = default;
 
 SessionRateImpact::~SessionRateImpact() = default;
 
+SnoozeParams::SnoozeParams() = default;
+
+SnoozeParams::SnoozeParams(const SnoozeParams& other) = default;
+
+SnoozeParams::~SnoozeParams() = default;
+
 std::ostream& operator<<(std::ostream& os, const SessionRateImpact& impact) {
   os << "{ type: " << impact.type << ", affected_features: ";
   if (!impact.affected_features.has_value())
@@ -126,7 +132,7 @@ bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs) {
          std::tie(rhs.type, rhs.affected_features);
 }
 
-FeatureConfig::FeatureConfig() : valid(false), tracking_only(false) {}
+FeatureConfig::FeatureConfig() : valid(false) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig& other) = default;
 

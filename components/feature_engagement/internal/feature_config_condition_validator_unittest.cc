@@ -59,7 +59,7 @@ SessionRateImpact CreateSessionRateImpactTypeExplicit(
 
 class TestEventModel : public EventModel {
  public:
-  TestEventModel() : ready_(true) {}
+  TestEventModel() = default;
 
   void Initialize(OnModelInitializationFinished callback,
                   uint32_t current_day) override {}
@@ -108,24 +108,54 @@ class TestEventModel : public EventModel {
 
   void IncrementSnooze(const std::string& event_name,
                        uint32_t day,
-                       base::Time time) override {}
+                       base::Time time) override {
+    last_snooze_time_us_ = time;
+  }
 
-  void DismissSnooze(const std::string& event_name) override {}
+  void DismissSnooze(const std::string& event_name) override {
+    snooze_dismissed_ = true;
+  }
 
   base::Time GetLastSnoozeTimestamp(
       const std::string& event_name) const override {
-    return base::Time();
+    return last_snooze_time_us_;
   }
 
   uint32_t GetSnoozeCount(const std::string& event_name,
                           uint32_t window,
-                          uint32_t current_day) override {
-    return 0;
+                          uint32_t current_day) const override {
+    const Event* event = GetEvent(event_name);
+    if (!event || window == 0u)
+      return 0;
+
+    DCHECK(window >= 0);
+
+    uint32_t oldest_accepted_day = current_day - window + 1;
+    if (window > current_day)
+      oldest_accepted_day = 0u;
+
+    // Calculate the number of snooze within the window.
+    uint32_t count = 0;
+    for (const auto& event_day : event->events()) {
+      if (event_day.day() < oldest_accepted_day ||
+          event_day.day() > current_day)
+        continue;
+
+      count += event_day.snooze_count();
+    }
+
+    return count;
+  }
+
+  bool IsSnoozeDismissed(const std::string& event_name) const override {
+    return snooze_dismissed_;
   }
 
  private:
   std::map<std::string, Event> events_;
-  bool ready_;
+  base::Time last_snooze_time_us_;
+  bool ready_ = true;
+  bool snooze_dismissed_ = false;
 };
 
 class TestAvailabilityModel : public AvailabilityModel {
@@ -649,6 +679,94 @@ TEST_F(FeatureConfigConditionValidatorTest, Availability) {
   EXPECT_FALSE(result.availability_ok);
   EXPECT_TRUE(GetResultForDay(config, 13u).NoErrors());
   EXPECT_TRUE(GetResultForDay(config, 14u).NoErrors());
+}
+
+TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
+  FeatureConfig config = GetAcceptingFeatureConfig();
+  base::Time baseline = base::Time::Now();
+
+  // Set up snooze params.
+  SnoozeParams snooze_params;
+  snooze_params.max_limit = 5;
+  snooze_params.snooze_interval = 3;
+  config.snooze_params = snooze_params;
+  config.trigger.window = 5;
+
+  ConditionValidator::Result result = GetResultForDayZero(config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.snooze_expiration_ok);
+  EXPECT_TRUE(result.should_show_snooze);
+
+  // Adding snooze count for |event|.
+  Event event;
+  event.set_name(config.trigger.name);
+  test::SetSnoozeCountForDay(&event, 1u, 1u);
+  test::SetSnoozeCountForDay(&event, 3u, 2u);
+  test::SetSnoozeCountForDay(&event, 5u, 2u);
+  event_model_.SetEvent(event);
+
+  // Updating last snooze timestamp.
+  event_model_.IncrementSnooze(config.trigger.name, 1u,
+                               baseline - base::TimeDelta::FromDays(4));
+
+  // Verify that snooze conditions are met at day 3.
+  result = GetResultForDay(config, 3u);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.snooze_expiration_ok);
+  EXPECT_TRUE(result.should_show_snooze);
+
+  // When last snooze timestamp is too recent.
+  event_model_.IncrementSnooze(config.trigger.name, 1u,
+                               baseline - base::TimeDelta::FromDays(2));
+  result = GetResultForDay(config, 3u);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.snooze_expiration_ok);
+  EXPECT_FALSE(result.should_show_snooze);
+
+  // Reset the last snooze timestamp.
+  event_model_.IncrementSnooze(config.trigger.name, 1u,
+                               baseline - base::TimeDelta::FromDays(4));
+  result = GetResultForDay(config, 3u);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.snooze_expiration_ok);
+  EXPECT_TRUE(result.should_show_snooze);
+
+  // When snooze is dismissed.
+  event_model_.DismissSnooze(config.trigger.name);
+  result = GetResultForDay(config, 3u);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.snooze_expiration_ok);
+  EXPECT_FALSE(result.should_show_snooze);
+}
+
+TEST_F(FeatureConfigConditionValidatorTest, ShouldShowSnooze) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
+  FeatureConfig config = GetAcceptingFeatureConfig();
+
+  // Set up snooze params.
+  SnoozeParams snooze_params;
+  snooze_params.max_limit = 5;
+  snooze_params.snooze_interval = 3;
+  config.snooze_params = snooze_params;
+  config.trigger.window = 5;
+
+  ConditionValidator::Result result = GetResultForDayZero(config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.should_show_snooze);
+
+  // Adding snooze count for |event|.
+  Event event;
+  event.set_name(config.trigger.name);
+  test::SetSnoozeCountForDay(&event, 1u, 10u);
+  event_model_.SetEvent(event);
+
+  // When snooze count exceeds the maximum limit.
+  result = GetResultForDay(config, 5u);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_FALSE(result.should_show_snooze);
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SingleEventChangingComparator) {

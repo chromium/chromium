@@ -70,6 +70,13 @@ class ConditionValidator {
     // Whether there are currently held display locks.
     bool display_lock_ok;
 
+    // Whether the current snooze timer has expired.
+    bool snooze_expiration_ok;
+
+    // Whether the snooze option should be shown.
+    // This value is excluded from the NoErrors() check.
+    bool should_show_snooze;
+
     // Returns true if this result object has no errors, i.e. no values that
     // are false.
     bool NoErrors() const;

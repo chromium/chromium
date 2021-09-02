@@ -63,8 +63,12 @@ class OnceTestEventModel : public EventModel {
 
   uint32_t GetSnoozeCount(const std::string& event_name,
                           uint32_t window,
-                          uint32_t current_day) override {
+                          uint32_t current_day) const override {
     return 0;
+  }
+
+  bool IsSnoozeDismissed(const std::string& event_name) const override {
+    return false;
   }
 
  private:

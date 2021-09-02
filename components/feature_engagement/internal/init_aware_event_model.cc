@@ -69,8 +69,13 @@ base::Time InitAwareEventModel::GetLastSnoozeTimestamp(
 
 uint32_t InitAwareEventModel::GetSnoozeCount(const std::string& event_name,
                                              uint32_t window,
-                                             uint32_t current_day) {
+                                             uint32_t current_day) const {
   return event_model_->GetSnoozeCount(event_name, window, current_day);
+}
+
+bool InitAwareEventModel::IsSnoozeDismissed(
+    const std::string& event_name) const {
+  return event_model_->IsSnoozeDismissed(event_name);
 }
 
 void InitAwareEventModel::OnInitializeComplete(

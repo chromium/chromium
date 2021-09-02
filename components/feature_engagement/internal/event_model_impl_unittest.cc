@@ -491,8 +491,7 @@ TEST_F(EventModelImplTest, DismissSnoozeEvent) {
 
   // Verify that dismissing a snooze event update the snooze_dismissed flag.
   model_->DismissSnooze("bar");
-  const Event* bar_event = model_->GetEvent("bar");
-  EXPECT_EQ(true, bar_event->snooze_dismissed());
+  EXPECT_EQ(true, model_->IsSnoozeDismissed("bar"));
 }
 
 TEST_F(EventModelImplTest, GetLastSnoozeTimestamp) {
@@ -510,10 +509,9 @@ TEST_F(EventModelImplTest, GetLastSnoozeTimestamp) {
       base::TimeDelta::FromMicroseconds(5));
 
   model_->IncrementSnooze("bar", 10u, snooze_time1);
+  EXPECT_EQ(snooze_time1, model_->GetLastSnoozeTimestamp("bar"));
   model_->IncrementSnooze("bar", 10u, snooze_time2);
-  const Event* bar_event = model_->GetEvent("bar");
-  EXPECT_EQ(snooze_time2.ToDeltaSinceWindowsEpoch().InMicroseconds(),
-            bar_event->last_snooze_time_us());
+  EXPECT_EQ(snooze_time2, model_->GetLastSnoozeTimestamp("bar"));
 }
 
 TEST_F(EventModelImplTest, GetEventCount) {

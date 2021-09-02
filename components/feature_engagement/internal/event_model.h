@@ -71,7 +71,11 @@ class EventModel {
   // Returns the snooze count. Used for comparison against the max limit.
   virtual uint32_t GetSnoozeCount(const std::string& event_name,
                                   uint32_t window,
-                                  uint32_t current_day) = 0;
+                                  uint32_t current_day) const = 0;
+
+  // Returns whether the user has dismissed the snooze associated with
+  // |event_name|.
+  virtual bool IsSnoozeDismissed(const std::string& event_name) const = 0;
 
  protected:
   EventModel() = default;
