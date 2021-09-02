@@ -651,7 +651,10 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case syncer::WEB_APPS: {
-      auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
+      auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+
+      // CreateWebAppsModelTypeController(), and therefore this code, should
+      // never be called when GetForWebApps() returns nullptr.
       DCHECK(provider);
 
       return provider->sync_bridge()
