@@ -92,9 +92,6 @@ NSString* const kIsMainFrame = @"isMainFrame";
 // URL scheme for messages sent from javascript for asynchronous processing.
 NSString* const kScriptMessageName = @"crwebinvoke";
 
-// URL scheme for session restore.
-NSString* const kSessionRestoreScriptMessageName = @"session_restore";
-
 }  // namespace
 
 // TODO(crbug.com/1174560): Allow usage of iOS15 interactionState on iOS 14 SDK
@@ -462,19 +459,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         }
                            name:kScriptMessageName
                         webView:_webView];
-
-    if (self.webStateImpl->GetNavigationManager()
-            ->IsRestoreSessionInProgress()) {
-      // The session restoration script needs to use IPC to notify the app of
-      // the last step of the session restoration. See the restore_session.html
-      // file or crbug.com/1127521.
-      [messageRouter
-          setScriptMessageHandler:^(WKScriptMessage* message) {
-            [weakSelf didReceiveSessionRestoreScriptMessage:message];
-          }
-                             name:kSessionRestoreScriptMessageName
-                          webView:_webView];
-    }
 
     _webView.allowsBackForwardNavigationGestures =
         _allowsBackForwardNavigationGestures;
@@ -1222,27 +1206,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // Broken out into separate method to catch errors.
   if (![self respondToWKScriptMessage:message]) {
     DLOG(WARNING) << "Message from JS not handled due to invalid format";
-  }
-}
-
-- (void)didReceiveSessionRestoreScriptMessage:(WKScriptMessage*)message {
-  if ([message.name isEqualToString:kSessionRestoreScriptMessageName] &&
-      [message.body[@"offset"] isKindOfClass:[NSNumber class]]) {
-    NSString* method =
-        [NSString stringWithFormat:@"_crFinishSessionRestoration('%@')",
-                                   message.body[@"offset"]];
-    // Don't use |self executeJavaScript:| here, as it relies on
-    // |windowID| being injected before window.onload starts.
-    web::ExecuteJavaScript(self.webView, method, nil);
-
-    // Removes the script as it is no longer needed.
-    CRWWKScriptMessageRouter* messageRouter =
-        [self webViewConfigurationProvider].GetScriptMessageRouter();
-    [messageRouter
-        removeScriptMessageHandlerForName:kSessionRestoreScriptMessageName
-                                  webView:_webView];
-  } else {
-    DLOG(WARNING) << "Invalid session restore JS message name.";
   }
 }
 

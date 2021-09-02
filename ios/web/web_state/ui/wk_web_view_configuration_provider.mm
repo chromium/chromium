@@ -20,6 +20,7 @@
 #include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
+#import "ios/web/navigation/session_restore_java_script_feature.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
@@ -207,8 +208,12 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   }
   java_script_feature_manager->ConfigureFeatures(features);
 
+  WKUserContentController* userContentController =
+      GetWebViewConfiguration().userContentController;
   WebFramesManagerJavaScriptFeature::FromBrowserState(browser_state_)
-      ->ConfigureHandlers(GetWebViewConfiguration().userContentController);
+      ->ConfigureHandlers(userContentController);
+  SessionRestoreJavaScriptFeature::FromBrowserState(browser_state_)
+      ->ConfigureHandlers(userContentController);
 
   // Main frame script depends upon scripts injected into all frames, so the
   // "AllFrames" scripts must be injected first.

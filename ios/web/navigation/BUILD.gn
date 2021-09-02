@@ -106,6 +106,21 @@ source_set("core") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("session_restore_feature") {
+  deps = [
+    "//base",
+    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:scoped_wk_script_message_handler",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  sources = [
+    "session_restore_java_script_feature.h",
+    "session_restore_java_script_feature.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("wk_navigation_util") {
   deps = [
     "//base",
