@@ -296,8 +296,7 @@ public class DownloadForegroundServiceManager {
     private Notification createEmptyNotification(int notificationId, Context context) {
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                        true /* preferCompat */, ChromeChannelDefinitions.ChannelId.DOWNLOADS,
-                        null /* remoteAppPackageName */,
+                        ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         new NotificationMetadata(
                                 NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES, null,
                                 notificationId));

@@ -96,8 +96,7 @@ public final class DownloadNotificationFactory {
         }
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */, channelId,
-                                null /* remoteAppPackageName */,
+                        .createNotificationWrapperBuilder(channelId,
                                 new NotificationMetadata(LegacyHelpers.isLegacyDownload(
                                                                  downloadUpdate.getContentId())
                                                 ? NotificationUmaTracker.SystemNotificationType
