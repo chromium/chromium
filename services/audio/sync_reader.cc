@@ -41,6 +41,12 @@ void LogAudioGlitchResult(AudioGlitchResult result) {
 
 namespace audio {
 
+#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
+const base::Feature kDynamicAudioTimeout{"DynamicAudioTimeout",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 SyncReader::SyncReader(
     base::RepeatingCallback<void(const std::string&)> log_callback,
     const media::AudioParameters& params,
@@ -55,14 +61,18 @@ SyncReader::SyncReader(
       renderer_callback_count_(0),
       renderer_missed_callback_count_(0),
       trailing_renderer_missed_callback_count_(0),
+      buffer_index_(0) {
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
-      maximum_wait_time_(params.GetBufferDuration() / 2),
+  maximum_wait_time_ = params.GetBufferDuration() / 2;
 #else
-      // TODO(dalecurtis): Investigate if we can reduce this on all platforms.
-      maximum_wait_time_(base::TimeDelta::FromMilliseconds(20)),
+  if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
+    maximum_wait_time_ = params.GetBufferDuration() / 2;
+  } else {
+    maximum_wait_time_ = base::TimeDelta::FromMilliseconds(20);
+  }
 #endif
-      buffer_index_(0) {
+
   base::CheckedNumeric<size_t> memory_size =
       media::ComputeAudioOutputBufferSizeChecked(params);
   if (!memory_size.IsValid())
