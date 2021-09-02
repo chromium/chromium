@@ -187,7 +187,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
      */
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        return mTabGridDialogCoordinator::isVisible;
+        return () -> mTabGridDialogCoordinator != null && mTabGridDialogCoordinator.isVisible();
     }
 
     /**
