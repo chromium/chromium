@@ -46,7 +46,7 @@ apps::mojom::IconKeyPtr AppServiceProxyLacros::InnerIconLoader::GetIconKey(
   }
 
   apps::mojom::IconKeyPtr icon_key;
-  if (host_->app_service_.is_connected()) {
+  if (host_->crosapi_receiver_.is_bound()) {
     host_->app_registry_cache_.ForOneApp(
         app_id, [&icon_key](const apps::AppUpdate& update) {
           icon_key = update.IconKey();
@@ -68,20 +68,6 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     return overriding_icon_loader_for_testing_->LoadIconFromIconKey(
         app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
         allow_placeholder_icon, std::move(callback));
-  }
-
-  if (host_->app_service_.is_connected() && icon_key) {
-    // TODO(crbug.com/826982): Mojo doesn't guarantee the order of messages,
-    // so multiple calls to this method might not resolve their callbacks in
-    // order. As per khmel@, "you may have race here, assume you publish change
-    // for the app and app requested new icon. But new icon is not delivered
-    // yet and you resolve old one instead. Now new icon arrives asynchronously
-    // but you no longer notify the app or do?"
-    host_->app_service_->LoadIcon(app_type, app_id, std::move(icon_key),
-                                  icon_type, size_hint_in_dip,
-                                  allow_placeholder_icon, std::move(callback));
-  } else {
-    std::move(callback).Run(apps::mojom::IconValue::New());
   }
   return nullptr;
 }
@@ -107,18 +93,7 @@ void AppServiceProxyLacros::Initialize() {
 
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
-  app_service_impl_ =
-      std::make_unique<apps::AppServiceImpl>(profile_->GetPath());
-  app_service_impl_->BindReceiver(app_service_.BindNewPipeAndPassReceiver());
-
   Observe(&app_registry_cache_);
-
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
-  extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
 
   web_apps_publisher_host_ =
       std::make_unique<web_app::WebAppsPublisherHost>(profile_);
@@ -150,7 +125,7 @@ void AppServiceProxyLacros::ReInitializeForTesting(Profile* profile) {
   // Service, before the profile is fully initialized. Such tests can call this
   // after full profile initialization to ensure the App Service implementation
   // has all of profile state it needs.
-  app_service_.reset();
+  crosapi_receiver_.reset();
   profile_ = profile;
   is_using_testing_profile_ = true;
   Initialize();
@@ -168,10 +143,6 @@ bool AppServiceProxyLacros::IsValidProfile() {
   }
 
   return true;
-}
-
-mojo::Remote<apps::mojom::AppService>& AppServiceProxyLacros::AppService() {
-  return app_service_;
 }
 
 apps::AppRegistryCache& AppServiceProxyLacros::AppRegistryCache() {
@@ -219,23 +190,7 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
                                    int32_t event_flags,
                                    apps::mojom::LaunchSource launch_source,
                                    apps::mojom::WindowInfoPtr window_info) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, event_flags, launch_source,
-                 &window_info](const apps::AppUpdate& update) {
-          if (MaybeShowLaunchPreventionDialog(update)) {
-            return;
-          }
-
-          RecordAppLaunch(update.AppId(), launch_source);
-          RecordAppPlatformMetrics(
-              profile_, update, launch_source,
-              apps::mojom::LaunchContainer::kLaunchContainerNone);
-
-          app_service_->Launch(update.AppType(), update.AppId(), event_flags,
-                               launch_source, std::move(window_info));
-        });
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(
@@ -243,31 +198,7 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
     int32_t event_flags,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::FilePathsPtr file_paths) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, event_flags, launch_source,
-                 &file_paths](const apps::AppUpdate& update) {
-          if (MaybeShowLaunchPreventionDialog(update)) {
-            return;
-          }
-
-          RecordAppPlatformMetrics(
-              profile_, update, launch_source,
-              apps::mojom::LaunchContainer::kLaunchContainerNone);
-
-          // TODO(crbug/1117655): File manager records metrics for apps it
-          // launched. So we only record launches from other places. We should
-          // eventually move those metrics here, after AppService supports all
-          // app types launched by file manager.
-          if (launch_source != apps::mojom::LaunchSource::kFromFileManager) {
-            RecordAppLaunch(update.AppId(), launch_source);
-          }
-
-          app_service_->LaunchAppWithFiles(update.AppType(), update.AppId(),
-                                           event_flags, launch_source,
-                                           std::move(file_paths));
-        });
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::LaunchAppWithFileUrls(
@@ -288,25 +219,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
-  CHECK(intent);
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, event_flags, &intent, launch_source,
-                 &window_info](const apps::AppUpdate& update) {
-          if (MaybeShowLaunchPreventionDialog(update)) {
-            return;
-          }
-
-          RecordAppLaunch(update.AppId(), launch_source);
-          RecordAppPlatformMetrics(
-              profile_, update, launch_source,
-              apps::mojom::LaunchContainer::kLaunchContainerNone);
-
-          app_service_->LaunchAppWithIntent(
-              update.AppType(), update.AppId(), event_flags, std::move(intent),
-              launch_source, std::move(window_info));
-        });
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(
@@ -322,13 +235,7 @@ void AppServiceProxyLacros::LaunchAppWithUrl(
 void AppServiceProxyLacros::SetPermission(
     const std::string& app_id,
     apps::mojom::PermissionPtr permission) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this, &permission](const apps::AppUpdate& update) {
-          app_service_->SetPermission(update.AppType(), update.AppId(),
-                                      std::move(permission));
-        });
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::Uninstall(
@@ -347,19 +254,11 @@ void AppServiceProxyLacros::Uninstall(
 void AppServiceProxyLacros::UninstallSilently(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source) {
-  if (app_service_.is_connected()) {
-    app_service_->Uninstall(app_registry_cache_.GetAppType(app_id), app_id,
-                            uninstall_source,
-                            /*clear_site_data=*/false, /*report_abuse=*/false);
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::StopApp(const std::string& app_id) {
-  if (!app_service_.is_connected()) {
-    return;
-  }
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->StopApp(app_type, app_id);
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::GetMenuModel(
@@ -367,13 +266,7 @@ void AppServiceProxyLacros::GetMenuModel(
     apps::mojom::MenuType menu_type,
     int64_t display_id,
     apps::mojom::Publisher::GetMenuModelCallback callback) {
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->GetMenuModel(app_type, app_id, menu_type, display_id,
-                             std::move(callback));
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::ExecuteContextMenuCommand(
@@ -381,22 +274,11 @@ void AppServiceProxyLacros::ExecuteContextMenuCommand(
     int command_id,
     const std::string& shortcut_id,
     int64_t display_id) {
-  if (!app_service_.is_connected()) {
-    return;
-  }
-
-  apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
-  app_service_->ExecuteContextMenuCommand(app_type, app_id, command_id,
-                                          shortcut_id, display_id);
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::OpenNativeSettings(const std::string& app_id) {
-  if (app_service_.is_connected()) {
-    app_registry_cache_.ForOneApp(
-        app_id, [this](const apps::AppUpdate& update) {
-          app_service_->OpenNativeSettings(update.AppType(), update.AppId());
-        });
-  }
+  NOTIMPLEMENTED();
 }
 
 apps::IconLoader* AppServiceProxyLacros::OverrideInnerIconLoaderForTesting(
@@ -431,7 +313,7 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
     return intent_launch_info;
   }
 
-  if (app_service_.is_bound()) {
+  if (crosapi_receiver_.is_bound()) {
     app_registry_cache_.ForEachApp(
         [&intent_launch_info, &intent, &exclude_browsers,
          &exclude_browser_tab_apps](const apps::AppUpdate& update) {
@@ -487,31 +369,12 @@ void AppServiceProxyLacros::AddPreferredApp(const std::string& app_id,
 void AppServiceProxyLacros::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentPtr& intent) {
-  // TODO(https://crbug.com/853604): Remove this and convert to a DCHECK
-  // after finding out the root cause.
-  if (app_id.empty()) {
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-  auto intent_filter = FindBestMatchingFilter(intent);
-  if (!intent_filter) {
-    return;
-  }
-  preferred_apps_.AddPreferredApp(app_id, intent_filter);
-  if (app_service_.is_connected()) {
-    constexpr bool kFromPublisher = false;
-    app_service_->AddPreferredApp(app_registry_cache_.GetAppType(app_id),
-                                  app_id, std::move(intent_filter),
-                                  intent->Clone(), kFromPublisher);
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
-  if (app_service_.is_connected()) {
-    app_service_->SetWindowMode(app_registry_cache_.GetAppType(app_id), app_id,
-                                window_mode);
-  }
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::AddAppIconSource(Profile* profile) {
@@ -543,7 +406,7 @@ void AppServiceProxyLacros::OnAppRegistryCacheWillBeDestroyed(
 apps::mojom::IntentFilterPtr AppServiceProxyLacros::FindBestMatchingFilter(
     const apps::mojom::IntentPtr& intent) {
   apps::mojom::IntentFilterPtr best_matching_intent_filter;
-  if (!app_service_.is_bound()) {
+  if (!crosapi_receiver_.is_bound()) {
     return best_matching_intent_filter;
   }
 
@@ -573,7 +436,6 @@ void AppServiceProxyLacros::RecordAppPlatformMetrics(
     apps::mojom::LaunchContainer container) {}
 
 void AppServiceProxyLacros::FlushMojoCallsForTesting() {
-  app_service_impl_->FlushMojoCallsForTesting();
   crosapi_receiver_.FlushForTesting();
 }
 

@@ -30,15 +30,12 @@
 class Profile;
 
 namespace web_app {
-class WebApps;
 class WebAppsPublisherHost;
 }  // namespace web_app
 
 namespace apps {
 
-class AppServiceImpl;
 class BrowserAppInstanceTracker;
-class ExtensionApps;
 
 struct IntentLaunchInfo {
   std::string app_id;
@@ -69,7 +66,6 @@ class AppServiceProxyLacros : public KeyedService,
 
   void ReInitializeForTesting(Profile* profile);
 
-  mojo::Remote<apps::mojom::AppService>& AppService();
   apps::AppRegistryCache& AppRegistryCache();
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
 
@@ -320,11 +316,6 @@ class AppServiceProxyLacros : public KeyedService,
                                         apps::mojom::LaunchSource launch_source,
                                         apps::mojom::LaunchContainer container);
 
-  // This proxy privately owns its instance of the App Service. This should not
-  // be exposed except through the Mojo interface connected to |app_service_|.
-  std::unique_ptr<apps::AppServiceImpl> app_service_impl_;
-
-  mojo::Remote<apps::mojom::AppService> app_service_;
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
 
@@ -351,9 +342,6 @@ class AppServiceProxyLacros : public KeyedService,
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
-
-  std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<ExtensionApps> extension_apps_;
 
   std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
