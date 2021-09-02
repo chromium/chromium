@@ -1399,6 +1399,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_GOOGLE_SERVICES_GROUP" desc="Label for the group of network diagnostic routines about connecting to Google services">
         Google Services
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_GROUP" desc="Label for the group of network diagnostic routines about connectivity inside Android">
+        Android
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
         Lan Connectivity
       </message>
@@ -1434,6 +1437,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_VIDEO_CONFERENCING" desc="Label for Network diagnostics `Video Conferencing` test. This test ensures that the device can communicate with Google's video conferencing servers">
         Video Conferencing
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP_LATENCY" desc="Label for Network diagnostics `ARC HTTP` test. This test ensures that the device's http requests inside ARC have an acceptable amount of latency">
+        HTTP Latency
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
         Passed
@@ -1533,6 +1539,21 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_VERY_HIGH_LATENCY" desc="Error message shown when HTTPS requests have a very high latency">
         Very high HTTPS latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP_PROBLEM_FAILED_HTTP_REQUESTS" desc="Error message shown when there are one or more failed HTTP requests">
+        Failed HTTP requests
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP_PROBLEM_HIGH_LATENCY" desc="Error message shown when HTTP requests inside ARC have a high latency">
+        High HTTP latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_HTTP_PROBLEM_VERY_HIGH_LATENCY" desc="Error message shown when HTTP requests inside ARC have a very high latency">
+        Very high HTTP latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_ROUTINE_PROBLEM_INTERNAL_ERROR" desc="Error message shown when ARC diagnostic test fails due to an unexpected internal problem">
+        Internal error
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_ARC_ROUTINE_PROBLEM_ARC_NOT_RUNNING" desc="Error message shown when ARC diagnostic test cannot run because ARC is either disabled or crashed">
+        Android not running
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_PROBLEM_NO_ACTIVE_NETWORKS" desc="Error message shown when the device is not actively connected to a network">
         No active networks

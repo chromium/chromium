@@ -47,6 +47,7 @@
   FIREWALL: 4,
   DNS: 5,
   GOOGLE_SERVICES: 6,
+  ARC: 7
 };
 
 /* #export */ const Icons = {
