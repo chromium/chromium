@@ -18,6 +18,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.test.runner.lifecycle.Stage;
 
 import androidx.test.filters.MediumTest;
@@ -33,6 +34,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -93,15 +95,7 @@ public class SigninFirstRunFragmentTest {
 
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
 
-        CriteriaHelper.pollUiThread(
-                mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(TEST_EMAIL1)).check(matches(isDisplayed()));
-        onView(withText(FULL_NAME1)).check(matches(isDisplayed()));
-        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
-        onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
     }
 
     @Test
@@ -111,13 +105,7 @@ public class SigninFirstRunFragmentTest {
 
         launchActivityWithFragment();
 
-        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
-        onView(withText(TEST_EMAIL1)).check(matches(isDisplayed()));
-        onView(withText(FULL_NAME1)).check(matches(isDisplayed()));
-        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, GIVEN_NAME1);
-        onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
     }
 
     @Test
@@ -131,11 +119,7 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
 
-        onView(withText(TEST_EMAIL2)).check(matches(isDisplayed()));
-        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, TEST_EMAIL2);
-        onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
     }
 
     @Test
@@ -173,11 +157,7 @@ public class SigninFirstRunFragmentTest {
                                 SigninFirstRunFragment.ADD_ACCOUNT_REQUEST_CODE, Activity.RESULT_OK,
                                 data));
 
-        onView(withText(TEST_EMAIL2)).check(matches(isDisplayed()));
-        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, TEST_EMAIL2);
-        onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+        checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
     }
 
     @Test
@@ -194,9 +174,21 @@ public class SigninFirstRunFragmentTest {
                                 SigninFirstRunFragment.ADD_ACCOUNT_REQUEST_CODE, Activity.RESULT_OK,
                                 data));
 
-        onView(withText(TEST_EMAIL1)).check(matches(isDisplayed()));
-        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
-                R.string.signin_promo_continue_as, TEST_EMAIL1);
+        checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
+    }
+
+    private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {
+        CriteriaHelper.pollUiThread(
+                mFragment.getView().findViewById(R.id.signin_fre_selected_account)::isShown);
+        final DisplayableProfileData profileData =
+                new DisplayableProfileData(email, mock(Drawable.class), fullName, givenName);
+        onView(withText(R.string.fre_welcome)).check(matches(isDisplayed()));
+        onView(withText(email)).check(matches(isDisplayed()));
+        if (fullName != null) {
+            onView(withText(fullName)).check(matches(isDisplayed()));
+        }
+        final String continueAsText = mFragment.getString(
+                R.string.signin_promo_continue_as, profileData.getGivenNameOrFullNameOrEmail());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
     }
