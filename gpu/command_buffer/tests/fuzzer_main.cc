@@ -332,6 +332,11 @@ class CommandBufferSetup {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     ALLOW_UNUSED_LOCAL(command_line);
 
+#if defined(USE_OZONE)
+    if (features::IsUsingOzonePlatform())
+      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
+#endif
+
 #if defined(GPU_FUZZER_USE_ANGLE)
     command_line->AppendSwitchASCII(switches::kUseGL,
                                     gl::kGLImplementationANGLEName);
@@ -341,10 +346,6 @@ class CommandBufferSetup {
 #else
     command_line->AppendSwitchASCII(switches::kUseANGLE,
                                     gl::kANGLEImplementationNullName);
-#endif
-#if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform())
-      ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
 #endif
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
