@@ -148,7 +148,7 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   bool success = args->GetString(0, &callback_id);
   DCHECK(success);
@@ -163,13 +163,13 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   include_specifics_ = args->GetList()[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   syncer::SyncService* service = GetSyncService();
   if (!service) {
@@ -186,7 +186,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
 
 void SyncInternalsMessageHandler::HandleRequestStopKeepData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   syncer::SyncService* service = GetSyncService();
   if (!service) {
@@ -198,7 +198,7 @@ void SyncInternalsMessageHandler::HandleRequestStopKeepData(
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   syncer::SyncService* service = GetSyncService();
   if (!service) {

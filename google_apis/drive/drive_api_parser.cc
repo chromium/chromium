@@ -55,8 +55,8 @@ bool GetParentsFromValue(const base::Value* value,
     return false;
 
   base::JSONValueConverter<ParentReference> converter;
-  result->resize(list_value->GetSize());
-  for (size_t i = 0; i < list_value->GetSize(); ++i) {
+  result->resize(list_value->GetList().size());
+  for (size_t i = 0; i < list_value->GetList().size(); ++i) {
     const base::Value* parent_value = nullptr;
     if (!list_value->Get(i, &parent_value) ||
         !converter.Convert(*parent_value, &(*result)[i]))

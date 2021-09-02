@@ -113,7 +113,7 @@ TEST(SpdyLogUtilTest, ElideHttp2HeaderBlockForNetLogWithNonUTF8Characters) {
   base::ListValue list =
       ElideHttp2HeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
-  ASSERT_EQ(3u, list.GetSize());
+  ASSERT_EQ(3u, list.GetList().size());
   std::string field;
   EXPECT_TRUE(list.GetString(0, &field));
   EXPECT_EQ("%ESCAPED:\xE2\x80\x8B foo: bar%81", field);

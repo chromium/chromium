@@ -133,11 +133,11 @@ bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
   }
 
   out->clear();
-  out->reserve(list->GetSize());
+  out->reserve(list->GetList().size());
 
   std::string sha256_base64;
 
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     sha256_base64.clear();
 
     if (!list->GetString(i, &sha256_base64))

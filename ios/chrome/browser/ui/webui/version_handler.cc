@@ -26,7 +26,7 @@ void VersionHandler::RegisterMessages() {
 void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
   // Respond with the variations info immediately.
   std::string callback_id;
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
 
   base::Value response(base::Value::Type::DICTIONARY);

@@ -534,7 +534,7 @@ TEST_F(StatsEventSubscriberTest, Packets) {
 
 bool CheckHistogramHasValue(base::ListValue* values,
                             const std::string& bucket, int expected_count) {
-  for (size_t i = 0; i < values->GetSize(); ++i) {
+  for (size_t i = 0; i < values->GetList().size(); ++i) {
     const base::DictionaryValue* dict = NULL;
     values->GetDictionary(i, &dict);
     if (!dict->HasKey(bucket))

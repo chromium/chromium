@@ -120,7 +120,7 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_->GetSize());
+  ASSERT_EQ(2u, pairings_->GetList().size());
   const base::DictionaryValue* actual_pairing_1;
   const base::DictionaryValue* actual_pairing_2;
   ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_1));
@@ -153,7 +153,7 @@ TEST_F(PairingRegistryTest, DeletePairing) {
   registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
                                           base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_->GetSize());
+  ASSERT_EQ(1u, pairings_->GetList().size());
   const base::DictionaryValue* actual_pairing_2;
   ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_2));
   std::string actual_client_id;

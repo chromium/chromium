@@ -1682,7 +1682,7 @@ TEST(ValuesTest, DeepCopy) {
   ListValue* copy_list = nullptr;
   ASSERT_TRUE(copy_value->GetAsList(&copy_list));
   ASSERT_TRUE(copy_list);
-  ASSERT_EQ(2U, copy_list->GetSize());
+  ASSERT_EQ(2U, copy_list->GetList().size());
 
   Value* copy_list_element_0;
   ASSERT_TRUE(copy_list->Get(0, &copy_list_element_0));
@@ -1985,7 +1985,7 @@ TEST(ValuesTest, RemoveEmptyChildren) {
 
     ListValue* inner_value;
     EXPECT_TRUE(root->GetList("list_with_empty_children", &inner_value));
-    ASSERT_EQ(1U, inner_value->GetSize());  // Dictionary was pruned.
+    ASSERT_EQ(1U, inner_value->GetList().size());  // Dictionary was pruned.
     const Value& inner_value2 = inner_value->GetList()[0];
     ASSERT_TRUE(inner_value2.is_list());
     EXPECT_EQ(1U, inner_value2.GetList().size());

@@ -168,7 +168,7 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
 
   std::vector<ReportingEndpoint::EndpointInfo> endpoints;
 
-  for (size_t i = 0; i < endpoint_list->GetSize(); i++) {
+  for (size_t i = 0; i < endpoint_list->GetList().size(); i++) {
     const base::Value* endpoint = nullptr;
     bool got_endpoint = endpoint_list->Get(i, &endpoint);
     DCHECK(got_endpoint);

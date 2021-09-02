@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, TraceUsingBrowserDevToolsTarget) {
 
   std::unique_ptr<base::ListValue> tracing_data = helper.TakeTracingData();
   EXPECT_TRUE(tracing_data);
-  EXPECT_LT(0u, tracing_data->GetSize());
+  EXPECT_LT(0u, tracing_data->GetList().size());
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
