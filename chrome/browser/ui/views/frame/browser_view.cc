@@ -3411,6 +3411,16 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
         swapping_screens_during_fullscreen = true;
 #endif  // OS_MAC
         frame_->SetFullscreen(false);
+
+        // Activate the window to give it input focus and bring it to the front
+        // of the z-order. This prevents an inactive fullscreen window from
+        // occluding the active window receiving key events on Mac and Linux,
+        // and also prevents an inactive fullscreen window and its exit bubble
+        // from being occluded by the active window on Windows and Chrome OS.
+        // Initial content fullscreen requests require user activation (so the
+        // window should already be active), but swapping the screen used for
+        // fullscreen does not require user activation on the fullscreen window.
+        Activate();
       }
 
       // Maximized windows must be restored to move to another display.

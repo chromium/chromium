@@ -43,6 +43,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif  // USE_AURA
+
 using url::kAboutBlankURL;
 using content::WebContents;
 using ui::PAGE_TRANSITION_TYPED;
@@ -1229,6 +1233,132 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   // Close all tabs to avoid assertions failing when their cached screen info
   // differs from the restored original Screen instance.
   browser()->tab_strip_model()->CloseAllTabs();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  display::Screen::SetScreenInstance(original_screen);
+#endif  // !OS_CHROMEOS
+}
+
+// TODO(crbug.com/1034772): Disabled on Windows, where views::FullscreenHandler
+// implements fullscreen by directly obtaining MONITORINFO, ignoring the mocked
+// display::Screen configuration used in this test. Disabled on Mac and Linux,
+// where the window server's async handling of the fullscreen window state may
+// transition the window into fullscreen on the actual (non-mocked) display
+// bounds before or after the window bounds checks, yielding flaky results.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_FullscreenActivatesOnSwap DISABLED_FullscreenActivatesOnSwap
+#else
+#define MAYBE_FullscreenActivatesOnSwap FullscreenActivatesOnSwap
+#endif
+// An end-to-end test that mocks a dual-screen configuration and executes
+// javascript to move an inactive fullscreen window onto the screen where the
+// active window is shown, checking that the fullscreen window is made active
+// and shown higher in the z-order than the old active window.
+IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+                       MAYBE_FullscreenActivatesOnSwap) {
+  // Updates the display configuration to add a secondary display.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+      .UpdateDisplay("100+100-801x802,901+100-801x802");
+#else
+  display::Screen* original_screen = display::Screen::GetScreen();
+  display::ScreenBase screen;
+  screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
+                                   display::DisplayList::Type::PRIMARY);
+  screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
+                                   display::DisplayList::Type::NOT_PRIMARY);
+  display::Screen::SetScreenInstance(&screen);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
+
+  // Move the window to the first display (on the left).
+  const gfx::Rect original_bounds(150, 150, 600, 500);
+  browser()->window()->SetBounds(original_bounds);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/simple.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Auto-accept the Window Placement permission request.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(tab);
+  permission_request_manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  // Execute JS to request fullscreen on the current display (on the left).
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    const std::string fullscreen_script = R"(
+       (async () => {
+           await document.body.requestFullscreen();
+           return !!document.fullscreenElement;
+       })();
+   )";
+    EXPECT_EQ(true, EvalJs(tab, fullscreen_script));
+    fullscreen_observer.Wait();
+    EXPECT_TRUE(browser()->window()->IsFullscreen());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    EXPECT_EQ(gfx::Rect(0, 0, 801, 802), browser()->window()->GetBounds());
+#else
+    EXPECT_EQ(gfx::Rect(100, 100, 801, 802), browser()->window()->GetBounds());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  // Create an implicitly activated window on the other display (on the right).
+  Browser::CreateParams params(browser()->profile(), /*user_gesture=*/true);
+  params.initial_bounds = gfx::Rect(900, 100, 500, 500);
+  Browser* other_browser = Browser::Create(params);
+  AddBlankTabAndShow(other_browser);
+  EXPECT_EQ(params.initial_bounds, other_browser->window()->GetBounds());
+  EXPECT_FALSE(browser()->window()->IsActive());
+  EXPECT_TRUE(other_browser->window()->IsActive());
+
+#if defined(USE_AURA)
+  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* other_window = other_browser->window()->GetNativeWindow();
+  window->TrackOcclusionState();
+  other_window->TrackOcclusionState();
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, window->GetOcclusionState());
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE,
+            other_window->GetOcclusionState());
+#endif  // USE_AURA
+
+  // Execute JS to request fullscreen on the other display (on the right).
+  // Explicitly test swapping screens without a user gesture.
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    const std::string fullscreen_script = R"(
+      (async () => {
+        const screensInterface = await self.getScreens();
+        while (navigator.userActivation.isActive)
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        if (navigator.userActivation.isActive || !document.fullscreenElement)
+          return false;
+        const options = { screen: screensInterface.screens[1] };
+        await document.body.requestFullscreen(options);
+        return !!document.fullscreenElement;
+      })();
+  )";
+    EXPECT_EQ(true, EvalJs(tab, fullscreen_script,
+                           content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    fullscreen_observer.Wait();
+    EXPECT_TRUE(browser()->window()->IsFullscreen());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    EXPECT_EQ(gfx::Rect(801, 0, 801, 802), browser()->window()->GetBounds());
+#else
+    EXPECT_EQ(gfx::Rect(901, 100, 801, 802), browser()->window()->GetBounds());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  // The fullscreen window should now be activated and occlude the other window.
+  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_FALSE(other_browser->window()->IsActive());
+#if defined(USE_AURA)
+  EXPECT_EQ(aura::Window::OcclusionState::VISIBLE, window->GetOcclusionState());
+  EXPECT_EQ(aura::Window::OcclusionState::OCCLUDED,
+            other_window->GetOcclusionState());
+#endif  // USE_AURA
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   display::Screen::SetScreenInstance(original_screen);
