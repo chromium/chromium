@@ -3178,11 +3178,13 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
     // node, so we cannot use a DOM traversal. In this case, we can traverse the
     // children of the accessible object directly, because CSS ::before and
     // ::after do generate accessibility nodes.
-    // TODO(accessibility): We explicitly exclude marker pseudo elements here
-    // because Chrome was traditionally not including them, but it's actually
-    // undefined behavior. We will have to revisit after this is settled, see:
-    // https://github.com/w3c/accname/issues/76
-    if (GetElement() && GetElement()->GetPseudoId() != kPseudoIdMarker) {
+    // We include only ::before and ::after pseudo elements, because these are
+    // the only ones explicitly specified in the accname spec.
+    // TODO(accessibility): Chrome has never included markers, but that's
+    // actually undefined behavior. We will have to revisit after this is
+    // settled, see: https://github.com/w3c/accname/issues/76
+    if (GetElement() && (GetElement()->GetPseudoId() == kPseudoIdBefore ||
+                         GetElement()->GetPseudoId() == kPseudoIdAfter)) {
       for (const auto& child : ChildrenIncludingIgnored())
         children.push_back(child);
     }
