@@ -182,6 +182,25 @@ class OsDiagnosticsRunCpuStressRoutineFunction
   ResponseAction Run() override;
 };
 
+class OsDiagnosticsRunMemoryRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runMemoryRoutine",
+                             OS_DIAGNOSTICS_RUNMEMORYROUTINE)
+
+  OsDiagnosticsRunMemoryRoutineFunction();
+  OsDiagnosticsRunMemoryRoutineFunction(
+      const OsDiagnosticsRunMemoryRoutineFunction&) = delete;
+  OsDiagnosticsRunMemoryRoutineFunction& operator=(
+      const OsDiagnosticsRunMemoryRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunMemoryRoutineFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_

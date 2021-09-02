@@ -47,6 +47,9 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
     case ash::health::mojom::DiagnosticRoutineEnum::kCpuStress:
       *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_STRESS;
       return true;
+    case ash::health::mojom::DiagnosticRoutineEnum::kMemory:
+      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_MEMORY;
+      return true;
     default:
       return false;
   }
@@ -261,6 +264,22 @@ OsDiagnosticsRunCpuStressRoutineFunction::Run() {
 
   remote_diagnostics_service_->RunCpuStressRoutine(
       params->request.length_seconds, std::move(cb));
+
+  return RespondLater();
+}
+
+// runMemoryRoutine ------------------------------------------------------------
+
+OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =
+    default;
+OsDiagnosticsRunMemoryRoutineFunction::
+    ~OsDiagnosticsRunMemoryRoutineFunction() = default;
+
+ExtensionFunction::ResponseAction OsDiagnosticsRunMemoryRoutineFunction::Run() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunMemoryRoutine(std::move(cb));
 
   return RespondLater();
 }

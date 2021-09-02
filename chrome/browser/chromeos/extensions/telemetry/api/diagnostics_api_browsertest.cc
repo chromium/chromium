@@ -22,6 +22,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth,
       cros_healthd::mojom::DiagnosticRoutineEnum::kCpuCache,
       cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress,
+      cros_healthd::mojom::DiagnosticRoutineEnum::kMemory,
   });
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -37,7 +38,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "battery_discharge",
               "battery_health",
               "cpu_cache",
-              "cpu_stress"
+              "cpu_stress",
+              "memory"
             ]
           }, response);
         chrome.test.succeed();
@@ -158,6 +160,22 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
   )");
   EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
             cros_healthd::mojom::DiagnosticRoutineEnum::kCpuStress);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunMemoryRoutineSuccess) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runMemoryRoutine() {
+        const response =
+          await chrome.os.diagnostics.runMemoryRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+  EXPECT_EQ(cros_healthd::FakeCrosHealthdClient::Get()->GetLastRunRoutine(),
+            cros_healthd::mojom::DiagnosticRoutineEnum::kMemory);
 }
 
 }  // namespace chromeos

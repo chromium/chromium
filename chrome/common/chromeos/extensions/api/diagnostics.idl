@@ -14,7 +14,8 @@ namespace os.diagnostics {
     battery_discharge,
     battery_health,
     cpu_cache,
-    cpu_stress
+    cpu_stress,
+    memory
   };
 
   enum RoutineStatus {
@@ -87,5 +88,8 @@ namespace os.diagnostics {
     // Starts CPU stress routine.
     [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
                                                        RunRoutineCallback callback);
+
+    // Starts memory routine.
+    [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
   };
 };
