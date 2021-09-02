@@ -488,7 +488,7 @@ export class BannerController extends EventTarget {
    * @param {!Event} event The banner-dismissed event.
    * @private
    */
-  onBannerDismissedClick_(event) {
+  async onBannerDismissedClick_(event) {
     if (!event.detail || !event.detail.banner) {
       console.warn('Banner dismiss event missing banner detail');
       return;
@@ -499,16 +499,15 @@ export class BannerController extends EventTarget {
     // banners) set the localStorage value to be 1.
     if (event.type === Banner.Event.BANNER_DISMISSED_FOREVER) {
       this.setLocalStorage_(`${banner.tagName}_${DISMISSED_FOREVER_SUFFIX}`, 1);
-      this.hideBannerIfShown_(banner);
-      return;
+    } else if (event.type === Banner.Event.BANNER_DISMISSED) {
+      // Reset the view counter so that after the dismiss duration elapses the
+      // banner can be shown for the showLimit again.
+      this.setLocalStorage_(`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`, 0);
+      this.setLocalStorage_(
+          `${banner.tagName}_${LAST_DISMISSED_SUFFIX}`, Date.now());
     }
 
-    // Reset the view counter so that after the dismiss duration elapses the
-    // banner can be shown for the showLimit again.
-    this.setLocalStorage_(`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`, 0);
-    this.setLocalStorage_(
-        `${banner.tagName}_${LAST_DISMISSED_SUFFIX}`, Date.now());
-    this.hideBannerIfShown_(banner);
+    await this.reconcile();
   }
 
   /**

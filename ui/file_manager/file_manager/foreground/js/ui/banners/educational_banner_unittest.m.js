@@ -89,3 +89,27 @@ export function testEducationalBannerDefaults() {
   // banners that don't override this property do not show by default.
   assertEquals(educationalBanner.allowedVolumes().length, 0);
 }
+
+/**
+ * Test that if extra button slot has attribute dismiss-banner-when-clicked the
+ * banner emits a DISMISS_FOREVER event.
+ */
+export async function testDismissBannerWhenClickedAttributeWorks(done) {
+  const html = `<educational-banner>
+      <span slot="title">Banner title</span>
+      <span slot="subtitle">Subtitle</span>
+      <button slot="extra-button" href="http://test.com" dismiss-banner-when-clicked>
+        Test Banner
+      </button>
+    </educational-banner>
+    `;
+  document.body.innerHTML = html;
+  educationalBanner = /** @type{!EducationalBanner} */ (
+      document.body.querySelector('educational-banner'));
+  const handler = () => {
+    done();
+  };
+  educationalBanner.addEventListener(
+      Banner.Event.BANNER_DISMISSED_FOREVER, handler);
+  educationalBanner.querySelector('[slot="extra-button"]').click();
+}

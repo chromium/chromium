@@ -987,3 +987,45 @@ export async function testEducationalBannerDismissedForever() {
   changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
   await waitUntil(isAllBannersHidden);
 }
+
+/**
+ * Test that banners are reconciled after every dismiss click that is made.
+ */
+export async function testBannersAreUpdatedOnDismissClick() {
+  // Add 1 educational banner and 1 warning banner.
+  controller.setEducationalBannersInOrder([
+    testEducationalBanners[0].tagName, testEducationalBanners[1].tagName,
+    testEducationalBanners[2].tagName
+  ]);
+  controller.setWarningBannersInOrder([testWarningBanners[0].tagName]);
+
+  testEducationalBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testEducationalBanners[1].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testEducationalBanners[2].setAllowedVolumes([downloadsAllowedVolumeType]);
+  testWarningBanners[0].setAllowedVolumes([downloadsAllowedVolumeType]);
+
+  // Verify that the warning banner is shown first.
+  await controller.initialize();
+  changeCurrentVolume(VolumeManagerCommon.VolumeType.DOWNLOADS);
+  await waitUntil(isOnlyBannerVisible(testWarningBanners[0]));
+
+  // Dismiss the warning banner and assert the highest priority educational
+  // banner is shown (without navigating directories).
+  clickDismissButton(testWarningBanners[0]);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[0]));
+
+  // Dismiss the educational banner and assert the next highest priority
+  // educational banner is shown (without navigating directories).
+  clickDismissForeverButton(testEducationalBanners[0]);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[1]));
+
+  // Dismiss the educational banner and assert the next highest priority
+  // educational banner is shown (without navigating directories).
+  clickDismissForeverButton(testEducationalBanners[1]);
+  await waitUntil(isOnlyBannerVisible(testEducationalBanners[2]));
+
+  // Dismiss the last educational banner and ensure no banners are shown (again
+  // without navigating directories).
+  clickDismissForeverButton(testEducationalBanners[2]);
+  await waitUntil(isAllBannersHidden);
+}

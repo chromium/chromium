@@ -39,6 +39,17 @@ const htmlTemplate = html`{__html_template__}`;
  *        Extra button text
  *      </cr-button>
  *    </educational-banner>
+ *
+ * There is also an optional HTML attribute that can be added to the
+ * extra-button slot called dismiss-banner-when-clicked that will dismiss the
+ * banner forever when the extra button is pressed. Example:
+ *
+ *      <cr-button
+ *          slot="extra-button"
+ *          href="{{url_to_navigate}}"
+ *          dismiss-banner-when-clicked>
+ *        Extra button text
+ *      </cr-button>
  */
 export class EducationalBanner extends Banner {
   constructor() {
@@ -86,6 +97,11 @@ export class EducationalBanner extends Banner {
     if (extraButton) {
       extraButton.addEventListener('click', (e) => {
         util.visitURL(extraButton.getAttribute('href'));
+        if (extraButton.hasAttribute('dismiss-banner-when-clicked')) {
+          this.dispatchEvent(new CustomEvent(
+              Banner.Event.BANNER_DISMISSED_FOREVER,
+              {bubbles: true, composed: true, detail: {banner: this}}));
+        }
         e.preventDefault();
       });
     }
