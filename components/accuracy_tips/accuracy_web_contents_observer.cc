@@ -62,7 +62,14 @@ void AccuracyWebContentsObserver::DidFinishNavigation(
 void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
     const GURL& url,
     AccuracyTipStatus result) {
-  if (!accuracy_service_->IsSecureConnection(web_contents())) {
+  // We are not on this site any more, so the result is invalid.
+  if (url != web_contents()->GetLastCommittedURL())
+    return;
+
+  // Don't show tip on insecure pages. This can't be checked in the
+  // AccuracyService because it requires a WebContents.
+  if (result == AccuracyTipStatus::kShowAccuracyTip &&
+      !accuracy_service_->IsSecureConnection(web_contents())) {
     result = AccuracyTipStatus::kNotSecure;
   }
 
@@ -73,10 +80,6 @@ void AccuracyWebContentsObserver::OnAccuracyStatusObtained(
       .Record(ukm::UkmRecorder::Get());
 
   if (result != AccuracyTipStatus::kShowAccuracyTip)
-    return;
-
-  // We are not on this site any more, so the result is invalid.
-  if (url != web_contents()->GetLastCommittedURL())
     return;
 
   accuracy_service_->MaybeShowAccuracyTip(web_contents());
