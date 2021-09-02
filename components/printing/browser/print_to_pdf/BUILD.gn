@@ -18,27 +18,21 @@ static_library("print_to_pdf") {
   deps = [
     "//base",
     "//components/printing/browser",
-    "//components/printing/common:mojo_interfaces",
     "//printing",
     "//printing/buildflags",
     "//printing/mojom",
   ]
+
+  public_deps = [ "//components/printing/common:mojo_interfaces" ]
 }
 
-test("print_to_pdf_tests") {
-  sources = [ "pdf_print_utils_test.cc" ]
+source_set("unit_tests") {
+  testonly = true
 
-  defines = []
+  sources = [ "pdf_print_utils_unittest.cc" ]
 
   deps = [
     ":print_to_pdf",
-    "//base",
-    "//base/test:run_all_unittests",
-    "//base/test:test_support",
-    "//components/printing/browser",
-    "//printing",
-    "//printing/buildflags",
-    "//testing/gmock",
     "//testing/gtest",
   ]
 }

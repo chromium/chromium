@@ -492,7 +492,10 @@ test("components_unittests") {
   }
 
   if (enable_basic_printing) {
-    deps += [ "//components/services/print_compositor:unit_tests" ]
+    deps += [
+      "//components/printing/browser/print_to_pdf:unit_tests",
+      "//components/services/print_compositor:unit_tests",
+    ]
   }
   if (enable_print_preview) {
     deps += [ "//components/pwg_encoder:unit_tests" ]
