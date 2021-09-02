@@ -57,7 +57,7 @@ const load = {
   iframe_with_attrs: async (path, attribute_map, validator) => {
     const frame = document.createElement("iframe");
     if (attribute_map instanceof Object) {
-      for (const [key, value] in Object.entries(attribute_map)) {
+      for (const [key, value] of Object.entries(attribute_map)) {
         frame[key] = value;
       }
     }
