@@ -184,8 +184,10 @@ const base::android::JavaRef<jobject>& MessageWrapper::GetJavaMessageWrapper()
   return java_message_wrapper_;
 }
 
-void MessageWrapper::SetMessageEnqueued() {
+void MessageWrapper::SetMessageEnqueued(
+    const base::android::JavaRef<jobject>& java_window_android) {
   message_enqueued_ = true;
+  java_window_android_ = java_window_android;
 }
 
 }  // namespace messages

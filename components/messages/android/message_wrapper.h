@@ -79,8 +79,15 @@ class MessageWrapper {
 
   const base::android::JavaRef<jobject>& GetJavaMessageWrapper() const;
 
-  // Called by bridge when message is successfully enqueued.
-  void SetMessageEnqueued();
+  // Called by the bridge when the message is successfully enqueued.
+  // WindowAndroid reference is retained and used for locating MessageDispatcher
+  // instance when the message is dismissed.
+  void SetMessageEnqueued(
+      const base::android::JavaRef<jobject>& java_window_android);
+
+  const base::android::JavaRef<jobject>& java_window_android() {
+    return java_window_android_;
+  }
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
@@ -89,6 +96,7 @@ class MessageWrapper {
   DismissCallback dismiss_callback_;
   // True if message is in queue.
   bool message_enqueued_;
+  base::android::ScopedJavaGlobalRef<jobject> java_window_android_;
 };
 
 }  // namespace messages

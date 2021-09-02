@@ -41,9 +41,8 @@ public class MessageDispatcherBridge {
 
     @CalledByNative
     private static void dismissMessage(
-            MessageWrapper message, WebContents webContents, @DismissReason int dismissReason) {
-        MessageDispatcher messageDispatcher =
-                MessageDispatcherProvider.from(webContents.getTopLevelNativeWindow());
+            MessageWrapper message, WindowAndroid windowAndroid, @DismissReason int dismissReason) {
+        MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
         messageDispatcher.dismissMessage(message.getMessageProperties(), dismissReason);
     }
 }

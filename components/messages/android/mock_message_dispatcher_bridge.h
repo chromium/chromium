@@ -25,7 +25,6 @@ class MockMessageDispatcherBridge : public MessageDispatcherBridge {
   MOCK_METHOD(void,
               DismissMessage,
               (MessageWrapper * message,
-               content::WebContents* web_contents,
                DismissReason dismiss_reason),
               (override));
 };

@@ -33,7 +33,6 @@ class GeneratedPasswordSavedMessageDelegate {
   friend class GeneratedPasswordSavedMessageDelegateTest;
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  content::WebContents* web_contents_ = nullptr;
 
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void DismissPromptInternal();

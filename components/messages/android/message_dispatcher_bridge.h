@@ -31,7 +31,6 @@ class MessageDispatcherBridge {
                                           ui::WindowAndroid* window_android,
                                           MessagePriority priority);
   virtual void DismissMessage(MessageWrapper* message,
-                              content::WebContents* web_contents,
                               DismissReason dismiss_reason);
 
  protected:
