@@ -56,7 +56,7 @@ _TESTER_NOOP_JOBS = [scheduler_pb.Job(
 def _add_noop_jobs(ctx):
     if settings.is_main:
         return
-    cfg = ctx.output["luci-scheduler.cfg"]
+    cfg = ctx.output["luci/luci-scheduler.cfg"]
     for j in _TESTER_NOOP_JOBS:
         cfg.job.append(j)
 

@@ -24,7 +24,7 @@ def _disable_cq_experiments(ctx):
     if not config.disable_cq_experiments:
         return
 
-    for c in ctx.output["commit-queue.cfg"].config_groups:
+    for c in ctx.output["luci/commit-queue.cfg"].config_groups:
         if c.verifiers.tryjob == cq_pb.Verifiers.Tryjob():
             # Accessing the tryjob field where it wasn't set causes it to be set
             # to an empty message and added to the output

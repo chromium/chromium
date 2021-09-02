@@ -74,8 +74,8 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
         (pyl_files_dir, 'gn_isolate_map2.pyl'): GPU_TELEMETRY_GN_ISOLATE_MAP,
         (pyl_files_dir, 'variants.pyl'): variants,
         (infra_config_dir, 'generated/project.pyl'): project_pyl,
-        (infra_config_dir, 'generated/luci-milo.cfg'): luci_milo_cfg,
-        (infra_config_dir, 'generated/luci-milo-dev.cfg'): '',
+        (infra_config_dir, 'generated/luci/luci-milo.cfg'): luci_milo_cfg,
+        (infra_config_dir, 'generated/luci/luci-milo-dev.cfg'): '',
     }
     for (d, filename), content in files.items():
       if content is None:

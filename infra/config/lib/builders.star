@@ -838,7 +838,7 @@ def _bootstrap_properties(ctx):
     """
     cfg = None
     for f in ctx.output:
-        if f.startswith("cr-buildbucket"):
+        if f.startswith("luci/cr-buildbucket"):
             cfg = ctx.output[f]
             break
     if cfg == None:
