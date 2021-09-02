@@ -22,6 +22,7 @@ namespace chrome {
 const char kChromeUIAboutHost[] = "about";
 const char kChromeUIAboutURL[] = "chrome://about/";
 const char kChromeUIAccessibilityHost[] = "accessibility";
+const char kChromeUIAllSitesPath[] = "/content/all";
 const char kChromeUIAppIconHost[] = "app-icon";
 const char kChromeUIAppIconURL[] = "chrome://app-icon/";
 const char kChromeUIAppLauncherPageHost[] = "apps";
@@ -162,6 +163,7 @@ const char kChromeUISigninErrorHost[] = "signin-error";
 const char kChromeUISigninErrorURL[] = "chrome://signin-error/";
 const char kChromeUISigninReauthHost[] = "signin-reauth";
 const char kChromeUISigninReauthURL[] = "chrome://signin-reauth/";
+const char kChromeUISiteDataDeprecatedPath[] = "/siteData";
 const char kChromeUISiteDetailsPrefixURL[] =
     "chrome://settings/content/siteDetails?site=";
 const char kChromeUISiteEngagementHost[] = "site-engagement";

@@ -27,6 +27,12 @@ suite('CrSettingsCookiesPageTest', function() {
   /** @type {!SettingsCookiesPageElement} */
   let page;
 
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: false,
+    });
+  });
+
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -51,6 +57,7 @@ suite('CrSettingsCookiesPageTest', function() {
 
   teardown(function() {
     page.remove();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('ElementVisibility', async function() {
@@ -67,12 +74,6 @@ suite('CrSettingsCookiesPageTest', function() {
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
-  });
-
-  test('CookiesSiteDataSubpageRoute', function() {
-    page.shadowRoot.querySelector('#site-data-trigger').click();
-    assertEquals(
-        Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_SITE_DATA);
   });
 
   test('CookiesRadioClicksRecorded', async function() {
@@ -253,5 +254,67 @@ suite('CrSettingsCookiesPageTest', function() {
     Router.getInstance().navigateTo(routes.COOKIES);
     await flushTasks();
     assertFalse(page.shadowRoot.querySelector('#toast').open);
+  });
+
+  test('AllSiteDataLink_consolidatedControlsDisabled', function() {
+    const siteDataLinkRow = page.shadowRoot.querySelector('#site-data-trigger');
+    assertEquals(siteDataLinkRow.label, page.i18n('siteSettingsCookieLink'));
+
+    siteDataLinkRow.click();
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_SITE_DATA);
+  });
+});
+
+suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
+  /** @type {!TestSiteSettingsPrefsBrowserProxy} */
+  let siteSettingsBrowserProxy;
+
+  /** @type {!TestMetricsBrowserProxy} */
+  let testMetricsBrowserProxy;
+
+  /** @type {!SettingsCookiesPageElement} */
+  let page;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: true,
+    });
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsCookiesPageElement} */ (
+        document.createElement('settings-cookies-page'));
+    page.prefs = {
+      generated: {
+        cookie_session_only: {value: false},
+        cookie_primary_setting:
+            {type: chrome.settingsPrivate.PrefType.NUMBER, value: 0},
+      },
+      privacy_sandbox: {
+        apis_enabled: {value: true},
+      }
+    };
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('AllSiteDataLink_consolidatedControlsEnabled', function() {
+    const siteDataLinkRow = page.shadowRoot.querySelector('#site-data-trigger');
+    assertEquals(siteDataLinkRow.label, page.i18n('cookiePageAllSitesLink'));
+
+    siteDataLinkRow.click();
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_ALL);
   });
 });

@@ -21,6 +21,7 @@ import './do_not_track_toggle.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -60,12 +61,14 @@ const NetworkPredictionOptions = {
 /**
  * @constructor
  * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
  * @implements {PrefsBehaviorInterface}
  * @implements {RouteObserverMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsCookiesPageElementBase = mixinBehaviors(
-    [PrefsBehavior, WebUIListenerBehavior], RouteObserverMixin(PolymerElement));
+    [I18nBehavior, PrefsBehavior, WebUIListenerBehavior],
+    RouteObserverMixin(PolymerElement));
 
 /** @polymer */
 export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
@@ -145,6 +148,13 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         },
       },
 
+      /** @private */
+      enableConsolidatedSiteStorageControls_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('consolidatedSiteStorageControlsEnabled'),
+      },
+
       /** @type {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
@@ -174,10 +184,17 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   focusConfigChanged_(newConfig, oldConfig) {
     assert(!oldConfig);
     assert(routes.SITE_SETTINGS_SITE_DATA);
-    this.focusConfig.set(routes.SITE_SETTINGS_SITE_DATA.path, () => {
+    const selectSiteDataLinkRow = () => {
       focusWithoutInk(
           assert(this.shadowRoot.querySelector('#site-data-trigger')));
-    });
+    };
+    this.focusConfig.set(
+        routes.SITE_SETTINGS_SITE_DATA.path, selectSiteDataLinkRow);
+    if (this.enableConsolidatedSiteStorageControls_) {
+      this.focusConfig.set(
+          `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
+          selectSiteDataLinkRow);
+    }
   }
 
   /** @override */
@@ -187,9 +204,23 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
+  /**
+   * @return {string}
+   * @private
+   */
+  getSiteDataLabel_() {
+    return this.enableConsolidatedSiteStorageControls_ ?
+        this.i18n('cookiePageAllSitesLink') :
+        this.i18n('siteSettingsCookieLink');
+  }
+
   /** @private */
   onSiteDataClick_() {
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
+    if (this.enableConsolidatedSiteStorageControls_) {
+      Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+    } else {
+      Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
+    }
   }
 
   /** @private */
@@ -201,12 +232,13 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     this.exceptionListsReadOnly_ = sessionOnlyPref.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED;
 
-    // It is not currently possible to represent multiple management sources
-    // for a single a preference. In all management scenarios, the blockAll
-    // setting shares the same controlledBy as the cookie_session_only pref.
-    // To support this, the controlledBy fields for the |cookie_primary_setting|
-    // pref provided to the blockAll control are overwritten with values from
-    // the session_only preference.
+    // It is not currently possible to represent multiple management
+    // sources for a single a preference. In all management scenarios,
+    // the blockAll setting shares the same controlledBy as the
+    // cookie_session_only pref. To support this, the controlledBy
+    // fields for the |cookie_primary_setting| pref provided to the
+    // blockAll control are overwritten with values from the session_only
+    // preference.
     this.set(
         'blockAllPref_',
         Object.assign(this.getPref('generated.cookie_primary_setting'), {
@@ -236,8 +268,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
 
     // If this change resulted in the user now blocking 3P cookies where they
-    // previously were not, and privacy sandbox APIs are enabled, the privacy
-    // sandbox toast should be shown.
+    // previously were not, and privacy sandbox APIs are enabled,
+    // the privacy sandbox toast should be shown.
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
     if (this.getPref('privacy_sandbox.apis_enabled').value &&

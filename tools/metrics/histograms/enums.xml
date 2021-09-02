@@ -9724,6 +9724,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="A recurrent error"/>
 </enum>
 
+<enum name="BooleanRedirected">
+  <int value="0" label="Not redirected"/>
+  <int value="1" label="Redirected"/>
+</enum>
+
 <enum name="BooleanRegistered">
   <int value="0" label="Not Registered"/>
   <int value="1" label="Registered"/>

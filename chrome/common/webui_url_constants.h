@@ -30,6 +30,7 @@ namespace chrome {
 extern const char kChromeUIAboutHost[];
 extern const char kChromeUIAboutURL[];
 extern const char kChromeUIAccessibilityHost[];
+extern const char kChromeUIAllSitesPath[];
 extern const char kChromeUIAppIconHost[];
 extern const char kChromeUIAppIconURL[];
 extern const char kChromeUIAppLauncherPageHost[];
@@ -163,6 +164,7 @@ extern const char kChromeUISigninErrorHost[];
 extern const char kChromeUISigninErrorURL[];
 extern const char kChromeUISigninReauthHost[];
 extern const char kChromeUISigninReauthURL[];
+extern const char kChromeUISiteDataDeprecatedPath[];
 extern const char kChromeUISiteDetailsPrefixURL[];
 extern const char kChromeUISiteEngagementHost[];
 extern const char kChromeUISupervisedUserPassphrasePageHost[];

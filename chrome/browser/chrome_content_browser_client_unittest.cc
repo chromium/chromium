@@ -16,11 +16,14 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -42,6 +45,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "media/media_buildflags.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -459,6 +463,33 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
+}
+
+TEST_F(ChromeContentBrowserClientTest, RedirectSiteDataURL) {
+  base::test::ScopedFeatureList feature_list(
+      features::kConsolidatedSiteStorageControls);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  base::HistogramTester histogram_tester;
+  const std::string histogram_name = "Settings.AllSites.DeprecatedRedirect";
+
+  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
+  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(chrome::kChromeUISiteDataDeprecatedPath);
+  GURL site_data_url = settings_url.ReplaceComponents(replacements);
+
+  replacements.SetPathStr(chrome::kChromeUIAllSitesPath);
+  GURL all_sites_url = settings_url.ReplaceComponents(replacements);
+
+  test_content_browser_client.HandleWebUI(&site_data_url, &profile_);
+  EXPECT_EQ(all_sites_url, site_data_url);
+  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
+
+  test_content_browser_client.HandleWebUI(&all_sites_url, &profile_);
+  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
+  histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
