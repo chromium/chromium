@@ -141,9 +141,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &loader_factory_));
     service_ = std::make_unique<ComponentCloudPolicyService>(
-        dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD,
-        &delegate_, &registry_, &core_, client_, std::move(owned_cache_),
-        base::ThreadTaskRunnerHandle::Get());
+        dm_protocol::kChromeExtensionPolicyType, &delegate_, &registry_, &core_,
+        client_, std::move(owned_cache_), base::ThreadTaskRunnerHandle::Get());
 
     client_->SetDMToken(ComponentCloudPolicyBuilder::kFakeToken);
     EXPECT_EQ(1u, client_->types_to_fetch_.size());

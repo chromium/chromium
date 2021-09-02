@@ -48,8 +48,7 @@ bool PolicyMerger::ConflictCanBeMerged(
   //   2. The user is affiliated with the machine-level cloud policy provider.
   const bool is_conflict_user_cloud_policy =
       conflict.scope == POLICY_SCOPE_USER &&
-      (conflict.source == POLICY_SOURCE_CLOUD ||
-       conflict.source == POLICY_SOURCE_PRIORITY_CLOUD);
+      conflict.source == POLICY_SOURCE_CLOUD;
 
   // Merging of user-level GPO policies is not permitted to prevent unexpected
   // behavior. If such merging is desired, it will be implemented in a similar
@@ -225,7 +224,6 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
   policies.push_back(policy);
   for (const auto& it : policy->conflicts)
     policies.push_back(&it.entry());
-
   std::sort(
       policies.begin(), policies.end(),
       [&policy_map](const PolicyMap::Entry* a, const PolicyMap::Entry* b) {

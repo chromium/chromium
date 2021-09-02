@@ -435,7 +435,6 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
     std::unique_ptr<MachineLevelUserCloudPolicyStore> policy_store =
         MachineLevelUserCloudPolicyStore::Create(
             browser_dm_token, client_id, base::FilePath(), user_data_dir,
-            /*cloud_policy_overrides=*/false,
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
     policy_store->AddObserver(&observer);

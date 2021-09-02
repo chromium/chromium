@@ -1235,6 +1235,9 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   policy_map1.Set(key::kPolicyDictionaryMultipleSourceMergeList,
                   POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                   POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+  policy_map1.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
   PolicyMap::Entry entry_dict_1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                                 POLICY_SOURCE_PLATFORM, std::move(dict1),
                                 nullptr);
@@ -1243,14 +1246,16 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   auto policy_bundle2 = std::make_unique<PolicyBundle>();
   PolicyMap& policy_map2 = policy_bundle2->Get(chrome_namespace);
   PolicyMap::Entry entry_dict_2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                                POLICY_SOURCE_PRIORITY_CLOUD, std::move(dict2),
-                                nullptr);
+                                POLICY_SOURCE_CLOUD, std::move(dict2), nullptr);
   policy_map2.Set(key::kExtensionSettings, entry_dict_2.DeepCopy());
 
   PolicyMap expected_chrome;
   expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
                       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                       POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+  expected_chrome.Set(key::kCloudPolicyOverridesPlatformPolicy,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_PLATFORM, base::Value(true), nullptr);
   expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 

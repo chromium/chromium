@@ -44,8 +44,7 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
     const base::FilePath& user_policy_key_dir,
     bool is_active_directory)
     : UserCloudPolicyStoreBase(background_task_runner,
-                               PolicyScope::POLICY_SCOPE_USER,
-                               PolicySource::POLICY_SOURCE_CLOUD),
+                               PolicyScope::POLICY_SCOPE_USER),
       session_manager_client_(session_manager_client),
       account_id_(account_id),
       is_active_directory_(is_active_directory),

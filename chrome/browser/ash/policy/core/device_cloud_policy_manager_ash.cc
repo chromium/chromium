@@ -186,8 +186,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     CHECK(signin_profile_forwarding_schema_registry_);
     CreateComponentCloudPolicyService(
         dm_protocol::kChromeSigninExtensionPolicyType,
-        component_policy_cache_dir, POLICY_SOURCE_CLOUD,
-        client_to_connect.get(),
+        component_policy_cache_dir, client_to_connect.get(),
         signin_profile_forwarding_schema_registry_.get());
   }
 

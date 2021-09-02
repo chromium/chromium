@@ -88,18 +88,14 @@ ComponentCloudPolicyStore::Delegate::~Delegate() {}
 ComponentCloudPolicyStore::ComponentCloudPolicyStore(
     Delegate* delegate,
     ResourceCache* cache,
-    const std::string& policy_type,
-    PolicySource policy_source)
+    const std::string& policy_type)
     : delegate_(delegate),
       cache_(cache),
-      domain_constants_(GetDomainConstantsForType(policy_type)),
-      policy_source_(policy_source) {
+      domain_constants_(GetDomainConstantsForType(policy_type)) {
   // Allow the store to be created on a different thread than the thread that
   // will end up using it.
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(domain_constants_);
-  DCHECK(policy_source == POLICY_SOURCE_CLOUD ||
-         policy_source == POLICY_SOURCE_PRIORITY_CLOUD);
 }
 
 ComponentCloudPolicyStore::~ComponentCloudPolicyStore() {
@@ -451,8 +447,8 @@ bool ComponentCloudPolicyStore::ParsePolicy(const std::string& data,
     if (level_string && *level_string == kRecommended)
       level = POLICY_LEVEL_RECOMMENDED;
 
-    policy->Set(policy_name, level, domain_constants_->scope, policy_source_,
-                std::move(value.value()), nullptr);
+    policy->Set(policy_name, level, domain_constants_->scope,
+                POLICY_SOURCE_CLOUD, std::move(value.value()), nullptr);
   }
 
   return true;

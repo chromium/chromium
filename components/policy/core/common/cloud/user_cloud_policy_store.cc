@@ -98,11 +98,8 @@ DesktopCloudPolicyStore::DesktopCloudPolicyStore(
     const base::FilePath& key_path,
     PolicyLoadFilter policy_load_filter,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope,
-    PolicySource policy_source)
-    : UserCloudPolicyStoreBase(background_task_runner,
-                               policy_scope,
-                               policy_source),
+    PolicyScope policy_scope)
+    : UserCloudPolicyStoreBase(background_task_runner, policy_scope),
       policy_path_(policy_path),
       key_path_(key_path),
       policy_load_filter_(std::move(policy_load_filter)) {}
@@ -379,8 +376,7 @@ UserCloudPolicyStore::UserCloudPolicyStore(
                               key_path,
                               PolicyLoadFilter(),
                               background_task_runner,
-                              PolicyScope::POLICY_SCOPE_USER,
-                              PolicySource::POLICY_SOURCE_CLOUD) {}
+                              PolicyScope::POLICY_SCOPE_USER) {}
 
 UserCloudPolicyStore::~UserCloudPolicyStore() {}
 

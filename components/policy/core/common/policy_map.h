@@ -314,10 +314,14 @@ class POLICY_EXPORT PolicyMap {
       const base::RepeatingCallback<bool(const const_iterator)>& filter,
       bool deletion_value);
 
+  // Updates the stored state of metapolicy CloudPolicyOverridesPlatformPolicy.
+  void UpdateCloudPolicyOverridesPlatformPolicy();
+
   PolicyMapType map_;
 
   // Affiliation
   bool is_user_affiliated_ = false;
+  bool cloud_policy_overrides_platform_policy_ = false;
   base::flat_set<std::string> user_affiliation_ids_;
   base::flat_set<std::string> device_affiliation_ids_;
 };

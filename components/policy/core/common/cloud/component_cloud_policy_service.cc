@@ -74,8 +74,7 @@ class ComponentCloudPolicyService::Backend
       scoped_refptr<base::SequencedTaskRunner> service_task_runner,
       std::unique_ptr<ResourceCache> cache,
       std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher,
-      const std::string& policy_type,
-      PolicySource policy_source);
+      const std::string& policy_type);
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
@@ -139,14 +138,13 @@ ComponentCloudPolicyService::Backend::Backend(
     scoped_refptr<base::SequencedTaskRunner> service_task_runner,
     std::unique_ptr<ResourceCache> cache,
     std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher,
-    const std::string& policy_type,
-    PolicySource policy_source)
+    const std::string& policy_type)
     : service_(service),
       task_runner_(task_runner),
       service_task_runner_(service_task_runner),
       cache_(std::move(cache)),
       external_policy_data_fetcher_(std::move(external_policy_data_fetcher)),
-      store_(this, cache_.get(), policy_type, policy_source) {
+      store_(this, cache_.get(), policy_type) {
   // This class is allowed to be instantiated on any thread.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -268,7 +266,6 @@ void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
 
 ComponentCloudPolicyService::ComponentCloudPolicyService(
     const std::string& policy_type,
-    PolicySource policy_source,
     Delegate* delegate,
     SchemaRegistry* schema_registry,
     CloudPolicyCore* core,
@@ -291,7 +288,7 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
       base::ThreadTaskRunnerHandle::Get(), std::move(cache),
       std::make_unique<ExternalPolicyDataFetcher>(client->GetURLLoaderFactory(),
                                                   backend_task_runner_),
-      policy_type, policy_source);
+      policy_type);
 
   // Observe the schema registry for keeping |current_schema_map_| up to date.
   schema_registry_->AddObserver(this);

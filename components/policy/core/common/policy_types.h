@@ -47,13 +47,13 @@ enum PolicySource {
 
   // Any non-platform policy was overridden because we are running in a
   // public session or kiosk mode.
-  // TODO(crbug/1225922): Remove deprecated policy source.
+  // TODO(crbug.com/1225922): Remove deprecated policy source.
   POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED,
 
   // The policy was set by a platform source.
   POLICY_SOURCE_PLATFORM,
 
-  // The policy was set by a cloud source that has higher priroity.
+  // The policy was set by a cloud source that has higher priority.
   POLICY_SOURCE_PRIORITY_CLOUD,
 
   // The policy coming from multiple sources and its value has been merged.
@@ -68,6 +68,47 @@ enum PolicySource {
 
   // Number of source types. Has to be the last element.
   POLICY_SOURCE_COUNT
+};
+
+// The priorities are set in order, with lowest priority first.
+// TODO(crbug.com/1011820): Split into separate enums for browser and device.
+enum PolicyPriority {
+  // The policy was set because we are running in an enterprise environment.
+  POLICY_PRIORITY_ENTERPRISE_DEFAULT,
+
+  // The policy was set by command line flag for testing purposes.
+  POLICY_PRIORITY_COMMAND_LINE,
+
+  // The policy was set by a cloud source.
+  POLICY_PRIORITY_CLOUD,
+
+  // The policy was set by an Active Directory source.
+  POLICY_PRIORITY_ACTIVE_DIRECTORY,
+
+  // Any non-platform policy was overridden because we are running in a
+  // managed guest session or kiosk mode.
+  // TODO(crbug.com/1225922): Remove when deprecated policy source is removed.
+  POLICY_PRIORITY_DEVICE_LOCAL_ACCOUNT_OVERRIDE,
+
+  // The policy was set by a platform source.
+  POLICY_PRIORITY_PLATFORM,
+
+  // The policy was set by a cloud source that has higher priority through the
+  // metapolicy CloudPolicyOverridesPlatformPolicy.
+  POLICY_PRIORITY_CLOUD_RAISED,
+
+  // The policy coming from multiple sources and its value has been merged.
+  POLICY_PRIORITY_MERGED,
+
+  // The policy was set by Cloud in Ash and piped to Lacros.
+  POLICY_PRIORITY_CLOUD_FROM_ASH,
+
+  // The policy was set by the RestrictedManagedGuestSessionEnabled policy. This
+  // source should be kept as highest priority source.
+  POLICY_PRIORITY_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE,
+
+  // Number of priority types. Must be the last element.
+  POLICY_PRIORITY_COUNT
 };
 
 }  // namespace policy

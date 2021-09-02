@@ -52,9 +52,8 @@ void MachineLevelUserCloudPolicyManager::Connect(
 
   CreateComponentCloudPolicyService(
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
-      policy_dir_.Append(kComponentPolicyCache),
-      // Component cloud policies use the same source of Chrome ones.
-      store()->source(), client.get(), schema_registry());
+      policy_dir_.Append(kComponentPolicyCache), client.get(),
+      schema_registry());
   core()->Connect(std::move(client));
   core()->StartRefreshScheduler();
   core()->TrackRefreshDelayPref(local_state,

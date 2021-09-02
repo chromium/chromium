@@ -37,7 +37,6 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
     const base::FilePath& external_policy_info_path,
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
-    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(
           policy_path,
@@ -47,9 +46,7 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
               external_policy_path,
               external_policy_info_path),
           background_task_runner,
-          PolicyScope::POLICY_SCOPE_MACHINE,
-          cloud_policy_has_priority ? PolicySource::POLICY_SOURCE_PRIORITY_CLOUD
-                                    : PolicySource::POLICY_SOURCE_CLOUD),
+          PolicyScope::POLICY_SCOPE_MACHINE),
       machine_dm_token_(machine_dm_token),
       machine_client_id_(machine_client_id) {}
 
@@ -62,7 +59,6 @@ MachineLevelUserCloudPolicyStore::Create(
     const std::string& machine_client_id,
     const base::FilePath& external_policy_dir,
     const base::FilePath& policy_dir,
-    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
@@ -79,7 +75,7 @@ MachineLevelUserCloudPolicyStore::Create(
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id, external_policy_path,
       external_policy_info_path, policy_cache_file, key_cache_file,
-      cloud_policy_has_priority, background_task_runner);
+      background_task_runner);
 }
 
 bool IsResultKeyEqual(const PolicyLoadResult& default_result,

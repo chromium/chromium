@@ -27,7 +27,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const base::FilePath& external_policy_info_path,
       const base::FilePath& policy_path,
       const base::FilePath& key_path,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   MachineLevelUserCloudPolicyStore(const MachineLevelUserCloudPolicyStore&) =
       delete;
@@ -42,7 +41,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const std::string& machine_client_id,
       const base::FilePath& external_policy_dir,
       const base::FilePath& policy_dir,
-      bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   // override DesktopCloudPolicyStore

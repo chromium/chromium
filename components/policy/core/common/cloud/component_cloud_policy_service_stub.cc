@@ -12,7 +12,6 @@ ComponentCloudPolicyService::Delegate::~Delegate() {}
 
 ComponentCloudPolicyService::ComponentCloudPolicyService(
     const std::string& policy_type,
-    PolicySource policy_source,
     Delegate* delegate,
     SchemaRegistry* schema_registry,
     CloudPolicyCore* core,

@@ -88,8 +88,7 @@ class EnterpriseConnectorsPolicyHandlerTest
       return true;
     if (policy() == kInvalidPolicy)
       return false;
-    return (source() == policy::PolicySource::POLICY_SOURCE_CLOUD ||
-            source() == policy::PolicySource::POLICY_SOURCE_PRIORITY_CLOUD);
+    return (source() == policy::PolicySource::POLICY_SOURCE_CLOUD);
   }
 
   absl::optional<base::Value> policy_value() const {
@@ -148,7 +147,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(kTestScopePref, nullptr),
         testing::Values(kValidPolicy, kInvalidPolicy, kEmptyPolicy),
         testing::Values(policy::PolicySource::POLICY_SOURCE_CLOUD,
-                        policy::PolicySource::POLICY_SOURCE_PRIORITY_CLOUD,
                         policy::PolicySource::POLICY_SOURCE_ACTIVE_DIRECTORY,
                         policy::PolicySource::POLICY_SOURCE_PLATFORM)));
 

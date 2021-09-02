@@ -86,7 +86,6 @@ class POLICY_EXPORT CloudPolicyManager
   void CreateComponentCloudPolicyService(
       const std::string& policy_type,
       const base::FilePath& policy_cache_path,
-      PolicySource policy_source,
       CloudPolicyClient* client,
       SchemaRegistry* schema_registry);
 

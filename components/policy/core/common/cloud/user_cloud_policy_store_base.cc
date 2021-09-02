@@ -18,14 +18,9 @@ namespace policy {
 
 UserCloudPolicyStoreBase::UserCloudPolicyStoreBase(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    PolicyScope policy_scope,
-    PolicySource policy_source)
+    PolicyScope policy_scope)
     : background_task_runner_(background_task_runner),
-      policy_scope_(policy_scope),
-      policy_source_(policy_source) {
-  DCHECK(policy_source == POLICY_SOURCE_CLOUD ||
-         policy_source == POLICY_SOURCE_PRIORITY_CLOUD);
-}
+      policy_scope_(policy_scope) {}
 
 UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() {}
 
@@ -60,7 +55,7 @@ void UserCloudPolicyStoreBase::InstallPolicy(
 #else
   PolicyPerProfileFilter filter = PolicyPerProfileFilter::kAny;
 #endif
-  DecodeProtoFields(*payload, external_data_manager(), policy_source_,
+  DecodeProtoFields(*payload, external_data_manager(), POLICY_SOURCE_CLOUD,
                     policy_scope_, &policy_map_, filter);
 
   if (policy_data->user_affiliation_ids_size() > 0) {

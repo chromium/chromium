@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_merger.h"
+#include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -50,6 +51,41 @@ base::flat_set<std::string> CombineIds(
   combined_ids.insert(ids_first.begin(), ids_first.end());
   combined_ids.insert(ids_second.begin(), ids_second.end());
   return combined_ids;
+}
+
+PolicyPriority GetPriority(PolicySource source,
+                           PolicyScope scope,
+                           bool cloud_policy_overrides_platform_policy) {
+  switch (source) {
+    case POLICY_SOURCE_ENTERPRISE_DEFAULT:
+      return POLICY_PRIORITY_ENTERPRISE_DEFAULT;
+    case POLICY_SOURCE_COMMAND_LINE:
+      return POLICY_PRIORITY_COMMAND_LINE;
+    case POLICY_SOURCE_CLOUD:
+      // Raise the priority only for cloud machine policies when the metapolicy
+      // CloudPolicyOverridesPlatformPolicy is set to true.
+      return scope == POLICY_SCOPE_MACHINE &&
+                     cloud_policy_overrides_platform_policy
+                 ? POLICY_PRIORITY_CLOUD_RAISED
+                 : POLICY_PRIORITY_CLOUD;
+    case POLICY_SOURCE_PRIORITY_CLOUD:
+      return POLICY_PRIORITY_CLOUD_RAISED;
+    case POLICY_SOURCE_ACTIVE_DIRECTORY:
+      return POLICY_PRIORITY_ACTIVE_DIRECTORY;
+    case POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED:
+      return POLICY_PRIORITY_DEVICE_LOCAL_ACCOUNT_OVERRIDE;
+    case POLICY_SOURCE_PLATFORM:
+      return POLICY_PRIORITY_PLATFORM;
+    case POLICY_SOURCE_MERGED:
+      return POLICY_PRIORITY_MERGED;
+    case POLICY_SOURCE_CLOUD_FROM_ASH:
+      return POLICY_PRIORITY_CLOUD_FROM_ASH;
+    case POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE:
+      return POLICY_PRIORITY_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE;
+    default:
+      NOTREACHED();
+      return POLICY_PRIORITY_ENTERPRISE_DEFAULT;
+  }
 }
 
 }  // namespace
@@ -362,18 +398,23 @@ PolicyMap PolicyMap::Clone() const {
 
 void PolicyMap::MergeFrom(const PolicyMap& other) {
   DCHECK_NE(this, &other);
+  // TODO(crbug.com/1234801): Extract the precedence and merging metapolicy
+  // values from both |PolicyMap|s here to enable setting them through CBCM.
+  UpdateCloudPolicyOverridesPlatformPolicy();
 
   for (const auto& policy_and_entry : other) {
     Entry* current_policy = GetMutableUntrusted(policy_and_entry.first);
     Entry other_policy = policy_and_entry.second.DeepCopy();
 
+    // TODO(crbug.com/1234801): Once metapolicies are extracted above, skip them
+    // if they are encountered again in this loop.
     if (!current_policy) {
       Set(policy_and_entry.first, std::move(other_policy));
       continue;
     }
 
     const bool other_is_higher_priority =
-        EntryHasHigherPriority(policy_and_entry.second, *current_policy);
+        EntryHasHigherPriority(other_policy, *current_policy);
 
     Entry& higher_policy =
         other_is_higher_priority ? other_policy : *current_policy;
@@ -385,7 +426,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
         conflicting_policy.source == POLICY_SOURCE_ENTERPRISE_DEFAULT;
     if (!overwriting_default_policy) {
       current_policy->value() &&
-              *policy_and_entry.second.value() == *current_policy->value()
+              *other_policy.value() == *current_policy->value()
           ? higher_policy.AddMessage(MessageType::kInfo,
                                      IDS_POLICY_CONFLICT_SAME_VALUE)
           : higher_policy.AddMessage(MessageType::kWarning,
@@ -473,8 +514,12 @@ void PolicyMap::FilterErase(
 
 bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                                        const PolicyMap::Entry& rhs) const {
-  return std::tie(lhs.level, lhs.scope, lhs.source) >
-         std::tie(rhs.level, rhs.scope, rhs.source);
+  PolicyPriority lhs_priority = GetPriority(
+      lhs.source, lhs.scope, cloud_policy_overrides_platform_policy_);
+  PolicyPriority rhs_priority = GetPriority(
+      rhs.source, rhs.scope, cloud_policy_overrides_platform_policy_);
+  return std::tie(lhs.level, lhs.scope, lhs_priority) >
+         std::tie(rhs.level, rhs.scope, rhs_priority);
 }
 
 bool PolicyMap::IsUserAffiliated() const {
@@ -497,6 +542,17 @@ void PolicyMap::SetDeviceAffiliationIds(
 
 const base::flat_set<std::string>& PolicyMap::GetDeviceAffiliationIds() const {
   return device_affiliation_ids_;
+}
+
+void PolicyMap::UpdateCloudPolicyOverridesPlatformPolicy() {
+  // Ensure the set precedence metapolicy is a platform machine policy.
+  cloud_policy_overrides_platform_policy_ =
+      GetValue(key::kCloudPolicyOverridesPlatformPolicy) &&
+      GetValue(key::kCloudPolicyOverridesPlatformPolicy)->GetBool() &&
+      Get(key::kCloudPolicyOverridesPlatformPolicy)->source ==
+          POLICY_SOURCE_PLATFORM &&
+      Get(key::kCloudPolicyOverridesPlatformPolicy)->scope ==
+          POLICY_SCOPE_MACHINE;
 }
 
 }  // namespace policy
