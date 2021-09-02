@@ -137,58 +137,50 @@ def parse_args(args):
                       'is to log as part of --debug-rwt-logging)')),
         ]))
 
-    option_group_definitions.append((
-        'Fuchsia-specific Options',
-        [
-            optparse.make_option(
-                '--zircon-logging',
-                dest='zircon_logging',
-                action='store_true',
-                default=True,
-                help=('Log Zircon debug messages (enabled by default).')),
-            optparse.make_option('--no-zircon-logging',
-                                 dest='zircon_logging',
-                                 action='store_false',
-                                 default=True,
-                                 help=('Do not log Zircon debug messages.')),
-            # TODO(crbug.com/1243754): Switch to fvdl as default.
-            optparse.make_option('--device',
-                                 choices=['aemu', 'qemu', 'device', 'fvdl'],
-                                 default='aemu',
-                                 help=('Choose device to launch Fuchsia with. '
-                                       'Defaults to AEMU.')),
-            optparse.make_option(
-                '--fuchsia-target-cpu',
-                choices=['x64', 'arm64'],
-                default='x64',
-                help=('cpu architecture of the device. Defaults '
-                      'to x64.')),
-            optparse.make_option(
-                '--fuchsia-out-dir',
-                help=('Path to Fuchsia build output directory.')),
-            optparse.make_option(
-                '--fuchsia-ssh-config',
-                help=('The path to the SSH configuration used for '
-                      'connecting to the target device.')),
-            optparse.make_option(
-                '--fuchsia-host',
-                help=('The IP of the target device. Optional.')),
-            optparse.make_option(
-                '--fuchsia-port',
-                type=int,
-                default=None,
-                help=('The port of the SSH service running on the '
-                      'device. Optional.')),
-            optparse.make_option(
-                '--fuchsia-node-name',
-                help=('The node-name of the device to boot or '
-                      'deploy to. Optional')),
-            optparse.make_option(
-                '--fuchsia-host-ip',
-                help=(
-                    'The IP address of the test host observed by the Fuchsia '
-                    'device. Required if running on hardware devices.')),
-        ]))
+    option_group_definitions.append(('Fuchsia-specific Options', [
+        optparse.make_option(
+            '--zircon-logging',
+            dest='zircon_logging',
+            action='store_true',
+            default=True,
+            help=('Log Zircon debug messages (enabled by default).')),
+        optparse.make_option('--no-zircon-logging',
+                             dest='zircon_logging',
+                             action='store_false',
+                             default=True,
+                             help=('Do not log Zircon debug messages.')),
+        optparse.make_option('--device',
+                             choices=['aemu', 'qemu', 'device', 'fvdl'],
+                             default='aemu',
+                             help=('Choose device to launch Fuchsia with. '
+                                   'Defaults to AEMU.')),
+        optparse.make_option('--fuchsia-target-cpu',
+                             choices=['x64', 'arm64'],
+                             default='x64',
+                             help=('cpu architecture of the device. Defaults '
+                                   'to x64.')),
+        optparse.make_option('--fuchsia-out-dir',
+                             help=('Path to Fuchsia build output directory.')),
+        optparse.make_option(
+            '--fuchsia-ssh-config',
+            help=('The path to the SSH configuration used for '
+                  'connecting to the target device.')),
+        optparse.make_option('--fuchsia-host',
+                             help=('The IP of the target device. Optional.')),
+        optparse.make_option(
+            '--fuchsia-port',
+            type=int,
+            default=None,
+            help=('The port of the SSH service running on the '
+                  'device. Optional.')),
+        optparse.make_option('--fuchsia-node-name',
+                             help=('The node-name of the device to boot or '
+                                   'deploy to. Optional')),
+        optparse.make_option(
+            '--fuchsia-host-ip',
+            help=('The IP address of the test host observed by the Fuchsia '
+                  'device. Required if running on hardware devices.')),
+    ]))
 
     option_group_definitions.append((
         'Results Options',
