@@ -352,6 +352,8 @@ source_set("browser") {
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
     "aggregation_service/aggregatable_report_manager.h",
+    "aggregation_service/aggregatable_report_sender.cc",
+    "aggregation_service/aggregatable_report_sender.h",
     "aggregation_service/aggregation_service_key_fetcher.cc",
     "aggregation_service/aggregation_service_key_fetcher.h",
     "aggregation_service/aggregation_service_key_storage.h",

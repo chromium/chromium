@@ -13,6 +13,7 @@ Refer to README.md for content description and update process.
  <item id="adb_client_socket" added_in_milestone="65" hash_code="87775794" type="0" content_hash_code="56654828" os_list="linux,windows" file_path="chrome/browser/devtools/device/adb/adb_client_socket.cc"/>
  <item id="affiliation_lookup" added_in_milestone="62" hash_code="111904019" type="0" deprecated="2021-07-27" content_hash_code="81061452" file_path=""/>
  <item id="affiliation_lookup_by_hash" added_in_milestone="87" hash_code="57748571" type="0" content_hash_code="40566404" os_list="linux,windows" file_path="components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.cc"/>
+ <item id="aggregation_service_report" added_in_milestone="95" hash_code="95942194" type="0" content_hash_code="44673922" os_list="linux,windows" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc"/>
  <item id="android_device_manager_socket" added_in_milestone="65" hash_code="37249086" type="0" content_hash_code="6436865" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_device_manager.cc"/>
  <item id="android_web_socket" added_in_milestone="65" hash_code="39356976" type="0" content_hash_code="12310113" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_web_socket.cc"/>
  <item id="appcache_update_job" added_in_milestone="62" hash_code="25790702" type="0" content_hash_code="27424887" os_list="linux,windows" file_path="content/browser/appcache/appcache_update_url_loader_request.cc"/>

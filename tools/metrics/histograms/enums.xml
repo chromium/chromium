@@ -67701,6 +67701,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="PriorityChanged"/>
 </enum>
 
+<enum name="PrivacySandboxAggregationServiceReportStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Server error"/>
+</enum>
+
 <enum name="PrivacySandboxReferrer">
   <int value="0" label="Privacy Settings"/>
   <int value="1" label="Cookie Settings Snackbar"/>
