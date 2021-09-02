@@ -206,8 +206,15 @@ float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
 }
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
-  return ash_color_provider_->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kHighlightColorHover);
+  // Use highlight colors when Dark Light mode is enabled.
+  if (features::IsDarkLightModeEnabled()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kHighlightColorHover);
+  }
+  // Use inkdrop colors by default.
+  return SkColorSetA(
+      GetRippleAttributesBaseColor(GetSearchBoxBackgroundColor()),
+      GetRippleAttributesHighlightOpacity(GetSearchBoxBackgroundColor()) * 255);
 }
 
 }  // namespace ash
