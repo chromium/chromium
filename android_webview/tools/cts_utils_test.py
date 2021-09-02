@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,6 +7,7 @@ import os
 import re
 import tempfile
 import shutil
+import six
 import sys
 import unittest
 import zipfile
@@ -314,13 +315,13 @@ class CTSUtilsTest(unittest.TestCase):
     yaml_data = cts_utils.CTSCIPDYaml(cts_utils.CIPD_PATH)
     self.assertTrue(yaml_data.get_package())
     self.assertTrue(yaml_data.get_files())
-    with tempfile.NamedTemporaryFile() as outputFile:
+    with tempfile.NamedTemporaryFile('w+t') as outputFile:
       yaml_data.write(outputFile.name)
       with open(cts_utils.CIPD_PATH) as cipdFile:
         self.assertEqual(cipdFile.readlines(), outputFile.readlines())
 
   def testCTSCIPDYamlOperations(self):
-    with tempfile.NamedTemporaryFile() as yamlFile:
+    with tempfile.NamedTemporaryFile('w+t') as yamlFile:
       yamlFile.writelines(CIPD_DATA['yaml'])
       yamlFile.flush()
       yaml_data = cts_utils.CTSCIPDYaml(yamlFile.name)
@@ -352,7 +353,7 @@ class CTSUtilsTest(unittest.TestCase):
     fake_cipd = FakeCIPD()
     fake_run_cmd = FakeRunCmd(cipd=fake_cipd)
     run_mock.side_effect = fake_run_cmd.run_cmd
-    with tempfile.NamedTemporaryFile() as yamlFile,\
+    with tempfile.NamedTemporaryFile('w+t') as yamlFile,\
          tempfile_ext.NamedTemporaryDirectory() as tempDir:
       yamlFile.writelines(CIPD_DATA['yaml'])
       yamlFile.flush()
@@ -376,7 +377,7 @@ class CTSUtilsTest(unittest.TestCase):
     self.assertTrue(cts_config.get_apks(platform))
 
   def testCTSConfig(self):
-    with tempfile.NamedTemporaryFile() as configFile:
+    with tempfile.NamedTemporaryFile('w+t') as configFile:
       configFile.writelines(CONFIG_DATA['json'])
       configFile.flush()
       cts_config = cts_utils.CTSConfig(configFile.name)
@@ -415,12 +416,12 @@ class CTSUtilsTest(unittest.TestCase):
                           'filtered.zip')
       zf = zipfile.ZipFile('filtered.zip', 'r')
       self.assertEquals(2, len(zf.namelist()))
-      self.assertEquals('abc', zf.read('a/b/one.apk'))
-      self.assertEquals('def', zf.read('a/b/two.apk'))
+      self.assertEquals(b'abc', zf.read('a/b/one.apk'))
+      self.assertEquals(b'def', zf.read('a/b/two.apk'))
 
   @patch('cts_utils.filterzip')
   def testFilterCTS(self, filterzip_mock):  # pylint: disable=no-self-use
-    with tempfile.NamedTemporaryFile() as configFile:
+    with tempfile.NamedTemporaryFile('w+t') as configFile:
       configFile.writelines(CONFIG_DATA['json'])
       configFile.flush()
       cts_config = cts_utils.CTSConfig(configFile.name)
@@ -467,7 +468,7 @@ class CTSUtilsTest(unittest.TestCase):
       with self.assertRaises(Exception):
         helper.update_cts_cipd_rev('anothernewversion')
 
-  @patch('urllib.urlretrieve')
+  @patch('urllib.urlretrieve' if six.PY2 else 'urllib.request.urlretrieve')
   @patch('os.makedirs')
   # pylint: disable=no-self-use
   def testDownload(self, mock_makedirs, mock_retrieve):

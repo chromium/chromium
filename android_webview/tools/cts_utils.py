@@ -1,4 +1,3 @@
-#!/usr/bin/env vpython
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,8 +5,10 @@
 
 import contextlib
 import json
+import operator
 import os
 import re
+import six
 import sys
 import tempfile
 import threading
@@ -199,8 +200,7 @@ class CTSCIPDYaml(object):
     output.append('package: {}\n'.format(self._yaml['package']))
     output.append('description: {}\n'.format(self._yaml['description']))
     output.append('data:\n')
-    self._yaml['data'].sort()
-    for d in self._yaml['data']:
+    for d in sorted(self._yaml['data'], key=operator.itemgetter('file')):
       output.append('  - file: {}\n'.format(d.get('file')))
     return output
 
@@ -432,7 +432,11 @@ def download(url, destination):
   dest_dir = os.path.dirname(destination)
   if not os.path.isdir(dest_dir):
     os.makedirs(dest_dir)
-  t = threading.Thread(target=urllib.urlretrieve, args=(url, destination))
+  if six.PY2:
+    retrieve_target = urllib.urlretrieve
+  else:
+    retrieve_target = urllib.request.urlretrieve
+  t = threading.Thread(target=retrieve_target, args=(url, destination))
   t.start()
   return t
 
