@@ -117,6 +117,8 @@ class ResourceLoadSchedulerTest : public testing::Test {
         *MakeGarbageCollected<DetachableConsoleLogger>(console_logger_),
         loading_observer_behavior_.Get());
     Scheduler()->SetOutstandingLimitForTesting(1);
+    feature_list_.InitAndDisableFeature(
+        features::kDelayLowPriorityRequestsAccordingToNetworkState);
   }
   void TearDown() override { Scheduler()->Shutdown(); }
 
@@ -714,6 +716,112 @@ TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
       scheduler::SchedulingLifecycleState::kNotThrottled);
   EXPECT_TRUE(GetConsoleLogger()->HasMessage());
   EXPECT_TRUE(Release(id2));
+}
+
+TEST_F(ResourceLoadSchedulerTest, ConsiderNetworkStateInTigtMode) {
+  const base::FieldTrialParams network_params = {
+      {features::kMaxNumOfThrottleableRequestsInTightMode.name, "2"},
+      {features::kHttpRttThreshold.name, "3600ms"},
+      {features::kCostReductionOfMultiplexedRequests.name, "0.5"}};
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kDelayLowPriorityRequestsAccordingToNetworkState,
+        network_params}},
+      {});
+
+  Scheduler()->SetOutstandingLimitForTesting(2, 5);
+
+  // Sets the RTT.
+  Scheduler()->SetHttpRttForTesting(base::TimeDelta::FromMilliseconds(1000));
+
+  // Push 2 requests, 1 non-multiplexed request and the other is multiplexed.
+  MockClient* client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kHigh, 0 /* intra_priority */,
+                       &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  MockClient* client2 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
+                       &id2);
+  Scheduler()->SetConnectionInfo(id2,
+                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
+
+  EXPECT_TRUE(client1->WasRun());
+  EXPECT_TRUE(client2->WasRun());
+
+  // Continue to push another non-multiplexed request, because there is
+  // already a multiplexed request, which is`id2`, the newly added one can
+  // still be handled without being delayed.
+  MockClient* client3 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client3, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 10 /* intra_priority */,
+                       &id3);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id3);
+
+  EXPECT_TRUE(client3->WasRun());
+
+  EXPECT_TRUE(Release(id3));
+  EXPECT_TRUE(Release(id2));
+  EXPECT_TRUE(Release(id1));
+}
+
+TEST_F(ResourceLoadSchedulerTest,
+       ConsiderNetworkStateInTigtModeWithPoorConnection) {
+  const base::FieldTrialParams network_params = {
+      {features::kMaxNumOfThrottleableRequestsInTightMode.name, "2"},
+      {features::kHttpRttThreshold.name, "3600ms"},
+      {features::kCostReductionOfMultiplexedRequests.name, "0.5"}};
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kDelayLowPriorityRequestsAccordingToNetworkState,
+        network_params}},
+      {});
+
+  Scheduler()->SetOutstandingLimitForTesting(2, 1024);
+
+  // Sets the RTT as a slow connection.
+  Scheduler()->SetHttpRttForTesting(base::TimeDelta::FromMilliseconds(5000));
+
+  // Push three requests.
+  MockClient* client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kHigh, 0 /* intra_priority */,
+                       &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  MockClient* client2 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
+                       &id2);
+  Scheduler()->SetConnectionInfo(id2,
+                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+
+  // This request will not run, because we are experiencing a slow connection.
+  MockClient* client3 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client3, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
+                       &id3);
+  Scheduler()->SetConnectionInfo(id3,
+                                 net::HttpResponseInfo::CONNECTION_INFO_HTTP2);
+
+  EXPECT_TRUE(client1->WasRun());
+  EXPECT_TRUE(client2->WasRun());
+  EXPECT_FALSE(client3->WasRun());
+
+  EXPECT_TRUE(Release(id3));
+  EXPECT_TRUE(Release(id2));
+  EXPECT_TRUE(Release(id1));
 }
 
 }  // namespace

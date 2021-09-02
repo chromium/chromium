@@ -1019,5 +1019,21 @@ const base::Feature kSyncLoadDataUrlFonts{"SyncLoadDataUrlFonts",
 const base::Feature kPersistentQuotaIsTemporaryQuota{
     "PersistentQuotaIsTemporaryQuota", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDelayLowPriorityRequestsAccordingToNetworkState{
+    "DelayLowPriorityRequestsAccordingToNetworkState",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
+    &kDelayLowPriorityRequestsAccordingToNetworkState,
+    "MaxNumOfThrottleableRequestsInTightMode", 5};
+
+const base::FeatureParam<base::TimeDelta> kHttpRttThreshold{
+    &kDelayLowPriorityRequestsAccordingToNetworkState, "HttpRttThreshold",
+    base::TimeDelta::FromMilliseconds(450)};
+
+const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
+    &kDelayLowPriorityRequestsAccordingToNetworkState,
+    "CostReductionOfMultiplexedRequests", 0.5};
+
 }  // namespace features
 }  // namespace blink

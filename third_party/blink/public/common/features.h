@@ -444,6 +444,30 @@ BLINK_COMMON_EXPORT extern const base::Feature kSyncLoadDataUrlFonts;
 BLINK_COMMON_EXPORT
 extern const base::Feature kPersistentQuotaIsTemporaryQuota;
 
+// If enabled, the ResourceLoadScheculer will take the current network state
+// into consideration, when it plans to delay a low-priority throttleable
+// requests in the tight mode. The factors include:
+//  - The total number of the in-flight multiplexed connections (e.g.,
+//    H2/SPDY/QUIC).
+//  - HTTP RTT estimate.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDelayLowPriorityRequestsAccordingToNetworkState;
+
+// Number of the requests that can be handled in the tight mode.
+BLINK_COMMON_EXPORT
+extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
+
+// The HTTP RTT threshold: decide whether the
+// `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
+// practically according to the network connection state.
+BLINK_COMMON_EXPORT
+extern const base::FeatureParam<base::TimeDelta> kHttpRttThreshold;
+
+// The cost reduction for the multiplexed requests when
+// `kDelayLowPriorityRequestsAccordingToNetworkState` is enabled.
+BLINK_COMMON_EXPORT
+extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
+
 }  // namespace features
 }  // namespace blink
 

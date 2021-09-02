@@ -9,10 +9,13 @@
 #include <set>
 
 #include "base/time/time.h"
+#include "base/types/strong_alias.h"
+#include "net/http/http_response_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -234,6 +237,16 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
     throttle_option_override_ = throttle_option_override;
   }
 
+  // Updates the connection info of the given client. This function may initiate
+  // a new resource loading.
+  void SetConnectionInfo(ClientId id,
+                         net::HttpResponseInfo::ConnectionInfo connection_info);
+
+  // Sets the HTTP RTT for testing.
+  void SetHttpRttForTesting(base::TimeDelta http_rtt) {
+    http_rtt_for_testing_ = http_rtt;
+  }
+
  private:
   class ClientIdWithPriority {
    public:
@@ -280,6 +293,9 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   using PendingRequestMap = HeapHashMap<ClientId, Member<ClientInfo>>;
 
+  using IsMultiplexedConnection =
+      base::StrongAlias<class IsMultiplexedConnectionTag, bool>;
+
   // Checks if |pending_requests_| for the specified option is effectively
   // empty, that means it does not contain any request that is still alive in
   // |pending_request_map_|.
@@ -302,14 +318,16 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   void MaybeRun();
 
   // Grants a client to run,
-  void Run(ClientId,
-           ResourceLoadSchedulerClient*,
-           bool throttleable,
-           ResourceLoadPriority priority);
+  void Run(ClientId, ResourceLoadSchedulerClient*, bool throttleable);
 
   size_t GetOutstandingLimit(ResourceLoadPriority priority) const;
 
   void ShowConsoleMessageIfNeeded();
+
+  bool IsRunningThrottleableRequestsLessThanOutStandingLimit(
+      size_t out_standing_limit);
+
+  bool CanRequestForMultiplexedConnectionsInTight() const;
 
   const Member<const DetachableResourceFetcherProperties>
       resource_fetcher_properties_;
@@ -329,14 +347,18 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   // Used when |policy_| is |kNormal|.
   size_t normal_outstanding_limit_ = kOutstandingUnlimited;
 
+  // The count of in-flight requests that support multiplexed connections.
+  size_t in_flight_on_multiplexed_connections_ = 0u;
+
   // Used when |frame_scheduler_throttling_state_| is |kThrottled|.
   const size_t outstanding_limit_for_throttled_frame_scheduler_;
 
   // The last used ClientId to calculate the next.
   ClientId current_id_ = kInvalidClientId;
 
-  // Holds clients that were granted and are running.
-  HashMap<ClientId, ResourceLoadPriority> running_requests_;
+  // Holds clients that were granted and are running and whether the connection
+  // is multiplexed.
+  HashMap<ClientId, IsMultiplexedConnection> running_requests_;
 
   HashSet<ClientId> running_throttleable_requests_;
 
@@ -370,6 +392,9 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   ThrottleOptionOverride throttle_option_override_;
 
   Member<LoadingBehaviorObserver> loading_behavior_observer_;
+
+  absl::optional<base::TimeDelta> http_rtt_ = absl::nullopt;
+  absl::optional<base::TimeDelta> http_rtt_for_testing_ = absl::nullopt;
 };
 
 }  // namespace blink

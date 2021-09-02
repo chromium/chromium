@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 
@@ -153,7 +154,7 @@ void ResourceLoadScheduler::Request(ResourceLoadSchedulerClient* client,
   // Check if the request can be throttled.
   ClientIdWithPriority request_info(*id, priority, intra_priority);
   if (!IsClientDelayable(option)) {
-    Run(*id, client, /*throttleable=*/false, priority);
+    Run(*id, client, /*throttleable=*/false);
     return;
   }
 
@@ -203,6 +204,9 @@ bool ResourceLoadScheduler::Release(
 
   auto running_request = running_requests_.find(id);
   if (running_request != running_requests_.end()) {
+    if (running_request->value)
+      in_flight_on_multiplexed_connections_--;
+
     running_requests_.erase(id);
     running_throttleable_requests_.erase(id);
 
@@ -291,15 +295,15 @@ bool ResourceLoadScheduler::GetNextPendingRequest(ClientId* id) {
   bool has_runnable_stoppable_request =
       stoppable_it != stoppable_queue.end() &&
       (!IsClientDelayable(ThrottleOption::kStoppable) ||
-       running_throttleable_requests_.size() <
-           GetOutstandingLimit(stoppable_it->priority));
+       IsRunningThrottleableRequestsLessThanOutStandingLimit(
+           GetOutstandingLimit(stoppable_it->priority)));
 
   auto throttleable_it = throttleable_queue.begin();
   bool has_runnable_throttleable_request =
       throttleable_it != throttleable_queue.end() &&
       (!IsClientDelayable(ThrottleOption::kThrottleable) ||
-       running_throttleable_requests_.size() <
-           GetOutstandingLimit(throttleable_it->priority));
+       IsRunningThrottleableRequestsLessThanOutStandingLimit(
+           GetOutstandingLimit(throttleable_it->priority)));
 
   if (!has_runnable_throttleable_request && !has_runnable_stoppable_request)
     return false;
@@ -332,25 +336,30 @@ void ResourceLoadScheduler::MaybeRun() {
   if (is_shutdown_)
     return;
 
+  // Updates the RTT before getting the next pending request in the tight mode.
+  if (policy_ == ThrottlingPolicy::kTight) {
+    http_rtt_ = http_rtt_for_testing_ ? http_rtt_for_testing_
+                                      : GetNetworkStateNotifier().HttpRtt();
+  }
+
   ClientId id = kInvalidClientId;
   while (GetNextPendingRequest(&id)) {
     auto found = pending_request_map_.find(id);
     if (found == pending_request_map_.end())
       continue;  // Already released.
 
-    auto priority = found->value->priority;
     ResourceLoadSchedulerClient* client = found->value->client;
     ThrottleOption option = found->value->option;
     pending_request_map_.erase(found);
-    Run(id, client, option == ThrottleOption::kThrottleable, priority);
+    Run(id, client, option == ThrottleOption::kThrottleable);
   }
 }
 
 void ResourceLoadScheduler::Run(ResourceLoadScheduler::ClientId id,
                                 ResourceLoadSchedulerClient* client,
-                                bool throttleable,
-                                ResourceLoadPriority priority) {
-  running_requests_.insert(id, priority);
+                                bool throttleable) {
+  // Assuming the request connection is not multiplexed.
+  running_requests_.insert(id, IsMultiplexedConnection(false));
   if (throttleable)
     running_throttleable_requests_.insert(id);
   client->Run();
@@ -372,11 +381,18 @@ size_t ResourceLoadScheduler::GetOutstandingLimit(
       break;
   }
 
+  size_t policy_limit = normal_outstanding_limit_;
   switch (policy_) {
     case ThrottlingPolicy::kTight:
-      limit = std::min(limit, priority < ResourceLoadPriority::kHigh
-                                  ? tight_outstanding_limit_
-                                  : normal_outstanding_limit_);
+      if (priority < ResourceLoadPriority::kHigh) {
+        if (CanRequestForMultiplexedConnectionsInTight()) {
+          policy_limit = static_cast<size_t>(
+              features::kMaxNumOfThrottleableRequestsInTightMode.Get());
+        } else {
+          policy_limit = tight_outstanding_limit_;
+        }
+      }
+      limit = std::min(limit, policy_limit);
       break;
     case ThrottlingPolicy::kNormal:
       limit = std::min(limit, normal_outstanding_limit_);
@@ -408,8 +424,60 @@ void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
   is_console_info_shown_ = true;
 }
 
+bool ResourceLoadScheduler::
+    IsRunningThrottleableRequestsLessThanOutStandingLimit(
+        size_t out_standing_limit) {
+  if (CanRequestForMultiplexedConnectionsInTight()) {
+    DCHECK_EQ(policy_, ThrottlingPolicy::kTight);
+    return (running_throttleable_requests_.size() -
+            in_flight_on_multiplexed_connections_ *
+                features::kCostReductionOfMultiplexedRequests.Get()) <
+           out_standing_limit;
+  }
+
+  return running_throttleable_requests_.size() < out_standing_limit;
+}
+
 void ResourceLoadScheduler::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
+}
+
+void ResourceLoadScheduler::SetConnectionInfo(
+    ClientId id,
+    net::HttpResponseInfo::ConnectionInfo connection_info) {
+  DCHECK_NE(kInvalidClientId, id);
+
+  // `is_multiplexed` will be set false if the connection of the given client
+  // doesn't support multiplexing (e.g., HTTP/1.x).
+  bool is_multiplexed = true;
+  switch (connection_info) {
+    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
+    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
+    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
+    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
+      is_multiplexed = false;
+      break;
+    default:
+      break;
+  }
+
+  auto running_request = running_requests_.find(id);
+  if (running_request != running_requests_.end() && is_multiplexed) {
+    running_request->value = IsMultiplexedConnection(true);
+    in_flight_on_multiplexed_connections_++;
+  }
+
+  MaybeRun();
+}
+
+bool ResourceLoadScheduler::CanRequestForMultiplexedConnectionsInTight() const {
+  // `kDelayLowPriorityRequestAccordingToNetworkState` will be triggered
+  // practically iff it's in the tight mode and the value of RTT is less than
+  // the `kThresholdOfHttpRtt`.
+  return base::FeatureList::IsEnabled(
+             features::kDelayLowPriorityRequestsAccordingToNetworkState) &&
+         policy_ == ThrottlingPolicy::kTight && http_rtt_ &&
+         http_rtt_.value() < features::kHttpRttThreshold.Get();
 }
 
 }  // namespace blink
