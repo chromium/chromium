@@ -132,7 +132,6 @@ TEST_F(RecoveryComponentTest, CrxDataPartiallySavedToDisk) {
 }
 
 TEST_F(RecoveryComponentTest, RunCalledForRemovablePUP) {
-  const UwSId kRemovableUwSId = 42;
   std::vector<UwSId> found_pups;
   TestPUPData test_pup_data;
 

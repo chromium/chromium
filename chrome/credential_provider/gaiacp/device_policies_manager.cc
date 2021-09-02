@@ -280,7 +280,7 @@ void DevicePoliciesManager::EnforceGcpwUpdatePolicy() {
       gcpw_version = base::UTF8ToWide(version.ToString());
     }
 
-    std::wstring ap_value = gcpw_version;
+    ap_value = gcpw_version;
     if (!update_channel.empty())
       ap_value = update_channel + kChannelAndVersionSeparator + gcpw_version;
 

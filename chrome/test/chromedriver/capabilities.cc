@@ -880,7 +880,6 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   LoggingPrefs::const_iterator iter = logging_prefs.find(
       WebDriverLog::kPerformanceType);
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->FindKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
@@ -892,7 +891,6 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       WebDriverLog::kDevToolsType);
   if (dt_events_logging_iter == logging_prefs.end()
       || dt_events_logging_iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = nullptr;
     if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->FindKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,

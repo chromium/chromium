@@ -210,7 +210,6 @@ void CloudSpeechRecognitionClientUnitTest::InitializeUpstreamPipeIfNecessary() {
 
 std::string CloudSpeechRecognitionClientUnitTest::ConsumeChunkedUploadData(
     uint32_t expected_num_bytes) {
-  std::string result;
   InitializeUpstreamPipeIfNecessary();
 
   EXPECT_TRUE(upstream_data_pipe_.is_valid());

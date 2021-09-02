@@ -872,15 +872,15 @@ TEST(DiskUtilTests,
     CreateProgramPathsAndFiles(temp_dir.GetPath(), &program_path,
                                &spaced_program_path);
     const base::FilePath program_paths[] = {program_path, spaced_program_path};
-    for (const auto& program_path : program_paths) {
+    for (const auto& path : program_paths) {
       // convert C:\\Windows\sysnative\scoped_folder\folder1234\file1 into
       // C:\\Windows\system32\scoped_folder\folder1234\file1
       base::FilePath program_path_system =
-          system_folder.Append(program_path.DirName().DirName().BaseName())
-              .Append(program_path.DirName().BaseName())
-              .Append(program_path.BaseName());
+          system_folder.Append(path.DirName().DirName().BaseName())
+              .Append(path.DirName().BaseName())
+              .Append(path.BaseName());
       EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-          program_path_system.value(), program_path));
+          program_path_system.value(), path));
     }
   }
 }
@@ -903,21 +903,21 @@ TEST(DiskUtilTests, ExtractExecutablePathFromRegistryContentWithEnvVariable) {
                              &spaced_program_path);
   const base::FilePath program_paths[] = {program_path, spaced_program_path};
 
-  for (const auto& program_path : program_paths) {
+  for (const auto& path : program_paths) {
     // Convert
     // "C:\Users\$USER\AppData\Local\Temp\scoped_dir1234\folder6788\A111.tmp"
     // into "scoped_dir1234\folder6789\A111.tmp"
     base::FilePath relative_program_path =
-        program_path.DirName()
+        path.DirName()
             .DirName()
             .BaseName()
-            .Append(program_path.DirName().BaseName())
-            .Append(program_path.BaseName());
+            .Append(path.DirName().BaseName())
+            .Append(path.BaseName());
     const auto program_path_with_var =
         base::StrCat({L"%TEMP%\\", relative_program_path.value()});
 
     EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-        program_path_with_var, program_path));
+        program_path_with_var, path));
   }
 }
 
@@ -931,9 +931,9 @@ TEST(DiskUtilTests, ExtractExecutablePathFromRegistryContent) {
                              &spaced_program_path);
   const base::FilePath program_paths[] = {program_path, spaced_program_path};
 
-  for (const auto& program_path : program_paths) {
-    EXPECT_TRUE(ExtractExecutablePathFromMockRegistryAndExpect(
-        program_path.value(), program_path));
+  for (const auto& path : program_paths) {
+    EXPECT_TRUE(
+        ExtractExecutablePathFromMockRegistryAndExpect(path.value(), path));
   }
 }
 

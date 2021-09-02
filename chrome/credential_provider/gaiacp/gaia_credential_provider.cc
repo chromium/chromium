@@ -476,8 +476,7 @@ HRESULT CGaiaCredentialProvider::CreateReauthCredentials(
     }
 
     GaiaCredentialComPtrStorage cred;
-    HRESULT hr =
-        CreateCredentialObject<CReauthCredential>(reauth_cred_creator_, &cred);
+    hr = CreateCredentialObject<CReauthCredential>(reauth_cred_creator_, &cred);
     if (FAILED(hr)) {
       LOG(ERROR) << "Could not create credential hr=" << putHR(hr);
       return hr;

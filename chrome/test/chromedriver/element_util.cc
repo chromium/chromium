@@ -552,8 +552,8 @@ Status GetElementClickableLocation(
   bool is_displayed = false;
   base::TimeTicks start_time = base::TimeTicks::Now();
   while (true) {
-    Status status = IsElementDisplayed(
-      session, web_view, target_element_id, true, &is_displayed);
+    status = IsElementDisplayed(session, web_view, target_element_id, true,
+                                &is_displayed);
     if (status.IsError())
       return status;
     if (is_displayed)

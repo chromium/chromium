@@ -211,7 +211,7 @@ void CALLBACK PerformPostSigninActionsW(HWND /*hwnd*/,
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ScopedCOMInitializer failed hr=" << putHR(hr);
   }
 

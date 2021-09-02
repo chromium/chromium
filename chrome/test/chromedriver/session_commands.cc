@@ -118,10 +118,10 @@ bool GetW3CSetting(const base::DictionaryValue& params) {
 
   const base::Value* list = params.FindListPath("capabilities.firstMatch");
   if (list && list->GetList().size()) {
-    const base::Value& caps_dict = std::move(list->GetList()[0]);
-    if (caps_dict.is_dict() &&
-        GetChromeOptionsDictionary(base::Value::AsDictionaryValue(caps_dict),
-                                   &options_dict)) {
+    const base::Value& caps_dict_ref = std::move(list->GetList()[0]);
+    if (caps_dict_ref.is_dict() &&
+        GetChromeOptionsDictionary(
+            base::Value::AsDictionaryValue(caps_dict_ref), &options_dict)) {
       absl::optional<bool> w3c = options_dict->FindBoolKey("w3c");
       if (w3c.has_value())
         return *w3c;
@@ -828,7 +828,7 @@ Status ExecuteSwitchToWindow(Session* session,
       session->chrome->IsMobileEmulationEnabled()) {
     // Connect to new window to apply session configuration
     WebView* web_view;
-    Status status = session->chrome->GetWebViewById(web_view_id, &web_view);
+    status = session->chrome->GetWebViewById(web_view_id, &web_view);
     if (status.IsError())
       return status;
     status = web_view->ConnectIfNecessary();

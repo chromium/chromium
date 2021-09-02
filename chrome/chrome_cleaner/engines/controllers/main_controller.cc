@@ -583,7 +583,6 @@ void MainController::UploadLogs(const std::wstring& tag, bool quit_when_done) {
   logging_service->MaybeSaveLogsToFile(tag);
 
   if (Settings::GetInstance()->logs_upload_allowed()) {
-    LoggingServiceAPI* logging_service = LoggingServiceAPI::GetInstance();
     logging_service->SendLogsToSafeBrowsing(
         base::BindRepeating(&MainController::LogsUploadComplete,
                             base::Unretained(this), tag),

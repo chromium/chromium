@@ -161,8 +161,8 @@ bool GetValueFromVersionResource(const char* version_resource,
 
   for (i = 0; i < array_size;) {
     wchar_t sub_block[MAX_PATH];
-    WORD language = lang_codepage[i++];
-    WORD code_page = lang_codepage[i++];
+    language = lang_codepage[i++];
+    code_page = lang_codepage[i++];
     _snwprintf_s(sub_block, MAX_PATH, MAX_PATH,
                  L"\\StringFileInfo\\%04hx%04hx\\%ls", language, code_page,
                  name.c_str());

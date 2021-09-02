@@ -252,8 +252,8 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
       content::MessageLoopRunner::QuitMode::DEFERRED);
 
   std::set<Browser*> initial_browsers;
-  for (auto* browser : *BrowserList::GetInstance())
-    initial_browsers.insert(browser);
+  for (auto* initial_browser : *BrowserList::GetInstance())
+    initial_browsers.insert(initial_browser);
 
   AllBrowserTabAddedWaiter tab_added_waiter;
 

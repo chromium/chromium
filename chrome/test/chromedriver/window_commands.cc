@@ -261,12 +261,12 @@ std::unique_ptr<base::DictionaryValue> CreateDictionaryFrom(
   return dict;
 }
 
-Status GetVisibleCookies(Session* session,
+Status GetVisibleCookies(Session* for_session,
                          WebView* web_view,
                          std::list<Cookie>* cookies) {
   std::string current_page_url;
   Status status =
-      GetUrl(web_view, session->GetCurrentFrameId(), &current_page_url);
+      GetUrl(web_view, for_session->GetCurrentFrameId(), &current_page_url);
   if (status.IsError())
     return status;
   std::unique_ptr<base::ListValue> internal_cookies;
@@ -1702,8 +1702,8 @@ Status ExecutePerformActions(Session* session,
                   session->sticky_modifiers &= ~KeyToKeyModifiers(event.key);
                 }
 
-                Status status = web_view->DispatchKeyEvents(
-                    dispatch_key_events, async_dispatch_event);
+                status = web_view->DispatchKeyEvents(dispatch_key_events,
+                                                     async_dispatch_event);
                 if (status.IsError())
                   return status;
               }

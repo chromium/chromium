@@ -545,11 +545,12 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
   // Touch events are filtered by the compositor if there are no touch listeners
   // on the page. Wait two frames for the compositor to sync with the main
   // thread to get consistent behavior.
-  base::DictionaryValue params;
-  params.SetString("expression",
-                   "new Promise(x => setTimeout(() => setTimeout(x, 20), 20))");
-  params.SetBoolean("awaitPromise", true);
-  client_->SendCommand("Runtime.evaluate", params);
+  base::DictionaryValue promise_params;
+  promise_params.SetString(
+      "expression",
+      "new Promise(x => setTimeout(() => setTimeout(x, 20), 20))");
+  promise_params.SetBoolean("awaitPromise", true);
+  client_->SendCommand("Runtime.evaluate", promise_params);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
 
@@ -1212,7 +1213,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   while (true) {
     base::ListValue no_args;
     std::unique_ptr<base::Value> query_value;
-    Status status = CallFunction(frame, kQueryResult, no_args, &query_value);
+    status = CallFunction(frame, kQueryResult, no_args, &query_value);
     if (status.IsError()) {
       if (status.code() == kNoSuchFrame)
         return Status(kJavaScriptError, kDocUnloadError);

@@ -68,9 +68,8 @@ TEST_F(SyncWebSocketImplTest, SendReceive) {
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("hi"));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("hi", message.c_str());
 }
 
@@ -88,7 +87,7 @@ TEST_F(SyncWebSocketImplTest, DetermineRecipient) {
   sock.Send(message_not_for_chromedriver);
   sock.Send(message_for_chromedriver);
   std::string message;
-  ASSERT_EQ(SyncWebSocket::kOk,
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
             sock.ReceiveNextMessage(&message, long_timeout()));
 
   // Getting message id and method
@@ -118,15 +117,13 @@ TEST_F(SyncWebSocketImplTest, SendReceiveTimeout) {
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("hi"));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kTimeout,
-      sock.ReceiveNextMessage(
-          &message, Timeout(base::TimeDelta())));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kTimeout,
+            sock.ReceiveNextMessage(&message, Timeout(base::TimeDelta())));
 
   server_reply_allowed.Signal();
   // Receive the response to avoid possible deletion of the event while the
   // server thread has not yet returned from the call to Wait.
-  EXPECT_EQ(SyncWebSocket::kOk,
+  EXPECT_EQ(SyncWebSocket::StatusCode::kOk,
             sock.ReceiveNextMessage(&message, long_timeout()));
 }
 
@@ -136,9 +133,8 @@ TEST_F(SyncWebSocketImplTest, SendReceiveLarge) {
   std::string wrote_message(10 << 20, 'a');
   ASSERT_TRUE(sock.Send(wrote_message));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_EQ(wrote_message.length(), message.length());
   ASSERT_EQ(wrote_message, message);
 }
@@ -149,18 +145,15 @@ TEST_F(SyncWebSocketImplTest, SendReceiveMany) {
   ASSERT_TRUE(sock.Send("1"));
   ASSERT_TRUE(sock.Send("2"));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("1", message.c_str());
   ASSERT_TRUE(sock.Send("3"));
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("2", message.c_str());
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("3", message.c_str());
 }
 
@@ -170,9 +163,8 @@ TEST_F(SyncWebSocketImplTest, CloseOnReceive) {
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("1"));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kDisconnected,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kDisconnected,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("", message.c_str());
 }
 
@@ -204,9 +196,8 @@ TEST_F(SyncWebSocketImplTest, Reconnect) {
   ASSERT_FALSE(sock.HasNextMessage());
   ASSERT_TRUE(sock.Send("3"));
   std::string message;
-  ASSERT_EQ(
-      SyncWebSocket::kOk,
-      sock.ReceiveNextMessage(&message, long_timeout()));
+  ASSERT_EQ(SyncWebSocket::StatusCode::kOk,
+            sock.ReceiveNextMessage(&message, long_timeout()));
   ASSERT_STREQ("3", message.c_str());
   ASSERT_FALSE(sock.HasNextMessage());
 }

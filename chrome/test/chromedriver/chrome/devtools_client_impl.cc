@@ -464,14 +464,14 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
 
   std::string message;
   switch (socket_->ReceiveNextMessage(&message, timeout)) {
-    case SyncWebSocket::kOk:
+    case SyncWebSocket::StatusCode::kOk:
       break;
-    case SyncWebSocket::kDisconnected: {
+    case SyncWebSocket::StatusCode::kDisconnected: {
       std::string err = "Unable to receive message from renderer";
       LOG(ERROR) << err;
       return Status(kDisconnected, err);
     }
-    case SyncWebSocket::kTimeout: {
+    case SyncWebSocket::StatusCode::kTimeout: {
       std::string err =
           "Timed out receiving message from renderer: " +
           base::StringPrintf("%.3lf", timeout.GetDuration().InSecondsF());

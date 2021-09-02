@@ -225,8 +225,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
 
   base::Value app_info_value_list(base::Value::Type::LIST);
   for (std::wstring regPath : app_path_list) {
-    std::unique_ptr<base::Value> request_dict_;
-    request_dict_ =
+    auto request_dict =
         std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
     wchar_t display_name[256];
@@ -235,8 +234,8 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
         GetMachineRegString(regPath, std::wstring(kAppDisplayNameRegistryKey),
                             display_name, &display_length);
     if (hr == S_OK) {
-      request_dict_->SetStringKey(kAppDisplayName,
-                                  base::WideToUTF8(display_name));
+      request_dict->SetStringKey(kAppDisplayName,
+                                 base::WideToUTF8(display_name));
 
       wchar_t display_version[256];
       ULONG version_length = base::size(display_version);
@@ -244,8 +243,8 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
                                std::wstring(kAppDisplayVersionRegistryKey),
                                display_version, &version_length);
       if (hr == S_OK) {
-        request_dict_->SetStringKey(kAppDisplayVersion,
-                                    base::WideToUTF8(display_version));
+        request_dict->SetStringKey(kAppDisplayVersion,
+                                   base::WideToUTF8(display_version));
       }
 
       wchar_t publisher[256];
@@ -253,14 +252,14 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
       hr = GetMachineRegString(regPath, std::wstring(kAppPublisherRegistryKey),
                                publisher, &publisher_length);
       if (hr == S_OK) {
-        request_dict_->SetStringKey(kAppPublisher, base::WideToUTF8(publisher));
+        request_dict->SetStringKey(kAppPublisher, base::WideToUTF8(publisher));
       }
 
       // App_type value 1 refers to WIN_32 applications.
-      request_dict_->SetIntKey(kAppType, 1);
+      request_dict->SetIntKey(kAppType, 1);
 
       app_info_value_list.Append(
-          base::Value::FromUniquePtrValue(std::move(request_dict_)));
+          base::Value::FromUniquePtrValue(std::move(request_dict)));
     }
   }
 

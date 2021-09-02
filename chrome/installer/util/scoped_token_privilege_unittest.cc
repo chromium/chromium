@@ -51,7 +51,7 @@ bool CurrentProcessHasPrivilege(const wchar_t* privilege_name) {
   std::unique_ptr<wchar_t[]> name_buffer(new wchar_t[buffer_size]);
   for (int i = privileges->PrivilegeCount - 1; i >= 0; --i) {
     LUID_AND_ATTRIBUTES& luid_and_att = privileges->Privileges[i];
-    DWORD size = buffer_size;
+    size = buffer_size;
     ::LookupPrivilegeName(nullptr, &luid_and_att.Luid, name_buffer.get(),
                           &size);
     if (size == desired_size &&

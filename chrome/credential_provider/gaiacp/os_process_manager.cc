@@ -251,7 +251,7 @@ HRESULT AllowLogonSIDOnLocalBasedNamedObjects(PSID sid) {
                           nullptr);
   ::LocalFree(new_dacl);
   if (err != ERROR_SUCCESS) {
-    HRESULT hr = HRESULT_FROM_NT(err);
+    hr = HRESULT_FROM_NT(err);
     LOGFN(ERROR) << "SetSecurityInfo hr=" << putHR(hr);
     return hr;
   }
@@ -305,7 +305,7 @@ HRESULT AllowLogonSIDOnWinSta0(PSID sid) {
                           nullptr);
   ::LocalFree(new_dacl);
   if (err != ERROR_SUCCESS) {
-    HRESULT hr = HRESULT_FROM_NT(err);
+    hr = HRESULT_FROM_NT(err);
     LOGFN(ERROR) << "SetSecurityInfo hr=" << putHR(hr);
     return hr;
   }
@@ -376,7 +376,7 @@ HDESK GetAndAllowLogonSIDOnDesktop(const wchar_t* desktop_name,
                           nullptr);
   ::LocalFree(new_dacl);
   if (err != ERROR_SUCCESS) {
-    HRESULT hr = HRESULT_FROM_NT(err);
+    hr = HRESULT_FROM_NT(err);
     LOGFN(ERROR) << "SetSecurityInfo hr=" << putHR(hr);
     return nullptr;
   }
@@ -407,7 +407,7 @@ HRESULT SetupPermissionsForLogonSid(PSID sid) {
     desktop.Set(
         GetAndAllowLogonSIDOnDesktop(kDesktopName, sid, DESKTOP_SWITCHDESKTOP));
     if (!desktop.IsValid()) {
-      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "GetAndAllowLogonSIDOnDesktop hr=" << putHR(hr);
       return hr;
     }

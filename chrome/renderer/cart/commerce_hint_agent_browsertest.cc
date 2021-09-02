@@ -328,8 +328,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                     .ReplaceComponents(remove_port)
                     .spec(),
                 expected[i].second.merchant_cart_url());
-      bool same_size = found[i].second.product_image_urls_size() ==
-                       expected[i].second.product_image_urls_size();
+      same_size = found[i].second.product_image_urls_size() ==
+                  expected[i].second.product_image_urls_size();
       if (!same_size) {
         fail = true;
       } else {

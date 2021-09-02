@@ -561,7 +561,6 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
   ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadFailures,
                                   num_upload_device_details_failures));
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle
@@ -685,7 +684,6 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
   // Ensure user has policies and valid GCPW token.
   SetCloudPoliciesForUser((BSTR)sid, policies);
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle

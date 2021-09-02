@@ -136,7 +136,6 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   std::string text;
   const base::ListValue* args = nullptr;
 
-  std::string arg_type;
   if (!params.GetList("args", &args) || args->GetList().size() < 1) {
     return Status(kUnknownError, "missing or invalid args");
   }

@@ -1575,9 +1575,9 @@ int WINAPI wWinMain(HINSTANCE instance,
       if (!new_cmd.HasSwitch(installer::switches::kSystemLevel))
         new_cmd.AppendSwitch(installer::switches::kSystemLevel);
 
-      DWORD exit_code = installer::UNKNOWN_STATUS;
-      InstallUtil::ExecuteExeAsAdmin(new_cmd, &exit_code);
-      return exit_code;
+      DWORD exe_exit_code = installer::UNKNOWN_STATUS;
+      InstallUtil::ExecuteExeAsAdmin(new_cmd, &exe_exit_code);
+      return exe_exit_code;
     } else {
       LOG(ERROR) << "Non admin user can not install system level Chrome.";
       installer_state.WriteInstallerResult(installer::INSUFFICIENT_RIGHTS,

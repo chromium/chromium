@@ -314,9 +314,9 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
         int32_t ntstatus = 0;  // STATUS_SUCCESS
         ::SetLastError(ERROR_SUCCESS);
         __try {
-          SRes sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.vt,
-                                          db.dataPos, mapped_file->data(),
-                                          folder_unpack_size, &allocTempImp);
+          sz_res = SzAr_DecodeFolder(&db.db, folder_index, &lookStream.vt,
+                                     db.dataPos, mapped_file->data(),
+                                     folder_unpack_size, &allocTempImp);
           if (sz_res != SZ_OK) {
             LOG(ERROR) << "Error returned by SzExtract: " << sz_res;
             auto error_code = ::GetLastError();
