@@ -325,17 +325,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
       run_location_, executing_scripts, num_injected_js_scripts);
   DCHECK(!sources.empty());
-  int world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
   bool is_user_gesture = injector_->IsUserGesture();
 
   std::unique_ptr<blink::WebScriptExecutionCallback> callback(
       new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
 
   base::ElapsedTimer exec_timer;
-  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
-      log_activity_) {
-    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
-  }
 
   // For content scripts executing during page load, we run them asynchronously
   // in order to reduce UI jank experienced by the user. (We don't do this for
@@ -353,10 +348,23 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           ? blink::WebLocalFrame::kAsynchronousBlockingOnload
           : blink::WebLocalFrame::kSynchronous;
 
-  render_frame_->GetWebFrame()->RequestExecuteScriptInIsolatedWorld(
-      world_id, &sources.front(), sources.size(), is_user_gesture,
-      execution_option, callback.release(),
-      blink::BackForwardCacheAware::kPossiblyDisallow);
+  mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
+  if (execution_world == mojom::ExecutionWorld::kIsolated) {
+    int world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
+    if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+        log_activity_) {
+      DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+    }
+    render_frame_->GetWebFrame()->RequestExecuteScriptInIsolatedWorld(
+        world_id, &sources.front(), sources.size(), is_user_gesture,
+        execution_option, callback.release(),
+        blink::BackForwardCacheAware::kPossiblyDisallow);
+  } else {
+    DCHECK_EQ(mojom::ExecutionWorld::kMain, execution_world);
+    render_frame_->GetWebFrame()->RequestExecuteScriptInMainWorld(
+        &sources.front(), sources.size(), is_user_gesture, execution_option,
+        callback.release(), blink::BackForwardCacheAware::kPossiblyDisallow);
+  }
 }
 
 void ScriptInjection::OnJsInjectionCompleted(

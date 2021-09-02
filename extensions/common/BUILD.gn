@@ -43,6 +43,7 @@ if (enable_extensions) {
       "mojom/css_origin.mojom",
       "mojom/event_dispatcher.mojom",
       "mojom/event_router.mojom",
+      "mojom/execution_world.mojom",
       "mojom/feature_session_type.mojom",
       "mojom/frame.mojom",
       "mojom/guest_view.mojom",

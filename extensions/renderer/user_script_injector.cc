@@ -142,6 +142,10 @@ bool UserScriptInjector::IsUserGesture() const {
   return false;
 }
 
+mojom::ExecutionWorld UserScriptInjector::GetExecutionWorld() const {
+  return mojom::ExecutionWorld::kIsolated;
+}
+
 bool UserScriptInjector::ExpectsResults() const {
   return false;
 }

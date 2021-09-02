@@ -11,6 +11,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -51,6 +52,9 @@ class ScriptInjector {
 
   // Returns true if the script is running inside a user gesture.
   virtual bool IsUserGesture() const = 0;
+
+  // Returns the world in which to execute the javascript code.
+  virtual mojom::ExecutionWorld GetExecutionWorld() const = 0;
 
   // Returns the CSS origin of this injection.
   virtual mojom::CSSOrigin GetCssOrigin() const = 0;

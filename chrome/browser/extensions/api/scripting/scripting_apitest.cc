@@ -61,8 +61,8 @@ class ScriptingAPITest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
-  OpenURLInCurrentTab(
-      embedded_test_server()->GetURL("example.com", "/simple.html"));
+  OpenURLInCurrentTab(embedded_test_server()->GetURL(
+      "example.com", "/extensions/main_world_script_flag.html"));
   OpenURLInNewTab(
       embedded_test_server()->GetURL("chromium.org", "/title2.html"));
 

@@ -973,11 +973,9 @@ void WebLocalFrameImpl::RequestExecuteScriptAndReturnValue(
     WebScriptExecutionCallback* callback) {
   DCHECK(GetFrame());
 
-  scoped_refptr<DOMWrapperWorld> main_world = &DOMWrapperWorld::MainWorld();
-  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame()->DomWindow(), std::move(main_world),
-      CreateSourcesVector(&source, 1), user_gesture, callback);
-  executor->Run();
+  RequestExecuteScriptImpl(
+      &DOMWrapperWorld::MainWorld(), CreateSourcesVector(&source, 1),
+      user_gesture, kSynchronous, callback, BackForwardCacheAware::kAllow);
 }
 
 void WebLocalFrameImpl::RequestExecuteV8Function(
@@ -1005,18 +1003,51 @@ void WebLocalFrameImpl::RequestExecuteScriptInIsolatedWorld(
   CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
   CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
 
+  scoped_refptr<DOMWrapperWorld> isolated_world =
+      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
+
+  RequestExecuteScriptImpl(
+      std::move(isolated_world), CreateSourcesVector(sources_in, num_sources),
+      user_gesture, option, callback, back_forward_cache_aware);
+}
+
+void WebLocalFrameImpl::RequestExecuteScriptInMainWorld(
+    const WebScriptSource* sources_in,
+    unsigned num_sources,
+    bool user_gesture,
+    ScriptExecutionType option,
+    WebScriptExecutionCallback* callback,
+    BackForwardCacheAware back_forward_cache_aware) {
+  DCHECK(GetFrame());
+  RequestExecuteScriptImpl(&DOMWrapperWorld::MainWorld(),
+                           CreateSourcesVector(sources_in, num_sources),
+                           user_gesture, option, callback,
+                           back_forward_cache_aware);
+}
+
+void WebLocalFrameImpl::RequestExecuteScriptImpl(
+    scoped_refptr<DOMWrapperWorld> world,
+    const HeapVector<ScriptSourceCode>& sources,
+    bool user_gesture,
+    ScriptExecutionType execution_type,
+    WebScriptExecutionCallback* callback,
+    BackForwardCacheAware back_forward_cache_aware) {
+  DCHECK(GetFrame());
+
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
+    // TODO(devlin): This isn't necessarily an "isolated world" script, but the
+    // purpose is always the same when it comes to BFCache: this was a script
+    // injected by the embedder that isn't strictly a part of the page. Should
+    // these be separate features, or should kIsolatedWorldScript be renamed?
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
         SchedulingPolicy::Feature::kIsolatedWorldScript,
         {SchedulingPolicy::DisableBackForwardCache()});
   }
 
-  scoped_refptr<DOMWrapperWorld> isolated_world =
-      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame()->DomWindow(), std::move(isolated_world),
-      CreateSourcesVector(sources_in, num_sources), user_gesture, callback);
-  switch (option) {
+      GetFrame()->DomWindow(), std::move(world), sources, user_gesture,
+      callback);
+  switch (execution_type) {
     case kAsynchronousBlockingOnload:
       executor->RunAsync(PausableScriptExecutor::kOnloadBlocking);
       break;

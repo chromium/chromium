@@ -15,6 +15,14 @@ namespace scripting {
     USER
   };
 
+  // The JavaScript world for a script to execute within.
+  enum ExecutionWorld {
+    // The isolated world, unique to this extension.
+    ISOLATED,
+    // The main world of the DOM, shared with the page's JavaScript.
+    MAIN
+  };
+
   dictionary InjectionTarget {
     // The ID of the tab into which to inject.
     long tabId;
@@ -58,6 +66,10 @@ namespace scripting {
 
     // Details specifying the target into which to inject the script.
     InjectionTarget target;
+
+    // The JavaScript "world" to run the script in. Defaults to
+    // <code>ISOLATED</code>.
+    ExecutionWorld? world;
   };
 
   dictionary CSSInjection {

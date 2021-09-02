@@ -30,6 +30,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -546,11 +547,20 @@ bool ScriptingExecuteScriptFunction::Execute(
     return false;
   }
 
+  mojom::ExecutionWorld execution_world = mojom::ExecutionWorld::kIsolated;
+  switch (injection_.world) {
+    case api::scripting::EXECUTION_WORLD_NONE:
+    case api::scripting::EXECUTION_WORLD_ISOLATED:
+      break;  // mojom::ExecutionWorld::kIsolated is correct.
+    case api::scripting::EXECUTION_WORLD_MAIN:
+      execution_world = mojom::ExecutionWorld::kMain;
+  }
+
   script_executor->ExecuteScript(
       mojom::HostID(mojom::HostID::HostType::kExtensions, extension()->id()),
-      mojom::CodeInjection::NewJs(mojom::JSInjection::New(std::move(sources),
-                                                          /*wants_result=*/true,
-                                                          user_gesture())),
+      mojom::CodeInjection::NewJs(
+          mojom::JSInjection::New(std::move(sources), execution_world,
+                                  /*wants_result=*/true, user_gesture())),
       frame_scope, frame_ids, ScriptExecutor::MATCH_ABOUT_BLANK,
       mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(),

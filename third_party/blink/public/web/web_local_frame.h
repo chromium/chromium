@@ -411,6 +411,18 @@ class WebLocalFrame : public WebFrame {
       WebScriptExecutionCallback*,
       BackForwardCacheAware) = 0;
 
+  // Executes the script in the main world of the page.
+  // TODO(devlin): Introduce a single RequestExecuteScript() function with these
+  // options that takes in a world ID that allows the main world? Then, we can
+  // combine this, RequestExecuteScriptInIsolatedWorld(), and
+  // RequestExecuteScriptAndReturnValue().
+  virtual void RequestExecuteScriptInMainWorld(const WebScriptSource* source_in,
+                                               unsigned num_sources,
+                                               bool user_gesture,
+                                               ScriptExecutionType,
+                                               WebScriptExecutionCallback*,
+                                               BackForwardCacheAware) = 0;
+
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
   // added to the console previously from this page).
