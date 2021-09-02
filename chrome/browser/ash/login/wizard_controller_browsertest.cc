@@ -1448,8 +1448,8 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WizardControllerDeviceStateTest::SetUpCommandLine(command_line);
 
-    // Enable usage of fake PSM RLWE client (for tests checking initial
-    // enrollment).
+    // Enable usage of fake PSM (private set membership) RLWE client (for tests
+    // checking initial enrollment).
     command_line->AppendSwitch(
         switches::kEnterpriseUseFakePsmRlweClientForTesting);
 

@@ -378,8 +378,8 @@ AutoEnrollmentController::GetFRERequirement() {
 
 AutoEnrollmentController::AutoEnrollmentController()
     : system_clock_sync_waiter_(std::make_unique<SystemClockSyncWaiter>()) {
-  // Create the PSM RLWE client factory depending on whether
-  // switches::kEnterpriseUseFakePsmRlweClient is set.
+  // Create the PSM (private set membership) RLWE client factory depending on
+  // whether switches::kEnterpriseUseFakePsmRlweClient is set.
   if (ShouldUseFakePsmRlweClient()) {
     psm_rlwe_client_factory_ = std::make_unique<
         policy::FakePrivateMembershipRlweClient::FactoryImpl>();

@@ -98,8 +98,8 @@ class AutoEnrollmentController {
   // Returns true if any either FRE or initial enrollment are enabled.
   static bool IsEnabled();
 
-  // Returns true if it is determined to use the fake PSM RLWE client based on
-  // command-line flags.
+  // Returns true if it is determined to use the fake PSM (private set
+  // membership) RLWE client based on command-line flags.
   static bool ShouldUseFakePsmRlweClient();
 
   // Returns whether the FRE auto-enrollment check is required. When
