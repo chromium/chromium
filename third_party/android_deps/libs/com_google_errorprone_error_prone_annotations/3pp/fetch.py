@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.7.1/error_prone_annotations-2.7.1.jar'
-_FILE_NAME = 'error_prone_annotations-2.7.1.jar'
-_FILE_VERSION = '2.7.1'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.9.0/error_prone_annotations-2.9.0.jar'
+_FILE_NAME = 'error_prone_annotations-2.9.0.jar'
+_FILE_VERSION = '2.9.0'
 
 
 def do_latest():

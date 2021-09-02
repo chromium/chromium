@@ -129,7 +129,7 @@ dependencies {
     // Matches version depended on by Dagger.
     buildCompile 'com.squareup:javapoet:1.13.0'
 
-    String errorproneVersion = '2.7.1'
+    String errorproneVersion = '2.9.0'
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     compile 'org.checkerframework:checker-compat-qual:2.5.3'

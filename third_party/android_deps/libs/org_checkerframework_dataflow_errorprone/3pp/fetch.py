@@ -12,9 +12,9 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-shaded/3.11.0/dataflow-shaded-3.11.0.jar'
-_FILE_NAME = 'dataflow-shaded-3.11.0.jar'
-_FILE_VERSION = '3.11.0'
+_FILE_URL = 'https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-errorprone/3.15.0/dataflow-errorprone-3.15.0.jar'
+_FILE_NAME = 'dataflow-errorprone-3.15.0.jar'
+_FILE_VERSION = '3.15.0'
 
 
 def do_latest():
