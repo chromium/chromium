@@ -506,7 +506,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
     results->experiment_stats.clear();
     if (extras->GetList("google:experimentstats", &experiment_stats) &&
         experiment_stats) {
-      for (size_t index = 0; index < experiment_stats->GetSize(); index++) {
+      for (size_t index = 0; index < experiment_stats->GetList().size();
+           index++) {
         const base::Value* experiment_stat = nullptr;
         if (experiment_stats->Get(index, &experiment_stat) && experiment_stat) {
           results->experiment_stats.push_back(experiment_stat->Clone());
@@ -541,7 +542,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       client_data->GetInteger("phi", &prefetch_index);
 
     if (extras->GetList("google:suggestdetail", &suggestion_details) &&
-        suggestion_details->GetSize() != results_list.size())
+        suggestion_details->GetList().size() != results_list.size())
       suggestion_details = nullptr;
 
     // Legacy code: Get subtype identifiers.

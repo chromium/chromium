@@ -209,7 +209,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
   // new keys.
   std::vector<blink::WebCryptoKey> live_keys;
 
-  for (size_t key_index = 0; key_index < key_list.GetSize(); ++key_index) {
+  for (size_t key_index = 0; key_index < key_list.GetList().size();
+       ++key_index) {
     SCOPED_TRACE(key_index);
 
     base::DictionaryValue* key_values;
@@ -651,7 +652,8 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyKnownAnswer) {
 
   // Validate the signatures are computed and verified as expected.
   std::vector<uint8_t> signature;
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
     base::DictionaryValue* test;
@@ -989,7 +991,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportInvalidKeyData) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("bad_rsa_keys.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
     const base::DictionaryValue* test;

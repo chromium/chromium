@@ -86,7 +86,7 @@ bool ParseDefaultApplications(const GURL& manifest_url,
     return false;
   }
 
-  size_t apps_number = list->GetSize();
+  size_t apps_number = list->GetList().size();
   if (apps_number > kMaximumNumberOfItems) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entries.",
                                  kDefaultApplications, kMaximumNumberOfItems));
@@ -140,7 +140,7 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
     return false;
   }
 
-  size_t supported_origins_number = list->GetSize();
+  size_t supported_origins_number = list->GetList().size();
   if (supported_origins_number > kMaximumNumberOfSupportedOrigins) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entires.",
                                  kSupportedOrigins,
@@ -270,7 +270,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
     return;
   }
 
-  size_t size = related_applications->GetSize();
+  size_t size = related_applications->GetList().size();
   if (size == 0) {
     log.Warn(base::StringPrintf(
         "Did not find any entries in \"%s\", even though \"%s\" is true.",
@@ -413,7 +413,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     return false;
   }
 
-  size_t related_applications_size = list->GetSize();
+  size_t related_applications_size = list->GetList().size();
   for (size_t i = 0; i < related_applications_size; ++i) {
     base::DictionaryValue* related_application = nullptr;
     if (!list->GetDictionary(i, &related_application) || !related_application) {
@@ -472,7 +472,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     base::ListValue* fingerprints_list = nullptr;
     if (!related_application->GetList(kFingerprints, &fingerprints_list) ||
         fingerprints_list->GetList().empty() ||
-        fingerprints_list->GetSize() > kMaximumNumberOfItems) {
+        fingerprints_list->GetList().size() > kMaximumNumberOfItems) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a non-empty list of at most %zu items.",
           kFingerprints, kMaximumNumberOfItems));
@@ -480,7 +480,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       return false;
     }
 
-    size_t fingerprints_size = fingerprints_list->GetSize();
+    size_t fingerprints_size = fingerprints_list->GetList().size();
     for (size_t j = 0; j < fingerprints_size; ++j) {
       base::DictionaryValue* fingerprint_dict = nullptr;
       std::string fingerprint_type;
@@ -575,7 +575,8 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
     const base::ListValue* delegation_list = nullptr;
     if (payment_dict->GetList(kSupportedDelegations, &delegation_list)) {
       if (delegation_list->GetList().empty() ||
-          delegation_list->GetSize() > kMaximumNumberOfSupportedDelegations) {
+          delegation_list->GetList().size() >
+              kMaximumNumberOfSupportedDelegations) {
         log.Error(base::StringPrintf(
             "\"%s.%s\" must be a non-empty list of at most %zu entries.",
             kPayment, kSupportedDelegations,

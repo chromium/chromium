@@ -223,7 +223,7 @@ bool KnownUser::FindPrefs(const AccountId& account_id,
     return false;
 
   const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
-  for (size_t i = 0; i < known_users->GetSize(); ++i) {
+  for (size_t i = 0; i < known_users->GetList().size(); ++i) {
     const base::DictionaryValue* element = nullptr;
     if (known_users->GetDictionary(i, &element)) {
       if (UserMatches(account_id, *element)) {
@@ -249,7 +249,7 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
     return;
 
   ListPrefUpdate update(local_state_, kKnownUsers);
-  for (size_t i = 0; i < update->GetSize(); ++i) {
+  for (size_t i = 0; i < update->GetList().size(); ++i) {
     base::DictionaryValue* element = nullptr;
     if (update->GetDictionary(i, &element)) {
       if (UserMatches(account_id, *element)) {
@@ -425,7 +425,7 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
   const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
-  for (size_t i = 0; i < known_users->GetSize(); ++i) {
+  for (size_t i = 0; i < known_users->GetList().size(); ++i) {
     const base::DictionaryValue* element = nullptr;
     if (known_users->GetDictionary(i, &element)) {
       std::string email;

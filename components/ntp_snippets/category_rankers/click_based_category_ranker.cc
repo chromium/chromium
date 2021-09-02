@@ -349,7 +349,7 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
   result_categories->clear();
   const base::ListValue* list =
       pref_service_->GetList(prefs::kClickBasedCategoryRankerOrderWithClicks);
-  if (!list || list->GetSize() == 0) {
+  if (!list || list->GetList().size() == 0) {
     return false;
   }
 

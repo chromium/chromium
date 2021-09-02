@@ -117,7 +117,7 @@ std::string GetVariationDirectory() {
 
 PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
   PopularSites::SitesVector sites;
-  for (size_t i = 0; i < list.GetSize(); i++) {
+  for (size_t i = 0; i < list.GetList().size(); i++) {
     const base::DictionaryValue* item;
     if (!list.GetDictionary(i, &item))
       continue;
@@ -159,7 +159,7 @@ std::map<SectionType, PopularSites::SitesVector> ParseVersion6OrAbove(
   // Valid lists would have contained at least the PERSONALIZED section.
   std::map<SectionType, PopularSites::SitesVector> sections = {
       std::make_pair(SectionType::PERSONALIZED, PopularSites::SitesVector{})};
-  for (size_t i = 0; i < list.GetSize(); i++) {
+  for (size_t i = 0; i < list.GetList().size(); i++) {
     const base::DictionaryValue* item;
     if (!list.GetDictionary(i, &item)) {
       LOG(WARNING) << "Parsed SitesExploration list contained an invalid "

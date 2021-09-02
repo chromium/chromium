@@ -158,7 +158,8 @@ TEST_F(WebCryptoRsaOaepTest, EncryptDecryptKnownAnswerTest) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("rsa_oaep.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
     base::DictionaryValue* test = nullptr;

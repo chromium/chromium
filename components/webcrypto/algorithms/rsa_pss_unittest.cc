@@ -175,7 +175,8 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
   const base::ListValue* tests = nullptr;
   ASSERT_TRUE(test_data.GetList("tests", &tests));
 
-  for (size_t test_index = 0; test_index < tests->GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests->GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
 
     const base::DictionaryValue* test;

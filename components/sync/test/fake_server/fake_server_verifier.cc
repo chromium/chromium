@@ -80,8 +80,8 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
   base::ListValue* entity_list = nullptr;
   if (!entities->GetList(model_type_string, &entity_list)) {
     return UnknownTypeAssertionFailure(model_type_string);
-  } else if (expected_count != entity_list->GetSize()) {
-    return VerificationCountAssertionFailure(entity_list->GetSize(),
+  } else if (expected_count != entity_list->GetList().size()) {
+    return VerificationCountAssertionFailure(entity_list->GetList().size(),
                                              expected_count)
            << "\n\n"
            << ConvertFakeServerContentsToString(*entities);

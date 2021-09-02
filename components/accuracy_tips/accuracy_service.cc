@@ -160,7 +160,8 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
   bool show_opt_out =
       pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetSize() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
+          ->GetList()
+          .size() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
 
   url_for_last_shown_tip_ = web_contents->GetLastCommittedURL();
 
@@ -283,7 +284,8 @@ bool AccuracyService::CanShowSurvey() {
 
   int interactions_count =
       pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetSize();
+          ->GetList()
+          .size();
   return interactions_count >= features::kMinPromptCountRequiredForSurvey.Get();
 }
 

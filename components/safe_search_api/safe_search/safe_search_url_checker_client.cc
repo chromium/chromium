@@ -52,7 +52,7 @@ bool ParseResponse(const std::string& response, bool* is_porn) {
     DLOG(WARNING) << "ParseResponse failed to parse classifications list";
     return false;
   }
-  if (classifications_list->GetSize() != 1) {
+  if (classifications_list->GetList().size() != 1) {
     DLOG(WARNING) << "ParseResponse expected exactly one result";
     return false;
   }

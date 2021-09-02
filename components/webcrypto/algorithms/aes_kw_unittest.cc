@@ -189,7 +189,8 @@ TEST_F(WebCryptoAesKwTest, AesKwRawSymkeyWrapUnwrapKnownAnswer) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("aes_kw.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
     base::DictionaryValue* test;
     ASSERT_TRUE(tests.GetDictionary(test_index, &test));

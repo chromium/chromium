@@ -137,7 +137,8 @@ TEST_F(WebCryptoAesGcmTest, SampleSets) {
   ASSERT_TRUE(ReadJsonTestFileToList("aes_gcm.json", &tests));
 
   // Note that WebCrypto appends the authentication tag to the ciphertext.
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
+  for (size_t test_index = 0; test_index < tests.GetList().size();
+       ++test_index) {
     SCOPED_TRACE(test_index);
     base::DictionaryValue* test;
     ASSERT_TRUE(tests.GetDictionary(test_index, &test));

@@ -484,7 +484,7 @@ ContentLengthList DataReductionProxyCompressionStats::GetDailyContentLengths(
     const char* pref_name) {
   ContentLengthList content_lengths;
   const base::ListValue* list_value = GetList(pref_name);
-  if (list_value->GetSize() == kNumDaysInHistory) {
+  if (list_value->GetList().size() == kNumDaysInHistory) {
     for (size_t i = 0; i < kNumDaysInHistory; ++i)
       content_lengths.push_back(GetInt64PrefValue(*list_value, i));
   }
@@ -503,8 +503,8 @@ void DataReductionProxyCompressionStats::GetContentLengths(
   const base::ListValue* received_list =
       GetList(prefs::kDailyHttpReceivedContentLength);
 
-  if (original_list->GetSize() != kNumDaysInHistory ||
-      received_list->GetSize() != kNumDaysInHistory) {
+  if (original_list->GetList().size() != kNumDaysInHistory ||
+      received_list->GetList().size() != kNumDaysInHistory) {
     *original_content_length = 0L;
     *received_content_length = 0L;
     *last_update_time = 0L;

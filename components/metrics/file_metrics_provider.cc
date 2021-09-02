@@ -943,7 +943,7 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
       mutable_list[0].GetInt() + count);
   pref_service_->SetInteger(
       metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
-      list_value->GetSize() - 1);
+      list_value->GetList().size() - 1);
   list_value->EraseListIter(mutable_list.begin());
 
   return true;

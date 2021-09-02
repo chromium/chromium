@@ -697,7 +697,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   if (!root_dict->GetList("results", &results_list)) {
     return matches;
   }
-  size_t num_results = results_list->GetSize();
+  size_t num_results = results_list->GetList().size();
   UMA_HISTOGRAM_COUNTS_1M("Omnibox.DocumentSuggest.ResultCount", num_results);
 
   // During development/quality iteration we may wish to defeat server scores.

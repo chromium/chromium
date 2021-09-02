@@ -1016,7 +1016,7 @@ std::string VariationsService::GetStoredPermanentCountry() {
       local_state_->GetList(prefs::kVariationsPermanentConsistencyCountry);
   std::string stored_country;
 
-  if (list_value->GetSize() == 2) {
+  if (list_value->GetList().size() == 2) {
     list_value->GetString(1, &stored_country);
   }
 

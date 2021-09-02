@@ -264,7 +264,7 @@ bool SpellingServiceClient::ParseResponse(
   if (!value->GetList(kMisspellingsRestPath, &misspellings))
     return true;
 
-  for (size_t i = 0; i < misspellings->GetSize(); ++i) {
+  for (size_t i = 0; i < misspellings->GetList().size(); ++i) {
     // Retrieve the i-th misspelling region and put it to the given vector. When
     // the Spelling service sends two or more suggestions, we read only the
     // first one because SpellCheckResult can store only one suggestion.

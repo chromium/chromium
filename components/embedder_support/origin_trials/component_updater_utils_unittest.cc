@@ -96,7 +96,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
         embedder_support::prefs::kOriginTrialDisabledFeatures);
     ASSERT_TRUE(disabled_feature_list);
 
-    ASSERT_EQ(features.size(), disabled_feature_list->GetSize());
+    ASSERT_EQ(features.size(), disabled_feature_list->GetList().size());
 
     std::string disabled_feature;
     for (size_t i = 0; i < features.size(); ++i) {
@@ -130,7 +130,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
         embedder_support::prefs::kOriginTrialDisabledTokens);
     ASSERT_TRUE(disabled_token_list);
 
-    ASSERT_EQ(tokens.size(), disabled_token_list->GetSize());
+    ASSERT_EQ(tokens.size(), disabled_token_list->GetList().size());
 
     std::string disabled_token;
     for (size_t i = 0; i < tokens.size(); ++i) {

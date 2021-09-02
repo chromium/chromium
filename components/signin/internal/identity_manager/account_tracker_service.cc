@@ -524,7 +524,7 @@ void AccountTrackerService::OnAccountImageUpdated(
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetSize(); ++i, dict = nullptr) {
+  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     if (update->GetDictionary(i, &dict)) {
       std::string value;
       if (dict->GetString(kAccountKeyPath, &value) &&
@@ -550,7 +550,7 @@ void AccountTrackerService::RemoveAccountImageFromDisk(
 void AccountTrackerService::LoadFromPrefs() {
   const base::ListValue* list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     const base::DictionaryValue* dict = nullptr;
     if (list->GetDictionary(i, &dict)) {
       std::string value;
@@ -659,7 +659,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
 
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-  for (size_t i = 0; i < update->GetSize(); ++i, dict = nullptr) {
+  for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     if (update->GetDictionary(i, &dict)) {
       std::string value;
       if (dict->GetString(kAccountKeyPath, &value) &&
@@ -672,7 +672,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     dict = new base::DictionaryValue();
     update->Append(base::WrapUnique(dict));
     // |dict| is invalidated at this point, so it needs to be reset.
-    update->GetDictionary(update->GetSize() - 1, &dict);
+    update->GetDictionary(update->GetList().size() - 1, &dict);
     dict->SetString(kAccountKeyPath, account_info.account_id.ToString());
   }
 

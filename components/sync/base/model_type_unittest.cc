@@ -30,7 +30,7 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
   const ModelTypeSet model_types(BOOKMARKS, APPS);
 
   std::unique_ptr<base::ListValue> value(ModelTypeSetToValue(model_types));
-  EXPECT_EQ(2u, value->GetSize());
+  EXPECT_EQ(2u, value->GetList().size());
   std::string types[2];
   EXPECT_TRUE(value->GetString(0, &types[0]));
   EXPECT_TRUE(value->GetString(1, &types[1]));

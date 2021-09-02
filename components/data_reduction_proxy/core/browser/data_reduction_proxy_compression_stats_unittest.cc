@@ -186,8 +186,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void VerifyPrefListWasWritten(const char* pref) {
     const base::ListValue* delayed_list = compression_stats_->GetList(pref);
     const base::ListValue* written_list = pref_service()->GetList(pref);
-    ASSERT_EQ(delayed_list->GetSize(), written_list->GetSize());
-    size_t count = delayed_list->GetSize();
+    ASSERT_EQ(delayed_list->GetList().size(), written_list->GetList().size());
+    size_t count = delayed_list->GetList().size();
 
     for (size_t i = 0; i < count; ++i) {
       EXPECT_EQ(GetListPrefInt64Value(*delayed_list, i),
@@ -231,7 +231,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
                       size_t num_days_in_history) {
     ASSERT_GE(num_days_in_history, count);
     base::ListValue* update = compression_stats_->GetList(pref);
-    ASSERT_EQ(num_days_in_history, update->GetSize()) << "Pref: " << pref;
+    ASSERT_EQ(num_days_in_history, update->GetList().size())
+        << "Pref: " << pref;
 
     for (size_t i = 0; i < count; ++i) {
       EXPECT_EQ(values[i],

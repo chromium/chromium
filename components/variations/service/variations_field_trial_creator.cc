@@ -354,7 +354,7 @@ std::string VariationsFieldTrialCreator::LoadPermanentConsistencyCountry(
 
   // Determine if the saved pref value is present and valid.
   const bool is_pref_empty = list_value->GetList().empty();
-  const bool is_pref_valid = list_value->GetSize() == 2 &&
+  const bool is_pref_valid = list_value->GetList().size() == 2 &&
                              list_value->GetString(0, &stored_version_string) &&
                              list_value->GetString(1, &stored_country) &&
                              base::Version(stored_version_string).IsValid();

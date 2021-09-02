@@ -1338,7 +1338,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   if (!list)
     return t_urls;
 
-  size_t num_engines = list->GetSize();
+  size_t num_engines = list->GetList().size();
   for (size_t i = 0; i != num_engines; ++i) {
     const base::DictionaryValue* engine;
     if (list->GetDictionary(i, &engine)) {

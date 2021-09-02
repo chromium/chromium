@@ -243,7 +243,7 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::ListValue& list_value) {
     return;
   }
 
-  const size_t log_count = list_value.GetSize();
+  const size_t log_count = list_value.GetList().size();
 
   DCHECK(list_.empty());
   list_.resize(log_count);

@@ -168,7 +168,7 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   EXPECT_EQ(icon_url, encoded_icon_url);
   base::ListValue* meta_info_list;
   ASSERT_TRUE(value->GetList("meta_info", &meta_info_list));
-  EXPECT_EQ(2u, meta_info_list->GetSize());
+  EXPECT_EQ(2u, meta_info_list->GetList().size());
   base::DictionaryValue* meta_info;
   std::string meta_key;
   std::string meta_value;
