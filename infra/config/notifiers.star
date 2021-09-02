@@ -13,6 +13,14 @@ luci.notifier(
 )
 
 luci.notifier(
+    name = "chrome-lacros-engprod-alerts",
+    on_status_change = True,
+    notify_emails = [
+        "chrome-lacros-engprod-alerts@google.com",
+    ],
+)
+
+luci.notifier(
     name = "chrome-memory-safety",
     on_status_change = True,
     notify_emails = [

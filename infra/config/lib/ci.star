@@ -290,13 +290,18 @@ def chromium_builder(*, name, tree_closing = True, **kwargs):
         **kwargs
     )
 
-def chromiumos_builder(*, name, tree_closing = True, **kwargs):
+def chromiumos_builder(
+        *,
+        name,
+        tree_closing = True,
+        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        **kwargs):
     kwargs.setdefault("os", os.LINUX_BIONIC_REMOVE)
     return ci_builder(
         name = name,
         builder_group = "chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
-        sheriff_rotations = builders.sheriff_rotations.CHROMIUM,
+        sheriff_rotations = sheriff_rotations,
         tree_closing = tree_closing,
         **kwargs
     )

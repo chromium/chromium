@@ -1727,8 +1727,10 @@ ci.chromiumos_builder(
     ),
     tree_closing = False,
     main_console_view = "main",
+    notifies = ["chrome-lacros-engprod-alerts"],
     triggered_by = [],
     schedule = "triggered",
+    sheriff_rotations = None,
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
