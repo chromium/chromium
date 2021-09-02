@@ -170,6 +170,11 @@ void TooltipController::UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
   ResetWindowAtMousePressedIfNeeded(target, /* force_reset */ true);
 }
 
+bool TooltipController::IsTooltipSetFromKeyboard(aura::Window* target) {
+  return target && target == state_manager_->tooltip_parent_window() &&
+         state_manager_->tooltip_trigger() == TooltipTrigger::kKeyboard;
+}
+
 void TooltipController::SetHideTooltipTimeout(aura::Window* target,
                                               base::TimeDelta timeout) {
   hide_tooltip_timeout_map_[target] = timeout;

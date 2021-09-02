@@ -57,6 +57,8 @@ void FakeRenderWidgetHost::UpdateTooltipFromKeyboard(
     base::i18n::TextDirection text_direction_hint,
     const gfx::Rect& bounds) {}
 
+void FakeRenderWidgetHost::ClearKeyboardTriggeredTooltip() {}
+
 void FakeRenderWidgetHost::TextInputStateChanged(
     ui::mojom::TextInputStatePtr state) {}
 

@@ -4170,8 +4170,11 @@ void Element::focus(const FocusParams& params) {
         break;
     }
 
-    if (is_focused_from_keypress)
+    if (is_focused_from_keypress) {
       chrome_client.ElementFocusedFromKeypress(*GetDocument().GetFrame(), this);
+    } else {
+      chrome_client.ClearKeyboardTriggeredTooltip(*GetDocument().GetFrame());
+    }
   }
 }
 
@@ -4241,6 +4244,8 @@ void Element::blur() {
     if (doc.GetPage()) {
       doc.GetPage()->GetFocusController().SetFocusedElement(nullptr,
                                                             doc.GetFrame());
+      doc.GetPage()->GetChromeClient().ClearKeyboardTriggeredTooltip(
+          *doc.GetFrame());
     } else {
       doc.ClearFocusedElement();
     }

@@ -189,6 +189,7 @@ class WebViewPlugin : public blink::WebPlugin, public blink::WebViewObserver {
     void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                    base::i18n::TextDirection hint,
                                    const gfx::Rect& bounds) override;
+    void ClearKeyboardTriggeredTooltip() override;
     void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override {}
     void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                                 base::i18n::TextDirection anchor_dir,

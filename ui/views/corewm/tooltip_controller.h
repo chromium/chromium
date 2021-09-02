@@ -57,6 +57,7 @@ class VIEWS_EXPORT TooltipController
   void UpdateTooltip(aura::Window* target) override;
   void UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
                                  aura::Window* target) override;
+  bool IsTooltipSetFromKeyboard(aura::Window* target) override;
   void SetHideTooltipTimeout(aura::Window* target,
                              base::TimeDelta timeout) override;
   void SetTooltipsEnabled(bool enable) override;

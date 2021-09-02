@@ -592,6 +592,15 @@ void ChromeClientImpl::UpdateTooltipFromKeyboard(LocalFrame& frame,
       ->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
 }
 
+void ChromeClientImpl::ClearKeyboardTriggeredTooltip(LocalFrame& frame) {
+  if (!RuntimeEnabledFeatures::KeyboardAccessibleTooltipEnabled())
+    return;
+
+  WebLocalFrameImpl::FromFrame(frame)
+      ->LocalRootFrameWidget()
+      ->ClearKeyboardTriggeredTooltip();
+}
+
 void ChromeClientImpl::DispatchViewportPropertiesDidChange(
     const ViewportDescription& description) const {
   web_view_->UpdatePageDefinedViewportConstraints(description);

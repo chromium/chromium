@@ -310,6 +310,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  base::i18n::TextDirection text_direction_hint,
                                  const gfx::Rect& bounds) override;
+  void ClearKeyboardTriggeredTooltip() override;
   void TextInputStateChanged(ui::mojom::TextInputStatePtr state) override;
   void SelectionBoundsChanged(const gfx::Rect& anchor_rect,
                               base::i18n::TextDirection anchor_dir,

@@ -111,6 +111,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                  const gfx::Rect& bounds) override {}
+  void ClearKeyboardTriggeredTooltip() override {}
   gfx::Rect GetBoundsInRootWindow() override;
   blink::mojom::PointerLockResult LockMouse(bool) override;
   blink::mojom::PointerLockResult ChangeMouseLock(bool) override;

@@ -323,6 +323,13 @@ void WebViewPlugin::WebViewHelper::UpdateTooltipFromKeyboard(
   UpdateTooltip(tooltip_text);
 }
 
+void WebViewPlugin::WebViewHelper::ClearKeyboardTriggeredTooltip() {
+  // This is an exception to the "only clear it if its set from keyboard" since
+  // there are no way of knowing whether the tooltips were set from keyboard or
+  // cursor in this class. In any case, this will clear the tooltip.
+  UpdateTooltip(std::u16string());
+}
+
 void WebViewPlugin::WebViewHelper::UpdateTooltip(
     const std::u16string& tooltip_text) {
   if (plugin_->container_) {

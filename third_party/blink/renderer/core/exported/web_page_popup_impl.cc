@@ -259,6 +259,10 @@ class PagePopupChromeClient final : public EmptyChromeClient {
     popup_->widget_base_->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
   }
 
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override {
+    popup_->widget_base_->ClearKeyboardTriggeredTooltip();
+  }
+
   void InjectGestureScrollEvent(LocalFrame& local_frame,
                                 WebGestureDevice device,
                                 const gfx::Vector2dF& delta,

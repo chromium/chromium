@@ -867,6 +867,8 @@ void TestWebFrameWidgetHost::UpdateTooltipFromKeyboard(
     base::i18n::TextDirection text_direction_hint,
     const gfx::Rect& bounds) {}
 
+void TestWebFrameWidgetHost::ClearKeyboardTriggeredTooltip() {}
+
 void TestWebFrameWidgetHost::TextInputStateChanged(
     ui::mojom::blink::TextInputStatePtr state) {
   if (state->show_ime_if_needed)

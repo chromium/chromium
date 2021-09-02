@@ -249,6 +249,14 @@ interface WidgetHost {
                             mojo_base.mojom.TextDirection text_direction_hint,
                             gfx.mojom.Rect bounds);
 
+  // Sent by a widget to the browser to clear any keyboard-triggered tooltip.
+  // This is needed because a keyboard-triggered tooltip follows the focused
+  // element set by the user from a keypress, but the focus could change
+  // programmatically to another element. In such a case, because of this
+  // dependency on focus, we want to hide keyboard-triggered tooltips but not
+  // the cursor-triggered ones, which don't rely on focus.
+  ClearKeyboardTriggeredTooltip();
+
   // Sent when the text input state is changed. This usually happens when
   // a text input entry is focused.
   TextInputStateChanged(ui.mojom.TextInputState state);

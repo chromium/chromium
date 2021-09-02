@@ -3129,6 +3129,10 @@ void WebFrameWidgetImpl::UpdateTooltipFromKeyboard(const String& tooltip_text,
   widget_base_->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
 }
 
+void WebFrameWidgetImpl::ClearKeyboardTriggeredTooltip() {
+  widget_base_->ClearKeyboardTriggeredTooltip();
+}
+
 void WebFrameWidgetImpl::DidOverscroll(
     const gfx::Vector2dF& overscroll_delta,
     const gfx::Vector2dF& accumulated_overscroll,

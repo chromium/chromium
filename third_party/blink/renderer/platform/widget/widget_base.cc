@@ -828,6 +828,10 @@ void WidgetBase::UpdateTooltipFromKeyboard(const String& tooltip_text,
       BlinkSpaceToEnclosedDIPs(bounds));
 }
 
+void WidgetBase::ClearKeyboardTriggeredTooltip() {
+  widget_host_->ClearKeyboardTriggeredTooltip();
+}
+
 void WidgetBase::ShowVirtualKeyboard() {
   UpdateTextInputStateInternal(true, false);
 }

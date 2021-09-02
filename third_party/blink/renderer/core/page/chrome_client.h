@@ -362,6 +362,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
                                          const String&,
                                          TextDirection,
                                          const gfx::Rect&) = 0;
+  virtual void ClearKeyboardTriggeredTooltip(LocalFrame&) = 0;
   void ClearToolTip(LocalFrame&);
   String GetLastToolTipTextForTesting() {
     return current_tool_tip_text_for_test_;

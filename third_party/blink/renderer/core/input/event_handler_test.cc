@@ -1081,6 +1081,7 @@ class TooltipCapturingChromeClient : public EmptyChromeClient {
     last_tooltip_text_ = str;
     // Always reset the bounds to zero as this function doesn't set bounds.
     last_tooltip_bounds_ = gfx::Rect();
+    triggered_from_cursor_ = true;
   }
 
   void UpdateTooltipFromKeyboard(LocalFrame&,
@@ -1089,6 +1090,15 @@ class TooltipCapturingChromeClient : public EmptyChromeClient {
                                  const gfx::Rect& bounds) override {
     last_tooltip_text_ = str;
     last_tooltip_bounds_ = bounds;
+    triggered_from_cursor_ = false;
+  }
+
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override {
+    if (triggered_from_cursor_)
+      return;
+
+    last_tooltip_text_ = String();
+    last_tooltip_bounds_ = gfx::Rect();
   }
 
   void ResetTooltip() {
@@ -1102,6 +1112,7 @@ class TooltipCapturingChromeClient : public EmptyChromeClient {
  private:
   String last_tooltip_text_;
   gfx::Rect last_tooltip_bounds_;
+  bool triggered_from_cursor_ = false;
 };
 
 class EventHandlerTooltipTest : public EventHandlerTest {
@@ -1345,6 +1356,98 @@ TEST_F(EventHandlerTooltipTest,
   element = GetDocument().getElementById("b1");
   element->focus(FocusOptions::Create());
   EXPECT_TRUE(LastToolTipText().IsNull());
+}
+
+// macOS doesn't have keyboard-triggered tooltips.
+#if defined(OS_MAC)
+#define MAYBE_FocusSetFromScriptClearsKeyboardTriggeredTooltip \
+  DISABLED_FocusSetFromScriptClearsKeyboardTriggeredTooltip
+#else
+#define MAYBE_FocusSetFromScriptClearsKeyboardTriggeredTooltip \
+  FocusSetFromScriptClearsKeyboardTriggeredTooltip
+#endif
+// Moving the focus programmatically to an element that doesn't have a title
+// attribute set while the user previously set the focus from keyboard on an
+// element with a title text should hide the tooltip.
+TEST_F(EventHandlerTooltipTest,
+       MAYBE_FocusSetFromScriptClearsKeyboardTriggeredTooltip) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <button id='b1' title='my tooltip 1'>button 1</button>
+        <button id='b2'>button 2</button>
+      )HTML");
+
+  // First, show a keyboard-triggered tooltip using the 'tab' key.
+  WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
+                     WebInputEvent::kNoModifiers,
+                     WebInputEvent::GetStaticTimeStampForTests()};
+  e.dom_code = static_cast<int>(ui::DomCode::TAB);
+  e.dom_key = ui::DomKey::TAB;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+
+  Element* element = GetDocument().getElementById("b1");
+  EXPECT_EQ("my tooltip 1", LastToolTipText());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+
+  // Validate that blurring an element that is not focused will not just hide
+  // the tooltip. It wouldn't make sense.
+  element = GetDocument().getElementById("b2");
+  element->blur();
+
+  EXPECT_EQ("my tooltip 1", LastToolTipText());
+  EXPECT_EQ(GetDocument().getElementById("b1")->BoundsInViewport(),
+            LastToolTipBounds());
+
+  // Then, programmatically move the focus to another button that has no title
+  // text. This should hide the tooltip.
+  element->focus();
+
+  EXPECT_TRUE(LastToolTipText().IsNull());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
+
+  // Move the focus on the first button again and validate that it trigger a
+  // tooltip again.
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(e);
+
+  element = GetDocument().getElementById("b1");
+  EXPECT_EQ("my tooltip 1", LastToolTipText());
+  EXPECT_EQ(element->BoundsInViewport(), LastToolTipBounds());
+
+  // Then, programmatically blur the button to validate that the tooltip gets
+  // hidden.
+  element->blur();
+
+  EXPECT_TRUE(LastToolTipText().IsNull());
+  EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
+}
+
+// Moving the focus programmatically while a cursor-triggered tooltip is visible
+// shouldn't hide the visible tooltip.
+TEST_F(EventHandlerTooltipTest,
+       FocusSetFromScriptDoesntClearCursorTriggeredTooltip) {
+  SetHtmlInnerHTML(
+      R"HTML(
+        <style>.box { width: 100px; height: 100px; }</style>
+        <img src='image.png' class='box' title='tooltip'>link</img>
+
+        <button id='b2'>button 2</button>
+      )HTML");
+  // First, show a cursor-triggered tooltip.
+  WebMouseEvent mouse_move_event(
+      WebInputEvent::Type::kMouseMove, gfx::PointF(51, 50), gfx::PointF(51, 50),
+      WebPointerProperties::Button::kNoButton, 0, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now());
+  mouse_move_event.SetFrameScale(1);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  EXPECT_EQ("tooltip", LastToolTipText());
+
+  // Then, programmatically move the focus to another element.
+  Element* element = GetDocument().getElementById("b2");
+  element->focus();
+
+  EXPECT_EQ("tooltip", LastToolTipText());
 }
 
 class UnbufferedInputEventsTrackingChromeClient : public EmptyChromeClient {

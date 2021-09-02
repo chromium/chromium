@@ -160,6 +160,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                                  const String&,
                                  TextDirection,
                                  const gfx::Rect&) override;
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override;
   void DispatchViewportPropertiesDidChange(
       const ViewportDescription&) const override;
   void PrintDelegate(LocalFrame*) override;

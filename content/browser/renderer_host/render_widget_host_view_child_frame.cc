@@ -435,6 +435,17 @@ void RenderWidgetHostViewChildFrame::UpdateTooltipFromKeyboard(
   root_view->UpdateTooltipFromKeyboard(tooltip_text, adjusted_bounds);
 }
 
+void RenderWidgetHostViewChildFrame::ClearKeyboardTriggeredTooltip() {
+  if (!frame_connector_)
+    return;
+
+  auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
+  if (!root_view)
+    return;
+
+  root_view->ClearKeyboardTriggeredTooltip();
+}
+
 RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
   if (!frame_connector_)
     return nullptr;

@@ -2571,6 +2571,13 @@ void RenderWidgetHostImpl::UpdateTooltipFromKeyboard(
       GetWrappedTooltipText(tooltip_text, text_direction_hint), bounds);
 }
 
+void RenderWidgetHostImpl::ClearKeyboardTriggeredTooltip() {
+  if (!GetView())
+    return;
+
+  view_->ClearKeyboardTriggeredTooltip();
+}
+
 void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
   waiting_for_screen_rects_ack_ = false;
   if (!view_)

@@ -798,6 +798,19 @@ void RenderWidgetHostViewAura::UpdateTooltipFromKeyboard(
   }
 }
 
+void RenderWidgetHostViewAura::ClearKeyboardTriggeredTooltip() {
+  if (!window_ || !window_->GetHost())
+    return;
+
+  wm::TooltipClient* tooltip_client =
+      wm::GetTooltipClient(window_->GetRootWindow());
+  if (!tooltip_client || !tooltip_client->IsTooltipSetFromKeyboard(window_))
+    return;
+
+  SetTooltipText(std::u16string());
+  tooltip_client->UpdateTooltipFromKeyboard(gfx::Rect(), window_);
+}
+
 uint32_t RenderWidgetHostViewAura::GetCaptureSequenceNumber() const {
   return latest_capture_sequence_number_;
 }

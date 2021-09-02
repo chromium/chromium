@@ -470,6 +470,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   virtual void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,
                                          const gfx::Rect& bounds) {}
 
+  // Hides tooltips that are still visible and were triggered from a keypress.
+  // Doesn't impact tooltips that were triggered from the cursor.
+  virtual void ClearKeyboardTriggeredTooltip() {}
+
   // Transforms |point| to be in the coordinate space of browser compositor's
   // surface. This is in DIP.
   virtual void TransformPointToRootSurface(gfx::PointF* point);

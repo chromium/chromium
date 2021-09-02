@@ -198,6 +198,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   void UpdateTooltipFromKeyboard(const String& tooltip_text,
                                  TextDirection dir,
                                  const gfx::Rect& bounds);
+  void ClearKeyboardTriggeredTooltip();
 
   // Posts a task with the given delay, then calls ScheduleAnimation() on the
   // WidgetBaseClient.

@@ -504,6 +504,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void UpdateTooltipFromKeyboard(const String& tooltip_text,
                                  TextDirection dir,
                                  const gfx::Rect& bounds);
+  void ClearKeyboardTriggeredTooltip();
 
   void ShowVirtualKeyboardOnElementFocus();
   void ProcessTouchAction(WebTouchAction touch_action);

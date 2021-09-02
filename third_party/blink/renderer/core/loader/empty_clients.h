@@ -192,6 +192,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
                                  const String&,
                                  TextDirection,
                                  const gfx::Rect&) override {}
+  void ClearKeyboardTriggeredTooltip(LocalFrame&) override {}
   void PrintDelegate(LocalFrame*) override {}
   ColorChooser* OpenColorChooser(LocalFrame*,
                                  ColorChooserClient*,
