@@ -183,6 +183,11 @@
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 96
   },
+   {
+    "name": "apps-shortcut-default-off",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
+    "expiry_milestone": 95
+  },
   {
     "name": "arc-custom-tabs-experiment",
     "owners": [ "hashimoto", "dominickn" ],
