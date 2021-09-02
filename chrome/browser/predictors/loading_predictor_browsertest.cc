@@ -60,6 +60,7 @@
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -134,159 +135,6 @@ class PredictorInitializer : public TestObserver {
   ResourcePrefetchPredictor* predictor_;
   base::RunLoop run_loop_;
   DISALLOW_COPY_AND_ASSIGN(PredictorInitializer);
-};
-
-// Keeps track of incoming connections being accepted or read from and exposes
-// that info to the tests.
-// A port being reused is currently considered an error.
-// If a test needs to verify multiple connections are opened in sequence, that
-// will need to be changed.
-class ConnectionTracker {
- public:
-  ConnectionTracker() {}
-
-  void AcceptedSocketWithPort(uint16_t port) {
-    EXPECT_FALSE(base::Contains(sockets_, port));
-    sockets_[port] = SocketStatus::kAccepted;
-    CheckAccepted();
-    first_accept_loop_.Quit();
-  }
-
-  void ReadFromSocketWithPort(uint16_t port) {
-    EXPECT_TRUE(base::Contains(sockets_, port));
-    sockets_[port] = SocketStatus::kReadFrom;
-    first_read_loop_.Quit();
-  }
-
-  // Returns the number of sockets that were accepted by the server.
-  size_t GetAcceptedSocketCount() const { return sockets_.size(); }
-
-  // Returns the number of sockets that were read from by the server.
-  size_t GetReadSocketCount() const {
-    size_t read_sockets = 0;
-    for (const auto& socket : sockets_) {
-      if (socket.second == SocketStatus::kReadFrom)
-        ++read_sockets;
-    }
-    return read_sockets;
-  }
-
-  void WaitUntilFirstConnectionAccepted() { first_accept_loop_.Run(); }
-  void WaitUntilFirstConnectionRead() { first_read_loop_.Run(); }
-
-  // The UI thread will wait for exactly |num_connections| items in |sockets_|.
-  // This method expects the server will not accept more than |num_connections|
-  // connections. |num_connections| must be greater than 0.
-  void WaitForAcceptedConnections(size_t num_connections) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!num_accepted_connections_loop_);
-    DCHECK_GT(num_connections, 0u);
-    base::RunLoop run_loop;
-    EXPECT_GE(num_connections, sockets_.size());
-    num_accepted_connections_loop_ = &run_loop;
-    num_accepted_connections_needed_ = num_connections;
-    CheckAccepted();
-    // Note that the previous call to CheckAccepted can quit this run loop
-    // before this call, which will make this call a no-op.
-    run_loop.Run();
-    EXPECT_EQ(num_connections, sockets_.size());
-  }
-
-  // Helper function to stop the waiting for sockets to be accepted for
-  // WaitForAcceptedConnections. |num_accepted_connections_loop_| spins
-  // until |num_accepted_connections_needed_| sockets are accepted by the test
-  // server. The values will be null/0 if the loop is not running.
-  void CheckAccepted() {
-    // |num_accepted_connections_loop_| null implies
-    // |num_accepted_connections_needed_| == 0.
-    DCHECK(num_accepted_connections_loop_ ||
-           num_accepted_connections_needed_ == 0);
-    if (!num_accepted_connections_loop_ ||
-        num_accepted_connections_needed_ != sockets_.size()) {
-      return;
-    }
-
-    num_accepted_connections_loop_->Quit();
-    num_accepted_connections_needed_ = 0;
-    num_accepted_connections_loop_ = nullptr;
-  }
-
-  void ResetCounts() { sockets_.clear(); }
-
- private:
-  enum class SocketStatus { kAccepted, kReadFrom };
-
-  base::RunLoop first_accept_loop_;
-  base::RunLoop first_read_loop_;
-
-  // Port -> SocketStatus.
-  using SocketContainer = std::map<uint16_t, SocketStatus>;
-  SocketContainer sockets_;
-
-  // If |num_accepted_connections_needed_| is non zero, then the object is
-  // waiting for |num_accepted_connections_needed_| sockets to be accepted
-  // before quitting the |num_accepted_connections_loop_|.
-  size_t num_accepted_connections_needed_ = 0;
-  base::RunLoop* num_accepted_connections_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTracker);
-};
-
-// Gets notified by the EmbeddedTestServer on incoming connections being
-// accepted or read from and transfers this information to ConnectionTracker.
-class ConnectionListener
-    : public net::test_server::EmbeddedTestServerConnectionListener {
- public:
-  // This class should be constructed on the browser UI thread.
-  explicit ConnectionListener(ConnectionTracker* tracker)
-      : task_runner_(base::ThreadTaskRunnerHandle::Get()), tracker_(tracker) {}
-
-  ~ConnectionListener() override {}
-
-  // Get called from the EmbeddedTestServer thread to be notified that
-  // a connection was accepted.
-  std::unique_ptr<net::StreamSocket> AcceptedSocket(
-      std::unique_ptr<net::StreamSocket> connection) override {
-    uint16_t port = GetPort(*connection);
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ConnectionTracker::AcceptedSocketWithPort,
-                                  base::Unretained(tracker_), port));
-    return connection;
-  }
-
-  // Get called from the EmbeddedTestServer thread to be notified that
-  // a connection was read from.
-  void ReadFromSocket(const net::StreamSocket& connection, int rv) override {
-    // Don't log a read if no data was transferred. This case often happens if
-    // the sockets of the test server are being flushed and disconnected.
-    if (rv <= 0)
-      return;
-    uint16_t port = GetPort(connection);
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ConnectionTracker::ReadFromSocketWithPort,
-                                  base::Unretained(tracker_), port));
-  }
-
- private:
-  static uint16_t GetPort(const net::StreamSocket& connection) {
-    // Get the remote port of the peer, since the local port will always be the
-    // port the test server is listening on. This isn't strictly correct - it's
-    // possible for multiple peers to connect with the same remote port but
-    // different remote IPs - but the tests here assume that connections to the
-    // test server (running on localhost) will always come from localhost, and
-    // thus the peer port is all that's needed to distinguish two connections.
-    // This also would be problematic if the OS reused ports, but that's not
-    // something to worry about for these tests.
-    net::IPEndPoint address;
-    EXPECT_EQ(net::OK, connection.GetPeerAddress(&address));
-    return address.port();
-  }
-
-  // Task runner associated with the browser UI thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  // This pointer should be only accessed on the browser UI thread.
-  ConnectionTracker* tracker_;
 };
 
 class TestPreconnectManagerObserver : public PreconnectManager::Observer {
@@ -542,20 +390,14 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    connection_tracker_ = std::make_unique<ConnectionTracker>();
-    connection_listener_ =
-        std::make_unique<ConnectionListener>(connection_tracker_.get());
+    connection_tracker_ = std::make_unique<net::test_server::ConnectionTracker>(
+        embedded_test_server());
     preconnecting_server_connection_tracker_ =
-        std::make_unique<ConnectionTracker>();
-    preconnecting_server_connection_listener_ =
-        std::make_unique<ConnectionListener>(
-            preconnecting_server_connection_tracker_.get());
+        std::make_unique<net::test_server::ConnectionTracker>(
+            &preconnecting_test_server_);
 
-    embedded_test_server()->SetConnectionListener(connection_listener_.get());
     embedded_test_server()->StartAcceptingConnections();
 
-    preconnecting_test_server_.SetConnectionListener(
-        preconnecting_server_connection_listener());
     EXPECT_TRUE(preconnecting_test_server_.Started());
     preconnecting_test_server_.StartAcceptingConnections();
 
@@ -632,14 +474,13 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
     return prefetch_manager_observer_.get();
   }
 
-  ConnectionTracker* connection_tracker() { return connection_tracker_.get(); }
-
-  ConnectionTracker* preconnecting_server_connection_tracker() const {
-    return preconnecting_server_connection_tracker_.get();
+  net::test_server::ConnectionTracker* connection_tracker() {
+    return connection_tracker_.get();
   }
 
-  ConnectionListener* preconnecting_server_connection_listener() const {
-    return preconnecting_server_connection_listener_.get();
+  net::test_server::ConnectionTracker*
+  preconnecting_server_connection_tracker() {
+    return preconnecting_server_connection_tracker_.get();
   }
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleFaviconRequest(
@@ -684,10 +525,9 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
 
  private:
   LoadingPredictor* loading_predictor_ = nullptr;
-  std::unique_ptr<ConnectionListener> connection_listener_;
-  std::unique_ptr<ConnectionTracker> connection_tracker_;
-  std::unique_ptr<ConnectionListener> preconnecting_server_connection_listener_;
-  std::unique_ptr<ConnectionTracker> preconnecting_server_connection_tracker_;
+  std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
+  std::unique_ptr<net::test_server::ConnectionTracker>
+      preconnecting_server_connection_tracker_;
   std::unique_ptr<TestPreconnectManagerObserver> preconnect_manager_observer_;
   std::unique_ptr<TestPrefetchManagerObserver> prefetch_manager_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1056,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
       "<link rel=\"preconnect\" href=\"" + preconnect_url.spec() + "\">";
   ui_test_utils::NavigateToURL(browser(),
                                GetDataURLWithContent(preconnect_content));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 }
@@ -1166,8 +1006,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "document.head.appendChild(link);",
         kCrossOriginValue[use_cors_for_preconnect],
         preconnect_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(tab, start_preconnect));
-    connection_tracker()->WaitUntilFirstConnectionAccepted();
+    content::ExecuteScriptAsync(tab, start_preconnect);
+    connection_tracker()->WaitForAcceptedConnections(1u);
     EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
     EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1180,8 +1020,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "document.body.appendChild(image);",
         kCrossOriginValue[use_cors_for_resource_request],
         image_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(tab, load_image));
-    connection_tracker()->WaitUntilFirstConnectionRead();
+    content::ExecuteScriptAsync(tab, load_image);
+    connection_tracker()->WaitUntilConnectionRead();
 
     // The preconnected socket should have been used by the image request if
     // the CORS behavior of the preconnect and the request were the same.
@@ -1381,8 +1221,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "link.href = '%s';"
       "document.head.appendChild(link);",
       preconnect_url.spec().c_str());
-  ASSERT_TRUE(content::ExecJs(tab1->GetMainFrame(), start_preconnect));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  content::ExecuteScriptAsync(tab1->GetMainFrame(), start_preconnect);
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1449,8 +1289,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "link.href = '%s';"
       "document.head.appendChild(link);",
       preconnect_url.spec().c_str());
-  ASSERT_TRUE(content::ExecJs(frames[2], start_preconnect));
-  connection_tracker()->WaitUntilFirstConnectionAccepted();
+  content::ExecuteScriptAsync(frames[2], start_preconnect);
+  connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 

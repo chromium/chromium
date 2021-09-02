@@ -2099,6 +2099,8 @@ static_library("test_support") {
     "test/cert_test_util.h",
     "test/ct_test_util.cc",
     "test/ct_test_util.h",
+    "test/embedded_test_server/connection_tracker.cc",
+    "test/embedded_test_server/connection_tracker.h",
     "test/embedded_test_server/controllable_http_response.cc",
     "test/embedded_test_server/controllable_http_response.h",
     "test/embedded_test_server/default_handlers.cc",

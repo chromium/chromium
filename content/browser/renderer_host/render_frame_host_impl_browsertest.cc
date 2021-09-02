@@ -35,6 +35,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -69,6 +70,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -78,6 +80,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -5981,6 +5984,104 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
   EXPECT_NE(
       second_nonce,
       web_contents()->GetMainFrame()->GetPage().anonymous_iframes_nonce());
+}
+
+class RenderFrameHostImplAnonymousIframeNikBrowserTest
+    : public RenderFrameHostImplAnonymousIframeBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    alternate_test_server_ =
+        std::make_unique<net::test_server::EmbeddedTestServer>();
+    connection_tracker_ = std::make_unique<net::test_server::ConnectionTracker>(
+        alternate_test_server_.get());
+    alternate_test_server_->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(alternate_test_server_->Start());
+    RenderFrameHostImplAnonymousIframeBrowserTest::SetUpOnMainThread();
+  }
+
+  void ResetNetworkState() {
+    auto* network_context = shell()
+                                ->web_contents()
+                                ->GetBrowserContext()
+                                ->GetDefaultStoragePartition()
+                                ->GetNetworkContext();
+    base::RunLoop close_all_connections_loop;
+    network_context->CloseAllConnections(
+        close_all_connections_loop.QuitClosure());
+    close_all_connections_loop.Run();
+
+    connection_tracker_->ResetCounts();
+  }
+
+ protected:
+  std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
+  std::unique_ptr<net::EmbeddedTestServer> alternate_test_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
+                       AnonymousIframeHasPartitionedNetworkState) {
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+
+  for (bool anonymous : {false, true}) {
+    SCOPED_TRACE(anonymous ? "anonymous iframe" : "normal iframe");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+    RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
+
+    // Create an iframe.
+    EXPECT_TRUE(ExecJs(main_rfh,
+                       JsReplace("let child = document.createElement('iframe');"
+                                 "child.src = $1;"
+                                 "child.anonymous = $2;"
+                                 "document.body.appendChild(child);",
+                                 main_url, anonymous)));
+    WaitForLoadStop(web_contents());
+    EXPECT_EQ(1U, main_rfh->child_count());
+    RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+    EXPECT_EQ(anonymous, iframe->anonymous());
+
+    ResetNetworkState();
+
+    std::string main_url_origin = main_url.GetOrigin().spec();
+    // Remove trailing '/'.
+    main_url_origin.pop_back();
+
+    GURL fetch_url = alternate_test_server_->GetURL(
+        "/set-header?"
+        "Access-Control-Allow-Credentials: true&"
+        "Access-Control-Allow-Origin: " +
+        main_url_origin);
+
+    // Preconnect a socket with the NetworkIsolationKey of the main frame.
+    shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->PreconnectSockets(1, fetch_url.GetOrigin(), true,
+                            main_rfh->GetNetworkIsolationKey());
+
+    connection_tracker_->WaitForAcceptedConnections(1);
+    EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
+    EXPECT_EQ(0u, connection_tracker_->GetReadSocketCount());
+
+    std::string fetch_resource = JsReplace(
+        "(async () => {"
+        "  let resp = (await fetch($1, { credentials : 'include'}));"
+        "  return resp.status; })();",
+        fetch_url);
+
+    EXPECT_EQ(200, EvalJs(iframe, fetch_resource));
+
+    // The normal iframe should reuse the preconnected socket, the anonymous
+    // iframe should open a new one.
+    if (!anonymous) {
+      EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
+    } else {
+      EXPECT_EQ(2u, connection_tracker_->GetAcceptedSocketCount());
+    }
+    EXPECT_EQ(1u, connection_tracker_->GetReadSocketCount());
+  }
 }
 
 }  // namespace content
