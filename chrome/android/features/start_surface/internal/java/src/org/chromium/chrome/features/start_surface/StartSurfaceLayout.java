@@ -149,11 +149,10 @@ public class StartSurfaceLayout extends Layout {
             @Override
             public void finishedHiding() {
                 // The Android View version of GTS overview is hidden.
-                // If not doing GTS-to-Tab transition animation or single tab switcher is shown on
-                // start surface, we show the fade-out instead, which was already done.
-                if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
-                        || StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY
-                                   .getValue()) {
+                // If not doing GTS-to-Tab transition animation or start surface homepage is hiding
+                // (instead of grid tab switcher), we show the fade-out instead, which was already
+                // done.
+                if (!TabUiFeatureUtilities.isTabToGtsAnimationEnabled() || isHidingStartSurface()) {
                     postHiding();
                     return;
                 }

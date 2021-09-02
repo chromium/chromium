@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -1199,6 +1201,28 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(feedSurfaceCoordinator, equalTo(mFeedSurfaceCoordinator));
 
         assertFalse(feedSurfaceCoordinator.isPlaceholderShown());
+    }
+
+    @Test
+    public void setShowingTabSwitcher() {
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true, false);
+        mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
+        mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
+        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
+
+        mediator.setOverviewState(StartSurfaceState.SHOWING_TABSWITCHER);
+        assertFalse(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE));
+        assertTrue(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
+        verify(mSecondaryTasksSurfaceController, times(0)).showOverview(true);
+
+        mediator.showOverview(false);
+        assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
+        verify(mSecondaryTasksSurfaceController, times(1)).showOverview(true);
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(
