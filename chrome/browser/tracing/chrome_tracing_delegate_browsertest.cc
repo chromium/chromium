@@ -50,25 +50,24 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   bool StartPreemptiveScenario(
       content::BackgroundTracingManager::DataFiltering data_filtering,
       base::StringPiece scenario_name = "TestScenario") {
-    base::DictionaryValue dict;
+    base::Value dict(base::Value::Type::DICTIONARY);
 
-    dict.SetString("scenario_name", scenario_name);
-    dict.SetString("mode", "PREEMPTIVE_TRACING_MODE");
-    dict.SetString("custom_categories",
-                   tracing::TraceStartupConfig::kDefaultStartupCategories);
+    dict.SetStringKey("scenario_name", scenario_name);
+    dict.SetStringKey("mode", "PREEMPTIVE_TRACING_MODE");
+    dict.SetStringKey("custom_categories",
+                      tracing::TraceStartupConfig::kDefaultStartupCategories);
 
-    base::ListValue rules_list;
+    base::Value rules_list(base::Value::Type::LIST);
     {
-      std::unique_ptr<base::DictionaryValue> rules_dict(
-          new base::DictionaryValue());
-      rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-      rules_dict->SetString("trigger_name", "test");
+      base::Value rules_dict(base::Value::Type::DICTIONARY);
+      rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+      rules_dict.SetStringKey("trigger_name", "test");
       rules_list.Append(std::move(rules_dict));
     }
     dict.SetKey("configs", std::move(rules_list));
 
     std::unique_ptr<content::BackgroundTracingConfig> config(
-        content::BackgroundTracingConfig::FromDict(&dict));
+        content::BackgroundTracingConfig::FromDict(std::move(dict)));
 
     DCHECK(config);
     // Proto output is uploaded through

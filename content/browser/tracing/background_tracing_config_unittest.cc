@@ -14,6 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -40,16 +41,14 @@ class BackgroundTracingConfigTest : public testing::Test {
 
 std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
     const std::string& json_text) {
-  std::unique_ptr<base::Value> json_value(
-      base::JSONReader::ReadDeprecated(json_text));
+  absl::optional<base::Value> json_value(base::JSONReader::Read(json_text));
 
-  base::DictionaryValue* dict = nullptr;
-  if (json_value)
-    json_value->GetAsDictionary(&dict);
+  if (!json_value || !json_value->is_dict())
+    return nullptr;
 
   std::unique_ptr<BackgroundTracingConfigImpl> config(
       static_cast<BackgroundTracingConfigImpl*>(
-          BackgroundTracingConfig::FromDict(dict).release()));
+          BackgroundTracingConfig::FromDict(std::move(*json_value)).release()));
   return config;
 }
 

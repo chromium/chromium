@@ -136,14 +136,13 @@ void SetupBackgroundTracingFromConfigFile(const base::FilePath& config_file,
     return;
   }
 
-  const base::DictionaryValue* dict = nullptr;
-  if (!value_with_error.value->GetAsDictionary(&dict)) {
+  if (!value_with_error.value->is_dict()) {
     LOG(ERROR) << "Background tracing config is not a dict";
     return;
   }
 
   std::unique_ptr<BackgroundTracingConfig> config =
-      BackgroundTracingConfig::FromDict(dict);
+      BackgroundTracingConfig::FromDict(std::move(*(value_with_error.value)));
   if (!config) {
     LOG(ERROR) << "Background tracing config dict has invalid contents";
     return;

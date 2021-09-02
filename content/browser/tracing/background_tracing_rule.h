@@ -16,6 +16,7 @@
 
 namespace base {
 class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace content {
@@ -30,7 +31,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   virtual ~BackgroundTracingRule();
 
-  void Setup(const base::DictionaryValue* dict);
+  void Setup(const base::Value* dict);
   BackgroundTracingConfigImpl::CategoryPreset category_preset() const {
     return category_preset_;
   }
@@ -56,12 +57,10 @@ class CONTENT_EXPORT BackgroundTracingRule {
   }
 
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
-      const base::DictionaryValue* dict);
+      const base::Value* dict);
 
-  void SetArgs(const base::DictionaryValue& args) {
-    args_ = args.CreateDeepCopy();
-  }
-  const base::DictionaryValue* args() const { return args_.get(); }
+  void SetArgs(const base::Value& args) { args_ = args.CreateDeepCopy(); }
+  const base::Value* args() const { return args_.get(); }
 
   const std::string& rule_id() const { return rule_id_; }
 
@@ -80,7 +79,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   BackgroundTracingConfigImpl::CategoryPreset category_preset_ =
       BackgroundTracingConfigImpl::CATEGORY_PRESET_UNSET;
   bool is_crash_ = false;
-  std::unique_ptr<base::DictionaryValue> args_;
+  std::unique_ptr<base::Value> args_;
 };
 
 }  // namespace content

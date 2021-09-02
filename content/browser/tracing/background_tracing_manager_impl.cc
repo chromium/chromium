@@ -351,12 +351,10 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
   if (!value)
     return nullptr;
 
-  // TODO(crbug.com/646113): use the new base::Value API.
-  const base::DictionaryValue* dict = nullptr;
-  if (!value->GetAsDictionary(&dict))
+  if (!value->is_dict())
     return nullptr;
 
-  return BackgroundTracingConfig::FromDict(dict);
+  return BackgroundTracingConfig::FromDict(std::move(*value));
 }
 
 void BackgroundTracingManagerImpl::OnHistogramTrigger(

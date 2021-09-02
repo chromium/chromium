@@ -45,11 +45,11 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
     return rules_;
   }
 
-  void AddPreemptiveRule(const base::DictionaryValue* dict);
+  void AddPreemptiveRule(const base::Value* dict);
   void AddReactiveRule(
-      const base::DictionaryValue* dict,
+      const base::Value* dict,
       BackgroundTracingConfigImpl::CategoryPreset category_preset);
-  void AddSystemRule(const base::DictionaryValue* dict);
+  void AddSystemRule(const base::Value* dict);
 
   base::trace_event::TraceConfig GetTraceConfig() const;
   const std::string& enabled_data_sources() const {
@@ -67,14 +67,14 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
   bool requires_anonymized_data() const { return requires_anonymized_data_; }
 
   static std::unique_ptr<BackgroundTracingConfigImpl> PreemptiveFromDict(
-      const base::DictionaryValue* dict);
+      const base::Value* dict);
   static std::unique_ptr<BackgroundTracingConfigImpl> ReactiveFromDict(
-      const base::DictionaryValue* dict);
+      const base::Value* dict);
   static std::unique_ptr<BackgroundTracingConfigImpl> SystemFromDict(
-      const base::DictionaryValue* dict);
+      const base::Value* dict);
 
   static std::unique_ptr<BackgroundTracingConfigImpl> FromDict(
-      const base::DictionaryValue* dict);
+      base::Value&& dict);
 
   static std::string CategoryPresetToString(
       BackgroundTracingConfigImpl::CategoryPreset category_preset);
@@ -100,8 +100,8 @@ class CONTENT_EXPORT BackgroundTracingConfigImpl
       BackgroundTracingConfigImpl::CategoryPreset,
       base::trace_event::TraceRecordMode);
 
-  BackgroundTracingRule* AddRule(const base::DictionaryValue* dict);
-  void SetBufferSizeLimits(const base::DictionaryValue* dict);
+  BackgroundTracingRule* AddRule(const base::Value* dict);
+  void SetBufferSizeLimits(const base::Value* dict);
   int GetMaximumTraceBufferSizeKb() const;
 
   // A trace config extracted from the "trace_config" field of the input
