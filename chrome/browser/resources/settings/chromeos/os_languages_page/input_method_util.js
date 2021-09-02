@@ -240,6 +240,15 @@ cr.define('settings.input_method_util', function() {
       ],
       basic: [],
       advanced: [],
+    },
+    [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: {
+      physicalKeyboard: [],
+      virtualKeyboard: [
+        {name: OptionType.ENABLE_SOUND_ON_KEYPRESS},
+        {name: OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION},
+      ],
+      basic: [],
+      advanced: [],
     }
   };
   /**

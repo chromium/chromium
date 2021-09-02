@@ -13,6 +13,7 @@ export const SettingsType = {
   PINYIN_SETTINGS: 3,
   PINYIN_FUZZY_SETTINGS: 4,
   BASIC_SETTINGS: 5,
+  ENGLISH_SOUTH_AFRICA_SETTINGS: 6,
 };
 /**
  * The string keys are the input methods ids.
@@ -98,4 +99,5 @@ export const inputMethodSettings = {
   'xkb:kz::kaz': [SettingsType.BASIC_SETTINGS],
   'xkb:by::bel': [SettingsType.BASIC_SETTINGS],
   'xkb:rs::srp': [SettingsType.BASIC_SETTINGS],
+  'xkb:za:gb:eng': [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS],
 };

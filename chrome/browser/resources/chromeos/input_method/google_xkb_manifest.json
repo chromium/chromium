@@ -619,6 +619,19 @@
       "options_page": "hmm_options.html?code=xkb:gb:extd:eng"
     },
     {
+      "name": "__MSG_keyboard_english_south_africa__",
+      "id": "xkb:za:gb:eng",
+      "indicator": "ZA",
+      "language": [
+        "en",
+        "en-ZA"
+      ],
+      "layouts": [
+        "gb(extd)"
+      ],
+      "options_page": "hmm_options.html?code=xkb:za:gb:eng"
+    },
+    {
       "name": "__MSG_keyboard_uk_dvorak__",
       "id": "xkb:gb:dvorak:eng",
       "indicator": "DV",
