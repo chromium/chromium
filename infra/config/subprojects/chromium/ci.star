@@ -4876,6 +4876,9 @@ ci.gpu_fyi_linux_builder(
 
 ci.gpu_fyi_linux_builder(
     name = "ChromeOS FYI Release (amd64-generic)",
+    # Runs a lot of tests + VMs are slower than real hardware, so increase the
+    # timeout.
+    execution_timeout = 8 * time.hour,
     console_view_entry = consoles.console_view_entry(
         category = "ChromeOS|amd64|generic",
         short_name = "x64",
