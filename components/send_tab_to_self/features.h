@@ -16,6 +16,10 @@ namespace send_tab_to_self {
 // of whether they have the sync feature enabled.
 extern const base::Feature kSendTabToSelfWhenSignedIn;
 
+// If this feature is enabled, a link to manage the user's devices will be shown
+// below the device list when sharing.
+extern const base::Feature kSendTabToSelfManageDevicesLink;
+
 // If this feature is enabled, use a fake backend implementation that supplies a
 // hardcoded list of share targets, for UI work & debugging.
 extern const base::Feature kSendTabToSelfUseFakeBackend;

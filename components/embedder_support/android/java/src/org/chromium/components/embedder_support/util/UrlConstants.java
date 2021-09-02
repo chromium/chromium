@@ -77,6 +77,9 @@ public class UrlConstants {
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL =
             "https://myaccount.google.com/activitycontrols/search";
 
+    public static final String GOOGLE_ACCOUNT_DEVICE_ACTIVITY_URL =
+            "https://myaccount.google.com/device-activity";
+
     public static final String GOOGLE_SEARCH_HISTORY_URL_IN_CBD =
             "https://myactivity.google.com/product/search?utm_source=chrome_cbd";
 

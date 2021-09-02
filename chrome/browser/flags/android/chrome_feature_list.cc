@@ -330,6 +330,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &query_tiles::features::kQueryTilesSegmentation,
     &reading_list::switches::kReadLater,
     &send_tab_to_self::kSendTabToSelfV2,
+    &send_tab_to_self::kSendTabToSelfManageDevicesLink,
     &signin::kMobileIdentityConsistencyPromos,
     &switches::kDeprecateMenagerieAPI,
     &switches::kForceStartupSigninPromo,

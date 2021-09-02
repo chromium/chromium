@@ -4304,6 +4304,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SEND_TAB_TO_SELF_V2_TOAST" desc="Toast message shown after a device is selected from the device picker.">
           Page sent. To see it, open Chrome on your <ph name="device_type">%1$s<ex>phone</ex></ph>
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK" desc="Text with a link to a page where the user can manage the devices they can share a tab to.">
+        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Your devices<ph name="END_LINK">&lt;/link&gt;</ph> · <ph name="EMAIL">%1$s<ex>foo@gmail.com</ex></ph>
+      </message>
+
 
       <!-- Sharing -->
       <message name="IDS_SHARING_SENDING_NOTIFICATION_TITLE" desc="Title text displayed in a sharing sending notification.">
