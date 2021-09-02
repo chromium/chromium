@@ -2482,6 +2482,18 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_UPDATE_CREDENTIALS_BUTTON" desc="Button title displayed when the signed in user needs to update its credentials. [Length: 20em] [iOS only]">
         Update
       </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED" desc="The header message in a one-time alert when sync is disabled by policy [iOS only].">
+        Your organization turned off sync.
+      </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED_DESCRIPTION" desc="The description in a one-time alert when sync is disabled by policy [iOS only].">
+        When sync is off, you can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won’t sync to your account.
+      </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE" desc="The text in the 'Continue' button, displayed in a one-time alert when sync is disabled by policy.">
+        Continue
+      </message>
+      <message name="IDS_IOS_SYNC_SYNC_DISABLED_LEARN_MORE" desc="The text in the 'Learn More' button, displayed in a one-time alert when sync is disabled by policy.">
+        Learn More
+      </message>
       <message name="IDS_IOS_TAB_GRID_DONE_BUTTON" desc="Title of the Done button in the tab grid UI. [iOS only]">
         Done
       </message>

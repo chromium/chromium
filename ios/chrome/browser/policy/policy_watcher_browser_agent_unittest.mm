@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -341,4 +342,96 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
   agent_->SignInUIDismissed();
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
+}
+
+// Tests that the handler is called and the alert shown as expected.
+TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
+  // Make sure shown if off.
+  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      syncer::prefs::kSyncManaged, false);
+
+  // Browser Agent under test.
+  // Set up the test browser and attach the browser agents.
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+
+  // Browser Agent under test.
+  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
+  PolicyWatcherBrowserAgent* agent =
+      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
+
+  // SceneState Browser Agent.
+  AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
+                                               startupInformation:nil
+                                              applicationDelegate:nil];
+  FakeSceneState* scene_state =
+      [[FakeSceneState alloc] initWithAppState:app_state];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+  OCMExpect([mockHandler showSyncDisabledAlert]);
+  agent->Initialize(mockHandler);
+
+  // Update the pref.
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      syncer::prefs::kSyncManaged, true);
+
+  EXPECT_OCMOCK_VERIFY(mockHandler);
+  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+
+  [[mockHandler reject] showSyncDisabledAlert];
+
+  // Update the pref.
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      syncer::prefs::kSyncManaged, false);
+
+  EXPECT_OCMOCK_VERIFY(mockHandler);
+  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+}
+
+// Tests that the handler is called and the alert shown at startup as expected.
+TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
+  // Make sure shown if off.
+  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      syncer::prefs::kSyncManaged, true);
+
+  // Browser Agent under test.
+  // Set up the test browser and attach the browser agents.
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(chrome_browser_state_.get());
+
+  // Browser Agent under test.
+  PolicyWatcherBrowserAgent::CreateForBrowser(browser.get());
+  PolicyWatcherBrowserAgent* agent =
+      PolicyWatcherBrowserAgent::FromBrowser(browser.get());
+
+  // SceneState Browser Agent.
+  AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
+                                               startupInformation:nil
+                                              applicationDelegate:nil];
+  FakeSceneState* scene_state =
+      [[FakeSceneState alloc] initWithAppState:app_state];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+
+  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+  OCMExpect([mockHandler showSyncDisabledAlert]);
+  agent->Initialize(mockHandler);
+
+  EXPECT_OCMOCK_VERIFY(mockHandler);
+  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+
+  [[mockHandler reject] showSyncDisabledAlert];
+
+  // Update the pref.
+  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+      syncer::prefs::kSyncManaged, false);
+
+  EXPECT_OCMOCK_VERIFY(mockHandler);
+  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 }

@@ -12,6 +12,11 @@
 // on-screen until the user dismisses it.
 - (void)showPolicySignoutPrompt;
 
+// Command to show an alert to warn the user that sync has been disabled due to
+// a policy change. The alert is shown immediately and stays on-screen until the
+// user dismisses it.
+- (void)showSyncDisabledAlert;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_POLICY_CHANGE_COMMANDS_H_

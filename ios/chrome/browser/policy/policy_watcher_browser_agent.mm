@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -24,12 +25,16 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
+
 BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
     : browser_(browser),
-      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
+      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()),
+      browser_prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
   prefs_change_observer_->Init(GetApplicationContext()->GetLocalState());
+  browser_prefs_change_observer_->Init(browser->GetBrowserState()->GetPrefs());
 }
 
 PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() {}
@@ -68,6 +73,15 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // Try to sign out in case the policy changed since last time. This should be
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
+
+  browser_prefs_change_observer_->Add(
+      syncer::prefs::kSyncManaged,
+      base::BindRepeating(
+          &PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded,
+          base::Unretained(this)));
+
+  // Try to show the alert in case the policy changed since last time.
+  ShowSyncDisabledAlertIfNeeded();
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
@@ -94,6 +108,24 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
     for (auto& observer : observers_) {
       observer.OnSignInDisallowed(this);
     }
+  }
+}
+
+void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
+  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  BOOL syncDisabledAlertShown =
+      [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+  BOOL isSyncDisabledByAdministrator =
+      browser_->GetBrowserState()->GetPrefs()->GetBoolean(
+          syncer::prefs::kSyncManaged);
+
+  if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
+    [handler_ showSyncDisabledAlert];
+    // Will never trigger again unless policy changes.
+    [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+  } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
+    // Will trigger again, if policy is turned back on.
+    [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
   }
 }
 

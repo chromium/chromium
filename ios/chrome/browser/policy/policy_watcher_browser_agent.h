@@ -21,6 +21,9 @@ class Browser;
 class PolicyWatcherBrowserAgentObserver;
 class PrefChangeRegistrar;
 
+// NSUserDefault global key to track if the sync disable alert was shown.
+extern NSString* kSyncDisabledAlertShownKey;
+
 // Service that listens for policy-controlled prefs changes and sends commands
 // to update the UI accordingly.
 class PolicyWatcherBrowserAgent
@@ -51,6 +54,10 @@ class PolicyWatcherBrowserAgent
   // UI.
   void ForceSignOutIfSigninDisabled();
 
+  // Handler for change to kSyncManaged. When the pref changes to |true|,
+  // sends a command to the handler to show an alert.
+  void ShowSyncDisabledAlertIfNeeded();
+
   // Callback called when the sign out is complete.
   void OnSignOutComplete();
 
@@ -63,8 +70,11 @@ class PolicyWatcherBrowserAgent
   // The AuthenticationService.
   AuthenticationService* auth_service_ = nullptr;
 
-  // Registrar for pref change notifications.
+  // Registrar for local state pref change notifications.
   std::unique_ptr<PrefChangeRegistrar> prefs_change_observer_;
+
+  // Registrar for browser state pref change notifications.
+  std::unique_ptr<PrefChangeRegistrar> browser_prefs_change_observer_;
 
   // List of observers notified of changes to the policy.
   base::ObserverList<PolicyWatcherBrowserAgentObserver, true> observers_;
