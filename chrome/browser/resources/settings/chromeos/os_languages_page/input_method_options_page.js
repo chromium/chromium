@@ -73,6 +73,9 @@ Polymer({
     this.id_ = queryParams.get('id') || '';
     this.parentNode.pageTitle =
         this.languageHelper.getInputMethodDisplayName(this.id_);
+    assert(
+        this.parentNode.pageTitle !== '',
+        `Input method ID '${this.id_}' is invalid`);
     this.engineId_ =
         settings.input_method_util.getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();

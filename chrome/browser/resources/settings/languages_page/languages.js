@@ -1374,7 +1374,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
    */
   getInputMethodDisplayName(id) {
     const inputMethod = this.supportedInputMethodMap_.get(id);
-    assert(inputMethod);
+    if (inputMethod === undefined) {
+      return '';
+    }
     return inputMethod.displayName;
   }
   // </if>
