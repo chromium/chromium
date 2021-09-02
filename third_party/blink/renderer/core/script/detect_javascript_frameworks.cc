@@ -236,7 +236,7 @@ void DetectJavascriptFrameworksOnLoad(Document& document) {
   ScriptState::Scope scope(script_state);
   v8::Local<v8::Context> context = script_state->GetContext();
 
-  if (base::FeatureList::IsEnabled(features::kReportAllJavascriptFrameworks)) {
+  if (base::FeatureList::IsEnabled(features::kReportAllJavaScriptFrameworks)) {
     TraverseTreeForFrameworks(document, context);
   } else {
     CheckForGatsby(document, context);

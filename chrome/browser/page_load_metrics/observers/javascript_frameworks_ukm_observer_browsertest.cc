@@ -48,14 +48,14 @@ const std::vector<const char*> harder_frameworks = {
     kSveltePageLoad,  kVuePageLoad,
 };
 
-enum class ReportAllJavascriptFrameworks { kDisabled, kEnabled };
+enum class ReportAllJavaScriptFrameworks { kDisabled, kEnabled };
 
 std::string ToString(
-    const testing::TestParamInfo<ReportAllJavascriptFrameworks>& info) {
+    const testing::TestParamInfo<ReportAllJavaScriptFrameworks>& info) {
   switch (info.param) {
-    case ReportAllJavascriptFrameworks::kDisabled:
+    case ReportAllJavaScriptFrameworks::kDisabled:
       return "Disabled";
-    case ReportAllJavascriptFrameworks::kEnabled:
+    case ReportAllJavaScriptFrameworks::kEnabled:
       return "Enabled";
   }
 }
@@ -119,7 +119,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
 
   void RunSingleFrameworkDetectionTest(const std::string& test_url,
                                        const char* framework_name,
-                                       ReportAllJavascriptFrameworks param) {
+                                       ReportAllJavaScriptFrameworks param) {
     page_load_metrics::PageLoadMetricsTestWaiter waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     waiter.AddPageExpectation(
@@ -130,7 +130,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     waiter.Wait();
     CloseAllTabs();
     RunFrameworkDetection(simpler_frameworks, framework_name, url);
-    if (param == ReportAllJavascriptFrameworks::kEnabled) {
+    if (param == ReportAllJavaScriptFrameworks::kEnabled) {
       RunFrameworkDetection(harder_frameworks, framework_name, url);
     }
   }
@@ -154,19 +154,19 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
 
 class ParametrizedJavascriptFrameworksUkmObserverBrowserTest
     : public JavascriptFrameworksUkmObserverBrowserTest,
-      public ::testing::WithParamInterface<ReportAllJavascriptFrameworks> {
+      public ::testing::WithParamInterface<ReportAllJavaScriptFrameworks> {
  public:
   ParametrizedJavascriptFrameworksUkmObserverBrowserTest() {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     switch (GetParam()) {
-      case ReportAllJavascriptFrameworks::kDisabled:
+      case ReportAllJavaScriptFrameworks::kDisabled:
         disabled_features.push_back(
-            blink::features::kReportAllJavascriptFrameworks);
+            blink::features::kReportAllJavaScriptFrameworks);
         break;
-      case ReportAllJavascriptFrameworks::kEnabled:
+      case ReportAllJavaScriptFrameworks::kEnabled:
         enabled_features.push_back(
-            blink::features::kReportAllJavascriptFrameworks);
+            blink::features::kReportAllJavaScriptFrameworks);
         break;
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -180,8 +180,8 @@ class ParametrizedJavascriptFrameworksUkmObserverBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     /* No prefix. */,
     ParametrizedJavascriptFrameworksUkmObserverBrowserTest,
-    testing::Values(ReportAllJavascriptFrameworks::kDisabled,
-                    ReportAllJavascriptFrameworks::kEnabled),
+    testing::Values(ReportAllJavaScriptFrameworks::kDisabled,
+                    ReportAllJavaScriptFrameworks::kEnabled),
     ToString);
 
 IN_PROC_BROWSER_TEST_P(ParametrizedJavascriptFrameworksUkmObserverBrowserTest,
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(ParametrizedJavascriptFrameworksUkmObserverBrowserTest,
     ExpectMetricCountForUrl(url, framework, 1);
     ExpectMetricValueForUrl(url, framework, false);
   }
-  if (GetParam() == ReportAllJavascriptFrameworks::kEnabled) {
+  if (GetParam() == ReportAllJavaScriptFrameworks::kEnabled) {
     for (const char* framework : harder_frameworks) {
       ExpectMetricCountForUrl(url, framework, 1);
       ExpectMetricValueForUrl(url, framework, false);
@@ -268,7 +268,7 @@ class JavascriptFrameworksUkmObserverBrowserTestEnabled
  public:
   JavascriptFrameworksUkmObserverBrowserTestEnabled() {
     feature_list_.InitAndEnableFeature(
-        blink::features::kReportAllJavascriptFrameworks);
+        blink::features::kReportAllJavaScriptFrameworks);
   }
   ~JavascriptFrameworksUkmObserverBrowserTestEnabled() override = default;
 
@@ -280,82 +280,82 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        AngularFrameworkDetected) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/angular_page.html",
                                   kAngularPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        PreactFrameworkDetected) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/preact_page.html",
                                   kPreactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected1) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react1_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected2) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react2_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected3) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react3_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected4) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react4_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected5) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react5_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        ReactFrameworkDetected6) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/react6_page.html",
                                   kReactPageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        SvelteFrameworkDetected) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/svelte_page.html",
                                   kSveltePageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        VueFrameworkDetected1) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/vue1_page.html",
                                   kVuePageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        VueFrameworkDetected2) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/vue2_page.html",
                                   kVuePageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTestEnabled,
                        VueFrameworkDetected3) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/vue3_page.html",
                                   kVuePageLoad,
-                                  ReportAllJavascriptFrameworks::kEnabled);
+                                  ReportAllJavaScriptFrameworks::kEnabled);
 }

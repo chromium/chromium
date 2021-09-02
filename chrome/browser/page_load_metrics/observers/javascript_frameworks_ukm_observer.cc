@@ -60,7 +60,7 @@ void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
            blink::LoadingBehaviorFlag::kLoadingBehaviorVuePressFrameworkUsed) !=
           0);
   if (base::FeatureList::IsEnabled(
-          blink::features::kReportAllJavascriptFrameworks)) {
+          blink::features::kReportAllJavaScriptFrameworks)) {
     builder
         .SetAngularPageLoad((frameworks_detected_ &
                              blink::LoadingBehaviorFlag::

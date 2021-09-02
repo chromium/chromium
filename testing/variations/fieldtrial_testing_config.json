@@ -7309,6 +7309,25 @@
             ]
         }
     ],
+    "ReportAllJavaScriptFrameworks": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "enable_features": [
+                        "ReportAllJavaScriptFrameworks"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportCertificateErrors": [
         {
             "platforms": [
