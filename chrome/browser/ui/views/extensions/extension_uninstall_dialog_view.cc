@@ -161,7 +161,6 @@ void ExtensionUninstallDialogViews::Show() {
 void ExtensionUninstallDialogViews::Close() {
   DCHECK(dialog_model_);
   dialog_model_->host()->Close();
-  DCHECK(!dialog_model_);
 }
 
 void ExtensionUninstallDialogViews::DialogAccepted() {
