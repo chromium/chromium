@@ -197,7 +197,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
 
         Notification notification = NotificationWrapperBuilderFactory
                                             .createNotificationWrapperBuilder(
-                                                    /*preferCompat=*/true,
                                                     ChromeChannelDefinitions.ChannelId.SECURITY_KEY)
                                             .setAutoCancel(true)
                                             .setCategory(Notification.CATEGORY_MESSAGE)

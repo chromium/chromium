@@ -125,8 +125,8 @@ public class UpdateNotificationControllerImpl
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true,
-                                ChromeChannelDefinitions.ChannelId.UPDATES, null,
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.UPDATES,
                                 new NotificationMetadata(
                                         NotificationUmaTracker.SystemNotificationType.UPDATES,
                                         UPDATE_NOTIFICATION_TAG /* notificationTag */,

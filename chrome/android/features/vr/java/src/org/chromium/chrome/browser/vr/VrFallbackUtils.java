@@ -30,8 +30,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
                     new NotificationManagerProxyImpl(context);
             Notification notification =
                     NotificationWrapperBuilderFactory
-                            .createNotificationWrapperBuilder(
-                                    true, ChromeChannelDefinitions.ChannelId.VR)
+                            .createNotificationWrapperBuilder(ChromeChannelDefinitions.ChannelId.VR)
                             .setContentTitle(context.getResources().getString(
                                     R.string.vr_preparing_vr_notification_title))
                             .setContentText(context.getResources().getString(
