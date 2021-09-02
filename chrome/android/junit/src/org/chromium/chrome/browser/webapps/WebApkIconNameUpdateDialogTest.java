@@ -53,6 +53,7 @@ public class WebApkIconNameUpdateDialogTest {
             dialogParams.shortNameBefore = "";
             dialogParams.shortNameAfter = "";
             dialogParams.nameChanged = false;
+            dialogParams.expectNameHiddenAnyway = false;
             dialogParams.nameBefore = "";
             dialogParams.nameAfter = "";
             return dialogParams;
@@ -67,6 +68,7 @@ public class WebApkIconNameUpdateDialogTest {
         public String shortNameBefore;
         public String shortNameAfter;
         public boolean nameChanged;
+        public boolean expectNameHiddenAnyway;
         public String nameBefore;
         public String nameAfter;
     }
@@ -150,6 +152,7 @@ public class WebApkIconNameUpdateDialogTest {
                 dialogParams.nameAfter, dialogParams.bitmapBefore, dialogParams.bitmapAfter, false,
                 false, this::onUpdateDialogResult);
 
+        // Verify the short name labels visibility status.
         Assert.assertEquals(dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
                         ? dialogParams.shortNameBefore
                         : null,
@@ -158,10 +161,18 @@ public class WebApkIconNameUpdateDialogTest {
                         ? dialogParams.shortNameAfter
                         : null,
                 getUpdateDialogAppNameLabel(R.id.short_app_name_new));
-        Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameBefore : null,
+
+        // Verify the app name label visibility status.
+        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+                        ? dialogParams.nameBefore
+                        : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_old));
-        Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameAfter : null,
+        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+                        ? dialogParams.nameAfter
+                        : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_new));
+
+        // Verify the icons visibility status.
         Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
                         ? dialogParams.bitmapBefore
                         : null,
@@ -279,6 +290,20 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
         verifyValues(/* clickAccept= */ false, dialogParams);
+
+        // Don't show duplicate name labels (identical change in both name and short name).
+        dialogParams = DialogParams.createDefault();
+        dialogParams.iconChanged = true;
+        dialogParams.bitmapBefore = blue;
+        dialogParams.bitmapAfter = red;
+        dialogParams.shortNameChanged = true;
+        dialogParams.shortNameBefore = "before";
+        dialogParams.shortNameAfter = "after";
+        dialogParams.nameChanged = true;
+        dialogParams.nameBefore = "before";
+        dialogParams.nameAfter = "after";
+        dialogParams.expectNameHiddenAnyway = true;
+        verifyValues(/* clickAccept= */ true, dialogParams);
     }
 
     @Test

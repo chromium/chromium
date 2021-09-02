@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webapps;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -70,6 +71,18 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
         mOldAppShortName = oldAppShortName;
         mPackageName = packageName;
         mDialogResultCallback = callback;
+
+        if (nameChanging && shortNameChanging && TextUtils.equals(oldAppShortName, oldAppName)
+                && TextUtils.equals(newAppShortName, newAppName)) {
+            // We can get notified of a change where:
+            //                Before -> After
+            // Name:            foo      bar
+            // Short name:      foo      bar
+            //
+            // It doesn't make sense to show duplicate labels, so we treat it as if the only thing
+            // changing is the short name.
+            nameChanging = false;
+        }
 
         int titleId = 0;
         if (iconChanging && (shortNameChanging || nameChanging)) {
