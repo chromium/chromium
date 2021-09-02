@@ -192,27 +192,12 @@ struct CTPolicy {
 };
 
 struct NetworkContextFilePaths {
-  // Points to a path that contains all the network service files and databases
-  // as listed below. If this network context is running inside a sandboxed
-  // network service, then this path should contain no other sensitive data
-  // since the sandboxed network service will have full access to this path.
-  // This should be a different path for each different network context running
-  // inside the network service.
+  // Points to a path that will contain all the network service data including
+  // those files/databases represented in `cookie_database_name`,
+  // `trust_token_database_name`, `http_server_properties_file_name`,
+  // `transport_security_persister_file_name` and
+  // `reporting_and_nel_store_database_name`.
   mojo_base.mojom.FilePath data_path;
-
-  // Points to a path that might contain existing network service data files and
-  // databases from network contexts created with the same `data_path`. If this
-  // parameter is specified, then the network context will be considered capable
-  // of being sandboxed, and the data files and databases contained in
-  // `unsandboxed_data_path` will be migrated to `data_path`. It is not valid to
-  // attempt to create a network context that cannot be sandboxed (i.e. do not
-  // specify an `unsandboxed_data_path`) inside a sandboxed network service.
-  // This file migration happens at the first creation of the network service in
-  // the browser process. In a future version of this interface, sandboxing will
-  // be enabled by default and this parameter will be removed and it will be
-  // assumed that all previous persistent data of any network contexts now
-  // contains data that has previously been migrated.
-  mojo_base.mojom.FilePath? unsandboxed_data_path;
 
   // Points to the cookie database file name inside `data_path`. An in-memory
   // cookie store is used if it's empty, or if `data_path` is empty.

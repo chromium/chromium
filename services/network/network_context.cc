@@ -446,9 +446,9 @@ NetworkContext::NetworkContext(
 #if defined(OS_WIN) && DCHECK_IS_ON()
   if (params_->file_paths) {
     DCHECK(params_->win_permissions_set)
-        << "Permissions not set on files. Network context should be created "
-           "using CreateNetworkContextInNetworkService rather than directly on "
-           "the network service.";
+        << "Permissions not set on files. Call "
+           "CreateNetworkContextInNetworkService or "
+           "MaybeSetNetworkContextSandboxPermissions.";
   }
 #endif  // defined(OS_WIN) && DCHECK_IS_ON()
   mojo::PendingRemote<mojom::URLLoaderFactory>
