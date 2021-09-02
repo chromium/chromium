@@ -22,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -106,6 +107,31 @@ TEST_F(ConversionNetworkSenderTest, LoadFlags) {
       test_url_loader_factory_.GetPendingRequest(0)->request.load_flags;
   EXPECT_TRUE(load_flags & net::LOAD_BYPASS_CACHE);
   EXPECT_TRUE(load_flags & net::LOAD_DISABLE_CACHE);
+}
+
+TEST_F(ConversionNetworkSenderTest, Isolation) {
+  network_sender_->SendReport(GetReport(/*conversion_id=*/1),
+                              GetSentCallback());
+  network_sender_->SendReport(GetReport(/*conversion_id=*/1),
+                              GetSentCallback());
+
+  const network::ResourceRequest& request1 =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  const network::ResourceRequest& request2 =
+      test_url_loader_factory_.GetPendingRequest(1)->request;
+
+  EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+            request1.trusted_params->isolation_info.request_type());
+  EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+            request2.trusted_params->isolation_info.request_type());
+
+  EXPECT_TRUE(request1.trusted_params->isolation_info.network_isolation_key()
+                  .IsTransient());
+  EXPECT_TRUE(request2.trusted_params->isolation_info.network_isolation_key()
+                  .IsTransient());
+
+  EXPECT_NE(request1.trusted_params->isolation_info.network_isolation_key(),
+            request2.trusted_params->isolation_info.network_isolation_key());
 }
 
 TEST_F(ConversionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {

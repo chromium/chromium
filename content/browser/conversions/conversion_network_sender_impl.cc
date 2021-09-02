@@ -15,6 +15,7 @@
 #include "content/browser/conversions/conversion_report.h"
 #include "content/browser/conversions/sent_report_info.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
@@ -90,6 +91,9 @@ void ConversionNetworkSenderImpl::SendReport(ConversionReport report,
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
+  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request->trusted_params->isolation_info =
+      net::IsolationInfo::CreateTransient();
 
   // TODO(https://crbug.com/1058018): Update the "policy" field in the traffic
   // annotation when a setting to disable the API is properly
