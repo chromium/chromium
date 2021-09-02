@@ -619,22 +619,22 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.send_tab_to_self_content_description;
+        return R.string.sharing_hub_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.send_tab_to_self_sheet_half_height;
+        return R.string.sharing_hub_sheet_half_height;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.send_tab_to_self_sheet_full_height;
+        return R.string.sharing_hub_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.send_tab_to_self_sheet_closed;
+        return R.string.sharing_hub_sheet_closed;
     }
 
     @Override

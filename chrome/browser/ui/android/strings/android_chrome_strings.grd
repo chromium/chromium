@@ -4351,6 +4351,18 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SHARING_HUB_VIDEO_PREVIEW_SUBTITLE" desc="Subtitle shown in the preview of Sharing Hub video file shares.">
         video
       </message>
+      <message name="IDS_SHARING_HUB_CONTENT_DESCRIPTION" desc="Accessibility string read when the sharing hub is opened. It describes the bottom sheet where a user can pick an option to share web content.">
+        List of sharing options.
+      </message>
+      <message name="IDS_SHARING_HUB_SHEET_HALF_HEIGHT" desc="Accessibility string read when the sharing hub is opened at half height. The sheet will occupy the bottom half the screen.">
+        List of sharing options opened at half height.
+      </message>
+      <message name="IDS_SHARING_HUB_SHEET_FULL_HEIGHT" desc="Accessibility string read when the sharing hub is opened at full height. The sheet will occupy the entire screen.">
+        List of sharing options at full height.
+      </message>
+      <message name="IDS_SHARING_HUB_SHEET_CLOSED" desc="Accessibility string read when the sharing hub is closed.">
+        List of sharing options is closed.
+      </message>
 
       <!-- ClickToCall -->
       <message name="IDS_CLICK_TO_CALL_NOTIFICATION_TEXT" desc="Text displayed in a click to call notification to call on a number.">
