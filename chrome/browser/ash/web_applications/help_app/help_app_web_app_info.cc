@@ -26,8 +26,8 @@ constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
   std::unique_ptr<WebApplicationInfo> info =
       std::make_unique<WebApplicationInfo>();
-  info->start_url = GURL(chromeos::kChromeUIHelpAppURL);
-  info->scope = GURL(chromeos::kChromeUIHelpAppURL);
+  info->start_url = GURL(kChromeUIHelpAppURL);
+  info->scope = GURL(kChromeUIHelpAppURL);
 
   info->title = l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE);
   web_app::CreateIconInfoForSystemWebApp(

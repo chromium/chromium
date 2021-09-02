@@ -4,7 +4,7 @@
 
 #include "ash/webui/help_app_ui/search/search_metadata.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 SearchMetadata::SearchMetadata() = default;
@@ -19,4 +19,4 @@ SearchMetadata::SearchMetadata(const std::u16string& title,
 SearchMetadata::~SearchMetadata() = default;
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

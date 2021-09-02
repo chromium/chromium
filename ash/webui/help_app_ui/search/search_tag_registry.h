@@ -18,7 +18,7 @@
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 // Processes all registered search tags by adding them to the LocalSearchService
@@ -59,7 +59,7 @@ class SearchTagRegistry {
   void NotifyRegistryAdded();
 
   // Index used by the LocalSearchService for string matching.
-  mojo::Remote<local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<chromeos::local_search_service::mojom::Index> index_remote_;
 
   // In-memory cache of all results which have been added to the
   // LocalSearchService. Contents are kept in sync with |index_remote_|.
@@ -71,6 +71,6 @@ class SearchTagRegistry {
 };
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_TAG_REGISTRY_H_

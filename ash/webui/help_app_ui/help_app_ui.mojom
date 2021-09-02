@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module help_app_ui.mojom;
+module ash.help_app.mojom;
 
 // Browser interface for chrome://help-app to bootstrap a connection.
 interface PageHandlerFactory {

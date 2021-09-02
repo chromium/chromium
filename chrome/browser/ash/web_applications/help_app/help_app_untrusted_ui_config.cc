@@ -139,8 +139,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
 }  // namespace
 
 HelpAppUntrustedUIConfig::HelpAppUntrustedUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chromeos::kChromeUIHelpAppHost) {}
+    : WebUIConfig(content::kChromeUIUntrustedScheme, kChromeUIHelpAppHost) {}
 
 HelpAppUntrustedUIConfig::~HelpAppUntrustedUIConfig() = default;
 
@@ -149,7 +148,7 @@ HelpAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
   base::RepeatingCallback<void(content::WebUIDataSource*)> callback =
       base::BindRepeating(&PopulateLoadTimeData, web_ui);
 
-  return std::make_unique<chromeos::HelpAppUntrustedUI>(web_ui, callback);
+  return std::make_unique<HelpAppUntrustedUI>(web_ui, callback);
 }
 
 }  // namespace ash

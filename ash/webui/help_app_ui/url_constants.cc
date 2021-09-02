@@ -4,7 +4,7 @@
 
 #include "ash/webui/help_app_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIHelpAppHost[] = "help-app";
 const char kChromeUIHelpAppKidsMagazineHost[] = "help-app-kids-magazine";
@@ -13,4 +13,4 @@ const char kChromeUIHelpAppUntrustedURL[] = "chrome-untrusted://help-app/";
 const char kChromeUIHelpAppKidsMagazineUntrustedURL[] =
     "chrome-untrusted://help-app-kids-magazine/";
 
-}  // namespace chromeos
+}  // namespace ash

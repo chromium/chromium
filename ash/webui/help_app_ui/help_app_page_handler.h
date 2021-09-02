@@ -9,23 +9,23 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
+
 class HelpAppUI;
-}
 
 // Implements the help_app mojom interface providing chrome://help-app
 // with browser process functions to call from the render process.
-class HelpAppPageHandler : public help_app_ui::mojom::PageHandler {
+class HelpAppPageHandler : public help_app::mojom::PageHandler {
  public:
   HelpAppPageHandler(
-      chromeos::HelpAppUI* help_app_ui,
-      mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver);
+      HelpAppUI* help_app_ui,
+      mojo::PendingReceiver<help_app::mojom::PageHandler> receiver);
   ~HelpAppPageHandler() override;
 
   HelpAppPageHandler(const HelpAppPageHandler&) = delete;
   HelpAppPageHandler& operator=(const HelpAppPageHandler&) = delete;
 
-  // help_app_ui::mojom::PageHandler:
+  // help_app::mojom::PageHandler:
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void ShowParentalControls() override;
   void IsLssEnabled(IsLssEnabledCallback callback) override;
@@ -35,10 +35,12 @@ class HelpAppPageHandler : public help_app_ui::mojom::PageHandler {
   void MaybeShowReleaseNotesNotification() override;
 
  private:
-  mojo::Receiver<help_app_ui::mojom::PageHandler> receiver_;
-  chromeos::HelpAppUI* help_app_ui_;  // Owns |this|.
+  mojo::Receiver<help_app::mojom::PageHandler> receiver_;
+  HelpAppUI* help_app_ui_;  // Owns |this|.
   bool is_lss_enabled_;
   bool is_launcher_search_enabled_;
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_HELP_APP_PAGE_HANDLER_H_

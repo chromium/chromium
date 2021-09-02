@@ -26,7 +26,7 @@ absl::optional<std::string> ChromeHelpAppUIDelegate::OpenFeedbackDialog() {
   constexpr char kHelpAppFeedbackCategoryTag[] = "FromHelpApp";
   // We don't change the default description, or add extra diagnostics so those
   // are empty strings.
-  chrome::ShowFeedbackPage(GURL(chromeos::kChromeUIHelpAppURL), profile,
+  chrome::ShowFeedbackPage(GURL(kChromeUIHelpAppURL), profile,
                            chrome::kFeedbackSourceHelpApp,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,

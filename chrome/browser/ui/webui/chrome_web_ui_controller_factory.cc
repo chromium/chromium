@@ -811,8 +811,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI) &&
       url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
     return &NewWebUI<chromeos::EnterpriseCastingUI>;
-  if (url.host_piece() == chromeos::kChromeUIHelpAppHost)
-    return &NewComponentUI<chromeos::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
+  if (url.host_piece() == ash::kChromeUIHelpAppHost)
+    return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<chromeos::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceInternalsHost)

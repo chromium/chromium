@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 // Handles search queries for the help app. Search() is expected to be invoked
@@ -72,7 +72,7 @@ class SearchHandler : public mojom::SearchHandler,
       const local_search_service::Result& result) const;
 
   SearchTagRegistry* search_tag_registry_;
-  mojo::Remote<local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<chromeos::local_search_service::mojom::Index> index_remote_;
 
   // Whether or not the first Update has finished yet, which means the Search
   // Handler is ready to search.
@@ -86,6 +86,6 @@ class SearchHandler : public mojom::SearchHandler,
 };
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_HANDLER_H_

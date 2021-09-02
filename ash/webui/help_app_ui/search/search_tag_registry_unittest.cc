@@ -10,7 +10,14 @@
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+// TODO(https://crbug.com/1164001): Remove if local_service_service::mojom
+// moved to ash.
+namespace local_search_service {
+namespace mojom = ::chromeos::local_search_service::mojom;
+}  // namespace local_search_service
+
 namespace help_app {
 namespace {
 
@@ -180,4 +187,4 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
 }
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

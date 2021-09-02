@@ -11,21 +11,20 @@
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "base/feature_list.h"
 
+namespace ash {
+
 HelpAppPageHandler::HelpAppPageHandler(
-    chromeos::HelpAppUI* help_app_ui,
-    mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver)
+    HelpAppUI* help_app_ui,
+    mojo::PendingReceiver<help_app::mojom::PageHandler> receiver)
     : receiver_(this, std::move(receiver)),
       help_app_ui_(help_app_ui),
       is_lss_enabled_(
           base::FeatureList::IsEnabled(
-              chromeos::features::kHelpAppSearchServiceIntegration) &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kEnableLocalSearchService)),
+              features::kHelpAppSearchServiceIntegration) &&
+          base::FeatureList::IsEnabled(features::kEnableLocalSearchService)),
       is_launcher_search_enabled_(
-          base::FeatureList::IsEnabled(
-              chromeos::features::kHelpAppLauncherSearch) &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kEnableLocalSearchService)) {}
+          base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
+          base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {}
 
 HelpAppPageHandler::~HelpAppPageHandler() = default;
 
@@ -55,3 +54,5 @@ void HelpAppPageHandler::MaybeShowDiscoverNotification() {
 void HelpAppPageHandler::MaybeShowReleaseNotesNotification() {
   help_app_ui_->delegate()->MaybeShowReleaseNotesNotification();
 }
+
+}  // namespace ash

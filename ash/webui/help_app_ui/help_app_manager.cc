@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 HelpAppManager::HelpAppManager(
@@ -31,4 +31,4 @@ void HelpAppManager::Shutdown() {
 }
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

@@ -12,11 +12,11 @@ import {MessagePipe} from './message_pipe.m.js';
 import {Message} from './message_types.js';
 
 const help_app = {
-  handler: new helpAppUi.mojom.PageHandlerRemote()
+  handler: new ash.helpApp.mojom.PageHandlerRemote()
 };
 
 // Set up a page handler to talk to the browser process.
-helpAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
+ash.helpApp.mojom.PageHandlerFactory.getRemote().createPageHandler(
     help_app.handler.$.bindNewPipeAndPassReceiver());
 
 // Set up an index remote to talk to Local Search Service.
@@ -27,9 +27,9 @@ const indexRemote = chromeos.localSearchService.mojom.Index.getRemote();
  * Talks to the search handler. Use for updating the content for launcher
  * search.
  *
- * @type {!chromeos.helpApp.mojom.SearchHandlerRemote}
+ * @type {!ash.helpApp.mojom.SearchHandlerRemote}
  */
-const searchHandlerRemote = chromeos.helpApp.mojom.SearchHandler.getRemote();
+const searchHandlerRemote = ash.helpApp.mojom.SearchHandler.getRemote();
 
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const MAX_STRING_LEN = 9999;
@@ -251,7 +251,7 @@ guestMessagePipe.registerHandler(
 
       const dataFromApp =
           /** @type {!Array<!helpApp.LauncherSearchableItem>} */ (message);
-      /** @type {!Array<!chromeos.helpApp.mojom.SearchConcept>} */
+      /** @type {!Array<!ash.helpApp.mojom.SearchConcept>} */
       const dataToSend = dataFromApp.map(
           searchableItem => ({
             id: truncate(searchableItem.id),

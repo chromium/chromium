@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 namespace {
 
@@ -298,4 +298,4 @@ TEST_F(HelpAppSearchHandlerTest, SearchStatusReadyAndOtherStatus) {
 }
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

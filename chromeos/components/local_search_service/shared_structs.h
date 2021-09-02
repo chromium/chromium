@@ -167,4 +167,16 @@ struct Token {
 }  // namespace local_search_service
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace local_search_service {
+using ::chromeos::local_search_service::Backend;
+using ::chromeos::local_search_service::Content;
+using ::chromeos::local_search_service::Data;
+using ::chromeos::local_search_service::IndexId;
+using ::chromeos::local_search_service::ResponseStatus;
+using ::chromeos::local_search_service::Result;
+}  // namespace local_search_service
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_LOCAL_SEARCH_SERVICE_SHARED_STRUCTS_H_

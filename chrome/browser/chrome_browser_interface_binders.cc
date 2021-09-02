@@ -846,14 +846,14 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       chromeos_camera::mojom::CameraAppHelper, chromeos::CameraAppUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<help_app_ui::mojom::PageHandlerFactory,
-                                         chromeos::HelpAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      ash::help_app::mojom::PageHandlerFactory, ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::local_search_service::mojom::Index, chromeos::HelpAppUI>(map);
+      chromeos::local_search_service::mojom::Index, ash::HelpAppUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<
-      chromeos::help_app::mojom::SearchHandler, chromeos::HelpAppUI>(map);
+  RegisterWebUIControllerInterfaceBinder<ash::help_app::mojom::SearchHandler,
+                                         ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::eche_app::mojom::SignalingMessageExchanger,

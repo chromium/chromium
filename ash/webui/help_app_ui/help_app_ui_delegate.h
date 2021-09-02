@@ -11,6 +11,8 @@
 
 class PrefService;
 
+namespace ash {
+
 // A delegate which exposes browser functionality from //chrome to the help app
 // ui page handler.
 class HelpAppUIDelegate {
@@ -38,5 +40,7 @@ class HelpAppUIDelegate {
   // the current milestone.
   virtual void MaybeShowReleaseNotesNotification() = 0;
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_HELP_APP_UI_DELEGATE_H_

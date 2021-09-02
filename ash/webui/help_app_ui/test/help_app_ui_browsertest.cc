@@ -29,8 +29,8 @@ constexpr const char* kTestFiles[] = {
 };
 
 HelpAppUiBrowserTest::HelpAppUiBrowserTest()
-    : SandboxedWebUiAppTestBase(chromeos::kChromeUIHelpAppURL,
-                                chromeos::kChromeUIHelpAppUntrustedURL,
+    : SandboxedWebUiAppTestBase(ash::kChromeUIHelpAppURL,
+                                ash::kChromeUIHelpAppUntrustedURL,
                                 {},
                                 kGuestTestCases) {
   ConfigureDefaultTestRequestHandler(

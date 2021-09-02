@@ -27,7 +27,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 content::WebUIDataSource* CreateHostDataSource() {
@@ -100,7 +100,7 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
 HelpAppUI::~HelpAppUI() = default;
 
 void HelpAppUI::BindInterface(
-    mojo::PendingReceiver<help_app_ui::mojom::PageHandlerFactory> receiver) {
+    mojo::PendingReceiver<help_app::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
 }
@@ -108,8 +108,7 @@ void HelpAppUI::BindInterface(
 void HelpAppUI::BindInterface(
     mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
         index_receiver) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kEnableLocalSearchService)) {
+  if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
     auto* const factory = chromeos::local_search_service::
         LocalSearchServiceProxyFactory::GetForBrowserContext(
             web_ui()->GetWebContents()->GetBrowserContext());
@@ -122,8 +121,7 @@ void HelpAppUI::BindInterface(
 
 void HelpAppUI::BindInterface(
     mojo::PendingReceiver<help_app::mojom::SearchHandler> receiver) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kHelpAppLauncherSearch)) {
+  if (base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch)) {
     help_app::HelpAppManagerFactory::GetForBrowserContext(
         web_ui()->GetWebContents()->GetBrowserContext())
         ->search_handler()
@@ -132,7 +130,7 @@ void HelpAppUI::BindInterface(
 }
 
 void HelpAppUI::CreatePageHandler(
-    mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver) {
+    mojo::PendingReceiver<help_app::mojom::PageHandler> receiver) {
   page_handler_ =
       std::make_unique<HelpAppPageHandler>(this, std::move(receiver));
 }
@@ -145,4 +143,4 @@ bool HelpAppUI::IsJavascriptErrorReportingEnabled() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HelpAppUI)
 
-}  // namespace chromeos
+}  // namespace ash

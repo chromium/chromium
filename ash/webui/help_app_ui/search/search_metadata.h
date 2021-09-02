@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 // Represents the metadata for a potential search result. The metadata is the
@@ -38,6 +38,6 @@ struct SearchMetadata {
 };
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_SEARCH_SEARCH_METADATA_H_

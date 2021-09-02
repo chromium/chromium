@@ -14,13 +14,13 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class HelpAppPageHandler;
+namespace ash {
 
-namespace chromeos {
+class HelpAppPageHandler;
 
 // The WebUI controller for chrome://help-app.
 class HelpAppUI : public ui::MojoWebUIController,
-                  public help_app_ui::mojom::PageHandlerFactory {
+                  public help_app::mojom::PageHandlerFactory {
  public:
   HelpAppUI(content::WebUI* web_ui,
             std::unique_ptr<HelpAppUIDelegate> delegate);
@@ -30,10 +30,11 @@ class HelpAppUI : public ui::MojoWebUIController,
   HelpAppUI& operator=(const HelpAppUI&) = delete;
 
   void BindInterface(
-      mojo::PendingReceiver<help_app_ui::mojom::PageHandlerFactory> receiver);
+      mojo::PendingReceiver<help_app::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
-      mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver);
+      mojo::PendingReceiver<chromeos::local_search_service::mojom::Index>
+          index_receiver);
 
   // The search handler is used to update the search index for launcher search.
   void BindInterface(
@@ -44,18 +45,18 @@ class HelpAppUI : public ui::MojoWebUIController,
   bool IsJavascriptErrorReportingEnabled() override;
 
  private:
-  // help_app_ui::mojom::PageHandlerFactory:
+  // help_app::mojom::PageHandlerFactory:
   void CreatePageHandler(
-      mojo::PendingReceiver<help_app_ui::mojom::PageHandler> receiver) override;
+      mojo::PendingReceiver<help_app::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<HelpAppPageHandler> page_handler_;
-  mojo::Receiver<help_app_ui::mojom::PageHandlerFactory> page_factory_receiver_{
+  mojo::Receiver<help_app::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
   std::unique_ptr<HelpAppUIDelegate> delegate_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_HELP_APP_UI_H_

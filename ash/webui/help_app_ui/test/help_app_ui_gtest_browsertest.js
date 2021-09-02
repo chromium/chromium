@@ -31,8 +31,8 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
   get featureList() {
     return {
       enabled: [
-        'chromeos::features::kHelpAppLauncherSearch',
-        'chromeos::features::kHelpAppSearchServiceIntegration',
+        'ash::features::kHelpAppLauncherSearch',
+        'ash::features::kHelpAppSearchServiceIntegration',
       ]
     };
   }

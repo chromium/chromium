@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 namespace {
 
@@ -98,4 +98,4 @@ void SearchTagRegistry::NotifyRegistryAdded() {
 }
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

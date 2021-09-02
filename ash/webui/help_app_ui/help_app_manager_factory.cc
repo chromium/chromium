@@ -7,7 +7,7 @@
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 // static
@@ -51,4 +51,4 @@ bool HelpAppManagerFactory::ServiceIsNULLWhileTesting() const {
 }
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash

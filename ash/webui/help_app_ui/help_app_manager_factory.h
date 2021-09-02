@@ -8,7 +8,7 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-namespace chromeos {
+namespace ash {
 namespace help_app {
 
 class HelpAppManager;
@@ -36,6 +36,6 @@ class HelpAppManagerFactory : public BrowserContextKeyedServiceFactory {
 };
 
 }  // namespace help_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_HELP_APP_MANAGER_FACTORY_H_

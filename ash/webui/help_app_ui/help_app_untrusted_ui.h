@@ -10,9 +10,9 @@
 
 namespace content {
 class WebUIDataSource;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // The Web UI for chrome-untrusted://help-app.
 class HelpAppUntrustedUI : public ui::UntrustedWebUIController {
@@ -26,6 +26,6 @@ class HelpAppUntrustedUI : public ui::UntrustedWebUIController {
   ~HelpAppUntrustedUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_HELP_APP_UI_HELP_APP_UNTRUSTED_UI_H_

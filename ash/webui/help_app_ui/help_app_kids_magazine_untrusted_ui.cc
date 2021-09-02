@@ -13,7 +13,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -61,7 +61,7 @@ content::WebUIDataSource* CreateHelpAppKidsMagazineUntrustedDataSource() {
 
 HelpAppKidsMagazineUntrustedUIConfig::HelpAppKidsMagazineUntrustedUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chromeos::kChromeUIHelpAppKidsMagazineHost) {}
+                  kChromeUIHelpAppKidsMagazineHost) {}
 
 HelpAppKidsMagazineUntrustedUIConfig::~HelpAppKidsMagazineUntrustedUIConfig() =
     default;
@@ -84,4 +84,4 @@ HelpAppKidsMagazineUntrustedUI::HelpAppKidsMagazineUntrustedUI(
 
 HelpAppKidsMagazineUntrustedUI::~HelpAppKidsMagazineUntrustedUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

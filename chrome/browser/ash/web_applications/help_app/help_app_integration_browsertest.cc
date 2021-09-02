@@ -103,7 +103,7 @@ void WaitForAppToOpen(const GURL& expected_url) {
 // Test that the Help App installs and launches correctly. Runs some spot
 // checks on the manifest.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2) {
-  const GURL url(chromeos::kChromeUIHelpAppURL);
+  const GURL url(kChromeUIHelpAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::HELP, url, "Explore"));
 }
@@ -537,12 +537,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Search using the search handler to confirm that the update happened.
   base::RunLoop run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/3u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      EXPECT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "test-id");
@@ -614,12 +614,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // Search using the search handler to confirm that only the valid article was
   // added to the index.
   base::RunLoop run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/3u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      EXPECT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "test-id-2");
@@ -683,12 +683,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // by the mock app.
   // Search using the search handler to confirm that the update happened.
   base::RunLoop search_run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
+  help_app::HelpAppManagerFactory::GetForBrowserContext(profile())
       ->search_handler()
       ->Search(u"verycomplicatedsearchquery",
                /*max_num_results=*/1u,
                base::BindLambdaForTesting(
-                   [&](std::vector<chromeos::help_app::mojom::SearchResultPtr>
+                   [&](std::vector<help_app::mojom::SearchResultPtr>
                            search_results) {
                      ASSERT_EQ(search_results.size(), 1u);
                      EXPECT_EQ(search_results[0]->id, "mock-app-test-id");

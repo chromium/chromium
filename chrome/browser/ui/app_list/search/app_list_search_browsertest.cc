@@ -311,8 +311,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
   // Add some searchable content to the help app search handler.
-  std::vector<chromeos::help_app::mojom::SearchConceptPtr> search_concepts;
-  auto concept = chromeos::help_app::mojom::SearchConcept::New(
+  std::vector<ash::help_app::mojom::SearchConceptPtr> search_concepts;
+  auto concept = ash::help_app::mojom::SearchConcept::New(
       /*id=*/"6318213",
       /*title=*/u"Fix connection problems",
       /*main_category=*/u"Help",
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
   search_concepts.push_back(std::move(concept));
 
   base::RunLoop run_loop;
-  chromeos::help_app::HelpAppManagerFactory::GetForBrowserContext(GetProfile())
+  ash::help_app::HelpAppManagerFactory::GetForBrowserContext(GetProfile())
       ->search_handler()
       ->Update(std::move(search_concepts), base::BindLambdaForTesting([&]() {
                  run_loop.QuitClosure().Run();

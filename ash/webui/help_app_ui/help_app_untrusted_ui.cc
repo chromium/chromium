@@ -16,7 +16,7 @@
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -70,4 +70,4 @@ HelpAppUntrustedUI::HelpAppUntrustedUI(
 
 HelpAppUntrustedUI::~HelpAppUntrustedUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash
