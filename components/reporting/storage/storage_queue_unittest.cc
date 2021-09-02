@@ -403,7 +403,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());
     sequenced_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
     EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull()))
         .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason,
                                   TestUploader* test_uploader) {

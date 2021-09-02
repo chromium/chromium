@@ -602,7 +602,8 @@ class StorageTest
   void SetUp() override {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     sequenced_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::BEST_EFFORT, base::MayBlock()});
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
 
     // Disallow uploads unless other expectation is set (any later EXPECT_CALL
     // will take precedence over this one).
