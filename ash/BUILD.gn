@@ -2144,6 +2144,7 @@ test("ash_unittests") {
     "assistant/model/assistant_query_history_unittest.cc",
     "assistant/ui/assistant_web_container_view_unittest.cc",
     "assistant/ui/colors/assistant_colors_util_unittest.cc",
+    "assistant/ui/main_stage/assistant_onboarding_suggestion_view_unittest.cc",
     "assistant/ui/main_stage/assistant_onboarding_view_unittest.cc",
     "assistant/ui/main_stage/assistant_opt_in_view_unittest.cc",
     "assistant/ui/main_stage/assistant_query_view_unittest.cc",

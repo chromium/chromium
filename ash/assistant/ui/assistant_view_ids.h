@@ -43,7 +43,10 @@ enum AssistantViewID {
   kLowConfidenceLabel,
 
   // UIs in UiElementContainer
-  kOverflowIndicator
+  kOverflowIndicator,
+
+  // UIs in AssistantOnboardingSuggestionView
+  kAssistantOnboardingSuggestionViewLabel
 };
 
 }  // namespace ash
