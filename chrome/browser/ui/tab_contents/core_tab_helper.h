@@ -40,6 +40,15 @@ class CoreTabHelper : public content::WebContentsObserver,
                               const GURL& src_url,
                               lens::EntryPoint entry_point);
 
+  // Returns the URL params for a Lens Search with the given image.
+  // TODO(crbug.com/1234592): Refactor to remove from core_tab_helper once Lens
+  // side panel implementation is complete and the new tab path is is no longer
+  // needed.
+  content::OpenURLParams GetSearchWithLensURLParams(
+      gfx::Image image,
+      const gfx::Size& image_original_size,
+      lens::EntryPoint entry_point);
+
   // Open the Lens experience for an image. Used for sending the bitmap selected
   // via Lens Region Search. |image_original_size| is specified in case of
   // resizing that happens prior to passing the image to CoreTabHelper.
@@ -88,8 +97,9 @@ class CoreTabHelper : public content::WebContentsObserver,
       const gfx::Size& original_size,
       const std::string& image_extension);
 
-  // Posts the bytes and content type to the specified URL.
-  void PostContentToURL(TemplateURLRef::PostContent post_content, GURL url);
+  content::OpenURLParams GetURLParamsForPostContent(
+      TemplateURLRef::PostContent post_content,
+      GURL url);
 
   // Create a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is

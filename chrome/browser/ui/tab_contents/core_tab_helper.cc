@@ -100,17 +100,24 @@ void CoreTabHelper::SearchWithLensInNewTab(
 void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
                                            const gfx::Size& image_original_size,
                                            lens::EntryPoint entry_point) {
+  content::OpenURLParams url_params =
+      GetSearchWithLensURLParams(image, image_original_size, entry_point);
+  web_contents()->OpenURL(url_params);
+}
+
+content::OpenURLParams CoreTabHelper::GetSearchWithLensURLParams(
+    gfx::Image image,
+    const gfx::Size& image_original_size,
+    lens::EntryPoint entry_point) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  if (!template_url_service)
-    return;
+  DCHECK(template_url_service);
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
-  if (!default_provider)
-    return;
+  DCHECK(default_provider);
 
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
@@ -128,9 +135,10 @@ void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image,
       lens::GetQueryParameterFromEntryPoint(entry_point);
 
   TemplateURLRef::PostContent post_content;
-  GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
+  GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
-  PostContentToURL(post_content, result);
+  DCHECK(search_url.is_valid());
+  return GetURLParamsForPostContent(post_content, search_url);
 }
 
 void CoreTabHelper::SearchByImageInNewTab(
@@ -344,12 +352,10 @@ void CoreTabHelper::DoSearchByImageInNewTab(
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  if (!template_url_service)
-    return;
+  DCHECK(template_url_service);
   const TemplateURL* const default_provider =
       template_url_service->GetDefaultSearchProvider();
-  if (!default_provider)
-    return;
+  DCHECK(default_provider);
 
   TemplateURLRef::SearchTermsArgs search_args =
       TemplateURLRef::SearchTermsArgs(std::u16string());
@@ -359,16 +365,17 @@ void CoreTabHelper::DoSearchByImageInNewTab(
   search_args.image_original_size = original_size;
   search_args.additional_query_params = additional_query_params;
   TemplateURLRef::PostContent post_content;
-  GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
+  GURL search_url(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
-  PostContentToURL(post_content, result);
+  DCHECK(search_url.is_valid());
+  content::OpenURLParams url_params =
+      GetURLParamsForPostContent(post_content, search_url);
+  web_contents()->OpenURL(url_params);
 }
 
-void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
-                                     GURL url) {
-  if (!url.is_valid())
-    return;
-
+content::OpenURLParams CoreTabHelper::GetURLParamsForPostContent(
+    TemplateURLRef::PostContent post_content,
+    GURL url) {
   content::OpenURLParams open_url_params(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false);
@@ -382,7 +389,7 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
         "%s: %s\r\n", net::HttpRequestHeaders::kContentType,
         content_type.c_str());
   }
-  web_contents()->OpenURL(open_url_params);
+  return open_url_params;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CoreTabHelper)
