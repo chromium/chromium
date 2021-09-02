@@ -145,14 +145,6 @@ declare_args() {
   # every toolchain can pass through the "global" value via toolchain_args().
   host_toolchain = ""
 
-  # Whether to allow Rust code to be part of the Chromium *build process*.
-  # This can be used to create Rust test binaries, even if the flag below
-  # is false.
-  enable_rust = false
-
-  # Whether to allow Rust code to contribute to the main Chromium binaries.
-  enable_rust_in_chromium = false
-
   # DON'T ADD MORE FLAGS HERE. Read the comment above.
 }
 
