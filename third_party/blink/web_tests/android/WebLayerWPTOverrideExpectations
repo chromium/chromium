@@ -1552,7 +1552,6 @@ crbug.com/1050754 external/wpt/resource-timing/document-domain-no-impact-opener.
 crbug.com/1050754 external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Timeout ]
 crbug.com/1050754 external/wpt/screen-orientation/active-lock.html [ Crash Failure Pass ]
-crbug.com/1050754 external/wpt/screen-orientation/event-before-promise.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/screen-orientation/idlharness.window.html [ Crash Failure Pass ]
 crbug.com/1050754 external/wpt/screen-orientation/lock-basic.html [ Timeout ]
 crbug.com/1050754 external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Failure ]

@@ -1451,7 +1451,6 @@ crbug.com/1050754 external/wpt/resource-timing/nested-context-navigations-object
 crbug.com/1050754 external/wpt/resource-timing/object-not-found-adds-entry.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Timeout ]
 crbug.com/1050754 external/wpt/screen-orientation/active-lock.html [ Failure ]
-crbug.com/1050754 external/wpt/screen-orientation/event-before-promise.html [ Pass ]
 crbug.com/1050754 external/wpt/screen-orientation/lock-basic.html [ Timeout ]
 crbug.com/1050754 external/wpt/screen-orientation/lock-sandboxed-iframe.html [ Failure ]
 crbug.com/1050754 external/wpt/screen-orientation/onchange-event-subframe.html [ Failure ]
