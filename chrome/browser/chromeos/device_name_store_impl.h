@@ -65,9 +65,13 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // Sets the device name and notify observers of DeviceNameStore class.
   void ChangeDeviceName(const std::string& device_name);
 
-  // Called from OnHostnamePolicyChanged() and SetDeviceName() to set the device
-  // name and notify observers of DeviceNameStore class. The new device name
-  // must be different from the one set previously in |prefs_|.
+  // Called from OnHostnamePolicyChanged() and AttemptDeviceNameStateUpdate().
+  // Computes the new device name and attempts to update it.
+  void AttemptUpdateToComputedDeviceName();
+
+  // Called from AttemptUpdateToComputedDeviceName() and SetDeviceName() to set
+  // the new device name if it is different from the one set previously in
+  // |prefs_|. Observers are notified if the device name and/or state changes.
   void AttemptDeviceNameUpdate(const std::string& new_device_name);
 
   // Callback function for OwnerSettingsService::IsOwnerAsync() that attempts to

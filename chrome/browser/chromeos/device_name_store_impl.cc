@@ -161,18 +161,17 @@ std::string DeviceNameStoreImpl::ComputeDeviceName() const {
   }
 }
 
-void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
+void DeviceNameStoreImpl::AttemptUpdateToComputedDeviceName() {
   AttemptDeviceNameUpdate(ComputeDeviceName());
+}
+
+void DeviceNameStoreImpl::OnHostnamePolicyChanged() {
+  AttemptUpdateToComputedDeviceName();
 }
 
 void DeviceNameStoreImpl::AttemptDeviceNameStateUpdate(bool is_user_owner) {
   is_user_owner_ = is_user_owner;
-  DeviceNameStore::DeviceNameState new_state = ComputeDeviceNameState();
-  if (device_name_state_ == new_state)
-    return;
-
-  device_name_state_ = new_state;
-  NotifyDeviceNameMetadataChanged();
+  AttemptUpdateToComputedDeviceName();
 }
 
 void DeviceNameStoreImpl::OnProfileAdded(Profile* profile) {
