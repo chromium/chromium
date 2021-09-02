@@ -640,6 +640,8 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
           EAnimPlayState::kPaused;
 
       Timing timing = animation_data->ConvertToTiming(i);
+      // We need to copy timing to a second object for cases where the original
+      // is modified and we still need original values.
       Timing specified_timing = timing;
       scoped_refptr<TimingFunction> keyframe_timing_function =
           timing.timing_function;
@@ -707,16 +709,46 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
 
           absl::optional<TimelinePhase> inherited_phase;
           absl::optional<AnimationTimeDelta> inherited_time;
+          absl::optional<AnimationTimeDelta> timeline_duration;
 
           if (timeline) {
             inherited_phase = absl::make_optional(timeline->Phase());
             inherited_time = animation->UnlimitedCurrentTime();
+            timeline_duration = timeline->GetDuration();
 
             if (will_be_playing &&
                 ((timeline != existing_animation->Timeline()) ||
                  animation->ResetsCurrentTimeOnResume())) {
-              if (!timeline->IsMonotonicallyIncreasing())
+              if (timeline->IsScrollTimeline()) {
                 inherited_time = timeline->CurrentTime();
+              } else {
+                AnimationTimeline* previous_timeline =
+                    existing_animation->Timeline();
+                // Check to see if we are switching from a scroll timeline to a
+                // document timeline.
+                if (previous_timeline &&
+                    previous_timeline->IsScrollTimeline() &&
+                    previous_timeline->CurrentTime()) {
+                  // For now, CSS Animations do not support duration 'auto'.
+                  // Issue: https://github.com/w3c/csswg-drafts/issues/6530
+                  DCHECK(specified_timing.iteration_duration);
+
+                  // We need to maintain current progress in the animation when
+                  // switching from scroll timeline to document timeline.
+                  double progress = previous_timeline->CurrentTime().value() /
+                                    previous_timeline->GetDuration().value();
+
+                  AnimationTimeDelta end_time = std::max(
+                      specified_timing.start_delay +
+                          MultiplyZeroAlwaysGivesZero(
+                              specified_timing.iteration_duration.value(),
+                              specified_timing.iteration_count) +
+                          specified_timing.end_delay,
+                      AnimationTimeDelta());
+
+                  inherited_time = progress * end_time;
+                }
+              }
             }
           }
 
@@ -727,7 +759,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
                                             parent_style, name,
                                             keyframe_timing_function.get(), i),
                   timing, is_paused, inherited_time, inherited_phase,
-                  animation->playbackRate()),
+                  timeline_duration, animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList());
           if (toggle_pause_state)
@@ -740,19 +772,23 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
         absl::optional<AnimationTimeDelta> inherited_time =
             AnimationTimeDelta();
 
-        if (timeline && !timeline->IsMonotonicallyIncreasing()) {
-          inherited_phase = absl::make_optional(timeline->Phase());
-          inherited_time = timeline->CurrentTime();
+        absl::optional<AnimationTimeDelta> timeline_duration;
+        if (timeline) {
+          timeline_duration = timeline->GetDuration();
+          if (!timeline->IsMonotonicallyIncreasing()) {
+            inherited_phase = absl::make_optional(timeline->Phase());
+            inherited_time = timeline->CurrentTime();
+          }
         }
-        update.StartAnimation(
-            name, name_index, i,
-            *MakeGarbageCollected<InertEffect>(
-                CreateKeyframeEffectModel(resolver, element, &style,
-                                          parent_style, name,
-                                          keyframe_timing_function.get(), i),
-                timing, is_paused, inherited_time, inherited_phase, 1.0),
-            specified_timing, keyframes_rule, timeline,
-            animation_data->PlayStateList());
+        update.StartAnimation(name, name_index, i,
+                              *MakeGarbageCollected<InertEffect>(
+                                  CreateKeyframeEffectModel(
+                                      resolver, element, &style, parent_style,
+                                      name, keyframe_timing_function.get(), i),
+                                  timing, is_paused, inherited_time,
+                                  inherited_phase, timeline_duration, 1.0),
+                              specified_timing, keyframes_rule, timeline,
+                              animation_data->PlayStateList());
       }
     }
   }
@@ -1217,8 +1253,9 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   state.update.StartTransition(
       property, state.before_change_style, state.cloned_style,
       reversing_adjusted_start_value, reversing_shortening_factor,
-      *MakeGarbageCollected<InertEffect>(
-          model, timing, false, AnimationTimeDelta(), absl::nullopt, 1.0));
+      *MakeGarbageCollected<InertEffect>(model, timing, false,
+                                         AnimationTimeDelta(), absl::nullopt,
+                                         absl::nullopt, 1.0));
   DCHECK(!state.animating_element.GetElementAnimations() ||
          !state.animating_element.GetElementAnimations()
               ->IsAnimationStyleChange());
@@ -1414,7 +1451,7 @@ scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
 
       auto* inert_animation_for_sampling = MakeGarbageCollected<InertEffect>(
           effect->Model(), effect->SpecifiedTiming(), false, current_time,
-          absl::nullopt, animation->playbackRate());
+          absl::nullopt, absl::nullopt, animation->playbackRate());
 
       HeapVector<Member<Interpolation>> sample;
       inert_animation_for_sampling->Sample(sample);

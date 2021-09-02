@@ -60,11 +60,10 @@ void AnimationEffect::EnsureNormalizedTiming() const {
     return;
 
   normalized_ = Timing::NormalizedTiming();
-  if (GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBasedTimeline()) {
+  // A valid timeline duration signifies use of a progress based timeline.
+  if (TimelineDuration()) {
     // Normalize timings for progress based timelines
-    normalized_->timeline_duration = GetAnimation()->timeline()->GetDuration();
-    DCHECK(normalized_->timeline_duration);
+    normalized_->timeline_duration = TimelineDuration();
 
     if (timing_.iteration_duration) {
       // Scaling up iteration_duration allows animation effect to be able to
@@ -113,9 +112,8 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       DCHECK(normalized_->start_delay.is_zero() &&
              normalized_->end_delay.is_zero());
 
-      normalized_->iteration_duration =
-          GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-              timing_);
+      normalized_->iteration_duration = IntrinsicIterationDuration();
+
       // TODO: add support for progress based timelines and "auto" duration
       // effects
     }

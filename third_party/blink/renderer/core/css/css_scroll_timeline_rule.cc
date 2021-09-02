@@ -42,11 +42,6 @@ String CSSScrollTimelineRule::cssText() const {
     builder.Append(end->CssText());
     builder.Append("; ");
   }
-  if (const CSSValue* time_range = scroll_timeline_rule_->GetTimeRange()) {
-    builder.Append("time-range: ");
-    builder.Append(time_range->CssText());
-    builder.Append("; ");
-  }
   builder.Append("}");
   return builder.ToString();
 }
@@ -81,12 +76,6 @@ String CSSScrollTimelineRule::start() const {
 String CSSScrollTimelineRule::end() const {
   if (const CSSValue* end = scroll_timeline_rule_->GetEnd())
     return end->CssText();
-  return "auto";
-}
-
-String CSSScrollTimelineRule::timeRange() const {
-  if (const CSSValue* range = scroll_timeline_rule_->GetTimeRange())
-    return range->CssText();
   return "auto";
 }
 
