@@ -227,14 +227,39 @@ GURL GetEffectiveDocumentURL(
 bool DoesContentScriptMatch(const UserScript& user_script,
                             content::RenderFrameHost* frame,
                             const GURL& url) {
+  content::RenderProcessHost& process = *frame->GetProcess();
+  const ExtensionId& extension_id = user_script.extension_id();
+
   // ContentScriptTracker only needs to track Javascript content scripts (e.g.
   // doesn't track CSS-only injections).
-  if (user_script.js_scripts().empty())
+  if (user_script.js_scripts().empty()) {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ContentScriptTracker/DoesContentScriptMatch=false(non-js)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension_id));
     return false;
+  }
 
   GURL effective_url = GetEffectiveDocumentURL(
       frame, url, user_script.match_origin_as_fallback());
-  return user_script.url_patterns().MatchesSecurityOrigin(effective_url);
+  if (user_script.url_patterns().MatchesSecurityOrigin(effective_url)) {
+    TRACE_EVENT_INSTANT("extensions",
+                        "ContentScriptTracker/DoesContentScriptMatch=true",
+                        ChromeTrackEvent::kRenderProcessHost, process,
+                        ChromeTrackEvent::kChromeExtensionId,
+                        ExtensionIdForTracing(extension_id));
+    return true;
+  } else {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ContentScriptTracker/DoesContentScriptMatch=false(mismatch)",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(extension_id));
+    return false;
+  }
 }
 
 void HandleProgrammaticContentScriptInjection(
@@ -278,6 +303,12 @@ bool DoContentScriptsMatch(const UserScriptList& content_script_list,
 bool DoContentScriptsMatch(const Extension& extension,
                            content::RenderFrameHost* frame,
                            const GURL& url) {
+  TRACE_EVENT("extensions", "ContentScriptTracker/DoContentScriptsMatch",
+              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+  content::RenderProcessHost& process = *frame->GetProcess();
+
   auto* guest = guest_view::GuestViewBase::FromWebContents(
       content::WebContents::FromRenderFrameHost(frame));
   if (guest) {
@@ -300,8 +331,15 @@ bool DoContentScriptsMatch(const Extension& extension,
       // https://crbug.com/614463).  At the same time, more granular checks are
       // difficult to achieve, because the UserScript objects are not retained
       // (i.e. only UserScriptIDs are available) by WebViewContentScriptManager.
-      if (!script_ids.empty())
+      if (!script_ids.empty()) {
+        TRACE_EVENT_INSTANT(
+            "extensions",
+            "ContentScriptTracker/DoesContentScriptMatch=true(guest)",
+            ChromeTrackEvent::kRenderProcessHost, process,
+            ChromeTrackEvent::kChromeExtensionId,
+            ExtensionIdForTracing(extension.id()));
         return true;
+      }
     }
   }
 
@@ -310,8 +348,15 @@ bool DoContentScriptsMatch(const Extension& extension,
     // Return true if manifest-declared content scripts match.
     const UserScriptList& manifest_scripts =
         ContentScriptsInfo::GetContentScripts(&extension);
-    if (DoContentScriptsMatch(manifest_scripts, frame, url))
+    if (DoContentScriptsMatch(manifest_scripts, frame, url)) {
+      TRACE_EVENT_INSTANT(
+          "extensions",
+          "ContentScriptTracker/DoesContentScriptMatch=true(manifest)",
+          ChromeTrackEvent::kRenderProcessHost, process,
+          ChromeTrackEvent::kChromeExtensionId,
+          ExtensionIdForTracing(extension.id()));
       return true;
+    }
 
     // Return true if dynamic content scripts match.  Note that `manager` can be
     // null for some unit tests which do not initialize the ExtensionSystem.
@@ -322,12 +367,24 @@ bool DoContentScriptsMatch(const Extension& extension,
       const UserScriptList& dynamic_scripts =
           manager->GetUserScriptLoaderForExtension(extension.id())
               ->GetLoadedDynamicScripts();
-      if (DoContentScriptsMatch(dynamic_scripts, frame, url))
+      if (DoContentScriptsMatch(dynamic_scripts, frame, url)) {
+        TRACE_EVENT_INSTANT(
+            "extensions",
+            "ContentScriptTracker/DoesContentScriptMatch=true(dynamic)",
+            ChromeTrackEvent::kRenderProcessHost, process,
+            ChromeTrackEvent::kChromeExtensionId,
+            ExtensionIdForTracing(extension.id()));
         return true;
+      }
     }
   }
 
   // Otherwise, no content script from `extension` can run in `frame` at `url`.
+  TRACE_EVENT_INSTANT("extensions",
+                      "ContentScriptTracker/DoesContentScriptMatch=false",
+                      ChromeTrackEvent::kRenderProcessHost, process,
+                      ChromeTrackEvent::kChromeExtensionId,
+                      ExtensionIdForTracing(extension.id()));
   return false;
 }
 
@@ -424,6 +481,9 @@ void ContentScriptTracker::ReadyToCommitNavigation(
 void ContentScriptTracker::RenderFrameCreated(
     base::PassKey<ExtensionWebContentsObserver> pass_key,
     content::RenderFrameHost* frame) {
+  TRACE_EVENT("extensions", "ContentScriptTracker::RenderFrameCreated",
+              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess());
+
   auto& process_data =
       RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
   process_data.AddFrame(frame);
@@ -433,6 +493,9 @@ void ContentScriptTracker::RenderFrameCreated(
 void ContentScriptTracker::RenderFrameDeleted(
     base::PassKey<ExtensionWebContentsObserver> pass_key,
     content::RenderFrameHost* frame) {
+  TRACE_EVENT("extensions", "ContentScriptTracker::RenderFrameDeleted",
+              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess());
+
   auto& process_data =
       RenderProcessHostUserData::GetOrCreate(*frame->GetProcess());
   process_data.RemoveFrame(frame);
@@ -498,8 +561,16 @@ void ContentScriptTracker::WillUpdateContentScriptsInRenderer(
                     return DoContentScriptsMatch(*extension, frame,
                                                  frame->GetLastCommittedURL());
                   });
-  if (any_frame_matches_content_scripts)
+  if (any_frame_matches_content_scripts) {
     process_data.AddContentScript(extension->id());
+  } else {
+    TRACE_EVENT_INSTANT(
+        "extensions",
+        "ContentScriptTracker::WillUpdateContentScriptsInRenderer - no matches",
+        ChromeTrackEvent::kRenderProcessHost, process,
+        ChromeTrackEvent::kChromeExtensionId,
+        ExtensionIdForTracing(host_id.id));
+  }
 }
 
 // static
