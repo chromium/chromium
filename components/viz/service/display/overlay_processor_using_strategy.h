@@ -9,12 +9,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/hash/hash.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_temporal_tracker.h"
@@ -246,8 +244,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // of Hardware overlays. Effectiveness here is primarily about power and
   // secondarily about of performance.
   void SortProposedOverlayCandidatesPrioritized(
-      Strategy::OverlayProposedCandidateList* proposed_candidates,
-      DisplayResourceProvider* resource_provider);
+      Strategy::OverlayProposedCandidateList* proposed_candidates);
 
   // Used by Android pre-SurfaceControl to notify promotion hints.
   virtual void NotifyOverlayPromotion(
@@ -262,14 +259,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
   struct ProposedCandidateKey {
     gfx::Rect rect;
-    FrameSinkId frame_sink_id;
-    gfx::Size resource_size;
     OverlayStrategy strategy_id = OverlayStrategy::kUnknown;
 
     bool operator==(const ProposedCandidateKey& other) const {
-      return (rect == other.rect && frame_sink_id == other.frame_sink_id &&
-              strategy_id == other.strategy_id &&
-              resource_size == other.resource_size);
+      return (rect == other.rect && strategy_id == other.strategy_id);
     }
   };
 
@@ -280,13 +273,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   };
 
   static ProposedCandidateKey ToProposeKey(
-      const Strategy::OverlayProposedCandidate& proposed,
-      DisplayResourceProvider* display_resource_provider);
+      const Strategy::OverlayProposedCandidate& proposed);
 
   std::unordered_map<ProposedCandidateKey,
                      OverlayCandidateTemporalTracker,
                      ProposedCandidateKeyHasher>
-      tracked_candidates_;
+      tracked_candidates;
 
   // These variables are used only for UMA purposes.
   void OnOverlaySwitchUMA(ProposedCandidateKey overlay_tracking_key);

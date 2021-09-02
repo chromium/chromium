@@ -23,17 +23,19 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // The |Config| contains values that are derived as part of a heuristic. This
   // |Config| allows for the potential of platform specific variations or
   // experiments.
-  struct VIZ_SERVICE_EXPORT Config {
+  class VIZ_SERVICE_EXPORT Config {
+   public:
     // This is the only heuristic input constant to our power model. It
     // effectively determines the threshold for positive power gain.
     float damage_rate_threshold = 0.3f;
 
-    // |max_num_frames_avg| is the number of frames that are averaged before
-    // exponential averaging starts.
-    // https://en.wikipedia.org/wiki/Exponential_smoothing It is also the frame
-    // count cutoff for when an unchanging candidate is considered to be
-    // inactive. see 'IsActivelyChanging()'
-    int max_num_frames_avg = 10;
+    // The hysteresis value for damage rate is kept constant within the range of
+    // |damage_rate_hysteresis_range|
+    float damage_rate_hysteresis_range = 0.15f;
+
+    // |max_frames_inactive| is the frame count cutoff for when an unchanging
+    // candidate is considered to be inactive. see 'IsActivelyChanging()'
+    uint64_t max_frames_inactive = 6;
   };
 
   // This function returns an opaque but comparable value representing the
@@ -71,14 +73,19 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // The functions and data below are used internally but also can be used for
   // diagnosis and testing.
   float MeanFrameRatioRate(const Config& config) const;
-  float GetDamageRatioRate() const { return ratio_rate_category_; }
+  float GetDamageRatioRate() const { return ratio_rate_category; }
   uint64_t LastChangeFrameCount(uint64_t curr_frame) const;
+  // Categorization can happen over a series of |KNumRecords| frames.
+  // The more records the smoother the categorization but the worse the latency.
+  static constexpr int kNumRecords = 6;
 
  private:
   void CategorizeDamageRatioRate(uint64_t curr_frame, const Config& config);
-  ResourceId prev_resource_id_ = kInvalidResourceId;
+  ResourceId prev_resource_id = kInvalidResourceId;
 
-  float ratio_rate_category_ = 0.0f;
+  float ratio_rate_category = 0.0f;
+  // Next empty slot index. Used for circular samples buffer.
+  int next_index = 0;
 
   // The state of this absent bool is as follows:
   // In the normal flow 'IsAbsent()' is tested which sets |absent| = true. Then
@@ -87,10 +94,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // 'IsAbsent()' is tested which sets |absent| = true but on the next frame
   // 'IsAbsent()' returns true  because |absent| was never reset to false. This
   // indicating this tracker should be removed.
-  bool absent_ = false;
-  uint64_t frame_record_prev_ = 0;
-  float damage_record_avg_ = 0.f;
-  int num_samples_ = 0;
+  bool absent = false;
+  uint64_t frame_record[kNumRecords] = {};
+  float damage_record[kNumRecords] = {};
 };
 
 }  // namespace viz
