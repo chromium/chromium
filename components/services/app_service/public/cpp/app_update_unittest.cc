@@ -16,6 +16,7 @@ const char test_name_1[] = "Dread Pirate Roberts";
 class AppUpdateTest : public testing::Test {
  protected:
   apps::mojom::Readiness expect_readiness_;
+  apps::mojom::Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
 
   std::string expect_name_;
@@ -130,6 +131,7 @@ class AppUpdateTest : public testing::Test {
 
   void CheckExpects(const apps::AppUpdate& u) {
     EXPECT_EQ(expect_readiness_, u.Readiness());
+    EXPECT_EQ(expect_prior_readiness_, u.PriorReadiness());
     EXPECT_EQ(expect_readiness_changed_, u.ReadinessChanged());
 
     EXPECT_EQ(expect_name_, u.Name());
@@ -213,6 +215,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(state == nullptr, u.StateIsNull());
 
     expect_readiness_ = apps::mojom::Readiness::kUnknown;
+    expect_prior_readiness_ = apps::mojom::Readiness::kUnknown;
     expect_name_ = "";
     expect_short_name_ = "";
     expect_publisher_id_ = "";
@@ -267,6 +270,7 @@ class AppUpdateTest : public testing::Test {
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
+      expect_prior_readiness_ = state->readiness;
       ExpectNoChange();
       CheckExpects(u);
     }
@@ -299,6 +303,7 @@ class AppUpdateTest : public testing::Test {
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
+      expect_prior_readiness_ = state->readiness;
       ExpectNoChange();
       CheckExpects(u);
     }

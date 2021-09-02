@@ -173,6 +173,10 @@ apps::mojom::Readiness AppUpdate::Readiness() const {
   return apps::mojom::Readiness::kUnknown;
 }
 
+apps::mojom::Readiness AppUpdate::PriorReadiness() const {
+  return state_ ? state_->readiness : apps::mojom::Readiness::kUnknown;
+}
+
 bool AppUpdate::ReadinessChanged() const {
   return delta_ && (delta_->readiness != apps::mojom::Readiness::kUnknown) &&
          (!state_ || (delta_->readiness != state_->readiness));

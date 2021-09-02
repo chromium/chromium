@@ -64,6 +64,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const std::string& AppId() const;
 
   apps::mojom::Readiness Readiness() const;
+  apps::mojom::Readiness PriorReadiness() const;
   bool ReadinessChanged() const;
 
   const std::string& Name() const;
