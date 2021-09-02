@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -314,14 +315,14 @@ public class StorePersistedTabDataTest {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[8];
+                Callback callback = (Callback) invocation.getArguments()[9];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchOAuth(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), any(String[].class), anyString(), anyLong(),
+                        anyString(), any(String[].class), anyString(), anyLong(), anyInt(),
                         any(Callback.class));
     }
 }

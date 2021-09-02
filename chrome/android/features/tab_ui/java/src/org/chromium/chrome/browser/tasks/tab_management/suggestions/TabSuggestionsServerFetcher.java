@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -78,12 +79,14 @@ public class TabSuggestionsServerFetcher implements TabSuggestionsFetcher {
                     return;
                 }
             }
+            // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+            // annotation.
             EndpointFetcher.fetchUsingChromeAPIKey(res
                     -> { fetchCallback(res, callback, tabContext); },
                     mProfileForTesting == null ? Profile.getLastUsedRegularProfile()
                                                : mProfileForTesting,
                     ENDPOINT, METHOD, CONTENT_TYPE, getTabContextJson(tabContext), TIMEOUT_MS,
-                    new String[] {});
+                    new String[] {}, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
         } catch (JSONException e) {
             // Soft failure for now so we don't crash the app and fall back on client side
             // providers.

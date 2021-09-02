@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +76,8 @@ public final class CommerceSubscriptionsServiceProxy {
      */
     public void get(@CommerceSubscription.CommerceSubscriptionType String type,
             Callback<List<CommerceSubscription>> callback) {
+        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
@@ -84,10 +87,12 @@ public final class CommerceSubscriptionsServiceProxy {
                 CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue()
                         + String.format(GET_SUBSCRIPTIONS_QUERY_PARAMS_TEMPLATE, type),
                 GET_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, EMPTY_POST_DATA,
-                HTTPS_REQUEST_TIMEOUT_MS);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
     }
 
     private void manageSubscriptions(JSONObject requestPayload, Callback<Boolean> callback) {
+        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // annotation.
         EndpointFetcher.fetchUsingOAuth(
                 (response)
                         -> {
@@ -97,7 +102,7 @@ public final class CommerceSubscriptionsServiceProxy {
                 mProfile, OAUTH_NAME,
                 CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL.getValue(),
                 POST_HTTPS_METHOD, CONTENT_TYPE, OAUTH_SCOPE, requestPayload.toString(),
-                HTTPS_REQUEST_TIMEOUT_MS);
+                HTTPS_REQUEST_TIMEOUT_MS, NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
     }
 
     private boolean didManageSubscriptionCallSucceed(String responseString) {

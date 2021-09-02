@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -57,6 +58,8 @@ public class PageAnnotationsServiceProxy {
             return;
         }
 
+        // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
+        // annotation.
         EndpointFetcher.fetchUsingChromeAPIKey(
                 (endpointResponse)
                         -> { fetchCallback(endpointResponse, callback); },
@@ -65,7 +68,8 @@ public class PageAnnotationsServiceProxy {
                                 + GET_ANNOTATIONS_QUERY_PARAMS_TEMPLATE,
                         UrlUtilities.escapeQueryParamValue(url.getSpec(), false)),
                 HTTPS_METHOD, CONTENT_TYPE, EMPTY_POST_DATA, TIMEOUT_MS,
-                new String[] {ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()});
+                new String[] {ACCEPT_LANGUAGE_KEY, LocaleUtils.getDefaultLocaleListString()},
+                NetworkTrafficAnnotationTag.NO_TRAFFIC_ANNOTATION_YET);
     }
 
     private void fetchCallback(EndpointResponse response,

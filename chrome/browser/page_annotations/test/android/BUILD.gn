@@ -54,6 +54,7 @@ android_library("javatests") {
     "//chrome/browser/page_annotations/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//net/android:net_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

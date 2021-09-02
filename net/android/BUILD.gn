@@ -23,6 +23,7 @@ android_library("net_java") {
     "java/src/org/chromium/net/NetworkActivationRequest.java",
     "java/src/org/chromium/net/NetworkChangeNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+    "java/src/org/chromium/net/NetworkTrafficAnnotationTag.java",
     "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
     "java/src/org/chromium/net/ProxyChangeListener.java",
     "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
@@ -221,7 +222,10 @@ java_cpp_enum("net_android_java_enums_srcjar") {
 }
 
 junit_binary("net_junit_tests") {
-  sources = [ "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java" ]
+  sources = [
+    "junit/src/org/chromium/net/HttpNegotiateAuthenticatorTest.java",
+    "junit/src/org/chromium/net/NetworkTrafficAnnotationTagTest.java",
+  ]
   deps = [
     ":net_java",
     "//base:base_java",

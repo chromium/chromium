@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 namespace {
 
 // Recursively compute hash code of the given string as a constant expression.
@@ -72,6 +76,13 @@ struct NetworkTrafficAnnotationTag {
       const char (&group_id)[N2],
       const PartialNetworkTrafficAnnotationTag& partial_annotation,
       const char (&proto)[N3]);
+
+#if defined(OS_ANDROID)
+  // Allows C++ methods to receive a Java NetworkTrafficAnnotationTag via JNI,
+  // and convert it to the C++ version.
+  static NetworkTrafficAnnotationTag FromJavaAnnotation(
+      int32_t unique_id_hash_code);
+#endif
 
   friend struct MutableNetworkTrafficAnnotationTag;
 

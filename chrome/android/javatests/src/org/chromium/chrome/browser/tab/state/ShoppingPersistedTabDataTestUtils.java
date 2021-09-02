@@ -324,7 +324,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     static void verifyEndpointFetcherCalled(EndpointFetcher.Natives endpointFetcher, int numTimes) {
         verify(endpointFetcher, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), anyInt(), any(Callback.class));
     }
 
     static void verifyPriceTrackingOptimizationTypeCalled(

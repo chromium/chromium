@@ -233,6 +233,7 @@ android_library("java") {
     "//components/site_engagement/content/android:java",
     "//content/public/android:content_java",
     "//content/public/android:content_java_resources",
+    "//net/android:net_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

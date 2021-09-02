@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.page_annotations;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -168,21 +169,21 @@ public class PageAnnotationsServiceProxyUnitTest {
         verify(mEndpointFetcherJniMock, times(numTimes))
                 .nativeFetchChromeAPIKey(any(Profile.class), eq(expectedUrl), eq(EXPECTED_METHOD),
                         eq(EXPECTED_CONTENT_TYPE), anyString(), anyLong(), eq(expectedHeaders),
-                        any(Callback.class));
+                        anyInt(), any(Callback.class));
     }
 
     private void mockEndpointResponse(String response) {
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {
-                Callback callback = (Callback) invocation.getArguments()[7];
+                Callback callback = (Callback) invocation.getArguments()[8];
                 callback.onResult(new EndpointResponse(response));
                 return null;
             }
         })
                 .when(mEndpointFetcherJniMock)
                 .nativeFetchChromeAPIKey(any(Profile.class), anyString(), anyString(), anyString(),
-                        anyString(), anyLong(), any(String[].class), any(Callback.class));
+                        anyString(), anyLong(), any(String[].class), anyInt(), any(Callback.class));
     }
 
     private void verifyAnnotations(List<PageAnnotation> annotations) {
