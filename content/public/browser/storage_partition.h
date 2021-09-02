@@ -200,6 +200,8 @@ class CONTENT_EXPORT StoragePartition {
   // Starts an asynchronous task that does a best-effort clear the data
   // corresponding to the given |remove_mask| and |quota_storage_remove_mask|
   // inside this StoragePartition for the given |storage_origin|.
+  // |callback| is called when data deletion is done or at least the deletion is
+  // scheduled.
   // Note session dom storage is not cleared even if you specify
   // REMOVE_DATA_MASK_LOCAL_STORAGE.
   // No notification is dispatched upon completion.
@@ -211,7 +213,8 @@ class CONTENT_EXPORT StoragePartition {
   // is fixed.
   virtual void ClearDataForOrigin(uint32_t remove_mask,
                                   uint32_t quota_storage_remove_mask,
-                                  const GURL& storage_origin) = 0;
+                                  const GURL& storage_origin,
+                                  base::OnceClosure callback) = 0;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always

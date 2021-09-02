@@ -227,7 +227,8 @@ void AwQuotaManagerBridge::DeleteOriginOnUiThread(
           StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS |
           StoragePartition::REMOVE_DATA_MASK_INDEXEDDB |
           StoragePartition::REMOVE_DATA_MASK_WEBSQL,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(origin));
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_TEMPORARY, GURL(origin),
+      base::DoNothing());
 }
 
 void AwQuotaManagerBridge::GetOrigins(JNIEnv* env,

@@ -2062,8 +2062,10 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       observer,
       OnOriginDataCleared(kTestClearMask, testing::Truly(origin_callback_valid),
                           base::Time(), base::Time::Max()));
+  base::RunLoop run_loop;
   partition->ClearDataForOrigin(kTestClearMask, kTestQuotaClearMask,
-                                kTestOrigin);
+                                kTestOrigin, run_loop.QuitClosure());
+  run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   EXPECT_CALL(

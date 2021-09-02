@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -363,7 +364,8 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
 
 void StoragePartitionImplMap::AsyncObliterate(
     const std::string& partition_domain,
-    base::OnceClosure on_gc_required) {
+    base::OnceClosure on_gc_required,
+    base::OnceClosure done_callback) {
   // Find the active partitions for the domain. Because these partitions are
   // active, it is not possible to just delete the directories that contain
   // the backing data structures without causing the browser to crash. Instead,
@@ -377,15 +379,26 @@ void StoragePartitionImplMap::AsyncObliterate(
        ++it) {
     const StoragePartitionConfig& config = it->first;
     if (config.partition_domain() == partition_domain) {
-      it->second->ClearData(
-          // All except shader cache.
-          ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-          StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(), base::DoNothing());
+      active_partitions.push_back(it->second.get());
       if (!config.in_memory()) {
         paths_to_keep.push_back(it->second->GetPath());
       }
     }
+  }
+
+  // Create a barrier closure for keeping track of the callbacks in
+  // AsyncObliterate(). We have one callback for each active partition that is
+  // cleared and an additional one for BlockingObliteratePath()'s task reply.
+  int num_tasks = active_partitions.size() + 1;
+  auto subtask_done_callback =
+      base::BarrierClosure(num_tasks, std::move(done_callback));
+
+  for (auto*& active_partition : active_partitions) {
+    active_partition->ClearData(
+        // All except shader cache.
+        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(), base::Time(),
+        base::Time::Max(), subtask_done_callback);
   }
 
   // Start a best-effort delete of the on-disk storage excluding paths that are
@@ -395,12 +408,13 @@ void StoragePartitionImplMap::AsyncObliterate(
   base::FilePath domain_root = browser_context_->GetPath().Append(
       GetStoragePartitionDomainPath(partition_domain));
 
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BlockingObliteratePath, browser_context_->GetPath(),
                      domain_root, paths_to_keep,
                      base::ThreadTaskRunnerHandle::Get(),
-                     std::move(on_gc_required)));
+                     std::move(on_gc_required)),
+      subtask_done_callback);
 }
 
 void StoragePartitionImplMap::GarbageCollect(

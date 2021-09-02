@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -197,13 +198,18 @@ void StorageFrontend::RunWithStorage(
                      base::Unretained(cache), std::move(callback), extension));
 }
 
-void StorageFrontend::DeleteStorageSoon(const std::string& extension_id) {
+void StorageFrontend::DeleteStorageSoon(const std::string& extension_id,
+                                        base::OnceClosure done_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (auto it = caches_.begin(); it != caches_.end(); ++it) {
-    ValueStoreCache* cache = it->second;
-    GetBackendTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&ValueStoreCache::DeleteStorageSoon,
-                                  base::Unretained(cache), extension_id));
+  auto subtask_done_callback =
+      base::BarrierClosure(caches_.size(), std::move(done_callback));
+  for (auto& cache_map : caches_) {
+    ValueStoreCache* cache = cache_map.second;
+    GetBackendTaskRunner()->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&ValueStoreCache::DeleteStorageSoon,
+                       base::Unretained(cache), extension_id),
+        subtask_done_callback);
   }
 }
 

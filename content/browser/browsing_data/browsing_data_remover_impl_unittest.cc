@@ -156,7 +156,8 @@ class StoragePartitionRemovalTestStoragePartition
 
   void ClearDataForOrigin(uint32_t remove_mask,
                           uint32_t quota_storage_remove_mask,
-                          const GURL& storage_origin) override {}
+                          const GURL& storage_origin,
+                          base::OnceClosure callback) override {}
 
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,

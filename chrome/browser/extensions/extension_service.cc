@@ -11,6 +11,7 @@
 #include <set>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -752,7 +753,8 @@ bool ExtensionService::UninstallExtension(
     // to become invalid. Instead, use |extension->id()|.
     const std::string& transient_extension_id,
     UninstallReason reason,
-    std::u16string* error) {
+    std::u16string* error,
+    base::OnceClosure done_callback) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   scoped_refptr<const Extension> extension =
@@ -797,17 +799,29 @@ bool ExtensionService::UninstallExtension(
   if (registry_->blocklisted_extensions().Contains(extension->id()))
     registry_->RemoveBlocklisted(extension->id());
 
+  // Prepare barrier closure for UninstallExtensionOnFileThread() task (if
+  // applicable) and DataDeleter::StartDeleting().
+  bool is_unpacked_location =
+      Manifest::IsUnpackedLocation(extension->location());
+  base::RepeatingClosure subtask_done_callback = base::DoNothing();
+  if (!done_callback.is_null()) {
+    int num_tasks = is_unpacked_location ? 1 : 2;
+    subtask_done_callback =
+        base::BarrierClosure(num_tasks, std::move(done_callback));
+  }
+
   // Tell the backend to start deleting installed extensions on the file thread.
-  if (!Manifest::IsUnpackedLocation(extension->location())) {
-    if (!GetExtensionFileTaskRunner()->PostTask(
+  if (!is_unpacked_location) {
+    if (!GetExtensionFileTaskRunner()->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&ExtensionService::UninstallExtensionOnFileThread,
                            extension->id(), profile_, install_directory_,
-                           extension->path())))
+                           extension->path()),
+            subtask_done_callback))
       NOTREACHED();
   }
 
-  DataDeleter::StartDeleting(profile_, extension.get());
+  DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
 
   extension_registrar_.UntrackTerminatedExtension(extension->id());
 

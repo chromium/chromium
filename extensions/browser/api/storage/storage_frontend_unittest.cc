@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_browser_context.h"
@@ -130,8 +131,9 @@ TEST_F(ExtensionSettingsFrontendTest, SettingsClearedOnUninstall) {
   }
 
   // This would be triggered by extension uninstall via a DataDeleter.
-  frontend_->DeleteStorageSoon(id);
-  content::RunAllTasksUntilIdle();
+  base::RunLoop run_loop;
+  frontend_->DeleteStorageSoon(id, run_loop.QuitClosure());
+  run_loop.Run();
 
   // The storage area may no longer be valid post-uninstall, so re-request.
   storage = settings_test_util::GetStorage(extension, settings::LOCAL,

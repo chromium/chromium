@@ -51,8 +51,10 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                       settings_namespace::Namespace settings_namespace,
                       ValueStoreCache::StorageCallback callback);
 
-  // Deletes the settings for the given |extension_id|.
-  void DeleteStorageSoon(const std::string& extension_id);
+  // Deletes the settings for the given |extension_id| and synchronously invokes
+  // |done_callback| once the settings are deleted.
+  void DeleteStorageSoon(const std::string& extension_id,
+                         base::OnceClosure done_callback);
 
   // Gets the thread-safe observer list.
   scoped_refptr<SettingsObserverList> GetObservers();

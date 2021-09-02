@@ -160,8 +160,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the number of StoragePartitions that exist for `this`
   // BrowserContext.
   size_t GetStoragePartitionCount();
+
+  // Starts an asynchronous best-effort attempt to delete all on-disk storage
+  // related to |partition_domain| and synchronously invokes |done_callback|
+  // once all on-disk storage is deleted.
   void AsyncObliterateStoragePartition(const std::string& partition_domain,
-                                       base::OnceClosure on_gc_required);
+                                       base::OnceClosure on_gc_required,
+                                       base::OnceClosure done_callback);
 
   // This function clears the contents of |active_paths| but does not take
   // ownership of the pointer.

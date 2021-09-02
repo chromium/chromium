@@ -46,8 +46,11 @@ class CONTENT_EXPORT StoragePartitionImplMap
   // |on_gc_required| is called if the AsyncObliterate() call was unable to
   // fully clean the on-disk storage requiring a call to GarbageCollect() on
   // the next browser start.
+  // |done_callback| is synchronously invoked once all on-disk storage
+  // (excluding paths that are known to still be in use) are deleted.
   void AsyncObliterate(const std::string& partition_domain,
-                       base::OnceClosure on_gc_required);
+                       base::OnceClosure on_gc_required,
+                       base::OnceClosure done_callback);
 
   // Examines the on-disk storage and removes any entires that are not listed
   // in the |active_paths|, or in use by current entries in the storage

@@ -245,9 +245,14 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns true if an uninstall was successfully triggered; this can fail if
   // the extension cannot be uninstalled (such as a policy force-installed
   // extension).
-  bool UninstallExtension(const std::string& extension_id,
-                          UninstallReason reason,
-                          std::u16string* error);
+  // |done_callback| is synchronously invoked once the site-related data and the
+  // files stored on disk are removed. If such a callback is not needed, pass in
+  // a null callback (base::NullCallback()).
+  bool UninstallExtension(
+      const std::string& extension_id,
+      UninstallReason reason,
+      std::u16string* error,
+      base::OnceClosure done_callback = base::NullCallback());
 
   // Enables the extension. If the extension is already enabled, does
   // nothing.
