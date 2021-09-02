@@ -6948,7 +6948,6 @@ crbug.com/1242243 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 crbug.com/1244896 [ Mac ] fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Pass Timeout ]
 
 # Sheriff 2021-08-25
-crbug.com/1243128 [ Win ] external/wpt/css/css-cascade/layer-basic.html [ Failure ]
 crbug.com/1243128 [ Win ] external/wpt/editing/run/insertparagraph.html?6001-last [ Failure ]
 crbug.com/1243128 [ Win ] external/wpt/editing/run/justifyright.html?4001-last [ Failure ]
 crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.html [ Failure ]
