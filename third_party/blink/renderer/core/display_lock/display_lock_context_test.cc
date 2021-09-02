@@ -178,6 +178,11 @@ class DisplayLockContextTest
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
+class DisplayLockContextPreCAPTest : public DisplayLockContextTest {
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
+};
+
 TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -2012,6 +2017,12 @@ class DisplayLockContextRenderingTest
   }
 };
 
+class DisplayLockContextPreCAPRenderingTest
+    : public DisplayLockContextRenderingTest {
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
+};
+
 TEST_F(DisplayLockContextRenderingTest, FrameDocumentRemovedWhileAcquire) {
   SetHtmlInnerHTML(R"HTML(
     <iframe id="frame"></iframe>
@@ -2879,7 +2890,8 @@ TEST_F(DisplayLockContextRenderingTest, UseCounter) {
       WebFeature::kContentVisibilityHiddenMatchable));
 }
 
-TEST_F(DisplayLockContextRenderingTest, CompositingRootIsSkippedIfLocked) {
+TEST_F(DisplayLockContextPreCAPRenderingTest,
+       CompositingRootIsSkippedIfLocked) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       .hidden { content-visibility: hidden; }
@@ -2935,7 +2947,7 @@ TEST_F(DisplayLockContextRenderingTest, CompositingRootIsSkippedIfLocked) {
   EXPECT_FALSE(target_layer->NeedsCompositingInputsUpdate());
 }
 
-TEST_F(DisplayLockContextRenderingTest,
+TEST_F(DisplayLockContextPreCAPRenderingTest,
        CompositingRootIsProcessedIfLockedButForced) {
   SetHtmlInnerHTML(R"HTML(
     <style>
@@ -3314,7 +3326,7 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
 }
 
-TEST_F(DisplayLockContextRenderingTest, LocalFrameGraphicsUpdateForced) {
+TEST_F(DisplayLockContextPreCAPRenderingTest, LocalFrameGraphicsUpdateForced) {
   SetHtmlInnerHTML(R"HTML(
     <iframe id="frame"></iframe>
   )HTML");
@@ -3391,7 +3403,8 @@ TEST_F(DisplayLockContextLegacyRenderingTest,
   UpdateAllLifecyclePhasesForTest();
 }
 
-TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
+TEST_F(DisplayLockContextPreCAPTest,
+       GraphicsLayerBitsNotCheckedInLockedSubtree) {
   ResizeAndFocus();
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
 

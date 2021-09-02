@@ -630,9 +630,14 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
     vertical_scrollbar_needs_paint_invalidation_ = true;
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    auto* frame_view = GetLayoutBox()->GetFrameView();
-    if (auto* compositor = frame_view->GetPaintArtifactCompositor())
-      compositor->SetScrollbarNeedsDisplay(GetScrollbarElementId(orientation));
+    // GetLayoutBox() may be null in some unit tests.
+    if (auto* box = GetLayoutBox()) {
+      auto* frame_view = GetLayoutBox()->GetFrameView();
+      if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
+        compositor->SetScrollbarNeedsDisplay(
+            GetScrollbarElementId(orientation));
+      }
+    }
   } else {
     cc::Layer* layer = orientation == kHorizontalScrollbar
                            ? LayerForHorizontalScrollbar()

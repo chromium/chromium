@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
@@ -51,9 +52,12 @@ class ScrollbarThemeWithMockInvalidation : public ScrollbarThemeOverlayMock {
 
 }  // namespace
 
-class ScrollableAreaTest : public testing::Test {};
+class ScrollableAreaTest : public testing::Test,
+                           public PaintTestConfigurations {};
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollableAreaTest);
+
+TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -65,7 +69,7 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
             scrollable_area->GetScrollAnimator().CurrentOffset().Height());
 }
 
-TEST_F(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
+TEST_P(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -107,7 +111,13 @@ TEST_F(ScrollableAreaTest, ScrollbarTrackAndThumbRepaint) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, ScrollbarLayerInvalidation) {
+TEST_P(ScrollableAreaTest, ScrollbarLayerInvalidation) {
+  // In CompositeAfterPaint, the functionality is not testable with just
+  // ScrollableArea. TODO(wangxianzhu): We can test this after we refactor
+  // ScrollbarDisplayItem.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -132,7 +142,7 @@ TEST_F(ScrollableAreaTest, ScrollbarLayerInvalidation) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
+TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -177,7 +187,13 @@ TEST_F(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, InvalidatesCompositedScrollbarsIfPartsNeedRepaint) {
+TEST_P(ScrollableAreaTest, InvalidatesCompositedScrollbarsIfPartsNeedRepaint) {
+  // In CompositeAfterPaint, the functionality is not testable with just
+  // ScrollableArea. TODO(wangxianzhu): We can test this after we refactor
+  // ScrollbarDisplayItem.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -262,7 +278,7 @@ TEST_F(ScrollableAreaTest, InvalidatesCompositedScrollbarsIfPartsNeedRepaint) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, RecalculatesScrollbarOverlayIfBackgroundChanges) {
+TEST_P(ScrollableAreaTest, RecalculatesScrollbarOverlayIfBackgroundChanges) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -279,7 +295,7 @@ TEST_F(ScrollableAreaTest, RecalculatesScrollbarOverlayIfBackgroundChanges) {
             scrollable_area->GetScrollbarOverlayColorTheme());
 }
 
-TEST_F(ScrollableAreaTest, ScrollableAreaDidScroll) {
+TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -291,7 +307,7 @@ TEST_F(ScrollableAreaTest, ScrollableAreaDidScroll) {
   EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().Height());
 }
 
-TEST_F(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
+TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
   MockAnimatingScrollableArea* scrollable_area =
@@ -325,7 +341,7 @@ TEST_F(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
 // Scrollbars in popups shouldn't fade out since they aren't composited and thus
 // they don't appear on hover so users without a wheel can't scroll if they fade
 // out.
-TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
+TEST_P(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -333,6 +349,8 @@ TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
+  EXPECT_CALL(*scrollable_area, UsesCompositedScrolling())
+      .WillRepeatedly(Return(false));
   scrollable_area->SetIsPopup();
 
   ScrollbarThemeOverlayMock& theme =
@@ -353,7 +371,7 @@ TEST_F(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -374,7 +392,7 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
   EXPECT_TRUE(finished);
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 
@@ -392,7 +410,7 @@ TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
   EXPECT_TRUE(finished);
 }
 
-TEST_F(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
+TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;
 

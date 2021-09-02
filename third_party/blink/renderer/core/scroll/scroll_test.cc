@@ -18,12 +18,14 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -34,7 +36,7 @@ const double kBeginFrameDelaySeconds =
                                                                         : 0.5);
 }
 
-class FractionalScrollSimTest : public SimTest {
+class FractionalScrollSimTest : public SimTest, public PaintTestConfigurations {
  public:
   FractionalScrollSimTest() : fractional_scroll_offsets_for_test_(true) {}
 
@@ -42,7 +44,9 @@ class FractionalScrollSimTest : public SimTest {
   ScopedFractionalScrollOffsetsForTest fractional_scroll_offsets_for_test_;
 };
 
-TEST_F(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
+INSTANTIATE_PAINT_TEST_SUITE_P(FractionalScrollSimTest);
+
+TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -82,7 +86,7 @@ TEST_F(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
   EXPECT_NEAR(LayoutUnit(600.f - 500.6f), rect->top(), kOneLayoutUnit);
 }
 
-TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
+TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -123,12 +127,6 @@ TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   )HTML");
   Compositor().BeginFrame();
 
-  auto* container_layer =
-      To<LayoutBoxModelObject>(
-          GetDocument().getElementById("container")->GetLayoutObject())
-          ->Layer()
-          ->GraphicsLayerBacking();
-  container_layer->ResetTrackedRasterInvalidations();
   GetDocument().View()->SetTracksRasterInvalidations(true);
 
   // Scroll on the layout viewport.
@@ -137,8 +135,8 @@ TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
       mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
-  EXPECT_FALSE(
-      container_layer->GetRasterInvalidationTracking()->HasInvalidations());
+  EXPECT_FALSE(GetRasterInvalidationTracking(*GetDocument().View(), 2)
+                   ->HasInvalidations());
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
@@ -146,7 +144,7 @@ TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
 // Verifies that the sticky constraints are correctly computed when the scroll
 // offset is fractional. Ensures any kind of layout unit snapping is
 // consistent.
-TEST_F(FractionalScrollSimTest, StickyDoesntOscillate) {
+TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
   WebView().MainFrameWidget()->Resize(gfx::Size(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -201,12 +199,14 @@ TEST_F(FractionalScrollSimTest, StickyDoesntOscillate) {
   }
 }
 
-class ScrollAnimatorSimTest : public SimTest {};
+class ScrollAnimatorSimTest : public SimTest, public PaintTestConfigurations {};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollAnimatorSimTest);
 
 // Test that the callback of user scroll will be executed when the animation
 // finishes at ScrollAnimator::TickAnimation for root frame user scroll at the
 // layout viewport.
-TEST_F(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
+TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -247,7 +247,7 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
 // Test that the callback of user scroll will be executed when the animation
 // finishes at ScrollAnimator::TickAnimation for root frame user scroll at the
 // visual viewport.
-TEST_F(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
+TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -297,7 +297,7 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
 #define MAYBE_TestRootFrameBothViewportsUserScrollCallBack \
   TestRootFrameBothViewportsUserScrollCallBack
 #endif
-TEST_F(ScrollAnimatorSimTest,
+TEST_P(ScrollAnimatorSimTest,
        MAYBE_TestRootFrameBothViewportsUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
@@ -345,7 +345,7 @@ TEST_F(ScrollAnimatorSimTest,
 #else
 #define MAYBE_TestDivUserScrollCallBack TestDivUserScrollCallBack
 #endif
-TEST_F(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
+TEST_P(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
   GetDocument().GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -393,7 +393,7 @@ TEST_F(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
 
 // Test that the callback of user scroll will be executed in
 // ScrollAnimatorBase::UserScroll when animation is disabled.
-TEST_F(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
+TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(false);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -426,7 +426,7 @@ TEST_F(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
 // Test that the callback of user scroll will be executed when the animation is
 // canceled because performing a programmatic scroll in the middle of a user
 // scroll will cancel the animation.
-TEST_F(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
+TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -466,7 +466,8 @@ TEST_F(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   ASSERT_TRUE(finished);
 }
 
-class ScrollInfacesUseCounterSimTest : public SimTest {
+class ScrollInfacesUseCounterSimTest : public SimTest,
+                                       public PaintTestConfigurations {
  public:
   // Reload the page, set direction and writing-mode, then check the initial
   // useCounted status.
@@ -568,6 +569,8 @@ class ScrollInfacesUseCounterSimTest : public SimTest {
   }
 };
 
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollInfacesUseCounterSimTest);
+
 struct TestCase {
   String direction;
   String writingMode;
@@ -575,7 +578,7 @@ struct TestCase {
   bool scrollTopUseCounted;
 };
 
-TEST_F(ScrollInfacesUseCounterSimTest, ScrollTestAll) {
+TEST_P(ScrollInfacesUseCounterSimTest, ScrollTestAll) {
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   const Vector<TestCase> test_cases = {
@@ -613,12 +616,16 @@ TEST_F(ScrollInfacesUseCounterSimTest, ScrollTestAll) {
   }
 }
 
-class ScrollPositionsInNonDefaultWritingModeSimTest : public SimTest {};
+class ScrollPositionsInNonDefaultWritingModeSimTest
+    : public SimTest,
+      public PaintTestConfigurations {};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollPositionsInNonDefaultWritingModeSimTest);
 
 // Verify that scrollIntoView() does not trigger the use counter
 // kElementWithLeftwardOrUpwardOverflowDirection_ScrollLeftOrTopSetPositive
 // and can be used to feature detect the convention of scroll coordinates.
-TEST_F(ScrollPositionsInNonDefaultWritingModeSimTest,
+TEST_P(ScrollPositionsInNonDefaultWritingModeSimTest,
        ScrollIntoViewAndCounters) {
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest child_frame_resource("https://example.com/subframe.html",

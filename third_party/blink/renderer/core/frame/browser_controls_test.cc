@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -1514,14 +1515,14 @@ TEST_F(BrowserControlsTest, MAYBE(GrowingHeightKeepsTopControlsHidden)) {
 }
 
 TEST_F(BrowserControlsTest,
-       MAYBE(HidingBrowserControlsInvalidatesGraphicsLayer)) {
+       MAYBE(HidingBrowserControlsInvalidatesCompositedLayer)) {
   // Initialize with the browser controls showing.
   WebViewImpl* web_view = Initialize("95-vh.html");
   web_view->ResizeWithBrowserControls(gfx::Size(412, 604), 56.f, 0, true);
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   UpdateAllLifecyclePhases();
 
-  GetFrame()->GetDocument()->View()->SetTracksRasterInvalidations(true);
+  GetFrame()->View()->SetTracksRasterInvalidations(true);
 
   // Hide the browser controls.
   VerticalScroll(-100.f);
@@ -1529,19 +1530,14 @@ TEST_F(BrowserControlsTest,
   UpdateAllLifecyclePhases();
 
   // Ensure there is a raster invalidation of the bottom of the layer.
-  const auto& raster_invalidations = GetFrame()
-                                         ->ContentLayoutObject()
-                                         ->Layer()
-                                         ->GetCompositedLayerMapping()
-                                         ->ScrollingContentsLayer()
-                                         ->GetRasterInvalidationTracking()
-                                         ->Invalidations();
+  const auto& raster_invalidations =
+      GetRasterInvalidationTracking(*GetFrame()->View())->Invalidations();
   EXPECT_EQ(1u, raster_invalidations.size());
   EXPECT_EQ(IntRect(0, 643, 412, 17), raster_invalidations[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kIncremental,
             raster_invalidations[0].reason);
 
-  GetFrame()->GetDocument()->View()->SetTracksRasterInvalidations(false);
+  GetFrame()->View()->SetTracksRasterInvalidations(false);
 }
 
 // Test that the browser controls have different shown ratios when scrolled with

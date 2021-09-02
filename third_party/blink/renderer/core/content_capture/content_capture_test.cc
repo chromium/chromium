@@ -609,7 +609,22 @@ TEST_P(ContentCaptureTest, RemoveNodeAfterSendingOut) {
   EXPECT_EQ(1u, GetWebContentCaptureClient()->RemovedData().size());
 }
 
-TEST_P(ContentCaptureTest, TaskHistogramReporter) {
+class ContentCapturePreCAPTest : public ContentCaptureTest {
+ private:
+  // TODO(michaelbai): For now TaskHistogramReporter fails with
+  // CompositeAfterPaint enabled because the default ContentCaptureManager
+  // interferes with the test.
+  ScopedCompositeAfterPaintForTest cap_{false};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentCapturePreCAPTest,
+    testing::Values(std::vector<base::Feature>{},
+                    std::vector<base::Feature>{
+                        features::kContentCaptureConstantStreaming}));
+
+TEST_P(ContentCapturePreCAPTest, TaskHistogramReporter) {
   // This performs gc for all DocumentSession, flushes the existing
   // SentContentCount and give a clean baseline for histograms.
   // We are not sure if it always work, maybe still be the source of flaky.

@@ -521,21 +521,18 @@ TEST_F(RootScrollerTest, AlwaysCreateCompositedScrollingLayers) {
   Element* container = MainFrame()->GetDocument()->getElementById("container");
 
   PaintLayerScrollableArea* container_scroller = GetScrollableArea(*container);
-  PaintLayer* layer = container_scroller->Layer();
-
-  ASSERT_FALSE(layer->HasCompositedLayerMapping());
+  ASSERT_FALSE(container_scroller->UsesCompositedScrolling());
 
   ExecuteScript("document.querySelector('#container').style.width = '100%'");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  ASSERT_TRUE(layer->HasCompositedLayerMapping());
-  EXPECT_TRUE(layer->GetCompositedLayerMapping()->ScrollingContentsLayer());
+  ASSERT_TRUE(container_scroller->UsesCompositedScrolling());
 
   ExecuteScript("document.querySelector('#container').style.width = '98%'");
   ASSERT_EQ(MainFrame()->GetDocument(),
             EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  EXPECT_FALSE(layer->HasCompositedLayerMapping());
+  EXPECT_FALSE(container_scroller->UsesCompositedScrolling());
 }
 
 // Make sure that if an effective root scroller becomes a remote frame, it's

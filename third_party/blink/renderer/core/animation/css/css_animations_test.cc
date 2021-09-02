@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace {
 
@@ -26,7 +27,7 @@ const double kTimeToleranceMilliseconds = 0.1;
 
 namespace blink {
 
-class CSSAnimationsTest : public RenderingTest {
+class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
  public:
   CSSAnimationsTest() {
     EnablePlatform();
@@ -46,6 +47,7 @@ class CSSAnimationsTest : public RenderingTest {
   void TearDown() override {
     platform()->SetAutoAdvanceNowToPendingTasks(true);
     platform()->RunUntilIdle();
+    RenderingTest::TearDown();
   }
 
   base::TimeTicks TimelineTime() {
@@ -80,16 +82,18 @@ class CSSAnimationsTest : public RenderingTest {
   }
 };
 
+INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsTest);
+
 // Verify that a composited animation is retargeted according to its composited
 // time.
-TEST_F(CSSAnimationsTest, RetargetedTransition) {
+TEST_P(CSSAnimationsTest, RetargetedTransition) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #test { transition: filter linear 1s; }
       .contrast1 { filter: contrast(50%); }
       .contrast2 { filter: contrast(0%); }
     </style>
-    <div id='test'></div>
+    <div id='test'>TEST</div>
   )HTML");
   Element* element = GetDocument().getElementById("test");
   element->setAttribute(html_names::kClassAttr, "contrast1");
@@ -116,14 +120,14 @@ TEST_F(CSSAnimationsTest, RetargetedTransition) {
 // Test that when an incompatible in progress compositor transition
 // would be retargeted it does not incorrectly combine with a new
 // transition target.
-TEST_F(CSSAnimationsTest, IncompatibleRetargetedTransition) {
+TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #test { transition: filter 1s; }
       .saturate { filter: saturate(20%); }
       .contrast { filter: contrast(20%); }
     </style>
-    <div id='test'></div>
+    <div id='test'>TEST</div>
   )HTML");
   Element* element = GetDocument().getElementById("test");
   element->setAttribute(html_names::kClassAttr, "saturate");
@@ -161,6 +165,10 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     CSSAnimationsTest::SetUp();
     CreateOpacityAnimation();
   }
+  void TearDown() override {
+    element_ = nullptr;
+    CSSAnimationsTest::TearDown();
+  }
 
   // Creates a composited animation for opacity, and advances to the midpoint
   // of the animation. Verifies that the state of the animation is in sync
@@ -171,7 +179,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
         #test { transition: opacity linear 1s; }
         .fade { opacity: 0; }
       </style>
-      <div id='test'></div>
+      <div id='test'>TEST</div>
     )HTML");
 
     element_ = GetDocument().getElementById("test");
@@ -275,8 +283,10 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
   Persistent<Element> element_;
 };
 
+INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsCompositorSyncTest);
+
 // Verifies that changes to the playback rate are synced with the compositor.
-TEST_F(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
+TEST_P(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 
@@ -310,7 +320,7 @@ TEST_F(CSSAnimationsCompositorSyncTest, UpdatePlaybackRate) {
 }
 
 // Verifies that reversing an animation is synced with the compositor.
-TEST_F(CSSAnimationsCompositorSyncTest, Reverse) {
+TEST_P(CSSAnimationsCompositorSyncTest, Reverse) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 
@@ -346,7 +356,7 @@ TEST_F(CSSAnimationsCompositorSyncTest, Reverse) {
 
 // Verifies that setting the start time on a running animation restarts the
 // compositor animation in sync with blink.
-TEST_F(CSSAnimationsCompositorSyncTest, SetStartTime) {
+TEST_P(CSSAnimationsCompositorSyncTest, SetStartTime) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 
@@ -389,7 +399,7 @@ TEST_F(CSSAnimationsCompositorSyncTest, SetStartTime) {
 
 // Verifies that setting the current time on a running animation restarts the
 // compositor animation in sync with blink.
-TEST_F(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
+TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
   Animation* animation = GetAnimation();
   int compositor_group = animation->CompositorGroup();
 

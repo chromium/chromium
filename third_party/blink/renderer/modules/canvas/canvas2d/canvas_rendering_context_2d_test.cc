@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -110,7 +111,8 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
 
 //============================================================================
 
-class CanvasRenderingContext2DTest : public ::testing::Test {
+class CanvasRenderingContext2DTest : public ::testing::Test,
+                                     public PaintTestConfigurations {
  protected:
   CanvasRenderingContext2DTest();
   void SetUp() override;
@@ -206,6 +208,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
     return wrap_gradients_->alpha_gradient_;
   }
 };
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
 CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
@@ -422,7 +426,7 @@ class MockImageBufferSurfaceForOverwriteTesting : public Canvas2DLayerBridge {
 
 //============================================================================
 
-TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithFillRect) {
+TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithFillRect) {
   CreateContext(kNonOpaque);
 
   TEST_OVERDRAW_1(1, fillRect(-1, -1, 12, 12));
@@ -449,7 +453,7 @@ TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithFillRect) {
                   fillRect(0, 0, 10, 10));
 }
 
-TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithClearRect) {
+TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithClearRect) {
   CreateContext(kNonOpaque);
 
   TEST_OVERDRAW_1(1, clearRect(0, 0, 10, 10));
@@ -463,7 +467,7 @@ TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithClearRect) {
   TEST_OVERDRAW_3(0, rect(0, 0, 5, 5), clip(), clearRect(0, 0, 10, 10));
 }
 
-TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithDrawImage) {
+TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithDrawImage) {
   CreateContext(kNonOpaque);
   NonThrowableExceptionState exception_state;
 
@@ -521,7 +525,7 @@ TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithDrawImage) {
   EXPECT_FALSE(exception_state.HadException());
 }
 
-TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithPutImageData) {
+TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithPutImageData) {
   CreateContext(kNonOpaque);
   NonThrowableExceptionState exception_state;
 
@@ -555,7 +559,7 @@ TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithPutImageData) {
   EXPECT_FALSE(exception_state.HadException());
 }
 
-TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithCompositeOperations) {
+TEST_P(CanvasRenderingContext2DTest, detectOverdrawWithCompositeOperations) {
   CreateContext(kNonOpaque);
 
   // Test composite operators with an opaque rect that covers the entire canvas
@@ -595,7 +599,7 @@ TEST_F(CanvasRenderingContext2DTest, detectOverdrawWithCompositeOperations) {
                   fillRect(0, 0, 5, 5));
 }
 
-TEST_F(CanvasRenderingContext2DTest, ImageResourceLifetime) {
+TEST_P(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().CreateRawElement(html_names::kCanvasTag));
   canvas->SetSize(IntSize(40, 40));
@@ -622,7 +626,7 @@ TEST_F(CanvasRenderingContext2DTest, ImageResourceLifetime) {
   context->drawImage(GetScriptState(), image_source, 0, 0, exception_state);
 }
 
-TEST_F(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
+TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   CreateContext(kNonOpaque);
 
   IntSize size(10, 10);
@@ -672,7 +676,7 @@ TEST_F(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   anotherCanvas->SetSize(IntSize(20, 20));
 }
 
-TEST_F(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
+TEST_P(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
   CreateContext(kNonOpaque);
   Context2D()->fillRect(0, 0, 1, 1);  // results in task observer registration
 
@@ -686,14 +690,14 @@ TEST_F(CanvasRenderingContext2DTest, CanvasDisposedBeforeContext) {
   // Test passes by not crashing during teardown
 }
 
-TEST_F(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
+TEST_P(CanvasRenderingContext2DTest, ContextDisposedBeforeCanvas) {
   CreateContext(kNonOpaque);
 
   CanvasElement().DetachContext();
   // Passes by not crashing later during teardown
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        NoResourceProviderInCanvas2DBufferInitialization) {
   // This test enforces that there is no eager creation of
   // CanvasResourceProvider for html canvas with 2d context when its
@@ -712,7 +716,7 @@ TEST_F(CanvasRenderingContext2DTest,
   EXPECT_FALSE(CanvasElement().ResourceProvider());
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        DISABLED_DisableAcceleration_UpdateGPUMemoryUsage) {
   CreateContext(kNonOpaque);
 
@@ -733,10 +737,9 @@ TEST_F(CanvasRenderingContext2DTest,
   EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 
   context->fillRect(10, 10, 100, 100);
-
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        DisableAcceleration_RestoreCanvasMatrixClipStack) {
   // This tests verifies whether the RestoreCanvasMatrixClipStack happens after
   // PaintCanvas is drawn from old 2d bridge to new 2d bridge.
@@ -867,13 +870,13 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   }
 }
 
-TEST_F(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
+TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
       "display-p3", GetDocument(),
       Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
-TEST_F(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
+TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
       "rec2020", GetDocument(), Persistent<HTMLCanvasElement>(CanvasElement()),
       GetScriptState());
@@ -1047,22 +1050,22 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
 }
 
 // Test disabled due to crbug.com/780925
-TEST_F(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnSRGBCanvas) {
+TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnSRGBCanvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
       CanvasElement(), CanvasColorSpaceSettings::CANVAS_SRGB);
 }
 
-TEST_F(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnRec2020Canvas) {
+TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnRec2020Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
       CanvasElement(), CanvasColorSpaceSettings::CANVAS_REC2020);
 }
 
-TEST_F(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnP3Canvas) {
+TEST_P(CanvasRenderingContext2DTest, ColorManagedPutImageDataOnP3Canvas) {
   TestPutImageDataOnCanvasWithColorSpaceSettings(
       CanvasElement(), CanvasColorSpaceSettings::CANVAS_P3);
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
@@ -1076,7 +1079,7 @@ TEST_F(CanvasRenderingContext2DTest,
   EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfNormalLatencyWillReadFrequently) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kNormalLatency,
@@ -1087,7 +1090,7 @@ TEST_F(CanvasRenderingContext2DTest,
       CanvasElement().GetOrCreateCanvas2DLayerBridge()->IsAccelerated());
 }
 
-TEST_F(CanvasRenderingContext2DTest,
+TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfLowLatencyWillReadFrequently) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kLowLatency, ReadFrequencyMode::kWillReadFrequency);
@@ -1097,7 +1100,7 @@ TEST_F(CanvasRenderingContext2DTest,
   EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 }
 
-TEST_F(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
+TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
   ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   IntSize size(10, 10);
@@ -1119,10 +1122,12 @@ class CanvasRenderingContext2DTestAccelerated
   bool AllowsAcceleration() override { return true; }
 };
 
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
+
 // https://crbug.com/708445: When the Canvas2DLayerBridge hibernates or wakes up
 // from hibernation, the compositing reasons for the canvas element may change.
 // In these cases, the element should request a compositing update.
-TEST_F(CanvasRenderingContext2DTestAccelerated,
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        ElementRequestsCompositingUpdateOnHibernateAndWakeUp) {
   CreateContext(kNonOpaque);
   IntSize size(300, 300);
@@ -1153,7 +1158,13 @@ TEST_F(CanvasRenderingContext2DTestAccelerated,
   blink::test::RunPendingTasks();  // Run hibernation task.
   // If enabled, hibernation should cause compositing update.
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->NeedsCompositingInputsUpdate());
+            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
+  } else {
+    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
+              layer->NeedsCompositingInputsUpdate());
+  }
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             !CanvasElement().ResourceProvider());
 
@@ -1168,10 +1179,16 @@ TEST_F(CanvasRenderingContext2DTestAccelerated,
       mojom::blink::PageVisibilityState::kVisible,
       /*is_initial_state=*/false);
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->NeedsCompositingInputsUpdate());
+            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
+  } else {
+    EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
+              layer->NeedsCompositingInputsUpdate());
+  }
 }
 
-TEST_F(CanvasRenderingContext2DTestAccelerated,
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoHibernationIfNoResourceProvider) {
   CreateContext(kNonOpaque);
   IntSize size(300, 300);
@@ -1205,7 +1222,7 @@ TEST_F(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
 }
 
-TEST_F(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
+TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
@@ -1245,7 +1262,9 @@ class CanvasRenderingContext2DTestImageChromium
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
-TEST_F(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestImageChromium);
+
+TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
@@ -1290,7 +1309,9 @@ class CanvasRenderingContext2DTestSwapChain
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestSwapChain);
+
+TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();

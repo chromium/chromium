@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -23,6 +24,8 @@ class PaintLayerCompositorTest : public RenderingTest {
     EnableCompositing();
     RenderingTest::SetUp();
   }
+
+  ScopedCompositeAfterPaintForTest cap_{false};
 };
 }  // namespace
 

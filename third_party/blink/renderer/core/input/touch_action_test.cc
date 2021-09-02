@@ -237,19 +237,10 @@ WebViewImpl* TouchActionTest::SetupTest(String file) {
   return web_view;
 }
 
-static const LayoutBoxModelObject& EnclosingCompositedContainer(
-    const LayoutObject& layout_object) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  return layout_object.PaintingLayer()
-      ->EnclosingLayerForPaintInvalidationCrossingFrameBoundaries()
-      ->GetLayoutObject();
-}
-
 IntRect WindowClipRect(const LocalFrameView& frame_view) {
   PhysicalRect clip_rect(PhysicalOffset(), PhysicalSize(frame_view.Size()));
   frame_view.GetLayoutView()->MapToVisualRectInAncestorSpace(
-      &EnclosingCompositedContainer(*frame_view.GetLayoutView()), clip_rect, 0,
-      kDefaultVisualRectFlags);
+      nullptr, clip_rect, 0, kDefaultVisualRectFlags);
   return EnclosingIntRect(clip_rect);
 }
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -22,6 +23,9 @@ class CompositingRequirementsUpdaterTest : public RenderingTest {
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
   void SetUp() final;
+
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
 };
 
 void CompositingRequirementsUpdaterTest::SetUp() {
@@ -231,6 +235,9 @@ class CompositingRequirementsUpdaterSimTest : public SimTest {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
+
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
 };
 
 TEST_F(CompositingRequirementsUpdaterSimTest,

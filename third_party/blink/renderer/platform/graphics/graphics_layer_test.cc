@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/testing/fake_graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using ::testing::ElementsAre;
 
@@ -56,6 +57,9 @@ class GraphicsLayerTest : public PaintControllerTestBase {
       const GraphicsLayer& layer) {
     return layer.paint_controller_.get();
   }
+
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
 };
 
 TEST_F(GraphicsLayerTest, PaintRecursively) {

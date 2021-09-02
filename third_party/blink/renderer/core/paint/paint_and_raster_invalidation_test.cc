@@ -16,6 +16,37 @@ using ::testing::MatchesRegex;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
+static ContentLayerClientImpl* GetContentLayerClient(
+    const LocalFrameView& root_frame_view,
+    wtf_size_t index) {
+  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  const auto& clients = root_frame_view.GetPaintArtifactCompositor()
+                            ->ContentLayerClientsForTesting();
+  return index < clients.size() ? clients[index].get() : nullptr;
+}
+
+const RasterInvalidationTracking* GetRasterInvalidationTracking(
+    const LocalFrameView& root_frame_view,
+    wtf_size_t index) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    if (auto* client = GetContentLayerClient(root_frame_view, index))
+      return client->GetRasterInvalidator().GetTracking();
+    return nullptr;
+  }
+  const GraphicsLayer* graphics_layer = nullptr;
+  ForAllGraphicsLayers(
+      *root_frame_view.GetLayoutView()->Layer()->GraphicsLayerBacking(),
+      [&index, &graphics_layer](const GraphicsLayer& layer) {
+        if (index-- == 0) {
+          graphics_layer = &layer;
+          return false;
+        }
+        return true;
+      },
+      [](const GraphicsLayer&, const cc::Layer&) {});
+  return graphics_layer->GetRasterInvalidationTracking();
+}
+
 void SetUpHTML(PaintAndRasterInvalidationTest& test) {
   test.SetBodyInnerHTML(R"HTML(
     <style>

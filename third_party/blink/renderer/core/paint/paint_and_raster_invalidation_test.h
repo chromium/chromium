@@ -12,6 +12,10 @@
 
 namespace blink {
 
+const RasterInvalidationTracking* GetRasterInvalidationTracking(
+    const LocalFrameView& root_frame_view,
+    wtf_size_t index = 0);
+
 class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
  public:
   PaintAndRasterInvalidationTest()
@@ -19,26 +23,9 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
             MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
-  ContentLayerClientImpl* GetContentLayerClient(wtf_size_t index = 0) const {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    const auto& clients = GetDocument()
-                              .View()
-                              ->GetPaintArtifactCompositor()
-                              ->ContentLayerClientsForTesting();
-    return index < clients.size() ? clients[index].get() : nullptr;
-  }
-
   const RasterInvalidationTracking* GetRasterInvalidationTracking(
       wtf_size_t index = 0) const {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      if (auto* client = GetContentLayerClient(index))
-        return client->GetRasterInvalidator().GetTracking();
-      return nullptr;
-    }
-    return GetLayoutView()
-        .Layer()
-        ->GraphicsLayerBacking()
-        ->GetRasterInvalidationTracking();
+    return blink::GetRasterInvalidationTracking(*GetDocument().View(), index);
   }
 
   void SetUp() override {

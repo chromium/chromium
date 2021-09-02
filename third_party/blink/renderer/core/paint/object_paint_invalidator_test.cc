@@ -9,10 +9,12 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -32,12 +34,14 @@ class ObjectPaintInvalidatorTest : public RenderingTest {
   }
 };
 
+class ObjectPaintInvalidatorPreCAPTest : public ObjectPaintInvalidatorTest {
+ private:
+  ScopedCompositeAfterPaintForTest cap_{false};
+};
+
 using ::testing::ElementsAre;
 
-TEST_F(ObjectPaintInvalidatorTest, TraverseNonCompositingDescendants) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
+TEST_F(ObjectPaintInvalidatorPreCAPTest, TraverseNonCompositingDescendants) {
   SetBodyInnerHTML(R"HTML(
     <style>div { width: 10px; height: 10px; background-color: green;
     }</style>
@@ -119,10 +123,7 @@ static const LayoutBoxModelObject& EnclosingCompositedContainer(
       ->GetLayoutObject();
 }
 
-TEST_F(ObjectPaintInvalidatorTest, TraverseFloatUnderCompositedInline) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
+TEST_F(ObjectPaintInvalidatorPreCAPTest, TraverseFloatUnderCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <style>* { background: blue; }</style>
     <div id='compositedContainer' style='position: relative;
@@ -204,10 +205,8 @@ TEST_F(ObjectPaintInvalidatorTest, TraverseFloatUnderCompositedInline) {
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
 }
 
-TEST_F(ObjectPaintInvalidatorTest, TraverseStackedFloatUnderCompositedInline) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
+TEST_F(ObjectPaintInvalidatorPreCAPTest,
+       TraverseStackedFloatUnderCompositedInline) {
   SetBodyInnerHTML(R"HTML(
     <span id='span' style='position: relative; will-change: transform'>
       <div id='target' style='position: relative; float: right'></div>
@@ -251,9 +250,8 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   GetDocument().View()->SetTracksRasterInvalidations(true);
   GetDocument().GetFrame()->Selection().SelectAll();
   UpdateAllLifecyclePhasesForTest();
-  const auto* graphics_layer = GetLayoutView().Layer()->GraphicsLayerBacking();
   const auto* invalidations =
-      &graphics_layer->GetRasterInvalidationTracking()->Invalidations();
+      &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
   ASSERT_EQ(1u, invalidations->size());
   EXPECT_EQ(IntRect(8, 8, 100, 100), (*invalidations)[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
@@ -263,7 +261,7 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   GetDocument().View()->SetTracksRasterInvalidations(true);
   target->SetShouldCheckForPaintInvalidation();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(graphics_layer->GetRasterInvalidationTracking()
+  EXPECT_TRUE(GetRasterInvalidationTracking(*GetDocument().View())
                   ->Invalidations()
                   .IsEmpty());
   GetDocument().View()->SetTracksRasterInvalidations(false);
@@ -273,7 +271,7 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   GetDocument().GetFrame()->Selection().Clear();
   UpdateAllLifecyclePhasesForTest();
   invalidations =
-      &graphics_layer->GetRasterInvalidationTracking()->Invalidations();
+      &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
   ASSERT_EQ(1u, invalidations->size());
   EXPECT_EQ(IntRect(8, 8, 100, 100), (*invalidations)[0].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
