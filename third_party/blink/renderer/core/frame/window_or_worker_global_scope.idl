@@ -31,6 +31,8 @@
     LegacyTreatAsPartialInterface,
     Exposed=(Window,Worker)
 ] interface mixin WindowOrWorkerGlobalScope {
+    [CallWith=ScriptState] void reportError(any e);
+
     // base64 utility methods
     [RaisesException] DOMString btoa(DOMString btoa);
     [RaisesException] DOMString atob(DOMString atob);

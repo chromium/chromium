@@ -52,6 +52,8 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   STATIC_ONLY(WindowOrWorkerGlobalScope);
 
  public:
+  static void reportError(ScriptState*, EventTarget&, const ScriptValue&);
+
   static String btoa(EventTarget&,
                      const String& string_to_encode,
                      ExceptionState&);

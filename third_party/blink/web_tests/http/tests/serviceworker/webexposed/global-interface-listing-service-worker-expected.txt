@@ -3012,6 +3012,7 @@ interface WorkerGlobalScope : EventTarget
     method fetch
     method importScripts
     method queueMicrotask
+    method reportError
     method setInterval
     method setTimeout
     setter onerror

@@ -35,6 +35,7 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -88,6 +89,12 @@ static bool IsAllowed(ExecutionContext* execution_context,
   }
   NOTREACHED();
   return false;
+}
+
+void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
+                                            EventTarget& event_target,
+                                            const ScriptValue& e) {
+  V8ScriptRunner::ReportException(script_state->GetIsolate(), e.V8Value());
 }
 
 String WindowOrWorkerGlobalScope::btoa(EventTarget&,

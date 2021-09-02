@@ -1388,6 +1388,7 @@ interface Document : Node
     method querySelector
     method querySelectorAll
     method releaseEvents
+    method reportError
     method webkitCancelFullScreen
     method webkitExitFullscreen
     method write
