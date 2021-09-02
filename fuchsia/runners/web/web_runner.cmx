@@ -19,7 +19,6 @@
       "fuchsia.media.drm.Widevine",
       "fuchsia.mediacodec.CodecFactory",
       "fuchsia.memorypressure.Provider",
-      "fuchsia.net.NameLookup",
       "fuchsia.net.interfaces.State",
       "fuchsia.net.name.Lookup",
       "fuchsia.posix.socket.Provider",

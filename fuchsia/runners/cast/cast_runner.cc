@@ -49,7 +49,6 @@ static constexpr const char* kServices[] = {
     "fuchsia.mediacodec.CodecFactory",
     "fuchsia.memorypressure.Provider",
     "fuchsia.net.name.Lookup",
-    "fuchsia.net.NameLookup",
     "fuchsia.net.interfaces.State",
     "fuchsia.posix.socket.Provider",
     "fuchsia.process.Launcher",
