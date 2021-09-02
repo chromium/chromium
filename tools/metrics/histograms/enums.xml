@@ -45982,6 +45982,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="kOtherReason"/>
 </enum>
 
+<enum name="LightTheme">
+  <int value="0" label="undefined"/>
+  <int value="1" label="no"/>
+  <int value="2" label="yes"/>
+</enum>
+
 <enum name="LinkGenerationCopiedLinkType">
   <int value="0" label="Copied from new right-click menu generation"/>
   <int value="1" label="Copied from existing highlight right-click menu"/>
@@ -59610,6 +59616,12 @@ Called by update_net_trust_anchors.py.-->
 <enum name="NewUserPriorityPrefsSyncResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>
+</enum>
+
+<enum name="NightMode">
+  <int value="0" label="undefined"/>
+  <int value="1" label="no"/>
+  <int value="2" label="yes"/>
 </enum>
 
 <enum name="NormalizedScore">
@@ -88733,10 +88745,46 @@ Called by update_scheduler_enums.py.-->
   <int value="8" label="OS yes, WebView on"/>
 </enum>
 
+<enum name="WebViewForceDarkMode2">
+  <int value="0" label="off"/>
+  <int value="1" label="auto"/>
+  <int value="2" label="on"/>
+</enum>
+
+<enum name="WebViewInDarkModeVsLightTheme">
+  <int value="0" label="WebView dark, light theme undefined"/>
+  <int value="1" label="WebView dark, light theme no"/>
+  <int value="2" label="WebView dark, light theme yes"/>
+  <int value="3" label="WebView light, light theme undefined"/>
+  <int value="4" label="WebView light, light theme no"/>
+  <int value="5" label="WebView light, light theme yes"/>
+</enum>
+
+<enum name="WebViewInDarkModeVsNightMode">
+  <int value="0" label="WebView dark, night mode undefined"/>
+  <int value="1" label="WebView dark, night mode off"/>
+  <int value="2" label="WebView dark, night mode on"/>
+  <int value="3" label="WebView light, night mode undefined"/>
+  <int value="4" label="WebView light, night mode off"/>
+  <int value="5" label="WebView light, night mode on"/>
+</enum>
+
 <enum name="WebViewMixedContentMode">
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>
   <int value="2" label="Compatibility Mode"/>
+</enum>
+
+<enum name="WebViewNightModeVsLightTheme">
+  <int value="0" label="Night mode undefined, light theme undefined"/>
+  <int value="1" label="Night mode undefined, light theme no"/>
+  <int value="2" label="Night mode undefined, light theme yes"/>
+  <int value="3" label="Night mode off, light theme undefined"/>
+  <int value="4" label="Night mode off, light theme no"/>
+  <int value="5" label="Night mode off, light theme yes"/>
+  <int value="6" label="Night mode on, light theme undefined"/>
+  <int value="7" label="Night mode on, light theme no"/>
+  <int value="8" label="Night mode on, light theme yes"/>
 </enum>
 
 <enum name="WebViewOpenWebScreenPortion">
@@ -88757,6 +88805,24 @@ Called by update_scheduler_enums.py.-->
 <enum name="WebViewOpenWebVisibility">
   <int value="0" label="OpenWebContentVisible"/>
   <int value="1" label="OpenWebContentNotVisible"/>
+</enum>
+
+<enum name="WebViewPrimaryTextLuminanceVsLightTheme">
+  <int value="0" label="Text dark, light theme undefined"/>
+  <int value="1" label="Text dark, light theme no"/>
+  <int value="2" label="Text dark, light theme yes"/>
+  <int value="3" label="Text light, light theme undefined"/>
+  <int value="4" label="Text light, light theme no"/>
+  <int value="5" label="Text light, light theme yes"/>
+</enum>
+
+<enum name="WebViewPrimaryTextLuminanceVsNightMode">
+  <int value="0" label="Text dark, night mode undefined"/>
+  <int value="1" label="Text dark, night mode off"/>
+  <int value="2" label="Text dark, night mode on"/>
+  <int value="3" label="Text light, night mode undefined"/>
+  <int value="4" label="Text light, night mode off"/>
+  <int value="5" label="Text light, night mode on"/>
 </enum>
 
 <enum name="WebViewUrlScheme">

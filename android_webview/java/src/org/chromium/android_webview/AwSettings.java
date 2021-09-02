@@ -46,13 +46,6 @@ public class AwSettings {
 
     private static final String TAG = "AwSettings";
 
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    private static final int OS_NIGHT_MODE_UNDEFINED = 0 * AwSettings.FORCE_DARK_MODES_COUNT;
-    private static final int OS_NIGHT_MODE_NO = 1 * AwSettings.FORCE_DARK_MODES_COUNT;
-    private static final int OS_NIGHT_MODE_YES = 2 * AwSettings.FORCE_DARK_MODES_COUNT;
-    private static final int UMA_FORCE_DARK_MODE_MAX_VALUE = 3 * AwSettings.FORCE_DARK_MODES_COUNT;
-
     /* See {@link android.webkit.WebSettings}. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LAYOUT_ALGORITHM_NORMAL,
@@ -311,6 +304,10 @@ public class AwSettings {
                     < Build.VERSION_CODES.R;
         }
         // Defer initializing the native side until a native WebContents instance is set.
+    }
+
+    public int getUiModeNight() {
+        return mContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
     }
 
     @CalledByNative
@@ -1743,33 +1740,13 @@ public class AwSettings {
     }
 
     public void setForceDarkMode(@ForceDarkMode int forceDarkMode) {
-        recordForceDarkMode(forceDarkMode);
+        DarkModeHistogramRecorder.recordForceDarkModeAPIUsage(mContext, forceDarkMode);
         synchronized (mAwSettingsLock) {
             if (mForceDarkMode != forceDarkMode) {
                 mForceDarkMode = forceDarkMode;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
-    }
-
-    private int getOsNightMode() {
-        int osNightMode = mContext.getResources().getConfiguration().uiMode
-                & Configuration.UI_MODE_NIGHT_MASK;
-        switch (osNightMode) {
-            case Configuration.UI_MODE_NIGHT_NO:
-                return OS_NIGHT_MODE_NO;
-            case Configuration.UI_MODE_NIGHT_YES:
-                return OS_NIGHT_MODE_YES;
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-            default:
-                return OS_NIGHT_MODE_UNDEFINED;
-        }
-    }
-
-    private void recordForceDarkMode(int forceDarkMode) {
-        int value = getOsNightMode() + forceDarkMode;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.ForceDarkMode", value, UMA_FORCE_DARK_MODE_MAX_VALUE);
     }
 
     public boolean isDarkMode() {
@@ -1794,18 +1771,13 @@ public class AwSettings {
     }
 
     public void setForceDarkBehavior(@ForceDarkBehavior int forceDarkBehavior) {
-        recordForceDarkBehavior(forceDarkBehavior);
+        DarkModeHistogramRecorder.recordForceDarkBehaviorAPIUsage(forceDarkBehavior);
         synchronized (mAwSettingsLock) {
             if (mForceDarkBehavior != forceDarkBehavior) {
                 mForceDarkBehavior = forceDarkBehavior;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }
-    }
-
-    private void recordForceDarkBehavior(@ForceDarkBehavior int forceDarkBehavior) {
-        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ForceDarkBehavior",
-                forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
     }
 
     @CalledByNative

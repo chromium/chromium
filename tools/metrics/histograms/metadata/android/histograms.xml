@@ -3269,6 +3269,109 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DarkMode.ForceDarkBehavior"
+    enum="WebViewForceDarkBehavior" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records WebView force dark behavior settings on each main frame navigation
+    entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.ForceDarkMode"
+    enum="WebViewForceDarkMode2" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records WebView force dark mode settings on each main frame navigation entry
+    committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.InDarkMode" enum="Boolean"
+    expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if WebView is in dark mode on each main frame navigation entry
+    committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.InDarkModeVsLightTheme"
+    enum="WebViewInDarkModeVsLightTheme" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the application has light theme and if WebView is in dark mode on
+    each main frame navigation entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.InDarkModeVsNightMode"
+    enum="WebViewInDarkModeVsNightMode" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the application is in the night mode and if WebView is in dark
+    mode on each main frame navigation entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.LightTheme" enum="LightTheme"
+    expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the application has light theme on each main frame navigation
+    entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.NightMode" enum="NightMode"
+    expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records application's night mode bit related to
+    android.content.res.Configuration.UI_MODE_NIGHT_MASK on each main frame
+    navigation entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.NightModeVsLightTheme"
+    enum="WebViewNightModeVsLightTheme" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if application is in night mode and if it has light theme on each
+    main frame navigation entry committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme"
+    enum="WebViewPrimaryTextLuminanceVsLightTheme" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the application has light theme and if its theme's
+    textColorPrimary attribute is light on each main frame navigation entry
+    committed.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.DarkMode.PrimaryTextLuminanceVsNightMode"
+    enum="WebViewPrimaryTextLuminanceVsNightMode" expires_after="2022-01-24">
+  <owner>michaelbai@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records if the application is in night mode and if its theme's
+    textColorPrimary attribute is light on each main frame navigation entry
+    committed.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
     expires_after="2021-12-14">
   <owner>ntfschr@chromium.org</owner>

@@ -483,6 +483,8 @@ public class AwContents implements SmartClipProvider {
     // attached to the Window and size tracking is enabled. It will be null otherwise.
     private AwWindowCoverageTracker mAwWindowCoverageTracker;
 
+    private DarkModeHistogramRecorder mDarkModeHistogramRecorder;
+
     private static class WebContentsInternalsHolder implements WebContents.InternalsHolder {
         private final WeakReference<AwContents> mAwContentsRef;
 
@@ -1476,6 +1478,11 @@ public class AwContents implements SmartClipProvider {
             mWebContentsObserver.destroy();
         }
         mWebContentsObserver = new AwWebContentsObserver(mWebContents, this, mContentsClient);
+        if (mDarkModeHistogramRecorder != null) {
+            mDarkModeHistogramRecorder.destroy();
+        }
+        mDarkModeHistogramRecorder =
+                new DarkModeHistogramRecorder(mWebContents, mContext, mSettings);
     }
 
     /**
@@ -1645,6 +1652,8 @@ public class AwContents implements SmartClipProvider {
 
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
+            mDarkModeHistogramRecorder.destroy();
+            mDarkModeHistogramRecorder = null;
             mNativeAwContents = 0;
             mWebContents = null;
             mWebContentsInternals = null;
