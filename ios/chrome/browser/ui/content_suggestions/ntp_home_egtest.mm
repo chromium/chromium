@@ -224,8 +224,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when loading an invalid URL, the NTP is still displayed.
 // Prevents regressions from https://crbug.com/1063154 .
 - (void)testInvalidURL {
-
-  NSString* URL = @"app-settings://test-test-test/";
+  NSString* URL = @"app-settings://test/";
 
   // The URL needs to be typed to trigger the bug.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
