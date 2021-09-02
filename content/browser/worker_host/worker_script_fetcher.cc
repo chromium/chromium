@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
@@ -40,6 +41,7 @@
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
@@ -583,16 +585,16 @@ void WorkerScriptFetcher::OnStartLoadingResponseBody(
     }
   }
 
-  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params =
-      blink::mojom::WorkerMainScriptLoadParams::New();
-  main_script_load_params->request_id = request_id_;
-  main_script_load_params->response_head = std::move(response_head_);
-  main_script_load_params->response_body = std::move(response_body);
+  DCHECK(!main_script_load_params_);
+  main_script_load_params_ = blink::mojom::WorkerMainScriptLoadParams::New();
+  main_script_load_params_->request_id = request_id_;
+  main_script_load_params_->response_head = std::move(response_head_);
+  main_script_load_params_->response_body = std::move(response_body);
   if (url_loader_) {
     // The main script was served by a request interceptor or the default
     // network loader.
     DCHECK(!response_url_loader_);
-    main_script_load_params->url_loader_client_endpoints =
+    main_script_load_params_->url_loader_client_endpoints =
         url_loader_->Unbind();
     subresource_loader_params_ = script_loader->TakeSubresourceLoaderParams();
   } else {
@@ -601,20 +603,29 @@ void WorkerScriptFetcher::OnStartLoadingResponseBody(
     // serving an alternative response.
     DCHECK(response_url_loader_);
     DCHECK(response_url_loader_receiver_.is_bound());
-    main_script_load_params->url_loader_client_endpoints =
+    main_script_load_params_->url_loader_client_endpoints =
         network::mojom::URLLoaderClientEndpoints::New(
             std::move(response_url_loader_),
             response_url_loader_receiver_.Unbind());
   }
 
-  main_script_load_params->redirect_infos = std::move(redirect_infos_);
-  main_script_load_params->redirect_response_heads =
+  main_script_load_params_->redirect_infos = std::move(redirect_infos_);
+  main_script_load_params_->redirect_response_heads =
       std::move(redirect_response_heads_);
 
-  std::move(callback_).Run(std::move(main_script_load_params),
-                           std::move(subresource_loader_params_),
-                           true /* success */);
-  delete this;
+  // Currently `parsed_headers` is null when FileURLLoader is used.
+  if (main_script_load_params_->response_head->parsed_headers) {
+    std::move(callback_).Run(std::move(main_script_load_params_),
+                             std::move(subresource_loader_params_),
+                             true /* success */);
+    delete this;
+    return;
+  }
+
+  GetNetworkService()->ParseHeaders(
+      resource_request_->url, main_script_load_params_->response_head->headers,
+      base::BindOnce(&WorkerScriptFetcher::DidParseHeaders,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void WorkerScriptFetcher::OnReceiveRedirect(
@@ -645,11 +656,32 @@ void WorkerScriptFetcher::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 void WorkerScriptFetcher::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // We can reach here only when loading fails before receiving a response_head.
-  DCHECK_NE(net::OK, status.error_code);
+
+  if (status.error_code == net::OK) {
+    // It's possible to reach here when the `response_head_` doesn't have a
+    // `parsed_headers` and ask NetworkService to parse headers in
+    // OnStartLoadingResponseBody(). DidParseHeaders() will be called eventually
+    // and `this` will be deleted in it.
+    return;
+  }
+
   std::move(callback_).Run(nullptr /* main_script_load_params */,
                            absl::nullopt /* subresource_loader_params */,
                            false /* success */);
+  delete this;
+}
+
+void WorkerScriptFetcher::DidParseHeaders(
+    network::mojom::ParsedHeadersPtr parsed_headers) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(main_script_load_params_);
+
+  main_script_load_params_->response_head->parsed_headers =
+      std::move(parsed_headers);
+
+  std::move(callback_).Run(std::move(main_script_load_params_),
+                           std::move(subresource_loader_params_),
+                           true /* success */);
   delete this;
 }
 

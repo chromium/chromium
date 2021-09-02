@@ -171,6 +171,8 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  void DidParseHeaders(network::mojom::ParsedHeadersPtr parsed_headers);
+
   std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory_;
 
   // Request ID for a browser-initiated request.
@@ -190,11 +192,14 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
       this};
 
+  blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params_;
   absl::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::mojom::URLResponseHeadPtr> redirect_response_heads_;
   network::mojom::URLResponseHeadPtr response_head_;
+
+  base::WeakPtrFactory<WorkerScriptFetcher> weak_factory_{this};
 };
 
 }  // namespace content
