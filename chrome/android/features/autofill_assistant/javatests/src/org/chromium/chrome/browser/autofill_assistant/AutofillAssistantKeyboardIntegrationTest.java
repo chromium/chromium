@@ -83,6 +83,7 @@ public class AutofillAssistantKeyboardIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1245563")
     public void keyboardDoesNotShowOnElementClick() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
