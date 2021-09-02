@@ -5,7 +5,7 @@
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/subresource_filter/content/browser/devtools_interaction_tracker.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"

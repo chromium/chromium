@@ -125,11 +125,11 @@
     (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/url_handler_manager.h"
-#include "chrome/browser/web_applications/components/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/url_handler_manager.h"
+#include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "third_party/blink/public/common/features.h"

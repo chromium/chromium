@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_IMPL_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_URL_HANDLER_MANAGER_IMPL_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_URL_HANDLER_MANAGER_IMPL_H_
 
 #include <memory>
 #include <vector>
@@ -12,8 +12,8 @@
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/url_handler_launch_params.h"
-#include "chrome/browser/web_applications/components/url_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/url_handler_manager.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -74,4 +74,4 @@ class UrlHandlerManagerImpl : public UrlHandlerManager {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_URL_HANDLER_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_URL_HANDLER_MANAGER_IMPL_H_

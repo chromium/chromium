@@ -26,7 +26,6 @@ source_set("web_applications") {
     "components/preinstalled_app_install_features.cc",
     "components/preinstalled_app_install_features.h",
     "components/protocol_handler_manager.h",
-    "components/url_handler_manager.h",
     "components/web_app_audio_focus_id_map.cc",
     "components/web_app_audio_focus_id_map.h",
     "components/web_app_callback_app_identity.h",
@@ -38,7 +37,6 @@ source_set("web_applications") {
     "components/web_app_data_retriever.h",
     "components/web_app_file_handler_registration.cc",
     "components/web_app_file_handler_registration.h",
-    "components/web_app_helpers.h",
     "components/web_app_icon_generator.cc",
     "components/web_app_icon_generator.h",
     "components/web_app_id.h",
@@ -67,7 +65,6 @@ source_set("web_applications") {
     "components/web_app_uninstallation_via_os_settings_registration.h",
     "components/web_app_url_loader.cc",
     "components/web_app_url_loader.h",
-    "components/web_app_utils.h",
     "components/web_application_info.cc",
     "components/web_application_info.h",
 
@@ -126,6 +123,7 @@ source_set("web_applications") {
     "system_web_apps/system_web_app_manager.h",
     "system_web_apps/system_web_app_types.h",
     "url_handler_manager.cc",
+    "url_handler_manager.h",
     "web_app.cc",
     "web_app.h",
     "web_app_database.cc",
@@ -135,6 +133,7 @@ source_set("web_applications") {
     "web_app_file_handler_manager.cc",
     "web_app_file_handler_manager.h",
     "web_app_helpers.cc",
+    "web_app_helpers.h",
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
     "web_app_install_finalizer.cc",
@@ -169,6 +168,7 @@ source_set("web_applications") {
     "web_app_tab_helper.cc",
     "web_app_tab_helper.h",
     "web_app_utils.cc",
+    "web_app_utils.h",
   ]
 
   if (is_chromeos_ash || is_chromeos_lacros) {
@@ -222,10 +222,10 @@ source_set("web_applications") {
     sources += [
       "components/url_handler_launch_params.cc",
       "components/url_handler_launch_params.h",
-      "components/url_handler_manager_impl.h",
       "components/url_handler_prefs.cc",
       "components/url_handler_prefs.h",
       "url_handler_manager_impl.cc",
+      "url_handler_manager_impl.h",
     ]
   }
 
@@ -464,14 +464,12 @@ source_set("web_applications_unit_tests") {
     "components/protocol_handler_manager_unittest.cc",
     "components/web_app_constants_unittest.cc",
     "components/web_app_data_retriever_unittest.cc",
-    "components/web_app_helpers_unittest.cc",
     "components/web_app_icon_downloader_unittest.cc",
     "components/web_app_icon_generator_unittest.cc",
     "components/web_app_install_utils_unittest.cc",
     "components/web_app_prefs_utils_unittest.cc",
     "components/web_app_shortcut_unittest.cc",
     "components/web_app_url_loader_unittest.cc",
-    "components/web_app_utils_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
     "externally_managed_app_manager_impl_unittest.cc",
@@ -485,6 +483,7 @@ source_set("web_applications_unit_tests") {
     "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_file_handler_manager_unittest.cc",
+    "web_app_helpers_unittest.cc",
     "web_app_icon_manager_unittest.cc",
     "web_app_install_finalizer_unittest.cc",
     "web_app_install_manager_unittest.cc",
@@ -495,6 +494,7 @@ source_set("web_applications_unit_tests") {
     "web_app_registrar_unittest.cc",
     "web_app_sync_bridge_unittest.cc",
     "web_app_unittest.cc",
+    "web_app_utils_unittest.cc",
   ]
 
   if (is_win) {
@@ -526,8 +526,8 @@ source_set("web_applications_unit_tests") {
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
-      "components/url_handler_manager_impl_unittest.cc",
       "components/url_handler_prefs_unittest.cc",
+      "url_handler_manager_impl_unittest.cc",
     ]
   }
 

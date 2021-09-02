@@ -7,7 +7,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
