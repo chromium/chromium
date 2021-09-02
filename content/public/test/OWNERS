@@ -4,6 +4,9 @@ sky@chromium.org
 per-file *download*=file://components/download/OWNERS
 per-file *test_file_error_injector*=file://components/download/OWNERS
 
+# For threading tests support review.
+per-file *browser_task_environment*=gab@chromium.org
+
 # For Android-specific changes.
 per-file *android*=file://content/public/test/android/OWNERS
 
