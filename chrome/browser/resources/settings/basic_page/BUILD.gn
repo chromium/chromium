@@ -18,7 +18,6 @@ js_library("basic_page") {
     "..:route",
     "..:router",
     "..:search_settings",
-    "../chrome_cleanup_page:chrome_cleanup_proxy",
     "../prefs:prefs_behavior",
     "../privacy_page:privacy_page",
     "../settings_page:main_page_mixin",

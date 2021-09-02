@@ -6,113 +6,91 @@
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
-/** @interface */
-export class ChromeCleanupProxy {
+export interface ChromeCleanupProxy {
   /**
    * Registers the current ChromeCleanupHandler as an observer of
    * ChromeCleanerController events.
    */
-  registerChromeCleanerObserver() {}
+  registerChromeCleanerObserver(): void;
 
   /**
    * Starts scanning the user's computer.
-   * @param {boolean} logsUploadEnabled
    */
-  startScanning(logsUploadEnabled) {}
+  startScanning(logsUploadEnabled: boolean): void;
 
   /**
    * Starts a cleanup on the user's computer.
-   * @param {boolean} logsUploadEnabled
    */
-  startCleanup(logsUploadEnabled) {}
+  startCleanup(logsUploadEnabled: boolean): void;
 
   /**
    * Restarts the user's computer.
    */
-  restartComputer() {}
+  restartComputer(): void;
 
   /**
    * Notifies Chrome that the state of the details section changed.
-   * @param {boolean} enabled
    */
-  notifyShowDetails(enabled) {}
+  notifyShowDetails(enabled: boolean): void;
 
   /**
    * Notifies Chrome that the "learn more" link was clicked.
    */
-  notifyLearnMoreClicked() {}
+  notifyLearnMoreClicked(): void;
 
   /**
    * Requests the plural string for the "show more" link in the detailed
    * view for either files to delete or registry keys.
-   * @param {number} numHiddenItems
-   * @return {!Promise<string>}
    */
-  getMoreItemsPluralString(numHiddenItems) {}
+  getMoreItemsPluralString(numHiddenItems: number): Promise<string>;
 
   /**
    * Requests the plural string for the "items to remove" link in the detailed
    * view.
-   * @param {number} numItems
-   * @return {!Promise<string>}
    */
-  getItemsToRemovePluralString(numItems) {}
+  getItemsToRemovePluralString(numItems: number): Promise<string>;
 }
 
-/**
- * @implements {ChromeCleanupProxy}
- */
-export class ChromeCleanupProxyImpl {
-  /** @override */
+export class ChromeCleanupProxyImpl implements ChromeCleanupProxy {
   registerChromeCleanerObserver() {
     chrome.send('registerChromeCleanerObserver');
   }
 
-  /** @override */
-  startScanning(logsUploadEnabled) {
+  startScanning(logsUploadEnabled: boolean) {
     chrome.send('startScanning', [logsUploadEnabled]);
   }
 
-  /** @override */
-  startCleanup(logsUploadEnabled) {
+  startCleanup(logsUploadEnabled: boolean) {
     chrome.send('startCleanup', [logsUploadEnabled]);
   }
 
-  /** @override */
   restartComputer() {
     chrome.send('restartComputer');
   }
 
-  /** @override */
-  notifyShowDetails(enabled) {
+  notifyShowDetails(enabled: boolean) {
     chrome.send('notifyShowDetails', [enabled]);
   }
 
-  /** @override */
   notifyLearnMoreClicked() {
     chrome.send('notifyChromeCleanupLearnMoreClicked');
   }
 
-  /** @override */
-  getMoreItemsPluralString(numHiddenItems) {
+  getMoreItemsPluralString(numHiddenItems: number) {
     return sendWithPromise('getMoreItemsPluralString', numHiddenItems);
   }
 
-  /** @override */
-  getItemsToRemovePluralString(numItems) {
+  getItemsToRemovePluralString(numItems: number) {
     return sendWithPromise('getItemsToRemovePluralString', numItems);
   }
 
-  /** @return {!ChromeCleanupProxy} */
-  static getInstance() {
+  static getInstance(): ChromeCleanupProxy {
     return instance || (instance = new ChromeCleanupProxyImpl());
   }
 
-  /** @param {!ChromeCleanupProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: ChromeCleanupProxy) {
     instance = obj;
   }
 }
 
-/** @type {?ChromeCleanupProxy} */
-let instance = null;
+let instance: ChromeCleanupProxy|null = null;

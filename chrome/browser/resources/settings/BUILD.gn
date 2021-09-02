@@ -116,7 +116,7 @@ preprocess_if_expr("preprocess") {
     "autofill_page/password_manager_proxy.js",
     "autofill_page/show_password_mixin.js",
     "base_mixin.js",
-    "chrome_cleanup_page/chrome_cleanup_proxy.js",
+    "chrome_cleanup_page/chrome_cleanup_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/pref_control_behavior.js",
     "controls/settings_boolean_control_behavior.js",
@@ -326,8 +326,8 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_win) {
     in_files += [
-      "chrome_cleanup_page/chrome_cleanup_page.js",
-      "chrome_cleanup_page/items_to_remove_list.js",
+      "chrome_cleanup_page/chrome_cleanup_page.ts",
+      "chrome_cleanup_page/items_to_remove_list.ts",
       "incompatible_applications_page/incompatible_applications_page.js",
       "incompatible_applications_page/incompatible_application_item.js",
       "safety_check_page/safety_check_chrome_cleaner_child.ts",
@@ -398,10 +398,7 @@ group("closure_compile") {
   }
 
   if (is_win) {
-    deps += [
-      "chrome_cleanup_page:closure_compile",
-      "incompatible_applications_page:closure_compile",
-    ]
+    deps += [ "incompatible_applications_page:closure_compile" ]
   }
 
   if (is_chromeos_ash) {
@@ -488,7 +485,6 @@ js_library("lazy_load") {
   deps = [
     "autofill_page:autofill_section",
     "autofill_page:payments_section",
-    "chrome_cleanup_page:chrome_cleanup_proxy",
     "privacy_page:cookies_page",
     "privacy_page:security_page",
     "privacy_page/privacy_review:privacy_review_page",
@@ -830,9 +826,9 @@ ts_library("build_ts") {
 
   if (is_win) {
     in_files += [
-      "chrome_cleanup_page/chrome_cleanup_page.js",
-      "chrome_cleanup_page/chrome_cleanup_proxy.js",
-      "chrome_cleanup_page/items_to_remove_list.js",
+      "chrome_cleanup_page/chrome_cleanup_page.ts",
+      "chrome_cleanup_page/chrome_cleanup_proxy.ts",
+      "chrome_cleanup_page/items_to_remove_list.ts",
       "incompatible_applications_page/incompatible_application_item.js",
       "incompatible_applications_page/incompatible_applications_browser_proxy.js",
       "incompatible_applications_page/incompatible_applications_page.js",

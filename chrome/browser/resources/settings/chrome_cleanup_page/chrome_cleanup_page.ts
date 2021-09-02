@@ -17,8 +17,8 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
@@ -27,94 +27,80 @@ import {ChromeCleanupRemovalListItem} from './items_to_remove_list.js';
 /**
  * The reason why the controller is in state kIdle.
  * Must be kept in sync with ChromeCleanerController::IdleReason.
- * @enum {string}
  */
-export const ChromeCleanupIdleReason = {
-  INITIAL: 'initial',
-  REPORTER_FOUND_NOTHING: 'reporter_found_nothing',
-  REPORTER_FAILED: 'reporter_failed',
-  SCANNING_FOUND_NOTHING: 'scanning_found_nothing',
-  SCANNING_FAILED: 'scanning_failed',
-  CONNECTION_LOST: 'connection_lost',
-  USER_DECLINED_CLEANUP: 'user_declined_cleanup',
-  CLEANING_FAILED: 'cleaning_failed',
-  CLEANING_SUCCEEDED: 'cleaning_succeeded',
-  CLEANER_DOWNLOAD_FAILED: 'cleaner_download_failed',
-};
+export enum ChromeCleanupIdleReason {
+  INITIAL = 'initial',
+  REPORTER_FOUND_NOTHING = 'reporter_found_nothing',
+  REPORTER_FAILED = 'reporter_failed',
+  SCANNING_FOUND_NOTHING = 'scanning_found_nothing',
+  SCANNING_FAILED = 'scanning_failed',
+  CONNECTION_LOST = 'connection_lost',
+  USER_DECLINED_CLEANUP = 'user_declined_cleanup',
+  CLEANING_FAILED = 'cleaning_failed',
+  CLEANING_SUCCEEDED = 'cleaning_succeeded',
+  CLEANER_DOWNLOAD_FAILED = 'cleaner_download_failed',
+}
 
 /**
  * The possible states for the cleanup card.
- * @enum {string}
  */
-const ChromeCleanerCardState = {
-  SCANNING_OFFERED: 'scanning_offered',
-  SCANNING: 'scanning',
-  CLEANUP_OFFERED: 'cleanup_offered',
-  CLEANING: 'cleaning',
-  REBOOT_REQUIRED: 'reboot_required',
-  SCANNING_FOUND_NOTHING: 'scanning_found_nothing',
-  SCANNING_FAILED: 'scanning_failed',
-  CLEANUP_SUCCEEDED: 'cleanup_succeeded',
-  CLEANING_FAILED: 'cleanup_failed',
-  CLEANER_DOWNLOAD_FAILED: 'cleaner_download_failed',
-};
+enum ChromeCleanerCardState {
+  SCANNING_OFFERED = 'scanning_offered',
+  SCANNING = 'scanning',
+  CLEANUP_OFFERED = 'cleanup_offered',
+  CLEANING = 'cleaning',
+  REBOOT_REQUIRED = 'reboot_required',
+  SCANNING_FOUND_NOTHING = 'scanning_found_nothing',
+  SCANNING_FAILED = 'scanning_failed',
+  CLEANUP_SUCCEEDED = 'cleanup_succeeded',
+  CLEANING_FAILED = 'cleanup_failed',
+  CLEANER_DOWNLOAD_FAILED = 'cleaner_download_failed',
+}
 
 /**
  * Boolean properties for a cleanup card state.
- * @enum {number}
  */
-const ChromeCleanupCardFlags = {
-  NONE: 0,
-  SHOW_LOGS_PERMISSIONS: 1 << 0,
-  WAITING_FOR_RESULT: 1 << 1,
-  SHOW_ITEMS_TO_REMOVE: 1 << 2,
-};
+enum ChromeCleanupCardFlags {
+  NONE = 0,
+  SHOW_LOGS_PERMISSIONS = 1 << 0,
+  WAITING_FOR_RESULT = 1 << 1,
+  SHOW_ITEMS_TO_REMOVE = 1 << 2,
+}
 
 /**
  * Identifies an ongoing scanning/cleanup action.
- * @enum {number}
  */
-const ChromeCleanupOngoingAction = {
-  NONE: 0,
-  SCANNING: 1,
-  CLEANING: 2,
+enum ChromeCleanupOngoingAction {
+  NONE = 0,
+  SCANNING = 1,
+  CLEANING = 2,
+}
+
+type ChromeCleanupCardActionButton = {
+  label: string,
+  doAction: () => void,
 };
 
-/**
- * @typedef {{
- *   label: string,
- *   doAction: !function(),
- * }}
- */
-let ChromeCleanupCardActionButton;
-
-/**
- * @typedef {{
- *   title: ?string,
- *   explanation: ?string,
- *   actionButton: ?ChromeCleanupCardActionButton,
- *   flags: number,
- * }}
- */
-let ChromeCleanupCardComponents;
+type ChromeCleanupCardComponents = {
+  title: string|null,
+  explanation: string|null,
+  actionButton: ChromeCleanupCardActionButton|null,
+  flags: number,
+};
 
 /**
  * Represents the file path structure of a base::FilePath.
  * dirname ends with a separator.
- * @typedef {{
- *   dirname: string,
- *   basename: string,
- * }}
  */
-let ChromeCleanupFilePath;
+type ChromeCleanupFilePath = {
+  dirname: string,
+  basename: string,
+};
 
-/**
- * @typedef {{
- *   files: Array<ChromeCleanupFilePath>,
- *   registryKeys: Array<string>,
- * }}
- */
-let ChromeCleanerScannerResults;
+type ChromeCleanerScannerResults = {
+  files: Array<ChromeCleanupFilePath>,
+  registryKeys: Array<string>,
+};
 
 /**
  * @fileoverview
@@ -129,16 +115,23 @@ let ChromeCleanerScannerResults;
  *    </iron-animated-pages>
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsChromeCleanupPageElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
+// TODO(crbug.com/1234307): Remove when settings_checkbox.js is migrated to
+// TypeScript.
+interface SettingsCheckboxElement extends HTMLElement {
+  checked: boolean;
+}
 
-/** @polymer */
+interface SettingsChromeCleanupPageElement {
+  $: {
+    chromeCleanupLogsUploadControl: SettingsCheckboxElement,
+    chromeCleanupShowNotificationControl: SettingsCheckboxElement,
+  };
+}
+
+const SettingsChromeCleanupPageElementBase =
+    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+
 class SettingsChromeCleanupPageElement extends
     SettingsChromeCleanupPageElementBase {
   static get is() {
@@ -159,108 +152,91 @@ class SettingsChromeCleanupPageElement extends
         notify: true,
       },
 
-      /** @private */
       title_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       explanation_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isWaitingForResult_: {
         type: Boolean,
         value: '',
       },
 
-      /** @private */
       showActionButton_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       cleanupEnabled_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       actionButtonLabel_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       showExplanation_: {
         type: Boolean,
         computed: 'computeShowExplanation_(explanation_)',
       },
 
-      /** @private */
       showLogsPermission_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       showItemsToRemove_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       itemsToRemoveSectionExpanded_: {
         type: Boolean,
         value: false,
         observer: 'itemsToRemoveSectionExpandedChanged_',
       },
 
-      /** @private */
       showItemsLinkLabel_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       showingAllFiles_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!ChromeCleanerScannerResults} */
       scannerResults_: {
-        type: Array,
+        type: Object,
         value() {
           return {'files': [], 'registryKeys': []};
         },
       },
 
-      /** @private */
       hasFilesToShow_: {
         type: Boolean,
         computed: 'computeHasFilesToShow_(scannerResults_)',
       },
 
-      /** @private */
       hasRegistryKeysToShow_: {
         type: Boolean,
         computed: 'computeHasRegistryKeysToShow_(scannerResults_)',
       },
 
-      /** @private {chrome.settingsPrivate.PrefObject} */
       logsUploadPref_: {
         type: Object,
         value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
+          return {};
         },
       },
 
-      /** @private */
       isPoweredByPartner_: {
         type: Boolean,
         value: false,
@@ -268,39 +244,52 @@ class SettingsChromeCleanupPageElement extends
 
       /**
        * Virtual pref that's attached to the notification checkbox.
-       * @private {!chrome.settingsPrivate.PrefObject}
        */
       notificationEnabledPref_: {
         type: Object,
         value() {
-          return /** @type {chrome.settingsPrivate.PrefObject} */ ({
+          return {
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: false,
-          });
+          };
         },
       },
     };
   }
 
+  private title_: string;
+  private explanation_: string;
+  private isWaitingForResult_: boolean;
+  private showActionButton_: boolean;
+  private cleanupEnabled_: boolean;
+  private actionButtonLabel_: string;
+  private showExplanation_: boolean;
+  private showLogsPermission_: boolean;
+  private showNotificationPermission_: boolean;
+  private showItemsToRemove_: boolean;
+  private itemsToRemoveSectionExpanded_: boolean;
+  private showItemsLinkLabel_: string;
+  private showingAllFiles_: boolean;
+  private scannerResults_: ChromeCleanerScannerResults;
+  private hasFilesToShow_: boolean;
+  private hasRegistryKeysToShow_: boolean;
+  private logsUploadPref_: chrome.settingsPrivate.PrefObject;
+  private isPoweredByPartner_: boolean;
+  private notificationEnabledPref_: chrome.settingsPrivate.PrefObject;
+
+  private emptyChromeCleanerScannerResults_:
+      ChromeCleanerScannerResults = {files: [], registryKeys: []};
+  private browserProxy_: ChromeCleanupProxy =
+      ChromeCleanupProxyImpl.getInstance();
+  private doAction_: (() => void)|null = null;
+  private cardStateToComponentsMap_:
+      Map<ChromeCleanerCardState, ChromeCleanupCardComponents>|null = null;
+  private ongoingAction_: ChromeCleanupOngoingAction =
+      ChromeCleanupOngoingAction.NONE;
+  private renderScanOfferedByDefault_: boolean;
+
   constructor() {
     super();
-
-    /** @private {!ChromeCleanerScannerResults} */
-    this.emptyChromeCleanerScannerResults_ = {'files': [], 'registryKeys': []};
-
-    /** @private {!ChromeCleanupProxy} */
-    this.browserProxy_ = ChromeCleanupProxyImpl.getInstance();
-
-    /** @private {?function()} */
-    this.doAction_ = null;
-
-    /**
-     * @private {?Map<ChromeCleanerCardState, !ChromeCleanupCardComponents>}
-     */
-    this.cardStateToComponentsMap_ = null;
-
-    /** @private {ChromeCleanupOngoingAction} */
-    this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
 
     /**
      * If true; the scan offered view is rendered on state idle, regardless of
@@ -309,92 +298,86 @@ class SettingsChromeCleanupPageElement extends
      * other tabs or if this tab is reloaded.
      * Set to false whenever there is a transition to a non-idle state while the
      * current tab is open.
-     * @private {boolean}
      */
     this.renderScanOfferedByDefault_ = true;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     this.cardStateToComponentsMap_ = this.buildCardStateToComponentsMap_();
 
-    this.addWebUIListener('chrome-cleanup-on-idle', this.onIdle_.bind(this));
     this.addWebUIListener(
-        'chrome-cleanup-on-scanning', this.onScanning_.bind(this));
+        'chrome-cleanup-on-idle',
+        (idleReason: string) => this.onIdle_(idleReason));
+    this.addWebUIListener(
+        'chrome-cleanup-on-scanning', () => this.onScanning_());
     // Note: both reporter running and scanning share the same UI.
     this.addWebUIListener(
-        'chrome-cleanup-on-reporter-running', this.onScanning_.bind(this));
+        'chrome-cleanup-on-reporter-running', () => this.onScanning_());
     this.addWebUIListener(
-        'chrome-cleanup-on-infected', this.onInfected_.bind(this));
+        'chrome-cleanup-on-infected',
+        (isPoweredByPartner: boolean,
+         scannerResults: ChromeCleanerScannerResults) =>
+            this.onInfected_(isPoweredByPartner, scannerResults));
     this.addWebUIListener(
-        'chrome-cleanup-on-cleaning', this.onCleaning_.bind(this));
+        'chrome-cleanup-on-cleaning',
+        (isPoweredByPartner: boolean,
+         scannerResults: ChromeCleanerScannerResults) =>
+            this.onCleaning_(isPoweredByPartner, scannerResults));
     this.addWebUIListener(
-        'chrome-cleanup-on-reboot-required', this.onRebootRequired_.bind(this));
+        'chrome-cleanup-on-reboot-required', () => this.onRebootRequired_());
     this.addWebUIListener(
         'chrome-cleanup-enabled-change',
-        this.onCleanupEnabledChange_.bind(this));
+        (enabled: boolean) => this.onCleanupEnabledChange_(enabled));
     this.browserProxy_.registerChromeCleanerObserver();
   }
 
   /**
    * Implements the action for the only visible button in the UI, which can be
    * either to start an action such as a cleanup or to restart the computer.
-   * @private
    */
-  proceed_() {
-    this.doAction_();
+  private proceed_() {
+    this.doAction_!();
   }
 
   /**
    * Notifies Chrome that the details section was opened or closed.
-   * @private
    */
-  itemsToRemoveSectionExpandedChanged_(newVal, oldVal) {
+  private itemsToRemoveSectionExpandedChanged_(
+      newVal: boolean, oldVal: boolean) {
     if (!oldVal && newVal) {
       this.browserProxy_.notifyShowDetails(this.itemsToRemoveSectionExpanded_);
     }
   }
 
-  /**
-   * @param {string} explanation
-   * @return {boolean}
-   * @private
-   */
-  computeShowExplanation_(explanation) {
+  private computeShowExplanation_(explanation: string): boolean {
     return explanation !== '';
   }
 
   /**
-   * Returns true if there are files to show to the user.
-   * @param {!ChromeCleanerScannerResults} scannerResults The cleanup
-   *     items to be presented to the user.
-   * @return {boolean}
-   * @private
+   * @param scannerResults The cleanup items to be presented to the user.
+   * @return Whether there are files to show to the user.
    */
-  computeHasFilesToShow_(scannerResults) {
+  private computeHasFilesToShow_(scannerResults: ChromeCleanerScannerResults):
+      boolean {
     return scannerResults.files.length > 0;
   }
 
   /**
-   * Returns true if user-initiated cleanups are enabled and there are
-   * registry keys to show to the user.
-   * @param {!ChromeCleanerScannerResults} scannerResults The cleanup
-   *     items to be presented to the user.
-   * @return {boolean}
-   * @private
+   * @param scannerResults The cleanup items to be presented to the user.
+   * @return Whether user-initiated cleanups are enabled and there are registry
+   *     keys to show to the user.
    */
-  computeHasRegistryKeysToShow_(scannerResults) {
+  private computeHasRegistryKeysToShow_(
+      scannerResults: ChromeCleanerScannerResults): boolean {
     return scannerResults.registryKeys.length > 0;
   }
 
   /**
    * Listener of event 'chrome-cleanup-on-idle'.
-   * @param {string} idleReason
-   * @private
    */
-  onIdle_(idleReason) {
+  private onIdle_(idleReason: string) {
     const lastAction = this.ongoingAction_;
     this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
@@ -451,9 +434,8 @@ class SettingsChromeCleanupPageElement extends
    * Listener of event 'chrome-cleanup-on-scanning'.
    * No UI will be shown in the Settings page on that state, simply hide the
    * card and cleanup this element's fields.
-   * @private
    */
-  onScanning_() {
+  private onScanning_() {
     this.ongoingAction_ = ChromeCleanupOngoingAction.SCANNING;
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
     this.renderScanOfferedByDefault_ = false;
@@ -463,13 +445,13 @@ class SettingsChromeCleanupPageElement extends
   /**
    * Listener of event 'chrome-cleanup-on-infected'.
    * Offers a cleanup to the user and enables presenting files to be removed.
-   * @param {boolean} isPoweredByPartner If scanning results are provided by a
-   *     partner's engine.
-   * @param {!ChromeCleanerScannerResults} scannerResults The cleanup
-   *     items to be presented to the user.
-   * @private
+   * @param isPoweredByPartner If scanning results are provided by a partner's
+   *     engine.
+   * @param scannerResults The cleanup items to be presented to the user.
    */
-  onInfected_(isPoweredByPartner, scannerResults) {
+  private onInfected_(
+      isPoweredByPartner: boolean,
+      scannerResults: ChromeCleanerScannerResults) {
     this.isPoweredByPartner_ = isPoweredByPartner;
     this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
     this.renderScanOfferedByDefault_ = false;
@@ -482,13 +464,13 @@ class SettingsChromeCleanupPageElement extends
    * Listener of event 'chrome-cleanup-on-cleaning'.
    * Shows a spinner indicating that an on-going action and enables presenting
    * files to be removed.
-   * @param {boolean} isPoweredByPartner If scanning results are provided by a
-   *     partner's engine.
-   * @param {!ChromeCleanerScannerResults} scannerResults The cleanup
-   *     items to be presented to the user.
-   * @private
+   * @param isPoweredByPartner If scanning results are provided by a partner's
+   *     engine.
+   * @param scannerResults The cleanup items to be presented to the user.
    */
-  onCleaning_(isPoweredByPartner, scannerResults) {
+  private onCleaning_(
+      isPoweredByPartner: boolean,
+      scannerResults: ChromeCleanerScannerResults) {
     this.isPoweredByPartner_ = isPoweredByPartner;
     this.ongoingAction_ = ChromeCleanupOngoingAction.CLEANING;
     this.renderScanOfferedByDefault_ = false;
@@ -501,9 +483,8 @@ class SettingsChromeCleanupPageElement extends
    * Listener of event 'chrome-cleanup-on-reboot-required'.
    * No UI will be shown in the Settings page on that state, so we simply hide
    * the card and cleanup this element's fields.
-   * @private
    */
-  onRebootRequired_() {
+  private onRebootRequired_() {
     this.ongoingAction_ = ChromeCleanupOngoingAction.NONE;
     this.scannerResults_ = this.emptyChromeCleanerScannerResults_;
     this.renderScanOfferedByDefault_ = false;
@@ -512,28 +493,26 @@ class SettingsChromeCleanupPageElement extends
 
   /**
    * Renders the cleanup card given the state and list of files.
-   * @param {!ChromeCleanerCardState} state The card state to be
-   *     rendered.
-   * @private
+   * @param state The card state to be rendered.
    */
-  renderCleanupCard_(state) {
-    const components = this.cardStateToComponentsMap_.get(state);
+  private renderCleanupCard_(state: ChromeCleanerCardState) {
+    const components = this.cardStateToComponentsMap_!.get(state);
     assert(components);
 
-    this.title_ = components.title || '';
-    this.explanation_ = components.explanation || '';
-    this.updateActionButton_(components.actionButton);
-    this.updateCardFlags_(components.flags);
+    this.title_ = components!.title || '';
+    this.explanation_ = components!.explanation || '';
+    this.updateActionButton_(components!.actionButton);
+    this.updateCardFlags_(components!.flags);
   }
 
   /**
    * Updates the action button on the cleanup card as the action expected for
    * the current state.
-   * @param {?ChromeCleanupCardActionButton} actionButton
-   *     The button to render, or null if no button should be shown.
-   * @private
+   * @param actionButton The button to render, or null if no button should be
+   *     shown.
    */
-  updateActionButton_(actionButton) {
+  private updateActionButton_(actionButton: ChromeCleanupCardActionButton|
+                              null) {
     if (!actionButton) {
       this.showActionButton_ = false;
       this.actionButtonLabel_ = '';
@@ -548,11 +527,9 @@ class SettingsChromeCleanupPageElement extends
   /**
    * Updates boolean flags corresponding to optional components to be rendered
    * on the card.
-   * @param {number} flags Flags indicating optional components to be
-   *     rendered.
-   * @private
+   * @param flags Flags indicating optional components to be rendered.
    */
-  updateCardFlags_(flags) {
+  private updateCardFlags_(flags: number) {
     this.showLogsPermission_ =
         (flags & ChromeCleanupCardFlags.SHOW_LOGS_PERMISSIONS) !== 0;
     this.isWaitingForResult_ =
@@ -568,36 +545,32 @@ class SettingsChromeCleanupPageElement extends
   }
 
   /**
-   * @param {boolean} enabled Whether cleanup is enabled.
-   * @private
+   * @param enabled Whether cleanup is enabled.
    */
-  onCleanupEnabledChange_(enabled) {
+  private onCleanupEnabledChange_(enabled: boolean) {
     this.cleanupEnabled_ = enabled;
   }
 
   /**
    * Sends an action to the browser proxy to start scanning.
-   * @private
    */
-  startScanning_() {
+  private startScanning_() {
     this.browserProxy_.startScanning(
         this.$.chromeCleanupLogsUploadControl.checked);
   }
 
   /**
    * Sends an action to the browser proxy to start the cleanup.
-   * @private
    */
-  startCleanup_() {
+  private startCleanup_() {
     this.browserProxy_.startCleanup(
         this.$.chromeCleanupLogsUploadControl.checked);
   }
 
   /**
    * Sends an action to the browser proxy to restart the machine.
-   * @private
    */
-  restartComputer_() {
+  private restartComputer_() {
     this.browserProxy_.restartComputer();
   }
 
@@ -607,8 +580,8 @@ class SettingsChromeCleanupPageElement extends
    * since it may require a plural version. Otherwise, use the default value
    * for |chromeCleanupLinkShowItems|.
    */
-  updateShowItemsLinklabel_() {
-    const setShowItemsLabel = text => this.showItemsLinkLabel_ = text;
+  private updateShowItemsLinklabel_() {
+    const setShowItemsLabel = (text: string) => this.showItemsLinkLabel_ = text;
     this.browserProxy_
         .getItemsToRemovePluralString(
             this.scannerResults_.files.length +
@@ -617,12 +590,10 @@ class SettingsChromeCleanupPageElement extends
   }
 
   /**
-   * Returns the map of card states to components to be rendered.
-   * @return {!Map<ChromeCleanerCardState,
-   *               !ChromeCleanupCardComponents>}
-   * @private
+   * @return The map of card states to components to be rendered.
    */
-  buildCardStateToComponentsMap_() {
+  private buildCardStateToComponentsMap_():
+      Map<ChromeCleanerCardState, ChromeCleanupCardComponents> {
     /**
      * The action buttons to show on the card.
      * @enum {ChromeCleanupCardActionButton}
@@ -630,24 +601,24 @@ class SettingsChromeCleanupPageElement extends
     const actionButtons = {
       FIND: {
         label: this.i18n('chromeCleanupFindButtonLabel'),
-        doAction: this.startScanning_.bind(this),
+        doAction: () => this.startScanning_(),
       },
 
       REMOVE: {
         label: this.i18n('chromeCleanupRemoveButtonLabel'),
-        doAction: this.startCleanup_.bind(this),
+        doAction: () => this.startCleanup_(),
       },
 
       RESTART_COMPUTER: {
         label: this.i18n('chromeCleanupRestartButtonLabel'),
-        doAction: this.restartComputer_.bind(this),
+        doAction: () => this.restartComputer_(),
       },
 
       TRY_SCAN_AGAIN: {
         label: this.i18n('chromeCleanupTitleTryAgainButtonLabel'),
         // TODO(crbug.com/776538): do not run the reporter component again.
         // Try downloading the cleaner and scan with it instead.
-        doAction: this.startScanning_.bind(this),
+        doAction: () => this.startScanning_(),
       },
     };
 
@@ -741,21 +712,13 @@ class SettingsChromeCleanupPageElement extends
     ]);
   }
 
-  /**
-   * @param {!Array<string>} list
-   * @return {!Array<ChromeCleanupRemovalListItem>}
-   * @private
-   */
-  getListEntriesFromStrings_(list) {
+  private getListEntriesFromStrings_(list: Array<string>):
+      Array<ChromeCleanupRemovalListItem> {
     return list.map(entry => ({text: entry, highlightSuffix: null}));
   }
 
-  /**
-   * @param {!Array<ChromeCleanupFilePath>} paths
-   * @return {!Array<ChromeCleanupRemovalListItem>}
-   * @private
-   */
-  getListEntriesFromFilePaths_(paths) {
+  private getListEntriesFromFilePaths_(paths: Array<ChromeCleanupFilePath>):
+      Array<ChromeCleanupRemovalListItem> {
     return paths.map(
         path => ({text: path.dirname, highlightSuffix: path.basename}));
   }

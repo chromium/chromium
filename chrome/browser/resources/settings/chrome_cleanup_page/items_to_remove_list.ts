@@ -14,18 +14,17 @@ import {ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
  * For each line in the item list, the text field will be shown in normal
  * style at front of the line. The highlightSuffix will be appended to the end
  * of line and emphasized with bold font.
- * @typedef {{
- *   text: string,
- *   highlightSuffix: ?string,
- * }}
  */
-export let ChromeCleanupRemovalListItem;
+export type ChromeCleanupRemovalListItem = {
+  text: string,
+  highlightSuffix: string|null,
+};
 
 /**
  * The default number of items to show for files, registry keys and extensions
  * on the detailed view when user-initiated cleanups are enabled.
  */
-export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW = 4;
+export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW: number = 4;
 
 /**
  * @fileoverview
@@ -46,7 +45,6 @@ export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW = 4;
  *    </items-to-remove-list>
  */
 
-/** @polymer */
 class ItemsToRemoveListElement extends PolymerElement {
   static get is() {
     return 'items-to-remove-list';
@@ -63,7 +61,6 @@ class ItemsToRemoveListElement extends PolymerElement {
         value: '',
       },
 
-      /** @type {!Array<ChromeCleanupRemovalListItem>} */
       itemsToShow: {
         type: Array,
         observer: 'updateVisibleState_',
@@ -81,7 +78,6 @@ class ItemsToRemoveListElement extends PolymerElement {
       /**
        * The first |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items of |itemsToShow|
        * if the list is longer than |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|.
-       * @private {?Array<ChromeCleanupRemovalListItem>}
        */
       initialItems_: Array,
 
@@ -89,14 +85,12 @@ class ItemsToRemoveListElement extends PolymerElement {
        * The remaining items to be presented that are not included in
        * |initialItems_|. Items in this list are only shown to the user if
        * |expanded_| is true.
-       * @private {?Array<ChromeCleanupRemovalListItem>}
        */
       remainingItems_: Array,
 
       /**
        * The text for the "show more" link available if not all files are
        * visible in the card.
-       * @private
        */
       moreItemsLinkText_: {
         type: String,
@@ -105,8 +99,14 @@ class ItemsToRemoveListElement extends PolymerElement {
     };
   }
 
-  /** @private */
-  expandList_() {
+  title: string;
+  itemsToShow: Array<ChromeCleanupRemovalListItem>;
+  private expanded_: boolean;
+  private initialItems_: Array<ChromeCleanupRemovalListItem>|null;
+  private remainingItems_: Array<ChromeCleanupRemovalListItem>|null;
+  private moreItemsLinkText_: string;
+
+  private expandList_() {
     this.expanded_ = true;
     this.moreItemsLinkText_ = '';
   }
@@ -121,10 +121,9 @@ class ItemsToRemoveListElement extends PolymerElement {
    *    visible and the "show more" link will be rendered. The list presented
    * to the user will contain exactly |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW|
    *    elements, and the last one will be the "show more" link.
-   *
-   * @param {!Array<ChromeCleanupRemovalListItem>} itemsToShow
    */
-  updateVisibleState_(itemsToShow) {
+  private updateVisibleState_(itemsToShow:
+                                  Array<ChromeCleanupRemovalListItem>) {
     // Start expanded if there are less than
     // |CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW| items to show.
     this.expanded_ = itemsToShow.length <= CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW;
@@ -151,18 +150,12 @@ class ItemsToRemoveListElement extends PolymerElement {
   /**
    * Returns the class for the <li> elements that correspond to the items
    * hidden in the default view.
-   * @param {boolean} expanded
    */
-  remainingItemsClass_(expanded) {
+  private remainingItemsClass_(expanded: boolean): string {
     return expanded ? 'visible-item' : 'hidden-item';
   }
 
-  /**
-   * @param {ChromeCleanupRemovalListItem} item
-   * @return {boolean} Whether a highlight suffix exists.
-   * @private
-   */
-  hasHighlightSuffix_(item) {
+  private hasHighlightSuffix_(item: ChromeCleanupRemovalListItem): boolean {
     return item.highlightSuffix !== null;
   }
 }
