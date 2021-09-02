@@ -3766,14 +3766,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                            scenario:menuScenario];
 
   if (isLink) {
-    if (link.SchemeIs(url::kJavaScriptScheme)) {
-      // Open.
-      UIAction* open = [actionFactory actionToOpenJavascriptWithBlock:^{
-        [weakSelf openJavascript:base::SysUTF8ToNSString(link.GetContent())];
-      }];
-      [menuElements addObject:open];
-    }
-
     if (web::UrlHasWebScheme(link)) {
       // Open in New Tab.
       UrlLoadParams loadParams = UrlLoadParams::InNewTab(link);
@@ -3822,11 +3814,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           [menuElements addObject:addToReadingList];
         }
       }
-
-      // Copy Link.
-      UIAction* copyLink = [actionFactory actionToCopyURL:link];
-      [menuElements addObject:copyLink];
     }
+
+    // Copy Link.
+    UIAction* copyLink = [actionFactory actionToCopyURL:link];
+    [menuElements addObject:copyLink];
   }
 
   if (isImage) {

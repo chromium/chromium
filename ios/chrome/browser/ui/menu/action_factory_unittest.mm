@@ -321,25 +321,6 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
   }
 }
 
-// Tests that the Open with JavaScript evaluation has have the right titles and
-// image.
-TEST_F(ActionFactoryTest, OpenWithJavaScript) {
-  if (@available(iOS 13.0, *)) {
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open"];
-
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPEN);
-
-    UIAction* actionWithBlock = [factory actionToOpenJavascriptWithBlock:^{
-    }];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
-    EXPECT_EQ(expectedImage, actionWithBlock.image);
-  }
-}
-
 // Tests that the save image action has the right title and image.
 TEST_F(ActionFactoryTest, SaveImageAction) {
   if (@available(iOS 13.0, *)) {

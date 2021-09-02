@@ -80,10 +80,6 @@ class GURL;
 // invoke the |block| when executed.
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance configured for executing JavaScript evalutation
-// The action will invoke the |block| when executed.
-- (UIAction*)actionToOpenJavascriptWithBlock:(ProceduralBlock)block;
-
 // Creates a UIAction instance for adding to the reading list.
 - (UIAction*)actionToAddToReadingListWithBlock:(ProceduralBlock)block;
 
