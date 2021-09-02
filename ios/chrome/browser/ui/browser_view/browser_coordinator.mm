@@ -336,6 +336,10 @@
   [self.badgePopupMenuCoordinator start];
 }
 
+- (void)dismissPopupMenu {
+  [self.badgePopupMenuCoordinator stop];
+}
+
 #pragma mark - Private
 
 // Shows a default promo with the passed type or nothing if a tailored promo is

@@ -275,6 +275,9 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   for (id<BadgeItem> item in self.badges) {
     if (item.badgeType == badgeItem.badgeType) {
       [self.badges removeObject:item];
+      if ([self.badges count] == 1) {
+        [self.dispatcher dismissPopupMenu];
+      }
       [self updateBadgesShown];
       return;
     }

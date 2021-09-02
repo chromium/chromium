@@ -32,6 +32,9 @@
 // Displays the Badge popup menu showing |badgeItems|.
 - (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
 
+// Dismisses the Badge popup menu.
+- (void)dismissPopupMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_
