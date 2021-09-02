@@ -108,16 +108,6 @@ fuzzer_test("signed_exchange_certificate_chain_fuzzer") {
   seed_corpus = "//content/test/data/fuzzer_corpus/signed_exchange_certificate_chain_data/"
 }
 
-fuzzer_test("appcache_manifest_parser_fuzzer") {
-  sources = [ "appcache_manifest_parser_fuzzer.cc" ]
-  deps = [
-    "//base:i18n",
-    "//content/test:test_support",
-  ]
-  dict = "//content/test/data/fuzzer_dictionaries/appcache_manifest_parser_fuzzer.dict"
-  seed_corpus = "//third_party/blink/web_tests/http/tests/appcache/resources/"
-}
-
 fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   sources = [ "merkle_integrity_source_stream_fuzzer.cc" ]
 
