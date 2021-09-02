@@ -44,7 +44,7 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
                  std::unique_ptr<base::ListValue> args) final {
     EXPECT_EQ(event_name_, event_name);
     EXPECT_EQ(extension_id_, extension_id);
-    EXPECT_EQ(param_count_, args->GetSize());
+    EXPECT_EQ(param_count_, args->GetList().size());
   }
 
  private:

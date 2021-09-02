@@ -145,7 +145,7 @@ void DownloadsHandler::FileSelectionCanceled(void* params) {
 void DownloadsHandler::HandleGetDownloadLocationText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id;
   std::string path;
   CHECK(args->GetString(0, &callback_id));
@@ -187,7 +187,7 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
 void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
     const base::ListValue* args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   bool enable_link = args->GetList()[0].GetBool();
   ec::SetFileSystemConnectorAccountLinkForSettingsPage(
       enable_link, profile_,

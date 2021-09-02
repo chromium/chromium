@@ -123,8 +123,8 @@ void DidGetFileSyncStatusForDump(
     file->SetString("status", SyncFileStatusToString(sync_file_status));
 
   // Once all results have been received, run the callback to signal end.
-  DCHECK_LE(*num_results, files->GetSize());
-  if (++*num_results < files->GetSize())
+  DCHECK_LE(*num_results, files->GetList().size());
+  if (++*num_results < files->GetList().size())
     return;
 
   // `callback` is a DumpFilesCallback, which should only be called
@@ -553,8 +553,8 @@ void SyncFileSystemService::DidDumpFiles(
     const GURL& origin,
     DumpFilesCallback callback,
     std::unique_ptr<base::ListValue> dump_files) {
-  if (!dump_files || !dump_files->GetSize() ||
-      !local_service_ || !remote_service_) {
+  if (!dump_files || !dump_files->GetList().size() || !local_service_ ||
+      !remote_service_) {
     std::move(callback).Run(base::ListValue());
     return;
   }
@@ -571,7 +571,7 @@ void SyncFileSystemService::DidDumpFiles(
       base::OwnedRef(std::move(callback)));
 
   // After all metadata loaded, sync status can be added to each entry.
-  for (size_t i = 0; i < files->GetSize(); ++i) {
+  for (size_t i = 0; i < files->GetList().size(); ++i) {
     base::DictionaryValue* file = nullptr;
     std::string path_string;
     if (!files->GetDictionary(i, &file) ||

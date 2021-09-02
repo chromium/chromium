@@ -66,7 +66,7 @@ void WhatsNewHandler::OnJavascriptDisallowed() {
 }
 
 void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   bool is_auto;

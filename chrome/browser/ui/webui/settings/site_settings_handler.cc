@@ -655,7 +655,7 @@ void SiteSettingsHandler::OnZoomLevelChanged(
 
 void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string host;
   CHECK(args->GetString(0, &host));
   usage_host_ = host;
@@ -669,7 +669,7 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
 }
 
 void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string origin;
   CHECK(args->GetString(0, &origin));
   GURL url(origin);
@@ -686,7 +686,7 @@ void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
 
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string content_type;
   CHECK(args->GetString(0, &content_type));
   std::string setting;
@@ -725,7 +725,7 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string type;
@@ -945,7 +945,7 @@ void SiteSettingsHandler::HandleGetFormattedBytes(const base::ListValue* args) {
 void SiteSettingsHandler::HandleGetExceptionList(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string type;
@@ -982,7 +982,7 @@ void SiteSettingsHandler::HandleGetChooserExceptionList(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string type;
@@ -1050,7 +1050,7 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
 
 void SiteSettingsHandler::HandleSetOriginPermissions(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   std::string origin_string = args->GetList()[0].GetString();
   const std::string* type_string = args->GetList()[1].GetIfString();
   std::string value = args->GetList()[2].GetString();
@@ -1119,7 +1119,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
 
 void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetSize());
+  CHECK_EQ(4U, args->GetList().size());
   std::string primary_pattern_string;
   CHECK(args->GetString(0, &primary_pattern_string));
   std::string secondary_pattern_string;
@@ -1183,7 +1183,7 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
 
 void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
     const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetSize());
+  CHECK_EQ(5U, args->GetList().size());
   std::string primary_pattern_string;
   CHECK(args->GetString(0, &primary_pattern_string));
   std::string secondary_pattern_string;
@@ -1255,7 +1255,7 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
 void SiteSettingsHandler::HandleResetChooserExceptionForSite(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetSize());
+  CHECK_EQ(4U, args->GetList().size());
 
   std::string chooser_type_str;
   CHECK(args->GetString(0, &chooser_type_str));
@@ -1281,7 +1281,7 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
 
 void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string origin_string;
@@ -1294,7 +1294,7 @@ void SiteSettingsHandler::HandleIsOriginValid(const base::ListValue* args) {
 void SiteSettingsHandler::HandleIsPatternValidForType(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string pattern_string;
@@ -1405,7 +1405,7 @@ void SiteSettingsHandler::SendZoomLevels() {
 }
 
 void SiteSettingsHandler::HandleRemoveZoomLevel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
 
   std::string origin;
   CHECK(args->GetString(0, &origin));
@@ -1458,7 +1458,7 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
   if (!UnifiedAutoplayConfig::IsBlockAutoplayUserModifiable(profile_))
     return;
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   bool value;
   CHECK(args->GetBoolean(0, &value));
 
@@ -1582,7 +1582,7 @@ void SiteSettingsHandler::GetOriginCookies(
 
 void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string etld_plus1_string;
   CHECK(args->GetString(0, &etld_plus1_string));
 

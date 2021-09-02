@@ -73,7 +73,7 @@ void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
     const base::ListValue& origins) {
   DVLOG(1)
       << "DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged count="
-      << origins.GetSize();
+      << origins.GetList().size();
 
   url_matcher::URLMatcherConditionSet::ID id(0);
   if (!matcher_->IsEmpty()) {

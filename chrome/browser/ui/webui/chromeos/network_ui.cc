@@ -191,7 +191,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillNetworkProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetSize());
+    CHECK_EQ(2u, arg_list->GetList().size());
     std::string callback_id, guid;
     CHECK(arg_list->GetString(0, &callback_id));
     CHECK(arg_list->GetString(1, &guid));
@@ -227,7 +227,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillDeviceProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetSize());
+    CHECK_EQ(2u, arg_list->GetList().size());
     std::string callback_id, type;
     CHECK(arg_list->GetString(0, &callback_id));
     CHECK(arg_list->GetString(1, &type));
@@ -247,7 +247,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetShillEthernetEAP(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string callback_id;
     CHECK(arg_list->GetString(0, &callback_id));
 
@@ -272,7 +272,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void OpenCellularActivationUi(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string callback_id;
     CHECK(arg_list->GetString(0, &callback_id));
 
@@ -300,7 +300,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string guid;
     CHECK(arg_list->GetString(0, &guid));
 
@@ -308,7 +308,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string guid;
     CHECK(arg_list->GetString(0, &guid));
 
@@ -338,7 +338,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void GetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string callback_id;
     CHECK(arg_list->GetString(0, &callback_id));
     std::string hostname =
@@ -347,7 +347,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void SetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string hostname;
     CHECK(arg_list->GetString(0, &hostname));
     NET_LOG(USER) << "SET HOSTNAME: " << hostname;

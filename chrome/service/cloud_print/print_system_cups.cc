@@ -436,7 +436,7 @@ void PrintSystemCUPS::InitPrintBackends(
   const base::ListValue* url_list;
   if (print_system_settings &&
       print_system_settings->GetList(kCUPSPrintServerURLs, &url_list)) {
-    for (size_t i = 0; i < url_list->GetSize(); i++) {
+    for (size_t i = 0; i < url_list->GetList().size(); i++) {
       std::string print_server_url;
       if (url_list->GetString(i, &print_server_url))
         AddPrintServer(print_server_url);

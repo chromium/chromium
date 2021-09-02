@@ -51,7 +51,7 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue* args) {
 }
 
 void DisplayHandler::HandleDragDisplayDelta(const base::ListValue* args) {
-  DCHECK_EQ(3U, args->GetSize());
+  DCHECK_EQ(3U, args->GetList().size());
   AllowJavascript();
 
   const auto& args_list = args->GetList();

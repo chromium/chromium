@@ -489,7 +489,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
 
 void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const auto& args_list = args->GetList();
   std::string vm_name = args_list[0].GetString();
   std::string container_name = args_list[1].GetString();

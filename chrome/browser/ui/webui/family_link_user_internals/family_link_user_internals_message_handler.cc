@@ -177,7 +177,7 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::ListValue* args) {
-  DCHECK_EQ(2u, args->GetSize());
+  DCHECK_EQ(2u, args->GetList().size());
   std::string callback_id;
   std::string url_str;
   if (!args->GetString(0, &callback_id) || !args->GetString(1, &url_str))

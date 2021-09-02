@@ -165,7 +165,7 @@ bool TestStatsDictionary::GetSequenceBoolean(
     return false;
   std::vector<bool> sequence;
   bool element;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (!list->GetBoolean(i, &element))
       return false;
     sequence.push_back(element);
@@ -201,7 +201,7 @@ bool TestStatsDictionary::GetSequenceString(
     return false;
   std::vector<std::string> sequence;
   std::string element;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (!list->GetString(i, &element))
       return false;
     sequence.push_back(element);

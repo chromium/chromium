@@ -274,7 +274,7 @@ Status GetVisibleCookies(Session* session,
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (size_t i = 0; i < internal_cookies->GetSize(); ++i) {
+  for (size_t i = 0; i < internal_cookies->GetList().size(); ++i) {
     base::DictionaryValue* cookie_dict;
     if (!internal_cookies->GetDictionary(i, &cookie_dict))
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
@@ -1280,7 +1280,7 @@ Status ProcessInputActionSequence(
   }
 
   bool found = false;
-  for (size_t i = 0; i < session->active_input_sources.GetSize(); i++) {
+  for (size_t i = 0; i < session->active_input_sources.GetList().size(); i++) {
     session->active_input_sources.GetDictionary(i, &source);
     DCHECK(source);
 
@@ -1346,7 +1346,7 @@ Status ProcessInputActionSequence(
     return Status(kInvalidArgument, "'actions' must be an array");
 
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (size_t i = 0; i < actions->GetSize(); i++) {
+  for (size_t i = 0; i < actions->GetList().size(); i++) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
 
     const base::DictionaryValue* action_item;
@@ -1568,7 +1568,7 @@ Status ExecutePerformActions(Session* session,
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (size_t i = 0; i < actions_input->GetSize(); i++) {
+  for (size_t i = 0; i < actions_input->GetList().size(); i++) {
     // proccess input action sequence
     const base::DictionaryValue* action_sequence;
     if (!actions_input->GetDictionary(i, &action_sequence))

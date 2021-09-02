@@ -641,7 +641,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
 
   const base::ListValue* app_page_names =
       prefs->GetList(prefs::kNtpAppPageNames);
-  if (!app_page_names || !app_page_names->GetSize()) {
+  if (!app_page_names || !app_page_names->GetList().size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::ListValue* list = update.Get();
     list->Set(0, std::make_unique<base::Value>(
@@ -789,15 +789,15 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
   }
 
   WindowOpenDisposition disposition =
-      args->GetSize() > 3 ? webui::GetDispositionFromClick(args, 3)
-                          : WindowOpenDisposition::CURRENT_TAB;
+      args->GetList().size() > 3 ? webui::GetDispositionFromClick(args, 3)
+                                 : WindowOpenDisposition::CURRENT_TAB;
   if (extension_id != extensions::kWebStoreAppId) {
     CHECK_NE(launch_bucket, extension_misc::APP_LAUNCH_BUCKET_INVALID);
     extensions::RecordAppLaunchType(launch_bucket, type);
   } else {
     extensions::RecordWebStoreLaunch();
 
-    if (args->GetSize() > 2) {
+    if (args->GetList().size() > 2) {
       std::string source_value;
       CHECK(args->GetString(2, &source_value));
       if (!source_value.empty()) {

@@ -253,7 +253,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
     return accounts;
 
   std::set<std::string> account_ids;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     const base::DictionaryValue* entry = NULL;
     if (!list->GetDictionary(i, &entry)) {
       LOG(ERROR) << "Corrupt entry in device-local account list at index " << i

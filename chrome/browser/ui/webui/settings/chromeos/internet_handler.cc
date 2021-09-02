@@ -111,7 +111,7 @@ void InternetHandler::OnGmsCoreNotificationStateChanged() {
 
 void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
   std::string app_id;
-  if (args->GetSize() < 1 || !args->GetString(0, &app_id)) {
+  if (args->GetList().size() < 1 || !args->GetString(0, &app_id)) {
     NOTREACHED() << "Invalid args for: " << kAddThirdPartyVpnMessage;
     return;
   }
@@ -147,7 +147,7 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue* args) {
 
 void InternetHandler::ConfigureThirdPartyVpn(const base::ListValue* args) {
   std::string guid;
-  if (args->GetSize() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }
@@ -207,7 +207,7 @@ void InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames(
 
 void InternetHandler::ShowCarrierAccountDetail(const base::ListValue* args) {
   std::string guid;
-  if (args->GetSize() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
     NOTREACHED() << "Invalid args for: " << kShowCarrierAccountDetail;
     return;
   }
@@ -216,7 +216,7 @@ void InternetHandler::ShowCarrierAccountDetail(const base::ListValue* args) {
 
 void InternetHandler::ShowCellularSetupUI(const base::ListValue* args) {
   std::string guid;
-  if (args->GetSize() < 1 || !args->GetString(0, &guid)) {
+  if (args->GetList().size() < 1 || !args->GetString(0, &guid)) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
     return;
   }

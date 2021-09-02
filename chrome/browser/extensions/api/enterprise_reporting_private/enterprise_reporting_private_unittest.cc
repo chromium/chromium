@@ -118,7 +118,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetSize());
+  EXPECT_EQ(0u, function->GetResultList()->GetList().size());
   EXPECT_TRUE(function->GetError().empty());
 }
 
@@ -131,7 +131,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(1u, function->GetResultList()->GetSize());
+  EXPECT_EQ(1u, function->GetResultList()->GetList().size());
   EXPECT_TRUE(function->GetError().empty());
 
   const base::Value* single_result = nullptr;
@@ -163,7 +163,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
                                              browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(function->GetResultList());
-  EXPECT_EQ(0u, function->GetResultList()->GetSize());
+  EXPECT_EQ(0u, function->GetResultList()->GetList().size());
   EXPECT_FALSE(function->GetError().empty());
 }
 
@@ -215,7 +215,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
                                              std::move(values2), browser(),
                                              extensions::api_test_utils::NONE);
   ASSERT_TRUE(get_function2->GetResultList());
-  EXPECT_EQ(1u, get_function2->GetResultList()->GetSize());
+  EXPECT_EQ(1u, get_function2->GetResultList()->GetList().size());
   EXPECT_TRUE(get_function2->GetError().empty());
 
   EXPECT_TRUE(get_function2->GetResultList()->Get(0, &single_result));

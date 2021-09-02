@@ -46,7 +46,7 @@ void AppendPrintersAndRunCallbackIfDone(base::ListValue* printers_out,
                                         base::RepeatingClosure callback,
                                         const base::ListValue& printers,
                                         bool done) {
-  for (size_t i = 0; i < printers.GetSize(); ++i) {
+  for (size_t i = 0; i < printers.GetList().size(); ++i) {
     const base::DictionaryValue* printer = NULL;
     EXPECT_TRUE(printers.GetDictionary(i, &printer))
         << "Found invalid printer value at index " << i << ": " << printers;
@@ -265,7 +265,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
   void ValidatePrinterListValue(
       const base::ListValue& printers,
       const std::vector<std::unique_ptr<base::Value>>& expected_printers) {
-    ASSERT_EQ(expected_printers.size(), printers.GetSize());
+    ASSERT_EQ(expected_printers.size(), printers.GetList().size());
     for (const auto& printer_value : expected_printers) {
       EXPECT_TRUE(base::Contains(printers.GetList(), *printer_value))
           << "Unable to find " << *printer_value << " in " << printers;

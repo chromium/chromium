@@ -92,7 +92,7 @@ void PeripheralDataAccessHandler::OnJavascriptDisallowed() {}
 void PeripheralDataAccessHandler::HandleThunderboltSupported(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
 
   // PathExist is a blocking call. PostTask it and wait on the result.
@@ -106,7 +106,7 @@ void PeripheralDataAccessHandler::HandleThunderboltSupported(
 void PeripheralDataAccessHandler::HandleGetPolicyState(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
 
   const std::string& pref_name = InstallAttributes::Get()->IsEnterpriseManaged()

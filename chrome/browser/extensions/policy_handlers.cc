@@ -309,7 +309,7 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     for (const char* key : host_keys) {
       const base::ListValue* unparsed_urls;
       if (sub_dict->GetList(key, &unparsed_urls)) {
-        for (size_t i = 0; i < unparsed_urls->GetSize(); ++i) {
+        for (size_t i = 0; i < unparsed_urls->GetList().size(); ++i) {
           std::string unparsed_url;
           unparsed_urls->GetString(i, &unparsed_url);
           URLPattern pattern(extension_scheme_mask);

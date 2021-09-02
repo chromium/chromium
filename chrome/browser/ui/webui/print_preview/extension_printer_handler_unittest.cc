@@ -619,7 +619,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
   EXPECT_EQ(1u, call_count);
   EXPECT_FALSE(is_done);
   EXPECT_TRUE(printers.get());
-  EXPECT_EQ(2u, printers->GetSize());
+  EXPECT_EQ(2u, printers->GetList().size());
   std::unique_ptr<base::DictionaryValue> extension_1_entry(
       DictionaryBuilder()
           .Set("id", base::StringPrintf("provisional-usb:%s:%s",

@@ -577,11 +577,11 @@ ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   }
   // Return a list of all cookie stores with at least one open tab.
   std::vector<api::cookies::CookieStore> cookie_stores;
-  if (original_tab_ids->GetSize() > 0) {
+  if (original_tab_ids->GetList().size() > 0) {
     cookie_stores.push_back(cookies_helpers::CreateCookieStore(
         original_profile, std::move(original_tab_ids)));
   }
-  if (incognito_tab_ids.get() && incognito_tab_ids->GetSize() > 0 &&
+  if (incognito_tab_ids.get() && incognito_tab_ids->GetList().size() > 0 &&
       incognito_profile) {
     cookie_stores.push_back(cookies_helpers::CreateCookieStore(
         incognito_profile, std::move(incognito_tab_ids)));

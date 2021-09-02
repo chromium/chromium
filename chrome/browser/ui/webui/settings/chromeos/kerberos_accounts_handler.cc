@@ -227,7 +227,7 @@ void KerberosAccountsHandler::HandleGetKerberosAccounts(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
 
   if (!kerberos_credentials_manager_->IsKerberosEnabled()) {
@@ -291,7 +291,7 @@ void KerberosAccountsHandler::HandleAddKerberosAccount(
   //   - Prevent account changes when Kerberos is disabled.
   //   - Remove all accounts when Kerberos is disabled.
 
-  CHECK_EQ(6U, args->GetSize());
+  CHECK_EQ(6U, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& principal_name = args->GetList()[1].GetString();
   const std::string& password = args->GetList()[2].GetString();
@@ -323,7 +323,7 @@ void KerberosAccountsHandler::HandleRemoveKerberosAccount(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& principal_name = args->GetList()[1].GetString();
 
@@ -348,7 +348,7 @@ void KerberosAccountsHandler::HandleValidateKerberosConfig(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& krb5conf = args->GetList()[1].GetString();
 
@@ -383,7 +383,7 @@ void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const std::string& principal_name = args->GetList()[0].GetString();
 
   kerberos_credentials_manager_->SetActiveAccount(principal_name);

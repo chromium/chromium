@@ -400,7 +400,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
       continue;
     }
 
-    for (size_t i = 0; i < component_list->GetSize(); ++i) {
+    for (size_t i = 0; i < component_list->GetList().size(); ++i) {
       const base::DictionaryValue* dictionary;
       if (!component_list->GetDictionary(i, &dictionary))
         continue;

@@ -36,7 +36,7 @@ void NotificationsInternalsUIMessageHandler::RegisterMessages() {
 
 void NotificationsInternalsUIMessageHandler::HandleScheduleNotification(
     const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 3u);
+  CHECK_EQ(args->GetList().size(), 3u);
   notifications::ScheduleParams schedule_params;
   schedule_params.deliver_time_start = base::Time::Now();
   schedule_params.deliver_time_end =

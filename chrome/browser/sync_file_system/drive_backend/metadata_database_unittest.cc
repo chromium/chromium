@@ -1161,7 +1161,7 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
 
   std::unique_ptr<base::ListValue> files =
       metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files->GetSize());
+  ASSERT_EQ(2u, files->GetList().size());
 
   base::DictionaryValue* file = nullptr;
   std::string str;

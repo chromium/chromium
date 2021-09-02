@@ -87,7 +87,7 @@ bool AllAllowlistedUsersPresent() {
   const base::ListValue* allowlist = nullptr;
   if (!cros_settings->GetList(kAccountsPrefUsers, &allowlist) || !allowlist)
     return false;
-  for (size_t i = 0; i < allowlist->GetSize(); ++i) {
+  for (size_t i = 0; i < allowlist->GetList().size(); ++i) {
     std::string allowlisted_user;
     // NB: Wildcards in the allowlist are also detected as not present here.
     if (!allowlist->GetString(i, &allowlisted_user) ||

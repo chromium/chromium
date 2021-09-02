@@ -89,7 +89,7 @@ void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
 }
 
 void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 2U);
+  CHECK_EQ(args->GetList().size(), 2U);
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
   std::string url_string;

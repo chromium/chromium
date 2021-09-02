@@ -137,11 +137,11 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   const base::ListValue* args = nullptr;
 
   std::string arg_type;
-  if (!params.GetList("args", &args) || args->GetSize() < 1) {
-       return Status(kUnknownError, "missing or invalid args");
+  if (!params.GetList("args", &args) || args->GetList().size() < 1) {
+    return Status(kUnknownError, "missing or invalid args");
   }
 
-  int arg_count = args->GetSize();
+  int arg_count = args->GetList().size();
   const base::DictionaryValue* current_arg = nullptr;
   for (int i = 0; i < arg_count; i++) {
     if (!args->GetDictionary(i, &current_arg)) {
@@ -202,7 +202,7 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
       preview->GetList("properties", &properties)) {
     // If the event contains an object which is an instance of the JS Error
     // class, attempt to get the message property for the exception.
-    for (size_t i = 0; i < properties->GetSize(); i++) {
+    for (size_t i = 0; i < properties->GetList().size(); i++) {
       const base::DictionaryValue* property = nullptr;
       if (properties->GetDictionary(i, &property)) {
         std::string name;

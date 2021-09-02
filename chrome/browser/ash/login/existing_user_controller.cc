@@ -1516,7 +1516,7 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
     std::unique_ptr<base::ListValue> keyboard_layouts) {
   UserContext new_user_context = user_context;
   std::string keyboard_layout;
-  for (size_t i = 0; i < keyboard_layouts->GetSize(); ++i) {
+  for (size_t i = 0; i < keyboard_layouts->GetList().size(); ++i) {
     base::DictionaryValue* entry = nullptr;
     keyboard_layouts->GetDictionary(i, &entry);
     bool selected = false;

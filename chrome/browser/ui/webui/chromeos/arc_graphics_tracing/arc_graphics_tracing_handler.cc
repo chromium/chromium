@@ -612,7 +612,7 @@ void ArcGraphicsTracingHandler::HandleReady(const base::ListValue* args) {
 
 void ArcGraphicsTracingHandler::HandleSetStopOnJank(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kFull, mode_);
   if (!args->GetList()[0].is_bool()) {
     LOG(ERROR) << "Invalid input";
@@ -622,7 +622,7 @@ void ArcGraphicsTracingHandler::HandleSetStopOnJank(
 }
 
 void ArcGraphicsTracingHandler::HandleSetMaxTime(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kOverview, mode_);
 
   if (!args->GetList()[0].is_int()) {
@@ -635,7 +635,7 @@ void ArcGraphicsTracingHandler::HandleSetMaxTime(const base::ListValue* args) {
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;

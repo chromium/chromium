@@ -669,7 +669,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
 }
 
 void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetSize());
+  DCHECK_EQ(2U, args->GetList().size());
   std::string callback_id;
   std::string json_str;
 
@@ -1232,7 +1232,7 @@ void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {
-    ReportNumberOfPrinters(printers.GetSize());
+    ReportNumberOfPrinters(printers.GetList().size());
     has_logged_printers_count_ = true;
   }
 }

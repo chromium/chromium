@@ -48,7 +48,7 @@ void FontHandler::OnJavascriptAllowed() {}
 void FontHandler::OnJavascriptDisallowed() {}
 
 void FontHandler::HandleFetchFontsData(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 

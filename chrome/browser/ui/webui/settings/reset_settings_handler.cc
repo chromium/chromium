@@ -135,7 +135,7 @@ void ResetSettingsHandler::HandleResetProfileSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   bool send_settings = false;
@@ -181,7 +181,7 @@ void ResetSettingsHandler::HandleGetReportedSettings(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -270,7 +270,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 

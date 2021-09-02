@@ -103,15 +103,15 @@ void BuildTabSpecifics(const std::string& tag,
 
 testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
                                             size_t num_sessions) {
-  EXPECT_EQ(5u, devices.GetSize());
+  EXPECT_EQ(5u, devices.GetList().size());
   const base::DictionaryValue* device = NULL;
   const base::ListValue* sessions = NULL;
-  for (size_t i = 0; i < devices.GetSize(); ++i) {
+  for (size_t i = 0; i < devices.GetList().size(); ++i) {
     EXPECT_TRUE(devices.GetDictionary(i, &device));
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "info"));
     EXPECT_EQ(kSessionTags[i], api_test_utils::GetString(device, "deviceName"));
     EXPECT_TRUE(device->GetList("sessions", &sessions));
-    EXPECT_EQ(num_sessions, sessions->GetSize());
+    EXPECT_EQ(num_sessions, sessions->GetList().size());
     // Because this test is hurried, really there are only ever 0 or 1
     // sessions, and if 1, that will be a Window. Grab it.
     if (num_sessions == 0)
@@ -123,8 +123,8 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
     // Only the tabs are interesting.
     const base::ListValue* tabs = NULL;
     EXPECT_TRUE(window->GetList("tabs", &tabs));
-    EXPECT_EQ(base::size(kTabIDs), tabs->GetSize());
-    for (size_t j = 0; j < tabs->GetSize(); ++j) {
+    EXPECT_EQ(base::size(kTabIDs), tabs->GetList().size());
+    for (size_t j = 0; j < tabs->GetList().size(); ++j) {
       const base::DictionaryValue* tab = NULL;
       EXPECT_TRUE(tabs->GetDictionary(j, &tab));
       EXPECT_FALSE(tab->HasKey("id"));  // sessions API does not give tab IDs
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
 
   ASSERT_TRUE(result);
   base::ListValue* devices = result.get();
-  EXPECT_EQ(0u, devices->GetSize());
+  EXPECT_EQ(0u, devices->GetList().size());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
@@ -317,13 +317,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   ASSERT_TRUE(result);
 
   base::ListValue* windows = result.get();
-  EXPECT_EQ(2u, windows->GetSize());
+  EXPECT_EQ(2u, windows->GetList().size());
   base::DictionaryValue* restored_window = NULL;
   EXPECT_TRUE(restored_window_session->GetDictionary("window",
                                                      &restored_window));
   base::DictionaryValue* window = NULL;
   int restored_id = api_test_utils::GetInteger(restored_window, "id");
-  for (size_t i = 0; i < windows->GetSize(); ++i) {
+  for (size_t i = 0; i < windows->GetList().size(); ++i) {
     EXPECT_TRUE(windows->GetDictionary(i, &window));
     if (api_test_utils::GetInteger(window, "id") == restored_id)
       break;
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedIncognito) {
           CreateIncognitoBrowser())));
   ASSERT_TRUE(result);
   base::ListValue* sessions = result.get();
-  EXPECT_EQ(0u, sessions->GetSize());
+  EXPECT_EQ(0u, sessions->GetList().size());
 }
 
 // http://crbug.com/251199

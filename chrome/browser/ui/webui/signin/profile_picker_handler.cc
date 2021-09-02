@@ -421,7 +421,7 @@ void ProfilePickerHandler::HandleAskOnStartupChanged(
 void ProfilePickerHandler::HandleGetNewProfileSuggestedThemeInfo(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
   chrome_colors::ColorInfo color_info = GenerateNewProfileColor();
   int avatar_icon_size =
@@ -463,7 +463,7 @@ void ProfilePickerHandler::HandleGetProfileThemeInfo(
 void ProfilePickerHandler::HandleGetAvailableIcons(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(
       callback_id,
@@ -498,7 +498,7 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
 
 void ProfilePickerHandler::HandleGetSwitchProfile(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value& callback_id = args->GetList()[0];
   int avatar_icon_size =
       kProfileCardAvatarSize * web_ui()->GetDeviceScaleFactor();
@@ -607,7 +607,7 @@ void ProfilePickerHandler::HandleRecordSignInPromoImpression(
 }
 
 void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
@@ -629,7 +629,7 @@ void ProfilePickerHandler::HandleSetProfileName(const base::ListValue* args) {
 }
 
 void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
@@ -652,7 +652,7 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue* args) {
 void ProfilePickerHandler::HandleGetProfileStatistics(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value& profile_path_value = args->GetList()[0];
   absl::optional<base::FilePath> profile_path =
       base::ValueToFilePath(profile_path_value);
@@ -699,7 +699,7 @@ void ProfilePickerHandler::OnProfileStatisticsReceived(
 
 void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {

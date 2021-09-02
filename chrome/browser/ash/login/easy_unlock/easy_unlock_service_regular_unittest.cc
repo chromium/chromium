@@ -223,7 +223,7 @@ class EasyUnlockServiceRegularTest : public testing::Test {
             ->GetRemoteDevices();
     if (are_local_and_remote_devices_expected)
       // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->GetSize());
+      EXPECT_EQ(2u, remote_devices->GetList().size());
     else
       EXPECT_FALSE(remote_devices);
   }

@@ -509,7 +509,7 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Compress array into a single string.
     std::string paths_string;
-    for (size_t i = 0; i < key_list->GetSize(); ++i) {
+    for (size_t i = 0; i < key_list->GetList().size(); ++i) {
       std::string path_part;
       if (!key_list->GetString(i, &path_part))
         return Status(kInvalidArgument, "'value' is invalid");

@@ -37,7 +37,7 @@ void WallpaperHandler::RegisterMessages() {
 
 void WallpaperHandler::HandleIsWallpaperSettingVisible(
     const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 1U);
+  CHECK_EQ(args->GetList().size(), 1U);
   ResolveCallback(
       args->GetList()[0],
       WallpaperControllerClientImpl::Get()->ShouldShowWallpaperSetting());
@@ -45,7 +45,7 @@ void WallpaperHandler::HandleIsWallpaperSettingVisible(
 
 void WallpaperHandler::HandleIsWallpaperPolicyControlled(
     const base::ListValue* args) {
-  CHECK_EQ(args->GetSize(), 1U);
+  CHECK_EQ(args->GetList().size(), 1U);
   bool result = WallpaperControllerClientImpl::Get()
                     ->IsActiveUserWallpaperControlledByPolicy();
   ResolveCallback(args->GetList()[0], result);

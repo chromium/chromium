@@ -44,8 +44,8 @@ bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
     return false;
   }
 
-  if (patterns->GetSize() >= kPatternsSizeWarningLevel) {
-    LOG(WARNING) << "Allowed urls list size is " << patterns->GetSize()
+  if (patterns->GetList().size() >= kPatternsSizeWarningLevel) {
+    LOG(WARNING) << "Allowed urls list size is " << patterns->GetList().size()
                  << ". Check may be slow.";
   }
 

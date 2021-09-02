@@ -97,7 +97,7 @@ void AccessibilityHandler::HandleShowSelectToSpeakSettings(
 
 void AccessibilityHandler::HandleSetStartupSoundEnabled(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   bool enabled;
   args->GetBoolean(0, &enabled);
   AccessibilityManager::Get()->SetStartupSoundEnabled(enabled);
@@ -105,7 +105,7 @@ void AccessibilityHandler::HandleSetStartupSoundEnabled(
 
 void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   bool enabled;
   args->GetBoolean(0, &enabled);
 

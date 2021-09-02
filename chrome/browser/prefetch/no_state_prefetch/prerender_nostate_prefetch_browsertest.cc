@@ -362,7 +362,7 @@ class NoStatePrefetchBrowserTest
     base::ListValue* history_list;
     if (!prerender_dict->GetList("history", &history_list))
       return std::numeric_limits<size_t>::max();
-    return history_list->GetSize();
+    return history_list->GetList().size();
   }
 
   // Clears the specified data using BrowsingDataRemover.

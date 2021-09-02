@@ -57,7 +57,7 @@ void SmbHandler::RegisterMessages() {
 }
 
 void SmbHandler::HandleSmbMount(const base::ListValue* args) {
-  CHECK_EQ(8U, args->GetSize());
+  CHECK_EQ(8U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -135,7 +135,7 @@ void SmbHandler::HandleGatherSharesResponse(
 }
 
 void SmbHandler::HandleUpdateCredentials(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
 
   std::string mount_id;
   std::string username;

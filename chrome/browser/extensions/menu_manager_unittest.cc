@@ -621,7 +621,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   manager_.ExecuteCommand(&profile, nullptr /* web_contents */,
                           nullptr /* render_frame_host */, params, id);
 
-  ASSERT_EQ(2u, list->GetSize());
+  ASSERT_EQ(2u, list->GetList().size());
 
   base::DictionaryValue* info;
   ASSERT_TRUE(list->GetDictionary(0, &info));

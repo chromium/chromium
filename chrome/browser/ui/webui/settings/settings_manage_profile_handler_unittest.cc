@@ -86,7 +86,7 @@ class ManageProfileHandlerTest : public testing::Test {
         gaia_selected ||
         (selected_index == profiles::GetPlaceholderAvatarIndex());
 
-    for (size_t i = 1; i < icons->GetSize(); ++i) {
+    for (size_t i = 1; i < icons->GetList().size(); ++i) {
       const base::DictionaryValue* icon = nullptr;
       EXPECT_TRUE(icons->GetDictionary(i, &icon));
       std::string icon_url;

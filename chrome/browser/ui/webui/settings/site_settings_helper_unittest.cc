@@ -101,7 +101,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListWithEmbargoedAndBlockedOrigins) {
                                              /*incognito=*/false, &exceptions);
 
   // |exceptions| size should be 2. One blocked and one embargoed origins.
-  ASSERT_EQ(2U, exceptions.GetSize());
+  ASSERT_EQ(2U, exceptions.GetList().size());
   base::Value* value = nullptr;
   // Get last added origin.
   exceptions.Get(0, &value);
@@ -148,7 +148,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.GetList().size());
   }
 
   TestingProfile* incognito_profile =
@@ -162,7 +162,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_EQ(0U, exceptions.GetList().size());
   }
 
   {
@@ -183,7 +183,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*incognito=*/true, &exceptions);
     // The exceptions size should be 1 because previously embargoed origin
     // was for a non-incognito profile.
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.GetList().size());
   }
 
   // Add an origin under embargo for incognito profile.
@@ -209,7 +209,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsIncognitoEmbargoed) {
                                                /*extension_registry=*/nullptr,
                                                /*web_ui=*/nullptr,
                                                /*incognito=*/true, &exceptions);
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.GetList().size());
   }
 }
 
@@ -225,7 +225,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_EQ(0U, exceptions.GetList().size());
   }
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
@@ -239,7 +239,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeNotifications, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.GetList().size());
   }
 
   // Add an origin under embargo.
@@ -265,7 +265,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.GetList().size());
 
     // Fetch and check the first origin.
     const base::DictionaryValue* dictionary;
@@ -298,7 +298,7 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
         kContentTypeCookies, &profile, /*extension_registry=*/nullptr,
         /*web_ui=*/nullptr,
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_EQ(0U, exceptions.GetList().size());
   }
 }
 
@@ -313,7 +313,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
                               /*extension_registry=*/nullptr,
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
-  EXPECT_EQ(0u, exceptions.GetSize());
+  EXPECT_EQ(0u, exceptions.GetList().size());
 
   map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
 
@@ -353,7 +353,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
                               /*web_ui=*/nullptr,
                               /*incognito=*/false, &exceptions);
 
-  EXPECT_EQ(5u, exceptions.GetSize());
+  EXPECT_EQ(5u, exceptions.GetList().size());
 
   // The policy exception should be returned first, the extension exception
   // second and pref exceptions afterwards.

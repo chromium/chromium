@@ -208,7 +208,7 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
   std::unique_ptr<base::ListValue> result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
                                                             "[]", browser())));
-  return result->GetSize();
+  return result->GetList().size();
 }
 
 bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(

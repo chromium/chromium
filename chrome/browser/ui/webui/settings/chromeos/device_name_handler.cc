@@ -65,7 +65,7 @@ void DeviceNameHandler::HandleAttemptSetDeviceName(
     const base::ListValue* args) {
   AllowJavascript();
 
-  DCHECK_EQ(2U, args->GetSize());
+  DCHECK_EQ(2U, args->GetList().size());
   const base::Value::ConstListView args_list = args->GetList();
   const std::string callback_id = args_list[0].GetString();
   const std::string name_from_user = args_list[1].GetString();

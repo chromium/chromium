@@ -182,7 +182,7 @@ void EnterpriseProfileWelcomeHandler::OnJavascriptDisallowed() {
 
 void EnterpriseProfileWelcomeHandler::HandleInitialized(
     const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());

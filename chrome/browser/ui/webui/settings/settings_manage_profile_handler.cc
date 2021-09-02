@@ -129,7 +129,7 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 
@@ -205,7 +205,7 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   CHECK(args->GetList()[0].is_int());
 
   size_t new_icon_index = args->GetList()[0].GetInt();
@@ -225,7 +225,7 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
 void ManageProfileHandler::HandleSetProfileName(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(args);
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
 
   std::u16string new_profile_name;
   CHECK(args->GetString(0, &new_profile_name));
@@ -243,7 +243,7 @@ void ManageProfileHandler::HandleRequestProfileShortcutStatus(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 

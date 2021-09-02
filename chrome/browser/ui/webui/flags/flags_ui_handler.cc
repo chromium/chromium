@@ -117,8 +117,8 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetSize());
-  if (args->GetSize() != 2)
+  DCHECK_EQ(2u, args->GetList().size());
+  if (args->GetList().size() != 2)
     return;
 
   std::string entry_internal_name;
@@ -136,7 +136,7 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
 void FlagsUIHandler::HandleSetOriginListFlagMessage(
     const base::ListValue* args) {
   DCHECK(flags_storage_);
-  if (args->GetSize() != 2) {
+  if (args->GetList().size() != 2) {
     NOTREACHED();
     return;
   }

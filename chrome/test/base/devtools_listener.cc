@@ -152,7 +152,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   CHECK(result->GetList("result", &coverage_entries));
 
   auto entries = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i != coverage_entries->GetSize(); ++i) {
+  for (size_t i = 0; i != coverage_entries->GetList().size(); ++i) {
     base::DictionaryValue* entry = nullptr;
     CHECK(coverage_entries->GetDictionary(i, &entry));
 

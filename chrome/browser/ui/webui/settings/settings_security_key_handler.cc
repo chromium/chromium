@@ -38,7 +38,7 @@ base::flat_set<device::FidoTransportProtocol> supported_transports() {
 
 void HandleClose(base::RepeatingClosure close_callback,
                  const base::ListValue* args) {
-  DCHECK_EQ(0u, args->GetSize());
+  DCHECK_EQ(0u, args->GetList().size());
   close_callback.Run();
 }
 
@@ -101,7 +101,7 @@ void SecurityKeysPINHandler::Close() {
 void SecurityKeysPINHandler::HandleStartSetPIN(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(State::kNone, state_);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
 
   AllowJavascript();
   DCHECK(callback_id_.empty());
@@ -162,7 +162,7 @@ void SecurityKeysPINHandler::OnSetPINComplete(
 void SecurityKeysPINHandler::HandleSetPIN(const base::ListValue* args) {
   DCHECK(state_ == State::kGatherNewPIN || state_ == State::kGatherChangePIN);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(3u, args->GetSize());
+  DCHECK_EQ(3u, args->GetList().size());
 
   DCHECK(callback_id_.empty());
   callback_id_ = args->GetList()[0].GetString();
@@ -207,7 +207,7 @@ void SecurityKeysResetHandler::Close() {
 void SecurityKeysResetHandler::HandleReset(const base::ListValue* args) {
   DCHECK_EQ(State::kNone, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
 
   AllowJavascript();
   DCHECK(callback_id_.empty());
@@ -237,7 +237,7 @@ void SecurityKeysResetHandler::OnResetSent() {
 void SecurityKeysResetHandler::HandleCompleteReset(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
 
   DCHECK(callback_id_.empty());
   callback_id_ = args->GetList()[0].GetString();
@@ -301,7 +301,7 @@ SecurityKeysCredentialHandler::~SecurityKeysCredentialHandler() = default;
 void SecurityKeysCredentialHandler::HandleStart(const base::ListValue* args) {
   DCHECK_EQ(State::kNone, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK(!credential_management_);
 
   AllowJavascript();
@@ -359,7 +359,7 @@ void SecurityKeysCredentialHandler::Close() {
 void SecurityKeysCredentialHandler::HandlePIN(const base::ListValue* args) {
   DCHECK_EQ(State::kPIN, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetSize());
+  DCHECK_EQ(2u, args->GetList().size());
   DCHECK(credential_management_);
   DCHECK(credential_management_provide_pin_cb_);
   DCHECK(callback_id_.empty());
@@ -374,7 +374,7 @@ void SecurityKeysCredentialHandler::HandleEnumerate(
     const base::ListValue* args) {
   DCHECK_EQ(state_, State::kReady);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK(credential_management_);
   DCHECK(callback_id_.empty());
 
@@ -388,7 +388,7 @@ void SecurityKeysCredentialHandler::HandleEnumerate(
 void SecurityKeysCredentialHandler::HandleDelete(const base::ListValue* args) {
   DCHECK_EQ(State::kReady, state_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetSize());
+  DCHECK_EQ(2u, args->GetList().size());
   DCHECK(credential_management_);
   DCHECK(callback_id_.empty());
 
@@ -557,7 +557,7 @@ void SecurityKeysBioEnrollmentHandler::HandleStart(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(state_, State::kNone);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK(callback_id_.empty());
 
   AllowJavascript();
@@ -703,7 +703,7 @@ void SecurityKeysBioEnrollmentHandler::OnGatherPIN(
 void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetSize());
+  DCHECK_EQ(2u, args->GetList().size());
   DCHECK_EQ(state_, State::kGatherPIN);
   state_ = State::kGatherPIN;
   callback_id_ = args->GetList()[0].GetString();
@@ -713,7 +713,7 @@ void SecurityKeysBioEnrollmentHandler::HandleProvidePIN(
 void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK_EQ(state_, State::kReady);
   base::DictionaryValue response;
   response.SetIntKey("maxTemplateFriendlyName",
@@ -730,7 +730,7 @@ void SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo(
 void SecurityKeysBioEnrollmentHandler::HandleEnumerate(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnumerating;
   callback_id_ = args->GetList()[0].GetString();
@@ -765,7 +765,7 @@ void SecurityKeysBioEnrollmentHandler::OnHaveEnumeration(
 void SecurityKeysBioEnrollmentHandler::HandleStartEnrolling(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnrolling;
   callback_id_ = args->GetList()[0].GetString();
@@ -836,7 +836,7 @@ void SecurityKeysBioEnrollmentHandler::OnHavePostEnrollmentEnumeration(
 void SecurityKeysBioEnrollmentHandler::HandleDelete(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(2u, args->GetSize());
+  DCHECK_EQ(2u, args->GetList().size());
   state_ = State::kDeleting;
   callback_id_ = args->GetList()[0].GetString();
   std::vector<uint8_t> template_id;
@@ -864,7 +864,7 @@ void SecurityKeysBioEnrollmentHandler::OnDelete(
 void SecurityKeysBioEnrollmentHandler::HandleRename(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(args->GetSize(), 3u);
+  DCHECK_EQ(args->GetList().size(), 3u);
   state_ = State::kRenaming;
   callback_id_ = args->GetList()[0].GetString();
   std::vector<uint8_t> template_id;
@@ -893,7 +893,7 @@ void SecurityKeysBioEnrollmentHandler::HandleCancel(
     const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(state_, State::kEnrolling);
-  DCHECK_EQ(0u, args->GetSize());
+  DCHECK_EQ(0u, args->GetList().size());
   DCHECK(!callback_id_.empty());
   // OnEnrollmentFinished() will be invoked once the cancellation is complete.
   bio_->CancelEnrollment();

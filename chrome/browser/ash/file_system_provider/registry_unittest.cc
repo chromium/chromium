@@ -242,8 +242,9 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   const base::ListValue* persistent_origins = NULL;
   ASSERT_TRUE(watcher->GetListWithoutPathExpansion(
       kPrefKeyWatcherPersistentOrigins, &persistent_origins));
-  ASSERT_GT(fake_watcher_.subscribers.size(), persistent_origins->GetSize());
-  ASSERT_EQ(1u, persistent_origins->GetSize());
+  ASSERT_GT(fake_watcher_.subscribers.size(),
+            persistent_origins->GetList().size());
+  ASSERT_EQ(1u, persistent_origins->GetList().size());
   std::string persistent_origin;
   EXPECT_TRUE(persistent_origins->GetString(0, &persistent_origin));
   const auto& fake_subscriber_it =

@@ -325,7 +325,7 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
   EXPECT_TRUE(RunFunction(function, args)) << function->GetError();
 
   ASSERT_TRUE(function->GetResultList());
-  ASSERT_EQ(1u, function->GetResultList()->GetSize());
+  ASSERT_EQ(1u, function->GetResultList()->GetList().size());
   const base::Value* response_value = nullptr;
   function->GetResultList()->Get(0u, &response_value);
   *profile_info =

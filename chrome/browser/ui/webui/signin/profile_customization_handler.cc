@@ -85,14 +85,14 @@ void ProfileCustomizationHandler::OnProfileNameChanged(
 
 void ProfileCustomizationHandler::HandleInitialized(
     const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   AllowJavascript();
   const base::Value& callback_id = args->GetList()[0];
   ResolveJavascriptCallback(callback_id, GetProfileInfoValue());
 }
 
 void ProfileCustomizationHandler::HandleDone(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetSize());
+  CHECK_EQ(1u, args->GetList().size());
   std::u16string profile_name =
       base::UTF8ToUTF16(args->GetList()[0].GetString());
 

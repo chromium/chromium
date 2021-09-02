@@ -657,7 +657,7 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     EXPECT_FALSE(manifest->GetString(manifest_keys::kBackgroundPage, &value));
     const base::ListValue* scripts;
     ASSERT_TRUE(manifest->GetList(manifest_keys::kBackgroundScripts, &scripts));
-    EXPECT_EQ(1u, scripts->GetSize());
+    EXPECT_EQ(1u, scripts->GetList().size());
   }
 
  protected:

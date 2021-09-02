@@ -668,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   EXPECT_FALSE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
   EXPECT_EQ(1U, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetSize());
+                    ->GetList()
+                    .size());
 }
 
 // Make sure preferences get preserved and spellchecking stays enabled.
@@ -686,7 +687,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest,
   EXPECT_TRUE(GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable));
   EXPECT_EQ(2U, GetPrefs()
                     ->GetList(spellcheck::prefs::kSpellCheckDictionaries)
-                    ->GetSize());
+                    ->GetList()
+                    .size());
   std::string pref;
   ASSERT_TRUE(GetPrefs()
                   ->GetList(spellcheck::prefs::kSpellCheckDictionaries)

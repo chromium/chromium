@@ -982,7 +982,7 @@ void ManagementUIHandler::HandleGetExtensions(const base::ListValue* args) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   base::Value trust_roots_configured(false);
   AllowJavascript();
 
@@ -1021,7 +1021,7 @@ void ManagementUIHandler::HandleGetDeviceReportingInfo(
 
 void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   base::Value plugin_vm_data_collection_enabled(
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           plugin_vm::prefs::kPluginVmDataCollectionAllowed));

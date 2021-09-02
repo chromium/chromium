@@ -55,7 +55,7 @@ const char* kVariationsRestrictionsByPolicy =
 // which cannot be converted will be skipped.
 std::vector<std::string> ListValueToStringVector(const base::ListValue* value) {
   std::vector<std::string> results;
-  results.reserve(value->GetSize());
+  results.reserve(value->GetList().size());
   for (const auto& entry : value->GetList()) {
     const std::string* s = entry.GetIfString();
     if (s)

@@ -284,7 +284,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   std::unique_ptr<base::ListValue> tabs_list_without_permission(
       RunTabsQueryFunction(browser(), extension.get(), kTitleAndURLQueryInfo));
   ASSERT_TRUE(tabs_list_without_permission);
-  EXPECT_EQ(0u, tabs_list_without_permission->GetSize());
+  EXPECT_EQ(0u, tabs_list_without_permission->GetList().size());
 
   // An extension with "tabs" permission however will see the third tab.
   scoped_refptr<const Extension> extension_with_permission =
@@ -301,7 +301,7 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
       RunTabsQueryFunction(browser(), extension_with_permission.get(),
                            kTitleAndURLQueryInfo));
   ASSERT_TRUE(tabs_list_with_permission);
-  ASSERT_EQ(1u, tabs_list_with_permission->GetSize());
+  ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
 
   const base::DictionaryValue* third_tab_info;
   ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
@@ -358,7 +358,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
         RunTabsQueryFunction(browser(), extension_with_permission.get(),
                              kTitleAndURLQueryInfo));
     ASSERT_TRUE(tabs_list_with_permission);
-    ASSERT_EQ(1u, tabs_list_with_permission->GetSize());
+    ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
 
     const base::DictionaryValue* third_tab_info;
     ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
@@ -374,7 +374,7 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
         RunTabsQueryFunction(browser(), extension_with_permission.get(),
                              kURLQueryInfo));
     ASSERT_TRUE(tabs_list_with_permission);
-    ASSERT_EQ(2u, tabs_list_with_permission->GetSize());
+    ASSERT_EQ(2u, tabs_list_with_permission->GetList().size());
 
     const base::DictionaryValue* first_tab_info;
     const base::DictionaryValue* third_tab_info;

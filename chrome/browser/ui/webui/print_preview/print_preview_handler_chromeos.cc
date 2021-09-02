@@ -233,7 +233,7 @@ void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
 
 void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   MaybeAllowJavascript();
 
   const std::string& callback_id = args->GetList()[0].GetString();
@@ -322,7 +322,7 @@ void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
 
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& printer_id = args->GetList()[1].GetString();
@@ -337,7 +337,7 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 
 void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
 
   const base::Value& val = args->GetList()[0];
   std::vector<std::string> print_server_ids;

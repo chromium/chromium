@@ -585,7 +585,8 @@ void SystemLogUploader::ScheduleNextSystemLogUpload(base::TimeDelta frequency) {
   // kLogThrottleWindowDuration time.
   if (g_browser_process->local_state()
               ->GetList(policy::prefs::kStoreLogStatesAcrossReboots)
-              ->GetSize() >= kLogThrottleCount &&
+              ->GetList()
+              .size() >= kLogThrottleCount &&
       !frequency.is_zero()) {
     delay = std::max(delay, last_valid_log_upload + kLogThrottleWindowDuration -
                                 base::Time::NowFromSystemTime());

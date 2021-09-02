@@ -415,7 +415,7 @@ void PeopleHandler::HandleSetDatatypes(const base::ListValue* args) {
 
 void PeopleHandler::HandleGetStoredAccounts(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 
@@ -686,7 +686,7 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::ListValue* args) {
 void PeopleHandler::HandleGetSyncStatus(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 

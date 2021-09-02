@@ -430,7 +430,7 @@ void InstallSigner::ParseFetchResponse(
   ExtensionIdSet invalid_ids;
   const base::ListValue* invalid_ids_list = NULL;
   if (dictionary->GetList(kInvalidIdsKey, &invalid_ids_list)) {
-    for (size_t i = 0; i < invalid_ids_list->GetSize(); i++) {
+    for (size_t i = 0; i < invalid_ids_list->GetList().size(); i++) {
       std::string id;
       if (!invalid_ids_list->GetString(i, &id)) {
         ReportErrorViaCallback();

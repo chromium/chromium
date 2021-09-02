@@ -68,7 +68,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
  private:
   void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string guid;
     CHECK(arg_list->GetString(0, &guid));
 
@@ -76,7 +76,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetSize());
+    CHECK_EQ(1u, arg_list->GetList().size());
     std::string guid;
     CHECK(arg_list->GetString(0, &guid));
 

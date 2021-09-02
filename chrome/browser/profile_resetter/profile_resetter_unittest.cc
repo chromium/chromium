@@ -984,7 +984,7 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
   ASSERT_TRUE(list);
   bool checked_extensions = false;
   bool checked_shortcuts = false;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     base::DictionaryValue* dict = NULL;
     ASSERT_TRUE(list->GetDictionary(i, &dict));
     std::string value;

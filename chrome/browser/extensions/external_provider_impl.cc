@@ -320,7 +320,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale(),
                                   &browser_locales);
 
-      size_t num_locales = supported_locales->GetSize();
+      size_t num_locales = supported_locales->GetList().size();
       bool locale_supported = false;
       for (size_t j = 0; j < num_locales; j++) {
         std::string current_locale;

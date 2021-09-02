@@ -463,7 +463,7 @@ void MobileSetupHandler::HandleSetTransactionStatus(
     return;
 
   const size_t kSetTransactionStatusParamCount = 1;
-  if (args->GetSize() != kSetTransactionStatusParamCount)
+  if (args->GetList().size() != kSetTransactionStatusParamCount)
     return;
   // Get change callback function name.
   std::string status;
@@ -480,7 +480,7 @@ void MobileSetupHandler::HandlePaymentPortalLoad(const base::ListValue* args) {
     return;
 
   const size_t kPaymentPortalLoadParamCount = 1;
-  if (args->GetSize() != kPaymentPortalLoadParamCount)
+  if (args->GetList().size() != kPaymentPortalLoadParamCount)
     return;
   // Get change callback function name.
   std::string result;

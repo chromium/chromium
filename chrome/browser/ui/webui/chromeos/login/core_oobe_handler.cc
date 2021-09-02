@@ -384,7 +384,7 @@ void CoreOobeHandler::HandleRaiseTabKeyEvent(bool reverse) {
 
 void CoreOobeHandler::HandleGetPrimaryDisplayNameForTesting(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   const base::Value* callback_id;
   CHECK(args->Get(0, &callback_id));
 

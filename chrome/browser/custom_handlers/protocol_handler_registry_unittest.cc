@@ -208,7 +208,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefHandlerCount() {
     const base::ListValue* in_pref_handlers =
         profile()->GetPrefs()->GetList(prefs::kRegisteredProtocolHandlers);
-    return static_cast<int>(in_pref_handlers->GetSize());
+    return static_cast<int>(in_pref_handlers->GetList().size());
   }
 
   int InMemoryHandlerCount() {
@@ -222,7 +222,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefIgnoredHandlerCount() {
     const base::ListValue* in_pref_ignored_handlers =
         profile()->GetPrefs()->GetList(prefs::kIgnoredProtocolHandlers);
-    return static_cast<int>(in_pref_ignored_handlers->GetSize());
+    return static_cast<int>(in_pref_ignored_handlers->GetList().size());
   }
 
   int InMemoryIgnoredHandlerCount() {

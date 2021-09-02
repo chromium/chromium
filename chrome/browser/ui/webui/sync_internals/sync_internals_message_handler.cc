@@ -208,7 +208,7 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
 
   std::string callback_id;
@@ -229,14 +229,14 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
     const ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
   include_specifics_ = args->GetList()[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleWriteUserEvent(
     const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetSize());
+  DCHECK_EQ(2U, args->GetList().size());
   AllowJavascript();
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -261,7 +261,7 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 
 void SyncInternalsMessageHandler::HandleRequestStart(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)
@@ -277,7 +277,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
 
 void SyncInternalsMessageHandler::HandleRequestStopKeepData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)
@@ -288,7 +288,7 @@ void SyncInternalsMessageHandler::HandleRequestStopKeepData(
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(
     const base::ListValue* args) {
-  DCHECK_EQ(0U, args->GetSize());
+  DCHECK_EQ(0U, args->GetList().size());
 
   SyncService* service = GetSyncService();
   if (!service)

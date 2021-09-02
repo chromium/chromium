@@ -63,7 +63,7 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(args->GetSize(), 1U);
+  CHECK_EQ(args->GetList().size(), 1U);
   CHECK(args->GetString(0, &check_default_callback_id_));
 
   default_browser_worker_->StartCheckIsDefault(

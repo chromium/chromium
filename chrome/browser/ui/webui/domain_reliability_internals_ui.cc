@@ -55,7 +55,7 @@ void DomainReliabilityInternalsHandler::RegisterMessages() {
 
 void DomainReliabilityInternalsHandler::HandleUpdateData(
     const base::ListValue* args) {
-  DCHECK_EQ(1u, args->GetSize());
+  DCHECK_EQ(1u, args->GetList().size());
   AllowJavascript();
   callback_id_ = args->GetList()[0].GetString();
 

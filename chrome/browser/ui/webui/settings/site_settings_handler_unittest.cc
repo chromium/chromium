@@ -295,7 +295,7 @@ class SiteSettingsHandlerTest : public testing::Test {
 
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    EXPECT_EQ(1U, exceptions->GetSize());
+    EXPECT_EQ(1U, exceptions->GetList().size());
     const base::DictionaryValue* exception;
     ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
     std::string origin, embedding_origin, display_name, setting, source;
@@ -329,7 +329,7 @@ class SiteSettingsHandlerTest : public testing::Test {
 
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    EXPECT_EQ(0U, exceptions->GetSize());
+    EXPECT_EQ(0U, exceptions->GetList().size());
   }
 
   void ValidatePattern(bool expected_validity,
@@ -386,9 +386,9 @@ class SiteSettingsHandlerTest : public testing::Test {
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg2()->GetAsList(&exceptions));
     if (expected_host.empty()) {
-      EXPECT_EQ(0U, exceptions->GetSize());
+      EXPECT_EQ(0U, exceptions->GetList().size());
     } else {
-      EXPECT_EQ(1U, exceptions->GetSize());
+      EXPECT_EQ(1U, exceptions->GetList().size());
 
       const base::DictionaryValue* exception;
       ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
@@ -844,7 +844,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
   const base::ListValue* storage_and_cookie_list;
   ASSERT_TRUE(data.arg2()->GetAsList(&storage_and_cookie_list));
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(3U, storage_and_cookie_list->GetList().size());
 
   const base::DictionaryValue* site_group;
   ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
@@ -860,7 +860,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
   // There will be 2 origins in this case. Cookie node with url
   // http://www.example.com/ will be treat as https://www.example.com/ because
   // this url existed in the storage nodes.
-  EXPECT_EQ(2U, origin_list->GetSize());
+  EXPECT_EQ(2U, origin_list->GetList().size());
 
   const base::DictionaryValue* origin_info;
 
@@ -889,7 +889,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 
   ASSERT_TRUE(site_group->GetList("origins", &origin_list));
 
-  EXPECT_EQ(1U, origin_list->GetSize());
+  EXPECT_EQ(1U, origin_list->GetList().size());
 
   ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
   EXPECT_EQ("https://www.google.com/",
@@ -906,7 +906,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
   EXPECT_EQ(1, site_group->FindKey("numCookies")->GetDouble());
 
   ASSERT_TRUE(site_group->GetList("origins", &origin_list));
-  EXPECT_EQ(1U, origin_list->GetSize());
+  EXPECT_EQ(1U, origin_list->GetList().size());
 
   ASSERT_TRUE(origin_list->GetDictionary(0, &origin_info));
   EXPECT_EQ("http://google.com.au/",
@@ -923,7 +923,7 @@ TEST_F(SiteSettingsHandlerTest, InstalledApps) {
 
   const base::ListValue* storage_and_cookie_list =
       GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(3U, storage_and_cookie_list->GetList().size());
 
   const base::DictionaryValue* site_group;
   ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
@@ -982,7 +982,7 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    ASSERT_EQ(1U, exceptions->GetSize());
+    ASSERT_EQ(1U, exceptions->GetList().size());
 
     const base::DictionaryValue* exception;
     ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
@@ -1012,7 +1012,7 @@ TEST_F(SiteSettingsHandlerTest, IncognitoExceptions) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     const base::ListValue* exceptions;
     ASSERT_TRUE(data.arg3()->GetAsList(&exceptions));
-    ASSERT_EQ(2U, exceptions->GetSize());
+    ASSERT_EQ(2U, exceptions->GetList().size());
 
     const base::DictionaryValue* exception;
     ASSERT_TRUE(exceptions->GetDictionary(0, &exception));
@@ -1072,7 +1072,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         /*incognito=*/false, &exceptions);
 
     // The size should be 2, 1st is blocked origin, 2nd is embargoed origin.
-    ASSERT_EQ(2U, exceptions.GetSize());
+    ASSERT_EQ(2U, exceptions.GetList().size());
   }
 
   {
@@ -1091,7 +1091,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(1U, exceptions.GetSize());
+    ASSERT_EQ(1U, exceptions.GetList().size());
   }
 
   {
@@ -1110,7 +1110,7 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), /*extension_registry=*/nullptr,
         web_ui(),
         /*incognito=*/false, &exceptions);
-    ASSERT_EQ(0U, exceptions.GetSize());
+    ASSERT_EQ(0U, exceptions.GetList().size());
   }
 }
 
@@ -2367,7 +2367,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 
   const base::ListValue* storage_and_cookie_list =
       GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(3U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(3U, storage_and_cookie_list->GetList().size());
   const base::DictionaryValue* site_group;
   ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
   std::string etld_plus1_string;
@@ -2381,7 +2381,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   EXPECT_EQ(11, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(2U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(2U, storage_and_cookie_list->GetList().size());
   ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
   ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
   ASSERT_EQ("google.com", etld_plus1_string);
@@ -2395,7 +2395,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   EXPECT_EQ(4, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(1U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(1U, storage_and_cookie_list->GetList().size());
   ASSERT_TRUE(storage_and_cookie_list->GetDictionary(0, &site_group));
   ASSERT_TRUE(site_group->GetString("etldPlus1", &etld_plus1_string));
   ASSERT_EQ("google.com.au", etld_plus1_string);
@@ -2409,7 +2409,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   EXPECT_EQ(1, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentListValue();
-  EXPECT_EQ(0U, storage_and_cookie_list->GetSize());
+  EXPECT_EQ(0U, storage_and_cookie_list->GetList().size());
 }
 
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {

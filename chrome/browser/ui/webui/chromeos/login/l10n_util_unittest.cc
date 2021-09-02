@@ -26,7 +26,7 @@ namespace chromeos {
 namespace {
 
 void VerifyOnlyUILanguages(const base::ListValue& list) {
-  for (size_t i = 0; i < list.GetSize(); ++i) {
+  for (size_t i = 0; i < list.GetList().size(); ++i) {
     const base::DictionaryValue* dict;
     ASSERT_TRUE(list.GetDictionary(i, &dict));
     std::string code;
@@ -170,7 +170,7 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   VerifyOnlyUILanguages(*list);
 
   // (4 languages (except Irish) + divider) = 5 + all other languages
-  ASSERT_LE(5u, list->GetSize());
+  ASSERT_LE(5u, list->GetList().size());
 
   VerifyLanguageCode(*list, 0, "fr");
   VerifyLanguageCode(*list, 1, "en-US");
@@ -191,7 +191,7 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
 
   VerifyOnlyUILanguages(*list);
 
-  ASSERT_LE(3u, list->GetSize());
+  ASSERT_LE(3u, list->GetList().size());
 
   VerifyLanguageCode(*list, 0, "it");
   VerifyLanguageCode(*list, 1, "de");

@@ -323,7 +323,7 @@ static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
   if (!preferenceValue || preferenceValue->GetList().empty())
     return targets;
   std::string address;
-  for (size_t i = 0; i < preferenceValue->GetSize(); i++) {
+  for (size_t i = 0; i < preferenceValue->GetList().size(); i++) {
     if (!preferenceValue->GetString(i, &address))
       continue;
     net::HostPortPair target = net::HostPortPair::FromString(address);

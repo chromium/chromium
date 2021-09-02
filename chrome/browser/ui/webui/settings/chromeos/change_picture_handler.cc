@@ -195,7 +195,7 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 
   std::string image_url;
-  if (!args || args->GetSize() != 1 || !args->GetString(0, &image_url))
+  if (!args || args->GetList().size() != 1 || !args->GetString(0, &image_url))
     NOTREACHED();
   DCHECK(!image_url.empty());
 
@@ -315,7 +315,7 @@ void ChangePictureHandler::SendOldImageWithIndex(std::string&& image_url,
 void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {
   std::string image_url;
   std::string image_type;
-  if (!args || args->GetSize() != 2 || !args->GetString(0, &image_url) ||
+  if (!args || args->GetList().size() != 2 || !args->GetString(0, &image_url) ||
       !args->GetString(1, &image_type)) {
     NOTREACHED();
     return;

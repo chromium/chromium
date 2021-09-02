@@ -149,7 +149,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
     if (node->is_folder()) {
       const base::ListValue* children = nullptr;
       if (!dict->GetList("children", &children) ||
-          node->children().size() != children->GetSize()) {
+          node->children().size() != children->GetList().size()) {
         return false;
       }
       size_t i = 0;

@@ -373,7 +373,7 @@ void CupsPrintersHandler::HandleGetCupsSavedPrintersList(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -388,7 +388,7 @@ void CupsPrintersHandler::HandleGetCupsEnterprisePrintersList(
     const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id = args->GetList()[0].GetString();
 
   std::vector<Printer> printers =
@@ -402,7 +402,7 @@ void CupsPrintersHandler::HandleUpdateCupsPrinter(const base::ListValue* args) {
   std::string callback_id;
   std::string printer_id;
   std::string printer_name;
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
   CHECK(args->GetString(1, &printer_id));
   CHECK(args->GetString(2, &printer_name));
@@ -631,7 +631,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue* args,
                                                   bool is_printer_edit) {
   std::string callback_id;
   const base::DictionaryValue* printer_dict = nullptr;
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
   CHECK(args->GetDictionary(1, &printer_dict));
 
@@ -837,7 +837,7 @@ void CupsPrintersHandler::HandleGetCupsPrinterManufacturers(
     const base::ListValue* args) {
   AllowJavascript();
   std::string callback_id;
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
   ppd_provider_->ResolveManufacturers(
       base::BindOnce(&CupsPrintersHandler::ResolveManufacturersDone,
@@ -849,7 +849,7 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
   AllowJavascript();
   std::string callback_id;
   std::string manufacturer;
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
   CHECK(args->GetString(1, &manufacturer));
 
@@ -870,7 +870,7 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
 }
 
 void CupsPrintersHandler::HandleSelectPPDFile(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   CHECK(args->GetString(0, &webui_callback_id_));
 
   base::FilePath downloads_path =
@@ -1037,8 +1037,9 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
   }
 
   PRINTER_LOG(DEBUG) << "Discovered printers updating. Automatic: "
-                     << automatic_printers_list->GetSize()
-                     << " Discovered: " << discovered_printers_list->GetSize();
+                     << automatic_printers_list->GetList().size()
+                     << " Discovered: "
+                     << discovered_printers_list->GetList().size();
   FireWebUIListener("on-nearby-printers-changed", *automatic_printers_list,
                     *discovered_printers_list);
 }
@@ -1046,7 +1047,7 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
 void CupsPrintersHandler::HandleAddDiscoveredPrinter(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id;
   std::string printer_id;
   CHECK(args->GetString(0, &callback_id));
@@ -1112,7 +1113,7 @@ void CupsPrintersHandler::HandleAddDiscoveredPrinter(
 void CupsPrintersHandler::HandleGetPrinterPpdManufacturerAndModel(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   std::string printer_id;
@@ -1146,7 +1147,7 @@ void CupsPrintersHandler::OnGetPrinterPpdManufacturerAndModel(
 }
 
 void CupsPrintersHandler::HandleGetEulaUrl(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
   const std::string callback_id = args->GetList()[0].GetString();
   const std::string ppd_manufacturer = args->GetList()[1].GetString();
   const std::string ppd_model = args->GetList()[2].GetString();
@@ -1226,7 +1227,7 @@ void CupsPrintersHandler::OnIpResolved(const std::string& callback_id,
 void CupsPrintersHandler::HandleQueryPrintServer(const base::ListValue* args) {
   std::string callback_id;
   std::string server_url;
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   CHECK(args->GetString(0, &callback_id));
   CHECK(args->GetString(1, &server_url));
 

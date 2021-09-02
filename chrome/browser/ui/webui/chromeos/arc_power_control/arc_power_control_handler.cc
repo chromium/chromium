@@ -205,7 +205,7 @@ void ArcPowerControlHandler::HandleReady(const base::ListValue* args) {
 
 void ArcPowerControlHandler::HandleSetWakefulnessMode(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
@@ -250,7 +250,7 @@ void ArcPowerControlHandler::HandleSetWakefulnessMode(
 }
 
 void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetSize());
+  DCHECK_EQ(1U, args->GetList().size());
 
   if (!power_control_enabled_) {
     LOG(ERROR) << "Power control is not enabled";
@@ -279,12 +279,12 @@ void ArcPowerControlHandler::HandleSetThrottling(const base::ListValue* args) {
 }
 
 void ArcPowerControlHandler::HandleStartTracing(const base::ListValue* args) {
-  DCHECK(!args->GetSize());
+  DCHECK(!args->GetList().size());
   StartTracing();
 }
 
 void ArcPowerControlHandler::HandleStopTracing(const base::ListValue* args) {
-  DCHECK(!args->GetSize());
+  DCHECK(!args->GetList().size());
   StopTracing();
 }
 

@@ -1430,7 +1430,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   EXPECT_TRUE(base::DirectoryExists(path2));
   EXPECT_EQ(profile_name2, local_state->GetString(prefs::kProfileLastUsed));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  ASSERT_EQ(1u, final_last_active_profile_list->GetSize());
+  ASSERT_EQ(1u, final_last_active_profile_list->GetList().size());
   ASSERT_EQ(path2.BaseName().MaybeAsASCII(),
             (final_last_active_profile_list->GetList())[0].GetString());
 
@@ -1443,7 +1443,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   EXPECT_FALSE(base::DirectoryExists(path2));
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
   EXPECT_EQ("Profile 1", local_state->GetString(prefs::kProfileLastUsed));
-  ASSERT_EQ(0u, final_last_active_profile_list->GetSize());
+  ASSERT_EQ(0u, final_last_active_profile_list->GetList().size());
 }
 
 #if defined(OS_WIN)
@@ -1506,7 +1506,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   EXPECT_EQ(guest_profile_name,
             local_state->GetString(prefs::kProfileLastUsed));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  ASSERT_EQ(2u, final_last_active_profile_list->GetSize());
+  ASSERT_EQ(2u, final_last_active_profile_list->GetList().size());
   ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
             (final_last_active_profile_list->GetList())[0].GetString());
 }

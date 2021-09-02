@@ -353,7 +353,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   const base::ListValue* args_value = nullptr;
   ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
   std::vector<base::CommandLine::StringType> args;
-  args.reserve(args_value->GetSize());
+  args.reserve(args_value->GetList().size());
   for (auto& arg : args_value->GetList()) {
     ASSERT_TRUE(arg.is_string());
 #if defined(OS_WIN)

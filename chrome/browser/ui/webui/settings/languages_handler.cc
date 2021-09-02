@@ -67,7 +67,7 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
 void LanguagesHandler::HandleSetProspectiveUILanguage(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
 
   std::string language_code;
   CHECK(args->GetString(0, &language_code));

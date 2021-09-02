@@ -121,7 +121,7 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   const base::ListValue& targets = base::Value::AsListValue(*value);
 
   std::string debugger_target_id;
-  for (size_t i = 0; i < targets.GetSize(); ++i) {
+  for (size_t i = 0; i < targets.GetList().size(); ++i) {
     const base::DictionaryValue* target_dict = nullptr;
     EXPECT_TRUE(targets.GetDictionary(i, &target_dict));
     int id = -1;

@@ -278,7 +278,7 @@ bool JoinUrlList(const base::ListValue* list,
                  std::string* error,
                  bool* bad_message) {
   std::string result;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     if (!result.empty())
       result.append(joiner);
 

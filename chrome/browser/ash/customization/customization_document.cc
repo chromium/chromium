@@ -322,7 +322,7 @@ void StartupCustomizationDocument::Init(
             chromeos::system::kHardwareClassKey, &hwid)) {
       base::ListValue* hwid_list = NULL;
       if (root_->GetList(kHwidMapAttr, &hwid_list)) {
-        for (size_t i = 0; i < hwid_list->GetSize(); ++i) {
+        for (size_t i = 0; i < hwid_list->GetList().size(); ++i) {
           base::DictionaryValue* hwid_dictionary = NULL;
           std::string hwid_mask;
           if (hwid_list->GetDictionary(i, &hwid_dictionary) &&
@@ -703,7 +703,7 @@ ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   const base::ListValue* apps_list = NULL;
   if (root.GetList(kDefaultAppsAttr, &apps_list)) {
-    for (size_t i = 0; i < apps_list->GetSize(); ++i) {
+    for (size_t i = 0; i < apps_list->GetList().size(); ++i) {
       std::string app_id;
       const base::DictionaryValue* app_entry = nullptr;
       std::unique_ptr<base::DictionaryValue> entry;

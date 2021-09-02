@@ -176,7 +176,7 @@ void FingerprintHandler::OnSessionStateChanged() {
 
 void FingerprintHandler::HandleGetFingerprintsList(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -206,7 +206,7 @@ void FingerprintHandler::OnGetFingerprintsList(
 }
 
 void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 

@@ -65,7 +65,7 @@ void WelcomeHandler::HandleActivateSignIn(const base::ListValue* args) {
     GoToNewTabPage();
   } else {
     GURL redirect_url = GURL::EmptyGURL();
-    if (args->GetSize() == 1U) {
+    if (args->GetList().size() == 1U) {
       std::string url_string;
       CHECK(args->GetString(0, &url_string));
       redirect_url = GURL(url_string);

@@ -77,7 +77,7 @@ void SigninReauthHandler::HandleCancel(const base::ListValue* args) {
 
 sync_pb::UserConsentTypes::AccountPasswordsConsent
 SigninReauthHandler::BuildConsent(const base::ListValue* args) const {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   base::Value::ConstListView consent_description = args->GetList()[0].GetList();
   const std::string& consent_confirmation = args->GetList()[1].GetString();
 

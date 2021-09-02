@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
   const base::ListValue* desks_names =
       primary_user_prefs->GetList(ash::prefs::kDesksNamesList);
   const auto& desks_names_list = desks_names->GetList();
-  EXPECT_EQ(2, desks_names->GetSize());
+  EXPECT_EQ(2, desks_names->GetList().size());
   EXPECT_EQ(base::UTF16ToUTF8(kDeskName), desks_names_list[1].GetString());
 }
 

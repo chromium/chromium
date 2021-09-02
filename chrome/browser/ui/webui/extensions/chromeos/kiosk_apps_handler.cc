@@ -242,7 +242,7 @@ KioskAppsHandler::GetSettingsDictionary() {
 
 void KioskAppsHandler::HandleInitializeKioskAppSettings(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -253,7 +253,7 @@ void KioskAppsHandler::HandleInitializeKioskAppSettings(
 }
 
 void KioskAppsHandler::HandleGetKioskAppSettings(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 

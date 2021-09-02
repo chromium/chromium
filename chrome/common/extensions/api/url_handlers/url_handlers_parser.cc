@@ -125,7 +125,7 @@ bool ParseUrlHandler(const std::string& handler_id,
 
   const base::ListValue* manif_patterns = NULL;
   if (!handler_info.GetList(mkeys::kMatches, &manif_patterns) ||
-      manif_patterns->GetSize() == 0) {
+      manif_patterns->GetList().size() == 0) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         merrors::kInvalidURLHandlerPattern, handler_id);
     return false;

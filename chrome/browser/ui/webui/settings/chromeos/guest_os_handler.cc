@@ -75,7 +75,7 @@ void GuestOsHandler::OnJavascriptDisallowed() {
 void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
     const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string callback_id = args->GetList()[0].GetString();
 
   base::Value texts(base::Value::Type::LIST);

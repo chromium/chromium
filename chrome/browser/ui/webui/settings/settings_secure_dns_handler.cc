@@ -220,7 +220,7 @@ void SecureDnsHandler::HandleProbeCustomDnsTemplate(
 
 void SecureDnsHandler::HandleRecordUserDropdownInteraction(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
   std::string old_provider;
   std::string new_provider;
   CHECK(args->GetString(0, &old_provider));

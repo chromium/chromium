@@ -71,7 +71,7 @@ TEST_F(FileSystemProviderOperationsCreateFileTest, Execute) {
       extensions::api::file_system_provider::OnCreateFileRequested::kEventName,
       event->event_name);
   base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetSize());
+  ASSERT_EQ(1u, event_args->GetList().size());
 
   const base::DictionaryValue* options_as_value = NULL;
   ASSERT_TRUE(event_args->GetDictionary(0, &options_as_value));

@@ -442,7 +442,7 @@ void AboutHandler::HandleOpenDiagnostics(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleCheckInternetConnection(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -471,7 +471,7 @@ void AboutHandler::HandleOpenOsHelpPage(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleSetChannel(const base::ListValue* args) {
-  DCHECK(args->GetSize() == 2);
+  DCHECK(args->GetList().size() == 2);
 
   if (!CanChangeChannel(profile_)) {
     LOG(WARNING) << "Non-owner tried to change release track.";
@@ -498,7 +498,7 @@ void AboutHandler::HandleSetChannel(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetVersionInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -515,7 +515,7 @@ void AboutHandler::OnGetVersionInfoReady(
 }
 
 void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
@@ -527,7 +527,7 @@ void AboutHandler::HandleGetRegulatoryInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   version_updater_->GetChannel(
@@ -537,7 +537,7 @@ void AboutHandler::HandleGetChannelInfo(const base::ListValue* args) {
 }
 
 void AboutHandler::HandleCanChangeChannel(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   ResolveJavascriptCallback(base::Value(callback_id),
@@ -576,7 +576,7 @@ void AboutHandler::HandleRequestUpdate(const base::ListValue* args) {
 
 void AboutHandler::HandleRequestUpdateOverCellular(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  CHECK_EQ(2U, args->GetList().size());
 
   std::string update_version;
   std::string update_size_string;
@@ -613,7 +613,7 @@ void AboutHandler::RefreshTPMFirmwareUpdateStatus(
 }
 
 void AboutHandler::HandleGetEndOfLifeInfo(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
+  CHECK_EQ(1U, args->GetList().size());
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
   version_updater_->GetEolInfo(base::BindOnce(&AboutHandler::OnGetEndOfLifeInfo,
