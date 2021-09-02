@@ -194,14 +194,6 @@ void SelectFileDialogImplPortal::SelectFileImpl(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  auto parent_handle_callback = base::BindOnce(
-      &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
-      base::Unretained(this),
-      // We don't move info, because it will be needed below to cancel the open
-      // on error.
-      info, std::move(title), std::move(default_path), std::move(filter_set),
-      std::move(default_extension));
-
   if (info->parent) {
     if (GtkUi::GetPlatform()->ExportWindowHandle(
             *info->parent,
