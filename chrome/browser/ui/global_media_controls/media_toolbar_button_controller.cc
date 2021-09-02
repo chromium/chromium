@@ -30,6 +30,7 @@ void MediaToolbarButtonController::OnMediaDialogOpened() {
 
 void MediaToolbarButtonController::OnMediaDialogClosed() {
   UpdateToolbarButtonState();
+  delegate_->MaybeShowStopCastingPromo();
 }
 
 void MediaToolbarButtonController::ShowToolbarButton() {

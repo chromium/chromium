@@ -229,6 +229,16 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
                     base::BindRepeating(GetMediaButton));
   }
 
+  {
+    // kIPHGMCCastStartStopFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier =
+        IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO;
+    params.arrow = views::BubbleBorder::Arrow::TOP_RIGHT;
+    RegisterFeature(feature_engagement::kIPHGMCCastStartStopFeature, params,
+                    base::BindRepeating(GetMediaButton));
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   {
     // kIPHSwitchProfileFeature:

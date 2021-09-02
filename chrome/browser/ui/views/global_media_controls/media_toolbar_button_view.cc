@@ -8,9 +8,12 @@
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/vector_icons/vector_icons.h"
@@ -121,11 +125,19 @@ void MediaToolbarButtonView::Enable() {
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  feature_promo_controller_->CloseBubble(
-      feature_engagement::kIPHLiveCaptionFeature);
+  ClosePromoBubble();
 
   for (auto& observer : observers_)
     observer.OnMediaButtonDisabled();
+}
+
+void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
+      media_router::MediaRouterEnabled(browser_->profile()) &&
+      service_->HasLocalCastNotifications()) {
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHGMCCastStartStopFeature);
+  }
 }
 
 void MediaToolbarButtonView::ButtonPressed() {
@@ -134,13 +146,18 @@ void MediaToolbarButtonView::ButtonPressed() {
   } else {
     MediaDialogView::ShowDialog(this, service_, browser_->profile(),
                                 GlobalMediaControlsEntryPoint::kToolbarIcon);
-
-    feature_promo_controller_->CloseBubble(
-        feature_engagement::kIPHLiveCaptionFeature);
+    ClosePromoBubble();
 
     for (auto& observer : observers_)
       observer.OnMediaDialogOpened();
   }
+}
+
+void MediaToolbarButtonView::ClosePromoBubble() {
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHLiveCaptionFeature);
+  feature_promo_controller_->CloseBubble(
+      feature_engagement::kIPHGMCCastStartStopFeature);
 }
 
 BEGIN_METADATA(MediaToolbarButtonView, ToolbarButton)

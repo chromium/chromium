@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/media_router/browser/media_router.h"
@@ -580,6 +582,9 @@ void MediaNotificationContainerImplView::StopCasting(
   // |service_| is nullptr in MediaNotificationContainerImplViewTest.
   if (service_)
     service_->FocusOnDialog();
+
+  feature_engagement::TrackerFactory::GetForBrowserContext(profile_)
+      ->NotifyEvent("media_route_stopped_from_gmc");
 
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point_) {

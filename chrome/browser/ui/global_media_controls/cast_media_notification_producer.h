@@ -55,6 +55,7 @@ class CastMediaNotificationProducer
                            joinable_route_ids) override;
 
   size_t GetActiveItemCount() const;
+  bool HasLocalMediaRoute() const;
 
  private:
   bool HasActiveItems() const;

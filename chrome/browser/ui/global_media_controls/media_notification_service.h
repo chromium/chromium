@@ -87,6 +87,9 @@ class MediaNotificationService : public MediaItemsManager, public KeyedService {
   bool HasActiveNotificationsForWebContents(
       content::WebContents* web_contents) const;
 
+  // True if there are local cast notifications.
+  bool HasLocalCastNotifications() const;
+
   // True if there are active frozen media session notifications.
   bool HasFrozenNotifications() const;
 

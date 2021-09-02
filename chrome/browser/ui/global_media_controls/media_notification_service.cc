@@ -224,6 +224,12 @@ bool MediaNotificationService::HasActiveNotificationsForWebContents(
   return HasCastNotificationsForWebContents(web_contents) || has_media_session;
 }
 
+bool MediaNotificationService::HasLocalCastNotifications() const {
+  return cast_notification_producer_
+             ? cast_notification_producer_->HasLocalMediaRoute()
+             : false;
+}
+
 bool MediaNotificationService::HasFrozenNotifications() const {
   return media_session_notification_producer_->HasFrozenNotifications();
 }

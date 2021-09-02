@@ -6,9 +6,11 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_media_controls/media_items_manager.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
@@ -121,6 +123,7 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   for (const auto& route : routes) {
     if (ShouldHideNotification(route))
       continue;
+
     auto item_it =
         std::find_if(items_.begin(), items_.end(), [&route](const auto& item) {
           return item.first == route.media_route_id();
@@ -156,4 +159,10 @@ size_t CastMediaNotificationProducer::GetActiveItemCount() const {
 
 bool CastMediaNotificationProducer::HasActiveItems() const {
   return GetActiveItemCount() != 0;
+}
+
+bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
+  return std::find_if(items_.begin(), items_.end(), [](const auto& item) {
+           return item.second.is_local_presentation();
+         }) != items_.end();
 }

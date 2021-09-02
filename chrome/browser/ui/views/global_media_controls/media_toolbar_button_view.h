@@ -36,6 +36,7 @@ class MediaToolbarButtonView : public ToolbarButton,
   void Hide() override;
   void Enable() override;
   void Disable() override;
+  void MaybeShowStopCastingPromo() override;
 
   MediaToolbarButtonController* media_toolbar_button_controller() {
     return controller_.get();
@@ -43,6 +44,7 @@ class MediaToolbarButtonView : public ToolbarButton,
 
  private:
   void ButtonPressed();
+  void ClosePromoBubble();
 
   const Browser* const browser_;
 

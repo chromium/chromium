@@ -123,6 +123,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="IPH_FeedHeaderMenu" summary="feed header menu on NTP"/>
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
+  <variant name="IPH_GMCCastStartStop"
+      summary="Cast start stop in the Zenith dialog"/>
   <variant name="IPH_HomePageButton" summary="home page button">
     <obsolete>
       This feature was deprecated in M79

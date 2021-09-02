@@ -23,18 +23,22 @@
    Live Caption
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_PROGRESS" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
-    Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%
+   Downloading... <ph name="PERCENT">$1<ex>17</ex></ph>%
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR" desc="Download progress indicator after Live Caption is enabled. The user needs to download certain files for the feature to work.">
-    Can't download speech files. Try again later.
+   Can't download speech files. Try again later.
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME" desc="A11y name for the Global Media Controls dialog.">
-  Global Media Controls
+   Global Media Controls
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST" desc="A11y text for showing the device list in the Global Media Controls dialog.">
-  Show device list
+   Show device list
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST" desc="A11y text for hiding the device list in the Global Media Controls dialog.">
-  Hide device list
+   Hide device list
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls button to promote controlling cast sessions.">
+   Control the media you're casting
+  </message>
+
 </grit-part>

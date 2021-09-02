@@ -44,10 +44,11 @@ class MockMediaToolbarButtonControllerDelegate
   ~MockMediaToolbarButtonControllerDelegate() override = default;
 
   // MediaToolbarButtonControllerDelegate implementation.
-  MOCK_METHOD0(Show, void());
-  MOCK_METHOD0(Hide, void());
-  MOCK_METHOD0(Enable, void());
-  MOCK_METHOD0(Disable, void());
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void, Hide, ());
+  MOCK_METHOD(void, Enable, ());
+  MOCK_METHOD(void, Disable, ());
+  MOCK_METHOD(void, MaybeShowStopCastingPromo, ());
 };
 
 }  // anonymous namespace

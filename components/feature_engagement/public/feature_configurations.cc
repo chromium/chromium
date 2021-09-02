@@ -54,6 +54,18 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("side_panel_shown", Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+
+  if (kIPHGMCCastStartStopFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("gmc_start_stop_iph_trigger",
+                                  Comparator(EQUAL, 0), 180, 180);
+    config->used = EventConfig("media_route_stopped_from_gmc",
+                               Comparator(EQUAL, 0), 180, 180);
+    return config;
+  }
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 
