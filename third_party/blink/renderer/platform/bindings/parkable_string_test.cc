@@ -633,9 +633,13 @@ TEST_F(ParkableStringTest, ToAndFromDisk) {
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.Latency", 1);
   histogram_tester.ExpectTotalCount("Memory.ParkableString.Read.ThroughputMBps",
                                     1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 }
 
 TEST_F(ParkableStringTest, UnparkWhileWritingToDisk) {
+  base::HistogramTester histogram_tester;
+
   ParkableString parkable(MakeLargeString('a').ReleaseImpl());
   ParkableStringImpl* impl = parkable.Impl();
 
@@ -657,6 +661,10 @@ TEST_F(ParkableStringTest, UnparkWhileWritingToDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   EXPECT_TRUE(impl->has_on_disk_data());
   EXPECT_EQ(ParkableStringImpl::Age::kYoung, impl->age_for_testing());
+
+  // No data point recorded, since writing to disk was aborted.
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 0);
 }
 
 TEST_F(ParkableStringTest, NoCompetingWritingToDisk) {
@@ -690,6 +698,8 @@ TEST_F(ParkableStringTest, NoCompetingWritingToDisk) {
 }
 
 TEST_F(ParkableStringTest, SynchronousToDisk) {
+  base::HistogramTester histogram_tester;
+
   ParkableString parkable(MakeLargeString('a').ReleaseImpl());
   ParkableStringImpl* impl = parkable.Impl();
 
@@ -707,6 +717,8 @@ TEST_F(ParkableStringTest, SynchronousToDisk) {
 
   parkable.ToString();
   EXPECT_FALSE(impl->is_on_disk());
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 1);
 
   impl->MaybeAgeOrParkString();
   impl->MaybeAgeOrParkString();
@@ -715,6 +727,10 @@ TEST_F(ParkableStringTest, SynchronousToDisk) {
   EXPECT_FALSE(impl->is_on_disk());
   impl->MaybeAgeOrParkString();
   EXPECT_TRUE(impl->is_on_disk());  // Synchronous writing.
+
+  parkable.ToString();
+  histogram_tester.ExpectTotalCount(
+      "Memory.ParkableString.Read.SinceLastDiskWrite", 2);
 }
 
 TEST_F(ParkableStringTest, OnPurgeMemory) {

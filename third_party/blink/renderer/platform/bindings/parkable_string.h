@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -241,6 +242,7 @@ class PLATFORM_EXPORT ParkableStringImpl final
     std::unique_ptr<Vector<uint8_t>> compressed_;
     std::unique_ptr<DiskDataMetadata> on_disk_metadata_;
     const SecureDigest digest_;
+    base::TimeTicks last_disk_parking_time_;
 
     // A string can be young, old or very old. It starts young, and ages with
     // |MaybeAgeOrParkString()|.

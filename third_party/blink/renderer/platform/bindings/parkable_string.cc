@@ -483,6 +483,7 @@ void ParkableStringImpl::DiscardUncompressedData() {
 void ParkableStringImpl::DiscardCompressedData() {
   metadata_->compressed_ = nullptr;
   metadata_->state_ = State::kOnDisk;
+  metadata_->last_disk_parking_time_ = base::TimeTicks::Now();
   ParkableStringManager::Instance().OnWrittenToDisk(this);
 }
 
@@ -525,11 +526,24 @@ void ParkableStringImpl::Unpark() {
   if (metadata_->state_ == State::kUnparked)
     return;
 
-  TRACE_EVENT1("blink", "ParkableStringImpl::Unpark", "size",
-               CharactersSizeInBytes());
+  TRACE_EVENT2(
+      "blink", "ParkableStringImpl::Unpark", "size", CharactersSizeInBytes(),
+      "time_since_last_disk_write_s",
+      metadata_->last_disk_parking_time_.is_null()
+          ? -1
+          : (base::TimeTicks::Now() - metadata_->last_disk_parking_time_)
+                .InSeconds());
   DCHECK(metadata_->compressed_ || metadata_->on_disk_metadata_);
   string_ = UnparkInternal();
   metadata_->state_ = State::kUnparked;
+  if (metadata_->last_disk_parking_time_ != base::TimeTicks()) {
+    // Can be quite short, can be multiple hours, hence long times, and 100
+    // buckets.
+    base::UmaHistogramLongTimes100(
+        "Memory.ParkableString.Read.SinceLastDiskWrite",
+        base::TimeTicks::Now() - metadata_->last_disk_parking_time_);
+    metadata_->last_disk_parking_time_ = base::TimeTicks();
+  }
   ParkableStringManager::Instance().OnUnparked(this);
 }
 
@@ -791,7 +805,7 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
          metadata_->state_ == State::kParked);
   if (metadata_->state_ == State::kParked) {
     DiscardCompressedData();
-    metadata_->state_ = State::kOnDisk;
+    DCHECK_EQ(metadata_->state_, State::kOnDisk);
   }
 
   // Record the time no matter whether the string was discarded or not, as the
