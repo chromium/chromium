@@ -282,17 +282,19 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         if (dismissReason == DismissReason.GESTURE) {
             // Survey prompt was dismissed by the user
             recordInfoBarClosingState(InfoBarClosingState.CLOSE_BUTTON);
+            recordSurveyPromptDisplayed();
         } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
             // Survey was accepted by the user
             recordInfoBarClosingState(InfoBarClosingState.ACCEPTED_SURVEY);
+            recordSurveyPromptDisplayed();
             recordSurveyAccepted();
         } else if (dismissReason == DismissReason.TIMER) {
             // Survey prompt was auto-dismissed from the front
             recordInfoBarClosingState(InfoBarClosingState.VISIBLE_INDIRECT);
+            recordSurveyPromptDisplayed();
         } else {
             recordInfoBarClosingState(InfoBarClosingState.UNKNOWN);
         }
-        recordInfoBarDisplayed();
     }
 
     /**
@@ -384,7 +386,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
         }
 
         mLoggingHandler.postDelayed(
-                () -> recordInfoBarDisplayed(), REQUIRED_VISIBILITY_DURATION_MS);
+                () -> recordSurveyPromptDisplayed(), REQUIRED_VISIBILITY_DURATION_MS);
     }
 
     /**
@@ -465,7 +467,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 }
 
                 mLoggingHandler.postDelayed(
-                        () -> recordInfoBarDisplayed(), REQUIRED_VISIBILITY_DURATION_MS);
+                        () -> recordSurveyPromptDisplayed(), REQUIRED_VISIBILITY_DURATION_MS);
             }
 
             @Override
@@ -478,7 +480,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
             public void onSurveyInfoBarClosed(boolean viaCloseButton, boolean visibleWhenClosed) {
                 if (viaCloseButton) {
                     recordInfoBarClosingState(InfoBarClosingState.CLOSE_BUTTON);
-                    recordInfoBarDisplayed();
+                    recordSurveyPromptDisplayed();
                 } else {
                     if (visibleWhenClosed) {
                         recordInfoBarClosingState(InfoBarClosingState.VISIBLE_INDIRECT);
@@ -509,13 +511,18 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
 
     /** Logs in SharedPreferences that the info bar was displayed. */
     @VisibleForTesting
-    void recordInfoBarDisplayed() {
+    void recordSurveyPromptDisplayed() {
         // This can be called multiple times e.g. by mLoggingHandler & onSurveyInfoBarClosed().
         // Return early to allow only one call to this method (http://crbug.com/791076).
         if (mSurveyPromptTab == null) return;
 
-        InfoBarContainer container = InfoBarContainer.get(mSurveyPromptTab);
-        if (container != null) container.removeAnimationListener(this);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
+                && !mSurveyPromptTab.isDestroyed()) {
+            // If this function is invoked after activity / tab is destroyed, do nothing.
+            // (http://crbug.com/1245624)
+            InfoBarContainer container = InfoBarContainer.get(mSurveyPromptTab);
+            if (container != null) container.removeAnimationListener(this);
+        }
 
         mLoggingHandler.removeCallbacksAndMessages(null);
 
