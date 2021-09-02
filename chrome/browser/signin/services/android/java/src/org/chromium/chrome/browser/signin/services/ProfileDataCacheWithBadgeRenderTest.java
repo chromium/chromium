@@ -21,20 +21,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -48,7 +42,6 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class ProfileDataCacheWithBadgeRenderTest extends DummyUiChromeActivityTestCase {
     private static final String TEST_ACCOUNT_NAME = "test@example.com";
 
@@ -57,17 +50,8 @@ public class ProfileDataCacheWithBadgeRenderTest extends DummyUiChromeActivityTe
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     @Rule
-    public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
-
-    @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeAccountInfoService());
-
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Mock
-    private ProfileDataCache.Observer mObserver;
 
     private FrameLayout mContentView;
     private ImageView mImageView;

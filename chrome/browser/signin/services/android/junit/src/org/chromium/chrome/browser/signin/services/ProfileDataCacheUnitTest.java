@@ -18,8 +18,6 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
@@ -32,7 +30,6 @@ import org.chromium.components.signin.identitymanager.IdentityManagerJni;
  * Unit tests for {@link ProfileDataCache}
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class ProfileDataCacheUnitTest {
     private static final long NATIVE_IDENTITY_MANAGER = 10001L;
     private static final String ACCOUNT_EMAIL = "test@gmail.com";
@@ -42,9 +39,6 @@ public class ProfileDataCacheUnitTest {
 
     @Rule
     public final JniMocker mocker = new JniMocker();
-
-    @Rule
-    public final Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
