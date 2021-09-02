@@ -71,12 +71,19 @@ export class BannerController extends EventTarget {
      * @private {!Array<!Banner>}
      */
     this.warningBanners_ = [];
+
     /**
      * Educational banners ordered by priority. Index 0 is the highest
      * priority.
      * @private {!Array<!Banner>}
      */
     this.educationalBanners_ = [];
+
+    /**
+     * State banners ordered by priority. Index 0 is the highest priority.
+     * @private {!Array<!Banner>}
+     */
+    this.stateBanners_ = [];
 
     /**
      * Keep track of banners that subscribe to volume changes.
@@ -196,6 +203,13 @@ export class BannerController extends EventTarget {
       this.maybeAddVolumeSizeObserver_(banner);
     }
 
+    for (const banner of this.stateBanners_) {
+      this.localStorageCache_[`${banner.tagName}_${MS_DISPLAYED_SUFFIX}`] = 0;
+      this.localStorageCache_[`${banner.tagName}_${VIEW_COUNTER_SUFFIX}`] = 0;
+
+      this.maybeAddVolumeSizeObserver_(banner);
+    }
+
     const cacheKeys = Object.keys(this.localStorageCache_);
     let values = {};
     try {
@@ -222,10 +236,10 @@ export class BannerController extends EventTarget {
     /** @type {?Banner} */
     let bannerToShow = null;
 
-    // Identify if (given current conditions) any of the warning banners should
-    // be shown or hidden.
-    const orderedBanners =
-        this.warningBanners_.concat(this.educationalBanners_);
+    // Identify if (given current conditions) any of the banners should be shown
+    // or hidden.
+    const orderedBanners = this.warningBanners_.concat(
+        this.educationalBanners_, this.stateBanners_);
     for (const banner of orderedBanners) {
       if (!this.shouldShowBanner_(banner)) {
         this.hideBannerIfShown_(banner);
@@ -419,6 +433,20 @@ export class BannerController extends EventTarget {
   }
 
   /**
+   * Creates all the state banners with the supplied tagName's. This will
+   * populate the stateBanners_ array with HTMLElement's.
+   * @param {!Array<string>} bannerTagNames The HTMLElement tagName's to create.
+   */
+  setStateBannersInOrder(bannerTagNames) {
+    for (const tagName of bannerTagNames) {
+      const banner = /** @type {!Banner} */ (document.createElement(tagName));
+      banner.toggleAttribute('hidden', true);
+      banner.setAttribute('aria-hidden', 'true');
+      this.stateBanners_.push(banner);
+    }
+  }
+
+  /**
    * Disable the banners from being loaded for testing. This is used to override
    * the loading of actual banners to load fake banners in unit tests.
    */
@@ -443,8 +471,8 @@ export class BannerController extends EventTarget {
    * @param {string} bannerTagName The tagName of the banner to force show.
    */
   async toggleBannerForTesting(bannerTagName) {
-    const orderedBanners =
-        this.warningBanners_.concat(this.educationalBanners_);
+    const orderedBanners = this.warningBanners_.concat(
+        this.educationalBanners_, this.stateBanners_);
     for (const banner of orderedBanners) {
       if (banner.tagName === bannerTagName) {
         banner.toggleAttribute(_BANNER_FORCE_SHOW_ATTRIBUTE);
