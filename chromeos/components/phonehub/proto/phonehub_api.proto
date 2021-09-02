@@ -284,3 +284,36 @@ message FetchCameraRollItemsResponse {
   // The up-to-date set of camera roll items that should be displayed.
   repeated CameraRollItem items = 1;
 }
+
+// A command to request a full-quality photo or video file from the connected
+// Android device.
+message FetchCameraRollItemDataRequest {
+  // Metadata of the requested camera roll item.
+  CameraRollItemMetadata metadata = 1;
+}
+
+message FetchCameraRollItemDataResponse {
+  enum FileAvailability {
+    UNKNOWN = 0;
+    AVAILABLE = 1;
+    NOT_FOUND = 2;
+  }
+  // Indicates whether the requested file is available and can be sent to the
+  // Chrome OS device.
+  FileAvailability file_availability = 1;
+  // A payload ID that the Chrome OS device should use to create a new local
+  // file for storing the incoming file content via the Nearby Connections API.
+  int64 payload_id = 2;
+}
+
+// A command to let the connected Android device start transferring the
+// requested camera roll item via Nearby Connections. This should be issued
+// after the Chrome OS device has allocated a new file with the provided payload
+// ID.
+message InitiateCameraRollItemTransferRequest {
+  // Metadata of the camera roll item requested.
+  CameraRollItemMetadata metadata = 1;
+  // The payload ID provided by the connected Android device for the requested
+  // camera roll item.
+  int64 payload_id = 2;
+}
