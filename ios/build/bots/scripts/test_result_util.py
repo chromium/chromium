@@ -78,13 +78,15 @@ class TestResult(object):
 
   def _compose_result_sink_tags(self):
     """Composes tags received by Result Sink from test result info."""
+    tags = [('test_name', self.name)]
     # Only SKIP results have tags, to distinguish whether the SKIP is expected
     # (disabled test) or not.
     if self.status == TestStatus.SKIP:
       if self.disabled():
-        return [('disabled_test', 'true')]
-      return [('disabled_test', 'false')]
-    return []
+        tags.append(('disabled_test', 'true'))
+      else:
+        tags.append(('disabled_test', 'false'))
+    return tags
 
   def disabled(self):
     """Returns whether the result represents a disabled test."""

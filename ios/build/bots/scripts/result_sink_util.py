@@ -49,7 +49,10 @@ def _compose_test_result(test_id, status, expected, test_log=None, tags=None):
       'tags': [{
           'key': key,
           'value': value
-      } for (key, value) in (tags or [])]
+      } for (key, value) in (tags or [])],
+      'testMetadata': {
+          'name': test_id,
+      }
   }
 
   if test_log:

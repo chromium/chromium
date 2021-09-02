@@ -72,9 +72,11 @@ class TestResultTest(test_runner_test.TestCase):
 
   def test_compose_result_sink_tags(self):
     """Tests _compose_result_sink_tags."""
-    disabled_test_tags = [('disabled_test', 'true')]
-    unexpected_skip_test_tags = [('disabled_test', 'false')]
-    not_skip_test_tags = []
+    disabled_test_tags = [('test_name', 'disabled/test'),
+                          ('disabled_test', 'true')]
+    unexpected_skip_test_tags = [('test_name', 'unexpected/skipped_test'),
+                                 ('disabled_test', 'false')]
+    not_skip_test_tags = [('test_name', 'passed/test')]
 
     not_skip_test_result = PASSED_RESULT
     self.assertEqual(not_skip_test_tags,
@@ -98,7 +100,7 @@ class TestResultTest(test_runner_test.TestCase):
         'SKIP',
         True,
         test_log='',
-        tags=[('disabled_test', 'true')])
+        tags=[('test_name', 'disabled/test'), ('disabled_test', 'true')])
     # Duplicate calls will only report once.
     disabled_test_result.report_to_result_sink(client)
     self.assertEqual(client.post.call_count, 1)
