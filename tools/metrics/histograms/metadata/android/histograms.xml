@@ -2961,6 +2961,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Android.View.onDraw.30Seconds" units="count"
+    expires_after="2022-08-31">
+  <owner>nuskos@chromium.org</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Keeps a counter of each onDraw invoked on the root view and emits the count
+    once every 30 seconds. Thus this is the amount of times android attempted to
+    draw/update a java view in the last 30 seconds.
+
+    NOTE: 30 second intervals with 0 draws are not reported.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ActualUiThread"
     enum="AndroidWebViewActualUiThread" expires_after="2021-03-31">
   <obsolete>

@@ -7,11 +7,13 @@ package org.chromium.components.messages;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -61,6 +63,13 @@ public class MessageContainer extends FrameLayout {
 
     public int getMessageShadowTopMargin() {
         return getResources().getDimensionPixelOffset(R.dimen.message_shadow_top_margin);
+    }
+
+    @Override
+    public void setLayoutParams(ViewGroup.LayoutParams params) {
+        try (TraceEvent e = TraceEvent.scoped("MessageContainer.setLayoutParams")) {
+            super.setLayoutParams(params);
+        }
     }
 
     /**
