@@ -148,6 +148,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   enum class UnloadSupportStrategy {
     kAlways,
     kOptInHeaderRequired,
+    kNo,
   };
 
   BackForwardCacheImpl();

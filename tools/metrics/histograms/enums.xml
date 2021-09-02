@@ -7187,7 +7187,7 @@ others/histograms.xml -->
              token, and an experimental config which requires it is active"/>
   <int value="50"
       label="Unload handler exists in the main frame, and the current
-             experimental config doesn't permit it to be BFCached. (removed)"/>
+             experimental config doesn't permit it to be BFCached."/>
   <int value="51"
       label="Unload handler exists in a sub frame, and the current
              experimental config doesn't permit it to be BFCached."/>
