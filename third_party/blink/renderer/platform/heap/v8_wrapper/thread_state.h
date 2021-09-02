@@ -15,8 +15,8 @@
 #include "v8-profiler.h"
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/cppgc/prefinalizer.h"
+#include "v8/include/v8-callbacks.h"
 #include "v8/include/v8-cppgc.h"
-#include "v8/include/v8.h"
 
 namespace v8 {
 class CppHeap;
@@ -28,6 +28,7 @@ class AllocationHandle;
 
 namespace v8 {
 class EmbedderGraph;
+class EmbedderRootsHandler;
 }  // namespace v8
 
 namespace blink {
