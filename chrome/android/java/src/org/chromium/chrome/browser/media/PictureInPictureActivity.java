@@ -219,7 +219,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @CalledByNative
-    private void close() {
+    public void close() {
         this.finish();
     }
 
@@ -266,7 +266,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @CalledByNative
-    private static void createActivity(long nativeOverlayWindowAndroid, Object initiatorTab) {
+    public static void createActivity(long nativeOverlayWindowAndroid, Object initiatorTab) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, PictureInPictureActivity.class);
 
@@ -294,7 +294,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onActivityStart(long nativeOverlayWindowAndroid, PictureInPictureActivity self,
                 WindowAndroid window);
 
