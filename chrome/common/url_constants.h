@@ -166,6 +166,9 @@ extern const char kGoogleAccountURL[];
 // URL of the Google Account chooser.
 extern const char kGoogleAccountChooserURL[];
 
+// URL of the Google Account page showing the known user devices.
+extern const char kGoogleAccountDeviceActivityURL[];
+
 // URL of the Google Password Manager.
 extern const char kGooglePasswordManagerURL[];
 

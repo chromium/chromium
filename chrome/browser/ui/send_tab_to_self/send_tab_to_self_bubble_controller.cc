@@ -8,11 +8,15 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -20,7 +24,12 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/events/event.h"
 
 namespace send_tab_to_self {
 
@@ -68,6 +77,14 @@ std::vector<TargetDeviceInfo> SendTabToSelfBubbleController::GetValidDevices()
                : std::vector<TargetDeviceInfo>();
 }
 
+AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() const {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser->profile());
+  return identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+}
+
 Profile* SendTabToSelfBubbleController::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 }
@@ -77,6 +94,22 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid) {
   send_tab_to_self::RecordDeviceClicked(ShareEntryPoint::kOmniboxIcon);
   CreateNewEntry(web_contents_, target_device_name, target_device_guid, GURL());
+}
+
+void SendTabToSelfBubbleController::OnManageDevicesClicked(
+    const ui::Event& event) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  NavigateParams params(browser->profile(),
+                        GURL(chrome::kGoogleAccountDeviceActivityURL),
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  // NEW_FOREGROUND_TAB is passed as the default below to avoid exiting the
+  // current page, which the user possibly wants to share (maybe they just
+  // clicked "Manage devices" by mistake). Still, DispositionFromEventFlags()
+  // ensures that any modifier keys are respected, e.g. to open a new window
+  // instead.
+  params.disposition = ui::DispositionFromEventFlags(
+      event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  Navigate(&params);
 }
 
 void SendTabToSelfBubbleController::OnBubbleClosed() {

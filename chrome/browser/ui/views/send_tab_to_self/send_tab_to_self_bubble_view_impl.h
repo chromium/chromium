@@ -18,6 +18,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 class GridLayout;
 }  // namespace views
@@ -49,6 +53,8 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
 
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
 
+  void OnManageDevicesClicked(const ui::Event& event);
+
   const views::View* GetButtonContainerForTesting() const;
 
  private:
@@ -60,6 +66,10 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
 
   // Creates the scroll view containing target devices.
   void CreateDevicesScrollView(views::GridLayout* layout);
+
+  // Creates the link leading to a page where the user can manage their known
+  // target devices.
+  void CreateManageDevicesLink(views::GridLayout* layout);
 
   SendTabToSelfBubbleController* controller_;  // Weak reference.
 

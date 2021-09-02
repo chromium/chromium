@@ -16,12 +16,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -42,6 +49,13 @@ constexpr int kMaximumButtons = 5;
 // with arrow keys possible.
 constexpr int kDeviceButtonGroup = 0;
 
+// This sneakily matches the value of SendTabToSelfBubbleDeviceButton, which is
+// inherited from views::HoverButton and isn't ever exposed.
+constexpr int kManageDevicesLinkTopMargin = 6;
+constexpr int kManageDevicesLinkBottomMargin = kManageDevicesLinkTopMargin + 1;
+
+constexpr int kAccountAvatarSize = 24;
+
 }  // namespace
 
 SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
@@ -52,7 +66,7 @@ SendTabToSelfBubbleViewImpl::SendTabToSelfBubbleViewImpl(
       controller_(controller) {
   DCHECK(controller_);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 }
 
@@ -96,6 +110,12 @@ void SendTabToSelfBubbleViewImpl::DeviceButtonPressed(
   Hide();
 }
 
+void SendTabToSelfBubbleViewImpl::OnManageDevicesClicked(
+    const ui::Event& event) {
+  controller_->OnManageDevicesClicked(event);
+  Hide();
+}
+
 const views::View* SendTabToSelfBubbleViewImpl::GetButtonContainerForTesting()
     const {
   return scroll_view_->contents();
@@ -110,8 +130,9 @@ void SendTabToSelfBubbleViewImpl::Init() {
                   provider->GetDistanceMetric(
                       views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
                   0));
-  auto width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  int width =
+      provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  // TODO(crbug.com/1243793): Use views::BoxLayout since there's only 1 column.
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
@@ -124,14 +145,25 @@ void SendTabToSelfBubbleViewImpl::Init() {
   }
 
   CreateDevicesScrollView(layout);
+
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
+    CreateManageDevicesLink(layout);
+    // Remove the extra bottom space because the link has a different background
+    // color.
+    gfx::Insets margins = GetInsets();
+    margins.set_bottom(0);
+    set_margins(margins);
+  }
 }
 
 void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
     views::GridLayout* layout) {
   layout->StartRow(1.0f, 0);
 
-  auto margin = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
+  auto* provider = ChromeLayoutProvider::Get();
+  int margin =
+      provider->GetDistanceMetric(views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
 
   views::View* container = layout->AddView(std::make_unique<views::View>());
   auto* container_layout =
@@ -149,7 +181,6 @@ void SendTabToSelfBubbleViewImpl::CreateHintTextLabel(
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   container->AddChildView(std::move(description));
 
-  auto* provider = ChromeLayoutProvider::Get();
   const int vertical_distance =
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
   layout->AddPaddingRow(views::GridLayout::kFixedSize, vertical_distance);
@@ -165,7 +196,7 @@ void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView(
       scroll_view_->SetContents(std::make_unique<views::View>());
   device_list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  for (const auto& device : controller_->GetValidDevices()) {
+  for (const TargetDeviceInfo& device : controller_->GetValidDevices()) {
     auto* view = device_list_view->AddChildView(
         std::make_unique<SendTabToSelfBubbleDeviceButton>(this, device));
     view->SetGroup(kDeviceButtonGroup);
@@ -179,6 +210,61 @@ void SendTabToSelfBubbleViewImpl::CreateDevicesScrollView(
     SizeToContents();
 
   Layout();
+}
+
+void SendTabToSelfBubbleViewImpl::CreateManageDevicesLink(
+    views::GridLayout* layout) {
+  layout->StartRow(1.0f, 0);
+  layout->AddView(std::make_unique<views::Separator>());
+
+  layout->StartRow(1.0f, 0);
+  auto* container = layout->AddView(std::make_unique<views::View>());
+  container->SetBackground(views::CreateThemedSolidBackground(
+      container, ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor));
+
+  auto* provider = ChromeLayoutProvider::Get();
+  gfx::Insets margins = provider->GetInsetsMetric(views::INSETS_DIALOG);
+  margins.set_top(kManageDevicesLinkTopMargin);
+  margins.set_bottom(kManageDevicesLinkBottomMargin);
+  int between_child_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, margins,
+      between_child_spacing));
+
+  AccountInfo account = controller_->GetSharingAccountInfo();
+  DCHECK(!account.IsEmpty());
+  gfx::ImageSkia square_avatar = account.account_image.AsImageSkia();
+  gfx::ImageSkia circle_mask =
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          square_avatar.size().width() / 2, SK_ColorWHITE, gfx::ImageSkia());
+  gfx::ImageSkia round_avatar =
+      gfx::ImageSkiaOperations::CreateMaskedImage(square_avatar, circle_mask);
+  auto* avatar_view =
+      container->AddChildView(std::make_unique<views::ImageView>());
+  avatar_view->SetImage(round_avatar);
+  avatar_view->SetImageSize(gfx::Size(kAccountAvatarSize, kAccountAvatarSize));
+
+  auto* link_view =
+      container->AddChildView(std::make_unique<views::StyledLabel>());
+  link_view->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+
+  // Only part of the string in |link_view| must be styled as a link and
+  // clickable. This range is marked in the *.grd entry by the first 2
+  // placeholders. This GetStringFUTF16() call replaces them with empty strings
+  // (no-op) and saves the range in |offsets[0]| and |offsets[1]|.
+  std::vector<size_t> offsets;
+  link_view->SetText(l10n_util::GetStringFUTF16(
+      IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK,
+      {std::u16string(), std::u16string(), base::UTF8ToUTF16(account.email)},
+      &offsets));
+  DCHECK_EQ(3u, offsets.size());
+  // This object outlives its |link_view| child so base::Unretained() is safe.
+  link_view->AddStyleRange(
+      gfx::Range(offsets[0], offsets[1]),
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &SendTabToSelfBubbleViewImpl::OnManageDevicesClicked,
+          base::Unretained(this))));
 }
 
 }  // namespace send_tab_to_self

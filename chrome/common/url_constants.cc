@@ -165,6 +165,9 @@ const char kGoogleAccountURL[] = "https://myaccount.google.com";
 const char kGoogleAccountChooserURL[] =
     "https://accounts.google.com/AccountChooser";
 
+const char kGoogleAccountDeviceActivityURL[] =
+    "https://myaccount.google.com/device-activity";
+
 const char kGooglePasswordManagerURL[] = "https://passwords.google.com";
 
 const char kGooglePhotosURL[] = "https://photos.google.com";
