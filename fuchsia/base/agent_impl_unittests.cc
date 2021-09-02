@@ -9,9 +9,9 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/testfidl/cpp/fidl.h"
 #include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cr_fuchsia {
@@ -131,29 +131,29 @@ class AgentImplTest : public ::testing::Test {
 
 // Verify that the Agent can publish and unpublish itself.
 TEST_F(AgentImplTest, PublishAndUnpublish) {
-  cr_fuchsia::ResultReceiver<zx_status_t> client_disconnect_status1;
+  base::test::TestFuture<zx_status_t> client_disconnect_status1;
   fuchsia::modular::AgentPtr agent = CreateAgentAndConnect();
   agent.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      client_disconnect_status1.GetReceiveCallback()));
+      client_disconnect_status1.GetCallback()));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(client_disconnect_status1.has_value());
+  EXPECT_FALSE(client_disconnect_status1.IsReady());
 
   // Teardown the Agent.
   agent_impl_.reset();
 
   // Verify that the client got disconnected on teardown.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(*client_disconnect_status1, ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(client_disconnect_status1.Get(), ZX_ERR_PEER_CLOSED);
 
   // Verify that the Agent service is no longer available.
-  cr_fuchsia::ResultReceiver<zx_status_t> client_disconnect_status2;
+  base::test::TestFuture<zx_status_t> client_disconnect_status2;
   services_client_->Connect(agent.NewRequest());
   agent.set_error_handler(cr_fuchsia::CallbackToFitFunction(
-      client_disconnect_status2.GetReceiveCallback()));
+      client_disconnect_status2.GetCallback()));
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(*client_disconnect_status2, ZX_ERR_PEER_CLOSED);
+  EXPECT_EQ(client_disconnect_status2.Get(), ZX_ERR_PEER_CLOSED);
 }
 
 // Verify that multiple connection attempts with the different component Ids

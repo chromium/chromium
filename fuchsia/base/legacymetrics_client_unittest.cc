@@ -14,11 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/base/legacymetrics_histogram_flattener.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -508,8 +508,8 @@ TEST_F(LegacyMetricsClientTest, FlushWithOutstandingAck) {
 }
 
 TEST_F(LegacyMetricsClientTest, ExternalFlushSignal) {
-  ResultReceiver<base::OnceClosure> flush_receiver;
-  client_.SetNotifyFlushCallback(flush_receiver.GetReceiveCallback());
+  base::test::TestFuture<base::OnceClosure> flush_receiver;
+  client_.SetNotifyFlushCallback(flush_receiver.GetCallback());
   client_.Start(kReportInterval);
   base::RunLoop().RunUntilIdle();
 
@@ -523,8 +523,8 @@ TEST_F(LegacyMetricsClientTest, ExternalFlushSignal) {
   EXPECT_FALSE(test_recorder_.IsRecordInFlight());
 
   // Verify that invoking the completion callback unblocks reporting.
-  EXPECT_TRUE(flush_receiver.has_value());
-  std::move(*flush_receiver).Run();
+  EXPECT_TRUE(flush_receiver.IsReady());
+  flush_receiver.Take().Run();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(test_recorder_.IsRecordInFlight());
 }
