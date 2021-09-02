@@ -144,6 +144,39 @@ const invariants = {
     ]);
   },
 
+  // Like assert_tao_pass_no_redirect_https but for resources that did encounter
+  // at least one HTTP redirect.
+  assert_tao_pass_with_redirect_https: entry => {
+    assert_ordered_(entry, [
+      "fetchStart",
+      "redirectStart",
+      "redirectEnd",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "secureConnectionStart",
+      "connectStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+
+    assert_zeroed_(entry, [
+      "workerStart",
+    ]);
+
+    assert_not_negative_(entry, [
+      "duration",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+  },
+
   // Like assert_tao_pass_no_redirect_http but, since the resource's bytes
   // won't be retransmitted, the encoded and decoded sizes must be zero.
   assert_tao_pass_304_not_modified_http: entry => {
@@ -274,8 +307,41 @@ const invariants = {
   },
 
   // Asserts that attributes of the given PerformanceResourceTiming entry match
-  // what the spec dictates for a resource fetched over HTTPS through a
-  // TAO enabled cross-origin redirect.
+  // what the spec dictates when
+  // 1. An HTTP request is made for a same-origin resource.
+  // 2. The response to 1 is an HTTP redirect (like a 302).
+  // 3. The location from 2 is a cross-origin HTTPS URL.
+  // 4. The response to fetching the URL from 3 does not set a matching TAO header.
+  assert_http_to_cross_origin_redirected_resource: entry => {
+    assert_zeroed_(entry, [
+      "redirectStart",
+      "redirectEnd",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+      "connectEnd",
+      "secureConnectionStart",
+      "requestStart",
+      "responseStart",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "responseEnd",
+    ]);
+
+    assert_ordered_(entry, [
+      "fetchStart",
+      "responseEnd",
+    ]);
+  },
+
+  // Asserts that attributes of the given PerformanceResourceTiming entry match
+  // what the spec dictates when
+  // 1. An HTTPS request is made for a same-origin resource.
+  // 2. The response to 1 is an HTTP redirect (like a 302).
+  // 3. The location from 2 is a cross-origin HTTPS URL.
+  // 4. The response to fetching the URL from 3 sets a matching TAO header.
   assert_tao_enabled_cross_origin_redirected_resource: entry => {
     assert_positive_(entry, [
       "redirectStart",
@@ -288,6 +354,37 @@ const invariants = {
       "domainLookupEnd",
       "connectStart",
       "secureConnectionStart",
+      "connectEnd",
+      "requestStart",
+      "responseStart",
+      "responseEnd",
+    ]);
+  },
+
+  // Asserts that attributes of the given PerformanceResourceTiming entry match
+  // what the spec dictates when
+  // 1. An HTTP request is made for a same-origin resource
+  // 2. The response to 1 is an HTTP redirect (like a 302).
+  // 3. The location from 2 is a cross-origin HTTPS URL.
+  // 4. The response to fetching the URL from 3 sets a matching TAO header.
+  assert_http_to_tao_enabled_cross_origin_https_redirected_resource: entry => {
+    assert_zeroed_(entry, [
+      // Note that, according to the spec, the secureConnectionStart attribute
+      // should describe the connection for the first resource request when
+      // there are redirects. Since the initial request is over HTTP,
+      // secureConnectionStart must be 0.
+      "secureConnectionStart",
+    ]);
+    assert_positive_(entry, [
+      "redirectStart",
+    ]);
+    assert_ordered_(entry, [
+      "redirectStart",
+      "redirectEnd",
+      "fetchStart",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
       "connectEnd",
       "requestStart",
       "responseStart",
