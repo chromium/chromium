@@ -2594,7 +2594,7 @@
   {
     "name": "enable-system-notifications",
     "owners": [ "peter", "finnur", "knollr" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "enable-system-proxy-for-system-services",
