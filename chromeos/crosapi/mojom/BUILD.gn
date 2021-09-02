@@ -121,6 +121,10 @@ mojom("mojom") {
           cpp = "::apps::mojom::IntentFilePtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.LaunchSource"
+          cpp = "::apps::mojom::LaunchSource"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

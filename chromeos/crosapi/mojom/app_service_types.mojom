@@ -7,6 +7,7 @@
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
@@ -287,4 +288,50 @@ struct Intent {
   string? mime_type@2; // MIME type. e.g. text/plain, image/*.
   string? share_text@3; // Text to share. e.g. Share link to other app.
   string? share_title@4; // Title for the share.
+};
+
+// The result from launching an app.
+[Stable]
+struct LaunchResult {
+  // The id to represent which instance the app is launched in.
+  mojo_base.mojom.UnguessableToken instance_id@0;
+};
+
+// Enumeration of app launch sources.
+[Stable, Extensible]
+enum LaunchSource {
+  [Default] kUnknown = 0,
+  kFromAppListGrid,              // Grid of apps, not the search box.
+  kFromAppListGridContextMenu,   // Grid of apps; context menu.
+  kFromAppListQuery,             // Query-dependent results (larger icons).
+  kFromAppListQueryContextMenu,  // Query-dependent results; context menu.
+  kFromAppListRecommendation,    // Query-less recommendations (smaller
+                                 // icons).
+  kFromParentalControls,         // Parental Controls Settings Section and
+                                 // Per App time notification.
+  kFromShelf,                    // Shelf.
+  kFromFileManager,              // FileManager.
+  kFromLink,                     // Left-clicking on links in the browser.
+  kFromOmnibox,                  // Enter URL in the Omnibox in the
+                                 // browser.
+  kFromChromeInternal,           // Chrome internal call.
+  kFromKeyboard,                 // Keyboard shortcut for opening app.
+  kFromOtherApp,                 // Clicking link in another app or webui.
+  kFromMenu,                     // Menu.
+  kFromInstalledNotification,    // Installed notification
+  kFromTest,                     // Test
+  kFromArc,                      // Arc.
+  kFromSharesheet,               // Sharesheet.
+  kFromReleaseNotesNotification, // Release Notes Notification.
+  kFromFullRestore,              // Full restore.
+  kFromSmartTextContextMenu,     // Smart text selection context menu.
+  kFromDiscoverTabNotification,  // Discover Tab Notification.
+};
+
+[Stable]
+// The parameters to launch an app.
+struct LaunchParams {
+  string app_id;               // The app id of the app.
+  LaunchSource launch_source;  // The app launch source.
+  Intent? intent;              // The intent the app will launch with.
 };

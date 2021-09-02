@@ -343,6 +343,13 @@ struct StructTraits<crosapi::mojom::IntentDataView, apps::mojom::IntentPtr> {
   static bool Read(crosapi::mojom::IntentDataView, apps::mojom::IntentPtr* out);
 };
 
+template <>
+struct EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource> {
+  static crosapi::mojom::LaunchSource ToMojom(apps::mojom::LaunchSource input);
+  static bool FromMojom(crosapi::mojom::LaunchSource input,
+                        apps::mojom::LaunchSource* output);
+};
+
 }  // namespace mojo
 
 #endif  // CHROMEOS_CROSAPI_MOJOM_APP_SERVICE_TYPES_MOJOM_TRAITS_H_

@@ -46,6 +46,8 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
+              LaunchCallback callback) override;
 
  private:
   // Mojo endpoint that's responsible for receiving messages from Ash.

@@ -105,6 +105,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
+              LaunchCallback callback) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

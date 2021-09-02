@@ -11,6 +11,9 @@
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
@@ -193,6 +196,37 @@ void WebAppsPublisherHost::ExecuteContextMenuCommand(const std::string& app_id,
   publisher_helper().ExecuteContextMenuCommand(
       app_id, item_id, apps::mojom::AppLaunchSource::kSourceAppLauncher,
       display_id);
+}
+
+void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
+                                  LaunchCallback callback) {
+  content::WebContents* web_contents;
+  if (launch_params->intent.has_value()) {
+    web_contents = publisher_helper().LaunchAppWithIntent(
+        launch_params->app_id, ui::EF_NONE,
+        std::move(launch_params->intent.value()), launch_params->launch_source,
+        nullptr);
+  } else {
+    web_contents =
+        publisher_helper().Launch(launch_params->app_id, ui::EF_NONE,
+                                  launch_params->launch_source, nullptr);
+  }
+
+  // TODO(crbug.com/1144877): Run callback when the window is ready.
+  auto* app_instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)
+          ->BrowserAppInstanceTracker();
+  auto launch_result = crosapi::mojom::LaunchResult::New();
+  if (app_instance_tracker) {
+    launch_result->instance_id =
+        app_instance_tracker->GetAppInstance(web_contents)->id;
+  } else {
+    // TODO(crbug.com/1144877): This part of code should not be reached
+    // after the instance tracker flag turned on. Replaced with DCHECK when
+    // the app instance tracker flag is turned on.
+    launch_result->instance_id = base::UnguessableToken::Create();
+  }
+  std::move(callback).Run(std::move(launch_result));
 }
 
 void WebAppsPublisherHost::OnShortcutsMenuIconsRead(

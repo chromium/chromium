@@ -711,4 +711,137 @@ bool StructTraits<crosapi::mojom::IntentDataView, apps::mojom::IntentPtr>::Read(
   return true;
 }
 
+crosapi::mojom::LaunchSource
+EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource>::ToMojom(
+    apps::mojom::LaunchSource input) {
+  switch (input) {
+    case apps::mojom::LaunchSource::kUnknown:
+      return crosapi::mojom::LaunchSource::kUnknown;
+    case apps::mojom::LaunchSource::kFromAppListGrid:
+      return crosapi::mojom::LaunchSource::kFromAppListGrid;
+    case apps::mojom::LaunchSource::kFromAppListGridContextMenu:
+      return crosapi::mojom::LaunchSource::kFromAppListGridContextMenu;
+    case apps::mojom::LaunchSource::kFromAppListQuery:
+      return crosapi::mojom::LaunchSource::kFromAppListQuery;
+    case apps::mojom::LaunchSource::kFromAppListQueryContextMenu:
+      return crosapi::mojom::LaunchSource::kFromAppListQueryContextMenu;
+    case apps::mojom::LaunchSource::kFromAppListRecommendation:
+      return crosapi::mojom::LaunchSource::kFromAppListRecommendation;
+    case apps::mojom::LaunchSource::kFromParentalControls:
+      return crosapi::mojom::LaunchSource::kFromParentalControls;
+    case apps::mojom::LaunchSource::kFromShelf:
+      return crosapi::mojom::LaunchSource::kFromShelf;
+    case apps::mojom::LaunchSource::kFromFileManager:
+      return crosapi::mojom::LaunchSource::kFromFileManager;
+    case apps::mojom::LaunchSource::kFromLink:
+      return crosapi::mojom::LaunchSource::kFromLink;
+    case apps::mojom::LaunchSource::kFromOmnibox:
+      return crosapi::mojom::LaunchSource::kFromOmnibox;
+    case apps::mojom::LaunchSource::kFromChromeInternal:
+      return crosapi::mojom::LaunchSource::kFromChromeInternal;
+    case apps::mojom::LaunchSource::kFromKeyboard:
+      return crosapi::mojom::LaunchSource::kFromKeyboard;
+    case apps::mojom::LaunchSource::kFromOtherApp:
+      return crosapi::mojom::LaunchSource::kFromOtherApp;
+    case apps::mojom::LaunchSource::kFromMenu:
+      return crosapi::mojom::LaunchSource::kFromMenu;
+    case apps::mojom::LaunchSource::kFromInstalledNotification:
+      return crosapi::mojom::LaunchSource::kFromInstalledNotification;
+    case apps::mojom::LaunchSource::kFromTest:
+      return crosapi::mojom::LaunchSource::kFromTest;
+    case apps::mojom::LaunchSource::kFromArc:
+      return crosapi::mojom::LaunchSource::kFromArc;
+    case apps::mojom::LaunchSource::kFromSharesheet:
+      return crosapi::mojom::LaunchSource::kFromSharesheet;
+    case apps::mojom::LaunchSource::kFromReleaseNotesNotification:
+      return crosapi::mojom::LaunchSource::kFromReleaseNotesNotification;
+    case apps::mojom::LaunchSource::kFromFullRestore:
+      return crosapi::mojom::LaunchSource::kFromFullRestore;
+    case apps::mojom::LaunchSource::kFromSmartTextContextMenu:
+      return crosapi::mojom::LaunchSource::kFromSmartTextContextMenu;
+    case apps::mojom::LaunchSource::kFromDiscoverTabNotification:
+      return crosapi::mojom::LaunchSource::kFromDiscoverTabNotification;
+  }
+  NOTREACHED();
+}
+
+bool EnumTraits<crosapi::mojom::LaunchSource, apps::mojom::LaunchSource>::
+    FromMojom(crosapi::mojom::LaunchSource input,
+              apps::mojom::LaunchSource* output) {
+  switch (input) {
+    case crosapi::mojom::LaunchSource::kUnknown:
+      *output = apps::mojom::LaunchSource::kUnknown;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromAppListGrid:
+      *output = apps::mojom::LaunchSource::kFromAppListGrid;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromAppListGridContextMenu:
+      *output = apps::mojom::LaunchSource::kFromAppListGridContextMenu;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromAppListQuery:
+      *output = apps::mojom::LaunchSource::kFromAppListQuery;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromAppListQueryContextMenu:
+      *output = apps::mojom::LaunchSource::kFromAppListQueryContextMenu;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromAppListRecommendation:
+      *output = apps::mojom::LaunchSource::kFromAppListRecommendation;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromParentalControls:
+      *output = apps::mojom::LaunchSource::kFromParentalControls;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromShelf:
+      *output = apps::mojom::LaunchSource::kFromShelf;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromFileManager:
+      *output = apps::mojom::LaunchSource::kFromFileManager;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromLink:
+      *output = apps::mojom::LaunchSource::kFromLink;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromOmnibox:
+      *output = apps::mojom::LaunchSource::kFromOmnibox;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromChromeInternal:
+      *output = apps::mojom::LaunchSource::kFromChromeInternal;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromKeyboard:
+      *output = apps::mojom::LaunchSource::kFromKeyboard;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromOtherApp:
+      *output = apps::mojom::LaunchSource::kFromOtherApp;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromMenu:
+      *output = apps::mojom::LaunchSource::kFromMenu;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromInstalledNotification:
+      *output = apps::mojom::LaunchSource::kFromInstalledNotification;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromTest:
+      *output = apps::mojom::LaunchSource::kFromTest;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromArc:
+      *output = apps::mojom::LaunchSource::kFromArc;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromSharesheet:
+      *output = apps::mojom::LaunchSource::kFromSharesheet;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromReleaseNotesNotification:
+      *output = apps::mojom::LaunchSource::kFromReleaseNotesNotification;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromFullRestore:
+      *output = apps::mojom::LaunchSource::kFromFullRestore;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromSmartTextContextMenu:
+      *output = apps::mojom::LaunchSource::kFromSmartTextContextMenu;
+      return true;
+    case crosapi::mojom::LaunchSource::kFromDiscoverTabNotification:
+      *output = apps::mojom::LaunchSource::kFromDiscoverTabNotification;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace mojo

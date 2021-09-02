@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module crosapi.mojom;
 
@@ -100,6 +100,13 @@ interface AppController {
   SetWindowMode@7(
       string app_id,
       WindowMode window_mode);
+
+  // Launch the app with |params|. The params include |app_id|,
+  // |launch_source|, and optional |intent| at the moment. This method will
+  // return |launch_result| to allow us find out which instance the app is
+  // running in.
+  [MinVersion=10]
+  Launch@8(LaunchParams params) => (LaunchResult launch_result);
 };
 
 // Interacts with the app service. Implemented in ash-chrome and called in

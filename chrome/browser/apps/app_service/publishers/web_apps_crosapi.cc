@@ -87,7 +87,23 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             int32_t event_flags,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::WindowInfoPtr window_info) {
-  // TODO(crbug.com/1144877): Implement this.
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  controller_->Launch(std::move(launch_params), base::DoNothing());
+}
+
+void WebAppsCrosapi::LaunchAppWithIntent(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::IntentPtr intent,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::WindowInfoPtr window_info) {
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent = std::move(intent);
+  controller_->Launch(std::move(launch_params), base::DoNothing());
 }
 
 void WebAppsCrosapi::Uninstall(const std::string& app_id,

@@ -136,3 +136,9 @@ void LacrosExtensionAppsController::SetWindowMode(
   // standalone window.
   NOTIMPLEMENTED();
 }
+
+void LacrosExtensionAppsController::Launch(
+    crosapi::mojom::LaunchParamsPtr launch_params,
+    LaunchCallback callback) {
+  NOTIMPLEMENTED();
+}
