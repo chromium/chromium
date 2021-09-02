@@ -184,7 +184,12 @@ void PhoneHubTray::ShowBubble() {
   // on the current mode.
   auto content_view = ui_controller_->CreateContentView(this);
   content_view_ = content_view.get();
-  DCHECK(content_view_);
+
+  if (!content_view_) {
+    CloseBubble();
+    return;
+  }
+
   bubble_view->AddChildView(std::move(content_view));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
@@ -243,12 +248,14 @@ void PhoneHubTray::CloseBubble() {
   if (bubble_view)
     bubble_view->ResetDelegate();
 
-  DCHECK(content_view_);
-  phone_hub_metrics::LogScreenOnBubbleClose(
-      content_view_->GetScreenForMetrics());
+  if (content_view_) {
+    phone_hub_metrics::LogScreenOnBubbleClose(
+        content_view_->GetScreenForMetrics());
 
-  content_view_->OnBubbleClose();
-  content_view_ = nullptr;
+    content_view_->OnBubbleClose();
+    content_view_ = nullptr;
+  }
+
   bubble_.reset();
   SetIsActive(false);
   shelf()->UpdateAutoHideState();
