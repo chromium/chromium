@@ -23,7 +23,7 @@
 
 namespace safe_browsing {
 
-ChromeUserPopulation GetUserPopulation(Profile* profile) {
+ChromeUserPopulation GetUserPopulationForProfile(Profile* profile) {
   ChromeUserPopulation population;
 
   // |profile| may be null in tests.

@@ -46,7 +46,7 @@ ChromeClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
 
 ChromeUserPopulation
 ChromeClientSideDetectionServiceDelegate::GetUserPopulation() {
-  return ::safe_browsing::GetUserPopulation(profile_);
+  return ::safe_browsing::GetUserPopulationForProfile(profile_);
 }
 
 }  // namespace safe_browsing

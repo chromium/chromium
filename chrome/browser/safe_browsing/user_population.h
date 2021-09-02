@@ -11,7 +11,7 @@
 namespace safe_browsing {
 
 // Creates a ChromeUserPopulation proto for the given |profile|.
-ChromeUserPopulation GetUserPopulation(Profile* profile);
+ChromeUserPopulation GetUserPopulationForProfile(Profile* profile);
 
 }  // namespace safe_browsing
 

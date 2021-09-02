@@ -69,7 +69,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return new ChromeEnterpriseRealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile), profile,
-      base::BindRepeating(&safe_browsing::GetUserPopulation, profile),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(

@@ -90,7 +90,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         test_shared_loader_factory_, cache_manager_.get(), test_profile_.get(),
         base::BindRepeating(
             [](Profile* profile, syncer::TestSyncService* test_sync_service) {
-              ChromeUserPopulation population = GetUserPopulation(profile);
+              ChromeUserPopulation population =
+                  GetUserPopulationForProfile(profile);
               population.set_is_history_sync_enabled(
                   safe_browsing::SyncUtils::IsHistorySyncEnabled(
                       test_sync_service));

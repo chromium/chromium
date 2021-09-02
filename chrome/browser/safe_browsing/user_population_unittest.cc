@@ -36,19 +36,19 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
   TestingProfile profile;
   SetSafeBrowsingState(profile.GetPrefs(),
                        SafeBrowsingState::STANDARD_PROTECTION);
-  ChromeUserPopulation population = GetUserPopulation(&profile);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
 
   SetSafeBrowsingState(profile.GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
-  population = GetUserPopulation(&profile);
+  population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_population(),
             ChromeUserPopulation::ENHANCED_PROTECTION);
 
   SetSafeBrowsingState(profile.GetPrefs(),
                        SafeBrowsingState::STANDARD_PROTECTION);
   SetExtendedReportingPrefForTests(profile.GetPrefs(), true);
-  population = GetUserPopulation(&profile);
+  population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_population(),
             ChromeUserPopulation::EXTENDED_REPORTING);
 }
@@ -58,25 +58,25 @@ TEST(GetUserPopulationTest, PopulatesMBB) {
   TestingProfile profile;
   profile.GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
-  ChromeUserPopulation population = GetUserPopulation(&profile);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_FALSE(population.is_mbb_enabled());
 
   profile.GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-  population = GetUserPopulation(&profile);
+  population = GetUserPopulationForProfile(&profile);
   EXPECT_TRUE(population.is_mbb_enabled());
 }
 
 TEST(GetUserPopulationTest, PopulatesIncognito) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  ChromeUserPopulation population = GetUserPopulation(&profile);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_FALSE(population.is_incognito());
 
   Profile* incognito_profile = profile.GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
-  population = GetUserPopulation(incognito_profile);
+  population = GetUserPopulationForProfile(incognito_profile);
   EXPECT_TRUE(population.is_incognito());
 }
 
@@ -93,7 +93,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
     sync_service->SetLocalSyncEnabled(false);
     sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
 
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_TRUE(population.is_history_sync_enabled());
   }
 
@@ -103,7 +103,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
     sync_service->SetLocalSyncEnabled(false);
     sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
 
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
@@ -113,7 +113,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
     sync_service->SetLocalSyncEnabled(true);
     sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
 
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
@@ -123,7 +123,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
     sync_service->SetLocalSyncEnabled(false);
     sync_service->SetActiveDataTypes(syncer::ModelTypeSet());
 
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 }
@@ -135,12 +135,12 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
 
   AdvancedProtectionStatusManagerFactory::GetForProfile(&profile)
       ->SetAdvancedProtectionStatusForTesting(true);
-  ChromeUserPopulation population = GetUserPopulation(&profile);
+  ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_TRUE(population.is_under_advanced_protection());
 
   AdvancedProtectionStatusManagerFactory::GetForProfile(&profile)
       ->SetAdvancedProtectionStatusForTesting(false);
-  population = GetUserPopulation(&profile);
+  population = GetUserPopulationForProfile(&profile);
   EXPECT_FALSE(population.is_under_advanced_protection());
 }
 #endif
@@ -154,7 +154,7 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
     feature_list.InitWithFeatures(
         /* enabled_features = */ {},
         /* disabled_features = */ {kBetterTelemetryAcrossReports});
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_EQ(population.user_agent(), "");
   }
   {
@@ -165,7 +165,7 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
     std::string user_agent =
         version_info::GetProductNameAndVersionForUserAgent() + "/" +
         version_info::GetOSType();
-    ChromeUserPopulation population = GetUserPopulation(&profile);
+    ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_EQ(population.user_agent(), user_agent);
   }
 }

@@ -1572,7 +1572,7 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
 
 void ChromePasswordProtectionService::FillUserPopulation(
     LoginReputationClientRequest* request_proto) {
-  *request_proto->mutable_population() = GetUserPopulation(profile_);
+  *request_proto->mutable_population() = GetUserPopulationForProfile(profile_);
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {
