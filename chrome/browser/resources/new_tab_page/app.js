@@ -54,6 +54,9 @@ export const NtpElement = {
   kCustomize: 8,
 };
 
+/** @const {string} */
+const CUSTOMIZE_URL_PARAM = 'customize';
+
 /** @param {NtpElement} element */
 function recordClick(element) {
   chrome.metricsPrivate.recordEnumerationValue(
@@ -117,10 +120,18 @@ class AppElement extends mixinBehaviors
       },
 
       /** @private */
-      showCustomizeDialog_: Boolean,
+      showCustomizeDialog_: {
+        type: Boolean,
+        value: () =>
+            WindowProxy.getInstance().url.searchParams.has(CUSTOMIZE_URL_PARAM),
+      },
 
       /** @private {?string} */
-      selectedCustomizeDialogPage_: String,
+      selectedCustomizeDialogPage_: {
+        type: String,
+        value: () =>
+            WindowProxy.getInstance().url.searchParams.get(CUSTOMIZE_URL_PARAM),
+      },
 
       /** @private */
       showVoiceSearchOverlay_: Boolean,
