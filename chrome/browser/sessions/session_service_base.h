@@ -246,6 +246,8 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Schedules the specified command.
   void ScheduleCommand(std::unique_ptr<sessions::SessionCommand> command);
 
+  virtual void DidScheduleCommand() {}
+
   // Returns true if changes to tabs in the specified window should be tracked.
   bool ShouldTrackChangesToWindow(const SessionID& window_id) const;
 

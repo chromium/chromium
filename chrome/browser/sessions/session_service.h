@@ -130,6 +130,7 @@ class SessionService : public SessionServiceBase {
 
  protected:
   Browser::Type GetDesiredBrowserTypeForWebContents() override;
+  void DidScheduleCommand() override;
 
  private:
   // Allow tests to access our innards for testing purposes.
@@ -240,6 +241,14 @@ class SessionService : public SessionServiceBase {
   bool did_log_exit_ = false;
 
   int unrecoverable_write_error_count_ = 0;
+
+  // True if this is the first SessionService created for the Profile. A value
+  // of false means the first SessionService was destroyed and a new one
+  // created.
+  const bool is_first_session_service_;
+
+  // Set to true once a valid command has been scheduled.
+  bool did_schedule_command_ = false;
 
   base::WeakPtrFactory<SessionService> weak_factory_{this};
 
