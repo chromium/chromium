@@ -93,6 +93,7 @@ static_library("browser") {
       "//components/messages/android:feature_flags",
       "//components/resources:android_resources",
       "//components/strings:components_strings_grit",
+      "//components/subresource_filter/android:android",
       "//components/subresource_filter/android:subresource_filter_jni_headers",
     ]
   }

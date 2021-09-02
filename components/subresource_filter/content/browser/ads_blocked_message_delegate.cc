@@ -4,17 +4,29 @@
 
 #include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
 
+#include <utility>
+
+#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/android/ads_blocked_dialog.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace subresource_filter {
+
+AdsBlockedMessageDelegate::~AdsBlockedMessageDelegate() {
+  if (message_) {
+    // Do not use message_ after this.
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::UNKNOWN);
+  }
+}
 
 void AdsBlockedMessageDelegate::ShowMessage() {
   if (message_) {
@@ -49,17 +61,11 @@ void AdsBlockedMessageDelegate::ShowMessage() {
   message_ = std::move(message);
 }
 
-AdsBlockedMessageDelegate::~AdsBlockedMessageDelegate() {
-  if (message_) {
-    // Do not use message_ after this.
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::UNKNOWN);
-  }
-}
-
 AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : web_contents_(web_contents) {
+  ads_blocked_dialog_factory_ = base::BindRepeating(AdsBlockedDialog::Create);
+}
 
 void AdsBlockedMessageDelegate::HandleDismissCallback(
     messages::DismissReason dismiss_reason) {

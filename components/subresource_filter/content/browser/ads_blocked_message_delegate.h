@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "components/subresource_filter/android/ads_blocked_dialog.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -29,21 +31,30 @@ namespace subresource_filter {
 class AdsBlockedMessageDelegate
     : public content::WebContentsUserData<AdsBlockedMessageDelegate> {
  public:
-  void ShowMessage();
+  using AdsBlockedDialogFactory =
+      base::RepeatingCallback<std::unique_ptr<AdsBlockedDialogBase>(
+          content::WebContents*,
+          AdsBlockedDialogBase::AllowAdsClickedCallback,
+          AdsBlockedDialogBase::LearnMoreClickedCallback)>;
 
   ~AdsBlockedMessageDelegate() override;
+
+  void ShowMessage();
 
   messages::MessageWrapper* message_for_testing() { return message_.get(); }
 
  private:
   friend class content::WebContentsUserData<AdsBlockedMessageDelegate>;
+  AdsBlockedMessageDelegate(content::WebContents* web_contents);
 
-  explicit AdsBlockedMessageDelegate(content::WebContents* web_contents);
   void HandleClick();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
 
   content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
+
+  AdsBlockedDialogFactory ads_blocked_dialog_factory_;
+  std::unique_ptr<AdsBlockedDialogBase> ads_blocked_dialog_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
