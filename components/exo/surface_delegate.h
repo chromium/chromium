@@ -87,6 +87,10 @@ class SurfaceDelegate {
   // Called when surface was requested to be visible on all workspaces.
   virtual void SetVisibleOnAllWorkspaces() = 0;
 
+  // Called to set the initial workspace to restore a window to the
+  // corresponding desk.
+  virtual void SetInitialWorkspace(const char* initial_workspace) = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };

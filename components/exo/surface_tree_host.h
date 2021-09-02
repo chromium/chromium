@@ -108,6 +108,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override {}
   void MoveToDesk(int desk_index) override {}
   void SetVisibleOnAllWorkspaces() override {}
+  void SetInitialWorkspace(const char* initial_workspace) override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

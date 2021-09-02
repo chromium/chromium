@@ -174,6 +174,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   // all desks state.
   void OnDeskChanged(int state);
 
+  // Sets |workspace_| to |aura_surface_|.
+  // This must be called in SetUpShellIntegration().
+  void SetInitialWorkspace();
+
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 

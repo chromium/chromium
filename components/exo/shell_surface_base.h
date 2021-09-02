@@ -188,6 +188,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
   void MoveToDesk(int desk_index) override;
   void SetVisibleOnAllWorkspaces() override;
+  void SetInitialWorkspace(const char* initial_workspace) override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -379,6 +380,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::Size pending_maximum_size_;
   gfx::SizeF pending_aspect_ratio_;
   bool pending_pip_ = false;
+  absl::optional<std::string> initial_workspace_;
 
   // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;

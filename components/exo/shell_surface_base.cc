@@ -25,6 +25,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -542,6 +543,13 @@ void ShellSurfaceBase::MoveToDesk(int desk_index) {
 void ShellSurfaceBase::SetVisibleOnAllWorkspaces() {
   if (widget_)
     widget_->SetVisibleOnAllWorkspaces(true);
+}
+
+void ShellSurfaceBase::SetInitialWorkspace(const char* initial_workspace) {
+  if (initial_workspace)
+    initial_workspace_ = std::string(initial_workspace);
+  else
+    initial_workspace_.reset();
 }
 
 void ShellSurfaceBase::SetChildAxTreeId(ui::AXTreeID child_ax_tree_id) {
@@ -1100,6 +1108,16 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.show_state = show_state;
+  if (initial_workspace_.has_value()) {
+    const std::string kToggleVisibleOnAllWorkspacesValue = "-1";
+    if (initial_workspace_ == kToggleVisibleOnAllWorkspacesValue) {
+      // If |initial_workspace_| is -1, window is visible on all workspaces.
+      params.visible_on_all_workspaces = true;
+    } else {
+      params.workspace = initial_workspace_.value();
+    }
+  }
+
   // Make shell surface a transient child if |parent_| has been set and
   // container_ isn't specified.
   aura::Window* root_window =

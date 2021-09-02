@@ -18,7 +18,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxAuraShellVersion = 22;
+constexpr uint32_t kMaxAuraShellVersion = 23;
 }
 
 // static

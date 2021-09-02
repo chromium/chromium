@@ -367,6 +367,9 @@ class Surface final : public ui::PropertyHandler {
   // Requests that window is visible on all workspaces.
   void SetVisibleOnAllWorkspaces();
 
+  // Sets the initial workspace to restore a window to the corresponding desk.
+  void SetInitialWorkspace(const char* initial_workspace);
+
  private:
   struct State {
     State();

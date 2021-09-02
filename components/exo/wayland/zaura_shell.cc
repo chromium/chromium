@@ -239,6 +239,12 @@ void aura_surface_move_to_desk(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->MoveToDesk(index);
 }
 
+void aura_surface_set_initial_workspace(wl_client* client,
+                                        wl_resource* resource,
+                                        const char* initial_workspace) {
+  GetUserDataAs<AuraSurface>(resource)->SetInitialWorkspace(initial_workspace);
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -263,7 +269,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_pip,
     aura_surface_unset_pip,
     aura_surface_set_aspect_ratio,
-    aura_surface_move_to_desk};
+    aura_surface_move_to_desk,
+    aura_surface_set_initial_workspace};
 
 }  // namespace
 
@@ -565,6 +572,10 @@ void AuraSurface::MoveToDesk(int desk_index) {
   } else {
     surface_->MoveToDesk(desk_index);
   }
+}
+
+void AuraSurface::SetInitialWorkspace(const char* initial_workspace) {
+  surface_->SetInitialWorkspace(initial_workspace);
 }
 
 namespace {

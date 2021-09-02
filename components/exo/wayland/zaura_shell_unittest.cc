@@ -110,6 +110,10 @@ class MockSurfaceDelegate : public SurfaceDelegate {
               (override));
   MOCK_METHOD(void, MoveToDesk, (int desk_index), (override));
   MOCK_METHOD(void, SetVisibleOnAllWorkspaces, (), (override));
+  MOCK_METHOD(void,
+              SetInitialWorkspace,
+              (const char* initial_workspace),
+              (override));
 };
 
 }  // namespace

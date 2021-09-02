@@ -458,6 +458,15 @@ bool WaylandToplevelWindow::OnInitialize(
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
   SetDeskExtension(this, static_cast<DeskExtension*>(this));
+
+  if (!properties.workspace.empty()) {
+    int workspace;
+    base::StringToInt(properties.workspace, &workspace);
+    workspace_ = workspace;
+  } else if (properties.visible_on_all_workspaces) {
+    workspace_ = kToggleVisibleOnAllWorkspaces;
+  }
+
   return true;
 }
 
@@ -783,6 +792,7 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
                                this);
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
+    SetInitialWorkspace();
   }
 
   if (connection()->gtk_shell1()) {
@@ -825,6 +835,17 @@ void WaylandToplevelWindow::OnDeskChanged(int state) {
   workspace_ = state;
   if (workspace_extension_delegate_)
     workspace_extension_delegate_->OnWorkspaceChanged();
+}
+
+void WaylandToplevelWindow::SetInitialWorkspace() {
+  if (!workspace_.has_value())
+    return;
+
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_INITIAL_WORKSPACE_SINCE_VERSION) {
+    zaura_surface_set_initial_workspace(
+        aura_surface_.get(), base::NumberToString(workspace_.value()).c_str());
+  }
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {

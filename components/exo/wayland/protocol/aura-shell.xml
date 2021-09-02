@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="22">
+  <interface name="zaura_shell" version="23">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -110,7 +110,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="22">
+  <interface name="zaura_surface" version="23">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -426,6 +426,16 @@
       </description>
       <arg name="state" type="int" summary="index of desk or -1 for a window assigned to all desks"/>
     </event>
+
+    <!-- Version 23 additions -->
+    <request name="set_initial_workspace" since="23">
+      <description summary="initial workspace for restore">
+        If |initial_workspace| equals '-1', a window is restored and visible on all workspaces,
+        Otherwise, set the initial workspace to restore the window to the corresponding workspace.
+        This is not double buffered and must be set before attaching a buffer.
+      </description>
+      <arg name="initial_workspace" type="string" summary="intial workspace for restoring or '-1' for visible on all workspaces"/>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="6">

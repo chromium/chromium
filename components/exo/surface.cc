@@ -1433,4 +1433,9 @@ void Surface::SetVisibleOnAllWorkspaces() {
     delegate_->SetVisibleOnAllWorkspaces();
 }
 
+void Surface::SetInitialWorkspace(const char* initial_workspace) {
+  if (delegate_)
+    delegate_->SetInitialWorkspace(initial_workspace);
+}
+
 }  // namespace exo
