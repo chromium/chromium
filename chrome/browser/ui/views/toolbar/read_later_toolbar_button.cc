@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/webui_url_constants.h"
@@ -172,6 +173,13 @@ void ReadLaterToolbarButton::ButtonPressed() {
   DCHECK(browser_view->right_aligned_side_panel());
 
   if (!side_panel_webview_) {
+    lens::LensSidePanelController* const lens_side_panel_controller =
+        browser_view->lens_side_panel_controller();
+    if (lens_side_panel_controller) {
+      // Hide the Lens side panel if showing.
+      lens_side_panel_controller->Close();
+    }
+
     // Using base::Unretained(this) is safe here because the side panel (and the
     // web view as its child) will be destroyed before the toolbar which will
     // destroy the ReadLaterToolbarButton.
@@ -183,6 +191,15 @@ void ReadLaterToolbarButton::ButtonPressed() {
             std::move(webview));
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
   } else {
+    HideSidePanel();
+  }
+}
+
+void ReadLaterToolbarButton::HideSidePanel() {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_);
+  DCHECK(browser_view->right_aligned_side_panel());
+  if (side_panel_webview_) {
     browser_view->right_aligned_side_panel()->RemoveChildViewT(
         side_panel_webview_);
     side_panel_webview_ = nullptr;

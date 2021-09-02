@@ -23,6 +23,13 @@ class ReadLaterToolbarButton : public ToolbarButton {
   // ToolbarButton
   bool ShouldShowInkdropAfterIphInteraction() override;
 
+  // Hides the Read Later side panel if showing, and updates the toolbar button
+  // accordingly. Can be called to force close the side panel outside of a
+  // toolbar button press (e.g. if the Lens side panel becomes active).
+  // TODO(crbug.com/3130644): Remove this method and instead have the toolbar
+  // button listen for side panel state changes.
+  void HideSidePanel();
+
  private:
   void ButtonPressed();
 

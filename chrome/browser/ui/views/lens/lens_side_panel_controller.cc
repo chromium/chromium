@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace lens {
@@ -24,6 +25,7 @@ LensSidePanelController::~LensSidePanelController() = default;
 
 void LensSidePanelController::OpenWithURL(
     const content::OpenURLParams& params) {
+  browser_view_->toolbar()->read_later_button()->HideSidePanel();
   side_panel_webview_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   side_panel_->SetVisible(true);
