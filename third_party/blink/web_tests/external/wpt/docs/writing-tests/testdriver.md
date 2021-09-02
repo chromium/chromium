@@ -128,9 +128,10 @@ being called and the promise settling.
 
 Usage: `test_driver.delete_all_cookies(context=null)`
  * _context_: an optional WindowProxy for the browsing context in which to
-              perform the call.
+              perform the call. Defaults to the current browsing context.
 
-This function deletes all cookies for the current browsing context.
+This function returns a promise that resolves after all the cookies have
+been deleted from the provided browsing context.
 
 ### send_keys
 
