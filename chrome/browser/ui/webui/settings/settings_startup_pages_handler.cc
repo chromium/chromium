@@ -133,7 +133,7 @@ void StartupPagesHandler::HandleEditStartupPage(const base::ListValue* args) {
   const base::Value& callback_id = list[0];
   int index = list[1].GetInt();
 
-  if (index < 0 || index > startup_custom_pages_table_model_.RowCount()) {
+  if (index < 0 || index >= startup_custom_pages_table_model_.RowCount()) {
     RejectJavascriptCallback(callback_id, base::Value());
     NOTREACHED();
     return;
