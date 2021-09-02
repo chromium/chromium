@@ -7,6 +7,7 @@
 
 luci.project(
     name = "chromium",
+    config_dir = "luci",
     dev = True,
     buildbucket = "cr-buildbucket-dev.appspot.com",
     logdog = "luci-logdog-dev.appspot.com",

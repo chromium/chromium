@@ -20,11 +20,11 @@ lucicfg.enable_experiment("crbug.com/1085650")
 lucicfg.config(
     config_dir = "generated",
     tracked_files = [
-        "cr-buildbucket-dev.cfg",
-        "luci-logdog-dev.cfg",
-        "luci-milo-dev.cfg",
-        "luci-scheduler-dev.cfg",
-        "realms-dev.cfg",
+        "luci/cr-buildbucket-dev.cfg",
+        "luci/luci-logdog-dev.cfg",
+        "luci/luci-milo-dev.cfg",
+        "luci/luci-scheduler-dev.cfg",
+        "luci/realms-dev.cfg",
     ],
     fail_on_warnings = True,
 )
