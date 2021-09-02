@@ -2089,6 +2089,11 @@
                   '|content/public/browser/host_zoom_map.h' \
                   '|content/public/browser/storage_partition.h'
     },
+    'zte': {
+      'filepath': 'chrome/browser/ash/login/enrollment/*auto_enrollment*|' \
+                  'chrome/browser/ash/policy/enrollment/*auto_enrollment*|' \
+                  'chrome/browser/ash/policy/enrollment/private_membership/'
+    },
   },
 
   ##############################################################################
@@ -2889,5 +2894,6 @@
             'yusukes+watch@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org'],
     'zoom': ['wjmaclean@chromium.org'],
+    'zte': ['amraboelkher+watch@chromium.org'],
   },
 }
