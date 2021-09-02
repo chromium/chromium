@@ -1274,6 +1274,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   login_screen_extensions_lifetime_manager_.reset();
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
+  login_api_data_for_next_login_attempt_pref_cleaner_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
