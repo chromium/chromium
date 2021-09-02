@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 
 #include <stdint.h>
 
@@ -211,7 +211,7 @@ class ClientSideDetectionServiceTest : public testing::Test {
 TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   EXPECT_NE(csd_service_.get(), nullptr);
   // We delete the client-side detection service class even though the callbacks
@@ -225,7 +225,7 @@ TEST_F(ClientSideDetectionServiceTest, ServiceObjectDeletedBeforeCallbackDone) {
 TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   GURL url("http://a.com/");
@@ -284,7 +284,7 @@ TEST_F(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithToken) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -309,7 +309,7 @@ TEST_F(ClientSideDetectionServiceTest,
        SendClientReportPhishingRequestWithoutToken) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
   csd_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
 
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
@@ -332,7 +332,7 @@ TEST_F(ClientSideDetectionServiceTest,
 TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::TimeDelta::FromHours(25);
@@ -348,7 +348,7 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
 TEST_F(ClientSideDetectionServiceTest, CacheTest) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
   TestCache();
 }
@@ -356,7 +356,7 @@ TEST_F(ClientSideDetectionServiceTest, CacheTest) {
 TEST_F(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   SetModelFetchResponses();
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
   EXPECT_TRUE(csd_service_->IsPrivateIPAddress("10.1.2.3"));
   EXPECT_TRUE(csd_service_->IsPrivateIPAddress("127.0.0.1"));
@@ -383,7 +383,7 @@ TEST_F(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
                                    false);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_));
 
   // Safe Browsing is not enabled.
   EXPECT_FALSE(csd_service_->enabled());

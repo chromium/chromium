@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/safe_browsing/buildflags.h"
@@ -55,7 +55,7 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return new ClientSideDetectionService(
-      std::make_unique<ClientSideDetectionServiceDelegate>(profile));
+      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile));
 }
 
 content::BrowserContext*

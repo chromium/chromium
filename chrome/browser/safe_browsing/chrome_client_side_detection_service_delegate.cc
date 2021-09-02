@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -14,21 +14,21 @@
 
 namespace safe_browsing {
 
-ClientSideDetectionServiceDelegate::ClientSideDetectionServiceDelegate(
-    Profile* profile)
+ChromeClientSideDetectionServiceDelegate::
+    ChromeClientSideDetectionServiceDelegate(Profile* profile)
     : profile_(profile) {}
 
-ClientSideDetectionServiceDelegate::~ClientSideDetectionServiceDelegate() =
-    default;
+ChromeClientSideDetectionServiceDelegate::
+    ~ChromeClientSideDetectionServiceDelegate() = default;
 
-PrefService* ClientSideDetectionServiceDelegate::GetPrefs() {
+PrefService* ChromeClientSideDetectionServiceDelegate::GetPrefs() {
   if (profile_) {
     return profile_->GetPrefs();
   }
   return nullptr;
 }
 scoped_refptr<network::SharedURLLoaderFactory>
-ClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
+ChromeClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
   if (profile_) {
     return profile_->GetURLLoaderFactory();
   }
@@ -36,7 +36,7 @@ ClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
+ChromeClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   if (g_browser_process->safe_browsing_service()) {
     return g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
         profile_);
@@ -44,7 +44,8 @@ ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   return nullptr;
 }
 
-ChromeUserPopulation ClientSideDetectionServiceDelegate::GetUserPopulation() {
+ChromeUserPopulation
+ChromeClientSideDetectionServiceDelegate::GetUserPopulation() {
   return ::safe_browsing::GetUserPopulation(profile_);
 }
 

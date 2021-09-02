@@ -10,7 +10,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/feature_list_creator.h"
-#include "weblayer/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "weblayer/browser/safe_browsing/weblayer_client_side_detection_service_delegate.h"
 #include "weblayer/common/features.h"
 
 namespace weblayer {
@@ -46,7 +46,7 @@ ClientSideDetectionServiceFactory::~ClientSideDetectionServiceFactory() =
 KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new safe_browsing::ClientSideDetectionService(
-      std::make_unique<ClientSideDetectionServiceDelegate>(
+      std::make_unique<WebLayerClientSideDetectionServiceDelegate>(
           static_cast<BrowserContextImpl*>(context)));
 }
 

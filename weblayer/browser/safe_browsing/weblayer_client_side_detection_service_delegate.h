@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
-#define WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#ifndef WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#define WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "weblayer/browser/browser_context_impl.h"
 
 namespace weblayer {
 
-class ClientSideDetectionServiceDelegate
+class WebLayerClientSideDetectionServiceDelegate
     : public safe_browsing::ClientSideDetectionService::Delegate {
  public:
-  explicit ClientSideDetectionServiceDelegate(
+  explicit WebLayerClientSideDetectionServiceDelegate(
       BrowserContextImpl* browser_context);
-  ~ClientSideDetectionServiceDelegate() override;
+  ~WebLayerClientSideDetectionServiceDelegate() override;
 
   // ClientSideDetectionService::Delegate implementation.
   PrefService* GetPrefs() override;
@@ -27,9 +27,9 @@ class ClientSideDetectionServiceDelegate
  private:
   BrowserContextImpl* browser_context_;
 
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionServiceDelegate);
+  DISALLOW_COPY_AND_ASSIGN(WebLayerClientSideDetectionServiceDelegate);
 };
 
 }  // namespace weblayer
 
-#endif  // WEBLAYER_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#endif  // WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_

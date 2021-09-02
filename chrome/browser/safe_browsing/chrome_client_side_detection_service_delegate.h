@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 
@@ -13,11 +13,11 @@ namespace safe_browsing {
 
 // Delegate class which implements chrome specific bits for configuring
 // the ClientSideDetectionService class.
-class ClientSideDetectionServiceDelegate
+class ChromeClientSideDetectionServiceDelegate
     : public ClientSideDetectionService::Delegate {
  public:
-  explicit ClientSideDetectionServiceDelegate(Profile* profile);
-  ~ClientSideDetectionServiceDelegate() override;
+  explicit ChromeClientSideDetectionServiceDelegate(Profile* profile);
+  ~ChromeClientSideDetectionServiceDelegate() override;
 
   // ClientSideDetectionService::Delegate implementation.
   PrefService* GetPrefs() override;
@@ -29,9 +29,9 @@ class ClientSideDetectionServiceDelegate
  private:
   Profile* profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionServiceDelegate);
+  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionServiceDelegate);
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_SERVICE_DELEGATE_H_

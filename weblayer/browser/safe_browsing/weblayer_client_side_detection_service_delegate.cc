@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/safe_browsing/client_side_detection_service_delegate.h"
+#include "weblayer/browser/safe_browsing/weblayer_client_side_detection_service_delegate.h"
 
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -15,33 +15,34 @@
 
 namespace weblayer {
 
-ClientSideDetectionServiceDelegate::ClientSideDetectionServiceDelegate(
-    BrowserContextImpl* browser_context)
+WebLayerClientSideDetectionServiceDelegate::
+    WebLayerClientSideDetectionServiceDelegate(
+        BrowserContextImpl* browser_context)
     : browser_context_(browser_context) {}
 
-ClientSideDetectionServiceDelegate::~ClientSideDetectionServiceDelegate() =
-    default;
+WebLayerClientSideDetectionServiceDelegate::
+    ~WebLayerClientSideDetectionServiceDelegate() = default;
 
-PrefService* ClientSideDetectionServiceDelegate::GetPrefs() {
+PrefService* WebLayerClientSideDetectionServiceDelegate::GetPrefs() {
   DCHECK(browser_context_);
   return browser_context_->pref_service();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
+WebLayerClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
   return browser_context_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-ClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
+WebLayerClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
   return sb_service->GetURLLoaderFactory();
 }
 
 safe_browsing::ChromeUserPopulation
-ClientSideDetectionServiceDelegate::GetUserPopulation() {
+WebLayerClientSideDetectionServiceDelegate::GetUserPopulation() {
   safe_browsing::ChromeUserPopulation population;
   if (safe_browsing::IsEnhancedProtectionEnabled(*GetPrefs())) {
     population.set_user_population(
