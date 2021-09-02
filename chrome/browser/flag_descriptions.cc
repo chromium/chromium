@@ -4567,12 +4567,6 @@ const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[] =
     "Enable a setup guide to walk through the steps of initially configuring "
     "Switch Access.";
 
-const char kMagnifierPanningImprovementsName[] =
-    "Enable panning improvements in magnifier";
-const char kMagnifierPanningImprovementsDescription[] =
-    "Enable feature which adds additional mouse and keyboard panning "
-    "functionality in Magnifier.";
-
 const char kMagnifierContinuousMouseFollowingModeSettingName[] =
     "Enable ability to choose continuous mouse following mode in Magnifier "
     "settings";

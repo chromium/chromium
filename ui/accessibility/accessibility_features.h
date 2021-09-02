@@ -85,13 +85,6 @@ AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables new magnifier panning improvements feature, which adds
-// additional keyboard and mouse panning functionality in Magnifier.
-AX_BASE_EXPORT extern const base::Feature kMagnifierPanningImprovements;
-
-// Returns true if the new magnifier panning improvements feature is enabled.
-AX_BASE_EXPORT bool IsMagnifierPanningImprovementsEnabled();
-
 // Enables ability to choose new continuous mouse following mode in Magnifier
 // settings.
 AX_BASE_EXPORT extern const base::Feature

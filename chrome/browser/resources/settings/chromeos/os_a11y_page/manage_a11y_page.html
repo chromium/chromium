@@ -125,43 +125,41 @@
         deep-link-focus-id$="[[Setting.kFullscreenMagnifier]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[prefs.settings.a11y.screen_magnifier.value]]">
-      <template is="dom-if" if="[[isMagnifierPanningImprovementsEnabled_]]">
-        <div class="settings-box continuation">
-          <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
-              pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}"
-              class="sub-item">
-            <template
-                is="dom-if"
-                if="[[isMagnifierContinuousMouseFollowingModeSettingEnabled_]]">
-              <controlled-radio-button
-                  id="screenMagnifierMouseFollowingModeContinuous"
-                  name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
-                  pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
-                  label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
-              </controlled-radio-button>
-            </template>
+      <div class="settings-box continuation">
+        <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
+            pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}"
+            class="sub-item">
+          <template
+              is="dom-if"
+              if="[[isMagnifierContinuousMouseFollowingModeSettingEnabled_]]">
             <controlled-radio-button
-                id="screenMagnifierMouseFollowingModeCentered"
-                name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+                id="screenMagnifierMouseFollowingModeContinuous"
+                name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
                 pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
-                label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+                label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
             </controlled-radio-button>
-            <controlled-radio-button
-                id="screenMagnifierMouseFollowingModeEdge"
-                name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
-                pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
-                label="$i18n{screenMagnifierMouseFollowingModeEdge}">
-            </controlled-radio-button>
-          </settings-radio-group>
-        </div>
-        <settings-toggle-button
-            class="indented hr"
-            pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
-            label="$i18n{screenMagnifierFocusFollowingLabel}"
-            deep-link-focus-id$=
-                "[[Setting.kFullscreenMagnifierFocusFollowing]]">
-        </settings-toggle-button>
-      </template>
+          </template>
+          <controlled-radio-button
+              id="screenMagnifierMouseFollowingModeCentered"
+              name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"
+              pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+              label="$i18n{screenMagnifierMouseFollowingModeCentered}">
+          </controlled-radio-button>
+          <controlled-radio-button
+              id="screenMagnifierMouseFollowingModeEdge"
+              name="[[screenMagnifierMouseFollowingModePrefValues_.EDGE]]"
+              pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+              label="$i18n{screenMagnifierMouseFollowingModeEdge}">
+          </controlled-radio-button>
+        </settings-radio-group>
+      </div>
+      <settings-toggle-button
+          class="indented hr"
+          pref="{{prefs.settings.a11y.screen_magnifier_focus_following}}"
+          label="$i18n{screenMagnifierFocusFollowingLabel}"
+          deep-link-focus-id$=
+              "[[Setting.kFullscreenMagnifierFocusFollowing]]">
+      </settings-toggle-button>
       <div class="settings-box indented">
         <div class="flex start settings-box-text" id="labelWrapper">
           <div class="label" aria-hidden="true">$i18n{screenMagnifierZoomLabel}</div>

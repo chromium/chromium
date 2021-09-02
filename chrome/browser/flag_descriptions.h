@@ -2621,9 +2621,6 @@ extern const char kSwitchAccessPointScanningDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessSetupGuideName[];
 extern const char kExperimentalAccessibilitySwitchAccessSetupGuideDescription[];
 
-extern const char kMagnifierPanningImprovementsName[];
-extern const char kMagnifierPanningImprovementsDescription[];
-
 extern const char kMagnifierContinuousMouseFollowingModeSettingName[];
 extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
 

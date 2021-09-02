@@ -168,14 +168,6 @@ Polymer({
     },
 
     /** @private */
-    isMagnifierPanningImprovementsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isMagnifierPanningImprovementsEnabled');
-      },
-    },
-
-    /** @private */
     isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
       type: Boolean,
       value() {

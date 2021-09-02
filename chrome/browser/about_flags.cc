@@ -4198,10 +4198,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kKernelnextVMs)},
-    {"enable-magnifier-panning-improvements",
-     flag_descriptions::kMagnifierPanningImprovementsName,
-     flag_descriptions::kMagnifierPanningImprovementsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kMagnifierPanningImprovements)},
     {"enable-magnifier-continuous-mouse-following-mode-setting",
      flag_descriptions::kMagnifierContinuousMouseFollowingModeSettingName,
      flag_descriptions::
