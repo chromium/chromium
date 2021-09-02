@@ -9,6 +9,8 @@
 #include "ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+class Profile;
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -28,8 +30,12 @@ class QuickPairBrowserDelegateImpl final : public QuickPairBrowserDelegate {
 
   // QuickPairBrowserDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  signin::IdentityManager* GetIdentityManager() override;
   void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) override;
+
+ private:
+  Profile* GetActiveProfile();
 };
 
 }  // namespace quick_pair

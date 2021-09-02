@@ -14,6 +14,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash {
 namespace quick_pair {
 
@@ -32,6 +36,9 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) QuickPairBrowserDelegate {
   // Returns the URL loader factory associated with the active user's profile.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
+
+  // Returns a pointer to the IdentityManager for the active user.
+  virtual signin::IdentityManager* GetIdentityManager() = 0;
 
   // Starts the utility process which houses QuickPairService and returns a
   // PendingReceiver for it.

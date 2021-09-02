@@ -12,6 +12,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace ash {
 namespace quick_pair {
 
@@ -27,6 +31,7 @@ class MockQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
               GetURLLoaderFactory,
               (),
               (override));
+  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(void,
               RequestService,
               (mojo::PendingReceiver<mojom::QuickPairService>),
