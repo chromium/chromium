@@ -220,10 +220,10 @@ void SystemClipboard::WriteImageWithTag(Image* image,
   // like F16. The IPC to the browser requires the bitmap to be in N32 format
   // so we convert it here if needed.
   SkBitmap n32_bitmap;
-  if (skia::SkBitmapToN32OpaqueOrPremul(bitmap, &n32_bitmap))
+  if (skia::SkBitmapToN32OpaqueOrPremul(bitmap, &n32_bitmap) &&
+      !n32_bitmap.isNull()) {
     clipboard_->WriteImage(n32_bitmap);
-  else
-    clipboard_->WriteImage(SkBitmap());
+  }
 
   if (url.IsValid() && !url.IsEmpty()) {
 #if !defined(OS_MAC)
