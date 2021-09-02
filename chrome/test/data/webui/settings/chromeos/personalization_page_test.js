@@ -167,27 +167,24 @@ suite('PersonalizationHandler', function() {
     assertTrue(!row);
   });
 
-  suite('PersonalizationTest_ReleaseOnly', function() {
-    test('Deep link to change account picture', async () => {
-      const params = new URLSearchParams;
-      params.append('settingId', '503');
-      settings.Router.getInstance().navigateTo(
-          settings.routes.CHANGE_PICTURE, params);
+  test('Deep link to change account picture', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '503');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.CHANGE_PICTURE, params);
 
-      Polymer.dom.flush();
+    Polymer.dom.flush();
 
-      await test_util.waitAfterNextRender(personalizationPage);
+    await test_util.waitAfterNextRender(personalizationPage);
 
-      const changePicturePage =
-          personalizationPage.$$('settings-change-picture');
-      assertTrue(!!changePicturePage);
-      const deepLinkElement = changePicturePage.$$('#pictureList')
-                                  .$$('#selector')
-                                  .$$('[class="iron-selected"]');
-      await test_util.waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, getDeepActiveElement(),
-          'Account picture elem should be focused for settingId=503.');
-    });
+    const changePicturePage = personalizationPage.$$('settings-change-picture');
+    assertTrue(!!changePicturePage);
+    const deepLinkElement = changePicturePage.$$('#pictureList')
+                                .$$('#selector')
+                                .$$('[class="iron-selected"]');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Account picture elem should be focused for settingId=503.');
   });
 });
