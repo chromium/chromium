@@ -204,6 +204,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  // Updates the browser window status when the web app tab of `tab_window` is
+  // inactivated.
+  void UpdateBrowserWindowStatus(aura::Window* tab_window);
+
   // Returns true if the browser with `browser_window` has activated tabs.
   // Otherwise, returns false.
   bool HasActivatedTab(aura::Window* browser_window);
