@@ -42,6 +42,13 @@ public abstract class ByteCodeRewriter {
     protected abstract boolean shouldRewriteClass(String classPath);
 
     /**
+     * Returns true if the class at the given {@link ClassReader} should be rewritten.
+     */
+    protected boolean shouldRewriteClass(ClassReader classReader) {
+        return true;
+    }
+
+    /**
      * Returns the ClassVisitor that should be used to modify the bytecode of class at the given
      * path in the archive.
      */
@@ -77,7 +84,10 @@ public abstract class ByteCodeRewriter {
         try {
             ClassReader reader = new ClassReader(inputStream);
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
-            ClassVisitor classVisitor = getClassVisitorForClass(entry.getName(), writer);
+            ClassVisitor classVisitor = writer;
+            if (shouldRewriteClass(reader)) {
+                classVisitor = getClassVisitorForClass(entry.getName(), writer);
+            }
             reader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
 
             writer.visitEnd();
