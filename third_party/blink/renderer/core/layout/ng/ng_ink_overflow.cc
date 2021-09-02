@@ -341,12 +341,13 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
+    const Font& scaled_font,
     const PhysicalSize& size,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
   DCHECK(type == kNotSet || type == kInvalidated);
   absl::optional<PhysicalRect> ink_overflow =
-      ComputeTextInkOverflow(text_info, style, size);
+      ComputeTextInkOverflow(text_info, style, scaled_font, size);
   if (!ink_overflow) {
     *ink_overflow_out = {PhysicalOffset(), size};
     return Reset(type);
@@ -359,14 +360,14 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
 absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
+    const Font& scaled_font,
     const PhysicalSize& size) {
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
-  const Font& font = style.GetFont();
-  const FloatRect text_ink_bounds = font.TextInkBounds(text_info);
+  const FloatRect text_ink_bounds = scaled_font.TextInkBounds(text_info);
   LayoutRect ink_overflow = EnclosingLayoutRect(text_ink_bounds);
 
   // Make the origin at the logical top of this fragment.
-  if (const SimpleFontData* font_data = font.PrimaryFont()) {
+  if (const SimpleFontData* font_data = scaled_font.PrimaryFont()) {
     ink_overflow.SetY(
         ink_overflow.Y() +
         font_data->GetFontMetrics().FixedAscent(kAlphabeticBaseline));
@@ -378,9 +379,9 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 
   // Following effects, such as shadows, operate on the text decorations,
   // so compute text decoration overflow first.
-  if (!style.AppliedTextDecorations().IsEmpty() && font.PrimaryFont()) {
+  if (!style.AppliedTextDecorations().IsEmpty() && scaled_font.PrimaryFont()) {
     LayoutRect decoration_rect =
-        ComputeTextDecorationOverflow(style, ink_overflow);
+        ComputeTextDecorationOverflow(style, scaled_font, ink_overflow);
     ink_overflow.Unite(decoration_rect);
   }
 
@@ -438,6 +439,7 @@ LayoutRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 // static
 LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     const ComputedStyle& style,
+    const Font& scaled_font,
     const LayoutRect& ink_overflow) {
   DCHECK(!style.AppliedTextDecorations().IsEmpty());
   // TODO(https://crbug.com/1145160): Reduce code duplication between here and
@@ -448,7 +450,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   PhysicalOffset offset;
   TextDecorationInfo decoration_info(offset, ink_overflow.Width(),
                                      style.GetFontBaseline(), style,
-                                     absl::nullopt, nullptr);
+                                     scaled_font, absl::nullopt, nullptr);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
                                            nullptr);
   const Vector<AppliedTextDecoration>& decorations =

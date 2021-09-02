@@ -228,7 +228,8 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow() const {
 
   if (!style.AppliedTextDecorations().IsEmpty()) {
     const LayoutRect decoration_rect =
-        NGInkOverflow::ComputeTextDecorationOverflow(style, ink_overflow);
+        NGInkOverflow::ComputeTextDecorationOverflow(style, style.GetFont(),
+                                                     ink_overflow);
     ink_overflow.Unite(decoration_rect);
   }
 

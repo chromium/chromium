@@ -420,9 +420,10 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
               ? absl::optional<AppliedTextDecoration>(
                     selection_style.selection_text_decoration)
               : absl::nullopt;
-      decoration_info.emplace(
-          local_origin, width, inline_text_box_.Root().BaselineType(),
-          style_to_use, selection_text_decoration, decorating_box_style);
+      decoration_info.emplace(local_origin, width,
+                              inline_text_box_.Root().BaselineType(),
+                              style_to_use, style_to_use.GetFont(),
+                              selection_text_decoration, decorating_box_style);
       TextDecorationOffset decoration_offset(decoration_info->Style(),
                                              &inline_text_box_, decorating_box);
       text_painter.PaintDecorationsExceptLineThrough(

@@ -21,6 +21,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Font;
 class SimpleFontData;
 
 enum class ResolvedUnderlinePosition {
@@ -42,6 +43,7 @@ class CORE_EXPORT TextDecorationInfo {
       LayoutUnit width,
       FontBaseline baseline_type,
       const ComputedStyle& style,
+      const Font& scaled_font,
       const absl::optional<AppliedTextDecoration> selection_text_decoration,
       const ComputedStyle* decorating_box_style);
 

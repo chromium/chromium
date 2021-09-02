@@ -459,6 +459,11 @@ class CORE_EXPORT NGFragmentItem {
   // This returns 1 for an NGFragmentItem not for LayoutSVGInlineText.
   float SvgScalingFactor() const;
 
+  // Return a scaled font for SVG <text>.
+  // This returns Style().GetFont() for an NGFragmentItem not for
+  // LayoutSVGInlineText.
+  const Font& ScaledFont() const;
+
   // Get a description of |this| for the debug purposes.
   String ToString() const;
 

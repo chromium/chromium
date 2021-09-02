@@ -53,6 +53,7 @@ void NGTextDecorationPainter::Begin(Phase phase) {
 
     decoration_info_.emplace(decoration_rect_.offset, decoration_rect_.Width(),
                              style_.GetFontBaseline(), style_,
+                             text_item_.ScaledFont(),
                              effective_selection_decoration, nullptr);
 
     if (UNLIKELY(selection_)) {

@@ -14,6 +14,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Font;
 struct NGTextFragmentPaintInfo;
 
 // Represents an ink-overflow rectangle. Used for:
@@ -113,12 +114,14 @@ class CORE_EXPORT NGInkOverflow {
   Type SetTextInkOverflow(Type type,
                           const NGTextFragmentPaintInfo& text_info,
                           const ComputedStyle& style,
+                          const Font& scaled_font,
                           const PhysicalSize& size,
                           PhysicalRect* ink_overflow_out);
 
   static absl::optional<PhysicalRect> ComputeTextInkOverflow(
       const NGTextFragmentPaintInfo& text_info,
       const ComputedStyle& style,
+      const Font& scaled_font,
       const PhysicalSize& size);
 
   // Returns ink-overflow with emphasis mark overflow in logical direction.
@@ -134,6 +137,7 @@ class CORE_EXPORT NGInkOverflow {
   // should be in logical direction.
   static LayoutRect ComputeTextDecorationOverflow(
       const ComputedStyle& style,
+      const Font& scaled_font,
       const LayoutRect& ink_overflow);
 
 #if DCHECK_IS_ON()

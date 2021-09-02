@@ -161,17 +161,16 @@ TextDecorationInfo::TextDecorationInfo(
     LayoutUnit width,
     FontBaseline baseline_type,
     const ComputedStyle& style,
+    const Font& scaled_font,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style)
     : style_(style),
       selection_text_decoration_(selection_text_decoration),
       baseline_type_(baseline_type),
       width_(width),
-      // TODO(tkent): font_data_ should be one for scaled font.
-      font_data_(style_.GetFont().PrimaryFont()),
+      font_data_(scaled_font.PrimaryFont()),
       baseline_(font_data_ ? font_data_->GetFontMetrics().FloatAscent() : 0),
-      // TODO(tkent): computed_font_size_ should be the size of scaled font.
-      computed_font_size_(style_.ComputedFontSize()),
+      computed_font_size_(scaled_font.GetFontDescription().ComputedSize()),
       underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
       local_origin_(FloatPoint(local_origin)),
       antialias_(ShouldSetDecorationAntialias(style)),
@@ -242,8 +241,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
       underline_position_ ==
           ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont) {
     thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_,
-                                           style_.GetFont().PrimaryFont());
+                                           computed_font_size_, font_data_);
   } else {
     // Compute decorating box. Position and thickness are computed from the
     // decorating box.
@@ -256,8 +254,7 @@ float TextDecorationInfo::ComputeUnderlineThickness(
           decorating_box_style->GetFont().PrimaryFont());
     } else {
       thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                             computed_font_size_,
-                                             style_.GetFont().PrimaryFont());
+                                             computed_font_size_, font_data_);
     }
   }
   return thickness;
