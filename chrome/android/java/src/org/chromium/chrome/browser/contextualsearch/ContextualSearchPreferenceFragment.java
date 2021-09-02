@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 /**
  * Fragment to manage the Contextual Search preference in Chrome Settings, and to explain to the
@@ -22,6 +23,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat {
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
+    static final String PREF_CONTEXTUAL_SEARCH_DESCRIPTION = "contextual_search_description";
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -65,5 +67,11 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
 
         seeBetterResultsSwitch.setVisible(ContextualSearchPolicy.shouldShowMultilevelSettingsUI()
                 && isContextualSearchEnabled);
+
+        if (ContextualSearchPolicy.shouldShowMultilevelSettingsUI()) {
+            TextMessagePreference contextualSearchDescription =
+                    (TextMessagePreference) findPreference(PREF_CONTEXTUAL_SEARCH_DESCRIPTION);
+            contextualSearchDescription.setTitle(R.string.contextual_search_description_revised);
+        }
     }
 }
