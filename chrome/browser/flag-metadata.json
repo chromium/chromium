@@ -4088,6 +4088,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "ntp-realbox-pedals",
+    "owners": [ "mahmadi", "mfacey" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "ntp-realbox-suggestion-answers",
     "owners": [ "mahmadi", "mfacey" ],
     "expiry_milestone": 96

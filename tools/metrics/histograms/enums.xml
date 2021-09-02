@@ -49519,6 +49519,7 @@ from previous Chrome versions.
   <int value="-161782023" label="AndroidMessagesProdEndpoint:enabled"/>
   <int value="-160571071" label="InterestFeedV2:enabled"/>
   <int value="-159877930" label="MaterialDesignUserManager:disabled"/>
+  <int value="-158938746" label="NtpRealboxPedals:enabled"/>
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
@@ -51047,6 +51048,7 @@ from previous Chrome versions.
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
+  <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
   <int value="1065553214" label="ClosedTabCache:enabled"/>
   <int value="1067618884" label="enable-experimental-input-view-features"/>
