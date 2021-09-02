@@ -43,7 +43,7 @@ namespace accuracy_tips {
 
 class AccuracyTipSafeBrowsingClient;
 
-// Checks accuracy information on URLs for AccuracyTips.
+// Checks if URL is news-related for AccuracyTips.
 // Handles rate-limiting and feature checks.
 class AccuracyService : public KeyedService, history::HistoryServiceObserver {
  public:

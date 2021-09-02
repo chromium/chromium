@@ -73,14 +73,14 @@ class MockSafeBrowsingDatabaseManager
 };
 
 // Handler to mark URLs as part of the AccuracyTips list.
-bool IsOnList(const GURL& url,
+bool IsInList(const GURL& url,
               safe_browsing::SafeBrowsingDatabaseManager::Client* client) {
   client->OnCheckUrlForAccuracyTip(true);
   return false;
 }
 
 // Handler to simulate URLs that match the local hash but are not on the list.
-bool IsLocalMatchButNotOnList(
+bool IsLocalMatchButNotInList(
     const GURL& url,
     safe_browsing::SafeBrowsingDatabaseManager::Client* client) {
   client->OnCheckUrlForAccuracyTip(false);
@@ -183,18 +183,18 @@ TEST_F(AccuracyServiceTest, CheckAccuracyStatusForSampleUrl) {
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 }
 
-TEST_F(AccuracyServiceTest, CheckAccuracyStatusForUrlOnList) {
-  auto url = GURL("https://badurl.com");
+TEST_F(AccuracyServiceTest, CheckAccuracyStatusForUrlInList) {
+  auto url = GURL("https://accuracytip.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillOnce(Invoke(&IsOnList));
+      .WillOnce(Invoke(&IsInList));
 
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 }
 
 TEST_F(AccuracyServiceTest, CheckAccuracyStatusForLocalMatch) {
-  auto url = GURL("https://notactuallybadurl.com");
+  auto url = GURL("https://notactuallyaccuracytip.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillOnce(Invoke(&IsLocalMatchButNotOnList));
+      .WillOnce(Invoke(&IsLocalMatchButNotInList));
 
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kNone);
 }
@@ -224,7 +224,7 @@ TEST_F(AccuracyServiceTest, IgnoreButton) {
 TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
   auto url = GURL("https://example.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillRepeatedly(Invoke(&IsOnList));
+      .WillRepeatedly(Invoke(&IsInList));
 
   // Show an accuracy tip.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
@@ -244,7 +244,7 @@ TEST_F(AccuracyServiceTest, TimeBetweenPrompts) {
 TEST_F(AccuracyServiceTest, OptOut) {
   auto url = GURL("https://example.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillRepeatedly(Invoke(&IsOnList));
+      .WillRepeatedly(Invoke(&IsInList));
 
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
 
@@ -264,7 +264,7 @@ TEST_F(AccuracyServiceTest, OptOut) {
 TEST_F(AccuracyServiceTest, HighEngagement) {
   auto url = GURL("https://example.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillRepeatedly(Invoke(&IsOnList));
+      .WillRepeatedly(Invoke(&IsInList));
 
   // Usually an accuracy tip is shown.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);
@@ -347,7 +347,7 @@ TEST_F(AccuracyServiceDisabledUiTest, ShowWithUiDisabled) {
 TEST_F(AccuracyServiceDisabledUiTest, TimeBetweenPrompts) {
   auto url = GURL("https://example.com");
   EXPECT_CALL(*sb_database(), CheckUrlForAccuracyTips(url, _))
-      .WillRepeatedly(Invoke(&IsOnList));
+      .WillRepeatedly(Invoke(&IsInList));
 
   // Show an accuracy tip.
   EXPECT_EQ(CheckAccuracyStatusSync(url), AccuracyTipStatus::kShowAccuracyTip);

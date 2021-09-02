@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
                                          AccuracyTipStatus::kNone, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
+IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnUrlInList) {
   ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
   EXPECT_TRUE(IsUIShowing());
 
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnBadUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
-                       DontShowOnBadUrlWithEngagement) {
+                       DontShowOnUrlInListWithEngagement) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   const GURL url = GetUrl(kAccuracyTipUrl);
   auto* engagement_service =
@@ -415,7 +415,7 @@ class AccuracyTipBubbleViewHttpBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewHttpBrowserTest,
-                       ShowOnBadUrlHttpNotSecure) {
+                       ShowOnUrlInListButNotSecure) {
   ui_test_utils::NavigateToURL(browser(), GetHttpUrl(kAccuracyTipUrl));
   EXPECT_FALSE(IsUIShowing());
 
