@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 #include "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
@@ -48,12 +47,18 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(handler);
   handler_ = handler;
 
+  auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState());
+  DCHECK(auth_service_);
+  auth_service_observation_.Observe(auth_service_);
+
   // BrowserSignin policy: start observing the kSigninAllowed pref for non-OTR
   // browsers. When the pref becomes false, send a UI command to sign the user
   // out. This requires the given command dispatcher to be fully configured.
   if (browser_->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
+
   prefs_change_observer_->Add(
       prefs::kBrowserSigninPolicy,
       base::BindRepeating(
@@ -67,12 +72,10 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(handler_);
-  if (!signin::IsSigninAllowedByPolicy()) {
-    AuthenticationService* service =
-        AuthenticationServiceFactory::GetForBrowserState(
-            browser_->GetBrowserState());
+  DCHECK(auth_service_);
 
-    if (service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  if (!signin::IsSigninAllowedByPolicy()) {
+    if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
@@ -81,10 +84,11 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
           weak_factory_.GetWeakPtr();
       // Sign the user out, but keep synced data (bookmarks, passwords, etc)
       // locally to be consistent with the policy's behavior on other platforms.
-      service->SignOut(signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-                       /*force_clear_browsing_data=*/false, ^{
-                         weak_ptr->OnSignOutComplete();
-                       });
+      auth_service_->SignOut(
+          signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+          /*force_clear_browsing_data=*/false, ^{
+            weak_ptr->OnSignOutComplete();
+          });
     }
 
     for (auto& observer : observers_) {
@@ -116,4 +120,8 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
   } else {
     scene_state.appState.shouldShowPolicySignoutPrompt = YES;
   }
+}
+
+void PolicyWatcherBrowserAgent::OnPrimaryAccountRestricted() {
+  // TODO(crbug.com/1237946): Display UI when user is signed out.
 }
