@@ -17637,7 +17637,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Sync.ModelTypeEntityChange3"/>
   <affected-histogram name="Sync.ModelTypeErrorSite"/>
   <affected-histogram name="Sync.ModelTypeMemoryKB"/>
-  <affected-histogram name="Sync.ModelTypeStoreCommitWriteBatchOutcome"/>
+  <affected-histogram name="Sync.ModelTypeStoreCommitWriteBatchOutcome">
+    <obsolete>
+      Deprecated 09/2021. No longer needed.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound"/>
   <affected-histogram name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"/>
   <affected-histogram name="Sync.NonReflectionUpdateFreshnessPossiblySkewed">

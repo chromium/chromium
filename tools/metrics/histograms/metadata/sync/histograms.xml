@@ -844,6 +844,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Sync.ModelTypeStoreCommitWriteBatchOutcome"
     enum="LevelDBStatus" expires_after="2021-10-10">
+  <obsolete>
+    Deprecated 09/2021.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="SyncModelType" -->
 
   <owner>qjw@chromium.org</owner>
