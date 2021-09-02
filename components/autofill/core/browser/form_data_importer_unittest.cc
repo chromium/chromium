@@ -171,14 +171,17 @@ class FormDataImporterTestBase {
   // PersonalDataManager::ImportAddressProfile or ImportCreditCard).
   void ImportAddressProfiles(bool extraction_successful,
                              const FormStructure& form,
-                             bool skip_waiting_on_pdm = false) {
+                             bool skip_waiting_on_pdm = false,
+                             bool allow_save_prompts = true) {
     if (!extraction_successful) {
-      EXPECT_FALSE(form_data_importer_->ImportAddressProfiles(form));
+      EXPECT_FALSE(
+          form_data_importer_->ImportAddressProfiles(form, allow_save_prompts));
       return;
     }
 
     if (skip_waiting_on_pdm) {
-      EXPECT_TRUE(form_data_importer_->ImportAddressProfiles(form));
+      EXPECT_TRUE(
+          form_data_importer_->ImportAddressProfiles(form, allow_save_prompts));
       return;
     }
 
@@ -186,7 +189,8 @@ class FormDataImporterTestBase {
     EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
         .WillOnce(QuitMessageLoop(&run_loop));
     EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
-    EXPECT_TRUE(form_data_importer_->ImportAddressProfiles(form));
+    EXPECT_TRUE(
+        form_data_importer_->ImportAddressProfiles(form, allow_save_prompts));
     run_loop.Run();
   }
 
@@ -621,6 +625,54 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles) {
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, expected.Compare(*results[0]));
+}
+
+// Test that the storage is prevented if the structured address prompt feature
+// is enabled, but address prompts are not allowed.
+TEST_P(FormDataImporterTest, ImportAddressProfiles_DontAllowPrompt) {
+  base::test::ScopedFeatureList save_prompt_feature;
+  save_prompt_feature.InitAndEnableFeature(
+      features::kAutofillAddressProfileSavePrompt);
+
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "George", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Washington", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Email:", "email", "theprez@gmail.com", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Address:", "address1", "21 Laussat St", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("City:", "city", "San Francisco", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("State:", "state", "California", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Zip:", "zip", "94102", "text", &field);
+  form.fields.push_back(field);
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportAddressProfiles(/*extraction_successful=*/false, form_structure,
+                        /*skip_waiting_on_pdm=*/true,
+                        /*allow_save_prompts=*/false);
+
+  EXPECT_EQ(personal_data_manager_->GetProfiles().size(), 0U);
+
+  save_prompt_feature.Reset();
+  save_prompt_feature.InitAndDisableFeature(
+      features::kAutofillAddressProfileSavePrompt);
+
+  // Verify that the behavior changes when prompts are disabled.
+  ImportAddressProfiles(/*extraction_successful=*/true, form_structure,
+                        /*skip_waiting_on_pdm=*/false,
+                        /*allow_save_prompts=*/false);
+  EXPECT_EQ(personal_data_manager_->GetProfiles().size(), 1U);
 }
 
 // Tests that even if the the autocomplete prevents filling, it does not prevent
@@ -4266,9 +4318,74 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  ImportAddressProfiles(/*extraction_successful=*/true, form_structure);
+  ImportAddressProfiles(/*extraction_successful=*/false, form_structure);
 
   // Expect that no new profile is saved.
+  const std::vector<AutofillProfile*>& results =
+      personal_data_manager_->GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(1, profile.Compare(*results[0]));
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST), u"Marion");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), u"");
+  EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST), u"Mitchell Morrison");
+}
+
+TEST_P(
+    FormDataImporterTest,
+    SilentlyUpdateExistingProfileByIncompleteProfile_DespiteDisallowedPrompts) {
+  // This test is only applicable when structured names are enabled.
+  if (!StructuredNames())
+    return;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillSilentProfileUpdateForInsufficientImport,
+       features::kAutofillAddressProfileSavePrompt},
+      {});
+
+  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
+                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
+                       "Hollywood", "CA", "91601", "US", "12345678910");
+
+  // Set the verification status for the first and middle name to parsed.
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FIRST, u"Marion", structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_MIDDLE, u"Mitchell",
+      structured_address::VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST, u"Morrison", structured_address::VerificationStatus::kParsed);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataFinishedProfileTasks())
+      .WillOnce(QuitMessageLoop(&run_loop));
+  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(1);
+  personal_data_manager_->AddProfile(profile);
+  run_loop.Run();
+
+  // Simulate a form submission with conflicting info.
+  FormData form;
+  form.url = GURL("https://wwww.foo.com");
+
+  FormFieldData field;
+  test::CreateTestFormField("First name:", "first_name", "Marion", "text",
+                            &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Middle name:", "middle_name", "", "text", &field);
+  form.fields.push_back(field);
+  test::CreateTestFormField("Last name:", "last_name", "Mitchell Morrison",
+                            "text", &field);
+  form.fields.push_back(field);
+
+  FormStructure form_structure(form);
+  form_structure.DetermineHeuristicTypes(nullptr, nullptr);
+  ImportAddressProfiles(/*extraction_successful=*/false, form_structure,
+                        /*skip_waiting_on_pdm=*/false,
+                        /*allow_save_prompts=*/false);
+
+  // Expect that no new profile is saved and the existing profile is updated.
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
@@ -4325,7 +4442,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
-  ImportAddressProfiles(/*extraction_successful=*/true, form_structure,
+  ImportAddressProfiles(/*extraction_successful=*/false, form_structure,
                         /*skip_waiting_on_pdm=*/true);
 
   // Expect that no new profile is saved.

@@ -116,15 +116,19 @@ class FormDataImporter {
   // Go through the |form| fields and attempt to extract and import valid
   // address profiles. Returns true on extraction success of at least one
   // profile. There are many reasons that extraction may fail (see
-  // implementation). The function returns true if at least one complete address
-  // profile was found.
-  bool ImportAddressProfiles(const FormStructure& form);
+  // implementation). |allow_save_prompts| indicates if a dialog to import a new
+  // address can be shown.  The function returns true if at least one complete
+  // address profile was found.
+  bool ImportAddressProfiles(const FormStructure& form,
+                             bool allow_save_prompts);
 
   // Helper method for ImportAddressProfiles which only considers the fields for
   // a specified |section|. If |section| is the empty string, the import is
-  // performed on the union of all sections.
+  // performed on the union of all sections. |allow_save_prompts| indicates if
+  // a dialog to import a new address can be shown.
   bool ImportAddressProfileForSection(const FormStructure& form,
                                       const std::string& section,
+                                      bool allow_save_prompts,
                                       LogBuffer* import_log_buffer);
 
   // Go through the |form| fields and attempt to extract a new credit card in
