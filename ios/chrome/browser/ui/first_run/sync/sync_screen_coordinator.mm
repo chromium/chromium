@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #include "components/sync/driver/sync_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
@@ -73,6 +74,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _policyWatcherObserverBridge =

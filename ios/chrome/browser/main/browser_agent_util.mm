@@ -52,7 +52,10 @@ void AttachBrowserAgents(Browser* browser) {
 
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser);
   SnapshotBrowserAgent::CreateForBrowser(browser);
-  PolicyWatcherBrowserAgent::CreateForBrowser(browser);
+
+  // PolicyWatcher is non-OTR only.
+  if (!browser->GetBrowserState()->IsOffTheRecord())
+    PolicyWatcherBrowserAgent::CreateForBrowser(browser);
 
   // Send Tab To Self is non-OTR only.
   if (!browser->GetBrowserState()->IsOffTheRecord())

@@ -33,6 +33,7 @@ PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
     : browser_(browser),
       prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()),
       browser_prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
+  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   prefs_change_observer_->Init(GetApplicationContext()->GetLocalState());
   browser_prefs_change_observer_->Init(browser->GetBrowserState()->GetPrefs());
 }
@@ -57,13 +58,9 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(auth_service_);
   auth_service_observation_.Observe(auth_service_);
 
-  // BrowserSignin policy: start observing the kSigninAllowed pref for non-OTR
-  // browsers. When the pref becomes false, send a UI command to sign the user
-  // out. This requires the given command dispatcher to be fully configured.
-  if (browser_->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-
+  // BrowserSignin policy: start observing the kSigninAllowed pref. When the
+  // pref becomes false, send a UI command to sign the user out. This requires
+  // the given command dispatcher to be fully configured.
   prefs_change_observer_->Add(
       prefs::kBrowserSigninPolicy,
       base::BindRepeating(
@@ -87,7 +84,6 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(handler_);
   DCHECK(auth_service_);
-
   if (!signin::IsSigninAllowedByPolicy()) {
     if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
