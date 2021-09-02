@@ -2563,7 +2563,15 @@ class CountingObserver : public net::NetLog::ThreadSafeObserver {
   int dict_count_;
 };
 
-TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
+// Flaky on MSAN. https://crbug.com/1245953
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_HttpsPostLookupWithLog \
+  DISABLED_HttpsPostLookupWithLog
+#else
+#define MAYBE_HttpsPostLookupWithLog \
+  HttpsPostLookupWithLog
+#endif
+TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
   ConfigureDohServers(true /* use_post */);
   AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
                       base::size(kT0ResponseDatagram), SYNCHRONOUS,
