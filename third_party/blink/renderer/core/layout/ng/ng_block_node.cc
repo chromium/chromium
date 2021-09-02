@@ -804,6 +804,22 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   if (IsListItem())
     To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 
+  const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
+  // In some scenarios, GridNG will run layout on its children during
+  // MinMaxSizes computation. Instead of running (and possible caching incorrect
+  // results), when we're not performing layout, just use border + padding.
+  if (!is_in_perform_layout && IsGrid()) {
+    const NGFragmentGeometry fragment_geometry =
+        CalculateInitialFragmentGeometry(constraint_space, *this,
+                                         /* is_intrinsic */ true);
+    const NGBoxStrut border_padding =
+        fragment_geometry.border + fragment_geometry.padding;
+    MinMaxSizes sizes;
+    sizes.min_size = border_padding.InlineSum();
+    sizes.max_size = sizes.min_size;
+    return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+  }
+
   bool is_orthogonal_flow_root =
       !IsParallelWritingMode(container_writing_mode, Style().GetWritingMode());
 
@@ -817,7 +833,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // Some other areas of the code can query the intrinsic-sizes while outside
     // of the layout phase.
     // TODO(ikilpatrick): Remove this check.
-    if (!box_->GetFrameView()->IsInPerformLayout()) {
+    if (!is_in_perform_layout) {
       sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
       return MinMaxSizesResult(sizes,
                                /* depends_on_block_constraints */ false);
