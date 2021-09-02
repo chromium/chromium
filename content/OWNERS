@@ -15,6 +15,7 @@
 set noparent
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
 alexmos@chromium.org
+altimin@chromium.org
 arthursonzogni@chromium.org
 avi@chromium.org
 clamy@chromium.org
