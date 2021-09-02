@@ -57,6 +57,13 @@ MainThreadWebSchedulingTaskQueueImpl::MainThreadWebSchedulingTaskQueueImpl(
       immediate_task_queue_(std::move(immediate_task_queue)),
       delayed_task_queue_(std::move(delayed_task_queue)) {}
 
+MainThreadWebSchedulingTaskQueueImpl::~MainThreadWebSchedulingTaskQueueImpl() {
+  if (immediate_task_queue_)
+    immediate_task_queue_->OnWebSchedulingTaskQueueDestroyed();
+  if (delayed_task_queue_)
+    delayed_task_queue_->OnWebSchedulingTaskQueueDestroyed();
+}
+
 void MainThreadWebSchedulingTaskQueueImpl::SetPriority(
     WebSchedulingPriority priority) {
   if (immediate_task_queue_)

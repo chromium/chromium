@@ -79,6 +79,8 @@ class PLATFORM_EXPORT FrameTaskQueueController {
       MainThreadTaskQueue::QueueTraits,
       WebSchedulingPriority);
 
+  void RemoveWebSchedulingTaskQueue(MainThreadTaskQueue*);
+
   // Get the list of all task queue and voter pairs.
   const Vector<TaskQueueAndEnabledVoterPair>& GetAllTaskQueuesAndVoters() const;
 
@@ -104,6 +106,12 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   void CreateTaskQueue(MainThreadTaskQueue::QueueTraits);
 
   void TaskQueueCreated(const scoped_refptr<MainThreadTaskQueue>&);
+
+  // Removes a queue from |all_task_queues_and_voters_| and
+  // |task_queue_enabled_voters_|. This method enforces that the queue is in the
+  // collection before removal. Removes are linear in the total number of task
+  // queues.
+  void RemoveTaskQueueAndVoter(MainThreadTaskQueue*);
 
   // Map a set of QueueTraits to a QueueType.
   // TODO(crbug.com/877245): Consider creating a new queue type kFrameNonLoading

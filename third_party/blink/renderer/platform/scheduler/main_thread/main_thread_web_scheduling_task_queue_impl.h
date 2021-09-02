@@ -24,7 +24,7 @@ class PLATFORM_EXPORT MainThreadWebSchedulingTaskQueueImpl
   MainThreadWebSchedulingTaskQueueImpl(
       base::WeakPtr<MainThreadTaskQueue> immediate_task_queue,
       base::WeakPtr<MainThreadTaskQueue> delayed_task_queue);
-  ~MainThreadWebSchedulingTaskQueueImpl() override = default;
+  ~MainThreadWebSchedulingTaskQueueImpl() override;
 
   void SetPriority(WebSchedulingPriority) override;
 
