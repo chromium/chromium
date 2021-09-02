@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -980,6 +981,97 @@ TEST_F(CoordinatorImplTest, DumpByPidFailure) {
 
   RequestGlobalMemoryDumpForPid(2, {}, callback.Get());
   run_loop.Run();
+}
+
+TEST_F(CoordinatorImplTest, GlobalDumpWithSubTrees) {
+  base::RunLoop run_loop;
+
+  static constexpr base::ProcessId kBrowserPid = 1;
+  MockClientProcess browser_client(this, kBrowserPid,
+                                   mojom::ProcessType::BROWSER);
+
+  EXPECT_CALL(browser_client, RequestChromeMemoryDumpMock(_, _))
+      .WillOnce(Invoke(
+          [](const MemoryDumpRequestArgs& args,
+             MockClientProcess::RequestChromeMemoryDumpCallback& callback) {
+            MemoryDumpArgs dump_args{MemoryDumpLevelOfDetail::DETAILED};
+            auto pmd = std::make_unique<ProcessMemoryDump>(dump_args);
+            auto* size = MemoryAllocatorDump::kNameSize;
+            auto* bytes = MemoryAllocatorDump::kUnitsBytes;
+            const uint32_t kB = 1024;
+
+            // None of these dumps should appear in the output.
+            pmd->CreateAllocatorDump(
+                   "malloc", base::trace_event::MemoryAllocatorDumpGuid(1))
+                ->AddScalar(size, bytes, 1 * kB);
+            pmd->CreateAllocatorDump("v8/foo")->AddScalar(size, bytes, 1 * kB);
+            pmd->CreateAllocatorDump("v8/bar")->AddScalar(size, bytes, 2 * kB);
+            pmd->CreateAllocatorDump("v8")->AddScalar(size, bytes, 99 * kB);
+
+            // This "tree" of dumps should be included.
+            pmd->CreateAllocatorDump("partition_alloc")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/allocated_objects")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions")
+                ->AddScalar(size, bytes, 99 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions/1")
+                ->AddScalar(size, bytes, 2 * kB);
+            pmd->CreateAllocatorDump("partition_alloc/partitions/2")
+                ->AddScalar(size, bytes, 2 * kB);
+
+            std::move(callback).Run(true, args.dump_guid, std::move(pmd));
+          }));
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(1), _))
+      .WillOnce(Invoke(
+          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
+             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+            base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+            results[1] = mojom::RawOSMemDump::New();
+            results[1]->resident_set_kb = 1;
+            results[1]->platform_private_footprint =
+                mojom::PlatformPrivateFootprint::New();
+            std::move(callback).Run(true, std::move(results));
+          }));
+#else
+  EXPECT_CALL(browser_client, RequestOSMemoryDumpMock(_, Contains(0), _))
+      .WillOnce(Invoke(
+          [](mojom::MemoryMapOption, const std::vector<base::ProcessId>& pids,
+             MockClientProcess::RequestOSMemoryDumpCallback& callback) {
+            base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr> results;
+            results[0] = mojom::RawOSMemDump::New();
+            results[0]->platform_private_footprint =
+                mojom::PlatformPrivateFootprint::New();
+            results[0]->resident_set_kb = 1;
+            std::move(callback).Run(true, std::move(results));
+          }));
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  base::test::TestFuture<bool,
+                         memory_instrumentation::mojom::GlobalMemoryDumpPtr>
+      result;
+  RequestGlobalMemoryDump(
+      MemoryDumpType::SUMMARY_ONLY, MemoryDumpLevelOfDetail::BACKGROUND,
+      MemoryDumpDeterminism::NONE, {"partition_alloc/*"}, result.GetCallback());
+
+  // Expect that the dump request succeeds.
+  ASSERT_TRUE(std::get<bool>(result.Get()));
+
+  // Verify that the dump has a single "partition_alloc" top-level node, and
+  // that the top level dump has children.
+  const auto& global_dump =
+      std::get<memory_instrumentation::mojom::GlobalMemoryDumpPtr>(
+          result.Get());
+  ASSERT_EQ(global_dump->process_dumps.size(), 1u);
+
+  const auto& process_dump = *global_dump->process_dumps.begin();
+  EXPECT_EQ(process_dump->pid, kBrowserPid);
+
+  const auto& allocator_dumps = process_dump->chrome_allocator_dumps;
+  ASSERT_EQ(allocator_dumps.size(), 1u);
+  EXPECT_EQ(allocator_dumps.begin()->first, "partition_alloc");
+  EXPECT_EQ(allocator_dumps.begin()->second->children.size(), 2u);
 }
 
 }  // namespace memory_instrumentation

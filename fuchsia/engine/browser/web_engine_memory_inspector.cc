@@ -38,6 +38,62 @@ const std::vector<std::string>& AllocatorDumpNames() {
   return *allocator_dump_names;
 }
 
+// Returns true if every field in the supplied |dump|, and those of its
+// children, are zero.  Generally parent nodes summarize the total usage across
+// all of their children, such that if the parent is all-zero then the children
+// must also be all-zero. This implementation is optimized for the case in
+// which that property holds, but also copes gracefully when it does not.
+bool AreAllDumpEntriesZero(
+    const memory_instrumentation::mojom::AllocatorMemDump* dump) {
+  for (auto& it : dump->numeric_entries) {
+    if (it.second != 0u)
+      return false;
+  }
+  for (auto& it : dump->children) {
+    if (!AreAllDumpEntriesZero(it.second.get()))
+      return false;
+  }
+  return true;
+}
+
+// Creates a node |name|, under |parent|, populated recursively with the
+// contents of |dump|. The returned tree of Nodes are emplace()d to be owned by
+// the specified |owner|.
+inspect::Node NodeFromAllocatorMemDump(
+    inspect::Inspector* owner,
+    inspect::Node* parent,
+    const std::string& name,
+    const memory_instrumentation::mojom::AllocatorMemDump* dump) {
+  auto node = parent->CreateChild(name);
+
+  // Add subordinate nodes for any children.
+  std::vector<const memory_instrumentation::mojom::AllocatorMemDump*> children;
+  children.reserve(dump->children.size());
+  for (auto& it : dump->children) {
+    // If a child contains no information then omit it.
+    if (AreAllDumpEntriesZero(it.second.get()))
+      continue;
+
+    children.push_back(it.second.get());
+    owner->emplace(
+        NodeFromAllocatorMemDump(owner, &node, it.first, it.second.get()));
+  }
+
+  // Publish the allocator-provided fields into the node.  Entries are not
+  // published if there is a single child, with identical entries, to avoid
+  // redundancy in the emitted output.
+  bool same_as_child =
+      (children.size() == 1u &&
+       (*children.begin())->numeric_entries == dump->numeric_entries);
+  if (!same_as_child) {
+    for (auto& it : dump->numeric_entries) {
+      node.CreateUint(it.first, it.second, owner);
+    }
+  }
+
+  return node;
+}
+
 }  // namespace
 
 WebEngineMemoryInspector::WebEngineMemoryInspector(inspect::Node& parent_node) {
@@ -78,12 +134,14 @@ WebEngineMemoryInspector::ResolveMemoryDumpPromise(fpromise::context& context) {
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
       base::trace_event::MemoryDumpDeterminism::NONE, AllocatorDumpNames(),
       base::BindOnce(&WebEngineMemoryInspector::OnMemoryDumpComplete,
-                     weak_this_.GetWeakPtr(), context.suspend_task()));
+                     weak_this_.GetWeakPtr(), base::TimeTicks::Now(),
+                     context.suspend_task()));
 
   return fpromise::pending();
 }
 
 void WebEngineMemoryInspector::OnMemoryDumpComplete(
+    base::TimeTicks requested_at,
     fpromise::suspended_task task,
     bool success,
     memory_instrumentation::mojom::GlobalMemoryDumpPtr raw_dump) {
@@ -96,6 +154,18 @@ void WebEngineMemoryInspector::OnMemoryDumpComplete(
     task.resume_task();
     return;
   }
+
+  // Note the delay between requesting the dump, and it being started.
+  dump_results_->GetRoot().CreateDouble(
+      "dump_queued_duration_ms",
+      (raw_dump->start_time - requested_at).InMillisecondsF(),
+      dump_results_.get());
+
+  // Note the delay between starting the dump, and it completing.
+  dump_results_->GetRoot().CreateDouble(
+      "dump_duration_ms",
+      (base::TimeTicks::Now() - raw_dump->start_time).InMillisecondsF(),
+      dump_results_.get());
 
   for (const auto& process_dump : raw_dump->process_dumps) {
     auto node = dump_results_->GetRoot().CreateChild(
@@ -121,19 +191,12 @@ void WebEngineMemoryInspector::OnMemoryDumpComplete(
                     dump_results_.get());
 
     // If provided, include detail from individual allocators.
-    auto detail_node = node.CreateChild("allocator_dump");
     if (!process_dump->chrome_allocator_dumps.empty()) {
+      auto detail_node = node.CreateChild("allocator_dump");
+
       for (auto& it : process_dump->chrome_allocator_dumps) {
-        // Create a node using the allocator dump name.
-        auto allocator_node = detail_node.CreateChild(it.first);
-
-        // Publish the allocator-provided fields into the node.
-        for (auto& field : it.second->numeric_entries) {
-          allocator_node.CreateUint(field.first, field.second,
-                                    dump_results_.get());
-        }
-
-        dump_results_->emplace(std::move(allocator_node));
+        dump_results_->emplace(NodeFromAllocatorMemDump(
+            dump_results_.get(), &detail_node, it.first, it.second.get()));
       }
 
       dump_results_->emplace(std::move(detail_node));

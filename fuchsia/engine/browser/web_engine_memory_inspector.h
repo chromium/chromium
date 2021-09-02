@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace fpromise {
@@ -36,6 +37,7 @@ class WebEngineMemoryInspector {
 
   // Handles completion of a memory dump request.
   void OnMemoryDumpComplete(
+      base::TimeTicks requested_at,
       fpromise::suspended_task task,
       bool success,
       memory_instrumentation::mojom::GlobalMemoryDumpPtr raw_dump);
