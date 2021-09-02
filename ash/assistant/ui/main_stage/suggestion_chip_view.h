@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
   void OnFocus() override;
   void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnThemeChanged() override;
 
   void SetIcon(const gfx::ImageSkia& icon);
   gfx::ImageSkia GetIcon() const;

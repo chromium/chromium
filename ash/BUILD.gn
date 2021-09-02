@@ -2147,6 +2147,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/assistant_onboarding_view_unittest.cc",
     "assistant/ui/main_stage/assistant_opt_in_view_unittest.cc",
     "assistant/ui/main_stage/assistant_query_view_unittest.cc",
+    "assistant/ui/main_stage/assistant_text_element_view_unittest.cc",
     "assistant/ui/main_stage/assistant_zero_state_view_unittest.cc",
     "assistant/ui/main_stage/suggestion_chip_view_unittest.cc",
     "assistant/ui/main_stage/ui_element_container_view_unittest.cc",

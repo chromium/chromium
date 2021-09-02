@@ -10,7 +10,12 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/util/resource_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -30,15 +35,21 @@ namespace {
 using assistant::util::ResourceLinkType;
 
 // Appearance.
-constexpr SkColor kBackgroundColor = SK_ColorWHITE;
 constexpr SkColor kFocusColor = SkColorSetA(gfx::kGoogleGrey900, 0x14);
-constexpr SkColor kStrokeColor = SkColorSetA(gfx::kGoogleGrey900, 0x24);
-constexpr SkColor kTextColor = gfx::kGoogleGrey700;
 constexpr int kStrokeWidthDip = 1;
 constexpr int kIconMarginDip = 8;
 constexpr int kIconSizeDip = 16;
 constexpr int kChipPaddingDip = 16;
 constexpr int kPreferredHeightDip = 32;
+
+SkColor GetStrokeColor() {
+  if (features::IsDarkLightModeEnabled()) {
+    return ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+
+  return SkColorSetA(gfx::kGoogleGrey900, 0x24);
+}
 
 }  // namespace
 
@@ -120,7 +131,6 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
   // Text.
   text_view_ = AddChildView(std::make_unique<views::Label>());
   text_view_->SetAutoColorReadabilityEnabled(false);
-  text_view_->SetEnabledColor(kTextColor);
   text_view_->SetSubpixelRenderingEnabled(false);
   text_view_->SetFontList(
       assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1));
@@ -134,8 +144,6 @@ void SuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetContentsBounds();
 
   // Background.
-  flags.setColor(kBackgroundColor);
-  canvas->DrawRoundRect(bounds, height() / 2, flags);
   if (HasFocus()) {
     flags.setColor(kFocusColor);
     canvas->DrawRoundRect(bounds, height() / 2, flags);
@@ -146,7 +154,7 @@ void SuggestionChipView::OnPaintBackground(gfx::Canvas* canvas) {
   bounds.Inset(gfx::Insets(kStrokeWidthDip));
 
   // Stroke.
-  flags.setColor(kStrokeColor);
+  flags.setColor(GetStrokeColor());
   flags.setStrokeWidth(kStrokeWidthDip);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
   canvas->DrawRoundRect(bounds, height() / 2, flags);
@@ -165,6 +173,19 @@ bool SuggestionChipView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_SPACE)
     return false;
   return Button::OnKeyPressed(event);
+}
+
+void SuggestionChipView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  text_view_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorSecondary));
+
+  // Border color will change in SuggestionChipView::OnPaintBackground. Request
+  // a paint.
+  SchedulePaint();
 }
 
 void SuggestionChipView::SetIcon(const gfx::ImageSkia& icon) {

@@ -59,6 +59,7 @@ class ASH_EXPORT AssistantDialogPlate
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void RequestFocus() override;
+  void OnThemeChanged() override;
 
   // AssistantButtonListener:
   void OnButtonPressed(AssistantButtonId button_id) override;

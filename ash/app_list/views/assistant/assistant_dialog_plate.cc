@@ -17,6 +17,8 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
@@ -289,6 +291,18 @@ void AssistantDialogPlate::RequestFocus() {
     view->RequestFocus();
 }
 
+void AssistantDialogPlate::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  textfield_->SetTextColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorPrimary));
+  textfield_->set_placeholder_text_color(
+      ColorProvider::Get()->GetContentLayerColor(
+          ColorProvider::ContentLayerType::kTextColorSecondary));
+}
+
 views::View* AssistantDialogPlate::FindFirstFocusableView() {
   // The first focusable view depends entirely on current input modality.
   switch (input_modality()) {
@@ -365,8 +379,6 @@ void AssistantDialogPlate::InitKeyboardLayoutContainer() {
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_DIALOG_PLATE_HINT);
   textfield->SetPlaceholderText(textfield_hint);
   textfield->SetAccessibleName(textfield_hint);
-  textfield->set_placeholder_text_color(kTextColorSecondary);
-  textfield->SetTextColor(kTextColorPrimary);
   textfield_ = keyboard_layout_container->AddChildView(std::move(textfield));
 
   layout_manager->SetFlexForView(textfield_, 1);

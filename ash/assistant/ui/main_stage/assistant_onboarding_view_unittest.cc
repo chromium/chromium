@@ -13,17 +13,23 @@
 #include "ash/assistant/model/assistant_suggestions_model.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/test_support/mock_assistant_view_delegate.h"
 #include "ash/assistant/util/test_support/macros.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -460,6 +466,43 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleRemoteIcons) {
 
   const auto& actual = suggestion_view->GetIcon();
   EXPECT_TRUE(actual.BackedBySameObjectAs(expected));
+}
+
+TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  ShowAssistantUi();
+
+  EXPECT_EQ(greeting_label()->GetEnabledColor(),
+            ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_EQ(intro_label()->GetEnabledColor(),
+            ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+  ASSERT_TRUE(ColorProvider::Get()->IsDarkModeEnabled());
+
+  EXPECT_EQ(greeting_label()->GetEnabledColor(),
+            ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_EQ(intro_label()->GetEnabledColor(),
+            ColorProvider::Get()->GetContentLayerColor(
+                ColorProvider::ContentLayerType::kTextColorPrimary));
+}
+
+TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
+  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+
+  ShowAssistantUi();
+
+  EXPECT_EQ(greeting_label()->GetEnabledColor(), kTextColorPrimary);
+  EXPECT_EQ(intro_label()->GetEnabledColor(), kTextColorPrimary);
 }
 
 }  // namespace ash

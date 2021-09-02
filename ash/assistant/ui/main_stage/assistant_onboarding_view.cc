@@ -17,6 +17,8 @@
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -139,6 +141,17 @@ void AssistantOnboardingView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
+void AssistantOnboardingView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+
+  greeting_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorPrimary));
+  intro_->SetEnabledColor(ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kTextColorPrimary));
+}
+
 void AssistantOnboardingView::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   AssistantSuggestionsController::Get()->GetModel()->RemoveObserver(this);
@@ -174,8 +187,6 @@ void AssistantOnboardingView::InitLayout() {
   // Greeting.
   greeting_ = AddChildView(std::make_unique<views::Label>());
   greeting_->SetAutoColorReadabilityEnabled(false);
-  greeting_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-  greeting_->SetEnabledColor(kTextColorPrimary);
   greeting_->SetFontList(assistant::ui::GetDefaultFontList()
                              .DeriveWithSizeDelta(kGreetingLabelSizeDelta)
                              .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
@@ -184,20 +195,17 @@ void AssistantOnboardingView::InitLayout() {
   greeting_->SetText(base::UTF8ToUTF16(GetGreetingMessage(delegate_)));
 
   // Intro.
-  auto intro = std::make_unique<views::Label>();
-  intro->SetAutoColorReadabilityEnabled(false);
-  intro->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-  intro->SetBorder(views::CreateEmptyBorder(kIntroLabelMarginTopDip, 0, 0, 0));
-  intro->SetEnabledColor(kTextColorPrimary);
-  intro->SetFontList(assistant::ui::GetDefaultFontList()
-                         .DeriveWithSizeDelta(kIntroLabelSizeDelta)
-                         .DeriveWithWeight(gfx::Font ::Weight::MEDIUM));
-  intro->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  intro->SetLineHeight(kIntroLabelLineHeight);
-  intro->SetMultiLine(true);
-  intro->SetText(
+  intro_ = AddChildView(std::make_unique<views::Label>());
+  intro_->SetAutoColorReadabilityEnabled(false);
+  intro_->SetBorder(views::CreateEmptyBorder(kIntroLabelMarginTopDip, 0, 0, 0));
+  intro_->SetFontList(assistant::ui::GetDefaultFontList()
+                          .DeriveWithSizeDelta(kIntroLabelSizeDelta)
+                          .DeriveWithWeight(gfx::Font ::Weight::MEDIUM));
+  intro_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  intro_->SetLineHeight(kIntroLabelLineHeight);
+  intro_->SetMultiLine(true);
+  intro_->SetText(
       l10n_util::GetStringUTF16(IDS_ASSISTANT_BETTER_ONBOARDING_INTRO));
-  AddChildView(std::move(intro));
 
   // Suggestions.
   UpdateSuggestions();

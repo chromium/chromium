@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantTextElementView
   void ChildPreferredSizeChanged(views::View* child) override;
   std::unique_ptr<ElementAnimator> CreateAnimator() override;
 
+  // views:View:
+  void OnThemeChanged() override;
+
  private:
   void InitLayout(const std::string& text);
 
