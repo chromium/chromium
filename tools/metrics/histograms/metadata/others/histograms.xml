@@ -1452,6 +1452,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BatteryStatus.StartAndroid" enum="BooleanSuccess"
     expires_after="M92">
+  <obsolete>
+    Removed 2021-09-02 due to being unused in the codebase.
+  </obsolete>
   <owner>timvolodine@chromium.org</owner>
   <owner>src/services/device/battery/OWNERS</owner>
   <summary>
