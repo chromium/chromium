@@ -23,7 +23,6 @@ group("closure_compile") {
 
 group("js_modules") {
   deps = [
-    ":api",
     ":app_util",
     ":async_util",
     ":dialog_type",
@@ -51,7 +50,6 @@ group("js_modules") {
 
 js_type_check("closure_compile_jsmodules") {
   deps = [
-    ":api",
     ":app_util",
     ":async_util",
     ":error_counter",
@@ -98,9 +96,6 @@ js_type_check("test_support_modules_type_check") {
         "js_module_root=../../ui",
         "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
       ]
-}
-
-js_library("api") {
 }
 
 js_library("app_util") {

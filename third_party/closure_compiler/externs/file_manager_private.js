@@ -625,14 +625,6 @@ chrome.fileManagerPrivate.HoldingSpaceState;
 
 /**
  * @typedef {{
- *   currentDirectoryURL: (string|undefined),
- *   selectionURL: (string|undefined)
- * }}
- */
-chrome.fileManagerPrivate.OpenWindowParams;
-
-/**
- * @typedef {{
  *   volumeId: string,
  *   writable: boolean,
  * }}
@@ -1276,14 +1268,6 @@ chrome.fileManagerPrivate.isTabletModeEnabled = function(callback) {};
  * @param {chrome.fileManagerPrivate.DriveDialogResult} result
  */
 chrome.fileManagerPrivate.notifyDriveDialogResult = function(result) {};
-
-/**
- * Creates a new Files app window in the directory provided in `params`.
- * @param {!chrome.fileManagerPrivate.OpenWindowParams} params
- * @param {function(boolean): void} callback |result| Boolean result returned by
- *     the invoked function.
- */
-chrome.fileManagerPrivate.openWindow = function(params, callback) {};
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;

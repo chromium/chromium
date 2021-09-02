@@ -121,7 +121,6 @@ js_library("app_window_wrapper") {
   visibility += related_apps
   deps = [
     ":app_windows",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:app_util",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:files_app_state",
