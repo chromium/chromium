@@ -1352,6 +1352,34 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
   EXPECT_FALSE(settings().has_value());
 }
 
+TEST_F(DeepScanningRequestTest, ShouldUploadBinary_FileURLs) {
+  SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
+              /*disabled*/ {});
+  SetAnalysisConnector(profile_->GetPrefs(),
+                       enterprise_connectors::FILE_DOWNLOADED,
+                       kScanForDlpAndMalware);
+
+  content::DownloadItemUtils::AttachInfo(&item_, profile_, nullptr);
+
+  // Even if the policy indicates scanning should occur, file:/// URLs should
+  // never return settings.
+  GURL url_1("file:///a/path/to/a/file");
+  EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(url_1));
+  EXPECT_FALSE(settings().has_value());
+
+  GURL url_2("file:///file.txt");
+  EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(url_2));
+  EXPECT_FALSE(settings().has_value());
+
+  GURL url_3("file:///C:\\a\\path\\to\\a\\file");
+  EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(url_3));
+  EXPECT_FALSE(settings().has_value());
+
+  GURL url_4("file:///C:\\file.txt");
+  EXPECT_CALL(item_, GetURL()).WillRepeatedly(ReturnRef(url_4));
+  EXPECT_FALSE(settings().has_value());
+}
+
 TEST_F(DeepScanningRequestTest, PopulatesRequest) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,

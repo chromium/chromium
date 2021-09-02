@@ -272,6 +272,10 @@ bool ResultIsRetriable(BinaryUploadService::Result result) {
 /* static */
 absl::optional<enterprise_connectors::AnalysisSettings>
 DeepScanningRequest::ShouldUploadBinary(download::DownloadItem* item) {
+  // Files already on the disk shouldn't be uploaded for scanning.
+  if (item->GetURL().SchemeIsFile())
+    return absl::nullopt;
+
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(item));
