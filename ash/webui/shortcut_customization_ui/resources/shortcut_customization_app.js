@@ -119,19 +119,24 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
 
   /** @private */
   addNavigationSelectors_() {
-    this.$.navigationPanel.addSelector(
-        'Chrome OS', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'chromeos-page-id', {category: /**ChromeOS*/ 0});
-    this.$.navigationPanel.addSelector(
-        'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'browser-page-id', {category: /**Browser*/ 1});
-    this.$.navigationPanel.addSelector(
-        'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
-        'android-page-id', {category: /**Android*/ 2});
-    this.$.navigationPanel.addSelector(
-        'Accessibility', 'shortcuts-page',
-        'navigation-selector:laptop-chromebook', 'a11y-page-id',
-        {category: /**Accessbility*/ 3});
+    const pages = [
+      this.$.navigationPanel.createSelectorItem(
+          'Chrome OS', 'shortcuts-page',
+          'navigation-selector:laptop-chromebook', 'chromeos-page-id',
+          {category: /**ChromeOS*/ 0}),
+      this.$.navigationPanel.createSelectorItem(
+          'Browser', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+          'browser-page-id', {category: /**Browser*/ 1}),
+      this.$.navigationPanel.createSelectorItem(
+          'Android', 'shortcuts-page', 'navigation-selector:laptop-chromebook',
+          'android-page-id', {category: /**Android*/ 2}),
+      this.$.navigationPanel.createSelectorItem(
+          'Accessibility', 'shortcuts-page',
+          'navigation-selector:laptop-chromebook', 'a11y-page-id',
+          {category: /**Accessbility*/ 3}),
+
+    ];
+    this.$.navigationPanel.addSelectors(pages);
   }
 
   /**

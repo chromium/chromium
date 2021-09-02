@@ -37,6 +37,15 @@ export function getDiagnosticsIcon(id) {
 }
 
 /**
+ * Returns an icon from the navigation icon set.
+ * @param {string} id
+ * @return {string}
+ */
+export function getNavigationIcon(id) {
+  return `navigation-selector:${id}`;
+}
+
+/**
  * @param {!NetworkType} type
  * @return {string}
  */

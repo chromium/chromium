@@ -108,7 +108,7 @@ export function appTestSuite() {
                  fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
           .then(() => {
             const systemPage =
-                dx_utils.getNavigationViewPanelElement(page, 'system-page');
+                dx_utils.getNavigationViewPanelElement(page, 'overview');
             assertTrue(!!systemPage);
             assertTrue(isVisible(systemPage));
           });

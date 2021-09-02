@@ -83,6 +83,51 @@ export class NavigationViewPanelElement extends PolymerElement {
   }
 
   /**
+   * @param {string} name
+   * @param {string} pageIs
+   * @param {string} icon
+   * @param {?string} id
+   * @param {?Object} initialData
+   * @return {!SelectorItem}
+   */
+  createSelectorItem(
+      name, pageIs, icon = '', id = null, initialData = null) {
+    id = id || pageIs;
+    return {
+      name, pageIs, icon, id, initialData
+    }
+  }
+
+  /**
+   * Set the initially active page (defaults to the first selector item),
+   * Callers can override this default behavior by providing a
+   * query param including the id of a specific page.
+   * @protected
+   */
+  setDefaultPage_() {
+    assert(!this.selectedItem);
+    const params = new URLSearchParams(window.location.search);
+
+    for (let item of this.selectorItems_) {
+      if (params.has(item.id)) {
+        this.selectedItem = item;
+        return;
+      }
+    }
+
+    // Default to first entry if query param isn't provided.
+    this.selectedItem = this.selectorItems_[0];
+  }
+
+  /**
+   * @param {!Array<!SelectorItem>} pages
+   */
+  addSelectors(pages) {
+    this.set('selectorItems_', pages);
+    this.setDefaultPage_();
+  }
+
+  /**
    * Adds a new section to the top level navigation. The name and icon will
    * be displayed in the side navigation. The content panel will create an
    * instance of pageIs when navigated to. If id is null it will default to
@@ -95,15 +140,9 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {?Object} initialData
    */
   addSelector(name, pageIs, icon = '', id = null, initialData = null) {
-    id = id || pageIs;
     let selectorItem =
-        /** @type {SelectorItem} */ ({name, pageIs, icon, id, initialData});
-
+        this.createSelectorItem(name, pageIs, icon, id, initialData);
     this.push('selectorItems_', selectorItem);
-    // Set the initial default page.
-    if (!this.selectedItem) {
-        this.selectedItem = selectorItem;
-    }
   }
 
   /** @protected */

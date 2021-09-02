@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -74,6 +75,16 @@ export function navigationViewPanelTestSuite() {
     return flushTasks();
   }
 
+  /**
+   * Adds sections to the navigation element.
+   * @param {!Array<!SelectorItem>} sections
+   * @return {!Promise}
+   */
+  function addNavigationSections(sections) {
+    viewElement.addSelectors(sections);
+    return flushTasks();
+  }
+
   test('twoEntries', async () => {
     const dummyPage1 = 'dummy-page1';
     const dummyPage2 = 'dummy-page2';
@@ -139,11 +150,29 @@ export function navigationViewPanelTestSuite() {
     const dummyPage1 = 'dummy-page1';
     const dummyPage2 = 'dummy-page2';
 
-    await addNavigationSection('dummyPage1', dummyPage1);
-    await addNavigationSection('dummyPage2', dummyPage2);
+    await addNavigationSections([
+      viewElement.createSelectorItem('dummyPage1', dummyPage1),
+      viewElement.createSelectorItem('dummyPage2', dummyPage2),
+    ]);
 
     assertFalse(viewElement.shadowRoot.querySelector(`#${dummyPage1}`).hidden);
     assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
+  });
+
+  test('defaultPageSetUsingQueryParam', async () => {
+    const queryParams = new URLSearchParams(window.location.search);
+    queryParams.set('page2', '');
+    // Replace current querystring with the new one.
+    window.history.replaceState(null, '', '?' + queryParams.toString());
+
+    await addNavigationSections([
+      viewElement.createSelectorItem('dummyPage1', 'dummy-page1', '', 'page1'),
+      viewElement.createSelectorItem('dummyPage1', 'dummy-page2', '', 'page2')
+    ]);
+
+
+    assertFalse(viewElement.shadowRoot.querySelector('#page2').hidden);
+    assertFalse(!!viewElement.shadowRoot.querySelector('#page1'));
   });
 
   test('samePageTypeDifferentId', async () => {
@@ -152,8 +181,10 @@ export function navigationViewPanelTestSuite() {
     const id2 = 'id2';
 
     // Add two pages of the the same type with different ids.
-    await addNavigationSection('Page 1', pageType, /*icon=*/ '', 'id1');
-    await addNavigationSection('Page 2', pageType, /*icon=*/ '', 'id2');
+    await addNavigationSections([
+      viewElement.createSelectorItem('Page 1', pageType, /*icon=*/ '', 'id1'),
+      viewElement.createSelectorItem('Page 2', pageType, /*icon=*/ '', 'id2'),
+    ]);
 
     // First page should be created by default.
     assertTrue(!!viewElement.shadowRoot.querySelector(`#${id1}`));
@@ -177,7 +208,9 @@ export function navigationViewPanelTestSuite() {
     viewElement.title = expectedTitle;
     viewElement.showToolBar = true;
 
-    await addNavigationSection('dummyPage1', dummyPage1);
+    await addNavigationSections([
+      viewElement.createSelectorItem('dummyPage1', dummyPage1),
+    ]);
 
     assertFalse(viewElement.shadowRoot.querySelector(`#${dummyPage1}`).hidden);
     // The title is only visible if the toolbar is stamped.

@@ -15,6 +15,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
+import {getNavigationIcon} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -72,19 +73,24 @@ Polymer({
   /** @override */
   attached() {
     if (this.showNavPanel_) {
-      this.$$('#navigationPanel')
-          .addSelector(
-              loadTimeData.getString('overviewText'), 'system-page',
-              'navigation-selector:laptop-chromebook');
+      const navPanel = this.$$('#navigationPanel');
+      // Note: When adding a new page, update the DiagnosticsPage enum located
+      // in chrome/browser/ui/webui/chromeos/diagnostics_dialog.h.
+      const pages = [navPanel.createSelectorItem(
+          loadTimeData.getString('overviewText'), 'system-page',
+          getNavigationIcon('laptop-chromebook'), 'overview')];
+
       if (this.isNetworkingEnabled_) {
-        this.$$('#navigationPanel')
-            .addSelector(
-                loadTimeData.getString('connectivityText'), 'network-list',
-                'navigation-selector:ethernet');
+        pages.push(navPanel.createSelectorItem(
+            loadTimeData.getString('connectivityText'), 'network-list',
+            getNavigationIcon('ethernet'), 'connectivity'))
       }
+
       if (this.isInputEnabled_) {
-        this.$$('#navigationPanel').addSelector('Input', 'input-list');
+        pages.push(navPanel.createSelectorItem(
+            'Input', 'input-list', /*icon=*/ '', 'input'));
       }
+      navPanel.addSelectors(pages);
     }
   },
 
