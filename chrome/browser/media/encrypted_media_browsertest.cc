@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
 #else
 #define MAYBE_FrameSizeChangeVideo FrameSizeChangeVideo
 #endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_FrameSizeChangeVideo) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "FrameSizeChange test requires video playback.";
 

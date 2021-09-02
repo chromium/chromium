@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 #define MAYBE_EncryptionScheme EncryptionScheme
 #endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
-                       EncryptionScheme) {
+                       MAYBE_EncryptionScheme) {
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kClearKey, nullptr));
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kClearKey, "cenc"));
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kClearKey, "cbcs"));
