@@ -943,9 +943,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public @Nullable ChipDelegate getChipDelegate() {
-        // TODO(crbug/1181101): Use #isLensAvailable to check Lens availablility before creating
-        // chip delegate.
-        if (LensUtils.enableImageChip() || LensUtils.enableTranslateChip()) {
+        if (LensChipDelegate.isEnabled(isIncognito(), isTabletScreen())) {
             // TODO(crbug.com/783819): Migrate LensChipDelegate to GURL.
             return new LensChipDelegate(mParams.getPageUrl().getSpec(), mParams.getTitleText(),
                     mParams.getSrcUrl().getSpec(), getPageTitle(), isIncognito(), isTabletScreen(),
@@ -958,18 +956,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     private Callback<Integer> getOnChipShownCallback() {
         return (Integer result) -> {
             int chipType = result.intValue();
-            switch (chipType) {
-                case ChipRenderParams.ChipType.LENS_SHOPPING_CHIP:
-                    maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLensChip");
-                    return;
-                case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
-                    maybeRecordBooleanUkm(
-                            "ContextMenuAndroid.Shown", "TranslateWithGoogleLensChip");
-                    return;
-                default:
-                    // Unreachable value.
-                    throw new IllegalArgumentException("Invalid chip type provided to callback.");
-            }
+            maybeRecordUkmLensChipShown(chipType);
         };
     }
 
@@ -1022,7 +1009,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      */
     private void recordContextMenuSelection(int actionId) {
         ContextMenuUma.record(mItemDelegate.getWebContents(), mParams, actionId);
-        maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
+        if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
+            maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
+        }
     }
 
     /**
@@ -1197,14 +1186,19 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * If not disabled record a UKM for opening the context menu with the search by image option.
      */
     private void maybeRecordUkmSearchByImageShown() {
-        maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchByImage");
+        if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
+            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchByImage");
+        }
     }
 
     /**
      * If not disabled record a UKM for opening the context menu with the lens item.
      */
     private void maybeRecordUkmLensShown() {
-        maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchWithGoogleLens");
+        if (LensUtils.shouldLogUkmByFeature(
+                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS)) {
+            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "SearchWithGoogleLens");
+        }
     }
 
     /**
@@ -1212,7 +1206,33 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * item.
      */
     private void maybeRecordUkmLensShoppingShown() {
-        maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLens");
+        if (LensUtils.shouldLogUkmByFeature(ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS)) {
+            maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "ShopWithGoogleLens");
+        }
+    }
+
+    private void maybeRecordUkmLensChipShown(int chipType) {
+        String actionName = null;
+        switch (chipType) {
+            case ChipRenderParams.ChipType.LENS_SHOPPING_CHIP:
+                if (!LensUtils.shouldLogUkmByFeature(
+                            ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP)) {
+                    return;
+                }
+                actionName = "ShopWithGoogleLensChip";
+                break;
+            case ChipRenderParams.ChipType.LENS_TRANSLATE_CHIP:
+                if (!LensUtils.shouldLogUkmByFeature(
+                            ChromeFeatureList.CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS)) {
+                    return;
+                }
+                actionName = "TranslateWithGoogleLensChip";
+                break;
+            default:
+                // Unreachable value.
+                assert false : "Invalid chip type provided to callback.";
+        }
+        maybeRecordBooleanUkm("ContextMenuAndroid.Shown", actionName);
     }
 
     /**
@@ -1230,7 +1250,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param metricName The name of the UKM metric to record.
      */
     private void maybeRecordBooleanUkm(String eventName, String metricName) {
-        if (!LensUtils.shouldLogUkm(mItemDelegate.isIncognito())) return;
+        // Disable UKM reporting when incognito.
+        if (mItemDelegate.isIncognito()) return;
         initializeUkmRecorderBridge();
         WebContents webContents = mItemDelegate.getWebContents();
         if (webContents != null) {
@@ -1244,7 +1265,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param actionId The id of the action corresponding the ContextMenuUma.Action enum.
      */
     private void maybeRecordActionUkm(String eventName, int actionId) {
-        if (!LensUtils.shouldLogUkm(mItemDelegate.isIncognito())) return;
+        // Disable UKM reporting when incognito.
+        if (mItemDelegate.isIncognito()) return;
         initializeUkmRecorderBridge();
         WebContents webContents = mItemDelegate.getWebContents();
         if (webContents != null) {
