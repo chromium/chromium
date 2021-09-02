@@ -619,6 +619,8 @@ TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(locales.contains("zh-HK"));
 #endif
+  // Norwegian (no), as it does not specify a written form.
+  EXPECT_FALSE(locales.contains("no"));
   // English (Germany). A valid locale and in ICU's list of locales, but not in
   // our list of Accept-Language locales.
   EXPECT_FALSE(locales.contains("en-DE"));

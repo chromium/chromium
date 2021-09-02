@@ -948,10 +948,22 @@ bool IsUserFacingUILocale(const std::string& locale) {
     return false;
   }
 
-  // Chinese locales (other than the ones that have strings on disk, i.e. when
-  // resolved_locale == locale) should not be shown.
-  if (resolved_locale != locale &&
-      base::LowerCaseEqualsASCII(l10n_util::GetLanguage(locale), "zh")) {
+  // Locales that have strings on disk should always be shown to the user.
+  if (resolved_locale == locale) {
+    return true;
+  }
+
+  const std::string& language = l10n_util::GetLanguage(locale);
+
+  // Chinese locales (other than the ones that have strings on disk) should not
+  // be shown.
+  if (base::LowerCaseEqualsASCII(language, "zh")) {
+    return false;
+  }
+
+  // Norwegian (no) should not be shown as it does not specify a written form.
+  // Users can select Norwegian Bokmål (nb) or Norwegian Nynorsk (nn) instead.
+  if (base::LowerCaseEqualsASCII(language, "no")) {
     return false;
   }
 
