@@ -1484,13 +1484,10 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
   Node* node = start.AnchorNode();
   while (node) {
     Node* next_to_process = nullptr;
-    if (EditingIgnoresContent(*node)) {
-      DCHECK(node == end.AnchorNode() || !node->contains(end.AnchorNode()))
-          << node << " " << end;
-      next_to_process = NodeTraversal::NextSkippingChildren(*node);
-    } else {
+    if (!EditingIgnoresContent(*node))
       next_to_process = NodeTraversal::Next(*node);
-    }
+    else if (!node->contains(end.AnchorNode()))
+      next_to_process = NodeTraversal::NextSkippingChildren(*node);
     auto* elem = DynamicTo<HTMLElement>(node);
     if (elem && ElementFullySelected(*elem, start, end)) {
       Node* prev = NodeTraversal::PreviousPostOrder(*elem);
