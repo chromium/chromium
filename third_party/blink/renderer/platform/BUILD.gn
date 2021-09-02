@@ -1094,7 +1094,6 @@ component("platform") {
     "graphics/paint/ref_counted_property_tree_state.h",
     "graphics/paint/scoped_display_item_fragment.h",
     "graphics/paint/scoped_effectively_invisible.h",
-    "graphics/paint/scoped_paint_chunk_hint.h",
     "graphics/paint/scoped_paint_chunk_properties.h",
     "graphics/paint/scroll_paint_property_node.cc",
     "graphics/paint/scroll_paint_property_node.h",

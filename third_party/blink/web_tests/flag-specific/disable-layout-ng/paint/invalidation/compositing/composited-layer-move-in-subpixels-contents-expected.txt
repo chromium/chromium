@@ -9,9 +9,6 @@
     {
       "name": "LayoutBlockFlow DIV id='container'",
       "bounds": [784, 377],
-      "invalidations": [
-        [0, 0, 784, 377]
-      ],
       "transform": 1
     }
   ],
