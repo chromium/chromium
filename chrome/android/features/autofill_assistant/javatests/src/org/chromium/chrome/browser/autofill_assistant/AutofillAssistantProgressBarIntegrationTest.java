@@ -218,8 +218,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
             onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                                  AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
                            withClassName(is(ChromeImageView.class.getName()))))
-                    .check(matches(allOf(
-                            not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                    .check(matches(allOf(not(isEnabled()),
+                            hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         }
         for (int i = 0; i < 3; ++i) {
             onView(withTagValue(is(String.format(
@@ -236,8 +236,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
         onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                              AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 1)))),
                        withClassName(is(ChromeImageView.class.getName()))))
-                .check(matches(
-                        allOf(not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                .check(matches(allOf(
+                        not(isEnabled()), hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         onView(withText("Next")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Final Step"), isCompletelyDisplayed());
@@ -302,8 +302,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
             onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                                  AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
                            withClassName(is(ChromeImageView.class.getName()))))
-                    .check(matches(allOf(
-                            not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                    .check(matches(allOf(not(isEnabled()),
+                            hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         }
         for (int i = 0; i < 3; ++i) {
             onView(withTagValue(is(String.format(
@@ -320,8 +320,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
         onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                              AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 1)))),
                        withClassName(is(ChromeImageView.class.getName()))))
-                .check(matches(
-                        allOf(not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                .check(matches(allOf(
+                        not(isEnabled()), hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         onView(withText("Next")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Final Step"), isCompletelyDisplayed());
@@ -382,8 +382,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
             onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                                  AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
                            withClassName(is(ChromeImageView.class.getName()))))
-                    .check(matches(allOf(
-                            not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                    .check(matches(allOf(not(isEnabled()),
+                            hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         }
         for (int i = 0; i < 3; ++i) {
             onView(withTagValue(is(String.format(
@@ -458,8 +458,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
             onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                                  AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, i)))),
                            withClassName(is(ChromeImageView.class.getName()))))
-                    .check(matches(allOf(
-                            not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                    .check(matches(allOf(not(isEnabled()),
+                            hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         }
         for (int i = 0; i < 3; ++i) {
             onView(withTagValue(is(String.format(
@@ -476,8 +476,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
         onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                              AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 1)))),
                        withClassName(is(ChromeImageView.class.getName()))))
-                .check(matches(
-                        allOf(not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                .check(matches(allOf(
+                        not(isEnabled()), hasTintColor(R.color.baseline_neutral_900_alpha_38))));
         onView(withText("Next")).perform(click());
 
         waitUntilViewMatchesCondition(withText("Final Step"), isCompletelyDisplayed());
@@ -544,8 +544,8 @@ public class AutofillAssistantProgressBarIntegrationTest {
         onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                              AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 1)))),
                        withClassName(is(ChromeImageView.class.getName()))))
-                .check(matches(
-                        allOf(not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                .check(matches(allOf(
+                        not(isEnabled()), hasTintColor(R.color.baseline_neutral_900_alpha_38))));
 
         onView(withText("Update")).perform(click());
         waitUntilViewMatchesCondition(withText("Updated"), isCompletelyDisplayed());
@@ -556,7 +556,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         onView(allOf(isDescendantOfA(withTagValue(is(String.format(Locale.getDefault(),
                              AssistantTagsForTesting.PROGRESSBAR_ICON_TAG, 1)))),
                        withClassName(is(ChromeImageView.class.getName()))))
-                .check(matches(
-                        allOf(not(isEnabled()), hasTintColor(R.color.modern_grey_800_alpha_38))));
+                .check(matches(allOf(
+                        not(isEnabled()), hasTintColor(R.color.baseline_neutral_900_alpha_38))));
     }
 }

@@ -39,8 +39,9 @@
     <!-- Same as ?attr/colorError. -->
     <color name="default_text_color_error_light">@color/baseline_error_200</color>
     <color name="default_text_color_error_dark">@color/baseline_error_600</color>
-    <color name="default_text_color_link_disabled_light">@color/modern_grey_300_alpha_38</color>
-    <color name="default_text_color_link_disabled_dark">@color/modern_grey_800_alpha_38</color>
+    <!-- Same as ?attr/onSurface with alpha. -->
+    <color name="default_text_color_link_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
     <!-- Same as ?attr/colorOnPrimary. -->
     <color name="default_text_color_on_accent1_light">@color/baseline_neutral_0</color>
     <color name="default_text_color_on_accent1_dark">@color/baseline_primary_800</color>

@@ -19,6 +19,7 @@
     <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
     <color name="default_text_color_error">@color/default_text_color_error_dark</color>
     <color name="default_text_color_on_accent1">@color/default_text_color_on_accent1_light</color>
+    <color name="default_text_color_on_accent1_disabled">@color/default_text_color_disabled_dark</color>
 
     <!-- Common icon colors for drawables. -->
     <color name="default_icon_color">@color/default_icon_color_dark</color>
