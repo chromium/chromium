@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
@@ -178,7 +179,7 @@ void DedicatedWorker::Start() {
     // WorkerOptions.
     // https://html.spec.whatwg.org/C/#workeroptions
     auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
-    if (options_->type() == "module") {
+    if (options_->type() == script_type_names::kModule) {
       absl::optional<network::mojom::CredentialsMode> result =
           Request::ParseCredentialsMode(options_->credentials());
       DCHECK(result);
@@ -233,7 +234,7 @@ void DedicatedWorker::OnHostCreated(
   DCHECK(!base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   const RejectCoepUnsafeNone reject_coep_unsafe_none(
       network::CompatibleWithCrossOriginIsolated(parent_coep));
-  if (options_->type() == "classic") {
+  if (options_->type() == script_type_names::kClassic) {
     // Legacy code path (to be deprecated, see https://crbug.com/835717):
     // A worker thread will start after scripts are fetched on the current
     // thread.
@@ -250,7 +251,7 @@ void DedicatedWorker::OnHostCreated(
         reject_coep_unsafe_none, std::move(blob_url_loader_factory));
     return;
   }
-  if (options_->type() == "module") {
+  if (options_->type() == script_type_names::kModule) {
     // Specify empty source code here because scripts will be fetched on the
     // worker thread.
     ContinueStart(script_request_url_,
@@ -424,8 +425,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
   }
 
   mojom::blink::ScriptType script_type =
-      (options_->type() == "classic") ? mojom::blink::ScriptType::kClassic
-                                      : mojom::blink::ScriptType::kModule;
+      (options_->type() == script_type_names::kClassic)
+          ? mojom::blink::ScriptType::kClassic
+          : mojom::blink::ScriptType::kModule;
 
   return std::make_unique<GlobalScopeCreationParams>(
       script_url, script_type, options_->name(),

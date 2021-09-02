@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -338,7 +339,7 @@ class TokenPreloadScanner::StartTagScanner {
     if (!request)
       return nullptr;
 
-    bool is_module = (type_attribute_value_ == "module");
+    bool is_module = (type_attribute_value_ == script_type_names::kModule);
     bool is_script = Match(tag_impl_, html_names::kScriptTag);
     if ((is_script && is_module) || IsLinkRelModulePreload()) {
       is_module = true;

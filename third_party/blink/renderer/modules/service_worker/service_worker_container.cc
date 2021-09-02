@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
@@ -221,7 +222,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
 
   // TODO(crbug.com/824647): Remove this check after module loading for
   // ServiceWorker is enabled by default.
-  if (options->type() == "module" &&
+  if (options->type() == script_type_names::kModule &&
       !RuntimeEnabledFeatures::ModuleServiceWorkerEnabled()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,

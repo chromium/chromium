@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -207,18 +208,18 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kClassic;
   }
 
-  if (EqualIgnoringASCIICase(type, "module")) {
+  if (EqualIgnoringASCIICase(type, script_type_names::kModule)) {
     // <spec step="7">... If the script block's type string is an ASCII
     // case-insensitive match for the string "module", the script's type is
     // "module". ...</spec>
     return ScriptTypeAtPrepare::kModule;
   }
 
-  if (EqualIgnoringASCIICase(type, "importmap")) {
+  if (EqualIgnoringASCIICase(type, script_type_names::kImportmap)) {
     return ScriptTypeAtPrepare::kImportMap;
   }
 
-  if (EqualIgnoringASCIICase(type, "speculationrules")) {
+  if (EqualIgnoringASCIICase(type, script_type_names::kSpeculationrules)) {
     return ScriptTypeAtPrepare::kSpeculationRules;
   }
 
