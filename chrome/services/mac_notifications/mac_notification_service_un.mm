@@ -84,6 +84,9 @@ int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
 
 namespace mac_notifications {
 
+// static
+constexpr base::TimeDelta MacNotificationServiceUN::kSynchronizationInterval;
+
 MacNotificationServiceUN::MacNotificationServiceUN(
     mojo::PendingReceiver<mojom::MacNotificationService> service,
     mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
@@ -100,6 +103,8 @@ MacNotificationServiceUN::MacNotificationServiceUN(
   LogUNNotificationSettings(notification_center_.get());
   // TODO(crbug.com/1129366): Determine when to ask for permissions.
   RequestPermission();
+  // Schedule a timer to regularly check for any closed notifications.
+  ScheduleSynchronizeNotifications();
 }
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
@@ -119,6 +124,9 @@ void MacNotificationServiceUN::DisplayNotification(
 
   std::string notification_id = DeriveMacNotificationId(notification->meta->id);
   NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
+
+  // Keep track of delivered notifications to detect when they get closed.
+  delivered_notifications_[notification_id] = notification->meta.Clone();
 
   // TODO(knollr): Also pass placeholder once we support inline replies.
   NotificationCategoryManager::Buttons buttons;
@@ -287,6 +295,7 @@ void MacNotificationServiceUN::CloseAllNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   [notification_center_ removeAllDeliveredNotifications];
   category_manager_.ReleaseAllCategories();
+  delivered_notifications_.clear();
 }
 
 void MacNotificationServiceUN::RequestPermission() {
@@ -306,6 +315,55 @@ void MacNotificationServiceUN::RequestPermission() {
                                       completionHandler:resultHandler];
 }
 
+void MacNotificationServiceUN::ScheduleSynchronizeNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // base::Unretained is safe in the initial timer callback as the timer is
+  // owned by |this|. We use a weak ptr in the final result callback as that
+  // might be called by the system after |this| got deleted.
+  synchronize_displayed_notifications_timer_.Start(
+      FROM_HERE, kSynchronizationInterval,
+      base::BindRepeating(
+          &MacNotificationServiceUN::GetDisplayedNotifications,
+          base::Unretained(this),
+          /*profile=*/nullptr,
+          base::BindRepeating(
+              &MacNotificationServiceUN::DoSynchronizeNotifications,
+              weak_factory_.GetWeakPtr())));
+}
+
+void MacNotificationServiceUN::DoSynchronizeNotifications(
+    std::vector<mojom::NotificationIdentifierPtr> notifications) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_map<std::string, mojom::NotificationMetadataPtr>
+      remaining_notifications;
+
+  for (const auto& identifier : notifications) {
+    std::string notification_id = DeriveMacNotificationId(identifier);
+    auto existing = delivered_notifications_.find(notification_id);
+    if (existing == delivered_notifications_.end())
+      continue;
+
+    remaining_notifications[notification_id] = std::move(existing->second);
+    delivered_notifications_.erase(existing);
+  }
+
+  auto closed_notifications = std::move(delivered_notifications_);
+  delivered_notifications_ = std::move(remaining_notifications);
+  std::vector<std::string> closed_notification_ids;
+
+  for (auto& entry : closed_notifications) {
+    closed_notification_ids.push_back(entry.first);
+    auto action_info = mojom::NotificationActionInfo::New(
+        std::move(entry.second), NotificationOperation::kClose,
+        kNotificationInvalidButtonIndex,
+        /*reply=*/absl::nullopt);
+    action_handler_->OnNotificationAction(std::move(action_info));
+  }
+
+  if (!closed_notification_ids.empty())
+    OnNotificationsClosed(closed_notification_ids);
+}
+
 void MacNotificationServiceUN::OnNotificationAction(
     mojom::NotificationActionInfoPtr action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -320,6 +378,8 @@ void MacNotificationServiceUN::OnNotificationsClosed(
     const std::vector<std::string>& notification_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   category_manager_.ReleaseCategories(notification_ids);
+  for (const auto& notification_id : notification_ids)
+    delivered_notifications_.erase(notification_id);
 }
 
 }  // namespace mac_notifications

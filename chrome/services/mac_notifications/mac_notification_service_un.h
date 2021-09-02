@@ -5,9 +5,14 @@
 #ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/common/notifications/notification_image_retainer.h"
 #import "chrome/services/mac_notifications/notification_category_manager.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -26,6 +31,10 @@ namespace mac_notifications {
 class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
     : public mojom::MacNotificationService {
  public:
+  // Timer interval used to synchronize displayed notifications.
+  static constexpr auto kSynchronizationInterval =
+      base::TimeDelta::FromMinutes(10);
+
   MacNotificationServiceUN(
       mojo::PendingReceiver<mojom::MacNotificationService> service,
       mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
@@ -49,6 +58,12 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   // to accept permissions if not granted or denied already.
   void RequestPermission();
 
+  // Called regularly while we think that notifications are on screen to detect
+  // when they get closed.
+  void ScheduleSynchronizeNotifications();
+  void DoSynchronizeNotifications(
+      std::vector<mojom::NotificationIdentifierPtr> notifications);
+
   // Called by |delegate_| when a user interacts with a notification.
   void OnNotificationAction(mojom::NotificationActionInfoPtr action);
 
@@ -64,6 +79,11 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   NotificationCategoryManager category_manager_;
   // Image retainer to pass image attachments to notifications.
   NotificationImageRetainer image_retainer_;
+
+  // Keeps track of delivered notifications to detect closed notifications.
+  base::flat_map<std::string, mojom::NotificationMetadataPtr>
+      delivered_notifications_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::RepeatingTimer synchronize_displayed_notifications_timer_;
 
   // Ensures that the methods in this class are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

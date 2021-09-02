@@ -145,7 +145,7 @@ class MacNotificationServiceUNTest : public testing::Test {
     for (const auto& notification : notifications)
       [notifications_ns addObject:notification.get()];
 
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+    [[[mock_notification_center_ stub] andDo:^(NSInvocation* invocation) {
       __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
       [invocation getArgument:&callback atIndex:2];
       callback(notifications_ns);
@@ -207,7 +207,8 @@ class MacNotificationServiceUNTest : public testing::Test {
         /*icon=*/gfx::ImageSkia());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver_{
       &mock_handler_};
@@ -315,6 +316,35 @@ TEST_F(MacNotificationServiceUNTest, CloseNotification) {
 
     // Expect closing the notification to remove the category as well.
     EXPECT_EQ(0u, category_count_);
+  }
+}
+
+TEST_F(MacNotificationServiceUNTest, SynchronizesNotifications) {
+  if (@available(macOS 10.14, *)) {
+    // Setup 4 notifications that are being returned by system APIs too.
+    auto notifications = SetupNotifications();
+    ASSERT_EQ(4u, GetDisplayedNotificationsSync(/*profile=*/nullptr).size());
+
+    // Display a notification which won't be reflected in the system APIs.
+    DisplayNotificationSync("notificationId3", "profileId", /*incognito=*/true);
+    ASSERT_EQ(4u, GetDisplayedNotificationsSync(/*profile=*/nullptr).size());
+
+    // Wait until the notification synchronization timer kicks in and expect it
+    // to detect the missing notification.
+    base::RunLoop run_loop;
+    base::Time start_time = base::Time::Now();
+    EXPECT_CALL(mock_handler_, OnNotificationAction)
+        .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+          EXPECT_EQ(NotificationOperation::kClose, action_info->operation);
+          EXPECT_EQ(kNotificationInvalidButtonIndex, action_info->button_index);
+          EXPECT_EQ("notificationId3", action_info->meta->id->id);
+          EXPECT_EQ("profileId", action_info->meta->id->profile->id);
+          EXPECT_EQ(MacNotificationServiceUN::kSynchronizationInterval,
+                    base::Time::Now() - start_time);
+          run_loop.Quit();
+        });
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(&mock_handler_);
   }
 }
 
