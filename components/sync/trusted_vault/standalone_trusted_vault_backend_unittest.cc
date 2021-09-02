@@ -493,7 +493,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
+      TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
       /*expected_bucket_count=*/1);
 
@@ -534,7 +534,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
+      TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithPersistentAuthError,
       /*expected_bucket_count=*/1);
 }
@@ -559,8 +559,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
-          kLocalKeysAreStale,
+      TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
       /*expected_bucket_count=*/1);
 }
 
@@ -619,8 +618,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
-          kAlreadyRegistered,
+      TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered,
       /*expected_bucket_count=*/1);
 }
 
@@ -667,8 +665,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
-          kThrottledClientSide,
+      TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide,
       /*expected_bucket_count=*/1);
 
   // Mimic a restart after sufficient time has passed, to trigger another device
@@ -683,7 +680,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester2.ExpectUniqueSample(
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
-      StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA::
+      TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair,
       /*expected_bucket_count=*/1);
 }

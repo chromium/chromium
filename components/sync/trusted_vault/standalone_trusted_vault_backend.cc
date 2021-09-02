@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
@@ -250,14 +249,13 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     per_user_vault->set_gaia_id(primary_account->gaia);
   }
 
-  const absl::optional<DeviceRegistrationStateForUMA> registration_state =
-      MaybeRegisterDevice(has_persistent_auth_error);
+  const absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+      registration_state = MaybeRegisterDevice(has_persistent_auth_error);
 
   if (registration_state.has_value() &&
       !device_registration_state_recorded_to_uma_) {
     device_registration_state_recorded_to_uma_ = true;
-    base::UmaHistogramEnumeration("Sync.TrustedVaultDeviceRegistrationState",
-                                  *registration_state);
+    RecordTrustedVaultDeviceRegistrationState(*registration_state);
   }
 
   if (pending_trusted_recovery_method_.has_value()) {
@@ -424,7 +422,7 @@ void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
 
-absl::optional<StandaloneTrustedVaultBackend::DeviceRegistrationStateForUMA>
+absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice(
     bool has_persistent_auth_error_for_uma) {
   // TODO(crbug.com/1102340): in case of transient failure this function is
@@ -453,17 +451,17 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
   }
 
   if (per_user_vault->local_device_registration_info().device_registered()) {
-    return DeviceRegistrationStateForUMA::kAlreadyRegistered;
+    return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegistered;
   }
 
   if (per_user_vault->keys_are_stale()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained first.
-    return DeviceRegistrationStateForUMA::kLocalKeysAreStale;
+    return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
   }
 
   if (AreConnectionRequestsThrottled()) {
-    return DeviceRegistrationStateForUMA::kThrottledClientSide;
+    return TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide;
   }
 
   std::unique_ptr<SecureBoxKeyPair> key_pair;
@@ -513,12 +511,12 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
 
   DCHECK(ongoing_connection_request_);
   if (has_persistent_auth_error_for_uma) {
-    return DeviceRegistrationStateForUMA::
+    return TrustedVaultDeviceRegistrationStateForUMA::
         kAttemptingRegistrationWithPersistentAuthError;
   }
-  return had_generated_key_pair ? DeviceRegistrationStateForUMA::
+  return had_generated_key_pair ? TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithExistingKeyPair
-                                : DeviceRegistrationStateForUMA::
+                                : TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithNewKeyPair;
 }
 

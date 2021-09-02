@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/protocol/local_trusted_vault.pb.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -117,19 +118,6 @@ class StandaloneTrustedVaultBackend
 
   void SetClockForTesting(base::Clock* clock);
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Exposed publicly for testing.
-  enum class DeviceRegistrationStateForUMA {
-    kAlreadyRegistered = 0,
-    kLocalKeysAreStale = 1,
-    kThrottledClientSide = 2,
-    kAttemptingRegistrationWithNewKeyPair = 3,
-    kAttemptingRegistrationWithExistingKeyPair = 4,
-    kAttemptingRegistrationWithPersistentAuthError = 5,
-    kMaxValue = kAttemptingRegistrationWithPersistentAuthError,
-  };
-
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 
@@ -144,7 +132,7 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<DeviceRegistrationStateForUMA> MaybeRegisterDevice(
+  absl::optional<TrustedVaultDeviceRegistrationStateForUMA> MaybeRegisterDevice(
       bool has_persistent_auth_error_for_uma);
 
   // Called when device registration for |gaia_id| is completed (either

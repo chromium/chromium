@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -123,19 +124,14 @@ void TrustedVaultRequest::OnAccessTokenFetched(
 
 void TrustedVaultRequest::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
-  const int net_error = url_loader_->NetError();
   int http_response_code = 0;
 
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
 
-  DCHECK_LE(net_error, 0);
-  DCHECK_GE(http_response_code, 0);
-
-  base::UmaHistogramSparse(
-      "Sync.TrustedVaultURLFetchResponse",
-      http_response_code == 0 ? net_error : http_response_code);
+  RecordTrustedVaultURLFetchResponse(/*http_response_code=*/http_response_code,
+                                     /*net_error=*/url_loader_->NetError());
 
   std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == net::HTTP_BAD_REQUEST) {
