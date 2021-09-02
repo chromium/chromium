@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -28,6 +29,28 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class BrowserContext;
+
+// Contains parameters to create NavigationEarlyHintsManager.
+struct CONTENT_EXPORT NavigationEarlyHintsManagerParams {
+  NavigationEarlyHintsManagerParams(
+      const url::Origin& origin,
+      net::IsolationInfo isolation_info,
+      mojo::Remote<network::mojom::URLLoaderFactory> loader_factory);
+  ~NavigationEarlyHintsManagerParams();
+
+  NavigationEarlyHintsManagerParams(NavigationEarlyHintsManagerParams&&);
+  NavigationEarlyHintsManagerParams& operator=(
+      NavigationEarlyHintsManagerParams&&);
+
+  NavigationEarlyHintsManagerParams(const NavigationEarlyHintsManagerParams&) =
+      delete;
+  NavigationEarlyHintsManagerParams& operator=(
+      const NavigationEarlyHintsManagerParams&) = delete;
+
+  url::Origin origin;
+  net::IsolationInfo isolation_info;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+};
 
 // Handles 103 Early Hints responses for navigation. Responsible for preloads
 // requested by Early Hints responses. Created when the first 103 response is
@@ -55,11 +78,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   };
   using PreloadedResources = base::flat_map<GURL, PreloadedResource>;
 
-  NavigationEarlyHintsManager(
-      BrowserContext& browser_context,
-      mojo::Remote<network::mojom::URLLoaderFactory> loader_factory,
-      url::Origin origin,
-      int frame_tree_node_id);
+  NavigationEarlyHintsManager(BrowserContext& browser_context,
+                              int frame_tree_node_id,
+                              NavigationEarlyHintsManagerParams params);
 
   ~NavigationEarlyHintsManager();
 
@@ -110,10 +131,11 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
   BrowserContext& browser_context_;
+  const int frame_tree_node_id_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
   const url::Origin origin_;
-  const int frame_tree_node_id_;
+  const net::IsolationInfo isolation_info_;
 
   struct InflightPreload {
     InflightPreload(std::unique_ptr<blink::ThrottlingURLLoader> loader,

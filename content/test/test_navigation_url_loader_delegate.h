@@ -69,8 +69,8 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  absl::optional<url::Origin> CreateURLLoaderFactoryForEarlyHintsPreload(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+  absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
 
  private:

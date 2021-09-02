@@ -3339,9 +3339,8 @@ void NavigationRequest::OnRequestFailed(
       status.should_collapse_initiator /* collapse_frame */);
 }
 
-absl::optional<url::Origin>
-NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+absl::optional<NavigationEarlyHintsManagerParams>
+NavigationRequest::CreateNavigationEarlyHintsManagerParams(
     const network::mojom::EarlyHints& early_hints) {
   // Early Hints preloads should happen only before the final response is
   // received, and limited only in the main frame for now.
@@ -3377,12 +3376,17 @@ NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
           process, tentative_origin, *this, early_hints,
           std::move(cookie_observer));
 
+  net::IsolationInfo isolation_info = url_loader_factory_params->isolation_info;
+
   // TODO(crbug.com/1225556): Support DevTools instrumentation and extension's
   // WebRequest API in a way similar to
   // RenderFrameHostImpl::WillCreateURLLoaderFactory.
-  process->CreateURLLoaderFactory(std::move(factory_receiver),
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+  process->CreateURLLoaderFactory(loader_factory.BindNewPipeAndPassReceiver(),
                                   std::move(url_loader_factory_params));
-  return tentative_origin;
+
+  return NavigationEarlyHintsManagerParams(
+      tentative_origin, std::move(isolation_info), std::move(loader_factory));
 }
 
 void NavigationRequest::OnRequestFailedInternal(

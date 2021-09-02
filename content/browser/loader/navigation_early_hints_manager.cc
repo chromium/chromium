@@ -169,6 +169,23 @@ network::mojom::CredentialsMode CalculateCredentialsMode(
 
 }  // namespace
 
+NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
+    const url::Origin& origin,
+    net::IsolationInfo isolation_info,
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory)
+    : origin(origin),
+      isolation_info(std::move(isolation_info)),
+      loader_factory(std::move(loader_factory)) {}
+
+NavigationEarlyHintsManagerParams::~NavigationEarlyHintsManagerParams() =
+    default;
+
+NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
+    NavigationEarlyHintsManagerParams&&) = default;
+
+NavigationEarlyHintsManagerParams& NavigationEarlyHintsManagerParams::operator=(
+    NavigationEarlyHintsManagerParams&&) = default;
+
 NavigationEarlyHintsManager::PreloadedResource::PreloadedResource() = default;
 
 NavigationEarlyHintsManager::PreloadedResource::~PreloadedResource() = default;
@@ -274,13 +291,13 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
-    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory,
-    url::Origin origin,
-    int frame_tree_node_id)
+    int frame_tree_node_id,
+    NavigationEarlyHintsManagerParams params)
     : browser_context_(browser_context),
-      loader_factory_(std::move(loader_factory)),
-      origin_(origin),
-      frame_tree_node_id_(frame_tree_node_id) {
+      frame_tree_node_id_(frame_tree_node_id),
+      loader_factory_(std::move(params.loader_factory)),
+      origin_(params.origin),
+      isolation_info_(std::move(params.isolation_info)) {
   shared_loader_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           loader_factory_.get());

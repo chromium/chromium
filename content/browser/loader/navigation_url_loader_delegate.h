@@ -31,6 +31,7 @@ struct URLLoaderCompletionStatus;
 namespace content {
 
 class NavigationEarlyHintsManager;
+struct NavigationEarlyHintsManagerParams;
 struct GlobalRequestID;
 struct SubresourceLoaderParams;
 
@@ -102,11 +103,10 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Creates a URLLoaderFactory for Early Hints preloads. On success returns the
-  // calculated origin to be used for network::ResourceRequest.
-  virtual absl::optional<url::Origin>
-  CreateURLLoaderFactoryForEarlyHintsPreload(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+  // Creates parameters to construct NavigationEarlyHintsManager. Returns
+  // absl::nullopt when this delegate cannot create parameters.
+  virtual absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) = 0;
 
  protected:
