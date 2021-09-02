@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -137,8 +137,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
             page.shadowRoot.querySelector('#previewArea'));
 
         return nativeLayer.whenCalled('getInitialSettings').then(function() {
-          const overlayEl = previewArea.$$('.preview-area-overlay-layer');
-          const messageEl = previewArea.$$('.preview-area-message');
+          const overlayEl = previewArea.shadowRoot.querySelector(
+              '.preview-area-overlay-layer');
+          const messageEl =
+              previewArea.shadowRoot.querySelector('.preview-area-message');
           assertEquals(State.FATAL_ERROR, page.state);
 
           // Make sure the overlay is visible.
@@ -179,8 +181,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
             page.shadowRoot.querySelector('#previewArea'));
-        const overlay = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
+        const overlay = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
             page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
@@ -297,8 +301,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
             page.shadowRoot.querySelector('#previewArea'));
-        const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
+        const overlayEl = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
             page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;
@@ -410,8 +416,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
         // Get references to relevant elements.
         const previewAreaEl = /** @type {!PrintPreviewPreviewAreaElement} */ (
             page.shadowRoot.querySelector('#previewArea'));
-        const overlayEl = previewAreaEl.$$('.preview-area-overlay-layer');
-        const messageEl = previewAreaEl.$$('.preview-area-message');
+        const overlayEl = previewAreaEl.shadowRoot.querySelector(
+            '.preview-area-overlay-layer');
+        const messageEl =
+            previewAreaEl.shadowRoot.querySelector('.preview-area-message');
         const sidebar = /** @type {!PrintPreviewSidebarElement} */ (
             page.shadowRoot.querySelector('print-preview-sidebar'));
         let printButton = null;

@@ -33,8 +33,8 @@ export const CrSearchFieldBehavior = {
   searchDelayTimer_: -1,
 
   /**
-   * @return {!HTMLInputElement} The input field element the behavior should
-   *     use.
+   * @return {!HTMLInputElement|!CrInputElement} The input field element the
+   *     behavior should use.
    */
   getSearchInput() {},
 
@@ -152,8 +152,8 @@ export class CrSearchFieldBehaviorInterface {
   }
 
   /**
-   * @return {!HTMLInputElement} The input field element the behavior should
-   *     use.
+   * @return {!HTMLInputElement|!CrInputElement} The input field element the
+   *     behavior should use.
    */
   getSearchInput() {}
 

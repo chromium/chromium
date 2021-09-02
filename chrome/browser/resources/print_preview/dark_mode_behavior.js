@@ -33,3 +33,10 @@ export const DarkModeBehavior = {
 };
 
 DarkModeBehavior.inDarkMode = () => prefersDark.matches;
+
+export class DarkModeBehaviorInterface {
+  constructor() {
+    /** @type {boolean} */
+    this.inDarkMode;
+  }
+}

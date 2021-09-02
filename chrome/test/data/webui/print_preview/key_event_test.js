@@ -63,8 +63,6 @@ suite(key_event_test.suiteName, function() {
     page = /** @type {!PrintPreviewAppElement} */ (
         document.createElement('print-preview-app'));
     document.body.appendChild(page);
-    const previewArea = /** @type {!PrintPreviewPreviewAreaElement} */ (
-        page.shadowRoot.querySelector('#previewArea'));
 
     // Wait for initialization to complete.
     return Promise

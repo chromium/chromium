@@ -62,10 +62,12 @@ suite(preview_area_test.suiteName, function() {
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
     assertEquals(PreviewAreaState.LOADING, previewArea.previewState);
-    assertFalse(previewArea.$$('.preview-area-overlay-layer')
-                    .classList.contains('invisible'));
+    assertFalse(
+        previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+            .classList.contains('invisible'));
     const message =
-        previewArea.$$('.preview-area-message').querySelector('span');
+        previewArea.shadowRoot.querySelector('.preview-area-message')
+            .querySelector('span');
     assertEquals('Loading preview', message.textContent.trim());
 
     previewArea.startPreview();
@@ -73,8 +75,9 @@ suite(preview_area_test.suiteName, function() {
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
       assertEquals(3, pluginProxy.getCallCount('loadPreviewPage'));
-      assertTrue(previewArea.$$('.preview-area-overlay-layer')
-                     .classList.contains('invisible'));
+      assertTrue(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
 
       // If destination capabilities fetch fails, the invalid printer error
       // will be set by the destination settings.
@@ -84,8 +87,9 @@ suite(preview_area_test.suiteName, function() {
       previewArea.state = State.ERROR;
       previewArea.error = Error.INVALID_PRINTER;
       assertEquals(PreviewAreaState.ERROR, previewArea.previewState);
-      assertFalse(previewArea.$$('.preview-area-overlay-layer')
-                      .classList.contains('invisible'));
+      assertFalse(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
       assertEquals(
           'The selected printer is not available or not installed ' +
               'correctly.  Check your printer or try selecting another ' +
@@ -103,9 +107,11 @@ suite(preview_area_test.suiteName, function() {
 
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
-      assertTrue(previewArea.$$('.preview-area-overlay-layer')
-                     .classList.contains('invisible'));
-      const plugin = previewArea.$$('.preview-area-plugin');
+      assertTrue(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
+      const plugin =
+          previewArea.shadowRoot.querySelector('.preview-area-plugin');
       assertEquals(null, plugin.getAttribute('tabindex'));
 
       // This can be triggered at any time by a resizing of the viewport or

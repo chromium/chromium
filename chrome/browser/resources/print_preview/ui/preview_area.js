@@ -9,12 +9,12 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeBehavior} from '../dark_mode_behavior.js';
+import {DarkModeBehavior, DarkModeBehaviorInterface} from '../dark_mode_behavior.js';
 import {Coordinate2d} from '../data/coordinate2d.js';
 import {Destination} from '../data/destination.js';
 import {getPrinterTypeForDestination} from '../data/destination_match.js';
@@ -31,7 +31,7 @@ import {areRangesEqual} from '../print_preview_utils.js';
 
 import {MARGIN_KEY_MAP} from './margin_control_container.js';
 import {PluginProxy, PluginProxyImpl} from './plugin_proxy.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * @typedef {{
@@ -50,112 +50,125 @@ export const PreviewAreaState = {
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'print-preview-preview-area',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DarkModeBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewPreviewAreaElementBase = mixinBehaviors(
+    [WebUIListenerBehavior, SettingsBehavior, I18nBehavior, DarkModeBehavior],
+    PolymerElement);
 
-  behaviors: [
-    WebUIListenerBehavior,
-    SettingsBehavior,
-    I18nBehavior,
-    DarkModeBehavior,
-  ],
+/** @polymer */
+export class PrintPreviewPreviewAreaElement extends
+    PrintPreviewPreviewAreaElementBase {
+  static get is() {
+    return 'print-preview-preview-area';
+  }
 
-  properties: {
-    /** @type {Destination} */
-    destination: Object,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    documentModifiable: Boolean,
+  static get properties() {
+    return {
+      /** @type {Destination} */
+      destination: Object,
 
-    /** @type {!Error} */
-    error: {
-      type: Number,
-      notify: true,
-    },
+      documentModifiable: Boolean,
 
-    /** @type {Margins} */
-    margins: Object,
+      /** @type {!Error} */
+      error: {
+        type: Number,
+        notify: true,
+      },
 
-    /** @type {?MeasurementSystem} */
-    measurementSystem: Object,
+      /** @type {Margins} */
+      margins: Object,
 
-    /** @type {!Size} */
-    pageSize: Object,
+      /** @type {?MeasurementSystem} */
+      measurementSystem: Object,
 
-    /** @type {!PreviewAreaState} */
-    previewState: {
-      type: String,
-      notify: true,
-      value: PreviewAreaState.LOADING,
-    },
+      /** @type {!Size} */
+      pageSize: Object,
 
-    /** @type {!State} */
-    state: Number,
+      /** @type {!PreviewAreaState} */
+      previewState: {
+        type: String,
+        notify: true,
+        value: PreviewAreaState.LOADING,
+      },
 
-    /** @private {boolean} Whether the plugin completely loaded the preview */
-    pluginLoadComplete_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @type {!State} */
+      state: Number,
 
-    /** @private {boolean} Whether the document is ready */
-    documentReady_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} Whether the plugin completely loaded the preview */
+      pluginLoadComplete_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    previewLoaded_: {
-      type: Boolean,
-      notify: true,
-      computed: 'computePreviewLoaded_(documentReady_, pluginLoadComplete_)',
-    },
-  },
+      /** @private {boolean} Whether the document is ready */
+      documentReady_: {
+        type: Boolean,
+        value: false,
+      },
 
-  listeners: {
-    'pointerover': 'onPointerOver_',
-    'pointerout': 'onPointerOut_',
-  },
+      /** @private {boolean} */
+      previewLoaded_: {
+        type: Boolean,
+        notify: true,
+        computed: 'computePreviewLoaded_(documentReady_, pluginLoadComplete_)',
+      },
+    };
+  }
 
-  observers: [
-    'onDarkModeChanged_(inDarkMode)',
-    'pluginOrDocumentStatusChanged_(pluginLoadComplete_, documentReady_)',
-    'onStateOrErrorChange_(state, error)',
-  ],
+  static get observers() {
+    return [
+      'onDarkModeChanged_(inDarkMode)',
+      'pluginOrDocumentStatusChanged_(pluginLoadComplete_, documentReady_)',
+      'onStateOrErrorChange_(state, error)',
+    ];
+  }
 
-  /** @private {?NativeLayer} */
-  nativeLayer_: null,
+  constructor() {
+    super();
 
-  /** @private {?Object} */
-  lastTicket_: null,
+    /** @private {?NativeLayer} */
+    this.nativeLayer_ = null;
 
-  /** @private {number} */
-  inFlightRequestId_: -1,
+    /** @private {?Object} */
+    this.lastTicket_ = null;
 
-  /** @private {?PluginProxy} */
-  pluginProxy_: null,
+    /** @private {number} */
+    this.inFlightRequestId_ = -1;
 
-  /** @private {?function(!KeyboardEvent)} */
-  keyEventCallback_: null,
+    /** @private {!PluginProxy} */
+    this.pluginProxy_ = PluginProxyImpl.getInstance();
+
+    /** @private {?function(!KeyboardEvent)} */
+    this.keyEventCallback_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.nativeLayer_ = NativeLayerImpl.getInstance();
     this.addWebUIListener(
         'page-preview-ready', this.onPagePreviewReady_.bind(this));
 
-    if (!this.pluginProxy_.checkPluginCompatibility(assert(
-            this.$$('.preview-area-compatibility-object-out-of-process')))) {
+    if (!this.pluginProxy_.checkPluginCompatibility(
+            assert(this.shadowRoot.querySelector(
+                '.preview-area-compatibility-object-out-of-process')))) {
       this.error = Error.NO_PLUGIN;
       this.previewState = PreviewAreaState.ERROR;
     }
-  },
-
-  /** @override */
-  created() {
-    this.pluginProxy_ = PluginProxyImpl.getInstance();
-  },
+  }
 
   /**
    * @return {boolean} Whether the preview is loaded.
@@ -163,12 +176,12 @@ Polymer({
    */
   computePreviewLoaded_() {
     return this.documentReady_ && this.pluginLoadComplete_;
-  },
+  }
 
   /** @return {boolean} Whether the preview is loaded. */
   previewLoaded() {
     return this.previewLoaded_;
-  },
+  }
 
   /**
    * Called when the pointer moves onto the component. Shows the margin
@@ -187,7 +200,7 @@ Polymer({
       fromElement = fromElement.parentElement;
     }
     marginControlContainer.setInvisible(false);
-  },
+  }
 
   /**
    * Called when the pointer moves off of the component. Hides the margin
@@ -206,7 +219,7 @@ Polymer({
       toElement = toElement.parentElement;
     }
     marginControlContainer.setInvisible(true);
-  },
+  }
 
   /** @private */
   pluginOrDocumentStatusChanged_() {
@@ -219,7 +232,7 @@ Polymer({
         this.previewState === PreviewAreaState.OPEN_IN_PREVIEW_LOADING ?
         PreviewAreaState.OPEN_IN_PREVIEW_LOADED :
         PreviewAreaState.DISPLAY_PREVIEW;
-  },
+  }
 
   /**
    * @return {string} 'invisible' if overlay is invisible, '' otherwise.
@@ -227,7 +240,7 @@ Polymer({
    */
   getInvisible_() {
     return this.isInDisplayPreviewState_() ? 'invisible' : '';
-  },
+  }
 
   /**
    * @return {string} 'true' if overlay is aria-hidden, 'false' otherwise.
@@ -235,7 +248,7 @@ Polymer({
    */
   getAriaHidden_() {
     return this.isInDisplayPreviewState_().toString();
-  },
+  }
 
   /**
    * @return {boolean} Whether the preview area is in DISPLAY_PREVIEW state.
@@ -243,7 +256,7 @@ Polymer({
    */
   isInDisplayPreviewState_() {
     return this.previewState === PreviewAreaState.DISPLAY_PREVIEW;
-  },
+  }
 
   /**
    * @return {boolean} Whether the preview is currently loading.
@@ -251,7 +264,7 @@ Polymer({
    */
   isPreviewLoading_() {
     return this.previewState === PreviewAreaState.LOADING;
-  },
+  }
 
   /**
    * @return {string} 'jumping-dots' to enable animation, '' otherwise.
@@ -259,7 +272,7 @@ Polymer({
    */
   getJumpingDots_() {
     return this.isPreviewLoading_() ? 'jumping-dots' : '';
-  },
+  }
 
   /**
    * @return {boolean} Whether the "learn more" link to the cloud print help
@@ -268,7 +281,7 @@ Polymer({
    */
   shouldShowLearnMoreLink_() {
     return this.error === Error.UNSUPPORTED_PRINTER;
-  },
+  }
 
   /**
    * @return {string} The current preview area message to display.
@@ -292,7 +305,7 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
   /**
    * @param {boolean} forceUpdate Whether to force the preview area to update
@@ -327,7 +340,7 @@ Polymer({
         });
     MetricsContext.getPreview().record(
         Metrics.PrintPreviewInitializationEvents.FUNCTION_INITIATED);
-  },
+  }
 
   // <if expr="is_macosx">
   /** Set the preview state to display the "opening in preview" message. */
@@ -336,7 +349,7 @@ Polymer({
     this.previewState = this.previewState === PreviewAreaState.LOADING ?
         PreviewAreaState.OPEN_IN_PREVIEW_LOADING :
         PreviewAreaState.OPEN_IN_PREVIEW_LOADED;
-  },
+  }
   // </if>
 
   /**
@@ -348,7 +361,7 @@ Polymer({
     if (!this.pluginProxy_.pluginReady()) {
       const plugin = this.pluginProxy_.createPlugin(previewUid, index);
       this.pluginProxy_.setKeyEventCallback(this.keyEventCallback_);
-      this.$$('.preview-area-plugin-wrapper')
+      this.shadowRoot.querySelector('.preview-area-plugin-wrapper')
           .appendChild(/** @type {Node} */ (plugin));
       this.pluginProxy_.setLoadCompleteCallback(
           this.onPluginLoadComplete_.bind(this));
@@ -364,7 +377,7 @@ Polymer({
         previewUid, index, !this.getSettingValue('color'),
         /** @type {!Array<number>} */ (this.getSettingValue('pages')),
         this.documentModifiable);
-  },
+  }
 
   /**
    * Called when the plugin loads the preview completely.
@@ -378,7 +391,7 @@ Polymer({
       this.error = Error.PREVIEW_FAILED;
       this.previewState = PreviewAreaState.ERROR;
     }
-  },
+  }
 
   /**
    * Called when the preview plugin's visual state has changed. This is a
@@ -396,7 +409,8 @@ Polymer({
     // Ensure the PDF viewer isn't tabbable if the window is small enough that
     // the zoom toolbar isn't displayed.
     const tabindex = viewportWidth < 300 || viewportHeight < 200 ? '-1' : '0';
-    this.$$('.preview-area-plugin').setAttribute('tabindex', tabindex);
+    this.shadowRoot.querySelector('.preview-area-plugin')
+        .setAttribute('tabindex', tabindex);
     this.$.marginControlContainer.updateTranslationTransform(
         new Coordinate2d(pageX, pageY));
     this.$.marginControlContainer.updateScaleTransform(
@@ -406,12 +420,13 @@ Polymer({
     // Align the margin control container with the preview content area.
     // The offset may be caused by the scrollbar on the left in the preview
     // area in right-to-left direction.
-    const previewDocument = this.$$('.preview-area-plugin').contentDocument;
+    const previewDocument =
+        this.shadowRoot.querySelector('.preview-area-plugin').contentDocument;
     if (previewDocument && previewDocument.documentElement) {
       this.$.marginControlContainer.style.left =
           previewDocument.documentElement.offsetLeft + 'px';
     }
-  },
+  }
 
   /**
    * Called when a page's preview has been generated.
@@ -440,7 +455,7 @@ Polymer({
     if (index !== -1) {
       this.pluginProxy_.loadPreviewPage(previewUid, pageIndex, index);
     }
-  },
+  }
 
   /** @private */
   onDarkModeChanged_() {
@@ -451,7 +466,7 @@ Polymer({
     if (this.previewState === PreviewAreaState.DISPLAY_PREVIEW) {
       this.startPreview(true);
     }
-  },
+  }
 
   /**
    * Processes a keyboard event that could possibly be used to change state of
@@ -494,7 +509,7 @@ Polymer({
     // button. Note: buttons have a bigger scrollHeight than clientHeight.
     this.pluginProxy_.sendKeyEvent(e);
     e.preventDefault();
-  },
+  }
 
   /**
    * Sends a message to the plugin to hide the toolbars after a delay.
@@ -505,7 +520,7 @@ Polymer({
     }
 
     this.pluginProxy_.hideToolbar();
-  },
+  }
 
   /**
    * Set a callback that gets called when a key event is received that
@@ -515,7 +530,7 @@ Polymer({
    */
   setPluginKeyEventCallback(callback) {
     this.keyEventCallback_ = callback;
-  },
+  }
 
   /**
    * Called when dragging margins starts or stops.
@@ -530,7 +545,7 @@ Polymer({
     // we don't want this to happen as it can cause the margin to stop
     // being draggable.
     this.pluginProxy_.setPointerEvents(!e.detail);
-  },
+  }
 
   /**
    * @param {!CustomEvent<{x: number, y: number}>} e Contains information about
@@ -553,7 +568,7 @@ Polymer({
     }
 
     this.pluginProxy_.scrollPosition(position.x, position.y);
-  },
+  }
 
   /**
    * @return {boolean} Whether margin settings are valid for the print ticket.
@@ -575,7 +590,7 @@ Polymer({
         customMargins.marginLeft !== undefined &&
         customMargins.marginBottom !== undefined &&
         customMargins.marginRight !== undefined;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -677,13 +692,13 @@ Polymer({
     }
 
     return false;
-  },
+  }
 
   /** @return {number} Native color model of the destination. */
   getColorForTicket_() {
     return this.destination.getNativeColorModel(
         /** @type {boolean} */ (this.getSettingValue('color')));
-  },
+  }
 
   /** @return {number} Scale factor for print ticket. */
   getScaleFactorForTicket_() {
@@ -691,13 +706,13 @@ Polymer({
             ScalingType.CUSTOM ?
         parseInt(this.getSettingValue('scaling'), 10) :
         100;
-  },
+  }
 
   /** @return {string} Appropriate key for the scaling type setting. */
   getScalingSettingKey_() {
     return this.getSetting('scalingTypePdf').available ? 'scalingTypePdf' :
                                                          'scalingType';
-  },
+  }
 
   /**
    * @param {Object} lastTicket Last print ticket.
@@ -725,7 +740,7 @@ Polymer({
         lastTicket.scalingType === ScalingType.DEFAULT;
 
     return !defaultToCustom && !customToDefault;
-  },
+  }
 
   /**
    * @param {string} dpiField The field in dpi to retrieve.
@@ -741,7 +756,7 @@ Polymer({
         (this.getSettingValue('dpi'));
     const value = (dpi && dpiField in dpi) ? dpi[dpiField] : 0;
     return value;
-  },
+  }
 
   /**
    * Requests a preview from the native layer.
@@ -789,9 +804,11 @@ Polymer({
     }
     this.lastTicket_ = ticket;
 
-    this.fire('preview-start', this.inFlightRequestId_);
+    this.dispatchEvent(new CustomEvent(
+        'preview-start',
+        {bubbles: true, composed: true, detail: this.inFlightRequestId_}));
     return this.nativeLayer_.getPreview(JSON.stringify(ticket));
-  },
+  }
 
   /** @private */
   onStateOrErrorChange_() {
@@ -799,7 +816,7 @@ Polymer({
         this.getErrorMessage_() !== '') {
       this.previewState = PreviewAreaState.ERROR;
     }
-  },
+  }
 
   /** @return {string} The error message to display in the preview area. */
   getErrorMessage_() {
@@ -825,5 +842,8 @@ Polymer({
       default:
         return '';
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewPreviewAreaElement.is, PrintPreviewPreviewAreaElement);

@@ -8,48 +8,74 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './print_preview_shared_css.js';
 
-import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
+import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @type {!RegExp} */
 const SANITIZE_REGEX = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
-Polymer({
-  is: 'print-preview-search-box',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrSearchFieldBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewSearchBoxElementBase = mixinBehaviors(
+    [CrSearchFieldBehavior, WebUIListenerBehaviorInterface], PolymerElement);
 
-  behaviors: [CrSearchFieldBehavior],
+/** @polymer */
+export class PrintPreviewSearchBoxElement extends
+    PrintPreviewSearchBoxElementBase {
+  static get is() {
+    return 'print-preview-search-box';
+  }
 
-  properties: {
-    autofocus: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @type {?RegExp} */
-    searchQuery: {
-      type: Object,
-      notify: true,
-    },
-  },
+  static get properties() {
+    return {
+      autofocus: Boolean,
 
-  listeners: {
-    'search-changed': 'onSearchChanged_',
-  },
+      /** @type {?RegExp} */
+      searchQuery: {
+        type: Object,
+        notify: true,
+      },
+    };
+  }
 
-  /**
-   * The last search query.
-   * @private {string}
-   */
-  lastQuery_: '',
+  constructor() {
+    super();
+
+    /**
+     * The last search query.
+     * @private {string}
+     */
+    this.lastQuery_ = '';
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'search-changed',
+        e => this.onSearchChanged_(/** @type {!CustomEvent<string>} */ (e)));
+  }
 
   /** @return {!CrInputElement} */
   getSearchInput() {
     return /** @type {!CrInputElement} */ (this.$.searchInput);
-  },
+  }
 
   focus() {
     this.$.searchInput.focus();
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e Event containing the new search.
@@ -65,11 +91,14 @@ Polymer({
     this.lastQuery_ = safeQuery;
     this.searchQuery =
         safeQuery.length > 0 ? new RegExp(`(${safeQuery})`, 'ig') : null;
-  },
+  }
 
   /** @private */
   onClearClick_() {
     this.setValue('');
     this.$.searchInput.focus();
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewSearchBoxElement.is, PrintPreviewSearchBoxElement);

@@ -8,68 +8,94 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {State} from '../data/state.js';
 
-import {InputBehavior} from './input_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-pin-settings',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {InputBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewPinSettingsElementBase = mixinBehaviors(
+    [SettingsBehavior, InputBehavior, I18nBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class PrintPreviewPinSettingsElement extends
+    PrintPreviewPinSettingsElementBase {
+  static get is() {
+    return 'print-preview-pin-settings';
+  }
 
-  behaviors: [SettingsBehavior, InputBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {!State} */
-    state: Number,
+  static get properties() {
+    return {
+      /** @type {!State} */
+      state: Number,
 
-    disabled: Boolean,
+      disabled: Boolean,
 
-    /** @private {boolean} */
-    checkboxDisabled_: {
-      type: Boolean,
-      computed: 'computeCheckboxDisabled_(inputValid_, disabled, ' +
-          'settings.pin.setByPolicy)',
-    },
+      /** @private {boolean} */
+      checkboxDisabled_: {
+        type: Boolean,
+        computed: 'computeCheckboxDisabled_(inputValid_, disabled, ' +
+            'settings.pin.setByPolicy)',
+      },
 
-    /** @private {boolean} */
-    pinEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      pinEnabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {string} */
-    inputString_: {
-      type: String,
-      value: '',
-      observer: 'onInputChanged_',
-    },
+      /** @private {string} */
+      inputString_: {
+        type: String,
+        value: '',
+        observer: 'onInputChanged_',
+      },
 
-    /** @private */
-    inputValid_: {
-      type: Boolean,
-      value: true,
-      reflectToAttribute: true,
-    },
-  },
+      /** @private */
+      inputValid_: {
+        type: Boolean,
+        value: true,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  observers: [
-    'onSettingsChanged_(settings.pin.value, settings.pinValue.value)',
-    'changePinValueSetting_(state)',
-  ],
+  static get observers() {
+    return [
+      'onSettingsChanged_(settings.pin.value, settings.pinValue.value)',
+      'changePinValueSetting_(state)',
+    ];
+  }
 
-  listeners: {
-    'input-change': 'onInputChange_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'input-change',
+        e => this.onInputChange_(/** @type {!CustomEvent<string>} */ (e)));
+  }
 
   /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
   getInput() {
     return /** @type {!CrInputElement} */ (this.$.pinValue);
-  },
+  }
 
   /**
    * @param {!CustomEvent<string>} e Contains the new input value.
@@ -77,14 +103,14 @@ Polymer({
    */
   onInputChange_(e) {
     this.inputString_ = e.detail;
-  },
+  }
 
   /** @private */
   onCollapseChanged_() {
     if (this.pinEnabled_) {
       /** @type {!CrInputElement} */ (this.$.pinValue).focusInput();
     }
-  },
+  }
 
   /**
    * @param {boolean} inputValid Whether pin value is valid.
@@ -95,7 +121,7 @@ Polymer({
    */
   computeCheckboxDisabled_(inputValid, disabled, managed) {
     return managed || (inputValid && disabled);
-  },
+  }
 
   /**
    * @return {boolean} Whether to disable the pin value input.
@@ -103,7 +129,7 @@ Polymer({
    */
   inputDisabled_() {
     return !this.pinEnabled_ || (this.inputValid_ && this.disabled);
-  },
+  }
 
   /**
    * Updates the checkbox state when the setting has been initialized.
@@ -116,7 +142,7 @@ Polymer({
     const pinValue = this.getSetting('pinValue');
     this.inputString_ = /** @type {string} */ (pinValue.value);
     this.resetString();
-  },
+  }
 
   /** @private */
   onPinChange_() {
@@ -129,14 +155,14 @@ Polymer({
     } else {
       this.changePinValueSetting_();
     }
-  },
+  }
 
   /**
    * @private
    */
   onInputChanged_() {
     this.changePinValueSetting_();
-  },
+  }
 
   /**
    * Updates pin value setting based on the current value of the pin value
@@ -164,7 +190,7 @@ Polymer({
         this.inputString_ !== this.getSettingValue('pinValue')) {
       this.setSetting('pinValue', this.inputString_);
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether input value represented by inputString_ is
@@ -176,7 +202,7 @@ Polymer({
     this.$.pinValue.value = this.inputString_;
     this.$.pinValue.validate();
     return !this.$.pinValue.invalid;
-  },
+  }
 
   /**
    * @return {string}
@@ -184,5 +210,8 @@ Polymer({
    */
   getPinErrorMessage_() {
     return this.inputValid_ ? '' : this.i18n('pinErrorMessage');
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewPinSettingsElement.is, PrintPreviewPinSettingsElement);
