@@ -46,6 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 public class SignInPreference
         extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
                                       SyncStateChangedListener, AccountsChangeObserver {
+    // TODO(https://crbug.com/1245603): Remove state
     @IntDef({State.SIGNIN_DISABLED_BY_POLICY, State.SIGNIN_DISALLOWED, State.GENERIC_PROMO,
             State.SIGNED_IN})
     @Retention(RetentionPolicy.SOURCE)
@@ -59,6 +60,7 @@ public class SignInPreference
     private final PrefService mPrefService;
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
+    private boolean mIsShowingSigninPromo;
     private final ProfileDataCache mProfileDataCache;
     private final AccountManagerFacade mAccountManagerFacade;
     private @State int mState;
@@ -76,6 +78,7 @@ public class SignInPreference
 
         // State will be updated in registerForUpdates.
         mState = State.SIGNED_IN;
+        mIsShowingSigninPromo = false;
     }
 
     @Override
@@ -117,8 +120,18 @@ public class SignInPreference
         return mState;
     }
 
+    /**
+     * Sets whether Personalized Signin Promo is being shown in {@link
+     * org.chromium.chrome.browser.settings.MainSettings} page
+     */
+    public void setIsShowingPersonalizedSigninPromo(boolean isShowingSigninPromo) {
+        mIsShowingSigninPromo = isShowingSigninPromo;
+        update();
+    }
+
     /** Updates the title, summary, and image based on the current sign-in state. */
     private void update() {
+        setVisible(!mIsShowingSigninPromo);
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
                         .isSigninDisabledByPolicy()) {
@@ -127,6 +140,9 @@ public class SignInPreference
                 setupSigninDisabledByPolicy();
             } else {
                 setupSigninDisallowed();
+                assert !mIsShowingSigninPromo
+                    : "Signin Promo should not be shown when signin is not allowed";
+                setVisible(false);
             }
             return;
         }
@@ -159,15 +175,7 @@ public class SignInPreference
     }
 
     private void setupSigninDisallowed() {
-        // TODO(https://crbug.com/1133743): Revise the preference behavior.
         mState = State.SIGNIN_DISALLOWED;
-        setTitle(R.string.signin_pref_disallowed_title);
-        setSummary(null);
-        setFragment(null);
-        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        setWidgetLayoutResource(0);
-        setViewEnabled(false);
-        setOnPreferenceClickListener(null);
         mWasGenericSigninPromoDisplayed = false;
     }
 

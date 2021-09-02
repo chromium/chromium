@@ -347,7 +347,7 @@ public class MainSettings extends PreferenceFragmentCompat
                 mSyncPromoPreference.getState() == State.PERSONALIZED_SIGNIN_PROMO;
         findPreference(PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION)
                 .setVisible(!isShowingPersonalizedSigninPromo);
-        mSignInPreference.setVisible(!isShowingPersonalizedSigninPromo);
+        mSignInPreference.setIsShowingPersonalizedSigninPromo(isShowingPersonalizedSigninPromo);
     }
 
     // TemplateUrlService.LoadListener implementation.
