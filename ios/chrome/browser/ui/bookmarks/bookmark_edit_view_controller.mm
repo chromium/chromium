@@ -374,6 +374,10 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:ItemTypeFolder
                               sectionIdentifier:SectionIdentifierInfo];
+  if (!indexPath) {
+    return;
+  }
+
   NSString* folderName = @"";
   if (self.bookmark) {
     folderName = bookmark_utils_ios::TitleForBookmarkNode(self.folder);
