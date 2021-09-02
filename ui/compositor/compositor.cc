@@ -595,6 +595,7 @@ void Compositor::AddAnimationObserver(CompositorAnimationObserver* observer) {
     for (auto& obs : observer_list_)
       obs.OnFirstAnimationStarted(this);
   }
+  observer->Start();
   animation_observer_list_.AddObserver(observer);
   host_->SetNeedsAnimate();
 }
@@ -603,6 +604,10 @@ void Compositor::RemoveAnimationObserver(
     CompositorAnimationObserver* observer) {
   if (!animation_observer_list_.HasObserver(observer))
     return;
+
+  for (auto& aobs : animation_observer_list_)
+    aobs.Check();
+
   animation_observer_list_.RemoveObserver(observer);
   if (animation_observer_list_.empty()) {
     for (auto& obs : observer_list_)
