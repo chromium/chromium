@@ -239,9 +239,8 @@ fuchsia::accessibility::semantics::Node AXNodeDataToSemanticNode(
   if (device_scale_factor > 0) {
     transform.PostScale(1 / device_scale_factor, 1 / device_scale_factor);
   }
-  if (!transform.IsIdentity()) {
-    fuchsia_node.set_transform(ConvertTransform(&transform));
-  }
+
+  fuchsia_node.set_transform(ConvertTransform(&transform));
 
   return fuchsia_node;
 }
