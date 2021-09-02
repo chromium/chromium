@@ -278,6 +278,7 @@ class Xcode11LogParser(object):
     Returns:
       test_result.ResultCollection: Test results.
     """
+    output_path = _sanitize_str(output_path)
     output = _sanitize_str_list(output)
     LOGGER.info('Reading %s' % output_path)
     overall_collected_result = ResultCollection()
@@ -557,6 +558,7 @@ class XcodeLogParser(object):
     Returns:
       test_result.ResultCollection representing all test results.
     """
+    output_folder = _sanitize_str(output_folder)
     output = _sanitize_str_list(output)
     overall_collected_result = ResultCollection()
     plist_path = os.path.join(output_folder, 'Info.plist')
