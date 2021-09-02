@@ -4,25 +4,16 @@
 
 #include "chrome/browser/first_run/first_run_internal.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/installer/util/google_update_settings.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
-#include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 
 namespace first_run {
@@ -32,7 +23,7 @@ base::OnceClosure& GetBeforeShowFirstRunDialogHookForTesting() {
   static base::NoDestructor<base::OnceClosure> closure;
   return *closure;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace internal {
 namespace {
@@ -58,11 +49,6 @@ bool ShouldShowFirstRunDialog() {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
 #else
-  base::FilePath local_state_path;
-  base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_path);
-  if (base::PathExists(local_state_path))
-    return false;
-
   if (!IsOrganicFirstRun())
     return false;
 
@@ -84,7 +70,7 @@ bool ShouldShowFirstRunDialog() {
   return true;
 #endif
 }
-#endif  // !OS_CHROMEOS
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

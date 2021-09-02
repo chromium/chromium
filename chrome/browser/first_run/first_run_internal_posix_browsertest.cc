@@ -6,8 +6,13 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/first_run/first_run_dialog.h"
 #include "chrome/browser/first_run/first_run_internal.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -23,9 +28,30 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // For Chrome, the presence of a Local State file should not influence whether
+  // the first run dialog is shown. See crbug.com/1221483.
+  bool SetUpUserDataDirectory() override {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    const base::FilePath local_state_file =
+        user_data_dir.Append(chrome::kLocalStateFilename);
+    const std::string empty_prefs = "{}";
+    base::WriteFile(local_state_file, empty_prefs.data());
+    return true;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // While Chromium uses ForcedShowDialogState::kForceShown, Chrome uses the
+    // default, ForcedShowDialogState::kNotForced, to exercise Chrome-specific
+    // behavior. See ShouldShowFirstRunDialog().
     internal::ForceFirstRunDialogShownForTesting(true);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
     // The modal dialog will spawn and spin a nested RunLoop when
     // content::BrowserTestBase::SetUp() invokes content::ContentMain().
     // BrowserTestBase sets GetContentMainParams()->ui_task before this, but the
