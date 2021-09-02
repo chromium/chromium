@@ -8,8 +8,6 @@
 <br>
 <a href="/sandbox.html"><button>Untrusted Sandbox Demo</button></a>
 <a href="/component_playground.html"><button>Component Playground</button></a>
-<!-- Below mojo script required to run browser tests -->
-<script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
 <div>
   <div>
     <label for="number1">Multiply number 1: </label>
@@ -25,7 +23,22 @@
   </div>
 </div>
 
-
 <p id="result">Result: 0</p>
 
-<script src="main.js"></script>
+<div>
+  <button id="do-something" type="button">Do Something (via Mojo)</button>
+  <div>
+    <label for="mojo-event">Mojo event: </label>
+    <input type="text" readonly id="mojo-event">
+  </div>
+  <div>
+    <label for="background">Preferences background: </label>
+    <input type="text" readonly id="background">
+  </div>
+  <div>
+    <label for="foreground">Preferences foreground: </label>
+    <input type="text" readonly id="foreground">
+  </div>
+</div>
+
+<script src="main.js" type="module"></script>
