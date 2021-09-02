@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -129,6 +130,7 @@ public class WebApkIntegrationTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1246127")
     @Feature({"Webapps"})
     public void testWebApkServiceIntegration() throws Exception {
         Context context = InstrumentationRegistry.getTargetContext();
