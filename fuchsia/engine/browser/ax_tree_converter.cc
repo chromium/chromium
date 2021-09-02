@@ -80,6 +80,10 @@ fuchsia::accessibility::semantics::Role AxRoleToFuchsiaSemanticRole(
       return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
     case ax::mojom::Role::kStaticText:
       return fuchsia::accessibility::semantics::Role::STATIC_TEXT;
+    case ax::mojom::Role::kSearchBox:
+      return fuchsia::accessibility::semantics::Role::SEARCH_BOX;
+    case ax::mojom::Role::kTextFieldWithComboBox:
+      return fuchsia::accessibility::semantics::Role::TEXT_FIELD;
     default:
       return fuchsia::accessibility::semantics::Role::UNKNOWN;
   }

@@ -443,6 +443,20 @@ TEST_F(AXTreeConverterTest, ConvertRoles) {
                                      ui::AXTreeID::CreateNewAXTreeID(), false,
                                      0.0f, &mapper)
                 .role());
+
+  node.role = ax::mojom::Role::kSearchBox;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::SEARCH_BOX,
+            AXNodeDataToSemanticNode(node, root_node(),
+                                     ui::AXTreeID::CreateNewAXTreeID(), false,
+                                     0.0f, &mapper)
+                .role());
+
+  node.role = ax::mojom::Role::kTextFieldWithComboBox;
+  EXPECT_EQ(fuchsia::accessibility::semantics::Role::TEXT_FIELD,
+            AXNodeDataToSemanticNode(node, root_node(),
+                                     ui::AXTreeID::CreateNewAXTreeID(), false,
+                                     0.0f, &mapper)
+                .role());
 }
 
 TEST_F(AXTreeConverterTest, TransformUsesDeviceScalingWhenItIsNotZero) {
