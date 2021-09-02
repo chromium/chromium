@@ -10,7 +10,6 @@
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/worker_host/worker_script_fetch_initiator.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

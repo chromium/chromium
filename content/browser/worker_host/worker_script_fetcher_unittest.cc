@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/worker_host/worker_script_fetch_initiator.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 
 #include <vector>
 
@@ -41,7 +41,7 @@ blink::mojom::WorkerMainScriptLoadParamsPtr CreateParams(
 
 }  // namespace
 
-TEST(WorkerScriptFetchInitiatorTest, DetermineFinalResponseUrl) {
+TEST(WorkerScriptFetcherTest, DetermineFinalResponseUrl) {
   struct TestCase {
     GURL initial_request_url;
     std::vector<GURL> url_list_via_service_worker;
@@ -81,9 +81,8 @@ TEST(WorkerScriptFetchInitiatorTest, DetermineFinalResponseUrl) {
         CreateParams(test_case.url_list_via_service_worker,
                      test_case.redirect_infos);
 
-    GURL final_response_url =
-        WorkerScriptFetchInitiator::DetermineFinalResponseUrl(
-            test_case.initial_request_url, main_script_load_params.get());
+    GURL final_response_url = WorkerScriptFetcher::DetermineFinalResponseUrl(
+        test_case.initial_request_url, main_script_load_params.get());
 
     EXPECT_EQ(final_response_url, test_case.expected_final_response_url);
   }

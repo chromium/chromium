@@ -25,7 +25,7 @@
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/shared_worker_host.h"
-#include "content/browser/worker_host/worker_script_fetch_initiator.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -364,7 +364,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // TODO(mmenke): The site-for-cookies and NetworkIsolationKey arguments leak
   // data across NetworkIsolationKeys and allow same-site cookies to be sent in
   // cross-site contexts. Fix this.
-  WorkerScriptFetchInitiator::Start(
+  WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
       &creator, net::SiteForCookies::FromOrigin(worker_origin),
       host->instance().storage_key().origin(),
@@ -382,7 +382,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));
 
-  // Ensures that WorkerScriptFetchInitiator::Start() doesn't synchronously
+  // Ensures that WorkerScriptFetcher::CreateAndStart() doesn't synchronously
   // destroy the SharedWorkerHost.
   DCHECK(weak_host);
 
