@@ -10,11 +10,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
-namespace network {
-class SimpleURLLoader;
-class SharedURLLoaderFactory;
-}  // namespace network
-
 namespace ash {
 namespace quick_pair {
 
@@ -24,8 +19,7 @@ using FetchCompleteCallback =
 // Makes HTTP GET requests and returns the response.
 class HttpFetcher {
  public:
-  explicit HttpFetcher(
-      const net::NetworkTrafficAnnotationTag& traffic_annotation);
+  HttpFetcher();
   HttpFetcher(const HttpFetcher&) = delete;
   HttpFetcher& operator=(const HttpFetcher&) = delete;
   virtual ~HttpFetcher();
@@ -33,17 +27,7 @@ class HttpFetcher {
   // Performs a GET request to the desired URL and returns the response, if
   // available, as a string to the provided |callback|.
   virtual void ExecuteGetRequest(const GURL& url,
-                                 FetchCompleteCallback callback);
-
- private:
-  void OnComplete(std::unique_ptr<network::SimpleURLLoader> simple_loader,
-                  FetchCompleteCallback success_callback,
-                  std::unique_ptr<std::string> response_body);
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
-
-  net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  base::WeakPtrFactory<HttpFetcher> weak_ptr_factory_{this};
+                                 FetchCompleteCallback callback) = 0;
 };
 
 }  // namespace quick_pair

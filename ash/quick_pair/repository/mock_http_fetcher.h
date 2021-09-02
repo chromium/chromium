@@ -18,8 +18,6 @@ namespace quick_pair {
 class MockHttpFetcher : public HttpFetcher {
  public:
   MockHttpFetcher();
-  explicit MockHttpFetcher(
-      const net::NetworkTrafficAnnotationTag& traffic_annotation);
   MockHttpFetcher(const MockHttpFetcher&) = delete;
   MockHttpFetcher& operator=(const MockHttpFetcher&) = delete;
   ~MockHttpFetcher() override;

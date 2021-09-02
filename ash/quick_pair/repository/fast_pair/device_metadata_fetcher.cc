@@ -6,7 +6,7 @@
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
-#include "ash/quick_pair/repository/http_fetcher.h"
+#include "ash/quick_pair/repository/unauthenticated_http_fetcher.h"
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "google_apis/google_api_keys.h"
@@ -45,7 +45,8 @@ namespace ash {
 namespace quick_pair {
 
 DeviceMetadataFetcher::DeviceMetadataFetcher()
-    : http_fetcher_(std::make_unique<HttpFetcher>(kTrafficAnnotation)) {}
+    : http_fetcher_(
+          std::make_unique<UnauthenticatedHttpFetcher>(kTrafficAnnotation)) {}
 
 DeviceMetadataFetcher::DeviceMetadataFetcher(
     std::unique_ptr<HttpFetcher> http_fetcher)

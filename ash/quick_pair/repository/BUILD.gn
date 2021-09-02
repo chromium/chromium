@@ -21,6 +21,8 @@ source_set("repository") {
     "fast_pair_repository_impl.h",
     "http_fetcher.cc",
     "http_fetcher.h",
+    "unauthenticated_http_fetcher.cc",
+    "unauthenticated_http_fetcher.h",
   ]
 
   deps = [
