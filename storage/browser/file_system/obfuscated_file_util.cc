@@ -772,6 +772,10 @@ base::File::Error ObfuscatedFileUtil::DeleteDirectory(
   FileId file_id;
   if (!db->GetFileWithPath(url.path(), &file_id))
     return base::File::FILE_ERROR_NOT_FOUND;
+  if (!file_id) {
+    // Cannot remove the root directory.
+    return base::File::FILE_ERROR_FAILED;
+  }
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {
     NOTREACHED();
