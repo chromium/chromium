@@ -119,9 +119,10 @@ void WaylandSurface::UpdateBufferDamageRegion(
   // scale at commit time and avoid these kind of conditions.
   if (crop_rect_.IsEmpty()) {
     bounds = gfx::ScaleToCeiledSize(bounds, 1.f / buffer_scale_);
+    wl_surface_set_buffer_scale(surface_.get(), buffer_scale_);
   } else {
     // Unset buffer scale if wp_viewport is set.
-    SetSurfaceBufferScale(1);
+    wl_surface_set_buffer_scale(surface_.get(), 1);
   }
   // Apply crop (wp_viewport.set_source).
   gfx::Rect viewport_src = gfx::Rect(bounds);
@@ -212,9 +213,7 @@ void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {
 }
 
 void WaylandSurface::SetSurfaceBufferScale(int32_t scale) {
-  wl_surface_set_buffer_scale(surface_.get(), scale);
   buffer_scale_ = scale;
-  connection_->ScheduleFlush();
 }
 
 void WaylandSurface::SetOpaqueRegion(const std::vector<gfx::Rect>& region_px) {

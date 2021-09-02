@@ -393,6 +393,134 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   }
 }
 
+// Tests that new buffer scale is set iff frames for new size are sent.
+TEST_P(WaylandWindowTest, SetsCorrectBufferScale) {
+  auto interface_ptr = connection_->buffer_manager_host()->BindInterface();
+  buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
+                                  false);
+
+  // Create window.
+  MockPlatformWindowDelegate delegate;
+  const auto kNormalBounds = gfx::Rect{0, 0, 100, 100};
+  auto window = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                              gfx::kNullAcceleratedWidget,
+                                              kNormalBounds, &delegate);
+  ASSERT_TRUE(window);
+  auto states = InitializeWlArrayWithActivatedState();
+
+  Sync();
+
+  auto* surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  // Configure window to be ready to attach wl_buffers.
+  EXPECT_TRUE(surface->xdg_surface());
+  EXPECT_TRUE(surface->xdg_surface()->xdg_toplevel());
+  SendConfigureEvent(surface->xdg_surface(), kNormalBounds.width(),
+                     kNormalBounds.height(), 1, states.get());
+
+  Sync();
+
+  // Send the window to |output1|.
+  wl::TestOutput* output = server_.output();
+  wl_surface_send_enter(surface->resource(), output->resource());
+
+  Sync();
+
+  // Default unchanged buffer scale.
+  EXPECT_EQ(window->root_surface()->buffer_scale(), 1);
+  EXPECT_EQ(window->window_scale(), 1);
+
+  // Setup wl_buffers.
+  constexpr uint32_t buffer_id1 = 1;
+  gfx::Size buffer_size(kNormalBounds.size());
+  auto length = buffer_size.width() * buffer_size.height() * 4;
+  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), length, buffer_size,
+                                            buffer_id1);
+
+  Sync();
+
+  // Commit a frame.
+  gfx::Rect bounds_rect = gfx::Rect({0, 0}, window->GetBounds().size());
+  std::vector<ui::ozone::mojom::WaylandOverlayConfigPtr> overlays;
+  ui::ozone::mojom::WaylandOverlayConfigPtr frame1{
+      ui::ozone::mojom::WaylandOverlayConfig::New()};
+  frame1->z_order = 0;
+  frame1->transform = gfx::OVERLAY_TRANSFORM_NONE;
+  frame1->buffer_id = buffer_id1;
+  frame1->bounds_rect = bounds_rect;
+  overlays.push_back(std::move(frame1));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+
+  Sync();
+
+  surface->SendFrameCallback();
+
+  Sync();
+
+  // Buffer scale should be 1.
+  EXPECT_EQ(window->root_surface()->buffer_scale(), 1);
+  EXPECT_EQ(window->window_scale(), 1);
+
+  // Change scale factor.
+  output->SetScale(2);
+  output->Flush();
+
+  Sync();
+
+  // Surface buffer scale mustn't be called until a buffer for a new size is
+  // attached.
+  EXPECT_EQ(window->root_surface()->buffer_scale(), 1);
+  EXPECT_EQ(window->window_scale(), 2);
+
+  // Commit a new frame, but maintain the old buffer size for old surface size.
+  overlays.clear();
+  ui::ozone::mojom::WaylandOverlayConfigPtr frame2{
+      ui::ozone::mojom::WaylandOverlayConfig::New()};
+  frame2->z_order = 0;
+  frame2->transform = gfx::OVERLAY_TRANSFORM_NONE;
+  frame2->buffer_id = buffer_id1;
+  frame2->bounds_rect = bounds_rect;
+  overlays.push_back(std::move(frame2));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+
+  Sync();
+
+  // Surface buffer scale mustn't be called until a buffer for a new size is
+  // attached.
+  EXPECT_EQ(window->root_surface()->buffer_scale(), 1);
+  EXPECT_EQ(window->window_scale(), 2);
+
+  // Setup wl_buffers.
+  constexpr uint32_t buffer_id2 = 2;
+  buffer_size = window->GetBounds().size();
+  EXPECT_EQ(buffer_size,
+            gfx::Size(kNormalBounds.width() * 2, kNormalBounds.height() * 2));
+  length = buffer_size.width() * buffer_size.height() * 4;
+  buffer_manager_gpu_->CreateShmBasedBuffer(MakeFD(), length, buffer_size,
+                                            buffer_id2);
+
+  // Commit a frame with new buffer size for new surface size.
+  overlays.clear();
+  ui::ozone::mojom::WaylandOverlayConfigPtr frame3{
+      ui::ozone::mojom::WaylandOverlayConfig::New()};
+  frame3->z_order = 0;
+  frame3->transform = gfx::OVERLAY_TRANSFORM_NONE;
+  frame3->buffer_id = buffer_id2;
+  frame3->bounds_rect = gfx::Rect({0, 0}, buffer_size);
+  overlays.push_back(std::move(frame3));
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), std::move(overlays));
+
+  Sync();
+
+  surface->SendFrameCallback();
+
+  Sync();
+
+  // Buffer scale must be changed now.
+  EXPECT_EQ(window->root_surface()->buffer_scale(), 2);
+  EXPECT_EQ(window->window_scale(), 2);
+}
+
 TEST_P(WaylandWindowTest, ShuffledUpdateVisualSizeOrder) {
   const auto kNormalBounds1 = gfx::Rect{0, 0, 500, 300};
   const auto kNormalBounds2 = gfx::Rect{0, 0, 800, 600};

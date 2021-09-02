@@ -771,16 +771,15 @@ bool WaylandWindow::CommitOverlays(
     // Either use current scale of the window or pending scale whenever visual
     // size updates. window_scale() won't be used if we are in process of
     // changing bounds.
-    int32_t buffer_scale = window_scale();
     auto result =
         std::find_if(pending_buffer_scale_.begin(), pending_buffer_scale_.end(),
                      [&visual_size = (*main_overlay)->bounds_rect.size()](
                          auto& item) { return visual_size == item.first; });
     if (result != pending_buffer_scale_.end()) {
-      buffer_scale = result->second;
+      // Set new buffer scale iff Chromium started to draw with new px size.
+      root_surface()->SetSurfaceBufferScale(result->second);
       pending_buffer_scale_.erase(pending_buffer_scale_.begin(), ++result);
     }
-    root_surface()->SetSurfaceBufferScale(buffer_scale);
   }
 
   {
