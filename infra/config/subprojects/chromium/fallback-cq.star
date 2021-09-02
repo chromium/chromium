@@ -34,7 +34,7 @@ luci.cq_group(
 # the empty CQ group until it's exposed in lucicfg or there is a better way to
 # create a CQ group for all of the canary branches
 def _generate_cq_group_fallback(ctx):
-    cq_cfg = ctx.output["commit-queue.cfg"]
+    cq_cfg = ctx.output["luci/commit-queue.cfg"]
 
     for c in cq_cfg.config_groups:
         if c.name == "fallback-empty-cq":
