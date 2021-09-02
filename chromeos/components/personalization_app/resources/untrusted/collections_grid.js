@@ -125,7 +125,7 @@ function getLocalTile(localImages, localImageData) {
   };
 }
 
-class CollectionsGrid extends PolymerElement {
+export class CollectionsGrid extends PolymerElement {
   static get is() {
     return 'collections-grid';
   }
@@ -413,6 +413,20 @@ class CollectionsGrid extends PolymerElement {
    */
   getLoadingPlaceholderAnimationDelay(index) {
     return getLoadingPlaceholderAnimationDelay(index);
+  }
+
+  /**
+   * Make the text and background gradient visible again after the image has
+   * finished loading. This is called for both on-load and on-error, as either
+   * event should make the text visible again.
+   * @param {!Event} event
+   * @private
+   */
+  onImgLoad_(event) {
+    const parent = event.currentTarget.closest('.photo-inner-container');
+    for (const elem of parent.querySelectorAll('[hidden]')) {
+      elem.removeAttribute('hidden');
+    }
   }
 }
 

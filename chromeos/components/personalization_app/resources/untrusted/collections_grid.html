@@ -47,14 +47,15 @@
             tabindex$="[[tabIndex]]" role="button">
           <div class$="[[getClassForImagesContainer_(item)]]">
             <template is="dom-repeat" items="[[item.preview]]" as="preview">
-              <img src="[[preview.url]]" aria-hidden="true">
+              <img src="[[preview.url]]" aria-hidden="true"
+                  on-load="onImgLoad_" on-error="onImgLoad_">
             </template>
           </div>
-          <div class="photo-text-container">
+          <div class="photo-text-container" hidden>
             <p title$="[[item.name]]">[[item.name]]</p>
             <p title$="[[item.count]]">[[item.count]]</p>
           </div>
-          <div class="photo-gradient-mask"></div>
+          <div class="photo-gradient-mask" hidden></div>
         </div>
       </template>
     </div>
