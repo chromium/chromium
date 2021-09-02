@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "remoting/host/ipc_server.h"
 
 namespace mojo {
 class IsolatedConnection;
@@ -27,22 +28,14 @@ namespace remoting {
 
 // Template-less base class to keep implementations in the .cc file. For usage,
 // see MojoIpcServer.
-class MojoIpcServerBase {
+class MojoIpcServerBase : public IpcServer {
  public:
   // Internal use only.
   struct PendingConnection;
 
-  // Starts sending out mojo invitations and accepting IPCs. No-op if the server
-  // is already started.
-  void StartServer();
-
-  // Stops sending out mojo invitations and accepting IPCs. No-op if the server
-  // is already stopped.
-  void StopServer();
-
-  // Close the receiver identified by |id| and disconnects the remote. No-op if
-  // |id| doesn't exist or the receiver is already closed.
-  void Close(mojo::ReceiverId id);
+  void StartServer() override;
+  void StopServer() override;
+  void Close(mojo::ReceiverId id) override;
 
   // Sets a callback to be run when an invitation is sent. Used by unit tests
   // only.
@@ -54,7 +47,7 @@ class MojoIpcServerBase {
  protected:
   explicit MojoIpcServerBase(
       const mojo::NamedPlatformChannel::ServerName& server_name);
-  virtual ~MojoIpcServerBase();
+  ~MojoIpcServerBase() override;
 
   void SendInvitation();
 
@@ -137,16 +130,11 @@ class MojoIpcServer final : public MojoIpcServerBase {
   MojoIpcServer(const MojoIpcServer&) = delete;
   MojoIpcServer& operator=(const MojoIpcServer&) = delete;
 
-  // Sets a callback to be invoked any time a receiver is disconnected. You may
-  // find out which receiver is being disconnected by calling
-  // |current_receiver()|.
-  void set_disconnect_handler(base::RepeatingClosure handler) {
+  void set_disconnect_handler(base::RepeatingClosure handler) override {
     receiver_set_.set_disconnect_handler(handler);
   }
 
-  // Call this method to learn which receiver has received the incoming IPC or
-  // which receiver is being disconnected.
-  mojo::ReceiverId current_receiver() const {
+  mojo::ReceiverId current_receiver() const override {
     return receiver_set_.current_receiver();
   }
 

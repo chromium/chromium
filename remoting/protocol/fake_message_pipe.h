@@ -53,6 +53,8 @@ class FakeMessagePipe final : public MessagePipe {
   // Returns all messages sent using Send().
   const base::queue<std::string>& sent_messages() { return sent_messages_; }
 
+  bool pipe_opened() const { return pipe_opened_; }
+
  private:
   void SendImpl(google::protobuf::MessageLite* message, base::OnceClosure done);
   void ReceiveImpl(std::unique_ptr<CompoundBuffer> message);

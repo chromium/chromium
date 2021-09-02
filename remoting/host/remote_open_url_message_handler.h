@@ -9,15 +9,16 @@
 
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
-#include "remoting/host/mojo_ipc_server.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
-#include "remoting/host/remote_open_url_constants.h"
 #include "remoting/proto/remote_open_url.pb.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
 
 class GURL;
 
 namespace remoting {
+
+class IpcServer;
 
 class RemoteOpenUrlMessageHandler final
     : public mojom::RemoteUrlOpener,
@@ -37,6 +38,13 @@ class RemoteOpenUrlMessageHandler final
       delete;
 
  private:
+  friend class RemoteOpenUrlMessageHandlerTest;
+
+  // Used by unittests.
+  RemoteOpenUrlMessageHandler(const std::string& name,
+                              std::unique_ptr<protocol::MessagePipe> pipe,
+                              std::unique_ptr<IpcServer> ipc_server);
+
   void OnIpcDisconnected();
 
   // RemoteUrlOpener implementation.
@@ -44,8 +52,7 @@ class RemoteOpenUrlMessageHandler final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  MojoIpcServer<mojom::RemoteUrlOpener> ipc_server_{
-      GetRemoteOpenUrlIpcChannelName(), this};
+  std::unique_ptr<IpcServer> ipc_server_;
 
   static_assert(
       std::is_same<
