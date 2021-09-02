@@ -1761,6 +1761,9 @@
       'wtf_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
+      'zlib_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
     },
 
     'fuchsia_experimental_gtests': {
@@ -1792,9 +1795,6 @@
         ],
       },
       'wm_unittests': {
-        'mixins': ['fuchsia_runner_logs'],
-      },
-      'zlib_unittests': {
         'mixins': ['fuchsia_runner_logs'],
       },
     },
