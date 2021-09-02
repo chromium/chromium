@@ -59,23 +59,25 @@ export class Dictation {
   initialize_() {
     this.speechRecognizer_.interimResults = true;
     this.speechRecognizer_.continuous = true;
-    this.speechRecognizer_.onresult = this.onResult_.bind(this);
-    this.speechRecognizer_.onstart = this.onSpeechRecognitionStart_.bind(this);
-    this.speechRecognizer_.onend = this.onSpeechRecognitionEnd_.bind(this);
-    this.speechRecognizer_.onerror = this.onSpeechRecognitionError_.bind(this);
+    this.speechRecognizer_.onresult = event => this.onResult_(event);
+    this.speechRecognizer_.onstart = () => this.onSpeechRecognitionStart_();
+    this.speechRecognizer_.onend = () => this.onSpeechRecognitionEnd_();
+    this.speechRecognizer_.onerror = error =>
+        this.onSpeechRecognitionError_(error);
 
-    chrome.settingsPrivate.getAllPrefs(this.updateFromPrefs_.bind(this));
+    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.updateFromPrefs_.bind(this));
+        prefs => this.updateFromPrefs_(prefs));
 
     // Listen for IME focus changes.
-    chrome.input.ime.onFocus.addListener(this.onImeFocus_.bind(this));
-    chrome.input.ime.onBlur.addListener(this.onImeBlur_.bind(this));
+    chrome.input.ime.onFocus.addListener(context => this.onImeFocus_(context));
+    chrome.input.ime.onBlur.addListener(
+        contextId => this.onImeBlur_(contextId));
 
     // Listen for Dictation toggles (activated / deactivated) from the Ash
     // Browser process.
     chrome.accessibilityPrivate.onToggleDictation.addListener(
-        this.onToggleDictation_.bind(this));
+        activated => this.onToggleDictation_(activated));
   }
 
   /**
@@ -88,7 +90,7 @@ export class Dictation {
       this.state_ = Dictation.DictationState.STARTING;
       this.startTone_.play();
       chrome.inputMethodPrivate.getCurrentInputMethod(
-          this.maybeSaveCurrentInputMethodAndStart_.bind(this));
+          method => this.maybeSaveCurrentInputMethodAndStart_(method));
     } else {
       this.onDictationStopped_();
     }
@@ -110,7 +112,7 @@ export class Dictation {
     // Add AccessibilityCommon as an input method and active it.
     chrome.languageSettingsPrivate.addInputMethod(Dictation.IME_ENGINE_ID);
     chrome.inputMethodPrivate.setCurrentInputMethod(
-        Dictation.IME_ENGINE_ID, this.maybeStartSpeechRecognition_.bind(this));
+        Dictation.IME_ENGINE_ID, () => this.maybeStartSpeechRecognition_());
   }
 
   /**
@@ -123,8 +125,7 @@ export class Dictation {
     if (this.state_ === Dictation.DictationState.STARTING) {
       this.speechRecognizer_.start();
       this.timeoutId_ = setTimeout(
-          this.stopDictation_.bind(this),
-          Dictation.SpeechTimeouts.NO_SPEECH_MS);
+          () => this.stopDictation_(), Dictation.SpeechTimeouts.NO_SPEECH_MS);
     } else {
       // We are no longer starting up - perhaps a stop came
       // through during the async callbacks. Ensure cleanup
@@ -222,7 +223,7 @@ export class Dictation {
     this.processSpeechRecognitionResult_(result[0].transcript, result.isFinal);
     clearTimeout(this.timeoutId_);
     this.timeoutId_ = setTimeout(
-        this.stopDictation_.bind(this),
+        () => this.stopDictation_(),
         result.isFinal ? Dictation.SpeechTimeouts.NO_SPEECH_MS :
                          Dictation.SpeechTimeouts.NO_NEW_SPEECH_MS);
   }
