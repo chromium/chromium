@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -37,7 +37,7 @@ using autofill::FooterCommand;
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationUIData;
 using base::ASCIIToUTF16;
-using password_manager::MockPasswordStore;
+using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
 using testing::_;
 using testing::ByMove;
@@ -53,22 +53,21 @@ class TestPasswordManagerClient
   TestPasswordManagerClient();
   ~TestPasswordManagerClient() override;
 
-  password_manager::PasswordStore* GetProfilePasswordStore() const override;
+  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+      const override;
 
  private:
-  scoped_refptr<MockPasswordStore> mock_password_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
 };
 
 TestPasswordManagerClient::TestPasswordManagerClient() {
-  mock_password_store_ = new MockPasswordStore();
+  mock_password_store_ = new MockPasswordStoreInterface();
 }
 
-TestPasswordManagerClient::~TestPasswordManagerClient() {
-  mock_password_store_->ShutdownOnUIThread();
-}
+TestPasswordManagerClient::~TestPasswordManagerClient() = default;
 
-password_manager::PasswordStore*
-TestPasswordManagerClient::GetProfilePasswordStore() const {
+password_manager::PasswordStoreInterface*
+TestPasswordManagerClient::GetProfilePasswordStoreInterface() const {
   return mock_password_store_.get();
 }
 

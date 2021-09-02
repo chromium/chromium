@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/credential_provider/credential_provider_migrator.h"
 
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
@@ -13,7 +13,7 @@
 #error "This file requires ARC support."
 #endif
 
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 
 NSErrorDomain const kCredentialProviderMigratorErrorDomain =
     @"kCredentialProviderMigratorErrorDomain";
@@ -34,7 +34,8 @@ typedef enum : NSInteger {
 @property(nonatomic, strong) UserDefaultsCredentialStore* temporalStore;
 
 // Password manager store, where passwords will be migrated to.
-@property(nonatomic, assign) scoped_refptr<PasswordStore> passwordStore;
+@property(nonatomic, assign) scoped_refptr<PasswordStoreInterface>
+    passwordStore;
 
 @end
 
@@ -42,8 +43,8 @@ typedef enum : NSInteger {
 
 - (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
                                  key:(NSString*)key
-                       passwordStore:
-                           (scoped_refptr<PasswordStore>)passwordStore {
+                       passwordStore:(scoped_refptr<PasswordStoreInterface>)
+                                         passwordStore {
   self = [super init];
   if (self) {
     _key = key;

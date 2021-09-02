@@ -36,7 +36,7 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/browser/credential_cache.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -69,10 +69,10 @@ using device_reauth::BiometricsAvailability;
 using device_reauth::MockBiometricAuthenticator;
 using password_manager::CreateEntry;
 using password_manager::CredentialCache;
-using password_manager::MockPasswordStore;
+using password_manager::MockPasswordStoreInterface;
 using password_manager::OriginCredentialStore;
 using password_manager::PasswordForm;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
 using testing::_;
 using testing::ByMove;
@@ -123,7 +123,7 @@ MockPasswordGenerationController::MockPasswordGenerationController(
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  explicit MockPasswordManagerClient(PasswordStore* password_store)
+  explicit MockPasswordManagerClient(PasswordStoreInterface* password_store)
       : password_store_(password_store) {}
 
   MOCK_METHOD(void, UpdateFormManagers, (), (override));
@@ -138,12 +138,13 @@ class MockPasswordManagerClient
               (),
               (override));
 
-  password_manager::PasswordStore* GetProfilePasswordStore() const override {
+  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+      const override {
     return password_store_;
   }
 
  private:
-  PasswordStore* password_store_;
+  PasswordStoreInterface* password_store_;
 };
 
 class MockPasswordManagerDriver
@@ -237,12 +238,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL(kExampleSite));
   }
 
-  void TearDown() override {
-    if (mock_password_store_)
-      mock_password_store_->ShutdownOnUIThread();
-    ChromeRenderViewHostTestHarness::TearDown();
-  }
-
   void CreateSheetController(
       security_state::SecurityLevel security_level = security_state::SECURE) {
     PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
@@ -268,16 +263,15 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
   MockPasswordManagerDriver* driver() { return &mock_driver_; }
 
  protected:
-  virtual PasswordStore* CreateInternalPasswordStore() {
-    mock_password_store_ = base::MakeRefCounted<MockPasswordStore>();
-    mock_password_store_->Init(nullptr);
+  virtual PasswordStoreInterface* CreateInternalPasswordStore() {
+    mock_password_store_ = base::MakeRefCounted<MockPasswordStoreInterface>();
     return mock_password_store_.get();
   }
 
   StrictMock<MockManualFillingController> mock_manual_filling_controller_;
   base::MockCallback<AccessoryController::FillingSourceObserver>
       filling_source_observer_;
-  scoped_refptr<MockPasswordStore> mock_password_store_;
+  scoped_refptr<MockPasswordStoreInterface> mock_password_store_;
   scoped_refptr<MockBiometricAuthenticator> mock_authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
 
@@ -1062,7 +1056,7 @@ class PasswordAccessoryControllerWithTestStoreTest
   }
 
  protected:
-  PasswordStore* CreateInternalPasswordStore() override {
+  PasswordStoreInterface* CreateInternalPasswordStore() override {
     test_store_ = CreateAndUseTestPasswordStore(profile());
     return test_store_.get();
   }

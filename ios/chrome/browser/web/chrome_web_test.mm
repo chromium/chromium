@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/web/chrome_web_test.h"
 
 #include "base/bind.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -30,9 +30,9 @@ void ChromeWebTest::SetUp() {
   web::WebTestWithWebState::SetUp();
   IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
       chrome_browser_state_.get(),
-      base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              web::BrowserState, password_manager::MockPasswordStore>));
+      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                          web::BrowserState,
+                          password_manager::MockPasswordStoreInterface>));
 }
 
 void ChromeWebTest::TearDown() {
