@@ -45,7 +45,6 @@ TemplateURLData::TemplateURLData()
       usage_count(0),
       prepopulate_id(0),
       sync_guid(base::GenerateGUID()),
-      is_active(ActiveStatus::kTrue),
       keyword_(u"dummy"),
       url_("x") {}
 

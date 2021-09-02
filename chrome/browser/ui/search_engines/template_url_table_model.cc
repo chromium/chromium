@@ -116,6 +116,7 @@ void TemplateURLTableModel::Add(int index,
   data.SetShortName(short_name);
   data.SetKeyword(keyword);
   data.SetURL(url);
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   template_url_service_->Add(std::make_unique<TemplateURL>(data));
 }
 
