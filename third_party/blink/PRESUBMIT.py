@@ -231,35 +231,12 @@ def _CheckForForbiddenChromiumCode(input_api, output_api):
     return results
 
 
-def _CheckForDeprecatedFunctions(input_api, output_api):
-    """Checks that Blink does not use deprecated functions."""
-    # TODO(https://crbug.com/1058527) Remove this presubmit once we've finished
-    # the refactor and no callers of `WTF::HashMap::DeprecatedAtOrEmptyValue()` remain.
-    deprecated_re = input_api.re.compile(
-        r'[^/][^/].*\bDeprecatedAtOrEmptyValue\b')
-    errors = input_api.canned_checks._FindNewViolationsOfRule(
-        lambda _, x: not deprecated_re.search(x), input_api, None)
-    errors = ['  * %s' % violation for violation in errors]
-    if errors:
-        return [
-            output_api.PresubmitPromptOrNotify(
-                'WTF::HashMap::DeprecatedAtOrEmptyValue() is deprecated. Please use '
-                'at() moving forward. Note that at() will crash if the HashMap '
-                'does not contain the given key, so it is recommended to use '
-                'find() or Contains() if you are not sure. Please fix the '
-                'following occurrences before uploading:\n%s' %
-                '\n'.join(errors))
-        ]
-    return []
-
-
 def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(_CommonChecks(input_api, output_api))
     results.extend(_CheckStyle(input_api, output_api))
     results.extend(_CheckForPrintfDebugging(input_api, output_api))
     results.extend(_CheckForForbiddenChromiumCode(input_api, output_api))
-    results.extend(_CheckForDeprecatedFunctions(input_api, output_api))
     return results
 
 
