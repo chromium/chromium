@@ -59,11 +59,7 @@
 
         <include
             android:id="@+id/signin_fre_continue_button"
-            layout="@layout/account_picker_bottom_sheet_continue_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp" />
+            layout="@layout/account_picker_bottom_sheet_continue_button" />
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/signin_fre_dismiss_button"
@@ -78,12 +74,13 @@
         <org.chromium.ui.widget.TextViewWithLeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="24dp"
             android:gravity="center_horizontal"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:text="@string/signin_account_picker_bottom_sheet_subtitle"
-            app:leading="@dimen/text_size_medium_leading" />
+            app:leading="@dimen/text_size_small_leading" />
   </LinearLayout>
 </RelativeLayout>
