@@ -33,28 +33,41 @@ namespace cors {
 
 namespace {
 
-bool NeedsPreflight(const ResourceRequest& request) {
+enum class PreflightRequiredReason {
+  kExternalRequest,
+  kCorsWithForcedPreflightMode,
+  kDisallowedMethod,
+  kDisallowedHeader
+};
+
+// Returns absl::nullopt when a CORS preflight isn't needed. Otherwise
+// returns the reason why a preflight is needed.
+absl::optional<PreflightRequiredReason> NeedsPreflight(
+    const ResourceRequest& request) {
   if (!IsCorsEnabledRequestMode(request.mode))
-    return false;
+    return absl::nullopt;
 
   if (request.is_external_request)
-    return true;
+    return PreflightRequiredReason::kExternalRequest;
 
   if (request.mode == mojom::RequestMode::kCorsWithForcedPreflight) {
-    return true;
+    return PreflightRequiredReason::kCorsWithForcedPreflightMode;
   }
 
   if (request.cors_preflight_policy ==
       mojom::CorsPreflightPolicy::kPreventPreflight) {
-    return false;
+    return absl::nullopt;
   }
 
   if (!IsCorsSafelistedMethod(request.method))
-    return true;
+    return PreflightRequiredReason::kDisallowedMethod;
 
-  return !CorsUnsafeNotForbiddenRequestHeaderNames(
-              request.headers.GetHeaderVector(), request.is_revalidating)
-              .empty();
+  if (!CorsUnsafeNotForbiddenRequestHeaderNames(
+           request.headers.GetHeaderVector(), request.is_revalidating)
+           .empty())
+    return PreflightRequiredReason::kDisallowedHeader;
+
+  return absl::nullopt;
 }
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
