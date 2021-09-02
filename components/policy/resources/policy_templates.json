@@ -22481,8 +22481,8 @@
     },
     {
       'name': 'ContextAwareAccessSignalsAllowlist',
-      'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org'],
-      'future_on': ['chrome.*', 'chrome_os'],
+      'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org', 'seblalancette@chromium.org'],
+      'supported_on': ['chrome.*:95-', 'chrome_os:95-'],
       'type': 'list',
       'schema': {
         'type': 'array',
