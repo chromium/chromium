@@ -194,24 +194,26 @@ void SelectFileDialogImplPortal::SelectFileImpl(
   // and returned to listeners later.
   filters_ = filter_set.filters;
 
-  auto parent_handle_callback = base::BindOnce(
-      &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
-      base::Unretained(this),
-      // We don't move info, because it will be needed below to cancel the open
-      // on error.
-      info, std::move(title), std::move(default_path), std::move(filter_set),
-      std::move(default_extension));
-
   if (info->parent) {
-    if (!GtkUi::GetPlatform()->ExportWindowHandle(
-            *info->parent, std::move(parent_handle_callback))) {
-      LOG(ERROR) << "Failed to export window handle for portal select dialog";
-      CancelOpenOnMainThread(std::move(info));
+    if (GtkUi::GetPlatform()->ExportWindowHandle(
+            *info->parent,
+            base::BindOnce(
+                &SelectFileDialogImplPortal::SelectFileImplWithParentHandle,
+                // Note that we can't move any of the parameters, as the
+                // fallback case below requires them to all still be available.
+                base::Unretained(this), info, title, default_path, filter_set,
+                default_extension))) {
+      // Return early to skip the fallback below.
+      return;
+    } else {
+      LOG(WARNING) << "Failed to export window handle for portal select dialog";
     }
-  } else {
-    // No parent, so just use a blank parent handle.
-    std::move(parent_handle_callback).Run("");
   }
+
+  // No parent, so just use a blank parent handle.
+  SelectFileImplWithParentHandle(std::move(info), std::move(title),
+                                 std::move(default_path), std::move(filter_set),
+                                 std::move(default_extension), "");
 }
 
 bool SelectFileDialogImplPortal::HasMultipleFileTypeChoicesImpl() {
