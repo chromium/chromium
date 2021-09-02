@@ -57,7 +57,7 @@ AndroidNotificationHandler::AndroidNotificationHandler(Profile* profile)
     : profile_(profile) {}
 
 AndroidNotificationHandler::~AndroidNotificationHandler() {
-  for (unsigned int i = 0; i < queued_messages_.size(); i++) {
+  while (!queued_messages_.empty()) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
         queued_messages_.at(0).get(), messages::DismissReason::UNKNOWN);
   }
