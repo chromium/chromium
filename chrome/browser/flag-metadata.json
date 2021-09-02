@@ -2055,6 +2055,17 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-hardware-secure-decryption",
+    "owners": [
+      "xhwang", "media-dev"
+    ],
+    // This flag does not expire because the feature depends on the OS, GPU
+    // driver and hardware, and the flag allows users to disable HW secure
+    // decryption for debugging purpose and/or temporarily working around OS
+    // or driver issues.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-heavy-ad-intervention",
     "owners": [ "johnidel", "jkarlin" ],
     "expiry_milestone": 90

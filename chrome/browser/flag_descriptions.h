@@ -2167,6 +2167,9 @@ extern const char kEnableIncognitoShortcutOnDesktopDescription[];
 extern const char kEnableMediaFoundationVideoCaptureName[];
 extern const char kEnableMediaFoundationVideoCaptureDescription[];
 
+extern const char kHardwareSecureDecryptionName[];
+extern const char kHardwareSecureDecryptionDescription[];
+
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 

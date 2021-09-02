@@ -39,6 +39,7 @@
   "enable-future-v8-vm-features",
   "enable-gpu-rasterization",
   "enable-gpu-service-logging",
+  "enable-hardware-secure-decryption",
   "enable-input-event-logging",
   "enable-javascript-harmony",
   "enable-lite-video",
