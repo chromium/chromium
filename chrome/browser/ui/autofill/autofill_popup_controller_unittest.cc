@@ -101,8 +101,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
       : BrowserAutofillManager(driver,
                                client,
-                               client->GetPersonalDataManager(),
-                               client->GetAutocompleteHistoryManager()) {}
+                               client->GetPersonalDataManager()) {}
   MockBrowserAutofillManager(MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(MockBrowserAutofillManager&) = delete;
   ~MockBrowserAutofillManager() override = default;

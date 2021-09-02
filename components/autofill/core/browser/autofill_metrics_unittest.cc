@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/metrics/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -381,7 +380,6 @@ class AutofillMetricsTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_;
-  std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   AutofillExternalDelegate* external_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -407,9 +405,6 @@ void AutofillMetricsTest::SetUp() {
   personal_data_->SetPrefService(autofill_client_.GetPrefs());
   personal_data_->SetSyncServiceForTest(&sync_service_);
 
-  autocomplete_history_manager_ =
-      std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
-
   payments::TestPaymentsClient* payments_client =
       new payments::TestPaymentsClient(autofill_driver_->GetURLLoaderFactory(),
                                        autofill_client_.GetIdentityManager(),
@@ -430,8 +425,7 @@ void AutofillMetricsTest::SetUp() {
       std::make_unique<AutofillOfferManager>(personal_data_.get()));
 
   browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-      autofill_driver_.get(), &autofill_client_, personal_data_.get(),
-      autocomplete_history_manager_.get());
+      autofill_driver_.get(), &autofill_client_, personal_data_.get());
   auto external_delegate = std::make_unique<AutofillExternalDelegate>(
       browser_autofill_manager_.get(), autofill_driver_.get());
   external_delegate_ = external_delegate.get();

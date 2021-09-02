@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -42,14 +41,12 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       AutofillDriver* driver,
       AutofillClient* client,
       PersonalDataManager* personal_data,
-      AutocompleteHistoryManager* autocomplete_history_manager,
       std::unique_ptr<CreditCardAccessManager> cc_access_manager = nullptr)
       // Force to use the constructor designated for unit test.
       : BrowserAutofillManager(
             driver,
             client,
             personal_data,
-            autocomplete_history_manager,
             "en-US",
             AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
             std::move(cc_access_manager)) {}
@@ -116,7 +113,6 @@ class CreditCardAccessoryControllerTest
       : af_manager_(&mock_af_driver_,
                     &client_,
                     &data_manager_,
-                    &history_,
                     std::make_unique<TestAccessManager>(&mock_af_driver_,
                                                         &client_,
                                                         &data_manager_)) {}
@@ -162,7 +158,6 @@ class CreditCardAccessoryControllerTest
   TestAutofillClient client_;
   testing::NiceMock<MockAutofillDriver> mock_af_driver_;
   autofill::TestPersonalDataManager data_manager_;
-  MockAutocompleteHistoryManager history_;
   testing::NiceMock<MockManualFillingController> mock_mf_controller_;
   TestBrowserAutofillManager af_manager_;
   base::MockCallback<AccessoryController::FillingSourceObserver>

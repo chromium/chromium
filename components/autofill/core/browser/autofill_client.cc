@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
 
@@ -36,6 +37,12 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
+}
+
+std::unique_ptr<SingleFieldFormFillRouter>
+AutofillClient::GetSingleFieldFormFillRouter() {
+  return std::make_unique<SingleFieldFormFillRouter>(
+      GetAutocompleteHistoryManager());
 }
 
 AutofillOfferManager* AutofillClient::GetAutofillOfferManager() {

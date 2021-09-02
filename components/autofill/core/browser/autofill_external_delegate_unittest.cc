@@ -103,8 +103,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
       // Force to use the constructor designated for unit test.
       : BrowserAutofillManager(driver,
                                client,
-                               client->GetPersonalDataManager(),
-                               client->GetAutocompleteHistoryManager()) {}
+                               client->GetPersonalDataManager()) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -821,7 +820,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillFieldWithValue) {
   EXPECT_CALL(*autofill_driver_,
               RendererShouldFillFieldWithValue(field_id_, dummy_string));
   EXPECT_CALL(*autofill_client_.GetMockAutocompleteHistoryManager(),
-              OnAutocompleteEntrySelected(dummy_string))
+              OnSingleFieldSuggestionSelected(dummy_string))
       .Times(1);
   base::HistogramTester histogram_tester;
   external_delegate_->DidAcceptSuggestion(

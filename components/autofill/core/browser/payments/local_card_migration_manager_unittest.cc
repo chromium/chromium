@@ -27,7 +27,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
@@ -95,8 +94,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_,
-        &autocomplete_history_manager_);
+        autofill_driver_.get(), &autofill_client_, &personal_data_);
     browser_autofill_manager_->SetExpectedObservedSubmission(true);
   }
 
@@ -321,7 +319,6 @@ class LocalCardMigrationManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   TestPersonalDataManager personal_data_;
-  NiceMock<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Ends up getting owned (and destroyed) by TestAutofillClient:

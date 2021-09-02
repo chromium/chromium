@@ -71,6 +71,7 @@ class FormStructure;
 class LogManager;
 class MigratableCreditCard;
 class PersonalDataManager;
+class SingleFieldFormFillRouter;
 class StrikeDatabase;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
@@ -306,6 +307,10 @@ class AutofillClient : public RiskDataLoader {
 
   // Gets the AutocompleteHistoryManager instance associate with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
+
+  // Creates and returns a SingleFieldFormFillRouter using the
+  // AutocompleteHistoryManager instance associated with the client.
+  std::unique_ptr<SingleFieldFormFillRouter> GetSingleFieldFormFillRouter();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;

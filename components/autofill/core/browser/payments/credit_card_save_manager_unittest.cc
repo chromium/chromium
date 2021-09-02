@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_strike_database.h"
@@ -138,10 +137,6 @@ class CreditCardSaveManagerTest : public testing::Test {
                         /*image_fetcher=*/nullptr,
                         /*is_off_the_record=*/false);
     personal_data_.SetSyncServiceForTest(&sync_service_);
-    autocomplete_history_manager_.Init(
-        /*profile_database=*/database_,
-        /*pref_service=*/nullptr,
-        /*is_off_the_record=*/false);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
@@ -161,8 +156,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
     autofill_client_.GetStrikeDatabase();
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_,
-        &autocomplete_history_manager_);
+        autofill_driver_.get(), &autofill_client_, &personal_data_);
     browser_autofill_manager_->SetExpectedObservedSubmission(true);
   }
 
@@ -346,7 +340,6 @@ class CreditCardSaveManagerTest : public testing::Test {
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   scoped_refptr<AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_;
-  NiceMock<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   syncer::TestSyncService sync_service_;
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   TestCreditCardSaveManager* credit_card_save_manager_;

@@ -30,7 +30,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -174,8 +173,6 @@ class CreditCardAccessManagerTest : public testing::Test {
                                 /*image_fetcher=*/nullptr,
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
-    autocomplete_history_manager_ =
-        std::make_unique<NiceMock<MockAutocompleteHistoryManager>>();
 
     accessor_ = std::make_unique<TestAccessor>();
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
@@ -188,8 +185,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_, &personal_data_manager_,
-        autocomplete_history_manager_.get());
+        autofill_driver_.get(), &autofill_client_, &personal_data_manager_);
     credit_card_access_manager_ =
         browser_autofill_manager_->credit_card_access_manager();
 
@@ -429,7 +425,6 @@ class CreditCardAccessManagerTest : public testing::Test {
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   scoped_refptr<AutofillWebDataService> database_;
   TestPersonalDataManager personal_data_manager_;
-  std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<BrowserAutofillManager> browser_autofill_manager_;
   CreditCardAccessManager* credit_card_access_manager_;

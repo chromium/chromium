@@ -160,7 +160,7 @@ AutocompleteHistoryManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutocompleteHistoryManager::OnGetAutocompleteSuggestions(
+void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
@@ -214,14 +214,14 @@ void AutocompleteHistoryManager::OnWillSubmitForm(
   }
 }
 
-void AutocompleteHistoryManager::OnRemoveAutocompleteEntry(
-    const std::u16string& name,
+void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
+    const std::u16string& field_name,
     const std::u16string& value) {
   if (profile_database_)
-    profile_database_->RemoveFormValueForElementName(name, value);
+    profile_database_->RemoveFormValueForElementName(field_name, value);
 }
 
-void AutocompleteHistoryManager::OnAutocompleteEntrySelected(
+void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value) {
   // Try to find the AutofillEntry associated with the given suggestion.
   auto last_entries_iter = last_entries_.find(value);

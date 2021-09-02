@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_subject.h"
+#include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -27,29 +28,30 @@ namespace autofill {
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
 // through WebDataServiceBase.
-class AutocompleteHistoryManager : public KeyedService,
+class AutocompleteHistoryManager : public SingleFieldFormFiller,
+                                   public KeyedService,
                                    public WebDataServiceConsumer,
                                    public AutofillSubject {
  public:
-  // Interface to be implemented by classes that want to fetch autocomplete
-  // suggestions.
-  class SuggestionsHandler {
-   public:
-    virtual ~SuggestionsHandler() = default;
-
-    // Function that will be called-back once AutocompleteHistoryManager gets
-    // the corresponding response from the DB.
-    // |query_id| is the value given by the implementor when
-    // OnGetAutocompleteSuggestions was called (it is not the DB query ID).
-    // |suggestions| is the list of fetched autocomplete suggestions.
-    virtual void OnSuggestionsReturned(
-        int query_id,
-        bool autoselect_first_suggestion,
-        const std::vector<Suggestion>& suggestions) = 0;
-  };
-
   AutocompleteHistoryManager();
   ~AutocompleteHistoryManager() override;
+
+  // SingleFieldFormFiller overrides:
+  void OnGetSingleFieldSuggestions(
+      int query_id,
+      bool is_autocomplete_enabled,
+      bool autoselect_first_suggestion,
+      const std::u16string& name,
+      const std::u16string& prefix,
+      const std::string& form_control_type,
+      base::WeakPtr<SuggestionsHandler> handler) override;
+  void OnWillSubmitForm(const FormData& form,
+                        bool is_autocomplete_enabled) override;
+  void CancelPendingQueries(const SuggestionsHandler* handler) override;
+  void OnRemoveCurrentSingleFieldSuggestion(
+      const std::u16string& field_name,
+      const std::u16string& value) override;
+  void OnSingleFieldSuggestionSelected(const std::u16string& value) override;
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.
@@ -62,51 +64,10 @@ class AutocompleteHistoryManager : public KeyedService,
   // Returns a weak pointer to the current AutocompleteHistoryManager instance.
   base::WeakPtr<AutocompleteHistoryManager> GetWeakPtr();
 
-  // Initiates a DB query to get suggestions given a field's information.
-  // |query_id| is given by the client as context.
-  // |is_autocomplete_enabled| is to determine if the feature is enable for the
-  // requestor's context (e.g. Android WebViews have different contexts).
-  // |name| is the name of the field,
-  // |prefix| is the field's values
-  // |form_control_type| is the field's control type.
-  // |handler| is weak pointer to the requestor, which we will callback once we
-  // receive the response. There can only be one pending query per |handler|,
-  // hence this function will cancel the previous pending query if it hadn't
-  // already been resolved, at which point no method of the handler will be
-  // called.
-  virtual void OnGetAutocompleteSuggestions(
-      int query_id,
-      bool is_autocomplete_enabled,
-      bool autoselect_first_suggestion,
-      const std::u16string& name,
-      const std::u16string& prefix,
-      const std::string& form_control_type,
-      base::WeakPtr<SuggestionsHandler> handler);
-
-  // Will save the given input from the |form| as a new, or updated,
-  // autocomplete entry, which will be served in the future as a suggestion.
-  // This update is dependent on whether we are running in incognito and if
-  // autocomplete is enabled or not.
-  virtual void OnWillSubmitForm(const FormData& form,
-                                bool is_autocomplete_enabled);
-
   // WebDataServiceConsumer implementation.
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override;
-
-  // Cancels the currently pending WebDataService queries associated with the
-  // given |handler|.
-  virtual void CancelPendingQueries(const SuggestionsHandler* handler);
-
-  // Must be public for the autofill manager to use.
-  virtual void OnRemoveAutocompleteEntry(const std::u16string& name,
-                                         const std::u16string& value);
-
-  // Invoked when the user selected |value| in the Autocomplete drop-down. This
-  // function logs the DaysSinceLastUse of the Autocomplete entry associated
-  // with |value|.
-  virtual void OnAutocompleteEntrySelected(const std::u16string& value);
 
  private:
   friend class AutocompleteHistoryManagerTest;
