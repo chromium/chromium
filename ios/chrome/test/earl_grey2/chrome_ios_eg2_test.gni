@@ -166,6 +166,7 @@ template("chrome_ios_eg2_test") {
     forward_variables_from(invoker,
                            [
                              "bundle_deps",
+                             "data",
                              "deps",
                              "data_deps",
                              "executable_args",

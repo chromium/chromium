@@ -191,6 +191,41 @@ def get_home_directory(platform, version):
        get_simulator(platform, version), 'HOME']).rstrip()
 
 
+def boot_simulator_if_not_booted(sim_udid):
+  """Boots the simulator of given udid.
+
+  Args:
+    sim_udid: (str) UDID of the simulator.
+
+  Raises:
+    test_runner.SimulatorNotFoundError if the sim_udid is not found on machine.
+  """
+  simulator_list = get_simulator_list()
+  for _, devices in simulator_list['devices'].items():
+    for device in devices:
+      if device['udid'] != sim_udid:
+        continue
+      if device['state'] == 'Booted':
+        return
+      subprocess.check_output(['xcrun', 'simctl', 'boot', sim_udid])
+      return
+  raise test_runner.SimulatorNotFoundError(
+      'Not found simulator with "%s" UDID in devices %s' %
+      (sim_udid, simulator_list['devices']))
+
+
+def get_app_data_directory(app_bundle_id, sim_udid):
+  """Returns app data directory for a given app on a given simulator.
+
+  Args:
+    app_bundle_id: (str) Bundle id of application.
+    sim_udid: (str) UDID of the simulator.
+  """
+  return subprocess.check_output(
+      ['xcrun', 'simctl', 'get_app_container', sim_udid, app_bundle_id,
+       'data']).rstrip()
+
+
 def is_device_with_udid_simulator(device_udid):
   """Checks whether a device with udid is simulator or not.
 

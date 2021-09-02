@@ -27,6 +27,7 @@ import traceback
 
 import shard_util
 import test_runner
+import variations_runner
 import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
@@ -162,6 +163,19 @@ class Runner():
             test_cases=self.args.test_cases,
             test_args=self.test_args,
             use_clang_coverage=self.args.use_clang_coverage,
+            env_vars=self.args.env_var)
+      elif self.args.variations_seed_path != 'NO_PATH':
+        tr = variations_runner.VariationsSimulatorParallelTestRunner(
+            self.args.app,
+            self.args.host_app,
+            self.args.iossim,
+            self.args.version,
+            self.args.platform,
+            self.args.out_dir,
+            self.args.variations_seed_path,
+            release=self.args.release,
+            test_cases=self.args.test_cases,
+            test_args=self.test_args,
             env_vars=self.args.env_var)
       elif self.args.replay_path != 'NO_PATH':
         tr = wpr_runner.WprProxySimulatorTestRunner(
@@ -436,6 +450,13 @@ class Runner():
         '--version',
         help='Version of iOS the simulator should run.',
         metavar='ver',
+    )
+    parser.add_argument(
+        '--variations-seed-path',
+        help=('Path to a JSON file with variations seed used in variations '
+              'smoke testing. Default: %(default)s'),
+        default='NO_PATH',
+        metavar='variations-seed-path',
     )
     parser.add_argument(
         '--wpr-tools-path',
