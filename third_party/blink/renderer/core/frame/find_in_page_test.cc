@@ -28,6 +28,12 @@ class FindInPageTest : public testing::Test {
     find_in_page_ = frame_impl.GetFindInPage();
   }
 
+  void SetUp() override {
+    web_view_helper_.Resize(gfx::Size(640, 480));
+    web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
+    test::RunPendingTasks();
+  }
+
   Document& GetDocument() const;
   FindInPage& GetFindInPage() const;
   TextFinder& GetTextFinder() const;
@@ -98,6 +104,26 @@ TEST_F(FindInPageTest, FindMatchRectsReturnsCorrectRects) {
                      GetTextFinder().FindMatchRects(),
                      GetTextFinder().ActiveFindMatchRect()));
   EXPECT_TRUE(callback_receiver.IsCalled());
+}
+
+TEST_F(FindInPageTest, FindAllAs) {
+  std::ostringstream str;
+  for (int i = 0; i < 10'000; ++i)
+    str << "a ";
+
+  GetDocument().body()->setInnerHTML(str.str().c_str());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  int identifier = 0;
+  WebString search_text(String("a"));
+  auto find_options =
+      mojom::blink::FindOptions::New();  // Default + add testing flag.
+  find_options->run_synchronously_for_testing = true;
+
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(10'000, GetTextFinder().TotalMatchCount());
 }
 
 }  // namespace blink

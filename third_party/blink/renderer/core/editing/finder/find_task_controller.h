@@ -84,6 +84,8 @@ class CORE_EXPORT FindTaskController final
                   const WebString& search_text_,
                   mojom::blink::FindOptionsPtr options_);
 
+  int GetMatchYieldCheckInterval() const;
+
  private:
   void RequestFindTask(int identifier,
                        const WebString& search_text,
@@ -140,6 +142,8 @@ class CORE_EXPORT FindTaskController final
   // been searched and returned 0 results, we don't need to search that frame
   // again if the user is just adding to the search (making it more specific).
   WTF::String last_search_string_;
+
+  int match_yield_check_interval_;
 };
 
 }  // namespace blink
