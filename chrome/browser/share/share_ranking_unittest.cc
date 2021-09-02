@@ -38,6 +38,42 @@ class ShareRankingTest : public testing::Test {
     }
   }
 
+  void ConfigureDefaultInitialRanking() {
+    db()->set_initial_ranking_for_test(ShareRanking::Ranking{
+        "aaa",
+        "bbb",
+        "ccc",
+        "ddd",
+        "eee",
+        "fff",
+        "ggg",
+        "hhh",
+        "iii",
+        "jjj",
+    });
+  }
+
+  absl::optional<ShareRanking::Ranking> RankSync(
+      ShareHistory* history,
+      const std::vector<std::string>& available,
+      const std::string& type = "type",
+      int length = 4,
+      bool persist = true) {
+    base::RunLoop loop;
+    absl::optional<ShareRanking::Ranking> ranking;
+    auto callback = base::BindLambdaForTesting(
+        [&](absl::optional<ShareRanking::Ranking> r) {
+          ranking = r;
+          loop.Quit();
+        });
+
+    backing_db()->QueueGetResult(true);
+    db()->Rank(history, type, available, length, persist, std::move(callback));
+    loop.Run();
+
+    return ranking;
+  }
+
   ShareRanking* db() { return db_.get(); }
   leveldb_proto::test::FakeDB<proto::ShareRanking>* backing_db() {
     return backing_db_;
@@ -260,36 +296,12 @@ TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
 }
 
 TEST_F(ShareRankingTest, InitialStateNoHistory) {
-  FakeShareHistory history;
+  ConfigureDefaultInitialRanking();
 
+  FakeShareHistory history;
   history.set_history({});
 
-  // Avoid tests depending on the actual locale (!)
-  db()->set_initial_ranking_for_test(ShareRanking::Ranking{
-      "aaa",
-      "bbb",
-      "ccc",
-      "ddd",
-      "eee",
-      "fff",
-      "ggg",
-      "hhh",
-      "iii",
-      "jjj",
-  });
-
-  base::RunLoop loop;
-  absl::optional<ShareRanking::Ranking> ranking;
-  auto callback =
-      base::BindLambdaForTesting([&](absl::optional<ShareRanking::Ranking> r) {
-        ranking = r;
-        loop.Quit();
-      });
-
-  backing_db()->QueueGetResult(true);
-  db()->Rank(&history, "type", {"aaa", "ccc", "eee", "ggg", "iii"}, 4, true,
-             std::move(callback));
-  loop.Run();
+  auto ranking = RankSync(&history, {"aaa", "ccc", "eee", "ggg", "iii"});
 
   ASSERT_TRUE(ranking);
   // The displayed ranking should only contain apps available on the system.
@@ -316,8 +328,42 @@ TEST_F(ShareRankingTest, DISABLED_RecentHistoryUpdatesRanking) {
   // TODO(https://crbug.com/1232529): Implement.
 }
 
-TEST_F(ShareRankingTest, DISABLED_ClearClearsDatabase) {
-  // TODO(https://crbug.com/1232529): Implement.
+TEST_F(ShareRankingTest, ClearClearsDatabase) {
+  ConfigureDefaultInitialRanking();
+
+  FakeShareHistory history;
+  history.set_history({{"iii", 10}, {"aaa", 2}, {"ccc", 1}});
+
+  auto pre_ranking = RankSync(&history, {"aaa", "ccc", "eee", "ggg", "iii"});
+
+  ASSERT_TRUE(pre_ranking);
+  EXPECT_EQ(*pre_ranking,
+            std::vector<std::string>({"aaa", "iii", "ccc", "$more"}));
+
+  backing_db()->UpdateCallback(true);
+
+  auto pre_entries = backing_entries()->at("type");
+  // The stored ranking should be identical to the default ranking we injected
+  // above, since there's no history to influence it.
+  EXPECT_EQ(pre_entries.targets().at(0), "aaa");
+  EXPECT_EQ(pre_entries.targets().at(1), "iii");
+  EXPECT_EQ(pre_entries.targets().at(2), "ccc");
+
+  history.set_history({});
+  db()->Clear();
+
+  // After clearing both the fake history and the ranking, we should get the
+  // initial ranking back, with the (present on system) "eee" app swapped in for
+  // "bbb", but "bbb" persisted to disk.
+  auto post_ranking = RankSync(&history, {"aaa", "ccc", "eee", "ggg", "iii"});
+  ASSERT_TRUE(post_ranking);
+  EXPECT_EQ(*post_ranking,
+            std::vector<std::string>({"aaa", "eee", "ccc", "$more"}));
+
+  auto post_entries = backing_entries()->at("type");
+  EXPECT_EQ(post_entries.targets().at(0), "aaa");
+  EXPECT_EQ(post_entries.targets().at(1), "bbb");
+  EXPECT_EQ(post_entries.targets().at(2), "ccc");
 }
 
 }  // namespace sharing
