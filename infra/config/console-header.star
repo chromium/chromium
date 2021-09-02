@@ -299,7 +299,7 @@ HEADER = headers.header(
                 headers.link(
                     text = "customize",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci-milo.cfg".format(settings.ref),
+                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci/luci-milo.cfg".format(settings.ref),
                     alt = "Customize this console",
                 ),
             ],
