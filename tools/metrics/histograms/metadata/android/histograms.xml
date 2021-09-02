@@ -2719,6 +2719,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Android.StrictMode.TabPersistentStore{AndroidTabPersistentStoreTime}"
     units="ms" expires_after="2021-10-04">
+  <obsolete>
+    No longer used. Removed as of 09/2021.
+  </obsolete>
   <owner>wnwen@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2727,11 +2730,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="AndroidTabPersistentStoreTime">
     <variant name=""/>
-    <variant name=".CleanupAllEncryptedTime" summary="">
-      <obsolete>
-        Original code deleted in a refactoring.
-      </obsolete>
-    </variant>
+    <variant name=".CleanupAllEncryptedTime" summary=""/>
     <variant name=".LoadStateInternalPrefetchTime" summary=""/>
     <variant name=".LoadStateInternalTime" summary=""/>
     <variant name=".LoadStateTime" summary=""/>
