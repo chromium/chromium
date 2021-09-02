@@ -817,9 +817,17 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
 }
 
+// TODO(crbug.com/1246139): flaky on linux.
+#if defined(OS_LINUX)
+#define MAYBE_HintsFetcher_NavigationFetch_NetworkChange \
+  DISABLED_HintsFetcher_NavigationFetch_NetworkChange
+#else
+#define MAYBE_HintsFetcher_NavigationFetch_NetworkChange \
+  HintsFetcher_NavigationFetch_NetworkChange
+#endif
 // Test that the hints are fetched at the time of the navigation.
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
-                       HintsFetcher_NavigationFetch_NetworkChange) {
+                       MAYBE_HintsFetcher_NavigationFetch_NetworkChange) {
   {
     base::HistogramTester histogram_tester;
 
