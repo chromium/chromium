@@ -7,6 +7,7 @@
 
 #include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -32,8 +33,10 @@ enum class UserGestureFileTypeAttributes {
   // visited before.
   // The download is considered safe in this case.
   HAS_BOTH_USER_GESTURE_AND_REFERRER_VISIT = 3,
+  // The user has bypassed download warnings before.
+  HAS_BYPASSED_DOWNLOAD_WARNING = 4,
 
-  kMaxValue = HAS_BOTH_USER_GESTURE_AND_REFERRER_VISIT
+  kMaxValue = HAS_BYPASSED_DOWNLOAD_WARNING
 };
 
 // Records that a download warning was shown on the download shelf.
@@ -62,7 +65,8 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
 void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,
     bool has_user_gesture,
-    bool visited_referrer_before);
+    bool visited_referrer_before,
+    absl::optional<base::Time> latest_bypass_time);
 
 }  // namespace safe_browsing
 

@@ -269,6 +269,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="SBClientDownload.UserGestureFileType.LastBypassDownloadInterval"
+    units="ms" expires_after="2022-08-25">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the interval between the current download and the last download
+    bypass. Logged each time a download happens, the danger level is
+    ALLOW_ON_USER_GESTURE and the last download bypass exists.
+  </summary>
+</histogram>
+
+<histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
     enum="BooleanHasUserGesture" expires_after="2022-05-20">
   <owner>xinghuilu@chromium.org</owner>

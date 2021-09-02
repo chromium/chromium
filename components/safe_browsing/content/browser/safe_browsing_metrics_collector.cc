@@ -169,6 +169,20 @@ void SafeBrowsingMetricsCollector::AddSafeBrowsingEventToPref(
   AddSafeBrowsingEventAndUserStateToPref(GetUserState(), event_type);
 }
 
+absl::optional<base::Time>
+SafeBrowsingMetricsCollector::GetLatestEventTimestamp(EventType event_type) {
+  // Events are not logged when Safe Browsing is disabled.
+  SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
+  if (sb_state == SafeBrowsingState::NO_SAFE_BROWSING) {
+    return absl::nullopt;
+  }
+
+  const absl::optional<Event> event =
+      GetLatestEventFromEventType(GetUserState(), event_type);
+  return event ? absl::optional<base::Time>(event.value().timestamp)
+               : absl::nullopt;
+}
+
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
     UserState user_state,
     EventType event_type) {

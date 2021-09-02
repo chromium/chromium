@@ -23,12 +23,14 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -39,6 +41,7 @@
 #include "net/base/filename_util.h"
 #include "net/http/http_content_disposition.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -877,7 +880,8 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
   safe_browsing::RecordDownloadFileTypeAttributes(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName()),
-      download_->HasUserGesture(), visited_referrer_before);
+      download_->HasUserGesture(), visited_referrer_before,
+      GetLastDownloadBypassTimestamp());
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
@@ -1130,6 +1134,18 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
        (download_->HasUserGesture() && visits == VISITED_REFERRER)))
     return DownloadFileType::NOT_DANGEROUS;
   return danger_level;
+}
+
+absl::optional<base::Time>
+DownloadTargetDeterminer::GetLastDownloadBypassTimestamp() const {
+  safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+      safe_browsing::SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          GetProfile());
+  // metrics_collector can be null in incognito.
+  return metrics_collector ? metrics_collector->GetLatestEventTimestamp(
+                                 safe_browsing::SafeBrowsingMetricsCollector::
+                                     EventType::DANGEROUS_DOWNLOAD_BYPASS)
+                           : absl::nullopt;
 }
 
 void DownloadTargetDeterminer::OnDownloadDestroyed(

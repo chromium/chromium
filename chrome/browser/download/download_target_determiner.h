@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "chrome/browser/download/download_target_info.h"
@@ -325,6 +326,9 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // to true if the download requires explicit user consent.
   safe_browsing::DownloadFileType::DangerLevel GetDangerLevel(
       PriorVisitsToReferrer visits) const;
+
+  // Returns the timestamp of the last download bypass.
+  absl::optional<base::Time> GetLastDownloadBypassTimestamp() const;
 
   // Generates the download file name based on information from URL, response
   // headers and sniffed mime type.

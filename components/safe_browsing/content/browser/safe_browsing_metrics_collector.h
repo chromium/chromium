@@ -91,8 +91,12 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // immediately. Otherwise, schedule the next logging with delay.
   void StartLogging();
 
-  // Add |event_type| and the current timestamp to pref.
+  // Adds |event_type| and the current timestamp to pref.
   void AddSafeBrowsingEventToPref(EventType event_type);
+
+  // Gets the latest event timestamp of the |event_type|. Returns nullopt if
+  // the |event_type| didn't happen in the past.
+  absl::optional<base::Time> GetLatestEventTimestamp(EventType event_type);
 
   // KeyedService:
   // Called before the actual deletion of the object.

@@ -121,7 +121,8 @@ void RecordDownloadOpened(download::DownloadDangerType danger_type,
 void RecordDownloadFileTypeAttributes(
     DownloadFileType::DangerLevel danger_level,
     bool has_user_gesture,
-    bool visited_referrer_before) {
+    bool visited_referrer_before,
+    absl::optional<base::Time> last_bypass_time) {
   if (danger_level != DownloadFileType::ALLOW_ON_USER_GESTURE) {
     return;
   }
@@ -143,6 +144,16 @@ void RecordDownloadFileTypeAttributes(
         "SBClientDownload.UserGestureFileType.Attributes",
         UserGestureFileTypeAttributes::
             HAS_BOTH_USER_GESTURE_AND_REFERRER_VISIT);
+  }
+  if (last_bypass_time) {
+    base::UmaHistogramEnumeration(
+        "SBClientDownload.UserGestureFileType.Attributes",
+        UserGestureFileTypeAttributes::HAS_BYPASSED_DOWNLOAD_WARNING);
+    base::UmaHistogramCustomTimes(
+        "SBClientDownload.UserGestureFileType.LastBypassDownloadInterval",
+        /* sample */ base::Time::Now() - last_bypass_time.value(),
+        /* min */ base::TimeDelta::FromSeconds(1),
+        /* max */ base::TimeDelta::FromDays(1), /* buckets */ 50);
   }
 }
 
