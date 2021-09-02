@@ -7,15 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store.h"
 
 @interface CredentialProviderMigrator : NSObject
-- (instancetype)
-    initWithUserDefaults:(NSUserDefaults*)userDefaults
-                     key:(NSString*)key
-           passwordStore:
-               (scoped_refptr<password_manager::PasswordStoreInterface>)
-                   passwordStore;
+- (instancetype)initWithUserDefaults:(NSUserDefaults*)userDefaults
+                                 key:(NSString*)key
+                       passwordStore:
+                           (scoped_refptr<password_manager::PasswordStore>)
+                               passwordStore;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts migration from the temporal store to the password store. |completion|

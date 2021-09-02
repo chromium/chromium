@@ -8,7 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -106,12 +106,14 @@ class MockNetworkContext : public network::TestNetworkContext {
 
 class HttpPasswordStoreMigratorTest : public testing::Test {
  public:
-  HttpPasswordStoreMigratorTest() = default;
+  HttpPasswordStoreMigratorTest() { mock_store_->Init(nullptr); }
 
-  ~HttpPasswordStoreMigratorTest() override = default;
+  ~HttpPasswordStoreMigratorTest() override {
+    mock_store_->ShutdownOnUIThread();
+  }
 
   MockConsumer& consumer() { return consumer_; }
-  MockPasswordStoreInterface& store() { return *mock_store_; }
+  MockPasswordStore& store() { return *mock_store_; }
   password_manager::MockSmartBubbleStatsStore& smart_bubble_stats_store() {
     return mock_smart_bubble_stats_store_;
   }
@@ -126,8 +128,8 @@ class HttpPasswordStoreMigratorTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   MockConsumer consumer_;
-  scoped_refptr<MockPasswordStoreInterface> mock_store_ =
-      base::MakeRefCounted<testing::StrictMock<MockPasswordStoreInterface>>();
+  scoped_refptr<MockPasswordStore> mock_store_ =
+      base::MakeRefCounted<testing::StrictMock<MockPasswordStore>>();
   testing::NiceMock<MockNetworkContext> mock_network_context_;
   testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
 

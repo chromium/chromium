@@ -507,6 +507,8 @@ static_library("test_support") {
     "mock_password_form_manager_for_ui.h",
     "mock_password_reuse_manager.cc",
     "mock_password_reuse_manager.h",
+    "mock_password_store.cc",
+    "mock_password_store.h",
     "mock_password_store_interface.cc",
     "mock_password_store_interface.h",
     "mock_password_sync_metadata_store.cc",

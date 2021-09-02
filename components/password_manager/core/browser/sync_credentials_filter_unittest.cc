@@ -17,7 +17,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -66,8 +66,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   url::Origin GetLastCommittedOrigin() const override {
     return last_committed_origin_;
   }
-  MockPasswordStoreInterface* GetProfilePasswordStoreInterface()
-      const override {
+  MockPasswordStore* GetProfilePasswordStore() const override {
     return password_store_.get();
   }
   signin::IdentityManager* GetIdentityManager() override {
@@ -86,8 +85,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   url::Origin last_committed_origin_;
-  scoped_refptr<testing::NiceMock<MockPasswordStoreInterface>> password_store_ =
-      new testing::NiceMock<MockPasswordStoreInterface>;
+  scoped_refptr<testing::NiceMock<MockPasswordStore>> password_store_ =
+      new testing::NiceMock<MockPasswordStore>;
   bool is_incognito_ = false;
   signin::IdentityManager* identity_manager_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
