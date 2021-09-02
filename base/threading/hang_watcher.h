@@ -265,34 +265,45 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
       base::PlatformThreadId thread_id;
     };
 
-    // Construct the snapshot from provided data. |snapshot_time| can be
+    WatchStateSnapShot();
+    WatchStateSnapShot(const WatchStateSnapShot& other);
+    ~WatchStateSnapShot();
+
+    // Initialize the snapshot from provided data. |snapshot_time| can be
     // different than now() to be coherent with other operations recently done
-    // on |watch_states|. The snapshot can be empty for a number of reasons:
+    // on |watch_states|. |hung_watch_state_copies_| can be empty after
+    // initialization for a number of reasons:
     // 1. If any deadline in |watch_states| is before
     // |deadline_ignore_threshold|.
     // 2. If some of the hung threads could not be marked as blocking on
     // capture.
     // 3. If none of the hung threads are of a type configured to trigger a
     // crash dump.
-    WatchStateSnapShot(const HangWatchStates& watch_states,
-                       base::TimeTicks deadline_ignore_threshold);
-    WatchStateSnapShot(const WatchStateSnapShot& other);
-    ~WatchStateSnapShot();
+    //
+    // This function cannot be called more than once without an associated call
+    // to Clear().
+    void Init(const HangWatchStates& watch_states,
+              base::TimeTicks deadline_ignore_threshold);
+
+    // Reset the snapshot object to be reused. Can only be called after Init().
+    void Clear();
 
     // Returns a string that contains the ids of the hung threads separated by a
     // '|'. The size of the string is capped at debug::CrashKeySize::Size256. If
     // no threads are hung returns an empty string. Can only be invoked if
-    // IsActionable().
+    // IsActionable(). Can only be called after Init().
     std::string PrepareHungThreadListCrashKey() const;
 
-    // Return the highest deadline included in this snapshot.
+    // Return the highest deadline included in this snapshot. Can only be called
+    // if IsActionable(). Can only be called after Init().
     base::TimeTicks GetHighestDeadline() const;
 
     // Returns true if the snapshot can be used to record an actionable hang
-    // report and false if not.
+    // report and false if not. Can only be called after Init().
     bool IsActionable() const;
 
    private:
+    bool initialized_ = false;
     std::vector<WatchStateCopy> hung_watch_state_copies_;
   };
 
@@ -338,6 +349,11 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
   std::vector<std::unique_ptr<internal::HangWatchState>> watch_states_
       GUARDED_BY(watch_state_lock_);
+
+  // Snapshot to be reused across hang captures. The point of keeping it
+  // around is reducing allocations during capture.
+  WatchStateSnapShot watch_state_snapshot_
+      GUARDED_BY_CONTEXT(hang_watcher_thread_checker_);
 
   base::DelegateSimpleThread thread_;
 
