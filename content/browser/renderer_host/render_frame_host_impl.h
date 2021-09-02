@@ -430,6 +430,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
 
+  // Additional non-override const version of GetMainFrame.
+  const RenderFrameHostImpl* GetMainFrame() const;
+
+  // Additional non-override const version of GetParent.
+  RenderFrameHostImpl* GetParent() const;
+
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
   // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the

@@ -417,11 +417,9 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
     debug_url_set_ = true;
-    auto* frame_tree_node = render_frame_host_->frame_tree_node();
-    GetContentClient()->SetActiveURL(frame_tree_node->current_url(),
-                                     frame_tree_node->frame_tree()
-                                         ->root()
-                                         ->current_origin()
+    GetContentClient()->SetActiveURL(render_frame_host_->GetLastCommittedURL(),
+                                     render_frame_host_->GetMainFrame()
+                                         ->GetLastCommittedOrigin()
                                          .GetDebugString());
     return true;
   }
@@ -1923,6 +1921,10 @@ AgentSchedulingGroupHost& RenderFrameHostImpl::GetAgentSchedulingGroup() {
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParent() {
+  return parent_;
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::GetParent() const {
   return parent_;
 }
 
@@ -3448,7 +3450,7 @@ void RenderFrameHostImpl::DidNavigate(
   // itself.  These allow GetLastCommittedURL and GetLastCommittedOrigin to
   // stay correct even if the render_frame_host later becomes pending deletion.
   // The URL is set regardless of whether it's for a net error or not.
-  frame_tree_node_->SetCurrentURL(params.url);
+  navigation_request->frame_tree_node()->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
 
   // For urn: resources served from WebBundles, use the Bundle's origin.
@@ -4044,7 +4046,7 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
                params->url.possibly_invalid_spec());
 
   ScopedActiveURL scoped_active_url(params->url,
-                                    frame_tree()->root()->current_origin());
+                                    GetMainFrame()->GetLastCommittedOrigin());
   ScopedCommitStateResetter commit_state_resetter(this);
 
   // When the frame is pending deletion, the browser is waiting for it to unload
@@ -5293,8 +5295,7 @@ void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
 }
 
 bool RenderFrameHostImpl::ShouldVirtualKeyboardOverlayContent() const {
-  RenderFrameHostImpl* root_frame_host =
-      frame_tree_->root()->current_frame_host();
+  const RenderFrameHostImpl* root_frame_host = GetMainFrame();
   return root_frame_host->should_virtual_keyboard_overlay_content_;
 }
 
@@ -5302,8 +5303,7 @@ void RenderFrameHostImpl::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   DCHECK(ShouldVirtualKeyboardOverlayContent());
 
-  RenderFrameHostImpl* root_frame_host =
-      frame_tree_->root()->current_frame_host();
+  RenderFrameHostImpl* root_frame_host = GetMainFrame();
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       root_frame_host->render_view_host_->GetWidget()->GetView());
   if (!view)
@@ -8601,11 +8601,15 @@ bool RenderFrameHostImpl::HasSelection() {
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() {
+  return const_cast<RenderFrameHostImpl*>(base::as_const(*this).GetMainFrame());
+}
+
+const RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() const {
   // Iteration over the GetParent() chain is used below, because returning
   // |frame_tree()->root()->current_frame_host()| might
   // give an incorrect result after |this| has been detached from the frame
   // tree.
-  RenderFrameHostImpl* main_frame = this;
+  const RenderFrameHostImpl* main_frame = this;
   while (main_frame->GetParent())
     main_frame = main_frame->GetParent();
   return main_frame;
@@ -8817,13 +8821,13 @@ bool RenderFrameHostImpl::CanExecuteJavaScript() {
   if (g_allow_injecting_javascript)
     return true;
 
-  return !frame_tree_node_->current_url().is_valid() ||
-         frame_tree_node_->current_url().SchemeIs(kChromeDevToolsScheme) ||
+  return !GetLastCommittedURL().is_valid() ||
+         GetLastCommittedURL().SchemeIs(kChromeDevToolsScheme) ||
          ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
              GetProcess()->GetID()) ||
          // It's possible to load about:blank in a Web UI renderer.
          // See http://crbug.com/42547
-         (frame_tree_node_->current_url().spec() == url::kAboutBlankURL);
+         (GetLastCommittedURL().spec() == url::kAboutBlankURL);
 }
 
 // static
