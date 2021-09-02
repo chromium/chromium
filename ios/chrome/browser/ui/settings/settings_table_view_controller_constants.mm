@@ -42,6 +42,8 @@ NSString* const kSettingsTOSCellId = @"kSettingsTOSCellId";
 NSString* const kSettingsPrivacyNoticeCellId = @"kSettingsPrivacyNoticeCellId";
 NSString* const kSettingsPreloadCellId = @"kSettingsPreloadCellId";
 NSString* const kSettingsBlockPopupsCellId = @"kSettingsBlockPopupsCellId";
+NSString* const kSettingsShowLinkPreviewCellId =
+    @"kSettingsShowLinkPreviewCellId";
 NSString* const kSettingsDefaultAppsCellId = @"kSettingsDefaultAppsCellId";
 NSString* const kSettingsAddLanguageCellId = @"kSettingsAddLanguageCellId";
 NSString* const kSettingsClearBrowsingDataCellId =

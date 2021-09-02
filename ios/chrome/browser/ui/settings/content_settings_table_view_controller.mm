@@ -14,7 +14,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
@@ -59,6 +61,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* _blockPopupsDetailItem;
   TableViewDetailIconItem* _composeEmailDetailItem;
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
+  SettingsSwitchItem* _linkPreviewItem;
 }
 
 // Helpers to create collection view items.
@@ -141,6 +144,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
           toSectionWithIdentifier:SectionIdentifierSettings];
     }
   }
+
+  if (IsDiscoverFeedPreviewEnabled()) {
+    [model addItem:[self linkPreviewItem]
+        toSectionWithIdentifier:SectionIdentifierSettings];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -207,6 +215,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _openedInAnotherWindowItem.accessibilityIdentifier =
       kSettingsDefaultAppsCellId;
   return _openedInAnotherWindowItem;
+}
+
+- (TableViewItem*)linkPreviewItem {
+  _linkPreviewItem =
+      [[SettingsSwitchItem alloc] initWithType:ItemTypeSettingsBlockPopups];
+  _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
+  // TODO(crbug.com/1245823): set the swicher's initial status.
+  _linkPreviewItem.on = YES;
+  _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
+  return _linkPreviewItem;
 }
 
 #pragma mark - UITableViewDelegate

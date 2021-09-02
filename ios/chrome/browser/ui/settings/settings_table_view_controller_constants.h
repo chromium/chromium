@@ -122,6 +122,9 @@ extern NSString* const kSettingsPreloadCellId;
 // The accessibility identifier of the Block Popups cell.
 extern NSString* const kSettingsBlockPopupsCellId;
 
+// The accessibility identifier of the Show Link Preview cell.
+extern NSString* const kSettingsShowLinkPreviewCellId;
+
 // The accessibility identifier of the Default Apps cell.
 extern NSString* const kSettingsDefaultAppsCellId;
 
