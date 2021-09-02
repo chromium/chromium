@@ -5,9 +5,10 @@
 module crosapi.mojom;
 
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
-import "chromeos/crosapi/mojom/app_service.mojom";
-import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
+import "chromeos/crosapi/mojom/app_service.mojom";
+import "chromeos/crosapi/mojom/app_window_tracker.mojom";
+import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/clipboard.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
@@ -70,8 +71,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 44
-// Next method id: 49
+// Next version: 45
+// Next method id: 50
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -125,6 +126,12 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=38]
   BindChromeAppPublisher@43(pending_receiver<AppPublisher> receiver);
+
+  // Binds the window tracker for chrome apps. This allows Lacros to inform Ash
+  // of the relationship between AppService app_ids and exo/Wayland/aura
+  // windows.
+  [MinVersion=44]
+  BindChromeAppWindowTracker@49(pending_receiver<AppWindowTracker> receiver);
 
   // Bind the clipboard interface to allow lacros-chrome to interact with the
   // system clipboard.

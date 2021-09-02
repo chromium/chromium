@@ -9,6 +9,7 @@ mojom("mojom") {
     "account_manager.mojom",
     "app_service.mojom",
     "app_service_types.mojom",
+    "app_window_tracker.mojom",
     "automation.mojom",
     "bitmap.mojom",
     "cert_database.mojom",

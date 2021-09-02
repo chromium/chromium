@@ -6,13 +6,18 @@
 
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/window_utility.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
+#include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
@@ -46,18 +51,27 @@ apps::mojom::InstallSource GetInstallSource(
 
 }  // namespace
 
-// This class tracks all extension apps associated with a given Profile*.
+// This class tracks all extension apps associated with a given Profile*. The
+// observation of ExtensionPrefsObserver and ExtensionRegistryObserver is used
+// to track AppService publisher events. The observation of AppsWindowRegistry
+// is used to track window creation and destruction.
 class LacrosExtensionAppsPublisher::ProfileTracker
     : public extensions::ExtensionPrefsObserver,
-      public extensions::ExtensionRegistryObserver {
+      public extensions::ExtensionRegistryObserver,
+      public extensions::AppWindowRegistry::Observer {
   using Readiness = apps::mojom::Readiness;
 
  public:
   ProfileTracker(Profile* profile, LacrosExtensionAppsPublisher* publisher)
       : profile_(profile), publisher_(publisher) {
+    // Start observing for relevant events.
     prefs_observation_.Observe(extensions::ExtensionPrefs::Get(profile_));
     registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
+    app_window_registry_observation_.Observe(
+        extensions::AppWindowRegistry::Get(profile_));
 
+    // Populate initial conditions [e.g. installed apps prior to starting
+    // observation].
     std::vector<apps::mojom::AppPtr> apps;
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile_);
@@ -81,6 +95,13 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     }
     if (!apps.empty())
       Publish(std::move(apps));
+
+    // Populate initial conditions [e.g. app windows created prior to starting
+    // observation].
+    for (extensions::AppWindow* app_window :
+         extensions::AppWindowRegistry::Get(profile_)->app_windows()) {
+      OnAppWindowAdded(app_window);
+    }
   }
   ~ProfileTracker() override = default;
 
@@ -171,6 +192,28 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     registry_observation_.Reset();
   }
 
+  // AppWindowRegistry::Observer overrides.
+  void OnAppWindowAdded(extensions::AppWindow* app_window) override {
+    std::string muxed_id = lacros_extension_apps_utility::MuxId(
+        profile_, app_window->GetExtension());
+    std::string window_id = lacros_window_utility::GetRootWindowUniqueId(
+        app_window->GetNativeWindow());
+    app_window_id_cache_[app_window] = window_id;
+
+    publisher_->OnAppWindowAdded(muxed_id, window_id);
+  }
+
+  void OnAppWindowRemoved(extensions::AppWindow* app_window) override {
+    auto it = app_window_id_cache_.find(app_window);
+    DCHECK(it != app_window_id_cache_.end());
+
+    std::string muxed_id = lacros_extension_apps_utility::MuxId(
+        profile_, app_window->GetExtension());
+    std::string window_id = it->second;
+
+    publisher_->OnAppWindowRemoved(muxed_id, window_id);
+  }
+
   // Publishes a differential update to the app service.
   void Publish(apps::mojom::AppPtr app) {
     std::vector<apps::mojom::AppPtr> apps;
@@ -251,6 +294,15 @@ class LacrosExtensionAppsPublisher::ProfileTracker
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       registry_observation_{this};
+
+  // Observes AppWindowRegistry for app window creation and destruction.
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
+      app_window_registry_observation_{this};
+
+  // Records the window id associated with an app window. This is needed since
+  // the app window destruction callback occurs after the window is destroyed.
+  std::map<extensions::AppWindow*, std::string> app_window_id_cache_;
 };
 
 LacrosExtensionAppsPublisher::LacrosExtensionAppsPublisher() = default;
@@ -268,7 +320,7 @@ void LacrosExtensionAppsPublisher::Initialize() {
 }
 
 bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
-  // Ash is too old to support the chrome app interface.
+  // Ash is too old to support the chrome app publisher interface.
   int crosapiVersion = chromeos::LacrosService::Get()->GetInterfaceVersion(
       crosapi::mojom::Crosapi::Uuid_);
   int minRequiredVersion = static_cast<int>(
@@ -276,17 +328,40 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
   if (crosapiVersion < minRequiredVersion)
     return false;
 
+  // Ash is too old to support the chrome app window tracker interface.
+  if (!chromeos::LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::AppWindowTracker>()) {
+    return false;
+  }
+
   chromeos::LacrosService::Get()
       ->BindPendingReceiverOrRemote<
           mojo::PendingReceiver<crosapi::mojom::AppPublisher>,
           &crosapi::mojom::Crosapi::BindChromeAppPublisher>(
           publisher_.BindNewPipeAndPassReceiver());
+
   return true;
 }
 
 void LacrosExtensionAppsPublisher::Publish(
     std::vector<apps::mojom::AppPtr> apps) {
   publisher_->OnApps(std::move(apps));
+}
+
+void LacrosExtensionAppsPublisher::OnAppWindowAdded(
+    const std::string& app_id,
+    const std::string& window_id) {
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::AppWindowTracker>()
+      ->OnAppWindowAdded(app_id, window_id);
+}
+
+void LacrosExtensionAppsPublisher::OnAppWindowRemoved(
+    const std::string& app_id,
+    const std::string& window_id) {
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::AppWindowTracker>()
+      ->OnAppWindowRemoved(app_id, window_id);
 }
 
 void LacrosExtensionAppsPublisher::OnProfileAdded(Profile* profile) {

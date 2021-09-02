@@ -18,10 +18,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 // This class tracks extension-based apps running in Lacros [e.g. chrome apps,
-// aka v2 packaged apps]. This class forwards metadata about these apps to Ash,
-// specifically StandaloneBrowserExtensionApps. This latter class is an
-// AppService publisher, which in turn will glue these apps into the App Service
-// infrastructure.
+// aka v2 packaged apps]. This class forwards metadata about these apps to two
+// classes in Ash:
+//
+// (1) StandaloneBrowserExtensionApps is an AppService publisher, which in turn
+// will glue these apps into the App Service infrastructure.
+//
+// (2) A yet unnamed class is responsible for tracking windows and gluing them
+// into the ash shelf.
 //
 // The main sublety of this class is that it observes all Lacros profiles for
 // installed/running extensions-based apps, whereas Ash itself will only ever
@@ -56,6 +60,16 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // Virtual for testing.
   virtual void Publish(std::vector<apps::mojom::AppPtr> apps);
 
+  // Notifies Ash's app window tracker of an app window construction.
+  // Virtual for testing.
+  virtual void OnAppWindowAdded(const std::string& app_id,
+                                const std::string& window_id);
+
+  // Notifies Ash's app window tracker of an app window destruction.
+  // Virtual for testing.
+  virtual void OnAppWindowRemoved(const std::string& app_id,
+                                  const std::string& window_id);
+
   // Virtual for testing. Sets up the crosapi connection. Returns false on
   // failure.
   virtual bool InitializeCrosapi();
@@ -73,7 +87,7 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // A map that maintains a single ProfileTracker per Profile.
   std::map<Profile*, std::unique_ptr<ProfileTracker>> profile_trackers_;
 
-  // Mojo endpoint that's responsible for sending messages to Ash.
+  // Mojo endpoint that's responsible for sending app publisher messages to Ash.
   mojo::Remote<crosapi::mojom::AppPublisher> publisher_;
 
   // Scoped observer for the ProfileManager.

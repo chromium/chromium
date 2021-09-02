@@ -208,6 +208,11 @@ void CrosapiAsh::BindChromeAppPublisher(
   chrome_apps->RegisterChromeAppsCrosapiHost(std::move(receiver));
 }
 
+void CrosapiAsh::BindChromeAppWindowTracker(
+    mojo::PendingReceiver<mojom::AppWindowTracker> receiver) {
+  // TODO(https://crbug.com/1225848): Implement this method.
+}
+
 void CrosapiAsh::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
   file_manager_ash_->BindReceiver(std::move(receiver));
