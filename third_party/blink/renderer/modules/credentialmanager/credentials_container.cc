@@ -917,7 +917,9 @@ ScriptPromise CredentialsContainer::get(
             "creating a credential"));
         return promise;
       }
-      if (options->publicKey()->extensions()->hasPayment()) {
+      if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+              resolver->GetExecutionContext()) &&
+          options->publicKey()->extensions()->hasPayment()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
             "The 'payment' extension is only valid when creating a "
