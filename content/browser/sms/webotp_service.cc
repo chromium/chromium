@@ -165,23 +165,6 @@ bool WebOTPService::Create(
 
 void WebOTPService::Receive(ReceiveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(majidvp): The comment below seems incorrect. This flow is used for
-  // both prompted and unprompted backends so it is not clear if we should
-  // always cancel early. Also I don't believe that we are actually silently
-  // dropping the sms but in fact the logic cancels the request once
-  // an sms comes in and there is no delegate.
-
-  // This flow relies on the delegate to display an infobar for user
-  // confirmation. Cancelling the call early if no delegate is available is
-  // easier to debug then silently dropping SMSes later on.
-  WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
-  if (!web_contents->GetDelegate()) {
-    std::move(callback).Run(SmsStatus::kCancelled, absl::nullopt);
-    return;
-  }
-
   DCHECK(!origin_list_.empty());
   // Cancels the last request if there is we have not yet handled it.
   if (callback_)

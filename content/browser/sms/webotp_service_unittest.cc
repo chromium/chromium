@@ -513,33 +513,6 @@ TEST_F(WebOTPServiceTest, CleansUp) {
   ASSERT_FALSE(fetcher.HasSubscribers());
 }
 
-TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
-  NavigateAndCommit(GURL(kTestUrl));
-
-  NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(&provider);
-  mojo::Remote<blink::mojom::WebOTPService> service;
-  EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
-                                    service.BindNewPipeAndPassReceiver()));
-
-  base::RunLoop loop;
-
-  service->Receive(base::BindLambdaForTesting(
-      [&loop](SmsStatus status, const optional<string>& otp) {
-        EXPECT_EQ(SmsStatus::kCancelled, status);
-        EXPECT_EQ(absl::nullopt, otp);
-        loop.Quit();
-      }));
-
-  loop.Run();
-
-  ASSERT_FALSE(fetcher.HasSubscribers());
-
-  // Explicitly delete contents to ensure the invariant that the fetcher
-  // lifetime is longer than service.
-  DeleteContents();
-}
-
 TEST_F(WebOTPServiceTest, Abort) {
   NavigateAndCommit(GURL(kTestUrl));
 
