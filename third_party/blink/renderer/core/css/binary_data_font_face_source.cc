@@ -41,9 +41,9 @@ scoped_refptr<SimpleFontData> BinaryDataFontFaceSource::CreateFontData(
       custom_platform_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
           font_description.IsSyntheticBold() &&
-              font_description.GetFontSynthesisWeight() ==
-                  FontDescription::kAutoFontSynthesisWeight,
-          font_description.IsSyntheticItalic(),
+              font_description.SyntheticBoldAllowed(),
+          font_description.IsSyntheticItalic() &&
+              font_description.SyntheticItalicAllowed(),
           font_description.GetFontSelectionRequest(),
           font_selection_capabilities, font_description.FontOpticalSizing(),
           font_description.Orientation(), font_description.VariationSettings()),

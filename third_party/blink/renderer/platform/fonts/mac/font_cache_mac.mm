@@ -289,20 +289,16 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   bool synthetic_bold_requested = (IsAppKitFontWeightBold(app_kit_weight) &&
                                    !IsAppKitFontWeightBold(actual_weight)) ||
                                   font_description.IsSyntheticBold();
-  bool synthetic_bold_allowed = font_description.GetFontSynthesisWeight() ==
-                                FontDescription::kAutoFontSynthesisWeight;
   bool synthetic_bold =
       [platform_font.familyName isEqual:@"Apple Color Emoji"]
           ? false
-          : synthetic_bold_requested && synthetic_bold_allowed;
+          : synthetic_bold_requested && font_description.SyntheticBoldAllowed();
 
   bool synthetic_italic_requested =
       ((traits & NSFontItalicTrait) && !(actual_traits & NSFontItalicTrait)) ||
       font_description.IsSyntheticItalic();
-  bool synthetic_italic_allowed = font_description.GetFontSynthesisStyle() ==
-                                  FontDescription::kAutoFontSynthesisStyle;
   bool synthetic_italic =
-      synthetic_italic_requested && synthetic_italic_allowed;
+      synthetic_italic_requested && font_description.SyntheticItalicAllowed();
 
   // FontPlatformData::typeface() is null in the case of Chromium out-of-process
   // font loading failing.  Out-of-process loading occurs for registered fonts

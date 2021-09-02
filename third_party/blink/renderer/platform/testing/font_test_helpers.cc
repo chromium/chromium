@@ -40,9 +40,9 @@ class TestFontSelector : public FontSelector {
     FontPlatformData platform_data = custom_platform_data_->GetFontPlatformData(
         font_description.EffectiveFontSize(),
         font_description.IsSyntheticBold() &&
-            font_description.GetFontSynthesisWeight() ==
-                FontDescription::kAutoFontSynthesisWeight,
-        font_description.IsSyntheticItalic(),
+            font_description.SyntheticBoldAllowed(),
+        font_description.IsSyntheticItalic() &&
+            font_description.SyntheticItalicAllowed(),
         font_description.GetFontSelectionRequest(), normal_capabilities,
         font_description.FontOpticalSizing(), font_description.Orientation());
     return SimpleFontData::Create(platform_data, CustomFontData::Create());

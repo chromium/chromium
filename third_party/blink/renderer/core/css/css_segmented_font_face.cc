@@ -130,11 +130,11 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
     requested_font_description.SetSyntheticBold(
         font_selection_capabilities_.weight.maximum < BoldThreshold() &&
         font_selection_request.weight >= BoldThreshold() &&
-        font_description.GetFontSynthesisWeight() ==
-            FontDescription::kAutoFontSynthesisWeight);
+        font_description.SyntheticBoldAllowed());
     requested_font_description.SetSyntheticItalic(
         font_selection_capabilities_.slope.maximum == NormalSlopeValue() &&
-        font_selection_request.slope == ItalicSlopeValue());
+        font_selection_request.slope == ItalicSlopeValue() &&
+        font_description.SyntheticItalicAllowed());
   }
 
   font_faces_->ForEachReverse(WTF::BindRepeating(

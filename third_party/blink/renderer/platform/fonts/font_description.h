@@ -263,8 +263,14 @@ class PLATFORM_EXPORT FontDescription {
   FontSynthesisWeight GetFontSynthesisWeight() const {
     return static_cast<FontSynthesisWeight>(fields_.font_synthesis_weight_);
   }
+  bool SyntheticBoldAllowed() const {
+    return fields_.font_synthesis_weight_ == kAutoFontSynthesisWeight;
+  }
   FontSynthesisStyle GetFontSynthesisStyle() const {
     return static_cast<FontSynthesisStyle>(fields_.font_synthesis_style_);
+  }
+  bool SyntheticItalicAllowed() const {
+    return fields_.font_synthesis_style_ == kAutoFontSynthesisStyle;
   }
 
   FontSelectionRequest GetFontSelectionRequest() const;

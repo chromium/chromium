@@ -125,14 +125,14 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (fallback_font.is_bold && description.Weight() < BoldThreshold())
     description.SetWeight(BoldWeightValue());
   if (!fallback_font.is_bold && description.Weight() >= BoldThreshold() &&
-      font_description.GetFontSynthesisWeight() ==
-          FontDescription::kAutoFontSynthesisWeight) {
+      font_description.SyntheticBoldAllowed()) {
     should_set_synthetic_bold = true;
     description.SetWeight(NormalWeightValue());
   }
   if (fallback_font.is_italic && description.Style() == NormalSlopeValue())
     description.SetStyle(ItalicSlopeValue());
-  if (!fallback_font.is_italic && (description.Style() == ItalicSlopeValue())) {
+  if (!fallback_font.is_italic && (description.Style() == ItalicSlopeValue()) &&
+      font_description.SyntheticItalicAllowed()) {
     should_set_synthetic_italic = true;
     description.SetStyle(NormalSlopeValue());
   }
