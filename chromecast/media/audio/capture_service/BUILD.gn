@@ -42,7 +42,7 @@ cast_source_set("receiver") {
     ":utils",
     "//base",
     "//chromecast/base",
-    "//chromecast/media/audio/mixer_service:audio_socket_service",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//chromecast/net:small_message_socket",
     "//media",
     "//net",

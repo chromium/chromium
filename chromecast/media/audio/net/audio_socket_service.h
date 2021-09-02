@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_AUDIO_SOCKET_SERVICE_H_
-#define CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_AUDIO_SOCKET_SERVICE_H_
+#ifndef CHROMECAST_MEDIA_AUDIO_NET_AUDIO_SOCKET_SERVICE_H_
+#define CHROMECAST_MEDIA_AUDIO_NET_AUDIO_SOCKET_SERVICE_H_
 
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace base {
@@ -42,6 +41,8 @@ class AudioSocketService {
                      int port,
                      int max_accept_loop,
                      Delegate* delegate);
+  AudioSocketService(const AudioSocketService&) = delete;
+  AudioSocketService& operator=(const AudioSocketService&) = delete;
   ~AudioSocketService();
 
   // Starts accepting incoming connections.
@@ -64,11 +65,9 @@ class AudioSocketService {
 
   std::unique_ptr<net::ServerSocket> listen_socket_;
   std::unique_ptr<net::StreamSocket> accepted_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSocketService);
 };
 
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_AUDIO_SOCKET_SERVICE_H_
+#endif  // CHROMECAST_MEDIA_AUDIO_NET_AUDIO_SOCKET_SERVICE_H_

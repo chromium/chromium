@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromecast/media/audio/mixer_service/audio_socket_service.h"
+#include "chromecast/media/audio/net/audio_socket_service.h"
 
 namespace chromecast {
 namespace media {

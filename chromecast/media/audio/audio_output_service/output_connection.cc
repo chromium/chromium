@@ -14,8 +14,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_output_service/constants.h"
-#include "chromecast/media/audio/mixer_service/audio_socket_service.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/audio_socket_service.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 

@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("audio_socket_service") {
+  sources = [
+    "audio_socket_service.cc",
+    "audio_socket_service.h",
+  ]
+
+  if (use_unix_sockets) {
+    sources += [ "audio_socket_service_uds.cc" ]
+  } else {
+    sources += [ "audio_socket_service_tcp.cc" ]
+  }
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+}

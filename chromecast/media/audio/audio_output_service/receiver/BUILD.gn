@@ -22,8 +22,8 @@ cast_source_set("receiver") {
 
   deps = [
     "//base",
-    "//chromecast/media/audio/mixer_service:audio_socket_service",
     "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//net",
   ]
 }

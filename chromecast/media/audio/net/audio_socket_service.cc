@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/audio/mixer_service/audio_socket_service.h"
+#include "chromecast/media/audio/net/audio_socket_service.h"
 
 #include <utility>
 

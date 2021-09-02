@@ -50,10 +50,10 @@ cast_source_set("connection") {
   ]
 
   deps = [
-    ":audio_socket_service",
     ":common",
     "//base",
     "//chromecast/base",
+    "//chromecast/media/audio/net:audio_socket_service",
     "//net",
   ]
 }
@@ -136,24 +136,6 @@ cast_source_set("redirected_audio_connection") {
     "//chromecast/net:io_buffer_pool",
     "//chromecast/public",
     "//chromecast/public/media",
-    "//net",
-  ]
-}
-
-cast_source_set("audio_socket_service") {
-  sources = [
-    "audio_socket_service.cc",
-    "audio_socket_service.h",
-  ]
-
-  if (use_unix_sockets) {
-    sources += [ "audio_socket_service_uds.cc" ]
-  } else {
-    sources += [ "audio_socket_service_tcp.cc" ]
-  }
-
-  deps = [
-    "//base",
     "//net",
   ]
 }
