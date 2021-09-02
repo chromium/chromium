@@ -2716,6 +2716,107 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
             popup_web_contents->GetMainFrame()->cross_origin_opener_policy());
 }
 
+// Regression test for https://crbug.com/1239540.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ReloadCrossOriginIsolatedPageWhileOffline) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+
+  // Initial cross origin isolated page.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+
+  // Simulate being offline by failing all network requests.
+  auto url_loader_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            network::URLLoaderCompletionStatus status;
+            status.error_code = net::Error::ERR_CONNECTION_FAILED;
+            params->client->OnComplete(status);
+            return true;
+          }));
+
+  // Reload and end up with an error page to verify we do not violate any cross
+  // origin isolation invariant.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+}
+
+// Regression test for https://crbug.com/1239540.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       ReloadCoopPageWhileOffline) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin"));
+
+  // Initial coop isolated page.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  RenderFrameHostImpl* main_rfh = current_frame_host();
+  EXPECT_EQ(main_rfh->cross_origin_opener_policy(), CoopSameOrigin());
+
+  // Simulate being offline by failing all network requests.
+  auto url_loader_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            network::URLLoaderCompletionStatus status;
+            status.error_code = net::Error::ERR_CONNECTION_FAILED;
+            params->client->OnComplete(status);
+            return true;
+          }));
+
+  // Reload and end up with an error page to verify we do not violate any cross
+  // origin isolation invariant.
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+}
+
+// Regression test for https://crbug.com/1239540.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       BackNavigationToCrossOriginIsolatedPageWhileOffline) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+
+  GURL same_origin_isolated_page(
+      https_server()->GetURL("a.com", "/cross-origin-isolated.html"));
+
+  // Put the initial isolated page in history.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+
+  // This test relies on actually doing the back navigation from network.
+  // We disable BFCache on the initial to ensure that happens.
+  DisableBFCacheForRFHForTesting(current_frame_host()->GetGlobalId());
+
+  // Navigate to a same origin isolated page, staying in the same
+  // BrowsingInstance. This is also ensured by having the BFCache disabled on
+  // the initial page, avoiding special same-site proactive swaps.
+  EXPECT_TRUE(NavigateToURL(shell(), same_origin_isolated_page));
+  main_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+
+  // Simulate being offline by failing all network requests.
+  auto url_loader_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            network::URLLoaderCompletionStatus status;
+            status.error_code = net::Error::ERR_CONNECTION_FAILED;
+            params->client->OnComplete(status);
+            return true;
+          }));
+
+  // Go back and end up with an error page to verify we do not violate any cross
+  // origin isolation invariant.
+  web_contents()->GetController().GoBack();
+  EXPECT_FALSE(WaitForLoadStop(web_contents()));
+}
+
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        CrossOriginRedirectHasProperCrossOriginIsolatedState) {
   GURL non_isolated_page(

@@ -1531,6 +1531,13 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // If new_entry already has a SiteInstance, assume it is correct.  We only
   // need to force a swap if it is in a different BrowsingInstance.
   if (destination_instance) {
+    // If we are doing an history navigation/reload and end up failing, it might
+    // not be suitable to host the error page in the original SiteInstance.
+    // Error pages have a Cross-Origin-Opener-Policy of 'unsafe-none' and might
+    // end up in a different BrowsingInstance.
+    if (is_failure && cross_origin_opener_policy_mismatch)
+      return ShouldSwapBrowsingInstance::kYes_ForceSwap;
+
     bool should_swap = !destination_instance->IsRelatedSiteInstance(
         render_frame_host_->GetSiteInstance());
     if (should_swap) {
