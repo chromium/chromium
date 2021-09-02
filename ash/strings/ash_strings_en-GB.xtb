@@ -33,7 +33,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Clear all</translation>
-<translation id="1199716647557067911">Are you sure that you want to turn off switch access?</translation>
+<translation id="1199716647557067911">Are you sure that you want to turn off Switch Access?</translation>
 <translation id="1210557957257435379">screen recording</translation>
 <translation id="121097972571826261">Forward by word</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
@@ -91,7 +91,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1615402009686901181">Administrator policy disables screen capture when confidential content is visible</translation>
-<translation id="1632985212731562677">Switch access can be disabled in Settings &gt; Accessibility.</translation>
+<translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1667964833127753507">The neutral colour mode does not use wallpaper extracted colours, replacing them by a set of neutrally toned light or dark hues.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
@@ -278,7 +278,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3181441307743005334">Restart may take a while</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connected to a device}other{Connected to # devices}}</translation>
 <translation id="320207200541803018">Set timer</translation>
-<translation id="3203405173652969239">Switch access enabled</translation>
+<translation id="3203405173652969239">Switch Access enabled</translation>
 <translation id="3207953481422525583">User settings</translation>
 <translation id="3217205077783620295">Volume is on; toggling will mute audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
@@ -773,7 +773,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7067196344162293536">Auto rotate</translation>
 <translation id="7068360136237591149">Open files</translation>
 <translation id="7076293881109082629">Signing in</translation>
-<translation id="7088960765736518739">Switch access</translation>
+<translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7106330611027933926">Show deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>

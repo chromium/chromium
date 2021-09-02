@@ -1396,7 +1396,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="244641233057214044">Related to your search</translation>
 <translation id="2448312741937722512">Types</translation>
-<translation id="2448810255793562605">Switch access auto-scan</translation>
+<translation id="2448810255793562605">Switch Access auto-scan</translation>
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
 <translation id="2450849356604136918">No active views</translation>
 <translation id="2451298179137331965">2x</translation>
@@ -2103,7 +2103,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202131003361292969">Path</translation>
 <translation id="3202173864863109533">This tab's audio is being muted.</translation>
-<translation id="3202879084005596395">You can always change additional settings or open the setup guide again from switch access settings.</translation>
+<translation id="3202879084005596395">You can always change additional settings or open the setup guide again from Switch Access settings.</translation>
 <translation id="3208321278970793882">App</translation>
 <translation id="3208584281581115441">Check now</translation>
 <translation id="3208703785962634733">Unconfirmed</translation>
@@ -2659,7 +2659,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3797739167230984533">Your <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> is managed<ph name="END_LINK" /> by your organisation</translation>
 <translation id="3797900183766075808">&amp;Search <ph name="SEARCH_ENGINE" /> for “<ph name="SEARCH_TERMS" />”</translation>
 <translation id="3798449238516105146">Version</translation>
-<translation id="3799128412641261490">Switch access settings</translation>
+<translation id="3799128412641261490">Switch Access settings</translation>
 <translation id="3799903419983101749">Continue from where you left off. You can set apps to restore automatically in Settings.</translation>
 <translation id="3800806661949714323">Show all (recommended)</translation>
 <translation id="380329542618494757">Name</translation>
@@ -3564,7 +3564,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4809079943450490359">Instructions from your device administrator:</translation>
 <translation id="480990236307250886">Open the homepage</translation>
 <translation id="4809927044794281115">Light theme</translation>
-<translation id="4811212958317149293">Switch access keyboard auto-scan</translation>
+<translation id="4811212958317149293">Switch Access keyboard auto-scan</translation>
 <translation id="4811503964269049987">Group selected tab</translation>
 <translation id="4813136279048157860">My Images</translation>
 <translation id="4813512666221746211">Network error</translation>
@@ -5587,7 +5587,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037509989619051237">Text to preview</translation>
-<translation id="7038632520572155338">Switch access</translation>
+<translation id="7038632520572155338">Switch Access</translation>
 <translation id="7038710352229712897">Add another Google Account for <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Access USB devices from <ph name="VENDOR_NAME" /></translation>
 <translation id="7039912931802252762">Microsoft Smart Card Logon</translation>
@@ -7171,7 +7171,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Choose the language into which you want to translate the page</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
-<translation id="8741944563400125534">Switch access setup guide</translation>
+<translation id="8741944563400125534">Switch Access setup guide</translation>
 <translation id="8742998548129056176">This is general information about your device and how you use it (such as battery level, system and app activity, and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, to make their apps and products better.</translation>
 <translation id="8746654918629346731">You already requested '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="874689135111202667">{0,plural, =1{Upload one file to this site?}other{Upload # files to this site?}}</translation>
