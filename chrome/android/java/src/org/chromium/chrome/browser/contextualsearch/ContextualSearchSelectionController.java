@@ -367,13 +367,18 @@ public class ContextualSearchSelectionController {
                 // If we're in the middle of a drag operation then we can wait for the drag to end,
                 // otherwise we need to process this right away.
                 if (mAreSelectionHandlesBeingDragged) break;
+
                 // Smart text selection generates MOVED without STARTED and since that's not a user
                 // gesture we should not consider it an adjusted selection requiring an exact
-                // search.
-                shouldHandleSelection = true;
+                // search. MOVED events are also sent on simple scroll operations that hide and then
+                // show the selection handles so we need to differentiate based on whether the
+                // selection changed.
+                String previousSelection = mSelectedText;
                 if (getSelectionPopupController() != null) {
                     mSelectedText = getSelectionPopupController().getSelectedText();
                 }
+                shouldHandleSelection =
+                        (mSelectedText != null && !mSelectedText.equals(previousSelection));
                 break;
             case SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED:
                 mAreSelectionHandlesBeingDragged = false;
