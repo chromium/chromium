@@ -56,7 +56,6 @@
 
     <!-- Contextual Search colors -->
     <color name="contextual_search_promo_background_color">@color/default_bg_color_elev_0</color>
-    <color name="contextual_search_promo_border_color">#C2C2C2</color>
 
     <!-- Find in Page colors -->
     <color name="find_in_page_query_white_color">@android:color/white</color>

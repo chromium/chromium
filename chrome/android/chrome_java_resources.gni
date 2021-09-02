@@ -474,7 +474,6 @@ chrome_java_resources = [
   "java/res/drawable/checkerboard_background.xml",
   "java/res/drawable/computer_black_24dp.xml",
   "java/res/drawable/contextual_search_panel_help_background.xml",
-  "java/res/drawable/contextual_search_promo_background.xml",
   "java/res/drawable/custom_tabs_handle_view_shape.xml",
   "java/res/drawable/data_reduction_big.xml",
   "java/res/drawable/data_reduction_illustration.xml",
