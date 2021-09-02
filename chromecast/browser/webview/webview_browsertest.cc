@@ -119,6 +119,7 @@ class WebviewTest : public content::BrowserTestBase {
   }
   void SetUpCommandLine(base::CommandLine* command_line) final {
     command_line->AppendSwitchASCII(switches::kTestType, "browser");
+    command_line->AppendSwitch("allow-pre-commit-input");
   }
   void RunTestOnMainThread() override {}
   void PostRunTestOnMainThread() override {}
