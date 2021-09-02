@@ -1502,11 +1502,7 @@ class BBJSONGenerator(object):
         return None
 
     bot_names = set()
-    # TODO(https://crbug.com/1245674) Remove the glob without the luci component
-    # once all configs are switched over
     milo_configs = glob.glob(
-        os.path.join(self.args.infra_config_dir, 'generated', 'luci-milo*.cfg'))
-    milo_configs += glob.glob(
         os.path.join(self.args.infra_config_dir, 'generated', 'luci',
                      'luci-milo*.cfg'))
     for c in milo_configs:
