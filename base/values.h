@@ -666,18 +666,18 @@ class BASE_EXPORT DictionaryValue : public Value {
   // value at that path, even if it has a different type.
   // DEPRECATED, use `Value::SetBoolKey()` or `Value::SetBoolPath()`.
   Value* SetBoolean(StringPiece path, bool in_value);
-  // DEPRECATED, use `Value::SetIntPath()`.
+  // DEPRECATED, use `Value::SetIntKey()` or `Value::SetBoolPath()`.
   Value* SetInteger(StringPiece path, int in_value);
-  // DEPRECATED, use `Value::SetDoublePath()`.
+  // DEPRECATED, use `Value::SetDoubleKey()` or `Value::SetDoublePath()`.
   Value* SetDouble(StringPiece path, double in_value);
-  // DEPRECATED, use `Value::SetStringPath()`.
+  // DEPRECATED, use `Value::SetStringKey()` or `Value::SetStringPath()`.
   Value* SetString(StringPiece path, StringPiece in_value);
-  // DEPRECATED, use `Value::SetStringPath()`.
+  // DEPRECATED, use `Value::SetStringKey()` or `Value::SetStringPath()`.
   Value* SetString(StringPiece path, const std::u16string& in_value);
-  // DEPRECATED, use `Value::SetPath()`.
+  // DEPRECATED, use `Value::SetKey()` or `Value::SetPath()`.
   DictionaryValue* SetDictionary(StringPiece path,
                                  std::unique_ptr<DictionaryValue> in_value);
-  // DEPRECATED, use `Value::SetPath()`.
+  // DEPRECATED, use `Value::SetKey()` or `Value::SetPath()`.
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
@@ -694,42 +694,52 @@ class BASE_EXPORT DictionaryValue : public Value {
   // Otherwise, it will return false and `out_value` will be untouched.
   // Note that the dictionary always owns the value that's returned.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `Value::FindPath(path)` instead.
+  // DEPRECATED, use `Value::FindKey(key)` or `Value::FindPath(path)` instead.
   bool Get(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use `Value::FindPath(path)` instead.
+  // DEPRECATED, use `Value::FindKey(key)` or `Value::FindPath(path)` instead.
   bool Get(StringPiece path, Value** out_value);
 
   // These are convenience forms of `Get()`.  The value will be retrieved
   // and the return value will be true if the path is valid and the value at
   // the end of the path can be returned in the form specified.
   // `out_value` is optional and will only be set if non-NULL.
-  // DEPRECATED, use `Value::FindBoolPath(path)` instead.
+  // DEPRECATED, use `Value::FindBoolKey(key)` or `Value::FindBoolPath(path)`
+  // instead.
   bool GetBoolean(StringPiece path, bool* out_value) const;
-  // DEPRECATED, use `Value::FindIntPath(path)` instead.
+  // DEPRECATED, use `Value::FindIntKey(key)` or `Value::FindIntPath(path)`
+  // instead.
   bool GetInteger(StringPiece path, int* out_value) const;
   // Values of both type Type::INTEGER and Type::DOUBLE can be obtained as
   // doubles.
-  // DEPRECATED, use `Value::FindDoublePath(path)`.
+  // DEPRECATED, use `Value::FindDoubleKey(key)` or
+  // `Value::FindDoublePath(path)`.
   bool GetDouble(StringPiece path, double* out_value) const;
-  // DEPRECATED, use `Value::FindStringPath(path)` instead.
+  // DEPRECATED, use `Value::FindStringKey(key)` or
+  // `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use `Value::FindStringPath(path)` instead.
+  // DEPRECATED, use `Value::FindStringKey(key)` or
+  // `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::u16string* out_value) const;
-  // DEPRECATED, use `Value::FindString(path)` and `IsAsciiString()` instead.
+  // DEPRECATED, use `Value::FindString(path)` or `Value::FindStPath(path)`, and
+  // `IsAsciiString()` instead.
   bool GetStringASCII(StringPiece path, std::string* out_value) const;
-  // DEPRECATED, use `Value::FindBlobPath(path)` instead.
+  // DEPRECATED, use `Value::FindBlobKey(key)` or `Value::FindBlobPath(path)`
+  // instead.
   bool GetBinary(StringPiece path, const Value** out_value) const;
-  // DEPRECATED, use `Value::FindBlobPath(path)` instead.
+  // DEPRECATED, use `Value::FindBlobKey(key)` or `Value::FindBlobPath(path)`
+  // instead.
   bool GetBinary(StringPiece path, Value** out_value);
-  // DEPRECATED, use `Value::FindPath(path)` and Value's Dictionary API
-  // instead.
+  // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPah(path)`,
+  // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;
-  // DEPRECATED, use `Value::FindPath(path)` and Value's Dictionary API
-  // instead.
+  // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPath(path)`,
+  // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, DictionaryValue** out_value);
-  // DEPRECATED, use `Value::FindPath(path)` and `Value::GetList()` instead.
+  // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
+  // and `Value::GetList()` instead.
   bool GetList(StringPiece path, const ListValue** out_value) const;
-  // DEPRECATED, use `Value::FindPath(path)` and `Value::GetList()` instead.
+  // DEPRECATED, use `Value::FindListKey(key)` or `Value::FindListPath(path)`,
+  // and `Value::GetList()` instead.
   bool GetList(StringPiece path, ListValue** out_value);
 
   // Like `Get()`, but without special treatment of '.'.  This allows e.g. URLs
