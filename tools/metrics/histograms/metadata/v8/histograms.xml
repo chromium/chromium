@@ -457,6 +457,66 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of compaction on the main thread during the atomic pause of
+    a garbage collection of the managed C++ heap. There is only a single atomic
+    pause compaction event per cycle but it may cover several sub-events.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall main thread duration of the atomic pause of a garbage collection of
+    the managed C++ heap. There is only a single atomic pause event per cycle
+    but it may cover several sub-events. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of marking on the main thread during the atomic pause of a
+    garbage collection of the managed C++ heap. There is only a single atomic
+    pause marking event per cycle but it may cover several sub-events. Reported
+    at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of sweeping on the main thread during the atomic pasue of a
+    garbage collection of the managed C++ heap. There is only a single atomic
+    pause sweeping event per cycle but it may cover several sub-events. Reported
+    at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp" units="ms"
+    expires_after="M100">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of weakness handling on the main thread during the atomic
+    pause of a garbage collection of the managed C++ heap. There is only a
+    single atomic pause weakness handling event per cycle but it may cover
+    several sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Compact.Cpp" units="ms"
     expires_after="M100">
   <owner>omerkatz@chromium.org</owner>
@@ -553,6 +613,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.GC.Event.MainThread.Full.Atomic.Compact.Cpp" units="ms"
     expires_after="M100">
+  <obsolete>
+    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp.
+  </obsolete>
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -563,6 +626,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.GC.Event.MainThread.Full.Atomic.Cpp" units="ms"
     expires_after="M100">
+  <obsolete>
+    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Cpp.
+  </obsolete>
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -573,6 +639,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.GC.Event.MainThread.Full.Atomic.Mark.Cpp" units="ms"
     expires_after="M100">
+  <obsolete>
+    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp.
+  </obsolete>
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -583,6 +652,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.GC.Event.MainThread.Full.Atomic.Sweep.Cpp" units="ms"
     expires_after="M100">
+  <obsolete>
+    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp.
+  </obsolete>
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -593,6 +665,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="V8.GC.Event.MainThread.Full.Atomic.Weak.Cpp" units="ms"
     expires_after="M100">
+  <obsolete>
+    Removed 09/2021. Renamed to V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp.
+  </obsolete>
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>

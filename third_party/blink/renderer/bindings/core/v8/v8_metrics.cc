@@ -86,11 +86,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
 namespace {
 
 #if BUILDFLAG(USE_V8_OILPAN)
-void ReportAtomicLatencyEvent(int64_t duration_us) {
-  UMA_HISTOGRAM_TIMES("V8.GC.Event.MainThread.Full.Atomic.Cpp",
-                      base::TimeDelta::FromMicroseconds(duration_us));
-}
-
 // Helper function to convert a byte count to a KB count, capping at
 // INT_MAX if the number is larger than that.
 constexpr int32_t CappedSizeInKB(int64_t size_in_bytes) {
@@ -179,31 +174,30 @@ void V8MetricsRecorder::AddMainThreadEvent(
       base::TimeDelta::FromMicroseconds(
           event.main_thread_cpp.sweep_wall_clock_duration_in_us));
 
-  // Report latency metrics:
+  // Report atomic pause metrics:
   UMA_HISTOGRAM_TIMES(
-      "V8.GC.Event.MainThread.Full.Atomic.Mark.Cpp",
+      "V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp",
       base::TimeDelta::FromMicroseconds(
           event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
-      "V8.GC.Event.MainThread.Full.Atomic.Weak.Cpp",
+      "V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp",
       base::TimeDelta::FromMicroseconds(
           event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
-      "V8.GC.Event.MainThread.Full.Atomic.Compact.Cpp",
+      "V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp",
       base::TimeDelta::FromMicroseconds(
           event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
-      "V8.GC.Event.MainThread.Full.Atomic.Sweep.Cpp",
+      "V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp",
       base::TimeDelta::FromMicroseconds(
           event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
-  ReportAtomicLatencyEvent(
-      event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us);
-  ReportAtomicLatencyEvent(
-      event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us);
-  ReportAtomicLatencyEvent(
-      event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us);
-  ReportAtomicLatencyEvent(
-      event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us);
+  UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Full.Atomic.Cpp",
+      base::TimeDelta::FromMicroseconds(
+          event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us +
+          event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us +
+          event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us +
+          event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
 
   // Report size metrics:
   static constexpr size_t kMinSize = 1;
