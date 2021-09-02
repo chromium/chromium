@@ -186,6 +186,7 @@ void FlatBufferModelScorer::GetMatchingVisualTargets(
   NOTIMPLEMENTED();
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<double>)> callback) const {
@@ -205,6 +206,7 @@ void FlatBufferModelScorer::ApplyVisualTfLiteModel(
     std::move(callback).Run(std::vector<double>());
   }
 }
+#endif
 
 int FlatBufferModelScorer::model_version() const {
   return flatbuffer_model_->version();

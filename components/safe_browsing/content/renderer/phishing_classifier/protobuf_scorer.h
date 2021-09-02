@@ -52,9 +52,11 @@ class ProtobufModelScorer : public Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const override;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;
+#endif
 
   int model_version() const override;
   base::RepeatingCallback<bool(uint32_t)> find_page_word_callback()

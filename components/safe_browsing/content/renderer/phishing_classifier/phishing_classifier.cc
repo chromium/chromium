@@ -288,10 +288,12 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
       *bitmap_, std::move(verdict),
       base::BindOnce(&PhishingClassifier::OnVisualTargetsMatched,
                      weak_factory_.GetWeakPtr()));
-#else
+#elif BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));
+#else
+  RunCallback(*verdict)
 #endif
 }
 
@@ -304,9 +306,13 @@ void PhishingClassifier::OnVisualTargetsMatched(
   base::UmaHistogramTimes("SBClientPhishing.VisualComparisonTime",
                           base::TimeTicks::Now() - visual_matching_start_);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   scorer_->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));
+#else
+  RunCallback(*verdict);
+#endif
 }
 
 void PhishingClassifier::OnVisualTfLiteModelDone(

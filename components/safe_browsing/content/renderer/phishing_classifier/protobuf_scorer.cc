@@ -152,6 +152,7 @@ void ProtobufModelScorer::GetMatchingVisualTargets(
       std::move(callback));
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void ProtobufModelScorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<double>)> callback) const {
@@ -171,6 +172,7 @@ void ProtobufModelScorer::ApplyVisualTfLiteModel(
     std::move(callback).Run(std::vector<double>());
   }
 }
+#endif
 
 int ProtobufModelScorer::model_version() const {
   return model_.version();

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -34,6 +35,7 @@ source_set("phishing_classifier") {
     deps = [
       "//base",
       "//cc/paint",
+      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/paint_preview/common",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/common:interfaces",
@@ -47,15 +49,20 @@ source_set("phishing_classifier") {
       "//skia",
       "//third_party/blink/public:blink_headers",
       "//third_party/smhasher:murmurhash3",
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite-support",
-      "//third_party/tflite-support:tflite-support-proto",
       "//ui/base",
       "//ui/gfx/geometry:geometry",
       "//url",
       "//v8",
     ]
+
+    if (build_with_tflite_lib) {
+      deps += [
+        "//third_party/tflite",
+        "//third_party/tflite:tflite_public_headers",
+        "//third_party/tflite-support",
+        "//third_party/tflite-support:tflite-support-proto",
+      ]
+    }
   }
 }
 

@@ -54,9 +54,11 @@ class FlatBufferModelScorer : public Scorer {
       base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)> callback)
       const override;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ApplyVisualTfLiteModel(
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<double>)> callback) const override;
+#endif
 
   int model_version() const override;
   size_t max_words_per_term() const override;
