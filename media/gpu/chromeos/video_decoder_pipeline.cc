@@ -574,7 +574,7 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   return main_frame_pool_.get();
 }
 
-absl::optional<std::pair<Fourcc, gfx::Size>>
+StatusOr<std::pair<Fourcc, gfx::Size>>
 VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
     const gfx::Rect& visible_rect) {
@@ -582,7 +582,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   if (candidates.empty())
-    return absl::nullopt;
+    return Status(StatusCode::kInvalidArgument);
 
   image_processor_.reset();
 
@@ -604,7 +604,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
                                                 "ImageProcessor error")));
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
-    return absl::nullopt;
+    return Status(StatusCode::kInvalidArgument);
   }
 
   // Note that fourcc is specified in ImageProcessor's factory method.
@@ -612,14 +612,15 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   auto size = image_processor->input_config().size;
 
   // Setup new pipeline.
-  image_processor_ = ImageProcessorWithPool::Create(
+  auto status_or_image_processor = ImageProcessorWithPool::Create(
       std::move(image_processor), main_frame_pool_.get(),
       kNumFramesForImageProcessor, decoder_task_runner_);
-  if (!image_processor_) {
+  if (status_or_image_processor.has_error()) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
-    return absl::nullopt;
+    return std::move(status_or_image_processor).error();
   }
 
+  image_processor_ = std::move(status_or_image_processor).value();
   return std::make_pair(fourcc, size);
 }
 

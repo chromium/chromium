@@ -585,12 +585,14 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
        std::pair<Fourcc, gfx::Size>(Fourcc::YV12, kSize)}};
 
   for (const auto& test_vector : test_vectors) {
-    const auto chosen_candidate = decoder_->PickDecoderOutputFormat(
+    auto status_or_chosen_candidate = decoder_->PickDecoderOutputFormat(
         test_vector.input_candidates, kVisibleRect);
+    ASSERT_TRUE(status_or_chosen_candidate.has_value());
+    const auto chosen_candidate = std::move(status_or_chosen_candidate).value();
     EXPECT_EQ(test_vector.expected_chosen_candidate, chosen_candidate)
         << " expected: "
         << test_vector.expected_chosen_candidate.first.ToString()
-        << ", actual: " << chosen_candidate->first.ToString();
+        << ", actual: " << chosen_candidate.first.ToString();
   }
   DetachDecoderSequenceChecker();
 }

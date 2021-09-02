@@ -181,17 +181,18 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
-  DCHECK(state_ == State::kError || state_ == State::kUninitialized ||
-         state_ == State::kWaitingForInput);
 
   // Reinitializing the decoder is allowed if there are no pending decodes.
-  if (current_decode_task_ || !decode_task_queue_.empty()) {
+  if (current_decode_task_ || !decode_task_queue_.empty() ||
+      state_ == State::kExpectingReset) {
     LOG(ERROR)
         << "Don't call Initialize() while there are pending decode tasks";
     std::move(init_cb).Run(StatusCode::kVaapiReinitializedDuringDecode);
     return;
   }
 
+  DCHECK(state_ == State::kError || state_ == State::kUninitialized ||
+         state_ == State::kWaitingForInput);
   if (state_ != State::kUninitialized) {
     DVLOGF(3) << "Reinitializing decoder";
 
@@ -391,7 +392,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ == State::kError || state_ == State::kResetting)
+  if (state_ != State::kDecoding)
     return;
 
   DCHECK_EQ(state_, State::kDecoding);
@@ -559,6 +560,9 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateDecodeSurface() {
 }
 
 bool VaapiVideoDecoder::IsScalingDecode() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kDecoding || state_ == State::kChangingResolution);
+
   // If we're not decoding while scaling, we shouldn't have any surfaces for
   // that purpose.
   DCHECK(!!decode_to_output_scale_factor_ ||
@@ -569,6 +573,9 @@ bool VaapiVideoDecoder::IsScalingDecode() {
 const gfx::Rect VaapiVideoDecoder::GetOutputVisibleRect(
     const gfx::Rect& decode_visible_rect,
     const gfx::Size& output_picture_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kDecoding || state_ == State::kChangingResolution);
+
   if (!IsScalingDecode())
     return decode_visible_rect;
   DCHECK_LT(*decode_to_output_scale_factor_, 1.0f);
@@ -802,16 +809,6 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
         decode_surface_pool_for_scaling_.push(std::move(scoped_va_surface));
     }
   }
-  const gfx::Size natural_size =
-      aspect_ratio_.GetNaturalSize(output_visible_rect);
-  if (frame_pool_
-          ->Initialize(*format_fourcc, output_pic_size, output_visible_rect,
-                       natural_size, decoder_->GetRequiredNumOfPictures(),
-                       !!cdm_context_ref_)
-          .has_error()) {
-    SetErrorState("failed Initialize()ing the frame pool");
-    return;
-  }
 
   if (profile_ != decoder_->GetProfile()) {
     // When a profile is changed, we need to re-initialize VaapiWrapper.
@@ -836,6 +833,21 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 
   if (!vaapi_wrapper_->CreateContext(decoder_->GetPicSize())) {
     SetErrorState("failed creating VAContext");
+    return;
+  }
+
+  const gfx::Size natural_size =
+      aspect_ratio_.GetNaturalSize(output_visible_rect);
+  auto status_or_layout = frame_pool_->Initialize(
+      *format_fourcc, output_pic_size, output_visible_rect, natural_size,
+      decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_);
+  if (status_or_layout.has_error()) {
+    if (std::move(status_or_layout).error().code() == StatusCode::kAborted) {
+      DVLOGF(2) << "The frame pool initialization is aborted.";
+      SetState(State::kExpectingReset);
+    } else {
+      SetErrorState("failed Initialize()ing the frame pool");
+    }
     return;
   }
 
@@ -874,6 +886,9 @@ bool VaapiVideoDecoder::IsPlatformDecoder() const {
 }
 
 bool VaapiVideoDecoder::NeedsTranscryption() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kWaitingForInput);
+
   return transcryption_;
 }
 
@@ -961,12 +976,16 @@ void VaapiVideoDecoder::Reset(base::OnceClosure reset_cb) {
     return;
   }
 
-  if (state_ == State::kChangingResolution) {
-    // Recreate |decoder_| and |decoder_delegate_| if we are Reset() in the
-    // interim between calling |client_|s PrepareChangeResolution() and being
-    // called back on ApplyResolutionChange(), so the latter will find a fresh
-    // |decoder_|. Also give a chance to |decoder_delegate_| to release its
-    // internal data structures.
+  if (state_ == State::kChangingResolution ||
+      state_ == State::kExpectingReset) {
+    // Recreate |decoder_| and |decoder_delegate_| if we are either:
+    // a) Reset() in the interim between calling |client_|s
+    //    PrepareChangeResolution() and being called back on
+    //    ApplyResolutionChange(), so the latter will find a fresh |decoder_|;
+    // b) expecting a Reset() after the initialization of the frame pool was
+    //    aborted.
+    // Also give a chance to |decoder_delegate_| to release its internal data
+    // structures.
     decoder_delegate_->OnVAContextDestructionSoon();
     if (!CreateAcceleratedVideoDecoder().is_ok()) {
       SetErrorState("failed to (re)create decoder/delegate");
@@ -992,6 +1011,9 @@ void VaapiVideoDecoder::Reset(base::OnceClosure reset_cb) {
 Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kUninitialized ||
+         state_ == State::kChangingResolution ||
+         state_ == State::kExpectingReset);
 
   VaapiVideoDecoderDelegate::ProtectedSessionUpdateCB protected_update_cb =
       BindToCurrentLoop(base::BindRepeating(
@@ -1090,11 +1112,15 @@ void VaapiVideoDecoder::SetState(State state) {
       DCHECK(state_ == State::kWaitingForInput ||
              state_ == State::kWaitingForOutput || state_ == State::kDecoding ||
              state_ == State::kWaitingForProtected ||
-             state_ == State::kChangingResolution);
+             state_ == State::kChangingResolution ||
+             state_ == State::kExpectingReset);
       ClearDecodeTaskQueue(DecodeStatus::ABORTED);
       break;
     case State::kChangingResolution:
       DCHECK_EQ(state_, State::kDecoding);
+      break;
+    case State::kExpectingReset:
+      DCHECK_EQ(state_, State::kChangingResolution);
       break;
     case State::kError:
       ClearDecodeTaskQueue(DecodeStatus::DECODE_ERROR);

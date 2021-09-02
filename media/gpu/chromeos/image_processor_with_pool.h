@@ -25,9 +25,12 @@ class ImageProcessorWithPool {
  public:
   using FrameReadyCB = ImageProcessor::FrameReadyCB;
 
-  // Create ImageProcessorWithPool instance. |num_frames| is the number of
-  // frames requested from |frame_pool|.
-  static std::unique_ptr<ImageProcessorWithPool> Create(
+  // Initializes |frame_pool| and creates an ImageProcessorWithPool instance.
+  // |num_frames| is the number of frames requested from |frame_pool|.
+  // Returns a valid ImageProcessorWithPool instance if successful.
+  // Returns StatusCode::kAborted if the initialization is aborted.
+  // Returns StatusCode::kInvalidArgument if any other error occurs.
+  static StatusOr<std::unique_ptr<ImageProcessorWithPool>> Create(
       std::unique_ptr<ImageProcessor> image_processor,
       DmabufVideoFramePool* const frame_pool,
       size_t num_frames,

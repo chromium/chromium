@@ -61,9 +61,9 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // Return a valid format and size for |decoder_| output from given
     // |candidates| and the visible rect. The size might be modified from the
     // ones provided originally to accommodate the needs of the pipeline.
-    // Return absl::nullopt if no valid format is found.
-    virtual absl::optional<std::pair<Fourcc, gfx::Size>>
-    PickDecoderOutputFormat(
+    // Return StatusCode::kAborted if the process is aborted.
+    // Return StatusCode::kInvalidArgument if no valid format is found.
+    virtual StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
         const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
         const gfx::Rect& visible_rect) = 0;
   };
@@ -141,7 +141,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // After picking a format, it instantiates an |image_processor_| if none of
   // format in |candidates| is renderable and an ImageProcessor can convert a
   // candidate to renderable format.
-  absl::optional<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
+  StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
       const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
       const gfx::Rect& visible_rect) override;
 

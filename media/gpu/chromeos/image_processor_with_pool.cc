@@ -12,7 +12,8 @@
 namespace media {
 
 // static
-std::unique_ptr<ImageProcessorWithPool> ImageProcessorWithPool::Create(
+StatusOr<std::unique_ptr<ImageProcessorWithPool>>
+ImageProcessorWithPool::Create(
     std::unique_ptr<ImageProcessor> image_processor,
     DmabufVideoFramePool* const frame_pool,
     size_t num_frames,
@@ -23,14 +24,14 @@ std::unique_ptr<ImageProcessorWithPool> ImageProcessorWithPool::Create(
       /*use_protected=*/false);
   if (status_or_layout.has_error()) {
     VLOGF(1) << "Failed to initialize the pool.";
-    return nullptr;
+    return std::move(status_or_layout).error();
   }
 
   const GpuBufferLayout layout = std::move(status_or_layout).value();
   if (layout.size() != config.size) {
     VLOGF(1) << "Failed to request frame with correct size. "
              << config.size.ToString() << " != " << layout.size().ToString();
-    return nullptr;
+    return Status(StatusCode::kInvalidArgument);
   }
 
   return base::WrapUnique<ImageProcessorWithPool>(new ImageProcessorWithPool(

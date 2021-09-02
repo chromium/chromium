@@ -110,6 +110,8 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
     kDecoding,             // decoding buffers.
     kChangingResolution,   // need to change resolution, waiting for pipeline to
                            // be flushed.
+    kExpectingReset,       // resolution change is aborted, waiting for decoder
+                           // to be reset.
     kResetting,            // resetting decoder.
     kError,                // decoder encountered an error.
   };
