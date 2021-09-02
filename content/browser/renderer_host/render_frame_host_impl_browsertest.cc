@@ -6018,8 +6018,9 @@ class RenderFrameHostImplAnonymousIframeNikBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> alternate_test_server_;
 };
 
+// Failing on some builders, see https://crbug.com/1245980.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
-                       AnonymousIframeHasPartitionedNetworkState) {
+                       DISABLED_AnonymousIframeHasPartitionedNetworkState) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
 
   for (bool anonymous : {false, true}) {
