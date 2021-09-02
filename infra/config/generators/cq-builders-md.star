@@ -49,7 +49,7 @@ _TRY_BUILDER_VIEW_URL = "https://ci.chromium.org/p/chromium/builders/try"
 _REGEX_PREFIX = ".+/[+]/"
 
 def _get_main_config_group_builders(ctx):
-    cq_cfg = ctx.output["commit-queue.cfg"]
+    cq_cfg = ctx.output["luci/commit-queue.cfg"]
 
     for c in cq_cfg.config_groups:
         if len(c.gerrit) != 1:

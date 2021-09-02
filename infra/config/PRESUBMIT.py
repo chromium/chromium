@@ -12,8 +12,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckLintLuciMilo(input_api, output_api):
-  if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
-      'infra/config/lint-luci-milo.py' in input_api.LocalPaths()):
+  if ('infra/config/generated/luci/luci-milo.cfg' in input_api.LocalPaths()
+      or 'infra/config/lint-luci-milo.py' in input_api.LocalPaths()):
     return input_api.RunTests([
         input_api.Command(
             name='lint-luci-milo',
@@ -24,8 +24,9 @@ def CheckLintLuciMilo(input_api, output_api):
   return []
 
 def CheckTestingBuildbot(input_api, output_api):
-  if ('infra/config/generated/luci-milo.cfg' in input_api.LocalPaths() or
-      'infra/config/generated/luci-milo-dev.cfg' in input_api.LocalPaths()):
+  if ('infra/config/generated/luci/luci-milo.cfg' in input_api.LocalPaths() or
+      'infra/config/generated/luci/luci-milo-dev.cfg' in input_api.LocalPaths()
+      ):
     return input_api.RunTests([
         input_api.Command(
             name='testing/buildbot config checks',
