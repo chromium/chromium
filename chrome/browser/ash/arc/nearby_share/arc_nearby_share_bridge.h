@@ -62,7 +62,7 @@ class ArcNearbyShareBridge : public KeyedService,
   Profile* const profile_;
 
   // Map that keeps track of a task_id with its NearbyShareSessionImpl instance.
-  std::map<int32_t, std::unique_ptr<NearbyShareSessionImpl>> session_map_;
+  std::map<uint32_t, std::unique_ptr<NearbyShareSessionImpl>> session_map_;
 
   base::WeakPtrFactory<ArcNearbyShareBridge> weak_ptr_factory_{this};
 };

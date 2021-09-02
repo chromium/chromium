@@ -157,12 +157,6 @@ void ShareInfoFileHandler::StartPreparingFiles(
   update_callback_ = std::move(update_callback);
   file_sharing_started_ = true;
 
-  if (!base::PathExists(file_config_.directory)) {
-    LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
-    NotifyFileSharingCompleted(base::File::FILE_ERROR_EXISTS);
-    return;
-  }
-
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
     NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_OPERATION);
@@ -198,6 +192,11 @@ bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
   // Keep track of all scoped directories created so they can be cleaned up.
   scoped_temp_dirs_.emplace_front();
   auto it_temp_dir = scoped_temp_dirs_.begin();
+
+  if (!base::PathExists(file_config_.directory)) {
+    LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
+    return false;
+  }
 
   // Prepare a temporary directory and the destination file.
   if (!it_temp_dir->CreateUniqueTempDirUnderPath(file_config_.directory)) {
