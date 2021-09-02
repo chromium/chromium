@@ -3562,6 +3562,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Safe Browsing',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Safe Browsing',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 14,
@@ -3648,6 +3658,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of usage and crash-related data',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of usage and crash-related data',
+        },
+      ],
       'example_value': True,
       'id': 15,
       'caption': '''Enable reporting of usage and crash-related data''',
@@ -3678,6 +3698,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable saving passwords using the password manager',
+        },
+        {
+          'value': False,
+          'caption': 'Disable saving passwords using the password manager',
+        },
+      ],
       'example_value': True,
       'id': 16,
       'caption': '''Enable saving passwords to the password manager''',
@@ -3727,6 +3757,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable password leak detection',
+        },
+        {
+          'value': False,
+          'caption': 'Disable password leak detection',
+        },
+      ],
       'example_value': True,
       'id': 580,
       'caption': '''Enable leak detection for entered credentials''',
@@ -3752,12 +3792,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable AutoFill',
+        },
+        {
+          'value': False,
+          'caption': 'Disable AutoFill',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 18,
       'caption': '''Enable AutoFill''',
       'tags': [],
-      'desc': '''This policy is deprecated in M70, please use AutofillAddressEnabled and AutofillCreditCardEnabled instead.
+      'desc': '''This policy is deprecated in M70, please use <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME">AutofillAddressEnabled</ph> and <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME">AutofillCreditCardEnabled</ph> instead.
 
       Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s AutoFill feature and allows users to auto complete web forms using previously stored information such as address or credit card information.
 
@@ -3781,6 +3831,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable AutoFill for addresses',
+        },
+        {
+          'value': False,
+          'caption': 'Disable AutoFill for addresses',
+        },
+      ],
       'example_value': False,
       'id': 459,
       'caption': '''Enable AutoFill for addresses''',
@@ -3805,6 +3865,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable AutoFill for credit cards',
+        },
+        {
+          'value': False,
+          'caption': 'Disable AutoFill for credit cards',
+        },
+      ],
       'example_value': False,
       'id': 392,
       'caption': '''Enable AutoFill for credit cards''',
