@@ -64,7 +64,8 @@ suite(print_button_test.suiteName, function() {
       // that the preview is ready.
       if (printBeforePreviewReady) {
         const sidebar = page.shadowRoot.querySelector('print-preview-sidebar');
-        const parentElement = sidebar.$$('print-preview-button-strip');
+        const parentElement =
+            sidebar.shadowRoot.querySelector('print-preview-button-strip');
         const printButton =
             parentElement.shadowRoot.querySelector('.action-button');
         assertFalse(printButton.disabled);
@@ -121,7 +122,8 @@ suite(print_button_test.suiteName, function() {
           // Select Save as PDF destination
           const destinationSettings =
               page.shadowRoot.querySelector('print-preview-sidebar')
-                  .$$('print-preview-destination-settings');
+                  .shadowRoot.querySelector(
+                      'print-preview-destination-settings');
           const pdfDestination =
               destinationSettings.destinationStore_.destinations().find(
                   d => d.id === 'Save as PDF');
@@ -158,7 +160,8 @@ suite(print_button_test.suiteName, function() {
               // Select Save as PDF destination
               const destinationSettings =
                   page.shadowRoot.querySelector('print-preview-sidebar')
-                      .$$('print-preview-destination-settings');
+                      .shadowRoot.querySelector(
+                          'print-preview-destination-settings');
               const driveDestination =
                   destinationSettings.destinationStore_.destinations().find(
                       d => d.id ===

@@ -73,7 +73,8 @@ suite(destination_dialog_interactive_test.suiteName, function() {
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
       // Retrieve a reference to dialog
       dialog = /** @type {!PrintPreviewDestinationDialogElement} */ (
-          destinationSettings.$$('#destinationDialog').get());
+          destinationSettings.shadowRoot.querySelector('#destinationDialog')
+              .get());
     });
   });
 

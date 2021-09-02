@@ -53,7 +53,7 @@ suite(select_behavior_test.suiteName, function() {
   test(
       assert(select_behavior_test.TestNames.CallProcessSelectChange),
       function() {
-        const select = testSelect.$$('select');
+        const select = testSelect.shadowRoot.querySelector('select');
         assertEquals('0', testSelect.selectedValue);
         assertEquals('0', select.value);
         let whenProcessSelectCalled =

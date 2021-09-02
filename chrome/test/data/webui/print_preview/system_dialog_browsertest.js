@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, whenReady} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewLinkContainerElement, PrintPreviewSidebarElement, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
@@ -59,7 +59,8 @@ suite(system_dialog_browsertest.suiteName, function() {
           nativeLayer.whenCalled('getPrinterCapabilities'),
         ])
         .then(function() {
-          linkContainer = sidebar.$$('print-preview-link-container');
+          linkContainer =
+              sidebar.shadowRoot.querySelector('print-preview-link-container');
           return nativeLayer.whenCalled('getPreview');
         })
         .then(function() {
@@ -89,9 +90,11 @@ suite(system_dialog_browsertest.suiteName, function() {
         assertFalse(linkContainer.disabled);
         assertFalse(link.hidden);
 
-        const moreSettingsElement = sidebar.$$('print-preview-more-settings');
+        const moreSettingsElement =
+            sidebar.shadowRoot.querySelector('print-preview-more-settings');
         moreSettingsElement.$.label.click();
-        const scalingSettings = sidebar.$$('print-preview-scaling-settings');
+        const scalingSettings =
+            sidebar.shadowRoot.querySelector('print-preview-scaling-settings');
         assertFalse(scalingSettings.hidden);
         nativeLayer.resetResolver('getPreview');
         let previewCalls = 0;
@@ -116,7 +119,8 @@ suite(system_dialog_browsertest.suiteName, function() {
             })
             .then(() => {
               // Expect disabled print button
-              const parentElement = sidebar.$$('print-preview-button-strip');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
               const printButton =
                   parentElement.shadowRoot.querySelector('.action-button');
               assertTrue(printButton.disabled);

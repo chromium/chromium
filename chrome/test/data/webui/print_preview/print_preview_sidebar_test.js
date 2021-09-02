@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterface, CloudPrintInterfaceImpl, NativeLayer, NativeLayerImpl, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceImpl, NativeLayer, NativeLayerImpl, PrintPreviewModelElement, PrintPreviewSidebarElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {CloudPrintInterfaceStub} from 'chrome://test/print_preview/cloud_print_interface_stub.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
@@ -66,14 +66,15 @@ suite(print_preview_sidebar_test.suiteName, function() {
       assert(print_preview_sidebar_test.TestNames
                  .SettingsSectionsVisibilityChange),
       function() {
-        const moreSettingsElement = sidebar.$$('print-preview-more-settings');
+        const moreSettingsElement =
+            sidebar.shadowRoot.querySelector('print-preview-more-settings');
         moreSettingsElement.$.label.click();
         const camelToKebab = s => s.replace(/([A-Z])/g, '-$1').toLowerCase();
         ['copies', 'layout', 'color', 'mediaSize', 'margins', 'dpi', 'scaling',
          'duplex', 'otherOptions']
             .forEach(setting => {
-              const element =
-                  sidebar.$$(`print-preview-${camelToKebab(setting)}-settings`);
+              const element = sidebar.shadowRoot.querySelector(
+                  `print-preview-${camelToKebab(setting)}-settings`);
               // Show, hide and reset.
               [true, false, true].forEach(value => {
                 sidebar.set(`settings.${setting}.available`, value);
@@ -88,7 +89,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   test(
       assert(print_preview_sidebar_test.TestNames.SheetCountWithDuplex),
       function() {
-        const header = sidebar.$$('print-preview-header');
+        const header = sidebar.shadowRoot.querySelector('print-preview-header');
         assertEquals(1, header.sheetCount);
         sidebar.setSetting('pages', [1, 2, 3]);
         assertEquals(3, header.sheetCount);
@@ -103,7 +104,7 @@ suite(print_preview_sidebar_test.suiteName, function() {
   test(
       assert(print_preview_sidebar_test.TestNames.SheetCountWithCopies),
       function() {
-        const header = sidebar.$$('print-preview-header');
+        const header = sidebar.shadowRoot.querySelector('print-preview-header');
         assertEquals(1, header.sheetCount);
         sidebar.setSetting('copies', 4);
         assertEquals(4, header.sheetCount);

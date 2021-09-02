@@ -386,7 +386,7 @@ export function getSaveAsPdfDestination() {
  *     selected and the process-select-change event has fired.
  */
 export function selectOption(section, option) {
-  const select = section.$$('select');
+  const select = section.shadowRoot.querySelector('select');
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);

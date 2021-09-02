@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
+import {CloudPrintInterfaceEventType, CloudPrintInterfaceImpl, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, LocalDestinationInfo, makeRecentDestination, MeasurementSystemUnitType, NativeInitialSettings, NativeLayer, NativeLayerImpl, PluginProxyImpl, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, PrintPreviewLayoutSettingsElement, PrintPreviewNumberSettingsSectionElement, PrintPreviewPreviewAreaElement, PrintPreviewSidebarElement, ScalingType, State, whenReady} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -190,11 +190,13 @@ suite(invalid_settings_browsertest.suiteName, function() {
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
-                sidebar.$$('print-preview-destination-settings'));
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
               printButton =
                   parentElement.shadowRoot.querySelector('.action-button');
 
@@ -310,19 +312,23 @@ suite(invalid_settings_browsertest.suiteName, function() {
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
-                sidebar.$$('print-preview-destination-settings'));
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
         const scalingSettings =
             /** @type {!PrintPreviewNumberSettingsSectionElement} */ (
-                sidebar.$$('print-preview-scaling-settings')
+                sidebar.shadowRoot
+                    .querySelector('print-preview-scaling-settings')
                     .shadowRoot.querySelector(
                         'print-preview-number-settings-section'));
         const layoutSettings =
             /** @type {!PrintPreviewLayoutSettingsElement} */ (
-                sidebar.$$('print-preview-layout-settings'));
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-layout-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
               printButton =
                   parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([
@@ -426,11 +432,13 @@ suite(invalid_settings_browsertest.suiteName, function() {
         let printButton = null;
         const destinationSettings =
             /** @type {!PrintPreviewDestinationSettingsElement} */ (
-                sidebar.$$('print-preview-destination-settings'));
+                sidebar.shadowRoot.querySelector(
+                    'print-preview-destination-settings'));
 
         return waitBeforeNextRender(page)
             .then(() => {
-              const parentElement = sidebar.$$('print-preview-button-strip');
+              const parentElement = sidebar.shadowRoot.querySelector(
+                  'print-preview-button-strip');
               printButton =
                   parentElement.shadowRoot.querySelector('.action-button');
               return Promise.all([

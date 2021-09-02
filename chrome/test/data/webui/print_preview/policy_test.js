@@ -137,14 +137,14 @@ suite(policy_tests.suiteName, function() {
   function toggleMoreSettings() {
     const moreSettingsElement =
         page.shadowRoot.querySelector('print-preview-sidebar')
-            .$$('print-preview-more-settings');
+            .shadowRoot.querySelector('print-preview-more-settings');
     moreSettingsElement.$.label.click();
   }
 
   function getCheckbox(settingName) {
     return page.shadowRoot.querySelector('print-preview-sidebar')
-        .$$('print-preview-other-options-settings')
-        .$$(`#${settingName}`);
+        .shadowRoot.querySelector('print-preview-other-options-settings')
+        .shadowRoot.querySelector(`#${settingName}`);
   }
 
   // Tests different scenarios of applying header/footer policy.
@@ -275,9 +275,9 @@ suite(policy_tests.suiteName, function() {
       toggleMoreSettings();
       const mediaSettingsSelect =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-media-size-settings')
-              .$$('print-preview-settings-select')
-              .$$('select');
+              .shadowRoot.querySelector('print-preview-media-size-settings')
+              .shadowRoot.querySelector('print-preview-settings-select')
+              .shadowRoot.querySelector('select');
       assertEquals(
           subtestParams.expectedName,
           JSON.parse(mediaSettingsSelect.value).name);
@@ -341,11 +341,11 @@ suite(policy_tests.suiteName, function() {
       }
       const printButton =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-button-strip')
+              .shadowRoot.querySelector('print-preview-button-strip')
               .shadowRoot.querySelector('cr-button.action-button');
       const errorMessage =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-button-strip')
+              .shadowRoot.querySelector('print-preview-button-strip')
               .shadowRoot.querySelector('div.error-message');
       assertEquals(subtestParams.expectedDisabled, printButton.disabled);
       assertEquals(subtestParams.expectedHidden, errorMessage.hidden);
@@ -422,7 +422,7 @@ suite(policy_tests.suiteName, function() {
           subtestParams.defaultMode);
       const colorSettingsSelect =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-color-settings')
+              .shadowRoot.querySelector('print-preview-color-settings')
               .shadowRoot.querySelector('select');
       assertEquals(
           subtestParams.expectedDisabled, colorSettingsSelect.disabled);
@@ -549,10 +549,12 @@ suite(policy_tests.suiteName, function() {
       toggleMoreSettings();
       const duplexSettingsSection =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-duplex-settings');
-      const checkbox = duplexSettingsSection.$$('cr-checkbox');
-      const collapse = duplexSettingsSection.$$('iron-collapse');
-      const select = duplexSettingsSection.$$('select');
+              .shadowRoot.querySelector('print-preview-duplex-settings');
+      const checkbox =
+          duplexSettingsSection.shadowRoot.querySelector('cr-checkbox');
+      const collapse =
+          duplexSettingsSection.shadowRoot.querySelector('iron-collapse');
+      const select = duplexSettingsSection.shadowRoot.querySelector('select');
       const expectedValue = subtestParams.expectedValue.toString();
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
       assertEquals(subtestParams.expectedOpened, collapse.opened);
@@ -662,10 +664,12 @@ suite(policy_tests.suiteName, function() {
 
       const pinSettingsSection =
           page.shadowRoot.querySelector('print-preview-sidebar')
-              .$$('print-preview-pin-settings');
-      const checkbox = pinSettingsSection.$$('cr-checkbox');
-      const collapse = pinSettingsSection.$$('iron-collapse');
-      const input = pinSettingsSection.$$('cr-input');
+              .shadowRoot.querySelector('print-preview-pin-settings');
+      const checkbox =
+          pinSettingsSection.shadowRoot.querySelector('cr-checkbox');
+      const collapse =
+          pinSettingsSection.shadowRoot.querySelector('iron-collapse');
+      const input = pinSettingsSection.shadowRoot.querySelector('cr-input');
       assertEquals(subtestParams.expectedCheckboxDisabled, checkbox.disabled);
       assertEquals(subtestParams.expectedChecked, checkbox.checked);
       assertEquals(subtestParams.expectedOpened, collapse.opened);

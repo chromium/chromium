@@ -32,16 +32,16 @@ import './link_container.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DarkModeBehavior} from '../dark_mode_behavior.js';
+import {DarkModeBehavior, DarkModeBehaviorInterface} from '../dark_mode_behavior.js';
 import {Destination} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
 import {Metrics, MetricsContext} from '../metrics.js';
 
 import {DestinationState} from './destination_settings.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * Number of settings sections to show when "More settings" is collapsed.
@@ -49,96 +49,110 @@ import {SettingsBehavior} from './settings_behavior.js';
  */
 const MAX_SECTIONS_TO_SHOW = 6;
 
-Polymer({
-  is: 'print-preview-sidebar',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DarkModeBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewSidebarElementBase = mixinBehaviors(
+    [
+      SettingsBehavior, CrContainerShadowBehavior, WebUIListenerBehavior,
+      DarkModeBehavior
+    ],
+    PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
+  static get is() {
+    return 'print-preview-sidebar';
+  }
 
-  behaviors: [
-    SettingsBehavior,
-    CrContainerShadowBehavior,
-    WebUIListenerBehavior,
-    DarkModeBehavior,
-  ],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    cloudPrintErrorMessage: String,
+  static get properties() {
+    return {
+      cloudPrintErrorMessage: String,
 
-    controlsManaged: Boolean,
+      controlsManaged: Boolean,
 
-    /** @type {Destination} */
-    destination: {
-      type: Object,
-      notify: true,
-    },
+      /** @type {Destination} */
+      destination: {
+        type: Object,
+        notify: true,
+      },
 
-    /** @private {!DestinationState} */
-    destinationState: {
-      type: Number,
-      notify: true,
-    },
+      /** @private {!DestinationState} */
+      destinationState: {
+        type: Number,
+        notify: true,
+      },
 
-    /** @type {!Error} */
-    error: {
-      type: Number,
-      notify: true,
-    },
+      /** @type {!Error} */
+      error: {
+        type: Number,
+        notify: true,
+      },
 
-    isPdf: Boolean,
+      isPdf: Boolean,
 
-    pageCount: Number,
+      pageCount: Number,
 
-    /** @type {!State} */
-    state: {
-      type: Number,
-      observer: 'onStateChanged_',
-    },
+      /** @type {!State} */
+      state: {
+        type: Number,
+        observer: 'onStateChanged_',
+      },
 
-    /** @private {boolean} */
-    controlsDisabled_: {
-      type: Boolean,
-      computed: 'computeControlsDisabled_(state)',
-    },
+      /** @private {boolean} */
+      controlsDisabled_: {
+        type: Boolean,
+        computed: 'computeControlsDisabled_(state)',
+      },
 
-    maxSheets: Number,
+      maxSheets: Number,
 
-    /** @private {number} */
-    sheetCount_: {
-      type: Number,
-      computed: 'computeSheetCount_(' +
-          'settings.pages.*, settings.duplex.*, settings.copies.*)',
-    },
+      /** @private {number} */
+      sheetCount_: {
+        type: Number,
+        computed: 'computeSheetCount_(' +
+            'settings.pages.*, settings.duplex.*, settings.copies.*)',
+      },
 
-    /** @private {boolean} */
-    firstLoad_: {
-      type: Boolean,
-      value: true,
-    },
+      /** @private {boolean} */
+      firstLoad_: {
+        type: Boolean,
+        value: true,
+      },
 
-    /** @private {boolean} */
-    isInAppKioskMode_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      isInAppKioskMode_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    settingsExpandedByUser_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      settingsExpandedByUser_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {boolean} */
-    shouldShowMoreSettings_: {
-      type: Boolean,
-      computed: 'computeShouldShowMoreSettings_(settings.pages.available, ' +
-          'settings.copies.available, settings.layout.available, ' +
-          'settings.color.available, settings.mediaSize.available, ' +
-          'settings.dpi.available, settings.margins.available, ' +
-          'settings.pagesPerSheet.available, settings.scaling.available, ' +
-          'settings.duplex.available, settings.otherOptions.available, ' +
-          'settings.vendorItems.available)',
-    },
-  },
+      /** @private {boolean} */
+      shouldShowMoreSettings_: {
+        type: Boolean,
+        computed: 'computeShouldShowMoreSettings_(settings.pages.available, ' +
+            'settings.copies.available, settings.layout.available, ' +
+            'settings.color.available, settings.mediaSize.available, ' +
+            'settings.dpi.available, settings.margins.available, ' +
+            'settings.pagesPerSheet.available, settings.scaling.available, ' +
+            'settings.duplex.available, settings.otherOptions.available, ' +
+            'settings.vendorItems.available)',
+      },
+    };
+  }
 
   /**
    * @param {boolean} appKioskMode
@@ -160,7 +174,7 @@ Polymer({
     this.$.destinationSettings.init(
         defaultPrinter, pdfPrinterDisabled, isDriveMounted,
         serializedDestinationSelectionRulesStr);
-  },
+  }
 
   /**
    * @return {boolean} Whether the controls should be disabled.
@@ -168,7 +182,7 @@ Polymer({
    */
   computeControlsDisabled_() {
     return this.state !== State.READY;
-  },
+  }
 
   /**
    * @return {number} The number of sheets that will be printed.
@@ -180,7 +194,7 @@ Polymer({
       sheets = Math.ceil(sheets / 2);
     }
     return sheets * /** @type {number} */ (this.getSettingValue('copies'));
-  },
+  }
 
   /**
    * @return {boolean} Whether to show the "More settings" link.
@@ -195,7 +209,7 @@ Polymer({
     ].reduce((count, setting) => {
       return this.getSetting(setting).available ? count + 1 : count;
     }, 1) > MAX_SECTIONS_TO_SHOW;
-  },
+  }
 
   /**
    * @return {boolean} Whether the "more settings" collapse should be expanded.
@@ -210,13 +224,14 @@ Polymer({
     // Expand the settings if the user has requested them expanded or if more
     // settings is not displayed (i.e. less than 6 total settings available).
     return this.settingsExpandedByUser_ || !this.shouldShowMoreSettings_;
-  },
+  }
 
   /** @private */
   onPrintButtonFocused_() {
     this.firstLoad_ = false;
-  },
+  }
 
+  /** @private */
   onStateChanged_() {
     if (this.state !== State.PRINTING) {
       return;
@@ -228,11 +243,15 @@ Polymer({
               Metrics.PrintSettingsUiBucket.PRINT_WITH_SETTINGS_EXPANDED :
               Metrics.PrintSettingsUiBucket.PRINT_WITH_SETTINGS_COLLAPSED);
     }
-  },
+  }
 
   /** @return {boolean} Whether the system dialog link is available. */
   systemDialogLinkAvailable() {
-    const linkContainer = this.$$('print-preview-link-container');
+    const linkContainer =
+        this.shadowRoot.querySelector('print-preview-link-container');
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewSidebarElement.is, PrintPreviewSidebarElement);

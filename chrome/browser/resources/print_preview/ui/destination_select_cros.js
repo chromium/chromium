@@ -102,7 +102,7 @@ export class PrintPreviewDestinationSelectCrosElement extends
 
   focus() {
     this.shadowRoot.querySelector('#dropdown')
-        .$$('#destination-dropdown')
+        .shadowRoot.querySelector('#destination-dropdown')
         .focus();
   }
 

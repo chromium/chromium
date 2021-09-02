@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, PrintPreviewSettingsSelectElement} from 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -43,7 +43,7 @@ suite('SettingsSelectTest', function() {
         settingsSelect.capability.option[1].custom_display_name;
     flush();
 
-    const select = settingsSelect.$$('select');
+    const select = settingsSelect.shadowRoot.querySelector('select');
     // Verify that the selected option and names are as expected.
     assertEquals(0, select.selectedIndex);
     assertEquals(2, select.options.length);
@@ -75,7 +75,7 @@ suite('SettingsSelectTest', function() {
     flush();
     const option0 = JSON.stringify(settingsSelect.capability.option[0]);
     const option1 = JSON.stringify(settingsSelect.capability.option[1]);
-    const select = settingsSelect.$$('select');
+    const select = settingsSelect.shadowRoot.querySelector('select');
 
     // Normally done for initialization by the model and parent section.
     settingsSelect.set(

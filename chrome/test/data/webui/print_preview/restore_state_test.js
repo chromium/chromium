@@ -317,7 +317,8 @@ suite(restore_state_test.suiteName, function() {
     PluginProxyImpl.instance_ = pluginProxy;
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
-    const previewArea = page.$$('print-preview-preview-area');
+    const previewArea =
+        page.shadowRoot.querySelector('print-preview-preview-area');
 
     await Promise.all([
       nativeLayer.whenCalled('getInitialSettings'),
@@ -332,7 +333,8 @@ suite(restore_state_test.suiteName, function() {
       // production, just use the model instead of creating the dialog.
       const element = testValue.settingName === 'vendorItems' ?
           getInstance() :
-          page.$$('print-preview-sidebar').$$(testValue.section);
+          page.shadowRoot.querySelector('print-preview-sidebar')
+              .shadowRoot.querySelector(testValue.section);
       element.setSetting(testValue.settingName, testValue.value);
     });
     // Wait on only the last call to saveAppState, which should

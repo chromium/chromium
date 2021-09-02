@@ -6,12 +6,12 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import './print_preview_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /**
  * @typedef {{
@@ -24,23 +24,38 @@ import {SettingsBehavior} from './settings_behavior.js';
  */
 export let SelectOption;
 
-Polymer({
-  is: 'print-preview-settings-select',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ */
+const PrintPreviewSettingsSelectElementBase =
+    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewSettingsSelectElement extends
+    PrintPreviewSettingsSelectElementBase {
+  static get is() {
+    return 'print-preview-settings-select';
+  }
 
-  behaviors: [SettingsBehavior, SelectBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    ariaLabel: String,
+  static get properties() {
+    return {
+      ariaLabel: String,
 
-    /** @type {{ option: Array<!SelectOption> }} */
-    capability: Object,
+      /** @type {{ option: Array<!SelectOption> }} */
+      capability: Object,
 
-    settingName: String,
+      settingName: String,
 
-    disabled: Boolean,
-  },
+      disabled: Boolean,
+    };
+  }
 
   /**
    * @param {!SelectOption} option Option to check.
@@ -50,12 +65,12 @@ Polymer({
   isSelected_(option) {
     return this.getValue_(option) === this.selectedValue ||
         (!!option.is_default && this.selectedValue === '');
-  },
+  }
 
   /** @param {string} value The value to select. */
   selectValue(value) {
     this.selectedValue = value;
-  },
+  }
 
   /**
    * @param {!SelectOption} option Option to get the value
@@ -65,7 +80,7 @@ Polymer({
    */
   getValue_(option) {
     return JSON.stringify(option);
-  },
+  }
 
   /**
    * @param {!SelectOption} option Option to get the display
@@ -80,7 +95,7 @@ Polymer({
           assert(option.custom_display_name_localized));
     }
     return displayName || option.name || '';
-  },
+  }
 
   /** @param {string} value The new select value. */
   onProcessSelectChange(value) {
@@ -94,5 +109,8 @@ Polymer({
     if (value !== JSON.stringify(this.getSettingValue(this.settingName))) {
       this.setSetting(this.settingName, /** @type {Object} */ (newValue));
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewSettingsSelectElement.is, PrintPreviewSettingsSelectElement);
