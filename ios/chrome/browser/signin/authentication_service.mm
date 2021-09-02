@@ -23,6 +23,7 @@
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/authentication_service_observer.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -128,6 +129,16 @@ void AuthenticationService::Shutdown() {
   identity_manager_observation_.Reset();
   account_manager_service_observation_.Reset();
   delegate_.reset();
+}
+
+void AuthenticationService::AddObserver(
+    AuthenticationServiceObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void AuthenticationService::RemoveObserver(
+    AuthenticationServiceObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
@@ -568,4 +579,9 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
     // since this change comes from the user.
     ApproveAccountList();
   }
+}
+
+void AuthenticationService::FirePrimaryAccountRestricted() {
+  for (auto& observer : observer_list_)
+    observer.OnPrimaryAccountRestricted();
 }

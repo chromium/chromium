@@ -26,6 +26,7 @@ class SyncService;
 
 class AuthenticationServiceDelegate;
 class AuthenticationServiceFake;
+class AuthenticationServiceObserver;
 @class ChromeIdentity;
 class PrefService;
 class SyncSetupService;
@@ -38,6 +39,7 @@ class AuthenticationService : public KeyedService,
                               public ios::ChromeIdentityService::Observer,
                               public ChromeAccountManagerService::Observer {
  public:
+  // Initializes the service.
   AuthenticationService(PrefService* pref_service,
                         SyncSetupService* sync_setup_service,
                         ChromeAccountManagerService* account_manager_service,
@@ -58,6 +60,10 @@ class AuthenticationService : public KeyedService,
 
   // KeyedService
   void Shutdown() override;
+
+  // Adds and removes observers.
+  void AddObserver(AuthenticationServiceObserver* observer);
+  void RemoveObserver(AuthenticationServiceObserver* observer);
 
   // Reminds user to Sign in and sync to Chrome when a new tab is opened.
   void SetReauthPromptForSignInAndSync();
@@ -141,8 +147,8 @@ class AuthenticationService : public KeyedService,
   void OnChromeBrowserProviderWillBeDestroyed() override;
 
  private:
-  friend class AuthenticationServiceTest;
   friend class AuthenticationServiceFake;
+  friend class AuthenticationServiceTest;
 
   // Migrates the token service accounts stored in prefs from emails to account
   // ids.
@@ -190,6 +196,9 @@ class AuthenticationService : public KeyedService,
   // ChromeAccountManagerServiceObserver implementation.
   void OnIdentityListChanged(bool need_user_approval) override;
 
+  // Fires |OnPrimaryAccountRestricted| on all observers.
+  void FirePrimaryAccountRestricted();
+
   // The delegate for this AuthenticationService. It is invalid to call any
   // method on this object except Initialize() or Shutdown() if this pointer
   // is null.
@@ -201,7 +210,7 @@ class AuthenticationService : public KeyedService,
   ChromeAccountManagerService* account_manager_service_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
   syncer::SyncService* sync_service_ = nullptr;
-
+  base::ObserverList<AuthenticationServiceObserver, true> observer_list_;
   // Whether Initialized has been called.
   bool initialized_ = false;
 
