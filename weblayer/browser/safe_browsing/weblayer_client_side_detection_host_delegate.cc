@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "weblayer/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "weblayer/browser/safe_browsing/weblayer_client_side_detection_host_delegate.h"
 
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -14,17 +14,19 @@
 
 namespace weblayer {
 
-ClientSideDetectionHostDelegate::ClientSideDetectionHostDelegate(
-    content::WebContents* web_contents)
+WebLayerClientSideDetectionHostDelegate::
+    WebLayerClientSideDetectionHostDelegate(content::WebContents* web_contents)
     : web_contents_(web_contents) {}
 
-ClientSideDetectionHostDelegate::~ClientSideDetectionHostDelegate() = default;
+WebLayerClientSideDetectionHostDelegate::
+    ~WebLayerClientSideDetectionHostDelegate() = default;
 
-bool ClientSideDetectionHostDelegate::HasSafeBrowsingUserInteractionObserver() {
+bool WebLayerClientSideDetectionHostDelegate::
+    HasSafeBrowsingUserInteractionObserver() {
   return false;
 }
 
-PrefService* ClientSideDetectionHostDelegate::GetPrefs() {
+PrefService* WebLayerClientSideDetectionHostDelegate::GetPrefs() {
   BrowserContextImpl* browser_context_impl =
       static_cast<BrowserContextImpl*>(web_contents_->GetBrowserContext());
   DCHECK(browser_context_impl);
@@ -32,26 +34,26 @@ PrefService* ClientSideDetectionHostDelegate::GetPrefs() {
 }
 
 scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-ClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
+WebLayerClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
   return sb_service->GetSafeBrowsingDBManager();
 }
 
 scoped_refptr<safe_browsing::BaseUIManager>
-ClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
+WebLayerClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   SafeBrowsingService* sb_service =
       BrowserProcess::GetInstance()->GetSafeBrowsingService();
   return sb_service->GetSafeBrowsingUIManager();
 }
 
 safe_browsing::ClientSideDetectionService*
-ClientSideDetectionHostDelegate::GetClientSideDetectionService() {
+WebLayerClientSideDetectionHostDelegate::GetClientSideDetectionService() {
   return ClientSideDetectionServiceFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 }
 
-void ClientSideDetectionHostDelegate::AddReferrerChain(
+void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(
     safe_browsing::ClientPhishingRequest* verdict,
     GURL current_url) {}
 

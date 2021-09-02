@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
@@ -28,11 +28,11 @@ const int kCSDAttributionUserGestureLimitForExtendedReporting = 5;
 
 // static
 std::unique_ptr<ClientSideDetectionHost>
-ClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
+ChromeClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
   content::BrowserContext* browser_context = tab->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return ClientSideDetectionHost::Create(
-      tab, std::make_unique<ClientSideDetectionHostDelegate>(tab),
+      tab, std::make_unique<ChromeClientSideDetectionHostDelegate>(tab),
       profile->GetPrefs(),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
@@ -41,29 +41,31 @@ ClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
                           IdentityManagerFactory::GetForProfile(profile)));
 }
 
-ClientSideDetectionHostDelegate::ClientSideDetectionHostDelegate(
+ChromeClientSideDetectionHostDelegate::ChromeClientSideDetectionHostDelegate(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {}
-ClientSideDetectionHostDelegate::~ClientSideDetectionHostDelegate() = default;
+ChromeClientSideDetectionHostDelegate::
+    ~ChromeClientSideDetectionHostDelegate() = default;
 
-bool ClientSideDetectionHostDelegate::HasSafeBrowsingUserInteractionObserver() {
+bool ChromeClientSideDetectionHostDelegate::
+    HasSafeBrowsingUserInteractionObserver() {
   return SafeBrowsingUserInteractionObserver::FromWebContents(web_contents_);
 }
 
-PrefService* ClientSideDetectionHostDelegate::GetPrefs() {
+PrefService* ChromeClientSideDetectionHostDelegate::GetPrefs() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   return profile ? profile->GetPrefs() : nullptr;
 }
 
 scoped_refptr<SafeBrowsingDatabaseManager>
-ClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
+ChromeClientSideDetectionHostDelegate::GetSafeBrowsingDBManager() {
   SafeBrowsingService* sb_service = g_browser_process->safe_browsing_service();
   return sb_service ? sb_service->database_manager().get() : nullptr;
 }
 
-SafeBrowsingNavigationObserverManager*
-ClientSideDetectionHostDelegate::GetSafeBrowsingNavigationObserverManager() {
+SafeBrowsingNavigationObserverManager* ChromeClientSideDetectionHostDelegate::
+    GetSafeBrowsingNavigationObserverManager() {
   if (observer_manager_for_testing_) {
     return observer_manager_for_testing_;
   }
@@ -73,18 +75,18 @@ ClientSideDetectionHostDelegate::GetSafeBrowsingNavigationObserverManager() {
 }
 
 scoped_refptr<BaseUIManager>
-ClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
+ChromeClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   SafeBrowsingService* sb_service = g_browser_process->safe_browsing_service();
   return sb_service ? sb_service->ui_manager() : nullptr;
 }
 
 ClientSideDetectionService*
-ClientSideDetectionHostDelegate::GetClientSideDetectionService() {
+ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
   return ClientSideDetectionServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
-void ClientSideDetectionHostDelegate::AddReferrerChain(
+void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
     ClientPhishingRequest* verdict,
     GURL current_url) {
   SafeBrowsingNavigationObserverManager* navigation_observer_manager =
@@ -113,7 +115,7 @@ void ClientSideDetectionHostDelegate::AddReferrerChain(
       recent_navigations_to_collect, verdict->mutable_referrer_chain());
 }
 
-size_t ClientSideDetectionHostDelegate::CountOfRecentNavigationsToAppend(
+size_t ChromeClientSideDetectionHostDelegate::CountOfRecentNavigationsToAppend(
     SafeBrowsingNavigationObserverManager::AttributionResult result) {
   auto* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());

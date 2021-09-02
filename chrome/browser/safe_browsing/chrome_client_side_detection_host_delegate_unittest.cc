@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -19,9 +19,10 @@
 
 namespace safe_browsing {
 
-class ClientSideDetectionDelegateTest : public BrowserWithTestWindowTest {
+class ChromeClientSideDetectionHostDelegateTest
+    : public BrowserWithTestWindowTest {
  public:
-  ClientSideDetectionDelegateTest() = default;
+  ChromeClientSideDetectionHostDelegateTest() = default;
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("http://foo/0"));
@@ -53,10 +54,10 @@ class ClientSideDetectionDelegateTest : public BrowserWithTestWindowTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionDelegateTest);
+  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionHostDelegateTest);
 };
 
-TEST_F(ClientSideDetectionDelegateTest, GetReferrerChain) {
+TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
   base::Time now = base::Time::Now();
   base::Time one_hour_ago =
       base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
@@ -78,8 +79,8 @@ TEST_F(ClientSideDetectionDelegateTest, GetReferrerChain) {
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
 
-  std::unique_ptr<ClientSideDetectionHostDelegate> csd_host_delegate =
-      std::make_unique<ClientSideDetectionHostDelegate>(
+  std::unique_ptr<ChromeClientSideDetectionHostDelegate> csd_host_delegate =
+      std::make_unique<ChromeClientSideDetectionHostDelegate>(
           browser()->tab_strip_model()->GetWebContentsAt(0));
   csd_host_delegate->SetNavigationObserverManagerForTesting(
       navigation_observer_manager_);
@@ -93,7 +94,7 @@ TEST_F(ClientSideDetectionDelegateTest, GetReferrerChain) {
   EXPECT_EQ("http://a.com/", referrer_chain[0].referrer_url());
 }
 
-TEST_F(ClientSideDetectionDelegateTest, NoNavigationObserverManager) {
+TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
   base::Time now = base::Time::Now();
   base::Time one_hour_ago =
       base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
@@ -106,8 +107,8 @@ TEST_F(ClientSideDetectionDelegateTest, NoNavigationObserverManager) {
       ReferrerChainEntry::BROWSER_INITIATED;
   navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
 
-  std::unique_ptr<ClientSideDetectionHostDelegate> csd_host_delegate =
-      std::make_unique<ClientSideDetectionHostDelegate>(
+  std::unique_ptr<ChromeClientSideDetectionHostDelegate> csd_host_delegate =
+      std::make_unique<ChromeClientSideDetectionHostDelegate>(
           browser()->tab_strip_model()->GetWebContentsAt(0));
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"));

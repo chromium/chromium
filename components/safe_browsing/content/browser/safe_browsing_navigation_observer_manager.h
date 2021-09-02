@@ -282,7 +282,7 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   friend class TestNavigationObserverManager;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
-  friend class ClientSideDetectionDelegateTest;
+  friend class ChromeClientSideDetectionHostDelegateTest;
 
   struct GurlHash {
     std::size_t operator()(const GURL& url) const {

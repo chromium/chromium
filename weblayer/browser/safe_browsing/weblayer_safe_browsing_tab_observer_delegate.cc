@@ -12,10 +12,10 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/profile_impl.h"
-#include "weblayer/browser/safe_browsing/client_side_detection_host_delegate.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
+#include "weblayer/browser/safe_browsing/weblayer_client_side_detection_host_delegate.h"
 
 namespace weblayer {
 
@@ -26,7 +26,8 @@ CreateClientSideDetectionHost(content::WebContents* web_contents,
                               BrowserContextImpl* browser_context) {
   return safe_browsing::ClientSideDetectionHost::Create(
       web_contents,
-      std::make_unique<ClientSideDetectionHostDelegate>(web_contents), prefs,
+      std::make_unique<WebLayerClientSideDetectionHostDelegate>(web_contents),
+      prefs,
       std::make_unique<SafeBrowsingTokenFetcherImpl>(base::BindRepeating(
           &ProfileImpl::access_token_fetch_delegate,
           base::Unretained(ProfileImpl::FromBrowserContext(browser_context)))),

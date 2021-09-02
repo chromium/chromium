@@ -10,7 +10,7 @@
 #include "components/safe_browsing/buildflags.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
@@ -46,7 +46,7 @@ bool ChromeSafeBrowsingTabObserverDelegate::DoesSafeBrowsingServiceExist() {
 std::unique_ptr<ClientSideDetectionHost>
 ChromeSafeBrowsingTabObserverDelegate::CreateClientSideDetectionHost(
     content::WebContents* web_contents) {
-  return ClientSideDetectionHostDelegate::CreateHost(web_contents);
+  return ChromeClientSideDetectionHostDelegate::CreateHost(web_contents);
 }
 
 }  // namespace safe_browsing

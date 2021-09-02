@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/client_side_detection_host_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include <memory>
 #include <tuple>
@@ -327,7 +327,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                    signin::ConsentLevel::kSync);
 
-    csd_host_ = ClientSideDetectionHostDelegate::CreateHost(web_contents());
+    csd_host_ =
+        ChromeClientSideDetectionHostDelegate::CreateHost(web_contents());
     csd_host_->set_client_side_detection_service(csd_service_.get());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());

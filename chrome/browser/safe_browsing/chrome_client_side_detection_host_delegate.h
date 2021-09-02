@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -12,14 +12,15 @@ namespace safe_browsing {
 
 // Delegate class which implements chrome specific bits for configuring
 // the ClientSideDetectionHost class.
-class ClientSideDetectionHostDelegate
+class ChromeClientSideDetectionHostDelegate
     : public ClientSideDetectionHost::Delegate {
  public:
   static std::unique_ptr<ClientSideDetectionHost> CreateHost(
       content::WebContents* tab);
 
-  explicit ClientSideDetectionHostDelegate(content::WebContents* web_contents);
-  ~ClientSideDetectionHostDelegate() override;
+  explicit ChromeClientSideDetectionHostDelegate(
+      content::WebContents* web_contents);
+  ~ChromeClientSideDetectionHostDelegate() override;
 
   // ClientSideDetectionHost::Delegate implementation.
   bool HasSafeBrowsingUserInteractionObserver() override;
@@ -47,9 +48,9 @@ class ClientSideDetectionHostDelegate
   SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
       nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHostDelegate);
+  DISALLOW_COPY_AND_ASSIGN(ChromeClientSideDetectionHostDelegate);
 };
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
