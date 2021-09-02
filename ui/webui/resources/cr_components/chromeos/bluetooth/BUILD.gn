@@ -12,6 +12,8 @@ js_type_check("closure_compile_module") {
   deps = [
     ":bluetooth_base_page",
     ":bluetooth_dialog",
+    ":bluetooth_icon",
+    ":bluetooth_icons",
     ":bluetooth_metrics_utils",
     ":bluetooth_pairing_device_selection_page",
     ":bluetooth_pairing_ui",
@@ -29,6 +31,17 @@ js_library("bluetooth_metrics_utils") {
 }
 
 js_library("bluetooth_utils") {
+}
+
+js_library("bluetooth_icons") {
+}
+
+js_library("bluetooth_icon") {
+  deps = [
+    ":bluetooth_icons",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("bluetooth_dialog") {
@@ -78,6 +91,8 @@ js_library("cros_bluetooth_config") {
 html_to_js("polymer3_elements") {
   js_files = [
     "bluetooth_dialog.js",
+    "bluetooth_icon.js",
+    "bluetooth_icons.js",
     "bluetooth_pairing_device_selection_page.js",
     "bluetooth_pairing_ui.js",
     "bluetooth_base_page.js",

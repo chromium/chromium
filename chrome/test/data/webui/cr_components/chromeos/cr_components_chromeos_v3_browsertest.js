@@ -17,6 +17,7 @@ GEN('#include "content/public/test/browser_test.h"');
     'DeviceSelectionPage',
     'bluetooth/bluetooth_pairing_device_selection_page_test.js'
   ],
+  ['BluetoothIcon', 'bluetooth/bluetooth_icon_test.js'],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
 

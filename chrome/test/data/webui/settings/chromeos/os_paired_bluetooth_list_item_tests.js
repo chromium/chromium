@@ -64,7 +64,8 @@ suite('OsPairedBluetoothListItemTest', function() {
               'os-settings-bluetooth-device-battery-info');
         };
         const getDeviceTypeIcon = () => {
-          return pairedBluetoothListItem.$.deviceTypeIcon;
+          return pairedBluetoothListItem.shadowRoot.querySelector(
+              'bluetooth-icon');
         };
         const getItemA11yLabel = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector('.list-item')
@@ -77,7 +78,6 @@ suite('OsPairedBluetoothListItemTest', function() {
         assertEquals(getDeviceName().innerText, publicName);
         assertFalse(!!getBatteryInfo());
         assertTrue(!!getDeviceTypeIcon());
-        assertEquals(getDeviceTypeIcon().icon, 'os-settings:bluetooth');
         assertEquals(
             getItemA11yLabel(),
             pairedBluetoothListItem.i18n(
@@ -104,8 +104,6 @@ suite('OsPairedBluetoothListItemTest', function() {
         assertEquals(getDeviceName().innerText, nickname);
         assertTrue(!!getBatteryInfo());
         assertEquals(getBatteryInfo().device, pairedBluetoothListItem.device);
-        assertEquals(
-            getDeviceTypeIcon().icon, 'os-settings:bluetooth-computer');
         assertEquals(
             getItemA11yLabel(),
             pairedBluetoothListItem.i18n(

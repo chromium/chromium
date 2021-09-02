@@ -10,6 +10,7 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
 import './os_bluetooth_device_battery_info.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
@@ -97,36 +98,6 @@ class SettingsPairedBluetoothListItemElement extends
    */
   getDeviceName_(device) {
     return getDeviceName(device);
-  }
-
-  /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
-   *     device
-   * @return {string}
-   * @private
-   */
-  getDeviceTypeIcon_(device) {
-    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
-    switch (device.deviceProperties.deviceType) {
-      case deviceType.kComputer:
-        return 'bluetooth-computer';
-      case deviceType.kPhone:
-        return 'bluetooth-phone';
-      case deviceType.kHeadset:
-        return 'bluetooth-headset';
-      case deviceType.kVideoCamera:
-        return 'bluetooth-video-camera';
-      case deviceType.kGameController:
-        return 'bluetooth-game-controller';
-      case deviceType.kKeyboard:
-        return 'bluetooth-keyboard';
-      case deviceType.kMouse:
-        return 'bluetooth-mouse';
-      case deviceType.kTablet:
-        return 'bluetooth-tablet';
-      default:
-        return 'bluetooth';
-    }
   }
 
   /**
