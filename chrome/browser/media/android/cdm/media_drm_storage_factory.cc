@@ -19,7 +19,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -124,11 +123,8 @@ void CreateMediaDrmStorage(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(render_frame_host);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents) << "WebContents not available.";
-
-  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+  content::BrowserContext* browser_context =
+      render_frame_host->GetBrowserContext();
   DCHECK(browser_context) << "BrowserContext not available.";
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
