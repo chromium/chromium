@@ -50,7 +50,7 @@ uintptr_t DecodeULEB128(const uint8_t*& bytes) {
   uintptr_t value = 0;
   unsigned shift = 0;
   do {
-    DCHECK_LE(shift, sizeof(uintptr_t) * 8) << "ULEB128 must not overflow.";
+    DCHECK_LE(shift, sizeof(uintptr_t) * 8);  // ULEB128 must not overflow.
     value += (*bytes & 0x7f) << shift;
     shift += 7;
   } while (*bytes++ & 0x80);
@@ -92,12 +92,11 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     // 1001nnnn (nnnn != 13,15)
     // Set vsp = r[nnnn].
     const uint8_t register_index = *instruction++ & 0b00001111;
-    DCHECK_NE(register_index, 13) << "Must not set sp to sp.";
-    DCHECK_NE(register_index, 15) << "Must not set sp to pc.";
+    DCHECK_NE(register_index, 13);  // Must not set sp to sp.
+    DCHECK_NE(register_index, 15);  // Must not set sp to pc.
     // Note: We shouldn't have cases that are setting caller-saved registers
     // using this instruction.
-    DCHECK_GE(register_index, 4)
-        << "Must not set sp to caller-saved registers.";
+    DCHECK_GE(register_index, 4);
 
     RegisterContextStackPointer(thread_context) =
         *GetRegisterPointer(thread_context, register_index);
