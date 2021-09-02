@@ -681,6 +681,11 @@ network::mojom::NetworkService* GetNetworkService() {
       if (command_line->HasSwitch(network::switches::kLogNetLog)) {
         base::FilePath log_path =
             command_line->GetSwitchValuePath(network::switches::kLogNetLog);
+        if (log_path.empty()) {
+          log_path = GetContentClient()->browser()->GetNetLogDefaultDirectory();
+          if (!log_path.empty())
+            log_path = log_path.Append(FILE_PATH_LITERAL("netlog.json"));
+        }
 
         base::File file = NetworkServiceInstancePrivate::BlockingOpenFile(
             log_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);

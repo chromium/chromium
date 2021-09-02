@@ -985,6 +985,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // skia.
   virtual base::FilePath GetGrShaderDiskCacheDirectory();
 
+  // Returns the path to the net log default directory.
+  virtual base::FilePath GetNetLogDefaultDirectory();
+
   // Notification that a pepper plugin has just been spawned. This allows the
   // embedder to add filters onto the host to implement interfaces.
   // This is called on the IO thread.
