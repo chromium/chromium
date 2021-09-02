@@ -24,9 +24,7 @@ from target import FuchsiaTargetException
 
 
 # Virtual networking configuration data for QEMU.
-GUEST_NET = '192.168.3.0/24'
-GUEST_IP_ADDRESS = '192.168.3.9'
-HOST_IP_ADDRESS = '192.168.3.2'
+HOST_IP_ADDRESS = '10.0.2.2'
 GUEST_MAC_ADDRESS = '52:54:00:63:5e:7b'
 
 # Capacity of the system's blobstore volume.
@@ -122,11 +120,9 @@ class QemuTarget(emu_target.EmuTarget):
           '-machine', 'q35',
       ])
 
-    # Configure virtual network. It is used in the tests to connect to
-    # testserver running on the host.
+    # Configure virtual network.
     netdev_type = 'virtio-net-pci'
-    netdev_config = 'user,id=net0,net=%s,dhcpstart=%s,host=%s' % \
-            (GUEST_NET, GUEST_IP_ADDRESS, HOST_IP_ADDRESS)
+    netdev_config = 'type=user,id=net0,restrict=off'
 
     self._host_ssh_port = common.GetAvailableTcpPort()
     netdev_config += ",hostfwd=tcp::%s-:22" % self._host_ssh_port
