@@ -137,7 +137,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
      *
      * @param voiceRecognitionHandler Handler responsible for managing voice searches.
      */
-    private void runVoiceSearch(@NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void runVoiceSearch(@NonNull VoiceRecognitionHandler voiceRecognitionHandler) {
         assert mNativeInitialized;
         // Run Voice before focusing the Omnibox. Voice search may trigger omnibox focus as part of
         // its own flow in the event where the input is ambiguous. Focusing the Omnibox early may

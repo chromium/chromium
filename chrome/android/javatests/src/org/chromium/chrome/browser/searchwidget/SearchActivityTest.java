@@ -88,7 +88,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
@@ -189,9 +188,6 @@ public class SearchActivityTest {
     @Mock
     VoiceRecognitionHandler mHandler;
 
-    @Mock
-    WindowAndroid mMockWindowAndroid;
-
     private TestDelegate mTestDelegate;
 
     @Before
@@ -279,8 +275,7 @@ public class SearchActivityTest {
         LocationBarCoordinator locationBarCoordinator =
                 searchActivity.getLocationBarCoordinatorForTesting();
         locationBarCoordinator.setVoiceRecognitionHandlerForTesting(mHandler);
-        locationBar.beginQuery(
-                SearchType.VOICE, /* optionalText= */ null, mHandler, mMockWindowAndroid);
+        locationBar.beginQuery(SearchType.VOICE, /* optionalText= */ null, mHandler, null);
         verify(mHandler, times(0))
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
