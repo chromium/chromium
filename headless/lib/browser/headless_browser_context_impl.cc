@@ -39,6 +39,7 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
       context_options_(std::move(context_options)),
       permission_controller_delegate_(
           std::make_unique<HeadlessPermissionManager>(this)) {
+  BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
   InitWhileIOAllowed();
   simple_factory_key_ =
       std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
