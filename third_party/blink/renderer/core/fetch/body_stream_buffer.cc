@@ -228,7 +228,6 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
   DCHECK(script_state_->ContextIsValid());
-  loader_ = loader;
   if (signal_) {
     if (signal_->aborted()) {
       client->Abort();
@@ -237,6 +236,7 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
     signal_->AddAlgorithm(
         WTF::Bind(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
   }
+  loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);
   if (exception_state.HadException())
     return;
