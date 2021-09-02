@@ -938,13 +938,6 @@ crbug.com/1210240 [ linux intel display-server-wayland no-passthrough ] conforma
 crbug.com/1215700 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 crbug.com/1218607 [ linux intel display-server-wayland no-passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/1231736 [ linux intel display-server-wayland no-passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-2d-rg8ui-rg_integer-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-2d-rgb10_a2-rgba-unsigned_int_2_10_10_10_rev.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-2d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-2d-rgba16f-rgba-float.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-3d-r32f-red-float.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-3d-rg16f-rg-float.html [ RetryOnFailure ]
-crbug.com/1240707 [ linux intel display-server-wayland no-passthrough ] conformance2/textures/video/tex-3d-rg16f-rg-half_float.html [ RetryOnFailure ]
 
 # Conflicting expectations to test that the
 # "Expectations have no collisions" unittest works.

@@ -218,8 +218,17 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
-  NOTIMPLEMENTED();
+#if defined(WAYLAND_GBM)
+  scoped_refptr<GbmPixmapWayland> pixmap =
+      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+
+  if (!pixmap->InitializeBufferFromHandle(widget, size, format,
+                                          std::move(handle)))
+    return nullptr;
+  return pixmap;
+#else
   return nullptr;
+#endif
 }
 
 }  // namespace ui
