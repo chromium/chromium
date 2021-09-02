@@ -66,6 +66,7 @@ android_library("java") {
 
 android_resources("web_feed_java_resources") {
   sources = [
+    "java/res/color/chip_hairline_color.xml",
     "java/res/color/menu_footer_chip_background.xml",
     "java/res/drawable-hdpi/follow_accelerator_shadow.9.png",
     "java/res/drawable-mdpi/follow_accelerator_shadow.9.png",
