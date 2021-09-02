@@ -232,6 +232,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chromeos/chromeos_projector_app_untrusted_resources.pak",
         "$root_gen_dir/chromeos/chromeos_resources.pak",
         "$root_gen_dir/chromeos/connectivity_diagnostics_resources.pak",
+        "$root_gen_dir/components/arc/input_overlay_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_gen_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
@@ -275,6 +276,7 @@ template("chrome_extra_paks") {
         "//chromeos/resources:projector_app_bundle_resources",
         "//chromeos/resources:projector_app_trusted_resources",
         "//chromeos/resources:projector_app_untrusted_resources",
+        "//components/arc/input_overlay/resources",
         "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",
       ]
