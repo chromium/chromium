@@ -280,7 +280,7 @@ class QuicChromiumClientSessionTest
 
   size_t GetMaxAllowedOutgoingBidirectionalStreams() {
     quic::QuicSession* quic_session =
-        dynamic_cast<quic::QuicSession*>(&*session_);
+        static_cast<quic::QuicSession*>(&*session_);
     if (!version_.HasIetfQuicFrames()) {
       return quic::test::QuicSessionPeer::GetStreamIdManager(quic_session)
           ->max_open_outgoing_streams();

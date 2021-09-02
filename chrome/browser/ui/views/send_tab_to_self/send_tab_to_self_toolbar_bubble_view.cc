@@ -42,8 +42,7 @@ SendTabToSelfToolbarBubbleView::SendTabToSelfToolbarBubbleView(
     SendTabToSelfToolbarIconView* parent,
     const SendTabToSelfEntry& entry,
     base::OnceCallback<void(NavigateParams*)> navigate_callback)
-    : views::BubbleDialogDelegateView(dynamic_cast<views::View*>(parent),
-                                      views::BubbleBorder::TOP_RIGHT),
+    : views::BubbleDialogDelegateView(parent, views::BubbleBorder::TOP_RIGHT),
       toolbar_button_(parent),
       navigate_callback_(std::move(navigate_callback)),
       profile_(profile),
