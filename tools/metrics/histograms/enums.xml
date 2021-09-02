@@ -29148,6 +29148,7 @@ Called by update_extension_histograms.py.-->
   <int value="1584" label="OS_DIAGNOSTICS_RUNCPUSTRESSROUTINE"/>
   <int value="1585" label="OS_DIAGNOSTICS_RUNCPUCACHEROUTINE"/>
   <int value="1586" label="SCRIPTING_UPDATECONTENTSCRIPTS"/>
+  <int value="1587" label="FILEMANAGERPRIVATE_OPENWINDOW"/>
 </enum>
 
 <enum name="ExtensionIconState">

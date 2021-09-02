@@ -127,6 +127,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/background/js/volume_manager_util.js",
 
     # Files Common:
+    "file_manager/common/js/api.js",
     "file_manager/common/js/app_util.js",
     "file_manager/common/js/async_util.js",
     "file_manager/common/js/dialog_type.js",
