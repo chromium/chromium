@@ -5,11 +5,13 @@
 #include "content/browser/renderer_host/page_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "content/browser/manifest/manifest_manager_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/render_view_host.h"
@@ -19,7 +21,9 @@
 namespace content {
 
 PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
-    : main_document_(rfh), delegate_(delegate) {}
+    : main_document_(rfh),
+      delegate_(delegate),
+      text_autosizer_page_info_({0, 0, 1.f}) {}
 
 PageImpl::~PageImpl() {
   // As SupportsUserData is a base class of PageImpl, Page members will be
@@ -94,6 +98,36 @@ void PageImpl::DidChangeBackgroundColor(SkColor background_color,
 
 void PageImpl::SetContentsMimeType(std::string mime_type) {
   contents_mime_type_ = std::move(mime_type);
+}
+
+void PageImpl::OnTextAutosizerPageInfoChanged(
+    blink::mojom::TextAutosizerPageInfoPtr page_info) {
+  OPTIONAL_TRACE_EVENT0("content", "PageImpl::OnTextAutosizerPageInfoChanged");
+
+  // Keep a copy of |page_info| in case we create a new RenderView before
+  // the next update, so that the PageImpl can tell the newly created RenderView
+  // about the autosizer info.
+  text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
+  text_autosizer_page_info_.main_frame_layout_width =
+      page_info->main_frame_layout_width;
+  text_autosizer_page_info_.device_scale_adjustment =
+      page_info->device_scale_adjustment;
+
+  auto remote_frames_broadcast_callback = base::BindRepeating(
+      [](const blink::mojom::TextAutosizerPageInfo& page_info,
+         RenderFrameProxyHost* proxy_host) {
+        DCHECK(proxy_host);
+        proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
+            page_info.Clone());
+      },
+      text_autosizer_page_info_);
+
+  main_document_.frame_tree()
+      ->root()
+      ->render_manager()
+      ->ExecuteRemoteFramesBroadcastMethod(
+          std::move(remote_frames_broadcast_callback),
+          main_document_.GetSiteInstance());
 }
 
 void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {

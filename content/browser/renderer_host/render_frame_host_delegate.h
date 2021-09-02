@@ -549,10 +549,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnPageScaleFactorChanged(RenderFrameHostImpl* source,
                                         float page_scale_factor) {}
 
-  virtual void OnTextAutosizerPageInfoChanged(
-      RenderFrameHostImpl* source,
-      blink::mojom::TextAutosizerPageInfoPtr page_info);
-
   // Binds a ScreenOrientation object associated to |render_frame_host|.
   virtual void BindScreenOrientation(
       RenderFrameHost* render_frame_host,

@@ -4703,7 +4703,7 @@ void RenderFrameHostImpl::ContentsPreferredSizeChanged(
 
 void RenderFrameHostImpl::TextAutosizerPageInfoChanged(
     blink::mojom::TextAutosizerPageInfoPtr page_info) {
-  delegate_->OnTextAutosizerPageInfoChanged(this, std::move(page_info));
+  GetPage().OnTextAutosizerPageInfoChanged(std::move(page_info));
 }
 
 void RenderFrameHostImpl::FocusPage() {

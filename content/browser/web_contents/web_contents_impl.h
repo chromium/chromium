@@ -729,9 +729,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       ClipboardPasteContentAllowed allowed);
   void OnPageScaleFactorChanged(RenderFrameHostImpl* source,
                                 float page_scale_factor) override;
-  void OnTextAutosizerPageInfoChanged(
-      RenderFrameHostImpl* source,
-      blink::mojom::TextAutosizerPageInfoPtr page_info) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
@@ -2168,10 +2165,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // If non-null then this WebContents is embedded in a portal and its outer
   // WebContents can be found by using GetOuterWebContents().
   Portal* portal_ = nullptr;
-
-  // Stores information from the main frame's renderer that needs to be shared
-  // with OOPIF renderers.
-  blink::mojom::TextAutosizerPageInfo text_autosizer_page_info_;
 
   // Stores the rect of the Windows Control Overlay, which contains system UX
   // affordances (e.g. close), for installed desktop Progress Web Apps (PWAs),

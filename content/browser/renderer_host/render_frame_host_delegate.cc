@@ -154,10 +154,6 @@ void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
   std::move(callback).Run(ClipboardPasteContentAllowed(true));
 }
 
-void RenderFrameHostDelegate::OnTextAutosizerPageInfoChanged(
-    RenderFrameHostImpl* source,
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {}
-
 bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
   return false;
 }

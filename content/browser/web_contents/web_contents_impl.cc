@@ -868,7 +868,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           std::make_unique<MediaWebContentsObserver>(this)),
       is_overlay_content_(false),
       showing_context_menu_(false),
-      text_autosizer_page_info_({0, 0, 1.f}),
       prerender_host_registry_(blink::features::IsPrerender2Enabled()
                                    ? std::make_unique<PrerenderHostRegistry>()
                                    : nullptr),
@@ -5975,33 +5974,6 @@ void WebContentsImpl::OnPageScaleFactorChanged(RenderFrameHostImpl* source,
                              page_scale_factor);
 }
 
-void WebContentsImpl::OnTextAutosizerPageInfoChanged(
-    RenderFrameHostImpl* source,
-    blink::mojom::TextAutosizerPageInfoPtr page_info) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::OnTextAutosizerPageInfoChanged",
-                        "render_frame_host", source);
-  // Keep a copy of |page_info| in case we create a new RenderView before
-  // the next update.
-  text_autosizer_page_info_.main_frame_width = page_info->main_frame_width;
-  text_autosizer_page_info_.main_frame_layout_width =
-      page_info->main_frame_layout_width;
-  text_autosizer_page_info_.device_scale_adjustment =
-      page_info->device_scale_adjustment;
-
-  auto remote_frames_broadcast_callback = base::BindRepeating(
-      [](const blink::mojom::TextAutosizerPageInfo& page_info,
-         RenderFrameProxyHost* proxy_host) {
-        DCHECK(proxy_host);
-        proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-            page_info.Clone());
-      },
-      text_autosizer_page_info_);
-
-  frame_tree_.root()->render_manager()->ExecuteRemoteFramesBroadcastMethod(
-      std::move(remote_frames_broadcast_callback), source->GetSiteInstance());
-}
-
 void WebContentsImpl::EnumerateDirectory(
     RenderFrameHost* render_frame_host,
     scoped_refptr<FileChooserImpl::FileSelectListenerImpl> listener,
@@ -7868,15 +7840,18 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
                                   opened_by_another_window_)) {
     return false;
   }
+
   // Set the TextAutosizer state from the main frame's renderer on the new view,
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
-  // We share the autosize info with all pages in the WebContents so there is no
-  // need to check whether the RVH belongs to the primary FrameTree.
   if (!render_view_host->GetMainFrame() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-        text_autosizer_page_info_.Clone());
+        proxy_host->frame_tree_node()
+            ->current_frame_host()
+            ->GetPage()
+            .text_autosizer_page_info()
+            .Clone());
   }
 
   if (!proxy_host)
