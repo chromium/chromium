@@ -1792,7 +1792,7 @@ DragOperation OmniboxViewViews::OnDrop(const ui::DropTargetEvent& event) {
   return output_drag_op;
 }
 
-views::View::DropCallback OmniboxViewViews::GetDropCallback(
+views::View::DropCallback OmniboxViewViews::CreateDropCallback(
     const ui::DropTargetEvent& event) {
   return base::BindOnce(&OmniboxViewViews::PerformDrop,
                         weak_factory_.GetWeakPtr());

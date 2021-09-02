@@ -954,7 +954,7 @@ views::View::DropCallback Textfield::GetDropCallback(
   drop_cursor_visible_ = false;
 
   if (controller_) {
-    auto cb = controller_->GetDropCallback(event);
+    auto cb = controller_->CreateDropCallback(event);
     if (!cb.is_null())
       return cb;
   }

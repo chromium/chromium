@@ -31,7 +31,7 @@ ui::mojom::DragOperation TextfieldController::OnDrop(
   return ui::mojom::DragOperation::kNone;
 }
 
-views::View::DropCallback TextfieldController::GetDropCallback(
+views::View::DropCallback TextfieldController::CreateDropCallback(
     const ui::DropTargetEvent& event) {
   return base::NullCallback();
 }

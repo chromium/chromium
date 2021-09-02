@@ -292,7 +292,7 @@ class OmniboxViewViews : public OmniboxView,
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override;
   ui::mojom::DragOperation OnDrop(const ui::DropTargetEvent& event) override;
-  views::View::DropCallback GetDropCallback(
+  views::View::DropCallback CreateDropCallback(
       const ui::DropTargetEvent& event) override;
   void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) override;
 

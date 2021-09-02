@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AyncDropCallback) {
 
   ui::DropTargetEvent event(data, gfx::PointF(), gfx::PointF(),
                             ui::DragDropTypes::DRAG_COPY);
-  auto cb = omnibox_view_views->GetDropCallback(event);
+  auto cb = omnibox_view_views->CreateDropCallback(event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(cb).Run(event, output_drag_op);
 
