@@ -13,9 +13,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
-#include "chromeos/network/cellular_policy_handler.h"
-#include "chromeos/network/network_event_log.h"
-#include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
 #include "chromeos/network/onc/onc_signature.h"
@@ -55,21 +52,6 @@ std::string GetGUIDFromONCPart(const base::Value& onc_part) {
   if (!guid_value)
     return std::string();
   return guid_value->GetString();
-}
-
-const std::string* GetSMDPAddressFromONC(
-    const base::DictionaryValue& onc_config) {
-  const std::string* type =
-      onc_config.FindStringKey(::onc::network_config::kType);
-  const base::Value* cellular_dict =
-      onc_config.FindKey(::onc::network_config::kCellular);
-  const std::string* smdp_address = nullptr;
-
-  if (type && *type == ::onc::network_type::kCellular && cellular_dict &&
-      cellular_dict->is_dict())
-    smdp_address = cellular_dict->FindStringKey(::onc::cellular::kSMDPAddress);
-
-  return smdp_address;
 }
 
 // Special service name in shill remembering settings across ethernet services.
@@ -392,33 +374,12 @@ void PolicyApplicator::ApplyRemainingPolicies() {
   // contains all modified policies that didn't match any entry. For these
   // remaining policies, new configurations have to be created.
   for (std::set<std::string>::iterator it = remaining_policy_guids_.begin();
-       it != remaining_policy_guids_.end();) {
+       it != remaining_policy_guids_.end(); ++it) {
     const base::DictionaryValue* network_policy = GetByGUID(all_policies_, *it);
     DCHECK(network_policy);
 
     VLOG(1) << "Creating new configuration managed by policy " << *it
             << " in profile " << profile_.ToDebugString() << ".";
-
-    const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
-    if (smdp_address) {
-      NET_LOG(EVENT)
-          << "Found ONC configuration with SMDP: " << *smdp_address
-          << ". Start installing policy eSim profile with ONC config: "
-          << *network_policy;
-      CellularPolicyHandler* cellular_policy_handler =
-          NetworkHandler::Get()->cellular_policy_handler();
-      if (cellular_policy_handler)
-        cellular_policy_handler->InstallESim(*smdp_address, *network_policy);
-      else
-        NET_LOG(ERROR)
-            << "Unable to install eSIM. CellularPolicyHandler not initialized.";
-
-      it = remaining_policy_guids_.erase(it);
-      if (remaining_policy_guids_.empty()) {
-        NotifyConfigurationHandlerAndFinish();
-      }
-      continue;
-    }
 
     base::Value shill_dictionary = policy_util::CreateShillConfiguration(
         profile_, *it, &global_network_config_, network_policy,
@@ -428,7 +389,6 @@ void PolicyApplicator::ApplyRemainingPolicies() {
         shill_dictionary,
         base::BindOnce(&PolicyApplicator::RemainingPolicyApplied,
                        weak_ptr_factory_.GetWeakPtr(), *it /* entry */));
-    it++;
   }
 }
 

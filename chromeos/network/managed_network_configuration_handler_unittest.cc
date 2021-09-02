@@ -6,19 +6,15 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chromeos/dbus/hermes/hermes_clients.h"
-#include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -42,9 +38,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
-#include "chromeos/network/network_metadata_store.h"
-
 namespace test_utils = ::chromeos::onc::test_utils;
 using base::test::DictionaryHasValues;
 
@@ -63,10 +56,6 @@ constexpr char kTestGuidVpn[] = "{a3860e83-f03d-4cb1-bafa-b22c9e746950}";
 // managed Wifi service.
 constexpr char kTestGuidManagedWifi[] = "policy_wifi1";
 
-// The GUID used by chromeos/test/data/network/policy/policy_cellular.onc files
-// for a managed Cellular service.
-constexpr char kTestGuidManagedCellular[] = "policy_cellular";
-
 // The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for an
 // unmanaged Wifi service.
 constexpr char kTestGuidUnmanagedWifi2[] = "wifi2";
@@ -74,9 +63,6 @@ constexpr char kTestGuidUnmanagedWifi2[] = "wifi2";
 // The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for a
 // Wifi service.
 constexpr char kTestGuidEthernetEap[] = "policy_ethernet_eap";
-
-constexpr char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
-constexpr char kTestEid[] = "12345678901234567890123456789012";
 
 std::string PrettyJson(const base::DictionaryValue& value) {
   std::string pretty;
@@ -126,11 +112,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
  public:
   ManagedNetworkConfigurationHandlerTest() {
     shill_clients::InitializeFakes();
-    hermes_clients::InitializeFakes();
 
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
-    NetworkHandler::Initialize();
     network_state_handler_ = MockNetworkStateHandler::InitializeForTest();
     network_profile_handler_ = std::make_unique<TestNetworkProfileHandler>();
     network_configuration_handler_.reset(
@@ -167,9 +149,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     network_profile_handler_.reset();
     network_state_handler_.reset();
     ui_proxy_config_service_.reset();
-    NetworkHandler::Shutdown();
     shill_clients::Shutdown();
-    hermes_clients::Shutdown();
   }
 
   TestNetworkPolicyObserver* policy_observer() { return &policy_observer_; }
@@ -191,14 +171,6 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     GetShillProfileClient()->AddProfile(
         NetworkProfileHandler::GetSharedProfilePath(),
         std::string() /* no userhash */);
-  }
-
-  void InitializeEuicc() {
-    HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
-    HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
-        dbus::ObjectPath(kTestEuiccPath), kTestEid, /*is_active=*/true,
-        /*physical_slot=*/0);
-    base::RunLoop().RunUntilIdle();
   }
 
   void SetPolicy(::onc::ONCSource onc_source,
@@ -271,18 +243,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     return false;
   }
 
-  void FastForwardProfileRefreshDelay() {
-    const base::TimeDelta kProfileRefreshCallbackDelay =
-        base::TimeDelta::FromMilliseconds(150);
-
-    // Connect can result in two profile refresh calls before and after
-    // enabling profile. Fast forward by delay after refresh.
-    task_environment_.FastForwardBy(2 * kProfileRefreshCallbackDelay);
-  }
-
  protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestNetworkPolicyObserver policy_observer_;
   std::unique_ptr<MockNetworkStateHandler> network_state_handler_;
@@ -314,34 +276,6 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
       GetShillServiceClient()->GetServiceProperties(service_path);
   ASSERT_TRUE(properties);
   EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
-}
-
-TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
-  InitializeStandardProfiles();
-  InitializeEuicc();
-  CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-      local_state_.registry());
-  NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-  NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-  NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
-
-  std::unique_ptr<base::DictionaryValue> expected_shill_properties =
-      test_utils::ReadTestDictionary(
-          "policy/shill_policy_on_unconfigured_cellular.json");
-
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular.onc");
-  FastForwardProfileRefreshDelay();
-  base::RunLoop().RunUntilIdle();
-
-  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
-      kTestGuidManagedCellular);
-  const base::Value* properties =
-      GetShillServiceClient()->GetServiceProperties(service_path);
-  ASSERT_TRUE(properties);
-  EXPECT_THAT(*properties, DictionaryHasValues(*expected_shill_properties));
-
-  chromeos::NetworkHandler::Get()->ShutdownPrefServices();
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
