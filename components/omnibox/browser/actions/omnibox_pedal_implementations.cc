@@ -74,20 +74,10 @@ class OmniboxPedalClearBrowsingData : public OmniboxPedal {
     }
   }
 
-  // This method and the below overrides enable this Pedal to spoof its ID
-  // for metrics reporting, making it possible to distinguish incognito usage.
-  OmniboxPedalId GetMetricsId() const {
+  // This method override enables this Pedal to spoof its ID for metrics
+  // reporting, making it possible to distinguish incognito usage.
+  OmniboxPedalId GetMetricsId() const override {
     return incognito_ ? OmniboxPedalId::INCOGNITO_CLEAR_BROWSING_DATA : id();
-  }
-
-  void RecordActionShown(size_t /*position*/) const override {
-    base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
-                                  OmniboxPedalId::TOTAL_COUNT);
-  }
-
-  void RecordActionExecuted(size_t /*position*/) const override {
-    base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
-                                  GetMetricsId(), OmniboxPedalId::TOTAL_COUNT);
   }
 
  protected:

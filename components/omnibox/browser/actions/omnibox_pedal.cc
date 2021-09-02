@@ -271,13 +271,25 @@ std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups()
   return {};
 }
 
+OmniboxPedalId OmniboxPedal::GetMetricsId() const {
+  return id();
+}
+
+bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
+  for (const auto& group : synonym_groups_) {
+    if (!group.EraseMatchesIn(match_sequence, false))
+      return false;
+  }
+  return match_sequence.IsFullyConsumed();
+}
+
 void OmniboxPedal::RecordActionShown(size_t /*position*/) const {
-  base::UmaHistogramEnumeration("Omnibox.PedalShown", id(),
+  base::UmaHistogramEnumeration("Omnibox.PedalShown", GetMetricsId(),
                                 OmniboxPedalId::TOTAL_COUNT);
 }
 
 void OmniboxPedal::RecordActionExecuted(size_t /*position*/) const {
-  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", id(),
+  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", GetMetricsId(),
                                 OmniboxPedalId::TOTAL_COUNT);
 }
 
@@ -292,10 +304,3 @@ int32_t OmniboxPedal::GetID() const {
   return static_cast<int32_t>(id());
 }
 
-bool OmniboxPedal::IsConceptMatch(TokenSequence& match_sequence) const {
-  for (const auto& group : synonym_groups_) {
-    if (!group.EraseMatchesIn(match_sequence, false))
-      return false;
-  }
-  return match_sequence.IsFullyConsumed();
-}

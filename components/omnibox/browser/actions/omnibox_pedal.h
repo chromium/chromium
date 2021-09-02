@@ -196,6 +196,11 @@ class OmniboxPedal : public OmniboxAction {
 
   OmniboxPedalId id() const { return id_; }
 
+  // Sometimes pedals report different IDs for metrics, either to enable
+  // feature discrimination (e.g. incognito mode) or to unify metrics
+  // of closely related pedals (e.g. a ChromeOS specialization of a pedal).
+  virtual OmniboxPedalId GetMetricsId() const;
+
   // If a sufficient set of triggering synonym groups are present in
   // match_sequence then it's a concept match and this returns true.  If a
   // required group is not present, or if match_sequence contains extraneous
