@@ -732,11 +732,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }
 
-// Bulk disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-// TODO(crbug.com/1241494): Extremely flaky on mac-arm64-rel and somewhat flaky
-// on linux-chromeos-rel. Not very flaky on other platforms.
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
-                       DISABLED_ManagedStorage) {
+IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
   std::unique_ptr<base::DictionaryValue> policy =
       extensions::DictionaryBuilder()
