@@ -47,7 +47,31 @@
 
   .secondary-text {
     color: var(--cr-secondary-text-color);
+    display: flex;
     font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  .secondary-text span {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .secondary-text .url {
+    /* Flip so the ellipsis appears at the front. */
+    direction: rtl;
+    padding-inline-start: 3px;
+  }
+
+  :host-context([dir='rtl']) .secondary-text .url {
+    padding-inline-end: 3px;
+    padding-inline-start: 0;
+  }
+
+  .secondary-text .time {
+    flex-shrink: 0;
+    padding-inline-start: 3px;
   }
 
   cr-icon-button {
@@ -81,7 +105,8 @@
 <div class="text-container">
   <div class="primary-text">[[data.title]]</div>
   <div class="secondary-text">
-    [[data.displayUrl]] - [[data.displayTimeSinceUpdate]]
+    <span class="url">[[data.displayUrl]]</span> -
+    <span class="time">[[data.displayTimeSinceUpdate]]</span>
   </div>
 </div>
 <div class="button-container">
