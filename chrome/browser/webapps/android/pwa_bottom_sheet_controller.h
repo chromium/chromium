@@ -58,6 +58,9 @@ class PwaBottomSheetController {
   // AMBIENT_BADGE to MENU).
   void UpdateInstallSource(JNIEnv* env, int install_source);
 
+  // Called from the Java side when bottom sheet got closed with swipe.
+  void OnSheetClosedWithSwipe(JNIEnv* env);
+
   // Called from the Java side when bottom sheet got expanded.
   void OnSheetExpanded(JNIEnv* env);
 

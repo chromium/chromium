@@ -134,6 +134,11 @@ void PwaBottomSheetController::UpdateInstallSource(JNIEnv* env,
       static_cast<WebappInstallSource>(install_source);
 }
 
+void PwaBottomSheetController::OnSheetClosedWithSwipe(JNIEnv* env) {
+  a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_CANCELLED,
+                           *a2hs_params_);
+}
+
 void PwaBottomSheetController::OnSheetExpanded(JNIEnv* env) {
   a2hs_event_callback_.Run(AddToHomescreenInstaller::Event::UI_SHOWN,
                            *a2hs_params_);

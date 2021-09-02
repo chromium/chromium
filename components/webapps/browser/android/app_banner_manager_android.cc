@@ -247,6 +247,8 @@ void AppBannerManagerAndroid::OnInstallEvent(
         // UI_CANCELLED as it is still visible to the user and they can expand
         // it later.
         SendBannerDismissed();
+        AppBannerSettingsHelper::RecordBannerDismissEvent(
+            web_contents(), a2hs_params.shortcut_info->url.spec());
         break;
       default:
         break;
