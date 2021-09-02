@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PrintPreviewPagesSettingsElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -77,8 +78,12 @@ suite(pages_settings_test.suiteName, function() {
       assertEquals(range.from, rangesValue[index].from);
     });
     assertEquals(!invalid, pagesSection.getSetting('pages').valid);
-    assertEquals(expectedError !== '', pagesSection.$$('cr-input').invalid);
-    assertEquals(expectedError, pagesSection.$$('cr-input').errorMessage);
+    assertEquals(
+        expectedError !== '',
+        pagesSection.shadowRoot.querySelector('cr-input').invalid);
+    assertEquals(
+        expectedError,
+        pagesSection.shadowRoot.querySelector('cr-input').errorMessage);
   }
 
   // Verifies that the pages setting updates correctly when the dropdown
@@ -87,8 +92,9 @@ suite(pages_settings_test.suiteName, function() {
     pagesSection.pageCount = 5;
 
     // Default value is all pages.
-    const pagesSelect = pagesSection.$$('select');
-    const customInputCollapse = pagesSection.$$('iron-collapse');
+    const pagesSelect = pagesSection.shadowRoot.querySelector('select');
+    const customInputCollapse =
+        pagesSection.shadowRoot.querySelector('iron-collapse');
     const pagesCrInput = pagesSection.$.pageSettingsCustomInput;
     const pagesInput = pagesCrInput.inputElement;
 
@@ -143,12 +149,12 @@ suite(pages_settings_test.suiteName, function() {
   test(assert(pages_settings_test.TestNames.NoParityOptions), async () => {
     pagesSection.pageCount = 1;
 
-    const oddOption =
-        pagesSection.$$(`[value="${pagesSection.pagesValueEnum_.ODDS}"]`);
+    const oddOption = pagesSection.shadowRoot.querySelector(
+        `[value="${pagesSection.pagesValueEnum_.ODDS}"]`);
     assertTrue(oddOption.hidden);
 
-    const evenOption =
-        pagesSection.$$(`[value="${pagesSection.pagesValueEnum_.EVENS}"]`);
+    const evenOption = pagesSection.shadowRoot.querySelector(
+        `[value="${pagesSection.pagesValueEnum_.EVENS}"]`);
     assertTrue(evenOption.hidden);
   });
 
@@ -157,7 +163,7 @@ suite(pages_settings_test.suiteName, function() {
   test(
       assert(pages_settings_test.TestNames.ParitySelectionMemorized),
       async () => {
-        const select = pagesSection.$$('select');
+        const select = pagesSection.shadowRoot.querySelector('select');
 
         pagesSection.pageCount = 2;
         assertEquals(pagesSection.pagesValueEnum_.ALL.toString(), select.value);
@@ -303,7 +309,7 @@ suite(pages_settings_test.suiteName, function() {
   test(assert(pages_settings_test.TestNames.ClearInput), async () => {
     pagesSection.pageCount = 3;
     const input = pagesSection.$.pageSettingsCustomInput.inputElement;
-    const select = pagesSection.$$('select');
+    const select = pagesSection.shadowRoot.querySelector('select');
     const allValue = pagesSection.pagesValueEnum_.ALL.toString();
     const customValue = pagesSection.pagesValueEnum_.CUSTOM.toString();
     assertEquals(allValue, select.value);
@@ -437,7 +443,7 @@ suite(pages_settings_test.suiteName, function() {
 
         // Setup an empty input by selecting custom..
         const customValue = pagesSection.pagesValueEnum_.CUSTOM.toString();
-        const pagesSelect = pagesSection.$$('select');
+        const pagesSelect = pagesSection.shadowRoot.querySelector('select');
         await Promise.all([
           selectOption(pagesSection, customValue),
           eventToPromise('focus', input)

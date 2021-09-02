@@ -11,13 +11,14 @@ import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {areRangesEqual} from '../print_preview_utils.js';
 
-import {InputBehavior} from './input_behavior.js';
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /** @enum {number} */
 const PagesInputErrorState = {
@@ -50,110 +51,149 @@ function parseIntStrict(value) {
   return NaN;
 }
 
-Polymer({
-  is: 'print-preview-pages-settings',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {InputBehaviorInterface}
+ * @implements {SelectBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewPagesSettingsElementBase = mixinBehaviors(
+    [SettingsBehavior, InputBehavior, SelectBehavior, WebUIListenerBehavior],
+    PolymerElement);
 
-  behaviors: [SettingsBehavior, InputBehavior, SelectBehavior],
+/** @polymer */
+export class PrintPreviewPagesSettingsElement extends
+    PrintPreviewPagesSettingsElementBase {
+  static get is() {
+    return 'print-preview-pages-settings';
+  }
 
-  properties: {
-    disabled: Boolean,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    pageCount: {
-      type: Number,
-      observer: 'onPageCountChange_',
-    },
+  static get properties() {
+    return {
+      disabled: Boolean,
 
-    /** @private {boolean} */
-    controlsDisabled_: {
-      type: Boolean,
-      computed: 'computeControlsDisabled_(disabled, hasError_)',
-    },
-
-    /** @private {number} */
-    errorState_: {
-      type: Number,
-      reflectToAttribute: true,
-      value: PagesInputErrorState.NO_ERROR,
-    },
-
-    /** @private {string} */
-    inputString_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {!Array<number>} */
-    pagesToPrint_: {
-      type: Array,
-      value() {
-        return [];
+      pageCount: {
+        type: Number,
+        observer: 'onPageCountChange_',
       },
-    },
 
-    /** @private {!Array<{to: number, from: number}>} */
-    rangesToPrint_: {
-      type: Array,
-      computed: 'computeRangesToPrint_(pagesToPrint_)',
-    },
+      /** @private {boolean} */
+      controlsDisabled_: {
+        type: Boolean,
+        computed: 'computeControlsDisabled_(disabled, hasError_)',
+      },
 
-    /** @private {number} */
-    selection_: {
-      type: Number,
-      value: PagesValue.ALL,
-      observer: 'onSelectionChange_',
-    },
+      /** @private {number} */
+      errorState_: {
+        type: Number,
+        reflectToAttribute: true,
+        value: PagesInputErrorState.NO_ERROR,
+      },
+
+      /** @private {boolean} */
+      hasError_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {string} */
+      inputString_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {!Array<number>} */
+      pagesToPrint_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /** @private {!Array<{to: number, from: number}>} */
+      rangesToPrint_: {
+        type: Array,
+        computed: 'computeRangesToPrint_(pagesToPrint_)',
+      },
+
+      /** @private {number} */
+      selection_: {
+        type: Number,
+        value: PagesValue.ALL,
+        observer: 'onSelectionChange_',
+      },
+
+      /**
+       * Mirroring the enum so that it can be used from HTML bindings.
+       * @private
+       */
+      pagesValueEnum_: {
+        type: Object,
+        value: PagesValue,
+      },
+
+    };
+  }
+
+  static get observers() {
+    return [
+      'updatePagesToPrint_(inputString_)',
+      'onRangeChange_(errorState_, rangesToPrint_, settings.pages, ' +
+          'settings.pagesPerSheet.value)',
+    ];
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Mirroring the enum so that it can be used from HTML bindings.
-     * @private
+     * True if the user's last valid input should be restored to the custom
+     * input field. Cleared when the input is set automatically, or the user
+     * manually clears the field.
+     * @private {boolean}
      */
-    pagesValueEnum_: {
-      type: Object,
-      value: PagesValue,
-    },
-  },
+    this.restoreLastInput_ = true;
 
-  observers: [
-    'updatePagesToPrint_(inputString_)',
-    'onRangeChange_(errorState_, rangesToPrint_, settings.pages, ' +
-        'settings.pagesPerSheet.value)',
-  ],
+    /**
+     * Memorizes the user's last non-custom pages setting. Used when
+     * `PagesValue.ODDS` and `PagesValue.EVEN` become invalid due to a changed
+     * page count.
+     * @private {number}
+     */
+    this.resorationValue_ = PagesValue.ALL;
+  }
 
-  listeners: {
-    'input-change': 'onInputChange_',
-  },
+  /** @override */
+  ready() {
+    super.ready();
 
-  /**
-   * True if the user's last valid input should be restored to the custom input
-   * field. Cleared when the input is set automatically, or the user manually
-   * clears the field.
-   * @private {boolean}
-   */
-  restoreLastInput_: true,
+    this.addEventListener(
+        'input-change',
+        e => this.onInputChange_(/** @type {!CustomEvent<string>} */ (e)));
+  }
 
   /**
-   * Memorizes the user's last non-custom pages setting. Used when
-   * `PagesValue.ODDS` and `PagesValue.EVEN` become invalid due to a changed
-   * page count.
-   * @private {number}
-   */
-  resorationValue_: PagesValue.ALL,
-
-  /**
-   * Initialize |selectedValue| in attached() since this doesn't observe
-   * settings.pages, because settings.pages is not sticky.
+   * Initialize |selectedValue| in connectedCallback() since this doesn't
+   * observe settings.pages, because settings.pages is not sticky.
    * @override
    */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.selectedValue = PagesValue.ALL.toString();
-  },
+  }
 
   /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
   getInput() {
     return /** @type {!CrInputElement} */ (this.$.pageSettingsCustomInput);
-  },
+  }
 
   /**
    * @param {number} value
@@ -161,8 +201,9 @@ Polymer({
    */
   setSelectedValue_(value) {
     this.selectedValue = value.toString();
-    this.$$('select').dispatchEvent(new CustomEvent('change'));
-  },
+    this.shadowRoot.querySelector('select').dispatchEvent(
+        new CustomEvent('change'));
+  }
 
   /**
    * @param {!CustomEvent<string>} e Contains the new input value.
@@ -173,11 +214,11 @@ Polymer({
       this.restoreLastInput_ = true;
     }
     this.inputString_ = e.detail;
-  },
+  }
 
   onProcessSelectChange(value) {
     this.selection_ = parseInt(value, 10);
-  },
+  }
 
   /** @private */
   onCollapseChanged_() {
@@ -185,7 +226,7 @@ Polymer({
       /** @type {!CrInputElement} */ (this.$.pageSettingsCustomInput)
           .inputElement.focus();
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether the controls should be disabled.
@@ -194,7 +235,7 @@ Polymer({
   computeControlsDisabled_() {
     // Disable the input if other settings are responsible for the error state.
     return !this.hasError_ && this.disabled;
-  },
+  }
 
   /**
    * Updates pages to print and error state based on the validity and
@@ -295,7 +336,7 @@ Polymer({
 
     this.errorState_ = PagesInputErrorState.NO_ERROR;
     this.pagesToPrint_ = pages;
-  },
+  }
 
   /**
    * @return {!Array<{to: number, from: number}>}
@@ -322,7 +363,7 @@ Polymer({
     }
     ranges.push({from: from, to: to});
     return ranges;
-  },
+  }
 
   /**
    * @return {!Array<number>} The final page numbers, reflecting N-up setting.
@@ -343,7 +384,7 @@ Polymer({
       nupPages[i] = i + 1;
     }
     return nupPages;
-  },
+  }
 
   /**
    * Updates the model with pages and validity, and adds error styling if
@@ -380,7 +421,7 @@ Polymer({
     }
     this.setSettingValid('pages', true);
     this.hasError_ = false;
-  },
+  }
 
   /** @private */
   onSelectBlur_(event) {
@@ -390,19 +431,20 @@ Polymer({
     }
 
     this.onCustomInputBlur_();
-  },
+  }
 
   /** @private */
   onCustomInputBlur_() {
     this.resetAndUpdate();
     if (this.errorState_ === PagesInputErrorState.EMPTY) {
       // Update with all pages.
-      this.$$('cr-input').value = this.getAllPagesString_();
+      this.shadowRoot.querySelector('cr-input').value =
+          this.getAllPagesString_();
       this.inputString_ = this.getAllPagesString_();
       this.resetString();
       this.restoreLastInput_ = false;
     }
-  },
+  }
 
   /**
    * @return {string} Gets message to show as hint.
@@ -424,7 +466,7 @@ Polymer({
           'pageRangeLimitInstructionWithValue', this.pageCount);
     }
     return formattedMessage.replace(/<\/b>|<b>/g, '');
-  },
+  }
 
   /**
    * @return {boolean} Whether the document being printed has only one page.
@@ -432,7 +474,7 @@ Polymer({
    */
   isSinglePage_() {
     return this.pageCount === 1;
-  },
+  }
 
   /**
    * @return {boolean} Whether to hide the hint.
@@ -441,7 +483,7 @@ Polymer({
   hintHidden_() {
     return this.errorState_ === PagesInputErrorState.NO_ERROR ||
         this.errorState_ === PagesInputErrorState.EMPTY;
-  },
+  }
 
   /**
    * @return {boolean} Whether to disable the custom input.
@@ -449,7 +491,7 @@ Polymer({
    */
   inputDisabled_() {
     return this.selection_ !== PagesValue.CUSTOM || this.controlsDisabled_;
-  },
+  }
 
   /**
    * @return {boolean} Whether to display the custom input.
@@ -457,7 +499,7 @@ Polymer({
    */
   shouldShowInput_() {
     return this.selection_ === PagesValue.CUSTOM;
-  },
+  }
 
   /**
    * @return {string} A string representing the full page range.
@@ -469,7 +511,7 @@ Polymer({
     }
 
     return this.pageCount === 1 ? '1' : `1-${this.pageCount}`;
-  },
+  }
 
   /** @private */
   onSelectionChange_() {
@@ -478,11 +520,11 @@ Polymer({
         this.errorState_ !== PagesInputErrorState.NO_ERROR) {
       this.restoreLastInput_ = true;
       this.inputString_ = '';
-      this.$$('cr-input').value = '';
+      this.shadowRoot.querySelector('cr-input').value = '';
       this.resetString();
     }
     this.updatePagesToPrint_();
-  },
+  }
 
   /**
    * @param {number} current
@@ -510,11 +552,15 @@ Polymer({
         (current < previous || !this.restoreLastInput_);
 
     if (resetCustom) {
-      this.$$('cr-input').value = this.getAllPagesString_();
+      this.shadowRoot.querySelector('cr-input').value =
+          this.getAllPagesString_();
       this.inputString_ = this.getAllPagesString_();
       this.resetString();
     } else {
       this.updatePagesToPrint_();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewPagesSettingsElement.is, PrintPreviewPagesSettingsElement);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, PrintPreviewOtherOptionsSettingsElement} from 'chrome://print/print_preview.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,7 +51,8 @@ suite('OtherOptionsSettingsTest', function() {
   test('checkbox visibility', function() {
     ['headerFooter', 'cssBackground', 'rasterize', 'selectionOnly'].forEach(
         setting => {
-          const checkbox = otherOptionsSection.$$(`#${setting}`);
+          const checkbox =
+              otherOptionsSection.shadowRoot.querySelector(`#${setting}`);
           // Show, hide and reset.
           [true, false, true].forEach(value => {
             model.set(`settings.${setting}.available`, value);
@@ -63,7 +64,8 @@ suite('OtherOptionsSettingsTest', function() {
 
   test('set with checkbox', async () => {
     const testOptionCheckbox = (settingName) => {
-      const element = otherOptionsSection.$$('#' + settingName);
+      const element =
+          otherOptionsSection.shadowRoot.querySelector(`#${settingName}`);
       const optionSetting = otherOptionsSection.getSetting(settingName);
       assertFalse(isSectionHidden(element));
       assertTrue(element.checked);
@@ -88,7 +90,8 @@ suite('OtherOptionsSettingsTest', function() {
   test('update from setting', function() {
     ['headerFooter', 'cssBackground', 'rasterize', 'selectionOnly'].forEach(
         setting => {
-          const checkbox = otherOptionsSection.$$(`#${setting}`);
+          const checkbox =
+              otherOptionsSection.shadowRoot.querySelector(`#${setting}`);
           // Set true and then false.
           [true, false].forEach(value => {
             otherOptionsSection.setSetting(setting, value);
@@ -101,7 +104,8 @@ suite('OtherOptionsSettingsTest', function() {
   // Tests that if settings are enforced by enterprise policy the checkbox
   // is disabled.
   test('header footer disabled by policy', function() {
-    const checkbox = otherOptionsSection.$$('#headerFooter');
+    const checkbox =
+        otherOptionsSection.shadowRoot.querySelector('#headerFooter');
     // Set true and then false.
     [true, false].forEach(value => {
       model.set('settings.headerFooter.setByPolicy', value);

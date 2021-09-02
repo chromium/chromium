@@ -8,62 +8,85 @@ import './print_preview_shared_css.js';
 import './settings_section.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsBehavior} from './settings_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
-Polymer({
-  is: 'print-preview-other-options-settings',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewOtherOptionsSettingsElementBase =
+    mixinBehaviors([SettingsBehavior, I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class PrintPreviewOtherOptionsSettingsElement extends
+    PrintPreviewOtherOptionsSettingsElementBase {
+  static get is() {
+    return 'print-preview-other-options-settings';
+  }
 
-  behaviors: [SettingsBehavior, I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    disabled: Boolean,
+  static get properties() {
+    return {
+      disabled: Boolean,
 
-    /**
-     * @private {!Array<!{name: string,
-     *                    label: string,
-     *                    value: (boolean | undefined),
-     *                    managed: (boolean | undefined),
-     *                    available: (boolean | undefined)}>}
-     */
-    options_: {
-      type: Array,
-      value() {
-        return [
-          {name: 'headerFooter', label: 'optionHeaderFooter'},
-          {name: 'cssBackground', label: 'optionBackgroundColorsAndImages'},
-          {name: 'rasterize', label: 'optionRasterize'},
-          {name: 'selectionOnly', label: 'optionSelectionOnly'},
-        ];
+      /**
+       * @private {!Array<!{name: string,
+       *                    label: string,
+       *                    value: (boolean | undefined),
+       *                    managed: (boolean | undefined),
+       *                    available: (boolean | undefined)}>}
+       */
+      options_: {
+        type: Array,
+        value() {
+          return [
+            {name: 'headerFooter', label: 'optionHeaderFooter'},
+            {name: 'cssBackground', label: 'optionBackgroundColorsAndImages'},
+            {name: 'rasterize', label: 'optionRasterize'},
+            {name: 'selectionOnly', label: 'optionSelectionOnly'},
+          ];
+        },
       },
-    },
 
-    /**
-     * The index of the checkbox that should display the "Options" title.
-     * @private {number}
-     */
-    firstIndex_: {
-      type: Number,
-      value: 0,
-    },
-  },
+      /**
+       * The index of the checkbox that should display the "Options" title.
+       * @private {number}
+       */
+      firstIndex_: {
+        type: Number,
+        value: 0,
+      },
 
-  observers: [
-    'onHeaderFooterSettingChange_(settings.headerFooter.*)',
-    'onCssBackgroundSettingChange_(settings.cssBackground.*)',
-    'onRasterizeSettingChange_(settings.rasterize.*)',
-    'onSelectionOnlySettingChange_(settings.selectionOnly.*)',
-  ],
+    };
+  }
 
-  /** @private {!Map<string, ?number>} */
-  timeouts_: new Map(),
+  static get observers() {
+    return [
+      'onHeaderFooterSettingChange_(settings.headerFooter.*)',
+      'onCssBackgroundSettingChange_(settings.cssBackground.*)',
+      'onRasterizeSettingChange_(settings.rasterize.*)',
+      'onSelectionOnlySettingChange_(settings.selectionOnly.*)',
 
-  /** @private {!Map<string, boolean>} */
-  previousValues_: new Map(),
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!Map<string, ?number>} */
+    this.timeouts_ = new Map();
+
+    /** @private {!Map<string, boolean>} */
+    this.previousValues_ = new Map();
+  }
 
   /**
    * @param {string} settingName The name of the setting to updated.
@@ -85,9 +108,11 @@ Polymer({
           this.setSetting(settingName, newValue);
 
           // For tests only
-          this.fire('update-checkbox-setting', settingName);
+          this.dispatchEvent(new CustomEvent(
+              'update-checkbox-setting',
+              {bubbles: true, composed: true, detail: settingName}));
         }, 200));
-  },
+  }
 
   /**
    * @param {number} index The index of the option to update.
@@ -104,7 +129,7 @@ Polymer({
     if (availableOptions.length > 0) {
       this.firstIndex_ = this.options_.indexOf(availableOptions[0]);
     }
-  },
+  }
 
   /**
    * @param {boolean} managed Whether the setting is managed by policy.
@@ -114,27 +139,27 @@ Polymer({
    */
   getDisabled_(managed, disabled) {
     return managed || disabled;
-  },
+  }
 
   /** @private */
   onHeaderFooterSettingChange_() {
     this.updateOptionFromSetting_(0);
-  },
+  }
 
   /** @private */
   onCssBackgroundSettingChange_() {
     this.updateOptionFromSetting_(1);
-  },
+  }
 
   /** @private */
   onRasterizeSettingChange_() {
     this.updateOptionFromSetting_(2);
-  },
+  }
 
   /** @private */
   onSelectionOnlySettingChange_() {
     this.updateOptionFromSetting_(3);
-  },
+  }
 
   /**
    * @param {!Event} e Contains the checkbox item that was checked.
@@ -142,8 +167,9 @@ Polymer({
    */
   onChange_(e) {
     const name = e.model.item.name;
-    this.updateSettingWithTimeout_(name, this.$$(`#${name}`).checked);
-  },
+    this.updateSettingWithTimeout_(
+        name, this.shadowRoot.querySelector(`#${name}`).checked);
+  }
 
   /**
    * @param {number} index The index of the settings section.
@@ -153,5 +179,9 @@ Polymer({
    */
   getClass_(index) {
     return index === this.firstIndex_ ? 'first-visible' : '';
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewOtherOptionsSettingsElement.is,
+    PrintPreviewOtherOptionsSettingsElement);
