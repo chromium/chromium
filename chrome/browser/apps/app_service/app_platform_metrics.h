@@ -186,6 +186,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     bool window_is_closed = false;
   };
 
+  struct BrowserToTab {
+    aura::Window* browser_window = nullptr;
+    aura::Window* tab_window = nullptr;
+  };
+
+  using BrowserToTabs = std::list<BrowserToTab>;
+
   // AppRegistryCache::Observer:
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -196,6 +203,20 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
+
+  // Returns true if the browser with `browser_window` has activated tabs.
+  // Otherwise, returns false.
+  bool HasActivatedTab(aura::Window* browser_window);
+
+  // Returns the browser window for `tab_window`.
+  aura::Window* GetBrowserWindow(aura::Window* tab_window) const;
+
+  // Adds an activated `browser_window` and `tab_window` to
+  // `active_browser_to_tabs_`.
+  void AddActivatedTab(aura::Window* browser_window, aura::Window* tab_window);
+
+  // Removes `tab_window` from `active_browser_to_tabs_`.
+  void RemoveActivatedTab(aura::Window* tab_window);
 
   void SetWindowActivated(apps::mojom::AppType app_type,
                           AppTypeName app_type_name,
@@ -243,6 +264,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   bool should_refresh_activated_count_pref = false;
 
   int user_type_by_device_type_;
+
+  // Records the map from browsers to activated web apps tabs.
+  BrowserToTabs active_browsers_to_tabs_;
 
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.

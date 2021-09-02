@@ -746,6 +746,49 @@ void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
   apps::InstanceRegistry::Observer::Observe(nullptr);
 }
 
+bool AppPlatformMetrics::HasActivatedTab(aura::Window* browser_window) {
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.browser_window == browser_window) {
+      return true;
+    }
+  }
+  return false;
+}
+
+aura::Window* AppPlatformMetrics::GetBrowserWindow(
+    aura::Window* tab_window) const {
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.tab_window == tab_window) {
+      return it.browser_window;
+    }
+  }
+  return nullptr;
+}
+
+void AppPlatformMetrics::AddActivatedTab(aura::Window* browser_window,
+                                         aura::Window* tab_window) {
+  bool found = false;
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.browser_window == browser_window && it.tab_window == tab_window) {
+      found = true;
+      break;
+    }
+  }
+
+  if (!found) {
+    BrowserToTab browser_to_tab;
+    browser_to_tab.browser_window = browser_window;
+    browser_to_tab.tab_window = tab_window;
+    active_browsers_to_tabs_.push_back(browser_to_tab);
+  }
+}
+
+void AppPlatformMetrics::RemoveActivatedTab(aura::Window* tab_window) {
+  active_browsers_to_tabs_.remove_if([&tab_window](const BrowserToTab& item) {
+    return item.tab_window == tab_window;
+  });
+}
+
 void AppPlatformMetrics::SetWindowActivated(apps::mojom::AppType app_type,
                                             AppTypeName app_type_name,
                                             AppTypeNameV2 app_type_name_v2,
