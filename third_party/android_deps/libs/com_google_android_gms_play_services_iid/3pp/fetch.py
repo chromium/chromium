@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/android/gms/play-services-iid/17.0.0/play-services-iid-17.0.0.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-iid/17.0.0/play-services-iid-17.0.0.aar'
 _FILE_NAME = 'play-services-iid-17.0.0.aar'
 _FILE_VERSION = '17.0.0'
 

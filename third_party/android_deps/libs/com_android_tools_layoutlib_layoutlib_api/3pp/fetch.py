@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/android/tools/layoutlib/layoutlib-api/30.0.0-alpha10/layoutlib-api-30.0.0-alpha10.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/layoutlib/layoutlib-api/30.0.0-alpha10/layoutlib-api-30.0.0-alpha10.jar'
 _FILE_NAME = 'layoutlib-api-30.0.0-alpha10.jar'
 _FILE_VERSION = '30.0.0-alpha10'
 

@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/android/tools/desugar_jdk_libs_configuration/1.1.1/desugar_jdk_libs_configuration-1.1.1.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/desugar_jdk_libs_configuration/1.1.1/desugar_jdk_libs_configuration-1.1.1.jar'
 _FILE_NAME = 'desugar_jdk_libs_configuration-1.1.1.jar'
 _FILE_VERSION = '1.1.1'
 

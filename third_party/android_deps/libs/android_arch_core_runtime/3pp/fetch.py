@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/android/arch/core/runtime/1.1.1/runtime-1.1.1.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/android/arch/core/runtime/1.1.1/runtime-1.1.1.aar'
 _FILE_NAME = 'runtime-1.1.1.aar'
 _FILE_VERSION = '1.1.1'
 

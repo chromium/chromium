@@ -18,10 +18,8 @@ buildscript {
 apply plugin: 'org.owasp.dependencycheck'
 
 repositories {
+    google()
     mavenCentral()
-    maven {
-        url 'https://maven.google.com'
-    }
 }
 
 dependencyCheck {
