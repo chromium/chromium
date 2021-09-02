@@ -6,6 +6,7 @@ package org.chromium.base.compat;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Rect;
 import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +14,7 @@ import android.os.storage.StorageManager;
 import android.view.Display;
 import android.view.InputEvent;
 import android.view.VerifiedInputEvent;
+import android.view.WindowManager;
 
 import org.chromium.base.annotations.VerifiesOnR;
 
@@ -45,5 +47,13 @@ public final class ApiHelperForR {
      */
     public static VerifiedInputEvent verifyInputEvent(InputManager manager, InputEvent inputEvent) {
         return manager.verifyInputEvent(inputEvent);
+    }
+
+    /**
+     * See {@link WindowManager#getMaximumWindowMetrics()}.
+     * See {@link WindowMetrics#getBounds()}.
+     */
+    public static Rect getMaximumWindowMetricsBounds(WindowManager manager) {
+        return manager.getMaximumWindowMetrics().getBounds();
     }
 }
