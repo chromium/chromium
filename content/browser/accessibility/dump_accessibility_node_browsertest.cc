@@ -470,6 +470,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
       "name-from-content-of-labelledby-elements-one-of-which-is-hidden.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFromListItem) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-from-list-item.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameHeadingComboboxFocusableAlternative) {
   RunAccNameTest(
@@ -795,6 +799,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
                        NameTextLabelledbySelfAndDiv) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-labelledby-self-and-div.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextLabelledbyWithGeneratedContent) {
+  RunAccNameTest(
+      FILE_PATH_LITERAL("name-text-labelledby-with-generated-content.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextLabelWithInput) {

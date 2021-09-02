@@ -3173,18 +3173,41 @@ String AXNodeObject::TextFromDescendants(AXObjectSet& visited,
   HeapVector<Member<AXObject>> owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
 
-  // TODO(aleventhal) Why isn't this just using cached children?
-  for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
-       child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    auto* child_text_node = DynamicTo<Text>(child);
-    if (child_text_node &&
-        child_text_node->wholeText().ContainsOnlyWhitespaceOrEmpty()) {
-      // skip over empty text nodes
-      continue;
+  if (ShouldUseLayoutObjectTraversalForChildren()) {
+    // This is a pseudo element and its descendants don't have an associated
+    // node, so we cannot use a DOM traversal. In this case, we can traverse the
+    // children of the accessible object directly, because CSS ::before and
+    // ::after do generate accessibility nodes.
+    // TODO(accessibility): We explicitly exclude marker pseudo elements here
+    // because Chrome was traditionally not including them, but it's actually
+    // undefined behavior. We will have to revisit after this is settled, see:
+    // https://github.com/w3c/accname/issues/76
+    if (GetElement() && GetElement()->GetPseudoId() != kPseudoIdMarker) {
+      for (const auto& child : ChildrenIncludingIgnored())
+        children.push_back(child);
     }
-    AXObject* child_obj = AXObjectCache().GetOrCreate(child);
-    if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
-      children.push_back(child_obj);
+  } else {
+    // For regular elements, we traverse the flattened DOM tree exposed by
+    // LayoutTreeBuilderTraversal that includes pseudo elements such as
+    // ::before, but not their children. We don't traverse the accessibility
+    // tree because it doesn't contain all the nodes we need. In particular, it
+    // will fail when there's a hidden node that is the target of an
+    // aria-labelledby or -describedby relation. Check content_browsertests at:
+    // All/DumpAccessibilityAccNameTest.NameTextLabelledbyHiddenWithHiddenChild/blink
+    // TODO(accessibility): Revisit this code after an agreement for the case
+    // explained above is reached, see: https://github.com/w3c/accname/issues/57
+    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
+         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
+      auto* child_text_node = DynamicTo<Text>(child);
+      if (child_text_node &&
+          child_text_node->wholeText().ContainsOnlyWhitespaceOrEmpty()) {
+        // skip over empty text nodes
+        continue;
+      }
+      AXObject* child_obj = AXObjectCache().GetOrCreate(child);
+      if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
+        children.push_back(child_obj);
+    }
   }
   for (const auto& owned_child : owned_children)
     children.push_back(owned_child);
