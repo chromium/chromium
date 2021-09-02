@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -21,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +29,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,11 +43,13 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
 
 /**
  * Tests {@link WebFeedMainMenuItem}.
@@ -78,10 +82,14 @@ public final class WebFeedMainMenuItemTest {
     private TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
     private WebFeedMainMenuItem mWebFeedMainMenuItem;
+    private ArrayList<Callback<WebFeedBridge.WebFeedMetadata>> mWaitingMetadataCallbacks =
+            new ArrayList();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        // Print logs to stdout.
+        ShadowLog.stream = System.out;
         mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
 
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
@@ -96,18 +104,31 @@ public final class WebFeedMainMenuItemTest {
         // Required for resolving an attribute used in AppMenuItemText.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        setGetWebFeedMetadataForPageRepsonse(null);
+        // Add requests for web feed information to mWaitingMetadataCallbacks.
+        doAnswer(invocation -> {
+            mWaitingMetadataCallbacks.add(
+                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1));
+            return null;
+        })
+                .when(mWebFeedBridgeJniMock)
+                .findWebFeedInfoForPage(any(), any(Callback.class));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
-                    R.layout.web_feed_main_menu_item, null));
-        });
+        mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
+                R.layout.web_feed_main_menu_item, null));
+
+        LoadingView.setDisableAnimationForTest(true);
+    }
+
+    @After
+    public void tearDown() {
+        LoadingView.setDisableAnimationForTest(false);
     }
 
     @Test
     @UiThreadTest
     public void initialize_hasFavicon_displaysFavicon() {
         initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithBitmap();
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
@@ -122,6 +143,7 @@ public final class WebFeedMainMenuItemTest {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
         mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
                 mDialogManager, mSnackBarManager);
+        respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
         ImageView imageView = mWebFeedMainMenuItem.findViewById(R.id.icon);
@@ -132,6 +154,7 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_displaysCorrectTitle() {
         initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(null);
 
         TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
         assertEquals("Title should be shortened URL.",
@@ -142,120 +165,156 @@ public final class WebFeedMainMenuItemTest {
     @Test
     @UiThreadTest
     public void initialize_noMetadata_displaysFollowChip() {
-        setGetWebFeedMetadataForPageRepsonse(null);
-
         initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(null);
 
-        verifyFollowChip(/*enabled=*/true);
+        assertEquals("follow", getChipState());
     }
 
     @Test
     @UiThreadTest
     public void initialize_notFollowed_displaysFollowChip() {
-        setGetWebFeedMetadataForPageRepsonse(
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
 
-        initializeWebFeedMainMenuItem();
-
-        verifyFollowChip(/*enabled=*/true);
+        assertEquals("follow", getChipState());
     }
 
     @Test
     @UiThreadTest
     public void initialize_errorPage_displaysDisabledFollowChip() {
         doReturn(true).when(mTab).isShowingErrorPage();
-        setGetWebFeedMetadataForPageRepsonse(
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
 
-        initializeWebFeedMainMenuItem();
-
-        verifyFollowChip(/*enabled=*/false);
+        assertEquals("disabled follow", getChipState());
     }
 
     @Test
     @UiThreadTest
     public void initialize_unknownFollowStatus_displaysFollowChip() {
-        setGetWebFeedMetadataForPageRepsonse(
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.UNKNOWN, GURL.emptyGURL()));
 
-        initializeWebFeedMainMenuItem();
-
-        verifyFollowChip(/*enabled=*/true);
+        assertEquals("follow", getChipState());
     }
 
     @Test
     @UiThreadTest
     public void initialize_followed_displaysFollowingChip() {
-        setGetWebFeedMetadataForPageRepsonse(
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(
                 createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
 
-        initializeWebFeedMainMenuItem();
-
-        ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
-        ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
-        TextView textView = followingChipView.getPrimaryTextView();
-        assertEquals("Follow chip should be gone.", View.GONE, followChipView.getVisibility());
-        assertEquals("Following chip should be visible.", View.VISIBLE,
-                followingChipView.getVisibility());
-        assertEquals("Chip text should say Following.",
-                mActivity.getResources().getString(R.string.menu_following), textView.getText());
-        assertTrue("Following chip should be enabled.", followingChipView.isEnabled());
+        assertEquals("following", getChipState());
     }
 
     @Test
     @UiThreadTest
-    public void initialize_unfollowInProgress_displaysLoadingFollowingChip() {
-        setGetWebFeedMetadataForPageRepsonse(createWebFeedMetadata(
+    public void initialize_unfollowInProgress() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(createWebFeedMetadata(
                 WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
 
-        initializeWebFeedMainMenuItem();
-
-        ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
-        ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
-        TextView textView = followingChipView.getPrimaryTextView();
-        assertEquals("Follow chip should be gone.", View.GONE, followChipView.getVisibility());
-        assertEquals("Following chip should be invisible at first.", View.INVISIBLE,
-                followingChipView.getVisibility());
-        assertEquals("Chip text should say Following",
-                mActivity.getResources().getString(R.string.menu_following), textView.getText());
-        assertFalse("Following chip should be disabled.", followingChipView.isEnabled());
+        // ChipView imposes a delay.
+        assertEquals("invisible", getChipState());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals("disabled following", getChipState());
     }
 
     @Test
     @UiThreadTest
-    public void initialize_followInProgress_displaysLoadingFollowChip() {
-        setGetWebFeedMetadataForPageRepsonse(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
-
+    public void initialize_unfollowInProgress_succeeds() {
         initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(createWebFeedMetadata(
+                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
-        ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
-        TextView textView = followChipView.getPrimaryTextView();
-        assertEquals(
-                "Following chip should be gone.", View.GONE, followingChipView.getVisibility());
-        assertEquals("Follow chip should be invisible at first.", View.INVISIBLE,
-                followChipView.getVisibility());
-        assertEquals("Chip text should say Follow",
-                mActivity.getResources().getString(R.string.menu_follow), textView.getText());
-        assertFalse("Follow chip should be disabled.", followChipView.isEnabled());
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals("follow", getChipState());
     }
 
-    /**
-     * Verifies that the follow chip is showing.
-     */
-    private void verifyFollowChip(boolean enabled) {
-        ChipView followChipView = mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
-        ChipView followingChipView = mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
-        TextView textView = followChipView.getPrimaryTextView();
-        assertEquals(
-                "Follow chip should be visible.", View.VISIBLE, followChipView.getVisibility());
-        assertEquals(
-                "Following chip should be gone.", View.GONE, followingChipView.getVisibility());
-        assertEquals("Chip text should say Follow.",
-                mActivity.getResources().getString(R.string.menu_follow), textView.getText());
-        assertEquals(String.format("Follow chip isEnabled should be %b", enabled), enabled,
-                followChipView.isEnabled());
+    @Test
+    @UiThreadTest
+    public void initialize_unfollowInProgress_fails() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(createWebFeedMetadata(
+                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals("following", getChipState());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_followInProgress_succeeds() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(createWebFeedMetadata(
+                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+
+        // ChipView imposes a delay.
+        assertEquals("invisible", getChipState());
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals("disabled follow", getChipState());
+
+        // Now the web feed is subscribed.
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.SUBSCRIBED, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals("following", getChipState());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_followInProgress_fails() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(createWebFeedMetadata(
+                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        respondWithFeedMetadata(
+                createWebFeedMetadata(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, GURL.emptyGURL()));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertEquals("follow", getChipState());
+    }
+
+    /** Helper method to return the visual state of the chip. */
+    private String getChipState() {
+        // Note there are some invariants checked here:
+        // * There are two ChipViews, ensure that only one is non-GONE.
+        // * For the visible chip, if any, verify it has the right text.
+        ChipView followingChip = getFollowingChipView();
+        ChipView followChip = getFollowChipView();
+
+        if (followingChip.getVisibility() != View.GONE) {
+            assertEquals(View.GONE, followChip.getVisibility());
+            if (followingChip.getVisibility() == View.VISIBLE) {
+                assertEquals(mActivity.getResources().getString(R.string.menu_following),
+                        followingChip.getPrimaryTextView().getText());
+                return (followingChip.isEnabled() ? "" : "disabled ") + "following";
+            }
+            return "invisible";
+        } else if (followChip.getVisibility() != View.GONE) {
+            if (followChip.getVisibility() == View.VISIBLE) {
+                assertEquals(mActivity.getResources().getString(R.string.menu_follow),
+                        followChip.getPrimaryTextView().getText());
+                return (followChip.isEnabled() ? "" : "disabled ") + "follow";
+            }
+            return "invisible";
+        } else {
+            return "none";
+        }
     }
 
     /**
@@ -279,12 +338,18 @@ public final class WebFeedMainMenuItemTest {
                 faviconUrl);
     }
 
-    private void setGetWebFeedMetadataForPageRepsonse(WebFeedBridge.WebFeedMetadata metadata) {
-        doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(metadata);
-            return null;
-        })
-                .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(any(), any(Callback.class));
+    ChipView getFollowChipView() {
+        return mWebFeedMainMenuItem.findViewById(R.id.follow_chip_view);
+    }
+
+    ChipView getFollowingChipView() {
+        return mWebFeedMainMenuItem.findViewById(R.id.following_chip_view);
+    }
+
+    private void respondWithFeedMetadata(WebFeedBridge.WebFeedMetadata metadata) {
+        assertFalse(mWaitingMetadataCallbacks.isEmpty());
+        Callback<WebFeedBridge.WebFeedMetadata> callback = mWaitingMetadataCallbacks.get(0);
+        mWaitingMetadataCallbacks.remove(0);
+        callback.onResult(metadata);
     }
 }
