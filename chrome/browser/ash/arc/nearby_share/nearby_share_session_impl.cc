@@ -94,15 +94,13 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
   }
 }
 
-NearbyShareSessionImpl::~NearbyShareSessionImpl() {
-  env_observation_.Reset();
-  arc_window_observation_.Reset();
-}
+NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
     views::Widget::ClosedReason reason) {
   DCHECK(session_instance_);
 
+  DVLOG(1) << __func__;
   session_instance_->OnNearbyShareViewClosed();
   if (window_initialization_timer_.IsRunning()) {
     window_initialization_timer_.Stop();
@@ -119,6 +117,7 @@ void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* const window) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(window);
 
+  DVLOG(1) << __func__;
   if (ash::IsArcWindow(window) && (arc::GetWindowTaskId(window) == task_id_)) {
     env_observation_.Reset();
     arc_window_observation_.Observe(window);
@@ -131,6 +130,7 @@ void NearbyShareSessionImpl::OnWindowVisibilityChanged(
     bool visible) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  DVLOG(1) << __func__;
   absl::optional<int> task_id = arc::GetWindowTaskId(window);
   DCHECK(task_id.has_value());
   DCHECK_GE(task_id.value(), 0);
@@ -151,7 +151,6 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
   DCHECK(profile_);
 
   DVLOG(1) << __func__;
-
   if (share_info_->files.has_value()) {
     // File sharing.
     base::FilePath cache_base_path;
@@ -177,8 +176,8 @@ void NearbyShareSessionImpl::OnArcWindowFound(aura::Window* const arc_window) {
 apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
     const {
   DCHECK(share_info_);
-  DCHECK(share_info_->files);
 
+  DVLOG(1) << __func__;
   std::string text;
   if (share_info_->extras.has_value() &&
       share_info_->extras->contains(kIntentExtraText)) {
@@ -222,7 +221,6 @@ void NearbyShareSessionImpl::OnPreparedDirectory(aura::Window* const arc_window,
   DCHECK_GT(file_handler_->GetTotalSizeOfFiles(), 0);
 
   DVLOG(1) << __func__;
-
   // TODO(b/191232168): Figure out why PrepareDirectoryTask is flaky. Ignoring
   // the error seem to always work otherwise will sometimes return error.
   PLOG_IF(WARNING, result != base::File::FILE_OK)
@@ -291,7 +289,6 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   DCHECK(arc_window);
 
   DVLOG(1) << __func__;
-
   // Only applicable if sharing files.
   if (result.has_value() && result.value() != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to complete file streaming with error: "
@@ -361,8 +358,7 @@ void NearbyShareSessionImpl::OnProgressBarIntervalElapsed() {
 void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DVLOG(1) << "Called OnProgressBarUpdate with value: " << value;
-
+  DVLOG(1) << "OnProgressBarUpdate with value: " << value;
   if (progress_bar_view_) {
     // Only show value if there is forward progress.
     if (value > progress_bar_view_->GetProgressBarValue()) {
@@ -435,23 +431,20 @@ bool NearbyShareSessionImpl::IsNearbyShareBubbleVisible() const {
   DVLOG(1) << __func__;
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (!arc_window) {
-    LOG(ERROR) << "IsNearbyShareBubbleVisible: Unable to close sharesheet "
-                  "bubble. No ARC window found for task ID: "
-               << task_id_;
+    VLOG(1) << "IsNearbyShareBubbleVisible: No ARC window found for task ID: "
+            << task_id_;
     return false;
   }
   sharesheet::SharesheetService* sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
-    LOG(ERROR) << "IsNearbyShareBubbleVisible: Cannot find sharesheet service.";
+    VLOG(1) << "IsNearbyShareBubbleVisible: Cannot find sharesheet service.";
     return false;
   }
-
   sharesheet::SharesheetController* sharesheet_controller =
       sharesheet_service->GetSharesheetController(arc_window);
   if (!sharesheet_controller) {
-    LOG(ERROR) << "IsNearbyShareBubbleVisible: Cannot find sharesheet "
-                  "controller.";
+    VLOG(1) << "IsNearbyShareBubbleVisible: Cannot find sharesheet controller.";
     return false;
   }
   return sharesheet_controller->IsBubbleVisible();
