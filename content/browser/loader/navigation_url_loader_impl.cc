@@ -777,7 +777,8 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     if (!params)
       return;
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
-        *browser_context_, frame_tree_node_id_, std::move(*params));
+        *browser_context_, *storage_partition_, frame_tree_node_id_,
+        std::move(*params));
   }
 
   early_hints_manager_->HandleEarlyHints(std::move(early_hints),

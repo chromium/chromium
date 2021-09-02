@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -26,6 +27,7 @@
 #include "net/http/http_status_code.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/quic_simple_test_server.h"
@@ -93,6 +95,46 @@ const char kHintedStylesheetBody[] = "/*empty*/";
 const char kEmptyPagePath[] = "/empty.html";
 const char kEmptyPageBody[] = "<html></html>";
 
+// Listens to sockets on an EmbeddedTestServer for preconnect tests. Created
+// on the UI thread. EmbeddedTestServerConnectionListener methods are called
+// from a different thread than the UI thread.
+class PreconnectListener
+    : public net::test_server::EmbeddedTestServerConnectionListener {
+ public:
+  PreconnectListener()
+      : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+        weak_ptr_factory_(this) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  }
+  ~PreconnectListener() override = default;
+
+  // net::test_server::EmbeddedTestServerConnectionListener implementation:
+  std::unique_ptr<net::StreamSocket> AcceptedSocket(
+      std::unique_ptr<net::StreamSocket> connection) override {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&PreconnectListener::AcceptedSocketOnUIThread,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return connection;
+  }
+  void ReadFromSocket(const net::StreamSocket& connection, int rv) override {}
+
+  size_t num_accepted_sockets() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    return num_accepted_sockets_;
+  }
+
+ private:
+  void AcceptedSocketOnUIThread() {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    ++num_accepted_sockets_;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  size_t num_accepted_sockets_ = 0;
+
+  base::WeakPtrFactory<PreconnectListener> weak_ptr_factory_;
+};
+
 }  // namespace
 
 // Most tests use EmbeddedTestServer but this uses QuicSimpleTestServer because
@@ -106,6 +148,13 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
     ConfigureMockCertVerifier();
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    cross_origin_server_.RegisterRequestHandler(
+        base::BindRepeating(&NavigationEarlyHintsTest::HandleCrossOriginRequest,
+                            base::Unretained(this)));
+    preconnect_listener_ = std::make_unique<PreconnectListener>();
+    cross_origin_server().SetConnectionListener(preconnect_listener_.get());
+    ASSERT_TRUE(cross_origin_server_.Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -115,11 +164,6 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
         {features::kEarlyHintsPreloadForNavigation,
          net::features::kSplitCacheByNetworkIsolationKey},
         {});
-
-    cross_origin_server_.RegisterRequestHandler(
-        base::BindRepeating(&NavigationEarlyHintsTest::HandleCrossOriginRequest,
-                            base::Unretained(this)));
-    ASSERT_TRUE(cross_origin_server_.Start());
 
     ASSERT_TRUE(net::QuicSimpleTestServer::Start());
 
@@ -138,6 +182,8 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 
  protected:
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
+
+  PreconnectListener& preconnect_listener() { return *preconnect_listener_; }
 
   void SetUpInProcessBrowserTestFixture() override {
     mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
@@ -331,6 +377,7 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
 
   // For tests that fetch resources from a cross origin server.
   net::EmbeddedTestServer cross_origin_server_;
+  std::unique_ptr<PreconnectListener> preconnect_listener_;
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, Basic) {
@@ -634,6 +681,23 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkIsolationKey) {
                      /*wait_for_navigation=*/true);
   FetchScriptOnDocument(iframe, kHintedScriptUrl);
   ASSERT_FALSE(is_cached.value());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, SimplePreconnect) {
+  const char kPageWithPreconnect[] = "/page_with_preconnect.html";
+  const GURL kPreconnectUrl = cross_origin_server().GetURL("/");
+  ResponseEntry page_entry(kPageWithPreconnect, net::HTTP_OK);
+  HeaderField link_header =
+      HeaderField("link", base::StringPrintf("<%s>; rel=preconnect",
+                                             kPreconnectUrl.spec().c_str()));
+  page_entry.AddEarlyHints({std::move(link_header)});
+  RegisterResponse(page_entry);
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), net::QuicSimpleTestServer::GetFileURL(kPageWithPreconnect)));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(preconnect_listener().num_accepted_sockets(), 1UL);
 }
 
 class NavigationEarlyHintsAddressSpaceTest : public NavigationEarlyHintsTest {

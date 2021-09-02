@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -22,6 +23,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -186,6 +188,47 @@ NavigationEarlyHintsManagerParams::NavigationEarlyHintsManagerParams(
 NavigationEarlyHintsManagerParams& NavigationEarlyHintsManagerParams::operator=(
     NavigationEarlyHintsManagerParams&&) = default;
 
+// Represents a preconnect.
+struct NavigationEarlyHintsManager::PreconnectEntry {
+  PreconnectEntry(const url::Origin& origin,
+                  network::mojom::CrossOriginAttribute cross_origin);
+  ~PreconnectEntry();
+  PreconnectEntry(const PreconnectEntry&);
+  PreconnectEntry& operator=(const PreconnectEntry&);
+
+  bool operator==(const PreconnectEntry&);
+  bool operator<(const PreconnectEntry&) const;
+
+  url::Origin origin;
+  network::mojom::CrossOriginAttribute cross_origin;
+};
+
+NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
+    const url::Origin& origin,
+    network::mojom::CrossOriginAttribute cross_origin)
+    : origin(origin), cross_origin(cross_origin) {}
+
+NavigationEarlyHintsManager::PreconnectEntry::~PreconnectEntry() = default;
+
+NavigationEarlyHintsManager::PreconnectEntry::PreconnectEntry(
+    const PreconnectEntry&) = default;
+
+NavigationEarlyHintsManager::PreconnectEntry&
+NavigationEarlyHintsManager::PreconnectEntry::operator=(
+    const PreconnectEntry&) = default;
+
+bool NavigationEarlyHintsManager::PreconnectEntry::operator==(
+    const PreconnectEntry& other) {
+  return origin == other.origin && cross_origin == other.cross_origin;
+}
+
+bool NavigationEarlyHintsManager::PreconnectEntry::operator<(
+    const PreconnectEntry& other) const {
+  if (origin == other.origin)
+    return cross_origin < other.cross_origin;
+  return origin < other.origin;
+}
+
 NavigationEarlyHintsManager::PreloadedResource::PreloadedResource() = default;
 
 NavigationEarlyHintsManager::PreloadedResource::~PreloadedResource() = default;
@@ -291,9 +334,11 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
+    StoragePartition& storage_partition,
     int frame_tree_node_id,
     NavigationEarlyHintsManagerParams params)
     : browser_context_(browser_context),
+      storage_partition_(storage_partition),
       frame_tree_node_id_(frame_tree_node_id),
       loader_factory_(std::move(params.loader_factory)),
       origin_(params.origin),
@@ -313,8 +358,10 @@ void NavigationEarlyHintsManager::HandleEarlyHints(
 
   for (const auto& link : early_hints->headers->link_headers) {
     // TODO(crbug.com/671310): Support other `rel` attributes.
-    if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
-        link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
+    if (link->rel == network::mojom::LinkRelAttribute::kPreconnect) {
+      MaybePreconnect(link, enabled_by_origin_trial);
+    } else if (link->rel == network::mojom::LinkRelAttribute::kPreload ||
+               link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
       MaybePreloadHintedResource(link, navigation_request,
                                  enabled_by_origin_trial);
     }
@@ -351,6 +398,21 @@ void NavigationEarlyHintsManager::WaitForPreloadsFinishedForTesting(
     preloads_completion_callback_for_testing_ = std::move(callback);
 }
 
+void NavigationEarlyHintsManager::SetNetworkContextForTesting(
+    network::mojom::NetworkContext* network_context) {
+  DCHECK(!network_context_for_testing_);
+  DCHECK(network_context);
+  network_context_for_testing_ = network_context;
+}
+
+network::mojom::NetworkContext*
+NavigationEarlyHintsManager::GetNetworkContext() {
+  if (network_context_for_testing_)
+    return network_context_for_testing_;
+
+  return storage_partition_.GetNetworkContext();
+}
+
 bool NavigationEarlyHintsManager::IsPreloadForNavigationEnabledByOriginTrial(
     const std::vector<std::string>& raw_tokens) {
   if (!blink::TrialTokenValidator::IsTrialPossibleOnOrigin(origin_.GetURL()))
@@ -375,18 +437,45 @@ bool NavigationEarlyHintsManager::IsPreloadForNavigationEnabledByOriginTrial(
   return false;
 }
 
+void NavigationEarlyHintsManager::MaybePreconnect(
+    const network::mojom::LinkHeaderPtr& link,
+    bool enabled_by_origin_trial) {
+  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
+    return;
+
+  PreconnectEntry entry(url::Origin::Create(link->href), link->cross_origin);
+  if (preconnect_entries_.contains(entry))
+    return;
+
+  network::mojom::NetworkContext* network_context = GetNetworkContext();
+  if (!network_context)
+    return;
+
+  bool allow_credentials =
+      link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
+  network_context->PreconnectSockets(/*num_streams=*/1, link->href,
+                                     allow_credentials,
+                                     isolation_info_.network_isolation_key());
+  preconnect_entries_.insert(std::move(entry));
+}
+
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     const network::mojom::LinkHeaderPtr& link,
     const network::ResourceRequest& navigation_request,
     bool enabled_by_origin_trial) {
   DCHECK(navigation_request.is_main_frame);
+  DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
 
   was_preload_link_header_received_ = true;
 
-  if (!ShouldPreload(link, enabled_by_origin_trial))
+  if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
     return;
 
-  DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
+  if (inflight_preloads_.contains(link->href) ||
+      preloaded_resources_.contains(link->href)) {
+    return;
+  }
+
   auto preload_origin = url::Origin::Create(link->href);
 
   net::SiteForCookies site_for_cookies =
@@ -431,7 +520,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
     was_preload_triggered_by_origin_trial_ = true;
 }
 
-bool NavigationEarlyHintsManager::ShouldPreload(
+bool NavigationEarlyHintsManager::ShouldHandleResourceHints(
     const network::mojom::LinkHeaderPtr& link,
     bool enabled_by_origin_trial) {
   if (IsDisabledEarlyHintsPreloadForcibly())
@@ -445,11 +534,6 @@ bool NavigationEarlyHintsManager::ShouldPreload(
 
   if (!link->href.SchemeIsHTTPOrHTTPS())
     return false;
-
-  if (inflight_preloads_.contains(link->href) ||
-      preloaded_resources_.contains(link->href)) {
-    return false;
-  }
 
   return true;
 }
