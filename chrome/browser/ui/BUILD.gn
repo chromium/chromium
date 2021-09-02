@@ -3922,6 +3922,8 @@ static_library("ui") {
       "views/extensions/extensions_toolbar_button.h",
       "views/extensions/extensions_toolbar_container.cc",
       "views/extensions/extensions_toolbar_container.h",
+      "views/extensions/extensions_toolbar_controls.cc",
+      "views/extensions/extensions_toolbar_controls.h",
       "views/file_system_access/file_system_access_icon_view.cc",
       "views/file_system_access/file_system_access_icon_view.h",
       "views/file_system_access/file_system_access_permission_view.cc",

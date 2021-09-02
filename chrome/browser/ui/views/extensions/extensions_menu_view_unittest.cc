@@ -149,7 +149,7 @@ void ExtensionsMenuViewUnitTest::SetUp() {
   // Shorten delay on animations so tests run faster.
   views::test::ReduceAnimationDuration(extensions_container());
 
-  ExtensionsMenuView::ShowBubble(extensions_container()->extensions_button(),
+  ExtensionsMenuView::ShowBubble(extensions_container()->GetExtensionsButton(),
                                  browser(), extensions_container(), true);
 }
 
@@ -588,7 +588,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
   std::vector<ToolbarActionView*> action_views = GetPinnedExtensionViews();
   ASSERT_EQ(3u, action_views.size());
   ExtensionsToolbarButton* menu_button =
-      extensions_container()->extensions_button();
+      extensions_container()->GetExtensionsButton();
 
   // All views should be lined up horizontally with the menu button.
   EXPECT_EQ(action_views[0]->y(), action_views[1]->y());

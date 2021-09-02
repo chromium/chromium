@@ -36,7 +36,7 @@ class ToolbarIconContainerView : public views::View,
   virtual void UpdateAllIcons() = 0;
 
   // Adds the RHS child as well as setting its margins.
-  void AddMainButton(views::Button* main_button);
+  void AddMainItem(views::View* item);
 
   // Begins observing |button| for changes that should affect the container's
   // highlight state.
@@ -44,6 +44,8 @@ class ToolbarIconContainerView : public views::View,
 
   void AddObserver(Observer* obs);
   void RemoveObserver(const Observer* obs);
+
+  views::View* main_item() { return main_item_; }
 
   void SetIconColor(SkColor icon_color);
   SkColor GetIconColor() const;
@@ -111,7 +113,7 @@ class ToolbarIconContainerView : public views::View,
 
   // The main view is nominally always present and is last child in the view
   // hierarchy.
-  views::Button* main_button_ = nullptr;
+  views::View* main_item_ = nullptr;
 
   // Override for the icon color. If not set, |COLOR_TOOLBAR_BUTTON_ICON| is
   // used.

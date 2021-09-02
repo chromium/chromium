@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,13 +73,14 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
       delete;
   ~ExtensionsToolbarContainer() override;
 
-  ExtensionsToolbarButton* extensions_button() const {
-    return extensions_button_;
-  }
+  DisplayMode display_mode() const { return display_mode_; }
   const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
     return popup_owner_;
   }
+
+  // Gets the extension menu button for the toolbar.
+  ExtensionsToolbarButton* GetExtensionsButton() const;
 
   // Get the view corresponding to the extension |id|, if any.
   ToolbarActionView* GetViewForId(const std::string& id);
@@ -251,7 +253,12 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   ToolbarActionsModel* const model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       model_observation_{this};
+  // TODO(emiliapaz): Remove `extensions_button_` once
+  // `features::kExtensionsMenuAccessControl` experiment is released.
+  // Exactly one of `extensions_button_ and `extensions_controls_` is created;
+  // the other is null.
   ExtensionsToolbarButton* const extensions_button_;
+  ExtensionsToolbarControls* const extensions_controls_;
   DisplayMode display_mode_;
 
   // TODO(pbos): Create actions and icons only for pinned pinned / popped out

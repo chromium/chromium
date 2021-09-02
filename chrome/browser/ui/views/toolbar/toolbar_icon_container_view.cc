@@ -132,16 +132,19 @@ ToolbarIconContainerView::~ToolbarIconContainerView() {
   RemoveAllChildViews();
 }
 
-void ToolbarIconContainerView::AddMainButton(views::Button* main_button) {
-  DCHECK(!main_button_);
-  main_button_ = main_button;
-  ObserveButton(main_button_);
-  AddChildView(main_button_);
+void ToolbarIconContainerView::AddMainItem(views::View* item) {
+  DCHECK(!main_item_);
+  main_item_ = item;
+  auto* const main_button = views::Button::AsButton(item);
+  if (main_button)
+    ObserveButton(main_button);
+
+  AddChildView(main_item_);
 }
 
 void ToolbarIconContainerView::ObserveButton(views::Button* button) {
   // We don't care about the main button being highlighted.
-  if (button != main_button_) {
+  if (button != main_item_) {
     subscriptions_.push_back(
         views::InkDrop::Get(button)->AddHighlightedChangedCallback(
             base::BindRepeating(
@@ -178,12 +181,12 @@ bool ToolbarIconContainerView::GetHighlighted() const {
   if (!uses_highlight_)
     return false;
 
-  if (IsMouseHovered() && (!main_button_ || !main_button_->IsMouseHovered()))
+  if (IsMouseHovered() && (!main_item_ || !main_item_->IsMouseHovered()))
     return true;
 
   // Focused, pressed or hovered children should trigger the highlight.
   for (const views::View* child : children()) {
-    if (child == main_button_)
+    if (child == main_item_)
       continue;
     if (child->HasFocus())
       return true;
