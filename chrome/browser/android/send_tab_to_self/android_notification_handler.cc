@@ -53,40 +53,51 @@ namespace send_tab_to_self {
 AndroidNotificationHandler::AndroidNotificationHandler(Profile* profile)
     : profile_(profile) {}
 
-AndroidNotificationHandler::~AndroidNotificationHandler() {}
+AndroidNotificationHandler::~AndroidNotificationHandler() {
+  while (!queued_messages_.empty()) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        queued_messages_.at(0).get(), messages::DismissReason::UNKNOWN);
+  }
+  DCHECK(queued_messages_.size() == 0);
+}
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
   for (const SendTabToSelfEntry* entry : new_entries) {
     if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
-      // Only enqueue a single message at a time.
-      if (message_ != nullptr)
-        return;
+      web_contents_ = GetWebContentsForProfile(profile_);
 
-      content::WebContents* web_contents = GetWebContentsForProfile(profile_);
+      std::unique_ptr<messages::MessageWrapper> message =
+          std::make_unique<messages::MessageWrapper>(
+              messages::MessageIdentifier::SEND_TAB_TO_SELF);
 
-      message_ = std::make_unique<messages::MessageWrapper>(
-          messages::MessageIdentifier::SEND_TAB_TO_SELF,
+      message->SetActionClick(
           base::BindOnce(&AndroidNotificationHandler::OnMessageOpened,
-                         base::Unretained(this), entry->GetURL()),
+                         base::Unretained(this), entry->GetURL()));
+      message->SetDismissCallback(
           base::BindOnce(&AndroidNotificationHandler::OnMessageDismissed,
-                         base::Unretained(this)));
+                         base::Unretained(this), message.get()));
 
-      message_->SetTitle(l10n_util::GetStringFUTF16(
+      message->SetTitle(l10n_util::GetStringFUTF16(
           IDS_SEND_TAB_TO_SELF_MESSAGE,
           base::UTF8ToUTF16(entry->GetDeviceName())));
-      message_->SetDescription(
+      message->SetDescription(
           url_formatter::FormatUrlForSecurityDisplay(entry->GetURL()));
-      message_->SetDescriptionMaxLines(1);
-      message_->SetPrimaryButtonText(
+      message->SetDescriptionMaxLines(1);
+      message->SetPrimaryButtonText(
           l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN));
-      message_->SetIconResourceId(
+      message->SetIconResourceId(
           ResourceMapper::MapToJavaDrawableId(IDR_SEND_TAB_TO_SELF));
 
       // TODO(crbug.com/1220129): A valid WebContents shouldn't be needed here.
-      messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
-          message_.get(), web_contents->GetTopLevelNativeWindow(),
-          messages::MessagePriority::kNormal);
+      if (web_contents_) {
+        messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
+            message.get(), web_contents_->GetTopLevelNativeWindow(),
+            messages::MessagePriority::kNormal);
+        queued_messages_.push_back(std::move(message));
+      } else {
+        pending_messages_.push(std::move(message));
+      }
     } else {
       JNIEnv* env = AttachCurrentThread();
 
@@ -120,17 +131,35 @@ void AndroidNotificationHandler::DismissEntries(
 }
 
 void AndroidNotificationHandler::OnMessageOpened(GURL url) {
+  DCHECK(web_contents_);
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
-  GetWebContentsForProfile(profile_)->OpenURL(params);
-  message_.reset();
+  web_contents_->OpenURL(params);
 }
 
 void AndroidNotificationHandler::OnMessageDismissed(
+    messages::MessageWrapper* message,
     messages::DismissReason dismiss_reason) {
-  message_.reset();
+  for (unsigned int i = 0; i < queued_messages_.size(); i++) {
+    if (queued_messages_.at(i).get() == message) {
+      queued_messages_.erase(queued_messages_.begin() + i);
+    }
+  }
+}
+
+void AndroidNotificationHandler::UpdateWebContents(
+    content::WebContents* web_contents) {
+  web_contents_ = web_contents;
+  while (!pending_messages_.empty()) {
+    queued_messages_.push_back(std::move(pending_messages_.front()));
+    pending_messages_.pop();
+    messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
+        std::move(queued_messages_.back().get()),
+        web_contents_->GetTopLevelNativeWindow(),
+        messages::MessagePriority::kNormal);
+  }
 }
 
 }  // namespace send_tab_to_self

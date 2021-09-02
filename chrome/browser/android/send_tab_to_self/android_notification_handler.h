@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_ANDROID_SEND_TAB_TO_SELF_ANDROID_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_ANDROID_SEND_TAB_TO_SELF_ANDROID_NOTIFICATION_HANDLER_H_
 
+#include <queue>
 #include <string>
-#include <vector>
 
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/messages/android/message_wrapper.h"
+
+namespace content {
+class WebContents;
+}
 
 class GURL;
 class Profile;
@@ -26,6 +30,10 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   explicit AndroidNotificationHandler(Profile* profile);
   ~AndroidNotificationHandler() override;
 
+  Profile* profile() { return profile_; }
+
+  void UpdateWebContents(content::WebContents* web_contents);
+
  private:
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
@@ -35,11 +43,19 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   void OnMessageOpened(GURL url);
   // Called whenever the message is dismissed (e.g. after timeout or because the
   // user already accepted or declined the message).
-  void OnMessageDismissed(messages::DismissReason dismiss_reason);
+  void OnMessageDismissed(messages::MessageWrapper* message,
+                          messages::DismissReason dismiss_reason);
 
-  std::unique_ptr<messages::MessageWrapper> message_;
+  // Messages that have not yet been queued due to no active WebContents.
+  std::queue<std::unique_ptr<messages::MessageWrapper>> pending_messages_;
+
+  // Messages that have already been enqueued via
+  // messages::MessageDispatcherBridge.
+  std::vector<std::unique_ptr<messages::MessageWrapper>> queued_messages_;
 
   Profile* profile_;
+
+  content::WebContents* web_contents_;
 };
 
 }  // namespace send_tab_to_self

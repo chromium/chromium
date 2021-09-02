@@ -131,6 +131,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -1807,6 +1808,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             tab.getWebContents(), navigation.getUrl(), tab.isShowingErrorPage(),
                             navigation.isFragmentNavigation(), navigation.httpStatusCode());
                     SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
+                    SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
                 }
             }
         };

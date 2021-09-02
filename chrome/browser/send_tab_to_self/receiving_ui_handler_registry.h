@@ -19,6 +19,7 @@ struct DefaultSingletonTraits;
 
 namespace send_tab_to_self {
 
+class AndroidNotificationHandler;
 class ReceivingUiHandler;
 class SendTabToSelfToolbarIconController;
 
@@ -39,6 +40,9 @@ class ReceivingUiHandlerRegistry {
   // Return the SendTabToSelfToolbarIconController owned by the registry
   // for the given |profile|.
   SendTabToSelfToolbarIconController* GetToolbarButtonControllerForProfile(
+      Profile* profile);
+
+  AndroidNotificationHandler* GetAndroidNotificationHandlerForProfile(
       Profile* profile);
 
  private:

@@ -9,10 +9,12 @@
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/send_tab_to_self/android_notification_handler.h"
 #include "chrome/browser/android/send_tab_to_self/send_tab_to_self_entry_bridge.h"
 #include "chrome/browser/android/send_tab_to_self/send_tab_to_self_infobar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/send_tab_to_self/receiving_ui_handler_registry.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/share/android/jni_headers/SendTabToSelfAndroidBridge_jni.h"
@@ -229,6 +231,20 @@ static void JNI_SendTabToSelfAndroidBridge_ShowInfoBar(
   std::unique_ptr<SendTabToSelfInfoBarDelegate> delegate =
       SendTabToSelfInfoBarDelegate::Create(web_contents, entry.release());
   SendTabToSelfInfoBar::ShowInfoBar(web_contents, std::move(delegate));
+}
+
+static void JNI_SendTabToSelfAndroidBridge_UpdateActiveWebContents(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    send_tab_to_self::ReceivingUiHandlerRegistry::GetInstance()
+        ->GetAndroidNotificationHandlerForProfile(profile)
+        ->UpdateWebContents(web_contents);
+  }
 }
 
 }  // namespace send_tab_to_self
