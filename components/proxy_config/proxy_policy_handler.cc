@@ -81,15 +81,15 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
     const PolicyMap::Entry* entry = policies.Get(kDeprecatedProxyPolicies[i]);
     if (!entry)
       continue;
-    if (entry->has_higher_priority_than(current_priority)) {
+    if (policies.EntryHasHigherPriority(*entry, current_priority)) {
       proxy_settings = base::Value(base::Value::Type::DICTIONARY);
       current_priority = entry->DeepCopy();
       if (entry->source > inherited_source)  // Higher priority?
         inherited_source = entry->source;
     }
     // If two priorities are the same.
-    if (!entry->has_higher_priority_than(current_priority) &&
-        !current_priority.has_higher_priority_than(*entry)) {
+    if (!policies.EntryHasHigherPriority(*entry, current_priority) &&
+        !policies.EntryHasHigherPriority(current_priority, *entry)) {
       proxy_settings.SetKey(kDeprecatedProxyPolicies[i],
                             entry->value()->Clone());
     }
@@ -98,7 +98,8 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   // new priority is higher.
   const PolicyMap::Entry* existing = policies.Get(kProxySettings);
   if (!proxy_settings.DictEmpty() &&
-      (!existing || current_priority.has_higher_priority_than(*existing))) {
+      (!existing ||
+       policies.EntryHasHigherPriority(current_priority, *existing))) {
     return proxy_settings;
   } else if (existing && existing->value()) {
     return existing->value()->Clone();

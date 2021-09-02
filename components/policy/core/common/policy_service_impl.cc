@@ -97,8 +97,8 @@ void RemapRenamedPolicies(PolicyMap* policies) {
   for (const auto& policy_pair : renamed_policies) {
     PolicyMap::Entry* old_policy = policies->GetMutable(policy_pair.first);
     const PolicyMap::Entry* new_policy = policies->Get(policy_pair.second);
-    if (old_policy &&
-        (!new_policy || old_policy->has_higher_priority_than(*new_policy))) {
+    if (old_policy && (!new_policy || policies->EntryHasHigherPriority(
+                                          *old_policy, *new_policy))) {
       PolicyMap::Entry policy_entry = old_policy->DeepCopy();
       policy_entry.AddMessage(PolicyMap::MessageType::kWarning,
                               IDS_POLICY_MIGRATED_NEW_POLICY,

@@ -101,12 +101,6 @@ void PolicyMap::Entry::set_value(absl::optional<base::Value> val) {
   value_ = std::move(val);
 }
 
-bool PolicyMap::Entry::has_higher_priority_than(
-    const PolicyMap::Entry& other) const {
-  return std::tie(level, scope, source) >
-         std::tie(other.level, other.scope, other.source);
-}
-
 bool PolicyMap::Entry::Equals(const PolicyMap::Entry& other) const {
   bool conflicts_are_equal = conflicts.size() == other.conflicts.size();
   for (size_t i = 0; conflicts_are_equal && i < conflicts.size(); ++i)
@@ -379,7 +373,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
     }
 
     const bool other_is_higher_priority =
-        policy_and_entry.second.has_higher_priority_than(*current_policy);
+        EntryHasHigherPriority(policy_and_entry.second, *current_policy);
 
     Entry& higher_policy =
         other_is_higher_priority ? other_policy : *current_policy;
@@ -411,7 +405,7 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
 
 void PolicyMap::MergeValues(const std::vector<PolicyMerger*>& mergers) {
   for (const auto* it : mergers)
-    it->Merge(&map_);
+    it->Merge(this);
 }
 
 void PolicyMap::LoadFrom(const base::DictionaryValue* policies,
@@ -475,6 +469,12 @@ void PolicyMap::FilterErase(
       ++iter;
     }
   }
+}
+
+bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
+                                       const PolicyMap::Entry& rhs) const {
+  return std::tie(lhs.level, lhs.scope, lhs.source) >
+         std::tie(rhs.level, rhs.scope, rhs.source);
 }
 
 bool PolicyMap::IsUserAffiliated() const {

@@ -28,7 +28,7 @@ class POLICY_EXPORT PolicyMerger {
                                   const bool is_user_cloud_merging_enabled);
 
   virtual ~PolicyMerger();
-  virtual void Merge(PolicyMap::PolicyMapType* policies) const = 0;
+  virtual void Merge(PolicyMap* policies) const = 0;
 };
 
 // PolicyListMerger allows the merging of policy lists that have multiple
@@ -42,7 +42,7 @@ class POLICY_EXPORT PolicyListMerger : public PolicyMerger {
   ~PolicyListMerger() override;
 
   // Merges the list policies from |policies| that have multiple sources.
-  void Merge(PolicyMap::PolicyMapType* policies) const override;
+  void Merge(PolicyMap* policies) const override;
 
   // Sets the variable used for determining if user cloud merging is enabled.
   void SetAllowUserCloudPolicyMerging(bool allowed);
@@ -79,7 +79,7 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
   ~PolicyDictionaryMerger() override;
 
   // Merges the dictionary policies from |policies| that have multiple sources.
-  void Merge(PolicyMap::PolicyMapType* policies) const override;
+  void Merge(PolicyMap* policies) const override;
   void SetAllowedPoliciesForTesting(
       base::flat_set<std::string> allowed_policies);
 
@@ -99,7 +99,7 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
   // Merges the values of |policy| if they come from multiple sources. Keeps
   // track of the original values by leaving them as conflicts. |policy| stays
   // intact if there is nothing to merge.
-  void DoMerge(PolicyMap::Entry* policy) const;
+  void DoMerge(PolicyMap::Entry* policy, const PolicyMap& policy_map) const;
 
   bool allow_user_cloud_policy_merging_ = false;
   const base::flat_set<std::string> policies_to_merge_;
@@ -117,7 +117,7 @@ class POLICY_EXPORT PolicyGroupMerger : public PolicyMerger {
 
   // Disables policies from atomic groups that do not share the highest priority
   // from that group.
-  void Merge(PolicyMap::PolicyMapType* result) const override;
+  void Merge(PolicyMap* result) const override;
 };
 
 }  // namespace policy

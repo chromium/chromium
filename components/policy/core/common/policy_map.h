@@ -75,10 +75,6 @@ class POLICY_EXPORT PolicyMap {
 
     void set_value(absl::optional<base::Value> val);
 
-    // Returns true if |this| has higher priority than |other|. The priority of
-    // the fields are |level| > |scope| > |source|.
-    bool has_higher_priority_than(const Entry& other) const;
-
     // Returns true if |this| equals |other|.
     bool Equals(const Entry& other) const;
 
@@ -253,8 +249,8 @@ class POLICY_EXPORT PolicyMap {
 
   // Merges policies from |other| into |this|. Existing policies are only
   // overridden by those in |other| if they have a higher priority, as defined
-  // by Entry::has_higher_priority_than(). If a policy is contained in both
-  // maps with the same priority, the current value in |this| is preserved.
+  // by EntryHasHigherPriority(). If a policy is contained in both maps with the
+  // same priority, the current value in |this| is preserved.
   void MergeFrom(const PolicyMap& other);
 
   // Merge the policy values that are coming from different sources.
@@ -267,6 +263,11 @@ class POLICY_EXPORT PolicyMap {
                 PolicyLevel level,
                 PolicyScope scope,
                 PolicySource source);
+
+  // Returns true if |lhs| has higher priority than |rhs|. The priority of the
+  // fields are |level| > |scope| > |source|.
+  bool EntryHasHigherPriority(const PolicyMap::Entry& lhs,
+                              const PolicyMap::Entry& rhs) const;
 
   // Returns True if at least one shared ID is found in the user and device
   // affiliation ID sets.

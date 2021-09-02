@@ -77,7 +77,7 @@ PolicyListMerger::~PolicyListMerger() = default;
 PolicyGroupMerger::PolicyGroupMerger() = default;
 PolicyGroupMerger::~PolicyGroupMerger() = default;
 
-void PolicyListMerger::Merge(PolicyMap::PolicyMapType* policies) const {
+void PolicyListMerger::Merge(PolicyMap* policies) const {
   DCHECK(policies);
   for (auto& it : *policies) {
     if (CanMerge(it.first, it.second))
@@ -167,11 +167,11 @@ PolicyDictionaryMerger::PolicyDictionaryMerger(
                         kDictionaryPoliciesToMerge.end()) {}
 PolicyDictionaryMerger::~PolicyDictionaryMerger() = default;
 
-void PolicyDictionaryMerger::Merge(PolicyMap::PolicyMapType* policies) const {
+void PolicyDictionaryMerger::Merge(PolicyMap* policies) const {
   DCHECK(policies);
   for (auto& it : *policies) {
     if (CanMerge(it.first, it.second))
-      DoMerge(&it.second);
+      DoMerge(&it.second, *policies);
   }
 }
 
@@ -218,17 +218,19 @@ bool PolicyDictionaryMerger::AllowUserCloudPolicyMerging() const {
   return allow_user_cloud_policy_merging_;
 }
 
-void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
+void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
+                                     const PolicyMap& policy_map) const {
   // Keep priority sorted list of potential merge targets.
   std::vector<const PolicyMap::Entry*> policies;
   policies.push_back(policy);
   for (const auto& it : policy->conflicts)
     policies.push_back(&it.entry());
 
-  std::sort(policies.begin(), policies.end(),
-            [](const PolicyMap::Entry* a, const PolicyMap::Entry* b) {
-              return b->has_higher_priority_than(*a);
-            });
+  std::sort(
+      policies.begin(), policies.end(),
+      [&policy_map](const PolicyMap::Entry* a, const PolicyMap::Entry* b) {
+        return policy_map.EntryHasHigherPriority(*b, *a);
+      });
 
   base::DictionaryValue merged_dictionary;
   bool value_changed = false;
@@ -262,7 +264,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy) const {
   policy->source = POLICY_SOURCE_MERGED;
 }
 
-void PolicyGroupMerger::Merge(PolicyMap::PolicyMapType* policies) const {
+void PolicyGroupMerger::Merge(PolicyMap* policies) const {
   for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
     const AtomicGroup& group = kPolicyAtomicGroupMappings[i];
     bool use_highest_set_priority = false;
@@ -274,27 +276,25 @@ void PolicyGroupMerger::Merge(PolicyMap::PolicyMapType* policies) const {
     // |group.policies|, an array ending with a nullptr.
     for (const char* const* policy_name = group.policies; *policy_name;
          ++policy_name) {
-      auto policy_it = policies->find(*policy_name);
-
-      if (policy_it == policies->end())
+      const auto* policy = policies->Get(*policy_name);
+      if (!policy)
         continue;
 
       use_highest_set_priority = true;
 
-      PolicyMap::Entry& policy = policy_it->second;
-
-      if (!policy.has_higher_priority_than(highest_set_priority))
+      if (!policies->EntryHasHigherPriority(*policy, highest_set_priority))
         continue;
 
       // Do not set POLICY_SOURCE_MERGED as the highest acceptable source
       // because it is a computed source. In case of an already merged policy,
       // the highest acceptable source must be the highest of the ones used to
       // compute the merged value.
-      if (policy.source != POLICY_SOURCE_MERGED) {
-        highest_set_priority = policy.DeepCopy();
+      if (policy->source != POLICY_SOURCE_MERGED) {
+        highest_set_priority = policy->DeepCopy();
       } else {
-        for (const auto& conflict : policy.conflicts) {
-          if (conflict.entry().has_higher_priority_than(highest_set_priority) &&
+        for (const auto& conflict : policy->conflicts) {
+          if (policies->EntryHasHigherPriority(conflict.entry(),
+                                               highest_set_priority) &&
               conflict.entry().source > highest_set_priority.source) {
             highest_set_priority = conflict.entry().DeepCopy();
           }
@@ -310,14 +310,12 @@ void PolicyGroupMerger::Merge(PolicyMap::PolicyMapType* policies) const {
     // priority.
     for (const char* const* policy_name = group.policies; *policy_name;
          ++policy_name) {
-      auto policy_it = policies->find(*policy_name);
-      if (policy_it == policies->end())
+      auto* policy = policies->GetMutable(*policy_name);
+      if (!policy)
         continue;
 
-      PolicyMap::Entry& policy = policy_it->second;
-
-      if (policy.source < highest_set_priority.source)
-        policy.SetIgnoredByPolicyAtomicGroup();
+      if (policy->source < highest_set_priority.source)
+        policy->SetIgnoredByPolicyAtomicGroup();
     }
   }
 }
