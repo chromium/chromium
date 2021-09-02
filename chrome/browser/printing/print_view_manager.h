@@ -105,10 +105,10 @@ class PrintViewManager : public PrintViewManagerBase,
 
   void OnScriptedPrintPreviewReply(SetupScriptedPrintPreviewCallback callback);
 
-  // Helper method for SetupScriptedPrintPreview(). To be called after
+  // Helper method for ShowScriptedPrintPreview(). To be called after
   // RejectPrintPreviewRequestIfRestricted(), in case the request is not
   // rejected.
-  void OnScriptedPrintPreviewAllowed(SetupScriptedPrintPreviewCallback callback,
+  void OnScriptedPrintPreviewAllowed(bool source_is_modifiable,
                                      int render_process_id,
                                      int render_frame_id);
 
