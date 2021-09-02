@@ -2,46 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../settings.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = settings_closure_flags
-  deps = [
-    ":incompatible_application_item",
-    ":incompatible_applications_browser_proxy",
-    ":incompatible_applications_page",
-  ]
-}
-
-js_library("incompatible_application_item") {
-  deps = [
-    ":incompatible_applications_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("incompatible_applications_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("incompatible_applications_page") {
-  deps = [
-    ":incompatible_applications_browser_proxy",
-    "..:i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
 
 html_to_js("web_components") {
   js_files = [
-    "incompatible_application_item.js",
-    "incompatible_applications_page.js",
+    "incompatible_application_item.ts",
+    "incompatible_applications_page.ts",
   ]
 }

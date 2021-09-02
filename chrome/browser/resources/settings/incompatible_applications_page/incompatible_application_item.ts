@@ -37,21 +37,15 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const IncompatibleApplicationItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class IncompatibleApplicationItemElement extends
     IncompatibleApplicationItemElementBase {
   static get is() {
@@ -75,7 +69,6 @@ class IncompatibleApplicationItemElement extends
        * The type of the action to be taken on this incompatible application.
        * Must be one of BlacklistMessageType in
        * chrome/browser/win/conflicts/proto/module_list.proto.
-       * @type {!ActionTypes}
        */
       actionType: Number,
 
@@ -87,19 +80,17 @@ class IncompatibleApplicationItemElement extends
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {!IncompatibleApplicationsBrowserProxy} */
-    this.browserProxy_ = IncompatibleApplicationsBrowserProxyImpl.getInstance();
-  }
+  applicationName: string;
+  actionType: ActionTypes;
+  actionUrl: string;
+  private browserProxy_: IncompatibleApplicationsBrowserProxy =
+      IncompatibleApplicationsBrowserProxyImpl.getInstance();
 
   /**
    * Executes the action for this incompatible application, depending on
    * actionType.
-   * @private
    */
-  onActionTap_() {
+  private onActionTap_() {
     if (this.actionType === ActionTypes.UNINSTALL) {
       this.browserProxy_.startApplicationUninstallation(this.applicationName);
     } else if (
@@ -112,10 +103,9 @@ class IncompatibleApplicationItemElement extends
   }
 
   /**
-   * @return {string} The label that should be applied to the action button.
-   * @private
+   * @return The label that should be applied to the action button.
    */
-  getActionName_(actionType) {
+  private getActionName_(actionType: ActionTypes): string {
     if (actionType === ActionTypes.UNINSTALL) {
       return this.i18n('incompatibleApplicationsRemoveButton');
     }
@@ -126,6 +116,7 @@ class IncompatibleApplicationItemElement extends
       return this.i18n('incompatibleApplicationsUpdateButton');
     }
     assertNotReached();
+    return '';
   }
 }
 

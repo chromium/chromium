@@ -6,14 +6,6 @@
  * @fileoverview
  * 'settings-incompatible-applications-page' is the settings subpage containing
  * the list of incompatible applications.
- *
- * Example:
- *
- *    <iron-animated-pages>
- *      <settings-incompatible-applications-page">
- *      </settings-incompatible-applications-page>
- *      ... other pages ...
- *    </iron-animated-pages>
  */
 
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -24,23 +16,17 @@ import '../settings_shared_css.js';
 import './incompatible_application_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsIncompatibleApplicationsPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsIncompatibleApplicationsPageElement extends
     SettingsIncompatibleApplicationsPageElementBase {
   static get is() {
@@ -55,7 +41,6 @@ class SettingsIncompatibleApplicationsPageElement extends
     return {
       /**
        * Indicates if the current user has administrator rights.
-       * @private
        */
       hasAdminRights_: {
         type: Boolean,
@@ -66,13 +51,11 @@ class SettingsIncompatibleApplicationsPageElement extends
 
       /**
        * The list of all the incompatible applications.
-       * @private {Array<IncompatibleApplication>}
        */
       applications_: Array,
 
       /**
        * Determines if the user has finished with this page.
-       * @private
        */
       isDone_: {
         type: Boolean,
@@ -81,7 +64,6 @@ class SettingsIncompatibleApplicationsPageElement extends
 
       /**
        * The text for the subtitle of the subpage.
-       * @private
        */
       subtitleText_: {
         type: String,
@@ -91,7 +73,6 @@ class SettingsIncompatibleApplicationsPageElement extends
       /**
        * The text for the subtitle of the subpage, when the user does not have
        * administrator rights.
-       * @private
        */
       subtitleNoAdminRightsText_: {
         type: String,
@@ -100,7 +81,6 @@ class SettingsIncompatibleApplicationsPageElement extends
 
       /**
        * The text for the title of the list of incompatible applications.
-       * @private
        */
       listTitleText_: {
         type: String,
@@ -109,13 +89,20 @@ class SettingsIncompatibleApplicationsPageElement extends
     };
   }
 
-  /** @override */
+  private hasAdminRights_: boolean;
+  private applications_: Array<IncompatibleApplication>;
+  private isDone_: boolean;
+  private subtitleText_: string;
+  private subtitleNoAdminRightsText_: string;
+  private listTitleText_: string;
+
   ready() {
     super.ready();
 
     this.addWebUIListener(
         'incompatible-application-removed',
-        this.onIncompatibleApplicationRemoved_.bind(this));
+        (applicationName: string) =>
+            this.onIncompatibleApplicationRemoved_(applicationName));
 
     IncompatibleApplicationsBrowserProxyImpl.getInstance()
         .requestIncompatibleApplicationsList()
@@ -125,19 +112,14 @@ class SettingsIncompatibleApplicationsPageElement extends
         });
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDone_() {
+  private computeIsDone_(): boolean {
     return this.applications_.length === 0;
   }
 
   /**
    * Removes a single incompatible application from the |applications_| list.
-   * @private
    */
-  onIncompatibleApplicationRemoved_(applicationName) {
+  private onIncompatibleApplicationRemoved_(applicationName: string) {
     // Find the index of the element.
     const index = this.applications_.findIndex(function(application) {
       return application.name === applicationName;
@@ -151,9 +133,8 @@ class SettingsIncompatibleApplicationsPageElement extends
   /**
    * Updates the texts of the Incompatible Applications subpage that depends on
    * the length of |applications_|.
-   * @private
    */
-  updatePluralStrings_() {
+  private updatePluralStrings_() {
     const browserProxy = IncompatibleApplicationsBrowserProxyImpl.getInstance();
     const numApplications = this.applications_.length;
 

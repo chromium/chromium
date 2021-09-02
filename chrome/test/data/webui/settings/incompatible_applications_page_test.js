@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {IncompatibleApplicationsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // clang-format on
 
@@ -125,8 +125,8 @@ suite('incompatibleApplicationsHandler', function() {
   setup(function() {
     incompatibleApplicationsBrowserProxy =
         new TestIncompatibleApplicationsBrowserProxy();
-    IncompatibleApplicationsBrowserProxyImpl.instance_ =
-        incompatibleApplicationsBrowserProxy;
+    IncompatibleApplicationsBrowserProxyImpl.setInstance(
+        incompatibleApplicationsBrowserProxy);
   });
 
   /**
