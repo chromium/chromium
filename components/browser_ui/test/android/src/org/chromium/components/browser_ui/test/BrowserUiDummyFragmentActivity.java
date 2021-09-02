@@ -17,7 +17,6 @@ public class BrowserUiDummyFragmentActivity extends FragmentActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_BrowserUI);
-        setTheme(R.style.ColorOverlay_BrowserUi);
+        setTheme(R.style.Theme_BrowserUI_DayNight);
     }
 }

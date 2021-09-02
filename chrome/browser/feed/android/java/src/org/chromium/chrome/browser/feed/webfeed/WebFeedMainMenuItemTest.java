@@ -94,7 +94,7 @@ public final class WebFeedMainMenuItemTest {
 
         mActivity = Robolectric.setupActivity(Activity.class);
         // Required for resolving an attribute used in AppMenuItemText.
-        mActivity.setTheme(R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         setGetWebFeedMetadataForPageRepsonse(null);
 

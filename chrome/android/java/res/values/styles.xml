@@ -8,7 +8,7 @@
     <!-- Application themes -->
     <style name="LauncherTheme" parent="@android:style/Theme.NoDisplay" />
 
-    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI" />
+    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI.DayNight" />
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
 
     <style name="Base.Theme.Chromium.WithWindowAnimation">

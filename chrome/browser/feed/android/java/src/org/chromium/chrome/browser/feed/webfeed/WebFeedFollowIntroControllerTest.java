@@ -120,7 +120,7 @@ public final class WebFeedFollowIntroControllerTest {
 
         mActivity = Robolectric.setupActivity(Activity.class);
         // Required for resolving an attribute used in AppMenuItemText.
-        mActivity.setTheme(R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
