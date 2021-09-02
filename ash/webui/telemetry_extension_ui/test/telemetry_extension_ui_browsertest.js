@@ -976,6 +976,20 @@ class TestDiagnosticsService {
     let response = this.routineResponse;
     return Promise.resolve({response});
   }
+
+  /**
+   * @override
+   * @return {!Promise<{response: !ash.health.mojom.RunRoutineResponse}>}
+   */
+  runMemoryRoutine() {
+    this.callHistory.push([
+      'runMemoryRoutine',
+      {}
+    ]);
+
+    let response = this.routineResponse;
+    return Promise.resolve({response});
+  }
 };
 
 // Tests with a fake Mojo diagnostics service.

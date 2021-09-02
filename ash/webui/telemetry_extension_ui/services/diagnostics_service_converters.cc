@@ -96,6 +96,8 @@ absl::optional<health::mojom::DiagnosticRoutineEnum> Convert(
       return health::mojom::DiagnosticRoutineEnum::kBatteryDischarge;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCharge:
       return health::mojom::DiagnosticRoutineEnum::kBatteryCharge;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kMemory:
+      return health::mojom::DiagnosticRoutineEnum::kMemory;
     default:
       return absl::nullopt;
   }

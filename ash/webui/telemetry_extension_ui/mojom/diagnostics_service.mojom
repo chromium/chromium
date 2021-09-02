@@ -250,6 +250,15 @@ interface DiagnosticsService {
   RunBatteryChargeRoutine(uint32 length_seconds,
                           uint32 minimum_charge_percent_required)
       => (RunRoutineResponse response);
+
+  // Requests that the Memory routine is created and started on the platform.
+  // This routine checks that the device's memory is working correctly. This
+  // routine is only available if GetAvailableRoutines returned kMemory.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunMemoryRoutine() => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
@@ -268,6 +277,7 @@ enum DiagnosticRoutineEnum {
   kPrimeSearch = 10,
   kBatteryDischarge = 11,
   kBatteryCharge = 12,
+  kMemory = 13,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

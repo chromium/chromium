@@ -244,4 +244,13 @@ void DiagnosticsService::RunBatteryChargeRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunMemoryRoutine(RunMemoryRoutineCallback callback) {
+  GetService()->RunMemoryRoutine(base::BindOnce(
+      [](health::mojom::DiagnosticsService::RunMemoryRoutineCallback callback,
+         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+        std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+      },
+      std::move(callback)));
+}
+
 }  // namespace ash
