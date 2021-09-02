@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -147,6 +149,48 @@ base::Value GetContext(Profile* profile) {
   }
 
   return context;
+}
+
+enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
+    Profile* profile) {
+  enterprise_connectors::ClientMetadata metadata;
+  metadata.mutable_browser()->set_user_agent(embedder_support::GetUserAgent());
+
+  if (!profile)
+    return metadata;
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  if (entry) {
+    metadata.mutable_profile()->set_profile_name(
+        base::UTF16ToUTF8(entry->GetName()));
+    metadata.mutable_profile()->set_gaia_email(
+        base::UTF16ToUTF8(entry->GetUserName()));
+  }
+
+  metadata.mutable_profile()->set_profile_path(
+      profile->GetPath().AsUTF8Unsafe());
+
+  const enterprise_management::PolicyData* policy = GetPolicyData(profile);
+
+  if (policy) {
+    if (policy->has_device_id())
+      metadata.mutable_profile()->set_client_id(policy->device_id());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    std::string device_dm_token = GetDeviceDmToken(profile);
+    if (!device_dm_token.empty())
+      metadata.mutable_device()->set_dm_token(device_dm_token);
+#endif
+
+    std::string user_dm_token = GetUserDmToken(profile);
+    if (!user_dm_token.empty())
+      metadata.mutable_profile()->set_dm_token(user_dm_token);
+  }
+
+  return metadata;
 }
 
 }  // namespace reporting

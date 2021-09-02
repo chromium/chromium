@@ -14,6 +14,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,10 +22,16 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -46,19 +53,19 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 ])";
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kFakeProfileDMToken[] = "fake-profile-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
-constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
-constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
-constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kAffiliationId2[] = "affiliation-id-2";
 constexpr char kUsername1[] = "user@domain1.com";
 constexpr char kUsername2[] = "admin@domain2.com";
-constexpr char kDomain1[] = "domain1.com";
 constexpr char kDomain2[] = "domain2.com";
 #endif
 
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
+constexpr char kFakeProfileDMToken[] = "fake-profile-dm-token";
+constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
+constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
+constexpr char kAffiliationId1[] = "affiliation-id-1";
+constexpr char kDomain1[] = "domain1.com";
 constexpr char kTestUrl[] = "https://foo.com";
 
 }  // namespace
@@ -108,23 +115,30 @@ class ConnectorsServiceProfileBrowserTest
     scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpOnMainThread() override {
     safe_browsing::DeepScanningBrowserTestBase::SetUpOnMainThread();
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     safe_browsing::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
+#endif
 
     // Set profile/browser affiliation IDs.
     auto* profile_policy_manager =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        browser()->profile()->GetUserCloudPolicyManagerAsh();
+#else
         browser()->profile()->GetUserCloudPolicyManager();
+#endif
     auto profile_policy_data =
         std::make_unique<enterprise_management::PolicyData>();
     profile_policy_data->add_user_affiliation_ids(kAffiliationId1);
     profile_policy_data->set_managed_by(kDomain1);
     profile_policy_data->set_device_id(kFakeProfileClientId);
+    profile_policy_data->set_request_token(kFakeProfileDMToken);
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(profile_policy_data));
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     if (management_status_ != ManagementStatus::UNMANAGED) {
       auto* browser_policy_manager =
           g_browser_process->browser_policy_connector()
@@ -141,16 +155,15 @@ class ConnectorsServiceProfileBrowserTest
       browser_policy_manager->core()->store()->set_policy_data_for_testing(
           std::move(browser_policy_data));
     }
+#endif
   }
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
   }
 #endif
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetPrefs(const char* pref,
                 const char* scope_pref,
@@ -246,32 +259,109 @@ class ConnectorsServiceAnalysisProfileBrowserTest
       : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {}
   AnalysisConnector connector() { return std::get<0>(GetParam()); }
 
+  // Returns the Value the "normal" reporting workflow uses to validate that it
+  // is in sync with the information sent through analysis-reporting.
+  base::Value ReportingMetadata(bool include_device_info) {
+    base::Value output = base::Value(base::Value::Type::DICTIONARY);
+    output.SetKey(
+        "browser",
+        policy::ReportingJobConfigurationBase::BrowserDictionaryBuilder::
+            BuildBrowserDictionary(include_device_info));
+    base::Value context = reporting::GetContext(browser()->profile());
+    output.MergeDictionary(&context);
+    if (include_device_info) {
+      base::Value device = base::Value(base::Value::Type::DICTIONARY);
+      device.SetKey(
+          "device",
+          policy::ReportingJobConfigurationBase::DeviceDictionaryBuilder ::
+              BuildDeviceDictionary(kFakeBrowserDMToken, kFakeBrowserClientId));
+      output.MergeDictionary(&device);
+    }
+
+    return output;
+  }
+
   void ValidateClientMetadata(const ClientMetadata& metadata,
                               bool profile_reporting) {
+    base::Value reporting_metadata = ReportingMetadata(!profile_reporting);
+
     ASSERT_TRUE(metadata.has_browser());
+
     ASSERT_TRUE(metadata.browser().has_browser_id());
+    ASSERT_EQ(metadata.browser().browser_id(),
+              *reporting_metadata.FindStringPath("browser.browserId"));
+
     ASSERT_TRUE(metadata.browser().has_user_agent());
+    ASSERT_EQ(metadata.browser().user_agent(),
+              *reporting_metadata.FindStringPath("browser.userAgent"));
+
     ASSERT_TRUE(metadata.browser().has_chrome_version());
+    ASSERT_EQ(metadata.browser().chrome_version(),
+              version_info::GetVersionNumber());
+    ASSERT_EQ(metadata.browser().chrome_version(),
+              *reporting_metadata.FindStringPath("browser.chromeVersion"));
+
     ASSERT_NE(profile_reporting, metadata.browser().has_machine_user());
+    ASSERT_NE(profile_reporting,
+              !!reporting_metadata.FindStringPath("browser.machineUser"));
+    if (metadata.browser().has_machine_user()) {
+      ASSERT_EQ(metadata.browser().machine_user(),
+                *reporting_metadata.FindStringPath("browser.machineUser"));
+    }
 
     ASSERT_NE(profile_reporting, metadata.has_device());
     if (!profile_reporting) {
       // The device DM token should only be populated when reporting is set at
       // the device level, aka not the profile level.
-      ASSERT_NE(profile_reporting, metadata.device().has_dm_token());
+      ASSERT_TRUE(metadata.device().has_dm_token());
+      ASSERT_EQ(metadata.device().dm_token(), kFakeBrowserDMToken);
+      ASSERT_TRUE(reporting_metadata.FindStringPath("device.dmToken"));
+      ASSERT_EQ(metadata.device().dm_token(),
+                *reporting_metadata.FindStringPath("device.dmToken"));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       ASSERT_TRUE(metadata.device().has_client_id());
+      ASSERT_EQ(metadata.device().client_id(),
+                *reporting_metadata.FindStringPath("device.clientId"));
+#endif
+
       ASSERT_TRUE(metadata.device().has_os_version());
+      ASSERT_EQ(metadata.device().os_version(),
+                *reporting_metadata.FindStringPath("device.osVersion"));
+
       ASSERT_TRUE(metadata.device().has_os_platform());
+      ASSERT_EQ(metadata.device().os_platform(),
+                *reporting_metadata.FindStringPath("device.osPlatform"));
+
       ASSERT_TRUE(metadata.device().has_name());
+      ASSERT_EQ(metadata.device().name(),
+                *reporting_metadata.FindStringPath("device.name"));
     }
 
     ASSERT_TRUE(metadata.has_profile());
-    ASSERT_EQ(profile_reporting, metadata.profile().has_dm_token());
+
+    ASSERT_TRUE(metadata.profile().has_dm_token());
+    ASSERT_EQ(metadata.profile().dm_token(), kFakeProfileDMToken);
+    ASSERT_EQ(metadata.profile().dm_token(),
+              *reporting_metadata.FindStringPath("profile.dmToken"));
+
     ASSERT_TRUE(metadata.profile().has_gaia_email());
+    ASSERT_EQ(metadata.profile().gaia_email(),
+              *reporting_metadata.FindStringPath("profile.gaiaEmail"));
+
     ASSERT_TRUE(metadata.profile().has_profile_path());
+    ASSERT_EQ(metadata.profile().profile_path(),
+              *reporting_metadata.FindStringPath("profile.profilePath"));
+
     ASSERT_TRUE(metadata.profile().has_profile_name());
+    ASSERT_EQ(metadata.profile().profile_name(),
+              *reporting_metadata.FindStringPath("profile.profileName"));
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_TRUE(metadata.profile().has_client_id());
+    ASSERT_EQ(metadata.profile().client_id(), kFakeProfileClientId);
+    ASSERT_EQ(metadata.profile().client_id(),
+              *reporting_metadata.FindStringPath("profile.clientId"));
 #endif
   }
 };
