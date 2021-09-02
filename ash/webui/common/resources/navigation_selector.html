@@ -50,31 +50,13 @@ cr-expand-button {
 
 <div id="navigationSelectorComponent">
   <div id="navigationSelectorMenu">
-    <template id="menuItems" is="dom-repeat" items="{{menuItems}}">
-      <template is="dom-if" if="[[!isCollapsible_(item)]]">
-        <div class$="{{computeInitialClass_(item.selectorItem)}}" tabindex="0"
+    <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
+        <div class$="{{computeInitialClass_(item)}}" tabindex="0"
             on-click="onSelected_">
-          <iron-icon class="icon" icon="[[item.selectorItem.icon]]" alt="">
+          <iron-icon class="icon" icon="[[item.icon]]" alt="">
           </iron-icon>
-          [[item.selectorItem.name]]
+          [[item.name]]
         </div>
-      </template>
-      <template is="dom-if" if="[[isCollapsible_(item)]]">
-        <cr-expand-button class="expand-button" on-click="onExpandClicked_">
-          [[item.selectorItem.name]]
-        </cr-expand-button>
-        <iron-collapse opened="[[item.properties.isExpanded]]">
-          <template class="collapsed-list" is="dom-repeat"
-              items="{{item.properties.subMenuItems}}">
-            <div class$="{{computeInitialClass_(item)}}" tabindex="0"
-                on-click="onNestedSelected_">
-              <iron-icon class="icon" icon="[[getIcon_(item)]]" alt="">
-              </iron-icon>
-              [[item.name]]
-            </div>
-          </template>
-        </iron-collapse>
-      </template>
     </template>
   </div>
 </div>

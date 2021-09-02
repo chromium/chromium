@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
 import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -67,12 +66,11 @@ export function navigationViewPanelTestSuite() {
    * @param {string} icon
    * @param {?string} id
    * @param {?Object} initialData
-   * @param {!Array<SelectorItem>} subItems
    * @return {!Promise}
    */
   function addNavigationSection(
-      name, pageType, icon = '', id = null, initialData = null, subItems = []) {
-    viewElement.addSelector(name, pageType, icon, id, initialData, subItems);
+      name, pageType, icon = '', id = null, initialData = null) {
+    viewElement.addSelector(name, pageType, icon, id, initialData);
     return flushTasks();
   }
 
@@ -82,8 +80,8 @@ export function navigationViewPanelTestSuite() {
     await addNavigationSection('dummyPage1', dummyPage1);
     await addNavigationSection('dummyPage2', dummyPage2);
 
-    // Click the first menu item. Expect that the dummyPage1 to be created and
-    // not hidden.
+    // Click the first selector item. Expect that the dummyPage1 to be created
+    // and not hidden.
     const navElements = getNavElements();
     navElements[0].click();
     await flushTasks();
@@ -92,8 +90,8 @@ export function navigationViewPanelTestSuite() {
     assertFalse(dummyElement1.hidden);
     dummyElement1['onNavigationPageChanged'] = onNavigationPageChanged;
 
-    // Click the second menu item. Expect that the dummyPage2 to be created and
-    // not hidden. dummyPage1 should be hidden now.
+    // Click the second selector item. Expect that the dummyPage2 to be created
+    // and not hidden. dummyPage1 should be hidden now.
     navElements[1].click();
     await flushTasks();
     const dummyElement2 =
@@ -105,7 +103,7 @@ export function navigationViewPanelTestSuite() {
     // navigation click, expect only one client to be notified.
     assertEquals(1, numPageChangedCount);
 
-    // Click the first menu item. Expect that dummyPage2 is now hidden and
+    // Click the first selector item. Expect that dummyPage2 is now hidden and
     // dummyPage1 is not hidden.
     navElements[0].click();
     await flushTasks();
@@ -171,27 +169,6 @@ export function navigationViewPanelTestSuite() {
     assertTrue(viewElement.shadowRoot.querySelector(`#${id1}`).hidden);
     assertTrue(!!viewElement.shadowRoot.querySelector(`#${id2}`));
     assertFalse(viewElement.shadowRoot.querySelector(`#${id2}`).hidden);
-  });
-
-  test('defaultCollapsiblePage', async () => {
-    const dummyPage1 = 'dummy-page1';
-    const dummyPage2 = 'dummy-page2';
-    const subPage = 'sub-page1';
-    const subid = 'subid1';
-    const id1 = 'id1';
-    const initialData = {};
-
-    let subItem =
-        /** @type {SelectorItem} */ (
-            {'name': 'subItem', 'pageIs': subPage, 'id': subid});
-
-    await addNavigationSection(
-        'dummyPage1', dummyPage1, '', id1, initialData, [subItem]);
-    await addNavigationSection('dummyPage2', dummyPage2);
-
-    // The pages are not created yet.
-    assertFalse(!!viewElement.shadowRoot.querySelector(`#${id1}`));
-    assertFalse(!!viewElement.shadowRoot.querySelector(`#${dummyPage2}`));
   });
 
   test('toolBarVisible', async () => {

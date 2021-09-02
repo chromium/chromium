@@ -7,7 +7,7 @@ import './page_toolbar.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MenuSelectorItem, SelectorItem, SelectorProperties} from './navigation_selector.js';
+import {SelectorItem} from './navigation_selector.js';
 
 const navigationPageChanged = 'onNavigationPageChanged';
 
@@ -50,10 +50,10 @@ export class NavigationViewPanelElement extends PolymerElement {
       },
 
       /**
-       * @type {!Array<!MenuSelectorItem>}
+       * @type {!Array<!SelectorItem>}
        * @private
        */
-      menuItems_: {
+      selectorItems_: {
         type: Array,
         value: () => [],
       },
@@ -68,11 +68,12 @@ export class NavigationViewPanelElement extends PolymerElement {
       },
 
       /**
-       * Can only be set to True if specified from the parent element by adding
-       * show-tool-bar as an attribute to <navigation-view-panel>. If True,
-       * a toolbar will appear at the top of the navigation view panel with
-       * a 2 column view below it (sidebar + page). If False, navigation view
-       * panel will only be a 2 column view (sidebar + page).
+       * Can only be set to True if specified from the parent element by
+       * adding show-tool-bar as an attribute to <navigation-view-panel>. If
+       * True, a toolbar will appear at the top of the navigation view panel
+       * with a 2 column view below it (sidebar + page). If False,
+       * navigation view panel will only be a 2 column view (sidebar +
+       * page).
        */
       showToolBar: {
         type: Boolean,
@@ -92,37 +93,16 @@ export class NavigationViewPanelElement extends PolymerElement {
    * @param {string} icon
    * @param {?string} id
    * @param {?Object} initialData
-   * @param {!Array<SelectorItem>} subItems
    */
-  addSelector(name, pageIs, icon = '', id = null, initialData = null,
-              subItems = []) {
-    if (!id) {
-      id = pageIs;
-    }
+  addSelector(name, pageIs, icon = '', id = null, initialData = null) {
+    id = id || pageIs;
+    let selectorItem =
+        /** @type {SelectorItem} */ ({name, pageIs, icon, id, initialData});
 
-    let item = /** @type {SelectorItem} */ (
-        {'name': name, 'pageIs': pageIs, 'icon': icon, 'id': id,
-         'initialData': initialData});
-    let property = /** @type {SelectorProperties} */ ({
-        'isCollapsible': subItems.length,
-        'isExpanded': false,
-        'subMenuItems': subItems,
-    });
-    let menuItem = /** @type {!MenuSelectorItem} */ ({
-        'selectorItem': item,
-        'properties': property,
-    });
-
-    this.push('menuItems_', menuItem);
-    // Set the initial default page, if the first entry is a collapsible entry
-    // the initial page is the first sub menu item. Otherwise, the first entry
-    // is the first menu item.
+    this.push('selectorItems_', selectorItem);
+    // Set the initial default page.
     if (!this.selectedItem) {
-      if (property.isCollapsible) {
-        this.selectedItem = property.subMenuItems[0];
-      } else {
-        this.selectedItem = item;
-      }
+        this.selectedItem = selectorItem;
     }
   }
 

@@ -23,27 +23,10 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 export let SelectorItem;
 
 /**
- * @typedef {{
- *   isCollapsible: boolean,
- *   isExpanded: boolean,
- *   subMenuItems: ?Array<?SelectorItem>
- * }}
- */
-export let SelectorProperties;
-
-/**
- * @typedef {{
- *   selectorItem: !SelectorItem,
- *   properties: !SelectorProperties,
- * }}
- */
-export let MenuSelectorItem;
-
-/**
  * @fileoverview
  * 'navigation-selector' is a side bar navigation element. To populate the
  * navigation-selector you must provide the element with an array of
- * MenuSelectorItem's.
+ * SelectorItem's.
  */
 export class NavigationSelectorElement extends PolymerElement {
   static get is() {
@@ -68,9 +51,9 @@ export class NavigationSelectorElement extends PolymerElement {
       },
 
       /**
-       * @type {!Array<!MenuSelectorItem>}
+       * @type {!Array<!SelectorItem>}
        */
-      menuItems: {
+      selectorItems: {
         type: Array,
         value: () => [],
       }
@@ -82,14 +65,6 @@ export class NavigationSelectorElement extends PolymerElement {
    * @private
    */
   onSelected_(e) {
-    this.selectedItem = e.model.item.selectorItem;
-  }
-
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onNestedSelected_(e) {
     this.selectedItem = e.model.item;
   }
 
@@ -99,14 +74,6 @@ export class NavigationSelectorElement extends PolymerElement {
     const items = /** @type {!NodeList<!HTMLDivElement>} */(
         this.shadowRoot.querySelectorAll('.navigation-item'));
     this.updateSelected_(items);
-
-    // Update any nested entries.
-    const collapsedLists = this.shadowRoot.querySelectorAll('iron-collapse');
-    for (const list of collapsedLists) {
-      const nestedElements = /** @type {!NodeList<!HTMLDivElement>} */(
-          list.shadowRoot.querySelectorAll('.navigation-item'));
-      this.updateSelected_(nestedElements);
-    }
   }
 
   /**
@@ -121,29 +88,6 @@ export class NavigationSelectorElement extends PolymerElement {
         item.classList.remove('selected');
       }
     }
-  }
-
-  /**
-   * @param {Event} e
-   * @private
-   */
-  onExpandClicked_(e) {
-    const selectedMenuItem = e.model.item;
-    const foundIndex = this.menuItems.findIndex((element) => {
-      return element.selectorItem.name === selectedMenuItem.selectorItem.name;
-    });
-
-    this.menuItems[foundIndex].properties.isExpanded =
-        !this.menuItems[foundIndex].properties.isExpanded;
-    this.notifyPath(`menuItems.${foundIndex}.properties.isExpanded`);
-  }
-
-  /**
-   * @param {!MenuSelectorItem} item
-   * @protected
-   */
-  isCollapsible_(item) {
-    return item.properties.isCollapsible;
   }
 
   /**
