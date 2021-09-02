@@ -99,8 +99,8 @@
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
-#import "ios/chrome/browser/ui/main/policy_signout_scene_agent.h"
 #import "ios/chrome/browser/ui/main/reading_list_background_session_scene_agent.h"
+#import "ios/chrome/browser/ui/main/signin_policy_scene_agent.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -840,7 +840,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 
   [self.sceneState
-      addAgent:[[PolicySignoutSceneAgent alloc]
+      addAgent:[[SigninPolicySceneAgent alloc]
                    initWithCommandDispatcher:mainCommandDispatcher]];
 
   // Create and start the BVC.

@@ -151,7 +151,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // while queueTransitionToNextInitStage is already on the call stack.
 @property(nonatomic, assign) BOOL needsIncrementInitStage;
 
-// Redefined internaly as readwrite.
+// Redefined internally as readwrite.
 @property(nonatomic, assign, readwrite) InitStage initStage;
 
 @end
