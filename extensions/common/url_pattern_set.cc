@@ -314,7 +314,7 @@ bool URLPatternSet::Populate(const base::ListValue& value,
                              bool allow_file_access,
                              std::string* error) {
   std::vector<std::string> patterns;
-  for (size_t i = 0; i < value.GetSize(); ++i) {
+  for (size_t i = 0; i < value.GetList().size(); ++i) {
     std::string item;
     if (!value.GetString(i, &item))
       return false;

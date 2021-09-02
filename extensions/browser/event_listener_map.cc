@@ -290,7 +290,7 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const base::ListValue* filter_list = nullptr;
     if (!it.value().GetAsList(&filter_list))
       continue;
-    for (size_t i = 0; i < filter_list->GetSize(); i++) {
+    for (size_t i = 0; i < filter_list->GetList().size(); i++) {
       const DictionaryValue* filter = nullptr;
       if (!filter_list->GetDictionary(i, &filter))
         continue;

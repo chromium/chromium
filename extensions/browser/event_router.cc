@@ -659,7 +659,7 @@ std::set<std::string> EventRouter::GetRegisteredEvents(
     return events;
   }
 
-  for (size_t i = 0; i < events_value->GetSize(); ++i) {
+  for (size_t i = 0; i < events_value->GetList().size(); ++i) {
     std::string event;
     if (events_value->GetString(i, &event))
       events.insert(event);

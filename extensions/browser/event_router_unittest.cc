@@ -231,7 +231,7 @@ class EventRouterFilterTest : public ExtensionsTest,
       return false;
     }
 
-    for (size_t i = 0; i < filter_list->GetSize(); ++i) {
+    for (size_t i = 0; i < filter_list->GetList().size(); ++i) {
       const DictionaryValue* filter = nullptr;
       if (!filter_list->GetDictionary(i, &filter)) {
         ADD_FAILURE();
@@ -462,7 +462,7 @@ TEST_P(EventRouterFilterTest, Basic) {
   const base::ListValue* filter_list = nullptr;
   ASSERT_TRUE(iter.value().GetAsList(&filter_list));
   ASSERT_TRUE(filter_list);
-  ASSERT_EQ(3u, filter_list->GetSize());
+  ASSERT_EQ(3u, filter_list->GetList().size());
 
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));

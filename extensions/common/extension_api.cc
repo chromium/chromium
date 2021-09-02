@@ -56,7 +56,7 @@ std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
 const base::DictionaryValue* FindListItem(const base::ListValue* list,
                                           const std::string& property_name,
                                           const std::string& property_value) {
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     const base::DictionaryValue* item = NULL;
     CHECK(list->GetDictionary(i, &item))
         << property_value << "/" << property_name;

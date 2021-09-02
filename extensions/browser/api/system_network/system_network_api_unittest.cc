@@ -35,7 +35,7 @@ TEST_F(SystemNetworkApiUnitTest, GetNetworkInterfaces) {
   // All we can confirm is that we have at least one address, but not what it
   // is.
   base::ListValue* value = static_cast<base::ListValue*>(result.get());
-  ASSERT_TRUE(value->GetSize() > 0);
+  ASSERT_TRUE(value->GetList().size() > 0);
 
   for (const auto& network_interface_value : value->GetList()) {
     NetworkInterface network_interface;

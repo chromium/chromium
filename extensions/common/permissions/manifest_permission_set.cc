@@ -62,7 +62,7 @@ bool ManifestPermissionSet::ParseFromJSON(
     ManifestPermissionSet* manifest_permissions,
     std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {
-  for (size_t i = 0; i < permissions->GetSize(); ++i) {
+  for (size_t i = 0; i < permissions->GetList().size(); ++i) {
     std::string permission_name;
     const base::Value* permission_value = NULL;
     if (!permissions->GetString(i, &permission_name)) {

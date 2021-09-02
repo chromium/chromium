@@ -947,7 +947,7 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
       const base::ListValue* urls_value = NULL;
       if (!it.value().GetAsList(&urls_value))
         return false;
-      for (size_t i = 0; i < urls_value->GetSize(); ++i) {
+      for (size_t i = 0; i < urls_value->GetList().size(); ++i) {
         std::string url;
         URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                            URLPattern::SCHEME_FTP | URLPattern::SCHEME_FILE |
@@ -966,7 +966,7 @@ bool ExtensionWebRequestEventRouter::RequestFilter::InitFromValue(
       const base::ListValue* types_value = NULL;
       if (!it.value().GetAsList(&types_value))
         return false;
-      for (size_t i = 0; i < types_value->GetSize(); ++i) {
+      for (size_t i = 0; i < types_value->GetList().size(); ++i) {
         std::string type_str;
         types.push_back(WebRequestResourceType::OTHER);
         if (!types_value->GetString(i, &type_str) ||

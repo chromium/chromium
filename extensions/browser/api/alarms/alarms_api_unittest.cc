@@ -78,7 +78,7 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   // JsAlarms.
   std::vector<std::unique_ptr<JsAlarm>> ToAlarmList(base::ListValue* value) {
     std::vector<std::unique_ptr<JsAlarm>> list;
-    for (size_t i = 0; i < value->GetSize(); ++i) {
+    for (size_t i = 0; i < value->GetList().size(); ++i) {
       std::unique_ptr<JsAlarm> alarm(new JsAlarm());
       base::DictionaryValue* alarm_value;
       if (!value->GetDictionary(i, &alarm_value)) {

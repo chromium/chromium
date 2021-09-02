@@ -60,7 +60,7 @@ bool EventMatcher::MatchNonURLCriteria(
 int EventMatcher::GetURLFilterCount() const {
   base::ListValue* url_filters = nullptr;
   if (filter_->GetList(kUrlFiltersKey, &url_filters))
-    return url_filters->GetSize();
+    return url_filters->GetList().size();
   return 0;
 }
 
@@ -91,7 +91,7 @@ int EventMatcher::GetInstanceID() const {
 int EventMatcher::GetWindowTypeCount() const {
   base::ListValue* window_type_filters = nullptr;
   if (filter_->GetList(kWindowTypesKey, &window_type_filters))
-    return window_type_filters->GetSize();
+    return window_type_filters->GetList().size();
   return 0;
 }
 

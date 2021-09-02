@@ -30,7 +30,7 @@ TEST(ValueBuilderTest, Basic) {
   base::ListValue* list_value;
   ASSERT_TRUE(settings->GetList("permissions", &list_value));
 
-  ASSERT_EQ(2U, list_value->GetSize());
+  ASSERT_EQ(2U, list_value->GetList().size());
   std::string permission;
   ASSERT_TRUE(list_value->GetString(0, &permission));
   ASSERT_EQ(permission, "tabs");

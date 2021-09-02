@@ -267,7 +267,7 @@ APIBinding::APIBinding(const std::string& api_name,
   }
 
   if (event_definitions) {
-    events_.reserve(event_definitions->GetSize());
+    events_.reserve(event_definitions->GetList().size());
     for (const auto& event : event_definitions->GetList()) {
       const base::DictionaryValue* event_dict = nullptr;
       CHECK(event.GetAsDictionary(&event_dict));

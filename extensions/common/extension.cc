@@ -707,7 +707,7 @@ bool Extension::LoadExtent(const char* key,
     return false;
   }
 
-  for (size_t i = 0; i < pattern_list->GetSize(); ++i) {
+  for (size_t i = 0; i < pattern_list->GetList().size(); ++i) {
     std::string pattern_string;
     if (!pattern_list->GetString(i, &pattern_string)) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

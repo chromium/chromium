@@ -54,8 +54,8 @@ std::vector<api::events::Rule> RulesFromValue(const base::Value* value) {
   if (!value || !value->GetAsList(&list))
     return rules;
 
-  rules.reserve(list->GetSize());
-  for (size_t i = 0; i < list->GetSize(); ++i) {
+  rules.reserve(list->GetList().size());
+  for (size_t i = 0; i < list->GetList().size(); ++i) {
     const base::DictionaryValue* dict = NULL;
     if (!list->GetDictionary(i, &dict))
       continue;
