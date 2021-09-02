@@ -125,7 +125,7 @@ const char kWaylandSocketGroup[] = "wayland";
 bool IsDrmAtomicAvailable() {
 #if defined(USE_OZONE)
   auto& host_properties =
-      ui::OzonePlatform::GetInstance()->GetInitializedHostProperties();
+      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
   return host_properties.supports_overlays;
 #else
   LOG(WARNING) << "Ozone disabled, cannot determine whether DrmAtomic is "

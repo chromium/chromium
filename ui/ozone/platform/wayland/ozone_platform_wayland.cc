@@ -304,17 +304,8 @@ class OzonePlatformWayland : public OzonePlatform {
     if (connection_) {
       properties.supports_server_side_window_decorations =
           (connection_->xdg_decoration_manager_v1() != nullptr);
-    }
-    return properties;
-  }
-
-  const InitializedHostProperties& GetInitializedHostProperties() override {
-    static OzonePlatform::InitializedHostProperties properties;
-    static bool initialized = false;
-    if (!initialized) {
       properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
-      initialized = true;
     }
     return properties;
   }

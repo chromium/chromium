@@ -39,7 +39,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   DrmDisplayHostManager(
       GpuThreadAdapter* proxy,
       DeviceManager* device_manager,
-      OzonePlatform::InitializedHostProperties* host_properties,
+      OzonePlatform::PlatformRuntimeProperties* host_properties,
       InputControllerEvdev* input_controller);
   ~DrmDisplayHostManager() override;
 

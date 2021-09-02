@@ -149,16 +149,10 @@ OzonePlatform::GetPlatformProperties() {
 
 const OzonePlatform::PlatformRuntimeProperties&
 OzonePlatform::GetPlatformRuntimeProperties() {
-  static const OzonePlatform::PlatformRuntimeProperties properties;
-  return properties;
-}
-
-const OzonePlatform::InitializedHostProperties&
-OzonePlatform::GetInitializedHostProperties() {
   DCHECK(initialized_ui_);
 
-  static InitializedHostProperties host_properties;
-  return host_properties;
+  static const PlatformRuntimeProperties properties;
+  return properties;
 }
 
 void OzonePlatform::AddInterfaces(mojo::BinderMap* binders) {}

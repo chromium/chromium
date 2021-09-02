@@ -146,7 +146,7 @@ class FindDrmDisplayHostById {
 DrmDisplayHostManager::DrmDisplayHostManager(
     GpuThreadAdapter* proxy,
     DeviceManager* device_manager,
-    OzonePlatform::InitializedHostProperties* host_properties,
+    OzonePlatform::PlatformRuntimeProperties* host_properties,
     InputControllerEvdev* input_controller)
     : proxy_(proxy),
       device_manager_(device_manager),

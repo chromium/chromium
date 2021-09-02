@@ -275,7 +275,7 @@ class OzonePlatformDrm : public OzonePlatform {
     }
   }
 
-  const InitializedHostProperties& GetInitializedHostProperties() override {
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
     DCHECK(has_initialized_ui());
     return host_properties_;
   }
@@ -343,7 +343,7 @@ class OzonePlatformDrm : public OzonePlatform {
   std::unique_ptr<DrmCursor> cursor_;
   std::unique_ptr<EventFactoryEvdev> event_factory_ozone_;
   std::unique_ptr<DrmDisplayHostManager> display_manager_;
-  InitializedHostProperties host_properties_;
+  PlatformRuntimeProperties host_properties_;
 
   base::WeakPtrFactory<OzonePlatformDrm> weak_factory_{this};
   base::WeakPtrFactory<OzonePlatformDrm> weak_factory_on_drm_{this};

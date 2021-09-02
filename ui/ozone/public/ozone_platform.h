@@ -158,16 +158,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   // Groups platform properties that can only be known at run time.
   struct PlatformRuntimeProperties {
-    // Indicates whether the platform supports server-side window decorations.
-    bool supports_server_side_window_decorations = true;
-  };
-
-  // Properties available in the host process after initialization.
-  struct InitializedHostProperties {
     // Whether the underlying platform supports deferring compositing of buffers
     // via overlays. If overlays are not supported the promotion and validation
     // logic can be skipped.
     bool supports_overlays = false;
+    // Indicates whether the platform supports server-side window decorations.
+    bool supports_server_side_window_decorations = true;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.
@@ -269,12 +265,9 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // process at any time.
   virtual const PlatformProperties& GetPlatformProperties();
 
-  // Returns runtime properties of the current platform implementation.
-  virtual const PlatformRuntimeProperties& GetPlatformRuntimeProperties();
-
-  // Returns a struct that contains properties available in the host process
+  // Returns runtime properties of the current platform implementation available
   // after InitializeForUI() runs.
-  virtual const InitializedHostProperties& GetInitializedHostProperties();
+  virtual const PlatformRuntimeProperties& GetPlatformRuntimeProperties();
 
   // Ozone platform implementations may also choose to expose mojo interfaces to
   // internal functionality. Embedders wishing to take advantage of ozone mojo

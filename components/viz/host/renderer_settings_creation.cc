@@ -94,7 +94,7 @@ RendererSettings CreateRendererSettings() {
           command_line->GetSwitchValueASCII(switches::kEnableHardwareOverlays));
     } else {
       auto& host_properties =
-          ui::OzonePlatform::GetInstance()->GetInitializedHostProperties();
+          ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
       if (host_properties.supports_overlays) {
         renderer_settings.overlay_strategies = {OverlayStrategy::kFullscreen,
                                                 OverlayStrategy::kSingleOnTop,
