@@ -3989,6 +3989,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always open PDF files using an external PDF viewer',
+        },
+        {
+          'value': False,
+          'caption': 'Always open PDF files using the internal PDF viewer',
+        },
+      ],
       'example_value': True,
       'id': 347,
       'caption': '''Always Open PDF files externally''',
@@ -4009,6 +4019,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the plugin finder',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the plugin finder',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 66,
@@ -4030,6 +4050,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Allow users to choose whether to enable <ph name="CHROME_SYNC_NAME">Chrome Sync</ph>',
+        },
+      ],
       'example_value': True,
       'id': 20,
       'caption': '''Disable synchronization of data with Google''',
@@ -4074,6 +4104,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable creation of roaming profiles',
+        },
+        {
+          'value': False,
+          'caption': 'Disable creation of roaming profiles',
+        },
+      ],
       'example_value': True,
       'id': 358,
       'caption': '''Enable the creation of roaming copies for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile data''',
@@ -4118,6 +4158,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to sign in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from signing in to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 190,
@@ -4485,6 +4535,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow captive portal authentication to ignore proxy settings',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent captive portal authentication from ignoring proxy settings',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 295,
@@ -4810,6 +4870,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable CNAME lookup during Kerberos authentication',
+        },
+        {
+          'value': False,
+          'caption': 'Use CNAME lookup during Kerberos authentication',
+        },
+      ],
       'example_value': False,
       'id': 27,
       'caption': '''Disable CNAME lookup when negotiating Kerberos authentication''',
