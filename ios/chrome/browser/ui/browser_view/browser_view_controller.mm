@@ -1697,8 +1697,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         [weakSelf completedTransition];
       }];
 
-  id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
-  [webViewProxy surfaceSizeChanged];
+  if (self.currentWebState) {
+    id<CRWWebViewProxy> webViewProxy = self.currentWebState->GetWebViewProxy();
+    [webViewProxy surfaceSizeChanged];
+  }
 
   crash_keys::SetCurrentOrientation(GetInterfaceOrientation(),
                                     [[UIDevice currentDevice] orientation]);
