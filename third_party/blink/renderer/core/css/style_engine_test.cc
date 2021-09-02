@@ -4221,6 +4221,7 @@ TEST_F(StyleEngineTest, CascadeLayersNotExplicitlyDeclared) {
   // We don't create CascadeLayerMap if no layers are explicitly declared.
   ASSERT_TRUE(GetDocument().GetScopedStyleResolver());
   ASSERT_FALSE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSCascadeLayers));
 }
 
 TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
@@ -4304,6 +4305,32 @@ TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
             old_style->VisitedDependentColor(GetCSSPropertyColor()));
   EXPECT_EQ(MakeRGB(0, 128, 0),
             new_style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
+TEST_F(StyleEngineTest, CascadeLayerUseCount) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  {
+    ASSERT_FALSE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    GetDocument().body()->setInnerHTML("<style>@layer foo;</style>");
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    ClearUseCounter(WebFeature::kCSSCascadeLayers);
+  }
+
+  {
+    ASSERT_FALSE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    GetDocument().body()->setInnerHTML("<style>@layer foo { }</style>");
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    ClearUseCounter(WebFeature::kCSSCascadeLayers);
+  }
+
+  {
+    ASSERT_FALSE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    GetDocument().body()->setInnerHTML(
+        "<style>@import url(foo.css) layer(foo);</style>");
+    EXPECT_TRUE(IsUseCounted(WebFeature::kCSSCascadeLayers));
+    ClearUseCounter(WebFeature::kCSSCascadeLayers);
+  }
 }
 
 }  // namespace blink

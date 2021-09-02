@@ -70,8 +70,8 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
       feature = WebFeature::kCSSAtRuleKeyframes;
       break;
     case kCSSAtRuleLayer:
-      // TODO(crbug.com/1095765): Add use-counter.
-      return;
+      feature = WebFeature::kCSSCascadeLayers;
+      break;
     case kCSSAtRuleMedia:
       feature = WebFeature::kCSSAtRuleMedia;
       break;

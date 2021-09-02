@@ -34419,6 +34419,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4004" label="CanvasRenderingContext2DFontKerning"/>
   <int value="4005" label="CanvasRenderingContext2DFontStretch"/>
   <int value="4006" label="CanvasRenderingContext2DTextRendering"/>
+  <int value="4007" label="CSSCascadeLayers"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

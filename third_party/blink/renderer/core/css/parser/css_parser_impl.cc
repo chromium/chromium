@@ -733,6 +733,9 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
         layer = std::move(name);
       }
     }
+
+    if (layer.size())
+      context_->Count(WebFeature::kCSSCascadeLayers);
   }
 
   if (observer_) {
