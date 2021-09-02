@@ -1983,11 +1983,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-ftp",
-    "owners": [ "asanka" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "enable-fullpage-screenshot",
     "owners": [ "seblalancette" ],
     "expiry_milestone": 94
