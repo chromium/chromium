@@ -514,10 +514,14 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   // - Our scrollbars have changed causing our size to change (shrink-to-fit)
   //   or the available space to our children changing.
   // - A child changed scrollbars causing our size to change (shrink-to-fit).
+  //
+  // Skip this part if side-effects aren't allowed, though. Calling
+  // ClearLayoutResults() when in this state is forbidden.
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
-  if (scrollbars_before != scrollbars_after ||
-      (!intrinsic_logical_widths_dirty_before &&
-       box_->IntrinsicLogicalWidthsDirty())) {
+  if ((scrollbars_before != scrollbars_after ||
+       (!intrinsic_logical_widths_dirty_before &&
+        box_->IntrinsicLogicalWidthsDirty())) &&
+      !NGDisableSideEffectsScope::IsDisabled()) {
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
