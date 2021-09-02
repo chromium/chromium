@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -172,6 +173,16 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
     // InWhichFrameIsContentMixed() check above.
     UMA_HISTOGRAM_BOOLEAN("SSL.NonWebbyMixedContentLoaded", true);
     return false;
+  }
+
+  // Cancel the prerendering page to prevent the problems that can be the
+  // logging UMA, UKM and calling DidChangeVisibleSecurityState() through this
+  // throttle.
+  if (mixed_content_frame->GetLifecycleState() ==
+      RenderFrameHost::LifecycleState::kPrerendering) {
+    mixed_content_frame->CancelPrerendering(
+        PrerenderHost::FinalStatus::kMixedContent);
+    return true;
   }
 
   bool allowed = false;

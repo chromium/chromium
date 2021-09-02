@@ -81,7 +81,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kUaChangeRequiresReload = 27,
     kBlockedByClient = 28,
     kAudioOutputDeviceRequested = 29,
-    kMaxValue = kAudioOutputDeviceRequested,
+    kMixedContent = 30,
+    kMaxValue = kMixedContent,
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

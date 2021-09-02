@@ -4760,5 +4760,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
   EXPECT_FALSE(prerendered_rfh->frame_tree_node()->HasStickyUserActivation());
 }
 
+// Tests that prerendering is cancelled when a mixed content subframe is
+// detected.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Make a prerendered page.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+  DCHECK(prerendered_rfh);
+  EXPECT_TRUE(AddTestUtilJS(prerendered_rfh));
+
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+
+  // Make a mixed content iframe.
+  EXPECT_TRUE(
+      ExecJs(prerendered_rfh,
+             "add_iframe_async('http://a.test/empty.html?prerendering')",
+             EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kMixedContent, 1);
+}
+
 }  // namespace
 }  // namespace content
