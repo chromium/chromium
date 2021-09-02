@@ -529,10 +529,10 @@ class AutoEnrollmentClientImplTest
     EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
 
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceProtocolTimeStr + GetAutoEnrollmentProtocolUmaSuffix(),
+        kUMAHashDanceProtocolTime + GetAutoEnrollmentProtocolUmaSuffix(),
         expected_time_recorded, /*expected_count=*/1);
     histogram_tester_.ExpectUniqueTimeSample(
-        kUMAHashDanceSuccessTimeStr + GetAutoEnrollmentProtocolUmaSuffix(),
+        kUMAHashDanceSuccessTime + GetAutoEnrollmentProtocolUmaSuffix(),
         expected_time_recorded, success_time_recorded ? 1 : 0);
   }
 
@@ -577,8 +577,6 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
  private:
-  const std::string kUMAHashDanceProtocolTimeStr = kUMAHashDanceProtocolTime;
-  const std::string kUMAHashDanceSuccessTimeStr = kUMAHashDanceSuccessTime;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<AutoEnrollmentClient> client_;
