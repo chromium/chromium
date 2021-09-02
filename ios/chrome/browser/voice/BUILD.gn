@@ -24,8 +24,7 @@ source_set("voice") {
     "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/voice",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
   ]
 }
@@ -89,8 +88,7 @@ source_set("test_support") {
   deps = [
     ":voice",
     "//base",
-    "//ios/public/provider/chrome/browser:test_support",
-    "//ios/public/provider/chrome/browser/voice:test_support",
+    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
     "//testing/gtest",
   ]
 }

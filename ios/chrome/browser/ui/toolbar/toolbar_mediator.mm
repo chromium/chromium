@@ -14,8 +14,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -186,9 +185,7 @@
 
 - (void)setConsumer:(id<ToolbarConsumer>)consumer {
   _consumer = consumer;
-  [_consumer setVoiceSearchEnabled:ios::GetChromeBrowserProvider()
-                                       .GetVoiceSearchProvider()
-                                       ->IsVoiceSearchEnabled()];
+  [_consumer setVoiceSearchEnabled:ios::provider::IsVoiceSearchEnabled()];
   if (self.webState) {
     [self updateConsumer];
   }

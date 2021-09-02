@@ -18,9 +18,8 @@
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/public/provider/chrome/browser/voice_search/test_voice_search.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -33,51 +32,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Test VoiceSearchProvider that allow overriding whether voice search
-// is enabled or not.
-class TestToolbarMediatorVoiceSearchProvider : public VoiceSearchProvider {
- public:
-  TestToolbarMediatorVoiceSearchProvider() = default;
-  ~TestToolbarMediatorVoiceSearchProvider() override = default;
-
-  // Setter to control the value returned by IsVoiceSearchEnabled().
-  void set_voice_search_enabled(bool enabled) {
-    voice_search_enabled_ = enabled;
-  }
-
-  // VoiceSearchProvider implementation.
-  bool IsVoiceSearchEnabled() const override { return voice_search_enabled_; }
-
- private:
-  bool voice_search_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToolbarMediatorVoiceSearchProvider);
-};
-
-// Test ChromeBrowserProvider that install custom VoiceSearchProvider
-// for ToolbarMediator unit tests.
-class TestToolbarMediatorChromeBrowserProvider
-    : public ios::TestChromeBrowserProvider {
- public:
-  TestToolbarMediatorChromeBrowserProvider()
-      : voice_search_provider_(
-            std::make_unique<TestToolbarMediatorVoiceSearchProvider>()) {}
-
-  ~TestToolbarMediatorChromeBrowserProvider() override = default;
-
-  VoiceSearchProvider* GetVoiceSearchProvider() const override {
-    return voice_search_provider_.get();
-  }
-
- private:
-  std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestToolbarMediatorChromeBrowserProvider);
-};
-}
 
 @interface TestToolbarMediator
     : ToolbarMediator<CRWWebStateObserver, WebStateListObserving>
@@ -93,9 +47,9 @@ static const char kTestUrl[] = "http://www.chromium.org";
 
 class ToolbarMediatorTest : public PlatformTest {
  public:
-  ToolbarMediatorTest()
-      : scoped_provider_(
-            std::make_unique<TestToolbarMediatorChromeBrowserProvider>()) {
+  ToolbarMediatorTest() {
+    ios::provider::test::SetVoiceSearchEnabled(false);
+
     TestChromeBrowserState::Builder test_cbs_builder;
 
     chrome_browser_state_ = test_cbs_builder.Build();
@@ -115,7 +69,11 @@ class ToolbarMediatorTest : public PlatformTest {
 
   // Explicitly disconnect the mediator so there won't be any WebStateList
   // observers when web_state_list_ gets dealloc.
-  ~ToolbarMediatorTest() override { [mediator_ disconnect]; }
+  ~ToolbarMediatorTest() override {
+    ios::provider::test::SetVoiceSearchEnabled(false);
+
+    [mediator_ disconnect];
+  }
 
  protected:
   web::WebTaskEnvironment task_environment_;
@@ -143,13 +101,6 @@ class ToolbarMediatorTest : public PlatformTest {
 
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
-  void set_voice_search_enabled(bool enabled) {
-    static_cast<TestToolbarMediatorVoiceSearchProvider*>(
-        ios::GetChromeBrowserProvider().GetVoiceSearchProvider())
-        ->set_voice_search_enabled(enabled);
-  }
-
-  IOSChromeScopedTestingChromeBrowserProvider scoped_provider_;
   TestToolbarMediator* mediator_;
   ToolbarTestWebState* web_state_;
   ToolbarTestNavigationManager* navigation_manager_;
@@ -378,7 +329,7 @@ TEST_F(ToolbarMediatorTest, TestDecreaseNumberOfWebstates) {
 
 // Test that consumer is informed that voice search is enabled.
 TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderEnabled) {
-  set_voice_search_enabled(true);
+  ios::provider::test::SetVoiceSearchEnabled(true);
 
   OCMExpect([consumer_ setVoiceSearchEnabled:YES]);
   mediator_.consumer = consumer_;
@@ -388,7 +339,7 @@ TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderEnabled) {
 
 // Test that consumer is informed that voice search is not enabled.
 TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
-  set_voice_search_enabled(false);
+  ios::provider::test::SetVoiceSearchEnabled(false);
 
   OCMExpect([consumer_ setVoiceSearchEnabled:NO]);
   mediator_.consumer = consumer_;
@@ -398,8 +349,6 @@ TEST_F(ToolbarMediatorTest, TestVoiceSearchProviderNotEnabled) {
 
 // Test that updating the consumer for a specific webState works.
 TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
-  VoiceSearchProvider provider;
-
   mediator_.webStateList = web_state_list_.get();
   SetUpActiveWebState();
   mediator_.consumer = consumer_;

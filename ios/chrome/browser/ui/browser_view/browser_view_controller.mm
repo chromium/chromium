@@ -186,9 +186,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_controller.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/url_scheme_util.h"
@@ -387,7 +386,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   KeyCommandsProvider* _keyCommandsProvider;
 
   // Used to display the Voice Search UI.  Nil if not visible.
-  scoped_refptr<VoiceSearchController> _voiceSearchController;
+  id<VoiceSearchController> _voiceSearchController;
 
   // Adapter to let BVC be the delegate for WebState.
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegate;
@@ -805,7 +804,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (BOOL)isPlayingTTS {
-  return _voiceSearchController && _voiceSearchController->IsPlayingAudio();
+  return _voiceSearchController.audioPlaying;
 }
 
 - (ChromeBrowserState*)browserState {
@@ -1172,8 +1171,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self ensureVoiceSearchControllerCreated];
 
   // Present voice search.
-  _voiceSearchController->StartRecognition(self, self.currentWebState,
-                                           self.browser);
+  [_voiceSearchController
+      startRecognitionOnViewController:self
+                              webState:self.currentWebState];
   [self.omniboxHandler cancelOmniboxEdit];
 }
 
@@ -1239,8 +1239,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.omniboxHandler cancelOmniboxEdit];
   }
   [self.helpHandler hideAllHelpBubbles];
-  if (_voiceSearchController)
-    _voiceSearchController->DismissMicPermissionsHelp();
+  [_voiceSearchController dismissMicPermissionHelp];
 
   web::WebState* webState = self.currentWebState;
 
@@ -1375,10 +1374,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _sideSwipeController = nil;
   _webStateListObserver.reset();
   _allWebStateObservationForwarder = nullptr;
-  if (_voiceSearchController) {
-    _voiceSearchController->SetDispatcher(nil);
-    _voiceSearchController = nullptr;
-  }
+  [_voiceSearchController disconnect];
+  _voiceSearchController = nil;
   _fullscreenDisabler = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -1436,7 +1433,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if ([self presentedViewController])
     return NO;
 
-  if (_voiceSearchController && _voiceSearchController->IsVisible())
+  if (_voiceSearchController.visible)
     return NO;
 
   if (self.bottomPosition)
@@ -1587,8 +1584,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (![self isViewLoaded]) {
     self.typingShield = nil;
-    if (_voiceSearchController)
-      _voiceSearchController->SetDispatcher(nil);
+    _voiceSearchController.dispatcher = nil;
     [self.primaryToolbarCoordinator stop];
     self.primaryToolbarCoordinator = nil;
     [self.secondaryToolbarContainerCoordinator stop];
@@ -2005,8 +2001,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   [self updateBroadcastState];
   if (_voiceSearchController)
-    _voiceSearchController->SetDispatcher(
-        HandlerForProtocol(self.commandDispatcher, LoadQueryCommands));
+    _voiceSearchController.dispatcher =
+        HandlerForProtocol(self.commandDispatcher, LoadQueryCommands);
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
@@ -2827,17 +2823,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - Private Methods: Voice Search
 
 - (void)ensureVoiceSearchControllerCreated {
-  if (!_voiceSearchController) {
-    VoiceSearchProvider* provider =
-        ios::GetChromeBrowserProvider().GetVoiceSearchProvider();
-    if (provider) {
-      _voiceSearchController =
-          provider->CreateVoiceSearchController(self.browser);
-      if (self.primaryToolbarCoordinator) {
-        _voiceSearchController->SetDispatcher(
-            static_cast<id<LoadQueryCommands>>(self.commandDispatcher));
-      }
-    }
+  if (_voiceSearchController)
+    return;
+
+  _voiceSearchController =
+      ios::provider::CreateVoiceSearchController(self.browser);
+  if (self.primaryToolbarCoordinator) {
+    _voiceSearchController.dispatcher =
+        HandlerForProtocol(self.commandDispatcher, LoadQueryCommands);
   }
 }
 
@@ -4564,7 +4557,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
   [self ensureVoiceSearchControllerCreated];
-  _voiceSearchController->PrepareToAppear();
+  [_voiceSearchController prepareToAppear];
 }
 
 #if !defined(NDEBUG)
@@ -5071,7 +5064,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if ([self.popupMenuCoordinator isShowingPopupMenu])
     return YES;
 
-  if (_voiceSearchController && _voiceSearchController->IsVisible())
+  if (_voiceSearchController.visible)
     return YES;
 
   if (!self.active)

@@ -26,10 +26,6 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
                               NSArray<SpeechInputLocaleMatch*>* locale_matches);
   ~SpeechInputLocaleConfigImpl() override;
 
-  // Deprecated constructor to avoid breaking the downstream tests. Will be
-  // removed once downstream is changed to use the other constructor.
-  SpeechInputLocaleConfigImpl();
-
   // Returns the available locale that matches |locale_code|.  Defaults to en-US
   // if a matching locale is not found.
   SpeechInputLocale GetMatchingLocale(const std::string& locale_code) const;

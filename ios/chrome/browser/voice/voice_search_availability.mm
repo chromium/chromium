@@ -4,8 +4,7 @@
 
 #import "ios/chrome/browser/voice/voice_search_availability.h"
 
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,9 +41,7 @@ void VoiceSearchAvailability::RemoveObserver(
 }
 
 bool VoiceSearchAvailability::IsVoiceSearchAvailable() const {
-  return !voice_over_enabled_ && ios::GetChromeBrowserProvider()
-                                     .GetVoiceSearchProvider()
-                                     ->IsVoiceSearchEnabled();
+  return !voice_over_enabled_ && ios::provider::IsVoiceSearchEnabled();
 }
 
 bool VoiceSearchAvailability::IsVoiceOverEnabled() const {

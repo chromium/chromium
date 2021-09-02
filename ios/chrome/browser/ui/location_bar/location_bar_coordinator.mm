@@ -61,8 +61,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
@@ -153,9 +152,8 @@
       static_cast<id<ActivityServiceCommands, BrowserCommands,
                      ApplicationCommands, LoadQueryCommands, OmniboxCommands>>(
           self.browser->GetCommandDispatcher());
-  self.viewController.voiceSearchEnabled = ios::GetChromeBrowserProvider()
-                                               .GetVoiceSearchProvider()
-                                               ->IsVoiceSearchEnabled();
+  self.viewController.voiceSearchEnabled =
+      ios::provider::IsVoiceSearchEnabled();
 
   _editController = std::make_unique<WebOmniboxEditControllerImpl>(self);
   _editController->SetURLLoader(self);
