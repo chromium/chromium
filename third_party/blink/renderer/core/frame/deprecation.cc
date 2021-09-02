@@ -587,6 +587,21 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   "WebSQL in third-party contexts (i.e. cross-site iframes)",
                   "Web Storage or Indexed Database", kM97, "5684870116278272")};
 
+    case WebFeature::kRTCConstraintEnableDtlsSrtpTrue:
+      return {
+          "RTCConstraintEnableDtlsSrtpTrue", kM97,
+          "The constraint \"DtlsSrtpKeyAgreement\" will be removed. You have "
+          "specified a \"true\" value for this constraint, which has no "
+          "effect, but you can remove this constraint for tidiness."};
+
+    case WebFeature::kRTCConstraintEnableDtlsSrtpFalse:
+      return {
+          "RTCConstraintEnableDtlsSrtpFalse", kM97,
+          "The constraint \"DtlsSrtpKeyAgreement\" will be removed. You have "
+          "specified a \"false\" value for this constraint, which is "
+          "interpreted as an attempt to use the deprecated \"SDES\" key "
+          "negotiation method. This functionality will be removed; use a "
+          "service that supports DTLS key negotiation instead."};
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return {"NotDeprecated", kUnknown, ""};

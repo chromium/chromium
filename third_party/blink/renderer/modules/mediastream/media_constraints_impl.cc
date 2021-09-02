@@ -370,11 +370,11 @@ static void ParseOldStyleNames(
     } else if (constraint.name_.Equals(kEnableDtlsSrtp)) {
       bool value = ToBoolean(constraint.value_);
       if (value) {
-        UseCounter::Count(context,
-                          WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCConstraintEnableDtlsSrtpTrue);
       } else {
-        UseCounter::Count(context,
-                          WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
+        Deprecation::CountDeprecation(
+            context, WebFeature::kRTCConstraintEnableDtlsSrtpFalse);
       }
       result.enable_dtls_srtp.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kEnableRtpDataChannels)) {
