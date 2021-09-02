@@ -27,7 +27,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -272,6 +272,9 @@ void ExecutionContext::ReportNavigatorUserAgentAccess() {
     return;
   has_filed_navigator_user_agent_issue_ = true;
   AuditsIssue::ReportNavigatorUserAgentAccess(this, Url().GetString());
+  base::UmaHistogramBoolean(
+      "Blink.Navigator.ReducedUserAgent",
+      RuntimeEnabledFeatures::UserAgentReductionEnabled(this));
 }
 
 void ExecutionContext::AddConsoleMessageImpl(

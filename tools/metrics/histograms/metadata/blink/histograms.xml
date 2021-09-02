@@ -2361,6 +2361,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
+    expires_after="M100">
+  <owner>abeyad@chromium.org</owner>
+  <owner>aarontag@chromium.org</owner>
+  <summary>
+    Whether the navigator.userAgent and navigator.appVersion JavaScript getters
+    returned a reduced user agent string value. The reduced user agent string is
+    only returned in the presence of a valid UserAgentReduction origin trial
+    token. This histogram is recorded when the navigator.userAgent and
+    navigator.appVersion JavaScript APIs are invoked.
+  </summary>
+</histogram>
+
 <histogram name="Blink.NotificationManager.GetPermissionStatusTime" units="ms"
     expires_after="2022-08-24">
   <owner>cduvall@chromium.org</owner>
