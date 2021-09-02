@@ -82,6 +82,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/boot_times_recorder.h"
+#include "components/full_restore/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
@@ -1014,8 +1015,16 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
            : 0);
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In Chrome OS, apps are restored by full restore only. This function is
+  // called when the chrome browser is launched after crash, so only browser
+  // tabs are restored, apps are not restroed.
+  if (!full_restore::features::IsFullRestoreEnabled())
+    behavior |= SessionRestore::RESTORE_APPS;
+#else
   // Apps should always be restored on crash restore.
   behavior |= SessionRestore::RESTORE_APPS;
+#endif
 #endif
   SessionRestore::RestoreSession(profile, browser, behavior,
                                  std::vector<GURL>());
