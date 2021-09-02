@@ -135,6 +135,11 @@ class Parser final {
   bool IsGroupOpen() const;
   bool IsGroupClose() const;
 
+  // These methods indicate if the current token is an opening or closing
+  // bracket for an ipv6 hostname; e.g. '[' or ']'.
+  bool IsIPv6Open() const;
+  bool IsIPv6Close() const;
+
   // This method returns a String consisting of the tokens between
   // `component_start_` and the current `token_index_`.
   String MakeComponentString() const;
@@ -176,6 +181,9 @@ class Parser final {
 
   // The current nesting depth of `{ }` pattern groupings.
   int group_depth_ = 0;
+
+  // The current netsting depth of `[ ]` in hostname patterns.
+  int hostname_ipv6_bracket_depth_ = 0;
 
   // The current parse state.  This should only be changed via `ChangeState()`
   // or `RewindAndSetState()`.

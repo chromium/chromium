@@ -2151,6 +2151,55 @@
     }
   },
   {
+    "pattern": [ "http://[\\:\\:1]/" ],
+    "inputs": [ "http://[::1]/" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "http",
+      "hostname": "[\\:\\:1]",
+      "pathname": "/"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "[::1]", "groups": {} },
+      "pathname": { "input": "/", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "http://[\\:\\:1]:8080/" ],
+    "inputs": [ "http://[::1]:8080/" ],
+    "exactly_empty_components": [ "username", "password", "search", "hash" ],
+    "expected_obj": {
+      "protocol": "http",
+      "hostname": "[\\:\\:1]",
+      "port": "8080",
+      "pathname": "/"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "[::1]", "groups": {} },
+      "port": { "input": "8080", "groups": {} },
+      "pathname": { "input": "/", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "http://[\\:\\:a]/" ],
+    "inputs": [ "http://[::a]/" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "http",
+      "hostname": "[\\:\\:a]",
+      "pathname": "/"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "[::a]", "groups": {} },
+      "pathname": { "input": "/", "groups": {} }
+    }
+  },
+  {
     "pattern": [ "https://foo{{@}}example.com" ],
     "inputs": [ "https://foo@example.com" ],
     "expected_obj": "error"
