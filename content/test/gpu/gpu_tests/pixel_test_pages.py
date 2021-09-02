@@ -131,6 +131,7 @@ class PixelTestPages(object):
     webgpu_args = [
         cba.ENABLE_UNSAFE_WEBGPU, cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
     ]
+    webgpu_args_compiler = webgpu_args + ['--disable-metal-shader-cache']
 
     # The optimizer script spat out pretty similar values for most MP4 tests, so
     # combine into a single set of parameters.
@@ -368,7 +369,7 @@ class PixelTestPages(object):
         PixelTestPage('pixel_webgpu_copy_image.html',
                       base_name + '_WebGPUToDataURL',
                       test_rect=[0, 0, 400, 300],
-                      browser_args=webgpu_args),
+                      browser_args=webgpu_args_compiler),
         PixelTestPage('pixel_webgpu_cached_swap_buffer_invalidated.html',
                       base_name +
                       '_WebGPUCachedSwapBufferInvalidatedShouldBeBlank',
