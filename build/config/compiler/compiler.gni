@@ -24,6 +24,10 @@ if (is_apple) {
   import("//build/config/apple/symbols.gni")
 }
 
+if (is_ios) {
+  import("//ios/features.gni")
+}
+
 declare_args() {
   # Default to warnings as errors for default workflow, where we catch
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
@@ -204,9 +208,11 @@ declare_args() {
 
 declare_args() {
   # Set to true to use lld, the LLVM linker.
-  # In late bring-up on macOS (see docs/mac_lld.md). Not used on iOS.
+  # In late bring-up on macOS (see docs/mac_lld.md).
+  # Tentatively used on iOS, except in cronet builds (cronet still supports 32-bit builds, which
+  # lld doesn't support).
   # The default linker everywhere else.
-  use_lld = is_clang && !is_ios && !(is_mac && is_gpu_fyi_bot)
+  use_lld = is_clang && !(is_ios && is_cronet_build) &&!(is_mac && is_gpu_fyi_bot)
 }
 
 declare_args() {
