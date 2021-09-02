@@ -92,6 +92,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) override;
   bool IsIncognitoModeAvailable() const override;
+  bool IsSharingHubAvailable() const override;
   void OnAutocompleteControllerResultReady(
       AutocompleteController* controller) override;
 

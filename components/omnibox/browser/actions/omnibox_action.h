@@ -52,6 +52,10 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // Actions such as Pedals may require various capabilities from an embedding
   // client context and this interface can be used to invert the dependency.
   struct Client {
+    // Opens the Sharing Hub as if the "Share this page" airplane button
+    // were clicked.
+    virtual void OpenSharingHub() = 0;
+
     // Opens and shows a new incognito browser window.
     virtual void NewIncognitoWindow() = 0;
 

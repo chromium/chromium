@@ -173,6 +173,10 @@ class OmniboxClient : public OmniboxAction::Client {
 
   // OmniboxAction::Client:
 
+  // Opens the Sharing Hub as if the "Share this page" airplane button
+  // were clicked.
+  void OpenSharingHub() override {}
+
   // Opens and shows a new incognito browser window.
   void NewIncognitoWindow() override {}
 

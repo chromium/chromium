@@ -190,6 +190,9 @@ class AutocompleteProviderClient {
 
   // Returns whether user is currently allowed to enter incognito mode.
   virtual bool IsIncognitoModeAvailable() const;
+
+  // Returns true if the sharing hub command is enabled.
+  virtual bool IsSharingHubAvailable() const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_PROVIDER_CLIENT_H_

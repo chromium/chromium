@@ -1202,6 +1202,16 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
                          IDS_ACC_OMNIBOX_PEDAL_SHARE_THIS_PAGE),
             GURL()) {}
 
+  bool IsReadyToTrigger(
+      const AutocompleteInput& input,
+      const AutocompleteProviderClient& client) const override {
+    return client.IsSharingHubAvailable();
+  }
+
+  void Execute(ExecutionContext& context) const override {
+    context.client_.OpenSharingHub();
+  }
+
  protected:
   ~OmniboxPedalShareThisPage() override = default;
 };

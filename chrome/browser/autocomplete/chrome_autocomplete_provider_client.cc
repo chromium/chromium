@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/document_suggestions_service_factory.h"
 #include "chrome/browser/autocomplete/in_memory_url_index_factory.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/history/core/browser/history_service.h"
@@ -511,6 +513,21 @@ bool ChromeAutocompleteProviderClient::IsIncognitoModeAvailable() const {
   }
   return IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
          IncognitoModePrefs::DISABLED;
+}
+
+bool ChromeAutocompleteProviderClient::IsSharingHubAvailable() const {
+#if !defined(OS_ANDROID)
+  // This logic is gated only to avoid requiring chrome/browser/ui/browser.h
+  // (see includes at top, some also gated on !defined(OS_ANDROID)) for
+  // a feature that is currently only for desktop platforms. If pedals are
+  // implemented on Android, or if browser.h gets included for some other
+  // reason, we can use this implementation without the #if directive.
+  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  if (browser) {
+    return browser->command_controller()->IsCommandEnabled(IDC_SHARING_HUB);
+  }
+#endif  // !defined(OS_ANDROID)
+  return false;
 }
 
 void ChromeAutocompleteProviderClient::OnAutocompleteControllerResultReady(
