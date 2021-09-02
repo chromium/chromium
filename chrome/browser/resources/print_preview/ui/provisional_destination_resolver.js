@@ -12,9 +12,9 @@ import '../strings.m.js';
 import './throbber_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
 import {DestinationStore} from '../data/destination_store.js';
@@ -40,39 +40,60 @@ const ResolverState = {
   DONE: 'DONE'
 };
 
-Polymer({
-  is: 'print-preview-provisional-destination-resolver',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PrintPreviewProvisionalDestinationResolverElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+class PrintPreviewProvisionalDestinationResolverElement extends
+    PrintPreviewProvisionalDestinationResolverElementBase {
+  static get is() {
+    return 'print-preview-provisional-destination-resolver';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @type {?DestinationStore} */
-    destinationStore: Object,
+  static get properties() {
+    return {
+      /** @type {?DestinationStore} */
+      destinationStore: Object,
 
-    /** @private {?Destination} */
-    destination_: {
-      type: Object,
-      value: null,
-    },
+      /** @private {?Destination} */
+      destination_: {
+        type: Object,
+        value: null,
+      },
 
-    /** @private {!ResolverState} */
-    state_: {
-      type: String,
-      value: ResolverState.INITIAL,
-    },
-  },
+      /** @private {!ResolverState} */
+      state_: {
+        type: String,
+        value: ResolverState.INITIAL,
+      },
+    };
+  }
 
-  listeners: {
-    'keydown': 'onKeydown_',
-  },
+  constructor() {
+    super();
 
-  /**
-   * Promise resolver for promise returned by {@code this.resolveDestination}.
-   * @private {?PromiseResolver<!Destination>}
-   */
-  promiseResolver_: null,
+    /**
+     * Promise resolver for promise returned by {@code this.resolveDestination}.
+     * @private {?PromiseResolver<!Destination>}
+     */
+    this.promiseResolver_ = null;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    this.addEventListener(
+        'keydown', e => this.onKeydown_(/** @type {!KeyboardEvent} */ (e)));
+  }
 
   /**
    * @param {!Destination} destination The destination this
@@ -84,7 +105,7 @@ Polymer({
     this.state_ = ResolverState.ACTIVE;
     this.destination_ = destination;
     this.$.dialog.showModal();
-    const icon = this.$$('.extension-icon');
+    const icon = this.shadowRoot.querySelector('.extension-icon');
     icon.style.backgroundImage = '-webkit-image-set(' +
         'url(chrome://extension-icon/' + this.destination_.extensionId +
         '/24/1) 1x,' +
@@ -92,7 +113,7 @@ Polymer({
         '/48/1) 2x)';
     this.promiseResolver_ = new PromiseResolver();
     return this.promiseResolver_.promise;
-  },
+  }
 
   /**
    * Handler for click on OK button. It attempts to resolve the destination.
@@ -129,7 +150,7 @@ Polymer({
                 this.state_ = ResolverState.ERROR;
               }
             });
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e Event containing the key
@@ -141,18 +162,18 @@ Polymer({
       this.$.dialog.cancel();
       e.preventDefault();
     }
-  },
+  }
 
   /** @private */
   onCancelClick_() {
     this.$.dialog.cancel();
-  },
+  }
 
   /** @private */
   onCancel_() {
     this.promiseResolver_.reject();
     this.state_ = ResolverState.INITIAL;
-  },
+  }
 
   /**
    * @return {string} The USB permission message to display.
@@ -164,7 +185,7 @@ Polymer({
             'resolveExtensionUSBErrorMessage',
             this.destination_.extensionName) :
         this.i18n('resolveExtensionUSBPermissionMessage');
-  },
+  }
 
   /**
    * @return {boolean} Whether the resolver is in the ERROR state.
@@ -172,7 +193,7 @@ Polymer({
    */
   isInErrorState_() {
     return this.state_ === ResolverState.ERROR;
-  },
+  }
 
   /**
    * @return {boolean} Whether the resolver is in the ACTIVE state.
@@ -180,7 +201,7 @@ Polymer({
    */
   isInActiveState_() {
     return this.state_ === ResolverState.ACTIVE;
-  },
+  }
 
   /**
    * @return {string} 'throbber' if the resolver is in the GRANTING_PERMISSION
@@ -188,5 +209,9 @@ Polymer({
    */
   getThrobberClass_() {
     return this.state_ === ResolverState.GRANTING_PERMISSION ? 'throbber' : '';
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewProvisionalDestinationResolverElement.is,
+    PrintPreviewProvisionalDestinationResolverElement);

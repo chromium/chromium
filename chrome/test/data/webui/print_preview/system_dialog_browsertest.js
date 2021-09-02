@@ -105,7 +105,8 @@ suite(system_dialog_browsertest.suiteName, function() {
 
               // Set an invalid input.
               const scalingSettingsInput =
-                  scalingSettings.$$('print-preview-number-settings-section')
+                  scalingSettings.shadowRoot
+                      .querySelector('print-preview-number-settings-section')
                       .$.userValue.inputElement;
               scalingSettingsInput.value = '0';
               scalingSettingsInput.dispatchEvent(

@@ -8,92 +8,114 @@ import './number_settings_section.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScalingType} from '../data/scaling.js';
 
-import {SelectBehavior} from './select_behavior.js';
-import {SettingsBehavior} from './settings_behavior.js';
+import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {SettingsBehavior, SettingsBehaviorInterface} from './settings_behavior.js';
 
 /*
  * Fit to page and fit to paper options will only be displayed for PDF
  * documents. If the custom option is selected, an additional input field will
  * appear to enter the custom scale factor.
  */
-Polymer({
-  is: 'print-preview-scaling-settings',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {SelectBehaviorInterface}
+ * @implements {SettingsBehaviorInterface}
+ */
+const PrintPreviewScalingSettingsElementBase =
+    mixinBehaviors([SettingsBehavior, SelectBehavior], PolymerElement);
 
-  behaviors: [SettingsBehavior, SelectBehavior],
+/** @polymer */
+export class PrintPreviewScalingSettingsElement extends
+    PrintPreviewScalingSettingsElementBase {
+  static get is() {
+    return 'print-preview-scaling-settings';
+  }
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      observer: 'onDisabledChanged_',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    isPdf: Boolean,
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        observer: 'onDisabledChanged_',
+      },
+
+      isPdf: Boolean,
+
+      /** @private {string} */
+      currentValue_: {
+        type: String,
+        observer: 'onInputChanged_',
+      },
+
+      /** @private {boolean} */
+      customSelected_: {
+        type: Boolean,
+        computed: 'computeCustomSelected_(settingKey_, ' +
+            'settings.scalingType.*, settings.scalingTypePdf.*)',
+      },
+
+      /** @private {boolean} */
+      inputValid_: Boolean,
+
+      /** @private {boolean} */
+      dropdownDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {string} */
+      settingKey_: {
+        type: String,
+        computed: 'computeSettingKey_(isPdf)',
+      },
+
+      /** Mirroring the enum so that it can be used from HTML bindings. */
+      ScalingValue: {
+        type: Object,
+        value: ScalingType,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onScalingTypeSettingChanged_(settingKey_, settings.scalingType.value, ' +
+          'settings.scalingTypePdf.value)',
+      'onScalingSettingChanged_(settings.scaling.value)',
+    ];
+  }
+
+  constructor() {
+    super();
 
     /** @private {string} */
-    currentValue_: {
-      type: String,
-      observer: 'onInputChanged_',
-    },
+    this.lastValidScaling_ = '';
 
-    /** @private {boolean} */
-    customSelected_: {
-      type: Boolean,
-      computed: 'computeCustomSelected_(settingKey_, ' +
-          'settings.scalingType.*, settings.scalingTypePdf.*)',
-    },
+    /**
+     * Whether the custom scaling setting has been set to true, but the custom
+     * input has not yet been expanded. Used to determine whether changes in the
+     * dropdown are due to user input or sticky settings.
+     * @private {boolean}
+     */
+    this.customScalingSettingSet_ = false;
 
-    /** @private {boolean} */
-    inputValid_: Boolean,
-
-    /** @private {boolean} */
-    dropdownDisabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {string} */
-    settingKey_: {
-      type: String,
-      computed: 'computeSettingKey_(isPdf)',
-    },
-
-    /** Mirroring the enum so that it can be used from HTML bindings. */
-    ScalingValue: {
-      type: Object,
-      value: ScalingType,
-    },
-  },
-
-  observers: [
-    'onScalingTypeSettingChanged_(settingKey_, settings.scalingType.value, ' +
-        'settings.scalingTypePdf.value)',
-    'onScalingSettingChanged_(settings.scaling.value)',
-  ],
-
-  /** @private {string} */
-  lastValidScaling_: '',
-
-  /**
-   * Whether the custom scaling setting has been set to true, but the custom
-   * input has not yet been expanded. Used to determine whether changes in the
-   * dropdown are due to user input or sticky settings.
-   * @private {boolean}
-   */
-  customScalingSettingSet_: false,
-
-  /**
-   * Whether the user has selected custom scaling in the dropdown, but the
-   * custom input has not yet been expanded. Used to determine whether to
-   * auto-focus the custom input.
-   * @private {boolean}
-   */
-  userSelectedCustomScaling_: false,
+    /**
+     * Whether the user has selected custom scaling in the dropdown, but the
+     * custom input has not yet been expanded. Used to determine whether to
+     * auto-focus the custom input.
+     * @private {boolean}
+     */
+    this.userSelectedCustomScaling_ = false;
+  }
 
   onProcessSelectChange(value) {
     const isCustom = value === ScalingType.CUSTOM.toString();
@@ -116,7 +138,7 @@ Polymer({
     if (isCustom) {
       this.setSetting('scaling', this.currentValue_);
     }
-  },
+  }
 
   /** @private */
   updateScalingToValid_() {
@@ -125,7 +147,7 @@ Polymer({
     } else {
       this.lastValidScaling_ = this.currentValue_;
     }
-  },
+  }
 
   /**
    * Updates the input string when scaling setting is set.
@@ -135,7 +157,7 @@ Polymer({
     const value = /** @type {string} */ (this.getSetting('scaling').value);
     this.lastValidScaling_ = value;
     this.currentValue_ = value;
-  },
+  }
 
   /** @private */
   onScalingTypeSettingChanged_() {
@@ -151,7 +173,7 @@ Polymer({
       this.customScalingSettingSet_ = true;
     }
     this.selectedValue = value.toString();
-  },
+  }
 
   /**
    * Updates scaling settings based on the validity and current value of the
@@ -165,12 +187,12 @@ Polymer({
         this.currentValue_ !== this.getSettingValue('scaling')) {
       this.setSetting('scaling', this.currentValue_);
     }
-  },
+  }
 
   /** @private */
   onDisabledChanged_() {
     this.dropdownDisabled_ = this.disabled && this.inputValid_;
-  },
+  }
 
   /**
    * @return {boolean} Whether the input should be disabled.
@@ -178,7 +200,7 @@ Polymer({
    */
   inputDisabled_() {
     return !this.customSelected_ || this.dropdownDisabled_;
-  },
+  }
 
   /**
    * @return {boolean} Whether the custom scaling option is selected.
@@ -187,7 +209,7 @@ Polymer({
   computeCustomSelected_() {
     return !!this.settingKey_ &&
         this.getSettingValue(this.settingKey_) === ScalingType.CUSTOM;
-  },
+  }
 
   /**
    * @return {string} The key of the appropriate scaling setting.
@@ -195,14 +217,19 @@ Polymer({
    */
   computeSettingKey_() {
     return this.isPdf ? 'scalingTypePdf' : 'scalingType';
-  },
+  }
 
   /** @private */
   onCollapseChanged_() {
     if (this.customSelected_ && this.userSelectedCustomScaling_) {
-      this.$$('print-preview-number-settings-section').getInput().focus();
+      this.shadowRoot.querySelector('print-preview-number-settings-section')
+          .getInput()
+          .focus();
     }
     this.customScalingSettingSet_ = false;
     this.userSelectedCustomScaling_ = false;
-  },
-});
+  }
+}
+
+customElements.define(
+    PrintPreviewScalingSettingsElement.is, PrintPreviewScalingSettingsElement);

@@ -314,7 +314,8 @@ suite(invalid_settings_browsertest.suiteName, function() {
         const scalingSettings =
             /** @type {!PrintPreviewNumberSettingsSectionElement} */ (
                 sidebar.$$('print-preview-scaling-settings')
-                    .$$('print-preview-number-settings-section'));
+                    .shadowRoot.querySelector(
+                        'print-preview-number-settings-section'));
         const layoutSettings =
             /** @type {!PrintPreviewLayoutSettingsElement} */ (
                 sidebar.$$('print-preview-layout-settings'));

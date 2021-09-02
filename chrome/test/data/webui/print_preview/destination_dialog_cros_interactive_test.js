@@ -75,7 +75,8 @@ suite(destination_dialog_cros_interactive_test.suiteName, function() {
     return nativeLayer.whenCalled('getPrinterCapabilities').then(() => {
       // Retrieve a reference to dialog
       dialog = /** @type {!PrintPreviewDestinationDialogCrosElement} */ (
-          destinationSettings.$$('#destinationDialog').get());
+          destinationSettings.shadowRoot.querySelector('#destinationDialog')
+              .get());
     });
   });
 

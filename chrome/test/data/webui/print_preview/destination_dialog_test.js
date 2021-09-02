@@ -99,7 +99,8 @@ suite(destination_dialog_test.suiteName, function() {
     const printerItems =
         list.shadowRoot.querySelectorAll('print-preview-destination-list-item');
 
-    const getDisplayedName = item => item.$$('.name').textContent;
+    const getDisplayedName = item =>
+        item.shadowRoot.querySelector('.name').textContent;
     // 5 printers + Save as PDF
     assertEquals(6, printerItems.length);
     // Save as PDF shows up first.
@@ -108,7 +109,9 @@ suite(destination_dialog_test.suiteName, function() {
         getDisplayedName(printerItems[0]));
     assertEquals(
         'rgb(32, 33, 36)',
-        window.getComputedStyle(printerItems[0].$$('.name')).color);
+        window
+            .getComputedStyle(printerItems[0].shadowRoot.querySelector('.name'))
+            .color);
     Array.from(printerItems).slice(1, 5).forEach((item, index) => {
       assertEquals(destinations[index].displayName, getDisplayedName(item));
     });
@@ -137,7 +140,7 @@ suite(destination_dialog_test.suiteName, function() {
         flush();
         provisionalDialog = dialog.shadowRoot.querySelector(
             'print-preview-provisional-destination-resolver');
-        assertFalse(provisionalDialog.$$('#dialog').open);
+        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
         const list =
             dialog.shadowRoot.querySelector('print-preview-destination-list');
         const printerItems = list.shadowRoot.querySelectorAll(
@@ -153,7 +156,7 @@ suite(destination_dialog_test.suiteName, function() {
         // Click the provisional destination to select it.
         provisionalItem.click();
         flush();
-        assertTrue(provisionalDialog.$$('#dialog').open);
+        assertTrue(provisionalDialog.shadowRoot.querySelector('#dialog').open);
 
         // Send escape key on provisionalDialog. Destinations dialog should
         // not close.
@@ -162,7 +165,7 @@ suite(destination_dialog_test.suiteName, function() {
         flush();
         await whenClosed;
 
-        assertFalse(provisionalDialog.$$('#dialog').open);
+        assertFalse(provisionalDialog.shadowRoot.querySelector('#dialog').open);
         assertTrue(dialog.shadowRoot.querySelector('#dialog').open);
       });
 

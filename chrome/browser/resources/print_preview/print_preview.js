@@ -71,5 +71,6 @@ export {PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
 export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
+export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectBehavior} from './ui/select_behavior.js';
 export {SelectOption} from './ui/settings_select.js';

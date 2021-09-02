@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewModelElement, ScalingType} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, PrintPreviewScalingSettingsElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {selectOption} from 'chrome://test/print_preview/print_preview_test_utils.js';
@@ -41,10 +41,13 @@ suite(scaling_settings_interactive_test.suiteName, function() {
       assert(scaling_settings_interactive_test.TestNames.AutoFocusInput),
       async () => {
         const scalingInput =
-            scalingSection.$$('print-preview-number-settings-section')
+            scalingSection.shadowRoot
+                .querySelector('print-preview-number-settings-section')
                 .$.userValue.inputElement;
-        const scalingDropdown = scalingSection.$$('.md-select');
-        const collapse = scalingSection.$$('iron-collapse');
+        const scalingDropdown =
+            scalingSection.shadowRoot.querySelector('.md-select');
+        const collapse =
+            scalingSection.shadowRoot.querySelector('iron-collapse');
 
         assertFalse(collapse.opened);
         assertEquals(
@@ -68,7 +71,8 @@ suite(scaling_settings_interactive_test.suiteName, function() {
         ]);
         assertEquals(
             ScalingType.DEFAULT, scalingSection.getSettingValue('scalingType'));
-        assertFalse(scalingSection.$$('iron-collapse').opened);
+        assertFalse(
+            scalingSection.shadowRoot.querySelector('iron-collapse').opened);
 
         // Set custom in JS, which happens when we set the sticky settings. This
         // should not autofocus the input.
