@@ -13,7 +13,6 @@
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"

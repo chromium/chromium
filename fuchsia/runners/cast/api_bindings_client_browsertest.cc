@@ -10,12 +10,12 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
-#include "fuchsia/base/test/result_receiver.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/test/frame_for_test.h"
 #include "fuchsia/engine/test/web_engine_browser_test.h"
@@ -134,16 +134,14 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
                     });
 
   // Handle the ping response.
-  base::RunLoop response_loop;
-  cr_fuchsia::ResultReceiver<fuchsia::web::WebMessage> response(
-      response_loop.QuitClosure());
+  base::test::TestFuture<fuchsia::web::WebMessage> response;
   port->ReceiveMessage(
-      cr_fuchsia::CallbackToFitFunction(response.GetReceiveCallback()));
-  response_loop.Run();
+      cr_fuchsia::CallbackToFitFunction(response.GetCallback()));
+  ASSERT_TRUE(response.Wait());
 
   std::string response_string;
   EXPECT_TRUE(
-      cr_fuchsia::StringFromMemBuffer(response->data(), &response_string));
+      cr_fuchsia::StringFromMemBuffer(response.Get().data(), &response_string));
   EXPECT_EQ("ack ping", response_string);
 
   // Ensure that we've received acks for all messages.
