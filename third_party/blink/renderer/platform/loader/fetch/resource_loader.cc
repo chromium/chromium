@@ -390,9 +390,14 @@ void ResourceLoader::CodeCacheRequest::MaybeSendCachedCode(
   auto ClearCachedCodeIfPresent = [&]() {
     if (data.size() != 0) {
       auto cache_type = resource_loader->GetCodeCacheType();
-      // If there is no valid code_cache_loader_, we wouldn't fetch cached code
-      // and hence we shouldn't reach here.
-      DCHECK(code_cache_loader_);
+      // TODO(crbug/1245526): Return early if we don't have a valid
+      // code_cache_loader_. This shouldn't happen but looks like we are hitting
+      // this case sometimes. This is a temporary fix to see if it fixes crashes
+      // and we should investigate why the code_cache_loader_ isn't valid here
+      // if this fixes the crashes. It is OK to return early here since the
+      // entry can be cleared on the next fetch.
+      if (!code_cache_loader_)
+        return;
       code_cache_loader_->ClearCodeCacheEntry(cache_type, url_);
     }
   };
