@@ -296,9 +296,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
     return;
 
   if (default_search_controlled_by_policy_) {
-    bool disabled_by_policy = false;
-    if (url_dict->GetBoolean(kDisabledByPolicy, &disabled_by_policy) &&
-        disabled_by_policy)
+    if (url_dict->FindBoolKey(kDisabledByPolicy).value_or(false))
       return;
   }
 

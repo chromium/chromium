@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/search_engines/template_url_id.h"
 #include "url/gurl.h"
-
-namespace base {
-class ListValue;
-}
 
 // The data for the TemplateURL.  Separating this into its own class allows most
 // users to do SSA-style usage of TemplateURL: construct a TemplateURLData with
@@ -44,7 +41,7 @@ struct TemplateURLData {
                   base::StringPiece image_url_post_params,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
-                  const base::ListValue& alternate_urls_list,
+                  const base::Value& alternate_urls_list,
                   bool preconnect_to_search_url,
                   int prepopulate_id);
 

@@ -27,63 +27,107 @@ base::StringPiece ToStringPiece(const char* str) {
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     const base::DictionaryValue& dict) {
-  std::string search_url;
-  std::u16string keyword;
-  std::u16string short_name;
-  dict.GetString(DefaultSearchManager::kURL, &search_url);
-  dict.GetString(DefaultSearchManager::kKeyword, &keyword);
-  dict.GetString(DefaultSearchManager::kShortName, &short_name);
+  const std::string* search_url =
+      dict.FindStringKey(DefaultSearchManager::kURL);
+  const std::string* keyword =
+      dict.FindStringKey(DefaultSearchManager::kKeyword);
+  const std::string* short_name =
+      dict.FindStringKey(DefaultSearchManager::kShortName);
   // Check required TemplateURLData fields first.
-  if (search_url.empty() || keyword.empty() || short_name.empty())
+  if (!search_url || !keyword || !short_name) {
     return nullptr;
+  }
 
   auto result = std::make_unique<TemplateURLData>();
-  result->SetKeyword(keyword);
-  result->SetURL(search_url);
+  result->SetKeyword(base::UTF8ToUTF16(*keyword));
+  result->SetURL(*search_url);
 
-  std::string id;
-  dict.GetString(DefaultSearchManager::kID, &id);
-  base::StringToInt64(id, &result->id);
+  const std::string* id = dict.FindStringKey(DefaultSearchManager::kID);
+  if (id) {
+    base::StringToInt64(*id, &result->id);
+  }
 
-  result->SetShortName(short_name);
-  dict.GetInteger(DefaultSearchManager::kPrepopulateID,
-                  &result->prepopulate_id);
-  dict.GetString(DefaultSearchManager::kSyncGUID, &result->sync_guid);
-  dict.GetString(DefaultSearchManager::kSuggestionsURL,
-                 &result->suggestions_url);
+  const std::string* string_value = nullptr;
 
-  dict.GetString(DefaultSearchManager::kImageURL, &result->image_url);
-  dict.GetString(DefaultSearchManager::kNewTabURL, &result->new_tab_url);
-  dict.GetString(DefaultSearchManager::kContextualSearchURL,
-                 &result->contextual_search_url);
-  std::string favicon_url;
-  std::string originating_url;
-  std::string logo_url;
-  std::string doodle_url;
-  dict.GetString(DefaultSearchManager::kFaviconURL, &favicon_url);
-  dict.GetString(DefaultSearchManager::kOriginatingURL, &originating_url);
-  dict.GetString(DefaultSearchManager::kLogoURL, &logo_url);
-  dict.GetString(DefaultSearchManager::kDoodleURL, &doodle_url);
-  result->favicon_url = GURL(favicon_url);
-  result->originating_url = GURL(originating_url);
-  result->logo_url = GURL(logo_url);
-  result->doodle_url = GURL(doodle_url);
+  result->SetShortName(base::UTF8ToUTF16(*short_name));
+  result->prepopulate_id = dict.FindIntKey(DefaultSearchManager::kPrepopulateID)
+                               .value_or(result->prepopulate_id);
+  string_value = dict.FindStringKey(DefaultSearchManager::kSyncGUID);
+  if (string_value) {
+    result->sync_guid = *string_value;
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kSuggestionsURL);
+  if (string_value) {
+    result->suggestions_url = *string_value;
+  }
 
-  dict.GetString(DefaultSearchManager::kSearchURLPostParams,
-                 &result->search_url_post_params);
-  dict.GetString(DefaultSearchManager::kSuggestionsURLPostParams,
-                 &result->suggestions_url_post_params);
-  dict.GetString(DefaultSearchManager::kImageURLPostParams,
-                 &result->image_url_post_params);
-  dict.GetBoolean(DefaultSearchManager::kSafeForAutoReplace,
-                  &result->safe_for_autoreplace);
+  string_value = dict.FindStringKey(DefaultSearchManager::kImageURL);
+  if (string_value) {
+    result->image_url = *string_value;
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kNewTabURL);
+  if (string_value) {
+    result->new_tab_url = *string_value;
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kContextualSearchURL);
+  if (string_value) {
+    result->contextual_search_url = *string_value;
+  }
+
+  string_value = dict.FindStringKey(DefaultSearchManager::kFaviconURL);
+  if (string_value) {
+    result->favicon_url = GURL(*string_value);
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kOriginatingURL);
+  if (string_value) {
+    result->originating_url = GURL(*string_value);
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kLogoURL);
+  if (string_value) {
+    result->logo_url = GURL(*string_value);
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kDoodleURL);
+  if (string_value) {
+    result->doodle_url = GURL(*string_value);
+  }
+
+  const std::string* search_url_post_params =
+      dict.FindStringKey(DefaultSearchManager::kSearchURLPostParams);
+  if (search_url_post_params) {
+    result->search_url_post_params = *search_url_post_params;
+  }
+  const std::string* suggestions_url_post_params =
+      dict.FindStringKey(DefaultSearchManager::kSuggestionsURLPostParams);
+  if (suggestions_url_post_params) {
+    result->suggestions_url_post_params = *suggestions_url_post_params;
+  }
+  const std::string* image_url_post_params =
+      dict.FindStringKey(DefaultSearchManager::kImageURLPostParams);
+  if (image_url_post_params) {
+    result->image_url_post_params = *image_url_post_params;
+  }
+  absl::optional<bool> safe_for_autoreplace =
+      dict.FindBoolKey(DefaultSearchManager::kSafeForAutoReplace);
+  if (safe_for_autoreplace) {
+    result->safe_for_autoreplace = *safe_for_autoreplace;
+  }
 
   std::string date_created_str;
   std::string last_modified_str;
   std::string last_visited_str;
-  dict.GetString(DefaultSearchManager::kDateCreated, &date_created_str);
-  dict.GetString(DefaultSearchManager::kLastModified, &last_modified_str);
-  dict.GetString(DefaultSearchManager::kLastVisited, &last_visited_str);
+
+  string_value = dict.FindStringKey(DefaultSearchManager::kDateCreated);
+  if (string_value) {
+    date_created_str = *string_value;
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kLastModified);
+  if (string_value) {
+    last_modified_str = *string_value;
+  }
+  string_value = dict.FindStringKey(DefaultSearchManager::kLastVisited);
+  if (string_value) {
+    last_visited_str = *string_value;
+  }
 
   int64_t date_created = 0;
   if (base::StringToInt64(date_created_str, &date_created))
@@ -97,7 +141,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   if (base::StringToInt64(last_visited_str, &last_visited))
     result->last_visited = base::Time::FromInternalValue(last_visited);
 
-  dict.GetInteger(DefaultSearchManager::kUsageCount, &result->usage_count);
+  result->usage_count = dict.FindIntKey(DefaultSearchManager::kUsageCount)
+                            .value_or(result->usage_count);
 
   const base::ListValue* alternate_urls = nullptr;
   if (dict.GetList(DefaultSearchManager::kAlternateURLs, &alternate_urls)) {
@@ -116,59 +161,64 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
     }
   }
 
-  dict.GetBoolean(DefaultSearchManager::kCreatedByPolicy,
-                  &result->created_by_policy);
-  dict.GetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
-                  &result->created_from_play_api);
-  dict.GetBoolean(DefaultSearchManager::kPreconnectToSearchUrl,
-                  &result->preconnect_to_search_url);
+  result->created_by_policy =
+      dict.FindBoolKey(DefaultSearchManager::kCreatedByPolicy)
+          .value_or(result->created_by_policy);
+  result->created_from_play_api =
+      dict.FindBoolKey(DefaultSearchManager::kCreatedFromPlayAPI)
+          .value_or(result->created_from_play_api);
+  result->preconnect_to_search_url =
+      dict.FindBoolKey(DefaultSearchManager::kPreconnectToSearchUrl)
+          .value_or(result->preconnect_to_search_url);
   return result;
 }
 
 std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
     const TemplateURLData& data) {
   auto url_dict = std::make_unique<base::DictionaryValue>();
-  url_dict->SetString(DefaultSearchManager::kID, base::NumberToString(data.id));
-  url_dict->SetString(DefaultSearchManager::kShortName, data.short_name());
-  url_dict->SetString(DefaultSearchManager::kKeyword, data.keyword());
-  url_dict->SetInteger(DefaultSearchManager::kPrepopulateID,
-                       data.prepopulate_id);
-  url_dict->SetString(DefaultSearchManager::kSyncGUID, data.sync_guid);
+  url_dict->SetStringKey(DefaultSearchManager::kID,
+                         base::NumberToString(data.id));
+  url_dict->SetStringKey(DefaultSearchManager::kShortName, data.short_name());
+  url_dict->SetStringKey(DefaultSearchManager::kKeyword, data.keyword());
+  url_dict->SetIntKey(DefaultSearchManager::kPrepopulateID,
+                      data.prepopulate_id);
+  url_dict->SetStringKey(DefaultSearchManager::kSyncGUID, data.sync_guid);
 
-  url_dict->SetString(DefaultSearchManager::kURL, data.url());
-  url_dict->SetString(DefaultSearchManager::kSuggestionsURL,
-                      data.suggestions_url);
-  url_dict->SetString(DefaultSearchManager::kImageURL, data.image_url);
-  url_dict->SetString(DefaultSearchManager::kNewTabURL, data.new_tab_url);
-  url_dict->SetString(DefaultSearchManager::kContextualSearchURL,
-                      data.contextual_search_url);
-  url_dict->SetString(DefaultSearchManager::kFaviconURL,
-                      data.favicon_url.spec());
-  url_dict->SetString(DefaultSearchManager::kOriginatingURL,
-                      data.originating_url.spec());
-  url_dict->SetString(DefaultSearchManager::kLogoURL, data.logo_url.spec());
-  url_dict->SetString(DefaultSearchManager::kDoodleURL, data.doodle_url.spec());
+  url_dict->SetStringKey(DefaultSearchManager::kURL, data.url());
+  url_dict->SetStringKey(DefaultSearchManager::kSuggestionsURL,
+                         data.suggestions_url);
+  url_dict->SetStringKey(DefaultSearchManager::kImageURL, data.image_url);
+  url_dict->SetStringKey(DefaultSearchManager::kNewTabURL, data.new_tab_url);
+  url_dict->SetStringKey(DefaultSearchManager::kContextualSearchURL,
+                         data.contextual_search_url);
+  url_dict->SetStringKey(DefaultSearchManager::kFaviconURL,
+                         data.favicon_url.spec());
+  url_dict->SetStringKey(DefaultSearchManager::kOriginatingURL,
+                         data.originating_url.spec());
+  url_dict->SetStringKey(DefaultSearchManager::kLogoURL, data.logo_url.spec());
+  url_dict->SetStringKey(DefaultSearchManager::kDoodleURL,
+                         data.doodle_url.spec());
 
-  url_dict->SetString(DefaultSearchManager::kSearchURLPostParams,
-                      data.search_url_post_params);
-  url_dict->SetString(DefaultSearchManager::kSuggestionsURLPostParams,
-                      data.suggestions_url_post_params);
-  url_dict->SetString(DefaultSearchManager::kImageURLPostParams,
-                      data.image_url_post_params);
+  url_dict->SetStringKey(DefaultSearchManager::kSearchURLPostParams,
+                         data.search_url_post_params);
+  url_dict->SetStringKey(DefaultSearchManager::kSuggestionsURLPostParams,
+                         data.suggestions_url_post_params);
+  url_dict->SetStringKey(DefaultSearchManager::kImageURLPostParams,
+                         data.image_url_post_params);
 
-  url_dict->SetBoolean(DefaultSearchManager::kSafeForAutoReplace,
+  url_dict->SetBoolKey(DefaultSearchManager::kSafeForAutoReplace,
                        data.safe_for_autoreplace);
 
-  url_dict->SetString(
+  url_dict->SetStringKey(
       DefaultSearchManager::kDateCreated,
       base::NumberToString(data.date_created.ToInternalValue()));
-  url_dict->SetString(
+  url_dict->SetStringKey(
       DefaultSearchManager::kLastModified,
       base::NumberToString(data.last_modified.ToInternalValue()));
-  url_dict->SetString(
+  url_dict->SetStringKey(
       DefaultSearchManager::kLastVisited,
       base::NumberToString(data.last_visited.ToInternalValue()));
-  url_dict->SetInteger(DefaultSearchManager::kUsageCount, data.usage_count);
+  url_dict->SetIntKey(DefaultSearchManager::kUsageCount, data.usage_count);
 
   base::ListValue alternate_urls;
   for (const auto& alternate_url : data.alternate_urls)
@@ -182,11 +232,11 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
     encodings.Append(input_encoding);
   url_dict->SetKey(DefaultSearchManager::kInputEncodings, std::move(encodings));
 
-  url_dict->SetBoolean(DefaultSearchManager::kCreatedByPolicy,
+  url_dict->SetBoolKey(DefaultSearchManager::kCreatedByPolicy,
                        data.created_by_policy);
-  url_dict->SetBoolean(DefaultSearchManager::kCreatedFromPlayAPI,
+  url_dict->SetBoolKey(DefaultSearchManager::kCreatedFromPlayAPI,
                        data.created_from_play_api);
-  url_dict->SetBoolean(DefaultSearchManager::kPreconnectToSearchUrl,
+  url_dict->SetBoolKey(DefaultSearchManager::kPreconnectToSearchUrl,
                        data.preconnect_to_search_url);
   return url_dict;
 }
@@ -215,20 +265,45 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     const base::DictionaryValue& engine) {
+  const std::string* string_value = nullptr;
+
   std::u16string name;
   std::u16string keyword;
   std::string search_url;
   std::string favicon_url;
   std::string encoding;
-  int id = -1;
+
+  string_value = engine.FindStringKey("name");
+  if (string_value) {
+    name = base::UTF8ToUTF16(*string_value);
+  }
+  string_value = engine.FindStringKey("keyword");
+  if (string_value) {
+    keyword = base::UTF8ToUTF16(*string_value);
+  }
+  string_value = engine.FindStringKey("search_url");
+  if (string_value) {
+    search_url = *string_value;
+  }
+  string_value = engine.FindStringKey("favicon_url");
+  if (string_value) {
+    favicon_url = *string_value;
+  }
+  string_value = engine.FindStringKey("encoding");
+  if (string_value) {
+    encoding = *string_value;
+  }
+  absl::optional<int> id = engine.FindIntKey("id");
+
   // The following fields are required for each search engine configuration.
-  if (engine.GetString("name", &name) && !name.empty() &&
-      engine.GetString("keyword", &keyword) && !keyword.empty() &&
-      engine.GetString("search_url", &search_url) && !search_url.empty() &&
-      engine.GetString("favicon_url", &favicon_url) && !favicon_url.empty() &&
-      engine.GetString("encoding", &encoding) && !encoding.empty() &&
-      engine.GetInteger("id", &id)) {
+  if (!name.empty() && !keyword.empty() && !search_url.empty() &&
+      !favicon_url.empty() && !encoding.empty() && id.has_value()) {
     // These fields are optional.
+    base::Value empty_list;
+    const base::Value* alternate_urls = engine.FindListKey("alternate_urls");
+    if (!alternate_urls)
+      alternate_urls = &empty_list;
+
     std::string suggest_url;
     std::string image_url;
     std::string new_tab_url;
@@ -239,24 +314,53 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
     std::string suggest_url_post_params;
     std::string image_url_post_params;
     std::string preconnect_to_search_url;
-    base::ListValue empty_list;
-    const base::ListValue* alternate_urls = &empty_list;
-    engine.GetString("suggest_url", &suggest_url);
-    engine.GetString("image_url", &image_url);
-    engine.GetString("new_tab_url", &new_tab_url);
-    engine.GetString("contextual_search_url", &contextual_search_url);
-    engine.GetString("logo_url", &logo_url);
-    engine.GetString("doodle_url", &doodle_url);
-    engine.GetString("search_url_post_params", &search_url_post_params);
-    engine.GetString("suggest_url_post_params", &suggest_url_post_params);
-    engine.GetString("image_url_post_params", &image_url_post_params);
-    engine.GetList("alternate_urls", &alternate_urls);
-    engine.GetString("preconnect_to_search_url", &preconnect_to_search_url);
+
+    string_value = engine.FindStringKey("suggest_url");
+    if (string_value) {
+      suggest_url = *string_value;
+    }
+    string_value = engine.FindStringKey("image_url");
+    if (string_value) {
+      image_url = *string_value;
+    }
+    string_value = engine.FindStringKey("new_tab_url");
+    if (string_value) {
+      new_tab_url = *string_value;
+    }
+    string_value = engine.FindStringKey("contextual_search_url");
+    if (string_value) {
+      contextual_search_url = *string_value;
+    }
+    string_value = engine.FindStringKey("logo_url");
+    if (string_value) {
+      logo_url = *string_value;
+    }
+    string_value = engine.FindStringKey("doodle_url");
+    if (string_value) {
+      doodle_url = *string_value;
+    }
+    string_value = engine.FindStringKey("search_url_post_params");
+    if (string_value) {
+      search_url_post_params = *string_value;
+    }
+    string_value = engine.FindStringKey("suggest_url_post_params");
+    if (string_value) {
+      suggest_url_post_params = *string_value;
+    }
+    string_value = engine.FindStringKey("image_url_post_params");
+    if (string_value) {
+      image_url_post_params = *string_value;
+    }
+    string_value = engine.FindStringKey("preconnect_to_search_url");
+    if (string_value) {
+      preconnect_to_search_url = *string_value;
+    }
+
     return std::make_unique<TemplateURLData>(
         name, keyword, search_url, suggest_url, image_url, new_tab_url,
         contextual_search_url, logo_url, doodle_url, search_url_post_params,
         suggest_url_post_params, image_url_post_params, favicon_url, encoding,
-        *alternate_urls, preconnect_to_search_url.compare("ALLOWED") == 0, id);
+        *alternate_urls, preconnect_to_search_url.compare("ALLOWED") == 0, *id);
   }
   return nullptr;
 }

@@ -260,10 +260,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicy) {
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
   temp->GetAsDictionary(&dictionary);
-  bool disabled = false;
-  EXPECT_TRUE(dictionary->GetBoolean(DefaultSearchManager::kDisabledByPolicy,
-                                     &disabled));
+  absl::optional<bool> disabled =
+      dictionary->FindBoolKey(DefaultSearchManager::kDisabledByPolicy);
   EXPECT_TRUE(disabled);
+  EXPECT_TRUE(disabled.value());
 }
 
 // Check that when the default search enabled policy is not set, all other
