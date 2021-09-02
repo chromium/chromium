@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
@@ -2086,7 +2087,10 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
   return mouse_event_manager_->DispatchMouseEvent(
       EffectiveMouseEventTargetElement(target_element),
       event_type_names::kContextmenu, event,
-      mev.GetHitTestResult().CanvasRegionId(), nullptr, nullptr);
+      mev.GetHitTestResult().CanvasRegionId(), nullptr, nullptr, false,
+      event.id,
+      PointerEventFactory::PointerTypeNameForWebPointPointerType(
+          event.pointer_type));
 }
 
 static bool ShouldShowContextMenuAtSelection(const FrameSelection& selection) {
@@ -2212,6 +2216,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
       gfx::PointF(global_position.X(), global_position.Y()),
       WebPointerProperties::Button::kNoButton, /* clickCount */ 0,
       WebInputEvent::kNoModifiers, base::TimeTicks::Now(), source_type);
+  mouse_event.id = PointerEventFactory::kMouseId;
 
   // TODO(dtapuska): Transition the mouseEvent to be created really in viewport
   // coordinates instead of root frame coordinates.
