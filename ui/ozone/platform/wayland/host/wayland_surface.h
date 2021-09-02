@@ -85,13 +85,10 @@ class WaylandSurface {
   // the contents of the buffer attached to this surface.
   void SetBufferTransform(gfx::OverlayTransform transform);
 
-  // Stores the |buffer_scale| (with respect to the scale factor used by the GPU
+  // Sets the |buffer_scale| (with respect to the scale factor used by the GPU
   // process) for the next submitted buffer. This helps Wayland compositor to
   // determine buffer size in dip (GPU operates in pixels. So, when buffers are
   // created, their requested size is in pixels).
-  // |buffer_scale| will be applied during UpdateBufferDamageRegion either via
-  // wl_surface.set_buffer_scale or via wp_viewport depending on availability of
-  // crop_rect.
   void SetSurfaceBufferScale(int32_t scale);
 
   // Sets the region that is opaque on this surface in physical pixels. This is
