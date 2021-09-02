@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 
 /**
  * Java-counterpart of the native PasswordStoreAndroidBackendBridgeImpl. It's part of the password
- * store backend that forwards password store operations to Google Mobile Services.
+ * store backend that forwards password store operations to a downstream implementation.
  */
 class PasswordStoreAndroidBackendBridgeImpl {
     /**
@@ -28,23 +28,32 @@ class PasswordStoreAndroidBackendBridgeImpl {
     private final PasswordStoreAndroidBackend mBackend;
     private long mNativeBackendBridge;
 
-    private PasswordStoreAndroidBackendBridgeImpl(long nativeBackendBridge) {
+    PasswordStoreAndroidBackendBridgeImpl(
+            long nativeBackendBridge, PasswordStoreAndroidBackend backend) {
         mNativeBackendBridge = nativeBackendBridge;
-        mBackend = new PasswordStoreAndroidBackend();
+        mBackend = backend;
+        assert mBackend != null;
     }
 
     @CalledByNative
-    private static PasswordStoreAndroidBackendBridgeImpl create(long nativeBackendBridge) {
-        return new PasswordStoreAndroidBackendBridgeImpl(nativeBackendBridge);
+    static PasswordStoreAndroidBackendBridgeImpl create(long nativeBackendBridge) {
+        return new PasswordStoreAndroidBackendBridgeImpl(nativeBackendBridge,
+                PasswordStoreAndroidBackendFactory.getInstance().createBackend());
     }
 
     @CalledByNative
-    private void getAllLogins(@TaskId int taskId) {
-        mBackend.getAllLogins(passwords -> {
-            if (mNativeBackendBridge == 0) return;
-            PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
-                    mNativeBackendBridge, taskId, passwords);
-        });
+    void getAllLogins(@TaskId int taskId) {
+        mBackend.getAllLogins(
+                passwords
+                -> {
+                    if (mNativeBackendBridge == 0) return;
+                    PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
+                            mNativeBackendBridge, taskId, passwords);
+                },
+                exception
+                -> {
+                        // TODO(crbug.com/1229654): Clear failed tasks and record failures.
+                });
     }
 
     @CalledByNative
