@@ -17,7 +17,9 @@ sys.path.insert(0,
                 os.path.join(path_util.GetChromiumSrcDir(), 'build', 'fuchsia'))
 from common_args import (AddCommonArgs, AddTargetSpecificArgs, ConfigureLogging,
                          GetDeploymentTargetForArgs)
-from symbolizer import RunSymbolizer
+from run_test_package import SystemLogReader
+from runner_logs import RunnerLogManager
+from symbolizer import BuildIdsPaths
 
 
 def RunTestOnFuchsiaDevice(script_cmd):
@@ -45,14 +47,20 @@ def RunTestOnFuchsiaDevice(script_cmd):
   package_names = ['web_engine_with_webui', 'web_engine_shell']
   web_engine_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia',
                                 'engine')
+  package_paths = map(
+      lambda package_name: os.path.join(web_engine_dir, package_name),
+      package_names)
 
   # Pass all other arguments to the gpu integration tests.
   script_cmd.extend(test_args)
-  listener_process = None
-  symbolizer_process = None
   try:
-    with GetDeploymentTargetForArgs(runner_script_args) as target:
+    with GetDeploymentTargetForArgs(runner_script_args) as target, \
+         SystemLogReader() as system_logger, \
+         RunnerLogManager(runner_script_args.runner_logs_dir,
+                          BuildIdsPaths(package_paths)):
       target.Start()
+      system_logger.Start(target, package_paths,
+                          runner_script_args.system_log_file)
       fuchsia_device_address, fuchsia_ssh_port = target._GetEndpoint()
       script_cmd.extend(
           ['--chromium-output-directory', runner_script_args.out_dir])
@@ -66,17 +74,6 @@ def RunTestOnFuchsiaDevice(script_cmd):
       if runner_script_args.verbose:
         script_cmd.append('-v')
 
-      # Set up logging of WebEngine
-      listener_process = target.RunCommandPiped(['log_listener'],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.STDOUT)
-      build_ids_paths = map(
-          lambda package_name: os.path.join(web_engine_dir, package_name,
-                                            'ids.txt'), package_names)
-      symbolizer_process = RunSymbolizer(
-          listener_process.stdout, open(runner_script_args.system_log_file,
-                                        'w'), build_ids_paths)
-
       # Keep the package repository live while the test runs.
       with target.GetPkgRepo():
         # Install necessary packages on the device.
@@ -89,7 +86,3 @@ def RunTestOnFuchsiaDevice(script_cmd):
   finally:
     if temp_log_file:
       shutil.rmtree(os.path.dirname(runner_script_args.system_log_file))
-    if listener_process:
-      listener_process.kill()
-    if symbolizer_process:
-      symbolizer_process.kill()
