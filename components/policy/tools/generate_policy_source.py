@@ -1581,7 +1581,7 @@ def _GetSupportedChromeOSPolicies(policies, type):
   if (type not in ['user', 'device', 'both']):
     raise RuntimeError('Unsupported type "%s"' % type)
 
-  return filter(partial(_IsSupportedChromeOSPolicy, type), policies)
+  return list(filter(partial(_IsSupportedChromeOSPolicy, type), policies))
 
 
 # Returns the list of all policy.policy_protobuf_type strings from |policies|.
