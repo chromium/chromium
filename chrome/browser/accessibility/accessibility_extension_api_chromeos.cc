@@ -52,6 +52,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_codes.h"
+#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
@@ -278,14 +279,16 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
       modifiers |= ui::EF_SHIFT_DOWN;
   }
 
+  ui::KeyboardCode keyboard_code =
+      static_cast<ui::KeyboardCode>(key_data->key_code);
   std::unique_ptr<ui::KeyEvent> synthetic_key_event =
       std::make_unique<ui::KeyEvent>(
           key_data->type ==
                   accessibility_private::SYNTHETIC_KEYBOARD_EVENT_TYPE_KEYUP
               ? ui::ET_KEY_RELEASED
               : ui::ET_KEY_PRESSED,
-          static_cast<ui::KeyboardCode>(key_data->key_code),
-          static_cast<ui::DomCode>(0), modifiers);
+          keyboard_code, ui::UsLayoutKeyboardCodeToDomCode(keyboard_code),
+          modifiers);
 
   auto* host = ash::GetWindowTreeHostForDisplay(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
