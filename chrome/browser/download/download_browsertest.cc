@@ -1732,41 +1732,58 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
 // the DownloadRequestLimiter state of the WebContents.
 IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
                        DownloadRequestLimiterIsUnaffectedByPrerendering) {
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  const GURL kPrerenderingUrl =
+  const GURL kInitialUrl =
       embedded_test_server()->GetURL("/download_script.html");
+  const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/empty.html");
 
   ui_test_utils::NavigateToURL(browser(), kInitialUrl);
 
-  // Check the initial DownloadRequestLimiter state.
+  // Set the initial DownloadRequestLimiter state to prompt for downloads and
+  // deny all requests. This allows to check whether a prerender resets the
+  // state, since PROMPT_BEFORE_DOWNLOAD is reset by any navigation, while
+  // DOWNLOADS_NOT_ALLOWED require a cross-site navigation to be reset and
+  // those cannot be done in prerendering.
   auto* web_contents = GetWebContents();
-  const DownloadRequestLimiter::TabDownloadState* tab_download_state =
+  DownloadRequestLimiter::TabDownloadState* tab_download_state =
       g_browser_process->download_request_limiter()->GetDownloadState(
           web_contents, true);
   ASSERT_TRUE(tab_download_state);
-  EXPECT_EQ(tab_download_state->download_status(),
-            DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD);
+  tab_download_state->SetDownloadStatusAndNotify(
+      url::Origin::Create(kInitialUrl),
+      DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
+  permissions::PermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DENY_ALL);
 
-  // Create a prerendered page.
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  // Launch a prerendering page.
+  const int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
   content::test::PrerenderHostObserver host_observer(*web_contents, host_id);
 
-  // Try to start the download via Javascript in the prerendered page.
-  ignore_result(
-      content::ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
-                      "startDownload();"));
+  // Check that the tab download state wasn't reset by the initial prerender
+  // navigation (a primary main frame navigation would have reset it as seen in
+  // the test DownloadRequestLimiterTest.ResetOnNavigation).
+  ASSERT_EQ(tab_download_state,
+            g_browser_process->download_request_limiter()->GetDownloadState(
+                web_contents, false));
+  ASSERT_EQ(tab_download_state->download_status(),
+            DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
 
-  // Navigations aren't allowed on prerendered pages.
-  host_observer.WaitForDestroyed();
+  // Attempt a download.
+  OnCanDownloadDecidedObserver can_download_observer;
+  g_browser_process->download_request_limiter()
+      ->SetOnCanDownloadDecidedCallbackForTesting(base::BindRepeating(
+          &OnCanDownloadDecidedObserver::OnCanDownloadDecided,
+          base::Unretained(&can_download_observer)));
+  ASSERT_EQ(true, content::EvalJs(web_contents, "startDownload();"));
+  can_download_observer.WaitForNumberOfDecisions(1);
+  EXPECT_FALSE(can_download_observer.GetDecisions().front());
 
-  // Check that the DownloadRequestLimiter state wasn't modified.
-  const DownloadRequestLimiter::TabDownloadState* new_tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, false);
-  ASSERT_EQ(tab_download_state, new_tab_download_state);
-  EXPECT_EQ(new_tab_download_state->download_status(),
-            DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD);
+  // Check that the download didn't succeed.
+  const base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
+  const base::FilePath file_path(DestinationFile(browser(), file));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(file_path));
 
   EXPECT_TRUE(VerifyNoDownloads());
 }
