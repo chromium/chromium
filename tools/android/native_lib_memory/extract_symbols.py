@@ -18,9 +18,15 @@ import logging
 import multiprocessing
 import os
 import shutil
-import SimpleHTTPServer
-import SocketServer
 import sys
+
+# Python 3 moved these.
+try:
+  import SimpleHTTPServer as server
+  import SocketServer as socketserver
+except ModuleNotFoundError:
+  from http import server
+  import socketserver
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
@@ -291,8 +297,8 @@ def main():
 
   if args.start_server:
     os.chdir(args.output_directory)
-    httpd = SocketServer.TCPServer(
-        ('', args.port), SimpleHTTPServer.SimpleHTTPRequestHandler)
+    httpd = socketserver.TCPServer(('', args.port),
+                                   server.SimpleHTTPRequestHandler)
     logging.warning('Serving on port %d', args.port)
     httpd.serve_forever()
 
