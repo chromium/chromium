@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -628,6 +629,7 @@ void CollectUserDataAction::OnGetUserData(
   delegate_->GetPersonalDataManager()->RemoveObserver(this);
 
   WriteProcessedAction(user_data, user_model);
+  UpdateProfileAndCardUse(user_data);
   DCHECK(
       IsUserDataComplete(*user_data, *user_model, *collect_user_data_options_));
   EndAction(ClientStatus(ACTION_APPLIED));
@@ -1136,7 +1138,6 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
         ->set_card_issuer_network(card_issuer_network);
   }
 
-  std::set<const autofill::AutofillProfile*> profiles_used;
   if (proto().collect_user_data().has_contact_details()) {
     auto contact_details_proto = proto().collect_user_data().contact_details();
     auto* selected_profile = user_data->selected_address(
@@ -1153,32 +1154,7 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
             ->set_payer_email(base::UTF16ToUTF8(
                 selected_profile->GetRawInfo(autofill::EMAIL_ADDRESS)));
       }
-
-      profiles_used.emplace(selected_profile);
     }
-  }
-  if (!proto().collect_user_data().shipping_address_name().empty()) {
-    auto* selected_shipping_address = user_data->selected_address(
-        proto().collect_user_data().shipping_address_name());
-    if (selected_shipping_address != nullptr) {
-      profiles_used.emplace(selected_shipping_address);
-    }
-  }
-  if (!proto().collect_user_data().billing_address_name().empty()) {
-    auto* selected_billing_address = user_data->selected_address(
-        proto().collect_user_data().billing_address_name());
-    if (selected_billing_address != nullptr) {
-      profiles_used.emplace(selected_billing_address);
-    }
-  }
-  if (proto().collect_user_data().request_payment_method()) {
-    auto* selected_card = user_data->selected_card();
-    if (selected_card != nullptr) {
-      delegate_->GetPersonalDataManager()->RecordUseOf(selected_card);
-    }
-  }
-  for (const auto* profile : profiles_used) {
-    delegate_->GetPersonalDataManager()->RecordUseOf(profile);
   }
 
   if (proto().collect_user_data().has_login_details()) {
@@ -1249,6 +1225,44 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
   }
   processed_action_proto_->mutable_collect_user_data_result()
       ->set_shown_to_user(shown_to_user_);
+}
+
+void CollectUserDataAction::UpdateProfileAndCardUse(UserData* user_data) {
+  base::flat_map<std::string, const autofill::AutofillProfile*> profiles_used;
+  if (proto().collect_user_data().has_contact_details()) {
+    auto contact_details_proto = proto().collect_user_data().contact_details();
+    auto* selected_contact_profile = user_data->selected_address(
+        contact_details_proto.contact_details_name());
+    if (selected_contact_profile != nullptr) {
+      profiles_used.emplace(selected_contact_profile->guid(),
+                            selected_contact_profile);
+    }
+  }
+  if (!proto().collect_user_data().shipping_address_name().empty()) {
+    auto* selected_shipping_address = user_data->selected_address(
+        proto().collect_user_data().shipping_address_name());
+    if (selected_shipping_address != nullptr) {
+      profiles_used.emplace(selected_shipping_address->guid(),
+                            selected_shipping_address);
+    }
+  }
+  if (!proto().collect_user_data().billing_address_name().empty()) {
+    auto* selected_billing_address = user_data->selected_address(
+        proto().collect_user_data().billing_address_name());
+    if (selected_billing_address != nullptr) {
+      profiles_used.emplace(selected_billing_address->guid(),
+                            selected_billing_address);
+    }
+  }
+  for (const auto& it : profiles_used) {
+    delegate_->GetPersonalDataManager()->RecordUseOf(it.second);
+  }
+  if (proto().collect_user_data().request_payment_method()) {
+    auto* selected_card = user_data->selected_card();
+    if (selected_card != nullptr) {
+      delegate_->GetPersonalDataManager()->RecordUseOf(selected_card);
+    }
+  }
 }
 
 void CollectUserDataAction::UpdatePersonalDataManagerProfiles(

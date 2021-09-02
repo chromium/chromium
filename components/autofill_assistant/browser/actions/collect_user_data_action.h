@@ -95,6 +95,7 @@ class CollectUserDataAction : public Action,
       autofill::PersonalDataManager* personal_data_manager);
 
   void WriteProcessedAction(UserData* user_data, const UserModel* user_model);
+  void UpdateProfileAndCardUse(UserData* user_data);
 
   // Update user data with the new state from personal data manager.
   void UpdatePersonalDataManagerProfiles(

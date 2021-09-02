@@ -28,18 +28,27 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace autofill_assistant {
 namespace {
+
 const char kFakeUrl[] = "https://www.example.com";
 const char kFakeUsername[] = "user@example.com";
 const char kFakePassword[] = "example_password";
 
-const char kMemoryLocation[] = "billing";
-}  // namespace
+const char kMemoryLocation[] = "address";
 
-namespace autofill_assistant {
-namespace {
+MATCHER_P(MatchingAutofillVariant, guid, "") {
+  if (absl::holds_alternative<const autofill::AutofillProfile*>(arg)) {
+    return absl::get<const autofill::AutofillProfile*>(arg)->guid() == guid;
+  }
+  if (absl::holds_alternative<const autofill::CreditCard*>(arg)) {
+    return absl::get<const autofill::CreditCard*>(arg)->guid() == guid;
+  }
+  return false;
+}
 
 RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
   RequiredDataPiece required_data_piece;
@@ -2376,6 +2385,7 @@ TEST_F(CollectUserDataActionTest, LinkClickWritesPartialUserData) {
 
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
 
+  EXPECT_CALL(mock_personal_data_manager_, RecordUseOf(_)).Times(0);
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(
@@ -2436,6 +2446,66 @@ TEST_F(CollectUserDataActionTest, ConfirmButtonFallbackText) {
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
 
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, RecordAddressUseOnlyOnce) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  auto* contact_details_proto =
+      collect_user_data_proto->mutable_contact_details();
+  contact_details_proto->set_contact_details_name("contact");
+  contact_details_proto->set_request_payer_name(true);
+  contact_details_proto->set_request_payer_email(true);
+  contact_details_proto->set_request_payer_phone(true);
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  collect_user_data_proto->set_request_payment_method(true);
+  collect_user_data_proto->set_billing_address_name("billing_address");
+  collect_user_data_proto->set_shipping_address_name("shipping_address");
+
+  std::string address_guid = base::GenerateGUID();
+  autofill::AutofillProfile address(address_guid, kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &address, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
+      "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+
+  std::string card_guid = base::GenerateGUID();
+  autofill::CreditCard credit_card(card_guid, kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050",
+                                    address.guid());
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            user_model_.SetSelectedAutofillProfile(
+                "contact", std::make_unique<autofill::AutofillProfile>(address),
+                &user_data_);
+            user_model_.SetSelectedCreditCard(
+                std::make_unique<autofill::CreditCard>(credit_card),
+                &user_data_);
+            user_model_.SetSelectedAutofillProfile(
+                "billing_address",
+                std::make_unique<autofill::AutofillProfile>(address),
+                &user_data_);
+            user_model_.SetSelectedAutofillProfile(
+                "shipping_address",
+                std::make_unique<autofill::AutofillProfile>(address),
+                &user_data_);
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  EXPECT_CALL(mock_personal_data_manager_,
+              RecordUseOf(MatchingAutofillVariant(address_guid)))
+      .Times(1);
+  EXPECT_CALL(mock_personal_data_manager_,
+              RecordUseOf(MatchingAutofillVariant(card_guid)))
+      .Times(1);
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
   action.ProcessAction(callback_.Get());
 }
