@@ -36,6 +36,7 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
 
  private:
   // BluetoothDetailedView:
+  views::View* GetAsView() override;
   void SetBluetoothToggleState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,

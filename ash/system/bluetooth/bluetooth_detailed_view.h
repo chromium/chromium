@@ -5,6 +5,9 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DETAILED_VIEW_H_
 
+#include <memory>
+
+#include "ash/ash_export.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -15,15 +18,17 @@ class View;
 namespace ash {
 
 class BluetoothDeviceListItemView;
+class DetailedViewDelegate;
 class TriView;
 
 namespace tray {
 
 // This class defines both the interface used to interact with the detailed
 // Bluetooth page within the quick settings, including the view responsible for
-// containing the device list, and the delegate interface this class uses to
-// propagate user interactions with this class.
-class BluetoothDetailedView {
+// containing the device list. This class includes the declaration for the
+// delegate interface it uses to propagate user interactions, and defines the
+// factory used to create instances of implementations of this class.
+class ASH_EXPORT BluetoothDetailedView {
  public:
   // This class defines the interface that BluetoothDetailedView will use to
   // propagate user interactions.
@@ -39,9 +44,31 @@ class BluetoothDetailedView {
             PairedBluetoothDevicePropertiesPtr& device) = 0;
   };
 
+  class Factory {
+   public:
+    Factory(const Factory&) = delete;
+    const Factory& operator=(const Factory&) = delete;
+    virtual ~Factory() = default;
+
+    static std::unique_ptr<BluetoothDetailedView> Create(
+        DetailedViewDelegate* detailed_view_delegate,
+        Delegate* delegate);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    Factory() = default;
+
+    virtual std::unique_ptr<BluetoothDetailedView> CreateForTesting(
+        Delegate* delegate) = 0;
+  };
+
   BluetoothDetailedView(const BluetoothDetailedView&) = delete;
   BluetoothDetailedView& operator=(const BluetoothDetailedView&) = delete;
   virtual ~BluetoothDetailedView() = default;
+
+  // Returns the implementation casted to views::View*. This may be |nullptr|
+  // when testing, where the implementation might not inherit from views::View.
+  virtual views::View* GetAsView() = 0;
 
   // Updates the detailed view to reflect a Bluetooth state of |enabled|.
   virtual void SetBluetoothToggleState(bool enabled) = 0;

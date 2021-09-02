@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DEVICE_LIST_CONTROLLER_H_
 #define ASH_SYSTEM_BLUETOOTH_BLUETOOTH_DEVICE_LIST_CONTROLLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "ash/ash_export.h"
@@ -15,42 +16,48 @@ namespace tray {
 class BluetoothDetailedView;
 }  // namespace tray
 
-class TriView;
-
-// This class encapsulates the logic to add, modify, and remove devices from the
-// device list of the detailed Bluetooth device page within the quick settings.
+// This class defines the interface used to add, modify, and remove devices from
+// the device list of the detailed Bluetooth device page within the quick
+// settings. This class includes the definition of the factory used to create
+// instances of implementations of this class.
 class ASH_EXPORT BluetoothDeviceListController {
  public:
   using PairedBluetoothDevicePropertiesPtrs = std::vector<
       chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr>;
 
-  explicit BluetoothDeviceListController(
-      tray::BluetoothDetailedView* bluetooth_detailed_view);
+  class Factory {
+   public:
+    Factory(const Factory&) = delete;
+    const Factory& operator=(const Factory&) = delete;
+    virtual ~Factory() = default;
+
+    static std::unique_ptr<BluetoothDeviceListController> Create(
+        tray::BluetoothDetailedView* bluetooth_detailed_view);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    Factory() = default;
+
+    virtual std::unique_ptr<BluetoothDeviceListController>
+    CreateForTesting() = 0;
+  };
+
   BluetoothDeviceListController(const BluetoothDeviceListController&) = delete;
   BluetoothDeviceListController& operator=(
       const BluetoothDeviceListController&) = delete;
-  ~BluetoothDeviceListController() = default;
+  virtual ~BluetoothDeviceListController() = default;
 
   // Clears the detailed view device list when |enabled| is |false|.
-  void UpdateBluetoothEnabledState(bool enabled);
+  virtual void UpdateBluetoothEnabledState(bool enabled) = 0;
 
   // Updates the devices shown in the detailed view device list so long as
   // |is_bluetooth_enabled_| is |true|.
-  void UpdateDeviceList(
+  virtual void UpdateDeviceList(
       const PairedBluetoothDevicePropertiesPtrs& connected,
-      const PairedBluetoothDevicePropertiesPtrs& previously_connected);
+      const PairedBluetoothDevicePropertiesPtrs& previously_connected) = 0;
 
- private:
-  // Adds a new sub-header with |text_id| if |sub_header| is |nullptr|,
-  // otherwise reuses |sub_header|. Whichever sub-header used is then reordered
-  // to |index| and returned.
-  TriView* AddOrReorderSubHeader(TriView* sub_header, int text_id, int index);
-
-  tray::BluetoothDetailedView* bluetooth_detailed_view_;
-
-  bool is_bluetooth_enabled_ = false;
-  TriView* currently_connected_devices_sub_header_ = nullptr;
-  TriView* previously_connected_devices_sub_header_ = nullptr;
+ protected:
+  BluetoothDeviceListController() = default;
 };
 
 }  // namespace ash

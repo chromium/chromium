@@ -44,8 +44,8 @@ void BluetoothDetailedViewImpl::SetBluetoothToggleState(bool enabled) {
   Layout();
 }
 
-const char* BluetoothDetailedViewImpl::GetClassName() const {
-  return "BluetoothDetailedViewImpl";
+views::View* BluetoothDetailedViewImpl::GetAsView() {
+  return this;
 }
 
 BluetoothDeviceListItemView* BluetoothDetailedViewImpl::AddDeviceListItem() {
@@ -66,6 +66,10 @@ void BluetoothDetailedViewImpl::NotifyDeviceListChanged() {
 
 views::View* BluetoothDetailedViewImpl::device_list() {
   return scroll_content();
+}
+
+const char* BluetoothDetailedViewImpl::GetClassName() const {
+  return "BluetoothDetailedViewImpl";
 }
 
 }  // namespace tray
