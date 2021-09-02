@@ -160,7 +160,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
         updateVisibility();
 
         if (initiallySelectedItem != null) {
-            selectItem(initiallySelectedItem, /*notify=*/true);
+            selectItem(initiallySelectedItem, shouldNotifySelectionWhenSettingItems());
         }
     }
 
@@ -356,6 +356,14 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
 
     /** Ask the subclass if two {@code option} instances should be considered equal. */
     protected abstract boolean areEqual(@Nullable T optionA, @Nullable T optionB);
+
+    /**
+     * Ask the subclass if the selection should be notified when setting the new list of items.
+     * This is default implemented as "true" and can be overridden to prevent notification.
+     */
+    protected boolean shouldNotifySelectionWhenSettingItems() {
+        return true;
+    }
 
     /**
      * For convenience. Hides {@code view} if it is empty.

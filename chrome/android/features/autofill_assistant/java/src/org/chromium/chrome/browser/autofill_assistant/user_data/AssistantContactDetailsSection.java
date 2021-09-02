@@ -132,6 +132,11 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         return optionA.isEqualOrSupersetOf(optionB) && optionB.isEqualOrSupersetOf(optionA);
     }
 
+    @Override
+    protected boolean shouldNotifySelectionWhenSettingItems() {
+        return false;
+    }
+
     /**
      * The Chrome profiles have changed externally. This will rebuild the UI with the new/changed
      * set of contacts derived from the profiles, while keeping the selected item if possible.

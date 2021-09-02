@@ -626,7 +626,7 @@ public class AutofillAssistantCollectUserDataUiTest {
     @Test
     @MediumTest
     public void testNonEmptyPaymentRequest() throws Exception {
-        /* Add complete profile and credit card to the personal data manager. */
+        // Add complete profile and credit card to the personal data manager.
         PersonalDataManager.AutofillProfile profile = new PersonalDataManager.AutofillProfile(
                 "GUID", "https://www.example.com", /* honorificPrefix= */ "", "Maggie Simpson",
                 "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "UZ",
@@ -644,7 +644,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                 .ViewHolder viewHolder = TestThreadUtils.runOnUiThreadBlocking(
                 () -> new AutofillAssistantCollectUserDataTestHelper.ViewHolder(coordinator));
 
-        /* Request all PR sections. */
+        // Request all PR sections.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // WEB_CONTENTS are necessary for the creation of AutofillPaymentInstrument.
             model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
@@ -686,7 +686,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                             "id", "Guest", "Description of guest checkout", "", 0, null, "")));
         });
 
-        /* Non-empty sections should not display the 'add' button in their title. */
+        // Non-empty sections should not display the 'add' button in their title.
         onView(allOf(withId(R.id.section_title_add_button),
                        isDescendantOfA(is(viewHolder.mContactSection))))
                 .check(matches(not(isDisplayed())));
@@ -700,7 +700,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mLoginsSection))))
                 .check(matches(not(isDisplayed())));
 
-        /* Non-empty sections should not be 'fixed', i.e., they can be expanded. */
+        // Non-empty sections should not be 'fixed', i.e., they can be expanded.
         onView(allOf(withTagValue(is(VERTICAL_EXPANDER_CHEVRON)),
                        isDescendantOfA(is(viewHolder.mContactSection))))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
@@ -714,12 +714,12 @@ public class AutofillAssistantCollectUserDataUiTest {
                        isDescendantOfA(is(viewHolder.mLoginsSection))))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
 
-        /* All section dividers are visible. */
+        // All section dividers are visible.
         for (View divider : viewHolder.mDividers) {
             onView(is(divider)).check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
         }
 
-        /* Check contents of sections. */
+        // Check contents of sections.
         assertThat(viewHolder.mContactList.getItemCount(), is(1));
         assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(1));
         assertThat(viewHolder.mShippingAddressList.getItemCount(), is(1));
@@ -738,7 +738,11 @@ public class AutofillAssistantCollectUserDataUiTest {
         testLoginDetails("Guest", "Description of guest checkout",
                 viewHolder.mLoginsSection.getCollapsedView(), viewHolder.mLoginList.getItem(0));
 
-        /* Check delegate status. The selections set in the model have been sent to the delegate. */
+        // Check delegate status. The selections set in the model have been sent to the delegate.
+        // |setItems()| has been called first (without selection) and selecting the item does not
+        // trigger a notification.
+        // TODO(b/198401707): The exception is the login choice which is not properly handled in
+        //  native yet.
         assertThat(delegate.mPaymentMethod, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
         assertThat(delegate.mAddress, is(nullValue()));
@@ -765,17 +769,12 @@ public class AutofillAssistantCollectUserDataUiTest {
                             "id", "Guest", "Description of guest checkout", "", 0, null, "")));
         });
 
-        /* Check delegate status. The previously selected items were sent to the delegate. */
-        assertThat(delegate.mPaymentMethod.getCard().getNumber(), is("4111111111111111"));
-        assertThat(delegate.mPaymentMethod.getCard().getName(), is("Jon Doe"));
-        assertThat(delegate.mPaymentMethod.getCard().getBasicCardIssuerNetwork(), is("visa"));
-        assertThat(delegate.mPaymentMethod.getCard().getBillingAddressId(), is("GUID"));
-        assertThat(delegate.mPaymentMethod.getCard().getMonth(), is("12"));
-        assertThat(delegate.mPaymentMethod.getCard().getYear(), is("2050"));
-        assertThat(delegate.mContact.getPayerName(), is("Maggie Simpson"));
-        assertThat(delegate.mContact.getPayerEmail(), is("maggie@simpson.com"));
-        assertThat(delegate.mAddress.getProfile().getFullName(), is("Maggie Simpson"));
-        assertThat(delegate.mAddress.getProfile().getStreetAddress(), containsString("123 Main"));
+        // Check delegate status. Setting items again will not send a notification to the delegate.
+        // TODO(b/198401707): The exception is the login choice which is not properly handled in
+        //  native yet.
+        assertThat(delegate.mPaymentMethod, is(nullValue()));
+        assertThat(delegate.mContact, is(nullValue()));
+        assertThat(delegate.mAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice.getIdentifier(), is("id"));
     }

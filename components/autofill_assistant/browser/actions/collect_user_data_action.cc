@@ -1254,9 +1254,7 @@ void CollectUserDataAction::WriteProcessedAction(UserData* user_data,
 void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
     UserData* user_data,
     UserData::FieldChange* field_change) {
-  if (user_data == nullptr) {
-    return;
-  }
+  DCHECK(user_data != nullptr);
 
   bool found_profile = false;
   bool found_shipping_address = false;
