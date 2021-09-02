@@ -355,8 +355,9 @@ std::unique_ptr<UserScript> ParseUserScript(
   if (content_script.all_frames)
     result->set_match_all_frames(*content_script.all_frames);
 
+  DCHECK(content_script.matches);
   if (!script_parsing::ParseMatchPatterns(
-          content_script.matches, content_script.exclude_matches.get(),
+          *content_script.matches, content_script.exclude_matches.get(),
           definition_index, extension.creation_flags(),
           kScriptsCanExecuteEverywhere, valid_schemes,
           kAllUrlsIncludesChromeUrls, result.get(), error,
@@ -396,9 +397,10 @@ api::scripting::RegisteredContentScript CreateRegisteredContentScriptInfo(
   api::scripting::RegisteredContentScript script_info;
   script_info.id = script.id();
 
-  script_info.matches.reserve(script.url_patterns().size());
+  script_info.matches = std::make_unique<std::vector<std::string>>();
+  script_info.matches->reserve(script.url_patterns().size());
   for (const URLPattern& pattern : script.url_patterns())
-    script_info.matches.push_back(pattern.GetAsString());
+    script_info.matches->push_back(pattern.GetAsString());
 
   if (!script.exclude_url_patterns().is_empty()) {
     script_info.exclude_matches = std::make_unique<std::vector<std::string>>();
@@ -813,7 +815,14 @@ ScriptingRegisterContentScriptsFunction::Run() {
   const int valid_schemes =
       UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere);
 
+  parsed_scripts->reserve(scripts.size());
   for (size_t i = 0; i < scripts.size(); ++i) {
+    if (!scripts[i].matches) {
+      return RespondNow(
+          Error(base::StringPrintf("Script with ID '%s' must specify 'matches'",
+                                   scripts[i].id.c_str())));
+    }
+
     // Parse/Create user script.
     std::unique_ptr<UserScript> user_script = ParseUserScript(
         *extension(), scripts[i], i, valid_schemes, &parse_error);
@@ -844,7 +853,7 @@ ScriptingRegisterContentScriptsFunction::Run() {
 
 void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
     ValidateContentScriptsResult result) {
-  auto error = result.second;
+  auto error = std::move(result.second);
   auto scripts = std::move(result.first);
   ExtensionUserScriptLoader* loader =
       ExtensionSystem::Get(browser_context())
@@ -857,7 +866,7 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
       ids_to_remove.insert(script->id());
 
     loader->RemovePendingDynamicScriptIDs(std::move(ids_to_remove));
-    Respond(Error(*error));
+    Respond(Error(std::move(*error)));
     Release();  // Matches the `AddRef()` in `Run()`.
     return;
   }
@@ -872,7 +881,7 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
 void ScriptingRegisterContentScriptsFunction::OnContentScriptsRegistered(
     const absl::optional<std::string>& error) {
   if (error.has_value())
-    Respond(Error(*error));
+    Respond(Error(std::move(*error)));
   else
     Respond(NoArguments());
   Release();  // Matches the `AddRef()` in `Run()`.
@@ -967,9 +976,166 @@ ScriptingUnregisterContentScriptsFunction::Run() {
 void ScriptingUnregisterContentScriptsFunction::OnContentScriptsUnregistered(
     const absl::optional<std::string>& error) {
   if (error.has_value())
-    Respond(Error(*error));
+    Respond(Error(std::move(*error)));
   else
     Respond(NoArguments());
+}
+
+ScriptingUpdateContentScriptsFunction::ScriptingUpdateContentScriptsFunction() =
+    default;
+ScriptingUpdateContentScriptsFunction::
+    ~ScriptingUpdateContentScriptsFunction() = default;
+
+ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
+  std::unique_ptr<api::scripting::UpdateContentScripts::Params> params(
+      api::scripting::UpdateContentScripts::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::vector<api::scripting::RegisteredContentScript>& scripts =
+      params->scripts;
+
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+
+  std::map<std::string, api::scripting::RegisteredContentScript>
+      loaded_scripts_metadata;
+  const UserScriptList& dynamic_scripts = loader->GetLoadedDynamicScripts();
+  for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
+    loaded_scripts_metadata.emplace(script->id(),
+                                    CreateRegisteredContentScriptInfo(*script));
+  }
+
+  std::set<std::string> ids_to_update;
+  for (const auto& script : scripts) {
+    if (loaded_scripts_metadata.find(script.id) ==
+        loaded_scripts_metadata.end()) {
+      return RespondNow(
+          Error(base::StringPrintf("Content script with ID '%s' does not exist "
+                                   "or is not fully registered",
+                                   script.id.c_str())));
+    }
+
+    DCHECK(!script.id.empty());
+    DCHECK(!UserScript::IsIDGenerated(script.id));
+
+    if (base::Contains(ids_to_update, script.id)) {
+      return RespondNow(Error(
+          base::StringPrintf("Duplicate script ID '%s'", script.id.c_str())));
+    }
+
+    ids_to_update.insert(script.id);
+  }
+
+  std::u16string parse_error;
+  auto parsed_scripts = std::make_unique<UserScriptList>();
+  const int valid_schemes =
+      UserScript::ValidUserScriptSchemes(kScriptsCanExecuteEverywhere);
+
+  parsed_scripts->reserve(scripts.size());
+  for (size_t i = 0; i < scripts.size(); ++i) {
+    api::scripting::RegisteredContentScript& update_delta = scripts[i];
+    DCHECK(base::Contains(loaded_scripts_metadata, update_delta.id));
+
+    api::scripting::RegisteredContentScript& updated_script =
+        loaded_scripts_metadata[update_delta.id];
+
+    if (update_delta.matches)
+      updated_script.matches = std::move(update_delta.matches);
+
+    if (update_delta.exclude_matches)
+      updated_script.exclude_matches = std::move(update_delta.exclude_matches);
+
+    if (update_delta.js)
+      updated_script.js = std::move(update_delta.js);
+
+    if (update_delta.css)
+      updated_script.css = std::move(update_delta.css);
+
+    if (update_delta.all_frames)
+      *updated_script.all_frames = *update_delta.all_frames;
+
+    if (update_delta.match_origin_as_fallback) {
+      *updated_script.match_origin_as_fallback =
+          *update_delta.match_origin_as_fallback;
+    }
+
+    if (update_delta.run_at != api::extension_types::RUN_AT_NONE)
+      updated_script.run_at = update_delta.run_at;
+
+    // Parse/Create user script.
+    std::unique_ptr<UserScript> user_script = ParseUserScript(
+        *extension(), updated_script, i, valid_schemes, &parse_error);
+    if (!user_script)
+      return RespondNow(Error(base::UTF16ToASCII(parse_error)));
+
+    parsed_scripts->push_back(std::move(user_script));
+  }
+
+  // Add new script IDs now in case another call with the same script IDs is
+  // made immediately following this one.
+  loader->AddPendingDynamicScriptIDs(std::move(ids_to_update));
+
+  base::PostTaskAndReplyWithResult(
+      GetExtensionFileTaskRunner().get(), FROM_HERE,
+      base::BindOnce(&ValidateParsedScriptsOnFileThread,
+                     script_parsing::GetSymlinkPolicy(extension()),
+                     std::move(parsed_scripts)),
+      base::BindOnce(
+          &ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated,
+          this));
+
+  // Balanced in `OnContentScriptFilesValidated()` or
+  // `OnContentScriptsRegistered()`.
+  AddRef();
+  return RespondLater();
+}
+
+void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
+    ValidateContentScriptsResult result) {
+  auto error = std::move(result.second);
+  auto scripts = std::move(result.first);
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+
+  std::set<std::string> script_ids;
+  for (const auto& script : *scripts)
+    script_ids.insert(script->id());
+
+  if (error.has_value()) {
+    loader->RemovePendingDynamicScriptIDs(script_ids);
+    Respond(Error(std::move(*error)));
+    Release();  // Matches the `AddRef()` in `Run()`.
+    return;
+  }
+
+  // To guarantee that scripts are updated, they need to be removed then added
+  // again. It should be guaranteed that the new scripts are added after the old
+  // ones are removed.
+  loader->RemoveDynamicScripts(script_ids, /*callback=*/base::DoNothing());
+
+  // Since RemoveDynamicScripts will remove pending script IDs, but
+  // AddDynamicScripts will only add scripts that are marked as pending, we must
+  // mark `script_ids` as pending again here.
+  loader->AddPendingDynamicScriptIDs(std::move(script_ids));
+
+  loader->AddDynamicScripts(
+      std::move(scripts),
+      base::BindOnce(
+          &ScriptingUpdateContentScriptsFunction::OnContentScriptsUpdated,
+          this));
+}
+
+void ScriptingUpdateContentScriptsFunction::OnContentScriptsUpdated(
+    const absl::optional<std::string>& error) {
+  if (error.has_value())
+    Respond(Error(std::move(*error)));
+  else
+    Respond(NoArguments());
+  Release();  // Matches the `AddRef()` in `Run()`.
 }
 
 }  // namespace extensions

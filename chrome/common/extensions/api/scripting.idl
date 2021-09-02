@@ -97,8 +97,9 @@ namespace scripting {
     DOMString id;
     // Specifies which pages this content script will be injected into. See
     // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
-    DOMString[] matches;
+    // syntax of these strings. Must be specified for
+    // $(ref:registerContentScripts).
+    DOMString[]? matches;
     // Excludes pages that this content script would otherwise be injected into.
     // See <a href="match_patterns">Match Patterns</a> for more details on the
     // syntax of these strings.
@@ -145,6 +146,8 @@ namespace scripting {
 
   callback UnregisterContentScriptsCallback = void();
 
+  callback UpdateContentScriptsCallback = void();
+
   interface Functions {
     // Injects a script into a target context. The script will be run at
     // <code>document_idle</code>.
@@ -179,8 +182,8 @@ namespace scripting {
     // |scripts|: Contains a list of scripts to be registered. If there are
     // errors during script parsing/file validation, or if the IDs specified
     // already exist, then no scripts are registered.
-    // |callback|: A callback to be invoked once scripts have been registered or
-    // if an error has occurred.
+    // |callback|: A callback to be invoked once scripts have been fully
+    // registered or if an error has occurred.
     [nodoc, supportsPromises] static void registerContentScripts(
         RegisteredContentScript[] scripts,
         optional RegisterContentScriptsCallback callback);
@@ -202,5 +205,17 @@ namespace scripting {
     [nodoc, supportsPromises] static void unregisterContentScripts(
         optional ContentScriptFilter filter,
         optional UnregisterContentScriptsCallback callback);
+
+    // Updates one or more content scripts for this extension.
+    // |scripts|: Contains a list of scripts to be updated. A property is only
+    // updated for the existing script if it is specified in this object. If
+    // there are errors during script parsing/file validation, or if the IDs
+    // specified do not correspond to a fully registered script, then no scripts
+    // are updated.
+    // |callback|: A callback to be invoked once scripts have been updated or
+    // if an error has occurred.
+    [nodoc, supportsPromises] static void updateContentScripts(
+        RegisteredContentScript[] scripts,
+        optional RegisterContentScriptsCallback callback);
   };
 };

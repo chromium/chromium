@@ -1646,6 +1646,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNBATTERYCHARGEROUTINE = 1583,
   OS_DIAGNOSTICS_RUNCPUSTRESSROUTINE = 1584,
   OS_DIAGNOSTICS_RUNCPUCACHEROUTINE = 1585,
+  SCRIPTING_UPDATECONTENTSCRIPTS = 1586,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

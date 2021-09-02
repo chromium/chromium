@@ -174,6 +174,30 @@ class ScriptingUnregisterContentScriptsFunction : public ExtensionFunction {
   void OnContentScriptsUnregistered(const absl::optional<std::string>& error);
 };
 
+class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.updateContentScripts",
+                             SCRIPTING_UPDATECONTENTSCRIPTS)
+
+  ScriptingUpdateContentScriptsFunction();
+  ScriptingUpdateContentScriptsFunction(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+  ScriptingUpdateContentScriptsFunction& operator=(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUpdateContentScriptsFunction() override;
+
+  // Called when script files have been checked.
+  void OnContentScriptFilesValidated(ValidateContentScriptsResult result);
+
+  // Called when content scripts have been updated.
+  void OnContentScriptsUpdated(const absl::optional<std::string>& error);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
