@@ -10005,6 +10005,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSMobileReloadCrashedRenderer" not_user_triggered="true">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <description>
+    Recorded when a user has switched back to a tab whose renderer needs to be
+    reloaded due to a renderer crash on iOS.
+  </description>
+</action>
+
 <action name="IOSOpenByMainIntent">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
