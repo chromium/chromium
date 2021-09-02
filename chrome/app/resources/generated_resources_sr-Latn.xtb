@@ -3619,7 +3619,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="485088796993065002">Sajtovi mogu da puštaju zvuk da biste čuli muziku, video snimke i druge medije</translation>
 <translation id="4853020600495124913">Otvori u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi nalog roditelja za odobrenje</translation>
-<translation id="485480310608090163">Još podešavanja i dozvola</translation>
 <translation id="4856478137399998590">Usluga mobilnog prenosa podataka je aktivirana i spremna za upotrebu</translation>
 <translation id="4858792381671956233">Pitao/la si roditelje da li smeš da posetiš ovaj sajt</translation>
 <translation id="4858913220355269194">Fric</translation>
@@ -6625,6 +6624,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> koristi podešavanja proksija iz dodatka</translation>
 <translation id="8097959162767603171">Administrator mora prvo da prihvati uslove korišćenja usluge na listi Chrome uređaja u administratorskoj konzoli.</translation>
 <translation id="8098616321286360457">Mrežna veza je obavezna</translation>
+<translation id="8099495042588009598">Još dozvola</translation>
 <translation id="810068641062493918">Izabran je <ph name="LANGUAGE" />. Da biste poništili izbor, pritisnite taster za pretragu i razmak.</translation>
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Powerwash je obavezan pri sledećem ponovnom pokretanju</translation>

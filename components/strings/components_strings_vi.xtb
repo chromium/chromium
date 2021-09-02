@@ -220,6 +220,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome đơn giản hóa trang này để bạn dễ đọc hơn. Chrome đã truy xuất trang gốc qua đường kết nối an toàn.</translation>
 <translation id="1656489000284462475">Nhận hàng</translation>
+<translation id="1658918301167915956">thiết bị Bluetooth</translation>
 <translation id="1662550410081243962">Lưu và điền phương thức thanh toán</translation>
 <translation id="1663943134801823270">Thẻ và địa chỉ từ Chrome. Bạn có thể quản lý thẻ và địa chỉ trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Kể từ bây giờ trở đi, các trang viết bằng <ph name="SOURCE_LANGUAGE" /> sẽ được dịch sang <ph name="TARGET_LANGUAGE" />.</translation>
@@ -678,6 +679,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3293642807462928945">Hãy tìm hiểu thêm về chính sách <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Xem và quản lý mật khẩu của bạn trong phần cài đặt của Chrome</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
+<translation id="3304073249511302126">quét tìm Bluetooth</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
 <translation id="3308738399950580893">quảng cáo</translation>
 <translation id="3320021301628644560">Thêm địa chỉ thanh toán</translation>
@@ -1447,6 +1449,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5817918615728894473">Ghép nối</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Thẻ này sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}other{Thẻ bạn chọn sẽ bị trừ tiền khi bạn thanh toán, nhưng số thẻ thật sẽ không được chia sẻ với trang web này. Để tăng cường tính bảo mật, hệ thống sẽ tạo một Mã xác minh thẻ (CVC) tạm thời.}}</translation>
 <translation id="5826507051599432481">Tên Phổ biến (CN)</translation>
+<translation id="5830698870816298009">sử dụng và di chuyển máy ảnh</translation>
 <translation id="5838278095973806738">Bạn không nên nhập bất kỳ thông tin nhạy cảm nào trên trang web này (ví dụ: mật khẩu hoặc thẻ tín dụng), vì những kẻ tấn công có thể đánh cắp thông tin đó.</translation>
 <translation id="5851548754964597211">Danh sách thẻ</translation>
 <translation id="5855253129151731373">Tên máy chủ của trang web này giống với miền <ph name="LOOKALIKE_DOMAIN" />. Kẻ tấn công đôi khi bắt chước các trang web bằng cách thực hiện các thay đổi nhỏ đối với tên miền mà bạn khó phát hiện ra.
@@ -1711,6 +1714,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6794951432696553238">Từ giờ trở đi, bạn có thể xác nhận các thẻ nhanh hơn bằng Windows Hello</translation>
 <translation id="681021252041861472">Trường bắt buộc</translation>
 <translation id="6810899417690483278">ID tùy chỉnh</translation>
+<translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">cổng nối tiếp</translation>
 <translation id="6825578344716086703">Bạn đã cố gắng truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình một chứng chỉ được ký bằng một thuật toán chữ ký yếu (chẳng hạn như SHA-1). Điều này có nghĩa là thông tin đăng nhập bảo mật mà máy chủ xuất trình có thể đã bị giả mạo và máy chủ đó có thể không phải là máy chủ mà bạn mong đợi (bạn có thể đang kết nối với kẻ tấn công).</translation>
 <translation id="6826993739343257035">Cho phép môi trường Thực tế tăng cường?</translation>
@@ -2025,6 +2029,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7865448901209910068">Tốc độ tốt nhất</translation>
 <translation id="7871445724586827387">Thay đổi mật khẩu cho Tài khoản Google của bạn</translation>
 <translation id="7874263914261512992">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome khuyên bạn nên kiểm tra ngay những mật khẩu bạn đã lưu cho <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> và các trang web khác mà bạn sử dụng mật khẩu này.</translation>
+<translation id="7877007680666472091">giá trị nhận dạng cho nội dung được bảo vệ</translation>
 <translation id="7878562273885520351">Mật khẩu của bạn có thể bị xâm phạm</translation>
 <translation id="7880146494886811634">Lưu địa chỉ</translation>
 <translation id="7882421473871500483">Nâu</translation>

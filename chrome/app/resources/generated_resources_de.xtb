@@ -3617,7 +3617,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="485088796993065002">Websites geben möglicherweise Audio für Musik, Videos und weitere Medien wieder</translation>
 <translation id="4853020600495124913">In &amp;neuem Fenster öffnen</translation>
 <translation id="4854317507773910281">Elternkonto für die Genehmigung auswählen</translation>
-<translation id="485480310608090163">Weitere Einstellungen und Berechtigungen</translation>
 <translation id="4856478137399998590">Ihr mobiler Datendienst ist aktiviert und einsatzbereit.</translation>
 <translation id="4858792381671956233">Du hast deine Eltern gefragt, ob du diese Website besuchen darfst</translation>
 <translation id="4858913220355269194">Fußball</translation>
@@ -6620,6 +6619,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> verwendet Proxy-Einstellungen einer Erweiterung</translation>
 <translation id="8097959162767603171">Ihr Administrator muss zuerst die Nutzungsbedingungen in der Chrome-Geräteliste der Admin-Konsole akzeptieren.</translation>
 <translation id="8098616321286360457">Netzwerkverbindung erforderlich</translation>
+<translation id="8099495042588009598">Weitere Berechtigungen</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ausgewählt. Drücken Sie zum Aufheben der Auswahl die Suchtaste + Leertaste.</translation>
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8101987792947961127">Powerwash beim nächsten Neustart erforderlich</translation>

@@ -3639,7 +3639,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="485088796993065002">Spletna mesta lahko predvajajo zvok, da zagotovijo zvočni ton za glasbo, videoposnetke in drugo predstavnost.</translation>
 <translation id="4853020600495124913">Odpri v &amp;novem oknu</translation>
 <translation id="4854317507773910281">Izbira starševskega računa za odobritev</translation>
-<translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
 <translation id="4856478137399998590">Mobilna podatkovna storitev je aktivirana in pripravljena za uporabo</translation>
 <translation id="4858792381671956233">Starše si vprašal(-a), ali smeš obiskati to spletno mesto</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -6647,6 +6646,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> uporablja nastavitve strežnika proxy razširitve</translation>
 <translation id="8097959162767603171">Skrbnik mora najprej sprejeti pogoje storitve na seznamu naprav Chrome v skrbniški konzoli.</translation>
 <translation id="8098616321286360457">Potrebna je omrežna povezava</translation>
+<translation id="8099495042588009598">Več dovoljenj</translation>
 <translation id="810068641062493918">Izbran je jezik <ph name="LANGUAGE" />. Pritisnite tipko za iskanje in preslednico, če želite preklicati izbiro.</translation>
 <translation id="810185532889603849">Barva po meri</translation>
 <translation id="8101987792947961127">Pri naslednjem zagonu je treba izvesti Powerwash</translation>

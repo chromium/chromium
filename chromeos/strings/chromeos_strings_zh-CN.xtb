@@ -71,6 +71,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2364498172489649528">通过</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2446553403094072641">浮点准确性</translation>
@@ -146,6 +147,7 @@
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
 <translation id="4034824040120875894">打印机</translation>
+<translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
@@ -340,6 +342,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">壁纸集</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="7375053625150546623">EAP</translation>

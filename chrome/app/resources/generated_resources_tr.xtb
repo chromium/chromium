@@ -3618,7 +3618,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="485088796993065002">Siteler müzik, video ve diğer medyalara işitsel içerik sağlamak için ses çalabilir</translation>
 <translation id="4853020600495124913">&amp;Yeni pencerede aç</translation>
 <translation id="4854317507773910281">Onay için ebeveyn hesabı seçin</translation>
-<translation id="485480310608090163">Diğer ayarlar ve izinler</translation>
 <translation id="4856478137399998590">Mobil veri hizmetiniz etkinleştirildi ve kullanıma hazır</translation>
 <translation id="4858792381671956233">Ebeveynlerinize bu siteyi ziyaret etmenizin uygun olup olmadığını sordunuz</translation>
 <translation id="4858913220355269194">Futbolcu</translation>
@@ -6623,6 +6622,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />, bir uzantıdan gelen proxy ayarlarını kullanıyor</translation>
 <translation id="8097959162767603171">Yöneticiniz önce Yönetici konsolu Chrome cihaz listesindeki hizmet şartlarını kabul etmelidir.</translation>
 <translation id="8098616321286360457">Ağ bağlantısı gerekiyor</translation>
+<translation id="8099495042588009598">Diğer izinler</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçildi. Seçimi kaldırmak için Arama'ya ve Boşluk çubuğuna basın.</translation>
 <translation id="810185532889603849">Özel renk</translation>
 <translation id="8101987792947961127">Gelecek yeniden başlatmada Powerwash gerekli</translation>

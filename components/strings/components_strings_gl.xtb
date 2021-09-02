@@ -220,6 +220,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome simplificou esta páxina para que sexa máis fácil de ler. Chrome recuperou a páxina orixinal a través dunha conexión segura.</translation>
 <translation id="1656489000284462475">Recollida</translation>
+<translation id="1658918301167915956">dispositivos Bluetooth</translation>
 <translation id="1662550410081243962">Gardar e autocompletar métodos de pago</translation>
 <translation id="1663943134801823270">As tarxetas e enderezos proceden de Chrome. Podes xestionalos en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">As páxinas en <ph name="SOURCE_LANGUAGE" /> traduciranse ao <ph name="TARGET_LANGUAGE" /> a partir de agora.</translation>
@@ -677,6 +678,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta e xestiona os teus contrasinais na configuración de Chrome</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
+<translation id="3304073249511302126">busca de dispositivos Bluetooth</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
 <translation id="3308738399950580893">anuncios</translation>
 <translation id="3320021301628644560">Engade un enderezo de facturación</translation>
@@ -1446,6 +1448,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Cando pagues, cobrarase o importe correspondente utilizando esta tarxeta, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}other{Cando pagues, cobrarase o importe correspondente utilizando a tarxeta que selecciones, pero o seu número real non se compartirá con este sitio. Para máis seguranza, xerarase un CVC temporal.}}</translation>
 <translation id="5826507051599432481">Nome común (NC)</translation>
+<translation id="5830698870816298009">uso e movemento da cámara</translation>
 <translation id="5838278095973806738">Non debes introducir información confidencial neste sitio (por exemplo, contrasinais ou tarxetas de crédito), xa que os atacantes poden roubala.</translation>
 <translation id="5851548754964597211">Lista de pestanas</translation>
 <translation id="5855253129151731373">O nome do host deste sitio é similar ao de <ph name="LOOKALIKE_DOMAIN" />. Ás veces, os atacantes crean copias de sitios introducindo nos nomes de dominio cambios pequenos e difíciles de ver.
@@ -1710,6 +1713,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6794951432696553238">A partir de agora, confirma as tarxetas máis rápido con Windows Hello</translation>
 <translation id="681021252041861472">Campo obrigatorio</translation>
 <translation id="6810899417690483278">ID de personalización</translation>
+<translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">portos de serie</translation>
 <translation id="6825578344716086703">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado asinado cun algoritmo de sinatura pouco seguro (como SHA-1). Unha posible causa deste problema é que se falsificasen as credenciais de seguranza presentadas polo servidor e que o servidor non sexa o que esperas. É probable que te comuniques cun pirata informático.</translation>
 <translation id="6826993739343257035">Queres permitir realidade aumentada?</translation>
@@ -2024,6 +2028,7 @@ Detalles adicionais:
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
 <translation id="7874263914261512992">Acabas de escribir o teu contrasinal nun sitio enganoso. Chrome recomenda comprobar os contrasinais gardados para <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e outros sitios nos que esteas a utilizar este contrasinal neste momento.</translation>
+<translation id="7877007680666472091">códigos de identificación de contido protexido</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7880146494886811634">Gardar enderezo</translation>
 <translation id="7882421473871500483">Marrón</translation>

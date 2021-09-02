@@ -323,7 +323,9 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2996291259634659425">Crear contrasinal</translation>
 <translation id="2996809686854298943">O URL é obrigatorio</translation>
 <translation id="3006881078666935414">Non hai datos de uso</translation>
+<translation id="301080557829842765">Guía de privacidade</translation>
 <translation id="3016635187733453316">Asegúrate de que este dispositivo estea conectado a Internet</translation>
+<translation id="3026955690410463085">Incluír ligazón</translation>
 <translation id="3029704984691124060">Os contrasinais non coinciden</translation>
 <translation id="3031225630520268969">Interface de consentimento para a busca por voz a través do Asistente</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter axuda<ph name="END_LINK" /></translation>
@@ -353,6 +355,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3220943972464248773">Para sincronizar os contrasinais, verifica a túa identidade</translation>
 <translation id="3227557059438308877">Google Chrome como chave de seguranza</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
+<translation id="3234978181857588512">Gardar no dispositivo</translation>
 <translation id="3236059992281584593">Queda 1 minuto</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">As descricións das imaxes retomaranse cando te conectes á wifi</translation>
@@ -480,6 +483,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="3988213473815854515">A localización está permitida</translation>
 <translation id="3988466920954086464">Consulta os resultados da busca instantáneos neste panel</translation>
 <translation id="4000212216660919741">Inicio sen conexión</translation>
+<translation id="4001236013802615636">Deixar que Google tamén teña en conta algún texto da páxina</translation>
 <translation id="4016425174436051808">Non se puido seguir o feed. Produciuse un erro.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
@@ -526,6 +530,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4335835283689002019">A navegación segura está desactivada</translation>
 <translation id="4351244548802238354">Pechar cadro de diálogo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
+<translation id="438319986296050901">Compartir só tarxeta</translation>
 <translation id="4384468725000734951">Uso de Sogou para a busca</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">Non hai marcadores</translation>
@@ -589,6 +594,7 @@ Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só na
 <translation id="4738836084190194332">Última sincronización: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">Deixar de salientar texto</translation>
 <translation id="4749960740855309258">Abrir unha nova pestana</translation>
+<translation id="4758061975920522644">Compartir só imaxe</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4763480195061959176">vídeo</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 descarga completada.}other{# descargas completadas.}}</translation>
@@ -752,6 +758,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5748802427693696783">Cambiouse ás pestanas estándar</translation>
 <translation id="5749068826913805084">Chrome precisa acceder ao almacenamento para descargar ficheiros.</translation>
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> Non recomendado</translation>
+<translation id="5752232708629533680">Compartir só GIF</translation>
 <translation id="5754350196967618083">Non se puido actualizar Discover</translation>
 <translation id="5763382633136178763">Pestanas do modo de incógnito</translation>
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
@@ -814,6 +821,7 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
+<translation id="6069177176307973611">Revisa a configuración de privacidade e seguranza</translation>
 <translation id="6085886413119427067">Determina como conectarse a sitios web mediante una conexión segura</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
@@ -962,6 +970,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
+<translation id="6924672435311694692">Ver mellores resultados</translation>
 <translation id="6929699136511445623">Activar sincronización do sistema Android</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
 <translation id="694267552845942083">Estás personalizando a configuración da sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Desprazarse cara arriba</translation>
@@ -980,6 +989,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7027549951530753705">Restaurouse <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Coloca o código QR ou o código de barras neste marco.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
+<translation id="7038956721828960940">chrome_imaxe_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Queres obter descricións de imaxes?</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
 <translation id="7063006564040364415">Non se puido conectar co servidor de sincronización.</translation>
@@ -1208,6 +1218,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8424781820952413435">Enviouse a páxina. Para vela, abre Chrome no teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">A pestana de vista previa abriuse ata a metade</translation>
 <translation id="8428213095426709021">Configuración</translation>
+<translation id="8430824733382774043">Compartir só captura de pantalla</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439974325294139057"><ph name="LANG" />: este idioma xa está preparado. Reinicia <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Non hai ningunha historia dispoñible</translation>
@@ -1333,6 +1344,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>
+<translation id="9158770349521403363">Compartir só contido</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>

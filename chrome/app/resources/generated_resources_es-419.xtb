@@ -3617,7 +3617,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="485088796993065002">Es posible que los sitios reproduzcan sonido para que la música, los videos y demás contenido multimedia tenga audio.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
-<translation id="485480310608090163">Más opciones de configuración y permisos</translation>
 <translation id="4856478137399998590">Tu servicio de datos para celulares está activado y listo para ser utilizado</translation>
 <translation id="4858792381671956233">Les preguntaste a tus padres si puedes visitar este sitio</translation>
 <translation id="4858913220355269194">Balón</translation>
@@ -6623,6 +6622,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> usa la configuración de proxy de una extensión</translation>
 <translation id="8097959162767603171">Tu administrador primero debe aceptar las condiciones del servicio de la lista de dispositivos de Chrome que se muestran en la Consola del administrador.</translation>
 <translation id="8098616321286360457">Se requiere una conexión de red</translation>
+<translation id="8099495042588009598">Más permisos</translation>
 <translation id="810068641062493918">Se seleccionó <ph name="LANGUAGE" />. Presiona la tecla de búsqueda+barra espaciadora para anular la selección del idioma.</translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>

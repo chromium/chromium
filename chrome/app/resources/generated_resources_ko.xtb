@@ -3633,7 +3633,6 @@
 <translation id="485088796993065002">사이트에서는 음악, 동영상, 기타 미디어의 오디오를 제공하기 위해 소리를 재생할 수 있습니다.</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
-<translation id="485480310608090163">추가 설정 및 권한</translation>
 <translation id="4856478137399998590">모바일 데이터 서비스가 활성화되었으며 사용할 준비가 되었습니다.</translation>
 <translation id="4858792381671956233">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
 <translation id="4858913220355269194">축구왕</translation>
@@ -6639,6 +6638,7 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 확장 프로그램의 프록시 설정을 사용 중입니다.</translation>
 <translation id="8097959162767603171">관리자가 먼저 관리 콘솔의 Chrome 기기 목록에서 서비스 약관에 동의해야 합니다.</translation>
 <translation id="8098616321286360457">네트워크 연결 필요</translation>
+<translation id="8099495042588009598">권한 더보기</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" />가 선택되었습니다. Search와 Space 키를 눌러 선택 해제하세요.</translation>
 <translation id="810185532889603849">맞춤 색상</translation>
 <translation id="8101987792947961127">다음에 재부팅할 때 Powerwash 필요</translation>

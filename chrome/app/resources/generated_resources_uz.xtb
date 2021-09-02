@@ -3623,7 +3623,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="485088796993065002">Saytlar musiqa, video va boshqa media kontent audiosini chiqarish uchun tovushlarni ijro qilishi mumkin</translation>
 <translation id="4853020600495124913">Yangi oynada &amp;ochish</translation>
 <translation id="4854317507773910281">Ruxsat olish uchun ota-onangiz hisobini tanlang</translation>
-<translation id="485480310608090163">Yana sozlamalar va ruxsatlar</translation>
 <translation id="4856478137399998590">Mobil internet xizmati faollashtirildi va foydalanilishga tayyor.</translation>
 <translation id="4858792381671956233">Bu saytni ko‘rishingiz uchun ruxsat so‘rovi ota-onangizga jo‘natildi</translation>
 <translation id="4858913220355269194">Futbol</translation>
@@ -6628,6 +6627,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> kengaytma tomonidan sozlangan proksi-serverni ishlatmoqda</translation>
 <translation id="8097959162767603171">Administratoringiz avval Administrator konsolida Chrome qurilmalari roʻyxatidagi xizmat shartlarini qabul qilishi kerak.</translation>
 <translation id="8098616321286360457">Internet aloqasi kerak</translation>
+<translation id="8099495042588009598">Boshqa ruxsatlar</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> tanlandi. Bekor qilish uchun Qidiruv va Boʻshliq tugmalarini bosing.</translation>
 <translation id="810185532889603849">Maxsus rang</translation>
 <translation id="8101987792947961127">Qurilmani keyingi marta qayta ishga tushirishda Powerwash amali bajarilishi kerak</translation>

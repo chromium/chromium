@@ -3633,7 +3633,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="485088796993065002">A webhelyek lejátszhatnak hangot, hogy a zeneszámok, videók és egyéb médiatartalmak hallhatók legyenek</translation>
 <translation id="4853020600495124913">Megnyitás új &amp;ablakban</translation>
 <translation id="4854317507773910281">Szülői fiók kiválasztása a jóváhagyáshoz</translation>
-<translation id="485480310608090163">További beállítások és engedélyek</translation>
 <translation id="4856478137399998590">Adatszolgáltatását aktiválta, és az használatra kész</translation>
 <translation id="4858792381671956233">Megkérdezted a szüleidet, hogy meg szabad-e látogatnod ezt a webhelyet</translation>
 <translation id="4858913220355269194">Foci</translation>
@@ -6640,6 +6639,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="809792523045608178">A <ph name="IDS_SHORT_PRODUCT_NAME" /> az egyik bővítményből származó proxybeállításokat használja</translation>
 <translation id="8097959162767603171">Rendszergazdájának előbb el kell fogadnia az általános szerződési feltételeket a Felügyeleti Konzol Chrome-eszközeinek listáján.</translation>
 <translation id="8098616321286360457">Hálózati kapcsolat szükséges</translation>
+<translation id="8099495042588009598">További engedélyek</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> kiválasztva. A kiválasztás megszüntetéséhez nyomja le a Keresés + Space billentyűkombinációt.</translation>
 <translation id="810185532889603849">Egyéni szín</translation>
 <translation id="8101987792947961127">Powerwash szükséges a következő újraindításkor</translation>

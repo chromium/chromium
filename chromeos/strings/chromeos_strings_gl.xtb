@@ -71,6 +71,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2364498172489649528">Aprobou</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar informe de comentarios</translation>
 <translation id="2418150275289244458">Abrir en Configuración</translation>
 <translation id="2446553403094072641">Precisión do punto flotante</translation>
@@ -146,6 +147,7 @@
 <translation id="39823212440917567">Quitaranse os traballos de impresión de máis de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003384961948020559">Produciuse un erro: a saída da impresora está chea</translation>
 <translation id="4034824040120875894">Impresora</translation>
+<translation id="409427325554347132">Gardar detalles da proba</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
@@ -340,6 +342,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="7375053625150546623">EAP</translation>

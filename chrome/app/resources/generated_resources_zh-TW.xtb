@@ -3619,7 +3619,6 @@
 <translation id="485088796993065002">網站可能會播放音效以提供音樂、影片和其他媒體的音訊</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇進行審核的家長帳戶</translation>
-<translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4856478137399998590">你的行動數據服務已啟用，隨時可供使用</translation>
 <translation id="4858792381671956233">你已詢問家長是否同意你造訪這個網站</translation>
 <translation id="4858913220355269194">飛球</translation>
@@ -6625,6 +6624,7 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用擴充功能的 Proxy 設定</translation>
 <translation id="8097959162767603171">系統管理員必須先在管理控制台接受 Chrome 裝置清單中的服務條款。</translation>
 <translation id="8098616321286360457">需要網路連線</translation>
+<translation id="8099495042588009598">更多權限</translation>
 <translation id="810068641062493918">已選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可取消選取。</translation>
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>

@@ -3618,7 +3618,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="485088796993065002">És possible que els llocs web reprodueixin so per proporcionar àudio per a música, vídeos i altres continguts multimèdia</translation>
 <translation id="4853020600495124913">Obre en una &amp;finestra nova</translation>
 <translation id="4854317507773910281">Tria un compte parental per a l'aprovació</translation>
-<translation id="485480310608090163">Més opcions de configuració i permisos</translation>
 <translation id="4856478137399998590">El servei de dades mòbils està activat i a punt per fer servir</translation>
 <translation id="4858792381671956233">Has demanat permís als teus pares per visitar aquest lloc web</translation>
 <translation id="4858913220355269194">Pilota</translation>
@@ -6626,6 +6625,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> està fent servir la connexió del servidor intermediari d'una extensió</translation>
 <translation id="8097959162767603171">Primer, l'administrador ha d'acceptar les condicions del servei de la llista de dispositius Chrome que hi ha a la consola d'administració.</translation>
 <translation id="8098616321286360457">Cal una connexió a la xarxa</translation>
+<translation id="8099495042588009598">Més permisos</translation>
 <translation id="810068641062493918">S'ha seleccionat <ph name="LANGUAGE" />. Prem Cerca+Espai per desseleccionar-lo.</translation>
 <translation id="810185532889603849">Color personalitzat</translation>
 <translation id="8101987792947961127">Es requereix Powerwash la propera vegada que es reiniciï</translation>

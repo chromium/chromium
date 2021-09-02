@@ -220,6 +220,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome e ka thjeshtuar këtë faqe për ta bërë më të lehtë për t'u lexuar. Chrome e mori faqen origjinale nëpërmjet një lidhjeje të sigurt.</translation>
 <translation id="1656489000284462475">Marrja</translation>
+<translation id="1658918301167915956">Pajisjet me Bluetooth</translation>
 <translation id="1662550410081243962">Ruaj dhe plotëso mënyrat e pagesës</translation>
 <translation id="1663943134801823270">Kartat dhe adresat janë nga Chrome. Ato mund t'i menaxhosh te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="1671391448414634642">Faqet në <ph name="SOURCE_LANGUAGE" /> do të përkthehen në <ph name="TARGET_LANGUAGE" /> nga tani e në vazhdim.</translation>
@@ -677,6 +678,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3293642807462928945">Mëso më shumë për politikën <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Shiko dhe menaxho fjalëkalimet e tua te cilësimet e Chrome</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
+<translation id="3304073249511302126">Skanimi i Bluetooth-it</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
 <translation id="3308738399950580893">reklamat</translation>
 <translation id="3320021301628644560">Shto adresën e faturimit</translation>
@@ -1444,6 +1446,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5817918615728894473">Çifto</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Kjo kartë do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}other{Karta që zgjedh do të tarifohet kur të paguash, por numri i saj i vërtetë nuk do të ndahet me këtë sajt. Për më shumë siguri, do të krijohet një kod CVC i përkohshëm.}}</translation>
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
+<translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="5838278095973806738">Nuk duhet të futësh asnjë informacion delikat në këtë sajt (p.sh. fjalëkalimet ose karta krediti) pasi mund të vidhet nga sulmuesit.</translation>
 <translation id="5851548754964597211">Lista e skedave</translation>
 <translation id="5855253129151731373">Emri i këtij domeni duket i ngjashëm me <ph name="LOOKALIKE_DOMAIN" />. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek emri i domenit ndryshime të vogla që janë të vështira për t'u dalluar.
@@ -1707,6 +1710,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6794951432696553238">Konfirmo kartat e tua më shpejt duke përdorur Windows Hello nga tani e tutje</translation>
 <translation id="681021252041861472">Fushë e detyrueshme</translation>
 <translation id="6810899417690483278">ID-ja e personalizimit</translation>
+<translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">portat seriale</translation>
 <translation id="6825578344716086703">U përpoqe të gjeje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë të nënshkruar duke përdorur një algoritëm të dobët nënshkrimi. Kjo do të thotë se kredencialet e sigurisë që paraqiti serveri mund të jenë të falsifikuara dhe serveri mund të mos jetë ai që prisje (mund të jesh duke komunikuar me një sulmues).</translation>
 <translation id="6826993739343257035">Të lejohet AR?</translation>
@@ -2021,6 +2025,7 @@ Detaje shtesë:
 <translation id="7865448901209910068">Shpejtësia më e mirë</translation>
 <translation id="7871445724586827387">Ndrysho fjalëkalimin e "Llogarisë sate të Google"</translation>
 <translation id="7874263914261512992">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Chrome të rekomandon të kontrollosh fjalëkalimet e tua të ruajtura për <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> dhe sajte të tjera ku e përdor këtë fjalëkalim tani.</translation>
+<translation id="7877007680666472091">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="7878562273885520351">Fjalëkalimet e tua mund të jenë kompromentuar</translation>
 <translation id="7880146494886811634">Ruaj adresën</translation>
 <translation id="7882421473871500483">Kafe</translation>

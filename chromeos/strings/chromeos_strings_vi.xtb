@@ -71,6 +71,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2418150275289244458">Mở trong phần cài đặt</translation>
 <translation id="2446553403094072641">Độ chính xác của dấu phẩy động</translation>
@@ -146,6 +147,7 @@
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
 <translation id="4034824040120875894">Máy in</translation>
+<translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
@@ -340,6 +342,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Bộ sưu tập hình nền</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Thiết bị mạng</translation>
 <translation id="7359657277149375382">Loại tệp</translation>
 <translation id="7375053625150546623">EAP</translation>

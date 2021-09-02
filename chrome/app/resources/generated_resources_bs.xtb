@@ -3634,7 +3634,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="485088796993065002">Web lokacije mogu reproducirati zvuk radi pružanja audio zapisa za muziku, videozapise i ostale medije</translation>
 <translation id="4853020600495124913">Otvori u &amp;novom prozoru</translation>
 <translation id="4854317507773910281">Odaberi roditeljski račun za odobrenje</translation>
-<translation id="485480310608090163">Više postavki i odobrenja</translation>
 <translation id="4856478137399998590">Usluga prijenosa podataka na mobilnoj mreži je aktivirana i spremna za upotrebu</translation>
 <translation id="4858792381671956233">Pitali ste roditelje možete li posjetiti ovu web lokaciju</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -6640,6 +6639,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> koristi proksi postavke iz ekstenzije</translation>
 <translation id="8097959162767603171">Vaš administrator najprije mora prihvatiti uslove korištenja usluge na listi uređaja Chromea u administratorskoj konzoli.</translation>
 <translation id="8098616321286360457">Potrebna je mrežna veza</translation>
+<translation id="8099495042588009598">Više odobrenja</translation>
 <translation id="810068641062493918">Jezik <ph name="LANGUAGE" /> je odabran. Da poništite odabir, pritisnite tipku za pretraživanje i razmak.</translation>
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8101987792947961127">Powerwash je obavezan prilikom sljedećeg pokretanja</translation>

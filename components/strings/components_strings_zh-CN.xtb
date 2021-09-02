@@ -220,6 +220,7 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome 已简化该页面，让内容更易于阅读，并且通过安全的连接检索到了原始网页。</translation>
 <translation id="1656489000284462475">取货</translation>
+<translation id="1658918301167915956">蓝牙设备</translation>
 <translation id="1662550410081243962">保存并填写付款方式</translation>
 <translation id="1663943134801823270">信用卡选项和地址选项均来自 Chrome。您可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中管理这些选项。</translation>
 <translation id="1671391448414634642">从现在开始，<ph name="SOURCE_LANGUAGE" />网页一律会被翻译成<ph name="TARGET_LANGUAGE" />。</translation>
@@ -672,6 +673,7 @@
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
+<translation id="3304073249511302126">蓝牙扫描</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
 <translation id="3308738399950580893">广告</translation>
 <translation id="3320021301628644560">添加账单邮寄地址</translation>
@@ -1434,6 +1436,7 @@
 <translation id="5817918615728894473">配对</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{当您付款时，系统会从这张卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}other{当您付款时，系统会从您所选的卡中扣款，但不会将其真实卡号分享给此网站。为进一步增强安全保障，系统会生成一个临时的银行卡验证码 (CVC)。}}</translation>
 <translation id="5826507051599432481">公用名 (CN)</translation>
+<translation id="5830698870816298009">使用和移动摄像头</translation>
 <translation id="5838278095973806738">请勿在此网站上输入任何敏感信息（例如密码或信用卡信息），因为攻击者可能会盗取这些信息。</translation>
 <translation id="5851548754964597211">标签列表</translation>
 <translation id="5855253129151731373">此网站的主机名看起来和 <ph name="LOOKALIKE_DOMAIN" /> 很相似。攻击者有时会对域名做些令人难以发现的细微更改来仿冒网站。
@@ -1697,6 +1700,7 @@
 <translation id="6794951432696553238">从现在开始，您只需使用 Windows Hello 便能更快速地确认银行卡</translation>
 <translation id="681021252041861472">必填字段</translation>
 <translation id="6810899417690483278">自定义 ID</translation>
+<translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">串行端口</translation>
 <translation id="6825578344716086703">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书是使用弱签名算法（例如 SHA-1）签署的。这意味着服务器出示的安全凭据可能是伪造的，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="6826993739343257035">允许 AR？</translation>
@@ -2011,6 +2015,7 @@
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7871445724586827387">更改您的 Google 帐号密码</translation>
 <translation id="7874263914261512992">您刚刚在一个诈骗网站中输入了密码。Chrome 建议您立即前往 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 以及使用此密码的其他网站检查您保存的密码。</translation>
+<translation id="7877007680666472091">受保护内容 ID</translation>
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
 <translation id="7880146494886811634">保存地址</translation>
 <translation id="7882421473871500483">棕色</translation>

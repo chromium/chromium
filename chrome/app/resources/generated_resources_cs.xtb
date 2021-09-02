@@ -3620,7 +3620,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="485088796993065002">Weby mohou přehrávat zvuky při přehrávání hudby, videí a dalších médií</translation>
 <translation id="4853020600495124913">Otevřít v &amp;novém okně</translation>
 <translation id="4854317507773910281">Vyber účet rodiče, který to schválí</translation>
-<translation id="485480310608090163">Další nastavení a oprávnění</translation>
 <translation id="4856478137399998590">Datové služby jsou aktivovány a můžete je začít používat</translation>
 <translation id="4858792381671956233">Požádal(a) jsi rodiče o povolení návštěvy tohoto webu.</translation>
 <translation id="4858913220355269194">Fotbal</translation>
@@ -6625,6 +6624,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> používá nastavení proxy serveru z rozšíření</translation>
 <translation id="8097959162767603171">Administrátor nejdřív musí přijmout smluvní podmínky v seznamu zařízení Chrome v administrátorské konzoli.</translation>
 <translation id="8098616321286360457">Je vyžadováno připojení k síti</translation>
+<translation id="8099495042588009598">Další oprávnění</translation>
 <translation id="810068641062493918">Jazyk <ph name="LANGUAGE" /> je vybrán. Jeho výběr zrušíte stisknutím tlačítka Hledat a mezerníku.</translation>
 <translation id="810185532889603849">Vlastní barva</translation>
 <translation id="8101987792947961127">Je vyžadováno použití funkce Powerwash při dalším restartu</translation>

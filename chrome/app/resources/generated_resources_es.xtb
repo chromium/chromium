@@ -3619,7 +3619,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="485088796993065002">Los sitios podrían reproducir sonidos para ofrecer el audio de música, vídeos y otro contenido multimedia.</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige una cuenta parental para la aprobación</translation>
-<translation id="485480310608090163">Más ajustes y permisos</translation>
 <translation id="4856478137399998590">Tu servicio de datos móviles se ha activado y está listo para utilizarse.</translation>
 <translation id="4858792381671956233">Has solicitado permiso a tus padres para poder acceder a este sitio web</translation>
 <translation id="4858913220355269194">Balón</translation>
@@ -6625,6 +6624,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> está usando los ajustes de proxy de una extensión</translation>
 <translation id="8097959162767603171">Primero, tu administrador debe aceptar los términos del servicio en la lista de dispositivos de Chrome en la consola de administración.</translation>
 <translation id="8098616321286360457">Se necesita una conexión de red</translation>
+<translation id="8099495042588009598">Más permisos</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Pulsa Buscar y la barra espaciadora para deseleccionar el idioma.</translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>

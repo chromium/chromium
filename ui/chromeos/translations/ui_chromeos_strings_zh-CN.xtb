@@ -224,6 +224,7 @@
 <translation id="299638574917407533">法语（加拿大）</translation>
 <translation id="3003189754374775221">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="3003633581067744647">切换到缩略图视图</translation>
+<translation id="3016566519832145558">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。</translation>
 <translation id="3029114385395636667">若要离线使用 Google 文档、表格及幻灯片，请启用 Google 文档的离线功能。</translation>
 <translation id="303198083543495566">地理位置</translation>
 <translation id="3047197340186497470">中文大易</translation>

@@ -3619,7 +3619,6 @@
 <translation id="485088796993065002">音楽や動画などのメディアの音声を再生するサイトもあります。</translation>
 <translation id="4853020600495124913">新しいウィンドウで開く(&amp;N)</translation>
 <translation id="4854317507773910281">承認してもらう保護者のアカウントを選択</translation>
-<translation id="485480310608090163">その他の設定と権限</translation>
 <translation id="4856478137399998590">モバイル データ サービスがご利用いただけるようになりました</translation>
 <translation id="4858792381671956233">このサイトを開いてもよいかの問い合わせを保護者に送信しました</translation>
 <translation id="4858913220355269194">フリッツ</translation>
@@ -6624,6 +6623,7 @@
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> は拡張機能のプロキシ設定を使用しています</translation>
 <translation id="8097959162767603171">まず管理者の方に管理コンソールの Chrome デバイスリストの利用規約に同意していただく必要があります。</translation>
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
+<translation id="8099495042588009598">その他の権限</translation>
 <translation id="810068641062493918">「<ph name="LANGUAGE" />」が選択されています。選択を解除するには検索+Space キーを押してください。</translation>
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8101987792947961127">次回の再起動時に Powerwash が必要</translation>

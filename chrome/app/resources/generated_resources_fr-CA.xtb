@@ -1850,7 +1850,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="2912247081180973411">Fermer les fenêtres</translation>
 <translation id="2913331724188855103">Autoriser les sites à enregistrer et à lire les données des témoins (recommandé)</translation>
 <translation id="2915102088417824677">Consulter le journal d'activité</translation>
-<translation id="2915873080513663243">Analyse automatique</translation>
+<translation id="2915873080513663243">Recherche automatique</translation>
 <translation id="2916073183900451334">Appuyer sur la touche de tabulation dans une page Web permet de sélectionner des liens et des champs de formulaire</translation>
 <translation id="2916745397441987255">Rechercher dans les extensions</translation>
 <translation id="2918484644467055090">Impossible d'enregistrer cet appareil dans l'organisation à laquelle appartient votre compte, car il est marqué pour être géré par une autre organisation.</translation>
@@ -3622,7 +3622,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="485088796993065002">Les sites peuvent faire jouer du son pour diffuser de la musique, des vidéos et d'autres contenus multimédias</translation>
 <translation id="4853020600495124913">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="4854317507773910281">Sélectionner le compte parental pour l'approbation</translation>
-<translation id="485480310608090163">Plus de paramètres et d'autorisations</translation>
 <translation id="4856478137399998590">Votre service de données mobile est activé et prêt à l'emploi</translation>
 <translation id="4858792381671956233">Tu as demandé l'autorisation de tes parents pour consulter ce site</translation>
 <translation id="4858913220355269194">Fritz</translation>
@@ -6627,6 +6626,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> utilise les paramètres mandataires d'une extension</translation>
 <translation id="8097959162767603171">Votre administrateur doit tout d'abord accepter les conditions d'utilisation dans la liste d'appareils de la console d'administrateur de Chrome.</translation>
 <translation id="8098616321286360457">Connexion réseau requise</translation>
+<translation id="8099495042588009598">Autres autorisations</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> sélectionné. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour désélectionner cette langue.</translation>
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8101987792947961127">Réinitialisation « Powerwash » nécessaire au prochain démarrage</translation>

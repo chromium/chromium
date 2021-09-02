@@ -323,7 +323,9 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
 <translation id="2996809686854298943">URL-ja e detyrueshme</translation>
 <translation id="3006881078666935414">Nuk ka asnjë të dhënë përdorimi</translation>
+<translation id="301080557829842765">Udhëzuesi i privatësisë</translation>
 <translation id="3016635187733453316">Sigurohu që kjo pajisje të jetë e lidhur me internetin</translation>
+<translation id="3026955690410463085">Përfshi lidhjen</translation>
 <translation id="3029704984691124060">Frazat e kalimit nuk përputhen</translation>
 <translation id="3031225630520268969">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit"</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /></translation>
@@ -353,6 +355,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3220943972464248773">Për të sinkronizuar fjalëkalimet e tua, verifiko që je ti</translation>
 <translation id="3227557059438308877">Google Chrome si çelës sigurie</translation>
 <translation id="3232754137068452469">Aplikacioni i uebit</translation>
+<translation id="3234978181857588512">Ruaj te pajisja</translation>
 <translation id="3236059992281584593">1 minutë e mbetur</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3250563604907490871">Përshkrimet e imazheve do të vazhdojnë kur të lidhesh me Wi-Fi</translation>
@@ -480,6 +483,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3988213473815854515">Vendndodhja nuk lejohet</translation>
 <translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
+<translation id="4001236013802615636">Lejo që Google të marrë parasysh edhe disa tekste të faqes</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
 <translation id="4045764304651014138">Të dhënat e përdorimit</translation>
@@ -526,6 +530,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="4335835283689002019">Shfletimi i sigurt është joaktiv</translation>
 <translation id="4351244548802238354">Mbyll dialogun</translation>
 <translation id="4378154925671717803">Telefoni</translation>
+<translation id="438319986296050901">Ndaj vetëm kartën</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Po shkarkohet…</translation>
 <translation id="4404568932422911380">Nuk ka faqeshënues</translation>
@@ -589,6 +594,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4738836084190194332">Sinkronizimi i fundit: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4749960740855309258">Hap një skedë të re</translation>
+<translation id="4758061975920522644">Ndaj vetëm imazhin</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4763480195061959176">video</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 shkarkim përfundoi.}other{# shkarkime përfunduan.}}</translation>
@@ -752,6 +758,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5748802427693696783">Kaloi në skedat standarde</translation>
 <translation id="5749068826913805084">Chrome ka nevojë për qasje te hapësira ruajtëse për të shkarkuar skedarë.</translation>
 <translation id="5749237766298580851">Joaktiv <ph name="SEPARATOR" /> Nuk rekomandohet</translation>
+<translation id="5752232708629533680">Ndaj vetëm imazhin GIF</translation>
 <translation id="5754350196967618083">"Zbulo" nuk mund të rifreskohet</translation>
 <translation id="5763382633136178763">Skedat "e fshehura"</translation>
 <translation id="5763514718066511291">Trokit për të kopjuar URL-në për këtë aplikacion</translation>
@@ -814,6 +821,7 @@ Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone
 <translation id="604996488070107836">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të një gabimi të panjohur.</translation>
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
+<translation id="6069177176307973611">Rishiko cilësimet e privatësisë dhe të sigurisë</translation>
 <translation id="6085886413119427067">Përcakton mënyrën e lidhjes me sajtet e uebit nëpërmjet një lidhjeje të sigurt</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> orë të mbetura</translation>
 <translation id="6108923351542677676">Konfigurimi në vazhdim...</translation>
@@ -962,6 +970,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
+<translation id="6924672435311694692">Shiko rezultate më të mira</translation>
 <translation id="6929699136511445623">Aktivizo sinkronizimin e sistemit Android</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
 <translation id="694267552845942083">Aktualisht po personalizon cilësimet e "Sinkronizimit". Për të përfunduar aktivizimin e sinkronizimit, trokit butonin "Konfirmo" pranë fundit të ekranit. Ngjitu lart</translation>
@@ -980,6 +989,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7027549951530753705">Restauruar në datën <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Pozicionoje kodin QR ose barkodin në këtë kornizë.</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Të merren përshkrimet e imazheve?</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7063006564040364415">Nuk mund të lidhej me serverin e sinkronizimit.</translation>
@@ -1208,6 +1218,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8424781820952413435">Faqja u dërgua. Për ta parë, hap Chrome në <ph name="DEVICE_TYPE" /> tënde</translation>
 <translation id="8427875596167638501">Skeda e shikimit paraprak është gjysmë e hapur</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
+<translation id="8430824733382774043">Ndaj vetëm pamjen e ekranit</translation>
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Gjuha është gati, rinise <ph name="APP_NAME" />.</translation>
 <translation id="8442258441309440798">Nuk ofrohet asnjë histori</translation>
@@ -1333,6 +1344,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9155898266292537608">Mund të kërkosh po ashtu me një trokitje të shpejtë te një fjalë</translation>
+<translation id="9158770349521403363">Ndaj vetëm përmbajtjen</translation>
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolluar 1 minutë më parë}other{Kontrolluar # minuta më parë}}</translation>
 <translation id="9204836675896933765">1 skedar i mbetur</translation>

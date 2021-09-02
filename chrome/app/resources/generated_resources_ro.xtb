@@ -3621,7 +3621,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="485088796993065002">Site-urile pot reda sunet pentru muzică, videoclipuri și alte tipuri de conținut media</translation>
 <translation id="4853020600495124913">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="4854317507773910281">Alege contul de părinte pentru aprobare</translation>
-<translation id="485480310608090163">Mai multe setări și permisiuni</translation>
 <translation id="4856478137399998590">Serviciul de date mobile este activat și gata de utilizare</translation>
 <translation id="4858792381671956233">Ți-ai întrebat părinții dacă poți accesa acest site</translation>
 <translation id="4858913220355269194">Jucător</translation>
@@ -6626,6 +6625,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> folosește setările proxy dintr-o extensie</translation>
 <translation id="8097959162767603171">Mai întâi, administratorul trebuie să accepte Termenii și condițiile din lista de dispozitive Chrome din Consola de administrare.</translation>
 <translation id="8098616321286360457">Este necesară o conexiune la rețea</translation>
+<translation id="8099495042588009598">Mai multe permisiuni</translation>
 <translation id="810068641062493918">S-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a deselecta.</translation>
 <translation id="810185532889603849">Culoare personalizată</translation>
 <translation id="8101987792947961127">Este necesară lansarea Powerwash la următoarea repornire</translation>
