@@ -318,6 +318,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.CertVerifier.InvalidRsaPssParams" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>bcb@chromium.org</owner>
+  <owner>rsleevi@chromium.org</owner>
+  <summary>
+    While parsing an RSASSA-PSS signature algorithm, whether any invalid
+    parameters were encountered that currently are not enforced as parsing
+    errors.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Net.CertVerifier.NameNormalizationPrivateRoots"
     enum="NetCertificateNameNormalization" expires_after="2021-12-12">
   <owner>mattm@chromium.org</owner>
