@@ -35,6 +35,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
+#include "components/component_updater/android/components_info_holder.h"
 #include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
 #include "components/update_client/utils.h"
 
@@ -147,12 +148,15 @@ void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env,
   delete this;
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
+std::string AndroidComponentLoaderPolicy::GetComponentId() const {
   std::vector<uint8_t> hash;
   loader_policy_->GetHash(&hash);
-  return base::android::ConvertUTF8ToJavaString(
-      env, update_client::GetCrxIdFromPublicKeyHash(hash));
+  return update_client::GetCrxIdFromPublicKeyHash(hash);
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
+  return base::android::ConvertUTF8ToJavaString(env, GetComponentId());
 }
 
 void AndroidComponentLoaderPolicy::NotifyNewVersion(
@@ -174,6 +178,7 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
 
   RecordComponentLoadStatusHistogram(loader_policy_->GetMetricsSuffix(),
                                      ComponentLoadResult::kComponentLoaded);
+  ComponentsInfoHolder::GetInstance()->AddComponent(GetComponentId(), version);
   loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
 }
 

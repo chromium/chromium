@@ -78,6 +78,8 @@ static_library("embedded_component_loader") {
     "component_loader_policy.cc",
     "component_loader_policy.h",
     "component_loader_policy_forward.h",
+    "components_info_holder.cc",
+    "components_info_holder.h",
   ]
   deps = [
     ":embedded_component_loader_jni_headers",

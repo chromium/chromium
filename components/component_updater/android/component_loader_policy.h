@@ -134,6 +134,8 @@ class AndroidComponentLoaderPolicy {
   // `org.chromium.components.component_updater.ComponentLoaderPolicy`.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  std::string GetComponentId() const;
+
   void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
                         std::unique_ptr<base::DictionaryValue> manifest);
 

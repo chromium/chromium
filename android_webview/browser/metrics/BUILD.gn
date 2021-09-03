@@ -22,6 +22,7 @@ source_set("metrics") {
     "//android_webview/common",
     "//base",
     "//components/component_updater",
+    "//components/component_updater/android:embedded_component_loader",
     "//components/embedder_support/android/metrics",
     "//components/metrics",
     "//components/metrics:component_metrics",
