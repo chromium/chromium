@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_PROTOCOL_HANDLER_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_PROTOCOL_HANDLER_MANAGER_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROTOCOL_HANDLER_MANAGER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROTOCOL_HANDLER_MANAGER_H_
 
 #include <vector>
 
@@ -13,11 +13,10 @@
 namespace web_app {
 
 // Fake implementation of WebAppProtocolHandlerManager
-// TODO(crbug.com/1225132): Rename FakeProtocolHandlerManager.
-class FakeProtocolHandlerManager : public WebAppProtocolHandlerManager {
+class FakeWebAppProtocolHandlerManager : public WebAppProtocolHandlerManager {
  public:
-  explicit FakeProtocolHandlerManager(Profile* profile);
-  ~FakeProtocolHandlerManager() override;
+  explicit FakeWebAppProtocolHandlerManager(Profile* profile);
+  ~FakeWebAppProtocolHandlerManager() override;
 
   void RegisterProtocolHandler(
       const AppId& app_id,
@@ -33,4 +32,4 @@ class FakeProtocolHandlerManager : public WebAppProtocolHandlerManager {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_PROTOCOL_HANDLER_MANAGER_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_FAKE_WEB_APP_PROTOCOL_HANDLER_MANAGER_H_

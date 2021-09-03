@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/fake_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -21,7 +21,7 @@ class ProtocolHandlerManagerTest : public WebAppTest {
         std::make_unique<TestWebAppRegistryController>();
     test_registry_controller_->SetUp(profile());
     protocol_handler_manager_ =
-        std::make_unique<FakeProtocolHandlerManager>(profile());
+        std::make_unique<FakeWebAppProtocolHandlerManager>(profile());
 
     protocol_handler_manager_->SetSubsystems(&app_registrar());
 
@@ -42,7 +42,7 @@ class ProtocolHandlerManagerTest : public WebAppTest {
     return web_app;
   }
 
-  FakeProtocolHandlerManager& protocol_handler_manager() {
+  FakeWebAppProtocolHandlerManager& protocol_handler_manager() {
     return *protocol_handler_manager_.get();
   }
 
@@ -54,7 +54,7 @@ class ProtocolHandlerManagerTest : public WebAppTest {
 
  private:
   std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
-  std::unique_ptr<FakeProtocolHandlerManager> protocol_handler_manager_;
+  std::unique_ptr<FakeWebAppProtocolHandlerManager> protocol_handler_manager_;
 };
 
 TEST_F(ProtocolHandlerManagerTest, TestGetHandlersFor) {

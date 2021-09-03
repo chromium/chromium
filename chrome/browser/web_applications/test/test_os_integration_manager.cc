@@ -8,8 +8,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
-#include "chrome/browser/web_applications/test/fake_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
+#include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
@@ -37,7 +37,7 @@ TestOsIntegrationManager::TestOsIntegrationManager(
   }
   if (!this->protocol_handler_manager()) {
     set_protocol_handler_manager(
-        std::make_unique<FakeProtocolHandlerManager>(profile));
+        std::make_unique<FakeWebAppProtocolHandlerManager>(profile));
   }
   if (!this->url_handler_manager()) {
     set_url_handler_manager(std::make_unique<FakeUrlHandlerManager>(profile));
