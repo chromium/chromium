@@ -3047,8 +3047,16 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
       new_style->SetPosition(child->StyleRef().GetPosition());
 
     if (UNLIKELY(IsA<LayoutNGTextCombine>(child))) {
-      // "text-combine-width-after-style-change.html" reaches here.
-      StyleAdjuster::AdjustStyleForTextCombine(*new_style);
+      if (new_style->IsHorizontalWritingMode()) {
+        // |LayoutNGTextCombine| will be removed when recalculating style for
+        // <br> or <wbr>.
+        // See StyleToHorizontalWritingModeWithWordBreak
+        DCHECK(child->SlowFirstChild()->IsBR() ||
+               To<LayoutText>(child->SlowFirstChild())->IsWordBreak());
+      } else {
+        // "text-combine-width-after-style-change.html" reaches here.
+        StyleAdjuster::AdjustStyleForTextCombine(*new_style);
+      }
     }
 
     UpdateAnonymousChildStyle(child, *new_style);

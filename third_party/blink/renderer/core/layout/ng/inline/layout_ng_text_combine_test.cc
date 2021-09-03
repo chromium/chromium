@@ -1223,6 +1223,29 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
       << "There are no wrapper.";
 }
 
+TEST_F(LayoutNGTextCombineTest, StyleToHorizontalWritingModeWithWordBreak) {
+  InsertStyleElement(
+      "wbr { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root><wbr></div>");
+  auto& root = *GetElementById("root");
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutWordBreak WBR
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
+
+  root.setAttribute("style", "writing-mode: horizontal-tb");
+  RunDocumentLifecycle();
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
+  +--LayoutWordBreak WBR
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
+}
+
 TEST_F(LayoutNGTextCombineTest, StyleToVerticalWritingMode) {
   InsertStyleElement("c { text-combine-upright: all; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
