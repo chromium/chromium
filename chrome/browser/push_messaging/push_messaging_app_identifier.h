@@ -116,7 +116,7 @@ class PushMessagingAppIdentifier {
 
  private:
   friend class PushMessagingAppIdentifierTest;
-  friend class PushMessagingBrowserTest;
+  friend class PushMessagingBrowserTestBase;
   FRIEND_TEST_ALL_PREFIXES(PushMessagingAppIdentifierTest, FindLegacy);
 
   // Generates a new app identifier for legacy GCM (not modern InstanceID).

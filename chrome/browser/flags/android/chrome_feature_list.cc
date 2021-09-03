@@ -17,6 +17,7 @@
 #include "chrome/browser/flags/jni_headers/ChromeFeatureList_jni.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
+#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/video_tutorials/switches.h"
@@ -119,6 +120,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPrivacyReview,
     &features::kPrivacySandboxSettings2,
     &features::kPrioritizeBootstrapTasks,
+    &features::kPushMessagingDisallowSenderIDs,
     &features::kPwaUpdateDialogForNameAndIcon,
     &features::kQuietNotificationPrompts,
     &features::kRequestDesktopSiteForTablets,

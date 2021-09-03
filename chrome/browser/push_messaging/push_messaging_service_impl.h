@@ -192,7 +192,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       base::OnceClosure closure);
 
  private:
-  friend class PushMessagingBrowserTest;
+  friend class PushMessagingBrowserTestBase;
   friend class PushMessagingServiceTest;
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
