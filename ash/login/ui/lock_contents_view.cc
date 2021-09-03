@@ -556,6 +556,13 @@ bool LockContentsView::TestApi::IsOobeDialogVisible() const {
   return view_->oobe_dialog_visible_;
 }
 
+FingerprintState LockContentsView::TestApi::GetFingerPrintState(
+    const AccountId& account_id) const {
+  UserState* user_state = view_->FindStateForUser(account_id);
+  DCHECK(user_state);
+  return user_state->fingerprint_state;
+}
+
 LockContentsView::UserState::UserState(const LoginUserInfo& user_info)
     : account_id(user_info.basic_user_info.account_id) {
   fingerprint_state = user_info.fingerprint_state;

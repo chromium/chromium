@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
@@ -153,6 +153,7 @@ class ScreenLocker
   // Hide the screen locker.
   static void Hide();
 
+  // we should probably not call it anymore
   void RefreshPinAndFingerprintTimeout();
 
   // Saves sync password hash and salt to user profile prefs based on
@@ -167,6 +168,9 @@ class ScreenLocker
   void SetAuthenticatorsForTesting(
       scoped_refptr<Authenticator> authenticator,
       scoped_refptr<ExtendedAuthenticator> extended_authenticator);
+
+  static void SetClocksForTesting(const base::Clock* clock,
+                                  const base::TickClock* tick_clock);
 
   // device::mojom::FingerprintObserver:
   void OnRestarted() override;
@@ -311,7 +315,7 @@ class ScreenLocker
 
   // Password is required every 24 hours in order to use fingerprint unlock.
   // This is used to update fingerprint state when password is required.
-  base::OneShotTimer update_fingerprint_state_timer_;
+  std::unique_ptr<base::WallClockTimer> update_fingerprint_state_timer_;
 
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 

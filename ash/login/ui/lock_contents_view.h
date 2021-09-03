@@ -111,6 +111,7 @@ class ASH_EXPORT LockContentsView
     LoginUserView* FindUserView(const AccountId& account_id);
     bool RemoveUser(const AccountId& account_id);
     bool IsOobeDialogVisible() const;
+    FingerprintState GetFingerPrintState(const AccountId& account_id) const;
 
    private:
     LockContentsView* const view_;

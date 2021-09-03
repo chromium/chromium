@@ -68,7 +68,13 @@ class QuickUnlockStorageTestApi {
     quick_unlock_storage_->last_strong_auth_ -= time_delta;
   }
 
-  bool HasStrongAuthInfo() {
+  base::TimeDelta TimeSinceLastStrongAuth() const {
+    EXPECT_TRUE(HasStrongAuthInfo());
+    return quick_unlock_storage_->clock_->Now() -
+           quick_unlock_storage_->last_strong_auth_;
+  }
+
+  bool HasStrongAuthInfo() const {
     return !quick_unlock_storage_->last_strong_auth_.is_null();
   }
 
@@ -95,8 +101,7 @@ TEST_F(QuickUnlockStorageUnitTest,
   base::TimeDelta expiration_time = GetExpirationTime(pref_service);
   test_api.ReduceRemainingStrongAuthTimeBy(expiration_time);
 
-  EXPECT_TRUE(quick_unlock_storage->TimeSinceLastStrongAuth() >=
-              (expiration_time / 2));
+  EXPECT_TRUE(test_api.TimeSinceLastStrongAuth() >= (expiration_time / 2));
 }
 
 // Verifies that by altering the password confirmation preference, the

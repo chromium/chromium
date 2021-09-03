@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_screen.h"
+#include "base/power_monitor/power_monitor_device_source.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -109,6 +112,10 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
     // This difference is important for fingerprint unlock policy so tests fake
     // both clock and tick clock, even though only clock is used by
     // quick unlock storage directly.
+    // Sets clocks to Now() because a first strong auth is marked at session
+    // initialization, with the default clock (before the test clock could be
+    // set) and this strong auth mark is used by
+    // ScreenLocker::update_fingerprint_state_timer_ as start time.
     base::Time now = base::Time::Now();
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     test_clock_->SetNow(now);
@@ -118,18 +125,75 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
     test_tick_clock_->SetNowTicks(now_ticks);
   }
 
-  void MarkStrongAuth() { quick_unlock_storage_->MarkStrongAuth(); }
-
   bool HasStrongAuth() { return quick_unlock_storage_->HasStrongAuth(); }
 
   void AdvanceTime(base::TimeDelta time_change, base::TimeDelta sleep_time) {
     // System time is paused when system goes to sleep but real_time is not
     // so amount of time by which tick clock is advanced should not include
     // sleep time.
-    ASSERT_GT(time_change, sleep_time);
+    ASSERT_GE(time_change, sleep_time);
+
+    // `ScreenLocker::update_fingerprint_state_timer_` is a WallClockTimer,
+    // implementing PowerSuspendObserver.
+    base::PowerMonitorDeviceSource::HandleSystemSuspending();
     test_clock_->Advance(time_change);
     test_tick_clock_->Advance(time_change - sleep_time);
+    base::PowerMonitorDeviceSource::HandleSystemResumed();
   }
+
+  void ShowLockScreenAndAdvanceTime(base::TimeDelta time_change,
+                                    base::TimeDelta sleep_time) {
+    ScreenLocker::SetClocksForTesting(test_clock_.get(),
+                                      test_tick_clock_.get());
+
+    // Show lock screen and wait until it is shown.
+    ScreenLockerTester tester;
+    tester.Lock();
+
+    EXPECT_TRUE(HasStrongAuth());
+    base::TimeDelta expiration_time = GetExpirationTime();
+    AdvanceTime(time_change, sleep_time);
+
+    bool fingerprint_available = time_change < expiration_time;
+
+    LockScreen::TestApi lock_screen_test(LockScreen::Get());
+    LockContentsView::TestApi lock_contents_test(
+        lock_screen_test.contents_view());
+    // Allow lock screen timer to be executed.
+    base::RunLoop().RunUntilIdle();
+
+    FingerprintState actual_state =
+        lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
+    FingerprintState expected_state =
+        fingerprint_available ? FingerprintState::AVAILABLE_DEFAULT
+                              : FingerprintState::DISABLED_FROM_TIMEOUT;
+    EXPECT_EQ(actual_state, expected_state);
+    EXPECT_EQ(fingerprint_available, HasStrongAuth());
+
+    // Fingerprint unlock is possible iff we have strong auth. After
+    // authentication attempt with fingerprint, the screen is locked if we
+    // don't.
+    bool screen_locked = !HasStrongAuth();
+    // Verify whether or not fingerprint unlock is possible and if the user can
+    // or cannot log in.
+    AuthenticateWithFingerprint();
+    EXPECT_EQ(screen_locked, tester.IsLocked());
+    EXPECT_EQ(
+        1,
+        FakeSessionManagerClient::Get()->notify_lock_screen_shown_call_count());
+    session_manager::SessionState expected_session_state =
+        screen_locked ? session_manager::SessionState::LOCKED
+                      : session_manager::SessionState::ACTIVE;
+    session_manager::SessionState actual_session_state =
+        session_manager::SessionManager::Get()->session_state();
+    EXPECT_EQ(expected_session_state, actual_session_state);
+    EXPECT_EQ(!screen_locked, FakeSessionManagerClient::Get()
+                                  ->notify_lock_screen_dismissed_call_count());
+  }
+
+ protected:
+  std::unique_ptr<base::SimpleTestClock> test_clock_;
+  std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
 
  private:
   // Callback function for FakeBiodClient->StartEnrollSession.
@@ -145,99 +209,26 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
 
   QuickUnlockStorage* quick_unlock_storage_;
 
-  std::unique_ptr<base::SimpleTestClock> test_clock_;
-  std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
-
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintUnlockTest);
 };
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintNotTimedOutTest) {
-  // Show lock screen and wait until it is shown.
-  ScreenLockerTester tester;
-  tester.Lock();
-
-  // Mark strong auth, checks for strong auth.
-  // The default is one day, so verify moving the last strong auth time back 12
-  // hours(half of the expiration time) should not request strong auth.
-  MarkStrongAuth();
-  EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
-  AdvanceTime(expiration_time / 2, base::TimeDelta::FromSeconds(0));
-  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(HasStrongAuth());
-
-  // Verify that fingerprint unlock is possible and the user can log in.
-  AuthenticateWithFingerprint();
-  EXPECT_FALSE(tester.IsLocked());
-  EXPECT_EQ(
-      1,
-      FakeSessionManagerClient::Get()->notify_lock_screen_shown_call_count());
-  EXPECT_EQ(session_manager::SessionState::ACTIVE,
-            session_manager::SessionManager::Get()->session_state());
-  EXPECT_EQ(1, FakeSessionManagerClient::Get()
-                   ->notify_lock_screen_dismissed_call_count());
+  ShowLockScreenAndAdvanceTime(expiration_time / 2,
+                               base::TimeDelta::FromSeconds(0));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FingerprintTimedOutTest) {
-  // Show lock screen and wait until it is shown.
-  ScreenLockerTester tester;
-  tester.Lock();
-
-  // Mark strong auth, checks for strong auth.
-  // The default is one day, so verify moving the last strong auth time back 12
-  // hours(half of the expiration time) should not request strong auth.
-  MarkStrongAuth();
-  EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
-  AdvanceTime(expiration_time, base::TimeDelta::FromSeconds(0));
-  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(HasStrongAuth());
-
-  // Verify that fingerprint unlock is not possible and the user cannot log in.
-  AuthenticateWithFingerprint();
-  EXPECT_TRUE(tester.IsLocked());
-  EXPECT_EQ(
-      1,
-      FakeSessionManagerClient::Get()->notify_lock_screen_shown_call_count());
-  EXPECT_EQ(session_manager::SessionState::LOCKED,
-            session_manager::SessionManager::Get()->session_state());
-  EXPECT_EQ(0, FakeSessionManagerClient::Get()
-                   ->notify_lock_screen_dismissed_call_count());
+  ShowLockScreenAndAdvanceTime(expiration_time,
+                               base::TimeDelta::FromSeconds(0));
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, TimeoutIncludesSuspendedTime) {
-  // Show lock screen and wait until it is shown.
-  ScreenLockerTester tester;
-  tester.Lock();
-
-  // Mark strong auth, checks for strong auth.
-  // The default is one day, so verify moving the last strong auth time back 12
-  // hours(half of the expiration time) should not request strong auth.
-  MarkStrongAuth();
-  EXPECT_TRUE(HasStrongAuth());
   base::TimeDelta expiration_time = GetExpirationTime();
-  AdvanceTime(expiration_time, expiration_time / 2);
-  ScreenLocker::default_screen_locker()->RefreshPinAndFingerprintTimeout();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(HasStrongAuth());
-
-  // Verify that fingerprint unlock is not possible and the user cannot log in.
-  AuthenticateWithFingerprint();
-  EXPECT_TRUE(tester.IsLocked());
-  EXPECT_EQ(
-      1,
-      FakeSessionManagerClient::Get()->notify_lock_screen_shown_call_count());
-  EXPECT_EQ(session_manager::SessionState::LOCKED,
-            session_manager::SessionManager::Get()->session_state());
-  EXPECT_EQ(0, FakeSessionManagerClient::Get()
-                   ->notify_lock_screen_dismissed_call_count());
+  ShowLockScreenAndAdvanceTime(expiration_time, expiration_time / 2);
 }
 
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, PRE_FingerprintRecordsGone) {
@@ -303,15 +294,14 @@ constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
 
 // Verifies that fingerprint auth success is recorded correctly.
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
+  ScreenLocker::SetClocksForTesting(test_clock_.get(), test_tick_clock_.get());
+
   // Show lock screen and wait until it is shown.
   ScreenLockerTester tester;
   tester.Lock();
+
   base::HistogramTester histogram_tester;
 
-  // Mark strong auth, checks for strong auth.
-  // The default is one day, so verify moving the last strong auth time back 12
-  // hours (half of the expiration time) should not request strong auth.
-  MarkStrongAuth();
   EXPECT_TRUE(HasStrongAuth());
   FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
                                           biod::SCAN_RESULT_TOO_FAST);
