@@ -3530,7 +3530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.SearchEngineOverrides" units="units"
-    expires_after="2021-10-04">
+    expires_after="2022-10-04">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
@@ -3645,7 +3645,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.StartupPagesOverrides" units="units"
-    expires_after="2021-10-10">
+    expires_after="2022-10-10">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
   <summary>
