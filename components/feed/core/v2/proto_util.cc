@@ -144,6 +144,14 @@ feedwire::Request CreateFeedQueryRequest(
         feedwire::Capability::OPEN_VIDEO_COMMAND);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedStamp)) {
+    feed_request.add_client_capability(
+        feedwire::Capability::SILK_AMP_OPEN_COMMAND);
+    feed_request.add_client_capability(feedwire::Capability::AMP_STORY_PLAYER);
+    feed_request.add_client_capability(
+        feedwire::Capability::AMP_GROUP_DATASTORE);
+  }
+
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);

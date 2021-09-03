@@ -67,6 +67,9 @@ extern const base::Feature kFeedImageMemoryCacheSizePercentage;
 // feeds quickly.
 extern const base::Feature kFeedBackToTop;
 
+// Feature that enables StAMP cards in the feed.
+extern const base::Feature kFeedStamp;
+
 std::string GetFeedReferrerUrl();
 
 }  // namespace feed

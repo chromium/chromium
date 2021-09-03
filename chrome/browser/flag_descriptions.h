@@ -1788,6 +1788,9 @@ extern const char kFeedBackToTopDescription[];
 extern const char kFeedInteractiveRefreshName[];
 extern const char kFeedInteractiveRefreshDescription[];
 
+extern const char kFeedStampName[];
+extern const char kFeedStampDescription[];
+
 extern const char kFillingPasswordsFromAnyOriginName[];
 extern const char kFillingPasswordsFromAnyOriginDescription[];
 

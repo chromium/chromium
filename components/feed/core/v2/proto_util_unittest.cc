@@ -168,5 +168,23 @@ TEST(ProtoUtilTest, AutoplayEnabled) {
               testing::Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
 }
 
+TEST(ProtoUtilTest, StampEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedStamp}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::SILK_AMP_OPEN_COMMAND));
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::AMP_STORY_PLAYER));
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
+}
+
 }  // namespace
 }  // namespace feed

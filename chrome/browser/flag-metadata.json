@@ -3120,6 +3120,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "feed-stamp",
+    "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "feed-v2-autoplay",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 97

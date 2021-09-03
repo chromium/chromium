@@ -3117,6 +3117,9 @@ const char kFeedInteractiveRefreshName[] = "Refresh feeds";
 const char kFeedInteractiveRefreshDescription[] =
     "Enables refreshing feeds triggered by the users.";
 
+const char kFeedStampName[] = "StAMP cards in the feed";
+const char kFeedStampDescription[] = "Enables StAMP cards in the feed.";
+
 const char kFillingPasswordsFromAnyOriginName[] =
     "Filling passwords from any origin";
 const char kFillingPasswordsFromAnyOriginDescription[] =
