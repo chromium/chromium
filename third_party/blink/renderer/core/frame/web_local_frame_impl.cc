@@ -536,13 +536,13 @@ class PaintPreviewContext : public PrintContext {
   ~PaintPreviewContext() override = default;
 
   bool Capture(cc::PaintCanvas* canvas,
-               FloatSize size,
+               const IntRect& bounds,
                bool include_linked_destinations) {
     // This code is based on ChromePrintContext::SpoolSinglePage()/SpoolPage().
     // It differs in that it:
     //   1. Uses a different set of flags for painting and the graphics context.
-    //   2. Paints a single page of |size| rather than a specific page in a
-    //      reformatted document.
+    //   2. Paints a single "page" of `bounds` size without applying print
+    //   modifications to the page.
     //   3. Does no scaling.
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
@@ -551,7 +551,6 @@ class PaintPreviewContext : public PrintContext {
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
       return false;
-    FloatRect bounds(0, 0, size.Width(), size.Height());
     PaintRecordBuilder builder;
     builder.Context().SetPaintPreviewTracker(canvas->GetPaintPreviewTracker());
 
@@ -567,8 +566,8 @@ class PaintPreviewContext : public PrintContext {
     if (include_linked_destinations)
       flags |= kGlobalPaintAddUrlMetadata;
 
-    frame_view->PaintContentsOutsideOfLifecycle(
-        builder.Context(), flags, CullRect(RoundedIntRect(bounds)));
+    frame_view->PaintContentsOutsideOfLifecycle(builder.Context(), flags,
+                                                CullRect(bounds));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -577,7 +576,7 @@ class PaintPreviewContext : public PrintContext {
       DrawingRecorder line_boundary_recorder(
           builder.Context(), builder,
           DisplayItem::kPrintedContentDestinationLocations);
-      OutputLinkedDestinations(builder.Context(), RoundedIntRect(bounds));
+      OutputLinkedDestinations(builder.Context(), bounds);
     }
     canvas->drawPicture(builder.EndRecording(property_tree_state.Unalias()));
     return true;
@@ -1794,7 +1793,6 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
                                             cc::PaintCanvas* canvas,
                                             bool include_linked_destinations,
                                             bool skip_accelerated_content) {
-  FloatSize float_bounds(bounds.width(), bounds.height());
   bool success = false;
   {
     Document::PaintPreviewScope paint_preview(
@@ -1805,7 +1803,7 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
     GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());
-    success = paint_preview_context->Capture(canvas, float_bounds,
+    success = paint_preview_context->Capture(canvas, IntRect(bounds),
                                              include_linked_destinations);
     GetFrame()->EndPaintPreview();
   }
