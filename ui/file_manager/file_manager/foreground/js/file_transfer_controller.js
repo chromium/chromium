@@ -36,6 +36,19 @@ import {ListContainer} from './ui/list_container.js';
 const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
 
 /**
+ * The key under which we store if the file content is missing. This property
+ * tells us if we are attemptint to use a drive file while Drive is
+ * disconnected.
+ */
+const MISSING_FILE_CONTENTS = 'missingFileContents';
+
+/**
+ * The key under which we store the root of the file system of files on which
+ * we operate. This allows us to set the correct drag effect.
+ */
+const SOURCE_ROOT_URL = 'sourceRootURL';
+
+/**
  * @typedef {{file:?File, externalFileUrl:string}}
  */
 let FileAsyncData;
@@ -312,7 +325,7 @@ export class FileTransferController {
     // Tag to check it's filemanager data.
     clipboardData.setData('fs/tag', 'filemanager-data');
     clipboardData.setData(
-        'fs/sourceRootURL', sourceVolumeInfo.fileSystem.root.toURL());
+        `fs/${SOURCE_ROOT_URL}`, sourceVolumeInfo.fileSystem.root.toURL());
 
     const sourceURLs = util.entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
@@ -321,7 +334,7 @@ export class FileTransferController {
     clipboardData.setData('fs/effectallowed', effectAllowed);
 
     clipboardData.setData(
-        'fs/missingFileContents', missingFileContents.toString());
+        `fs/${MISSING_FILE_CONTENTS}`, missingFileContents.toString());
   }
 
   /**
@@ -356,15 +369,26 @@ export class FileTransferController {
    * @private
    */
   getDragAndDropGlobalData_() {
-    if (window[DRAG_AND_DROP_GLOBAL_DATA]) {
-      return window[DRAG_AND_DROP_GLOBAL_DATA];
-    }
-
-    // Dragging from other tabs/windows.
-    const views = chrome && chrome.extension ? chrome.extension.getViews() : [];
-    for (let i = 0; i < views.length; i++) {
-      if (views[i][DRAG_AND_DROP_GLOBAL_DATA]) {
-        return views[i][DRAG_AND_DROP_GLOBAL_DATA];
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      const sourceRootURL =
+          storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+      const missingFileContents = storage.getItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+      if (sourceRootURL !== null && missingFileContents !== null) {
+        return {sourceRootURL, missingFileContents};
+      }
+    } else {
+      // TODO(b/198106171): Remove this code.
+      if (window[DRAG_AND_DROP_GLOBAL_DATA]) {
+        return window[DRAG_AND_DROP_GLOBAL_DATA];
+      }
+      // Dragging from other tabs/windows.
+      const views = chrome.extension.getViews();
+      for (let i = 0; i < views.length; i++) {
+        if (views[i][DRAG_AND_DROP_GLOBAL_DATA]) {
+          return views[i][DRAG_AND_DROP_GLOBAL_DATA];
+        }
       }
     }
     return null;
@@ -381,7 +405,7 @@ export class FileTransferController {
    * @private
    */
   getSourceRootURL_(clipboardData, dragAndDropData) {
-    const sourceRootURL = clipboardData.getData('fs/sourceRootURL');
+    const sourceRootURL = clipboardData.getData(`fs/${SOURCE_ROOT_URL}`);
     if (sourceRootURL) {
       return sourceRootURL;
     }
@@ -401,7 +425,7 @@ export class FileTransferController {
    * @private
    */
   isMissingFileContents_(clipboardData) {
-    let data = clipboardData.getData('fs/missingFileContents');
+    let data = clipboardData.getData(`fs/${MISSING_FILE_CONTENTS}`);
     if (!data) {
       // |clipboardData| in protected mode.
       const globalData = this.getDragAndDropGlobalData_();
@@ -704,10 +728,22 @@ export class FileTransferController {
 
     dataTransfer.setDragImage(thumbnail.element, thumbnail.x, thumbnail.y);
 
-    window[DRAG_AND_DROP_GLOBAL_DATA] = {
-      sourceRootURL: dataTransfer.getData('fs/sourceRootURL'),
-      missingFileContents: dataTransfer.getData('fs/missingFileContents'),
-    };
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      storage.setItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
+          dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
+      storage.setItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`,
+          dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`));
+    } else {
+      // TODO(b/198106171): Remove this code.
+      window[DRAG_AND_DROP_GLOBAL_DATA] = {
+        sourceRootURL: dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`),
+        missingFileContents:
+            dataTransfer.getData(`fs/${MISSING_FILE_CONTENTS}`),
+      };
+    }
   }
 
   /**
@@ -723,7 +759,15 @@ export class FileTransferController {
     const container = this.document_.body.querySelector('#drag-container');
     container.textContent = '';
     this.clearDropTarget_();
-    delete window[DRAG_AND_DROP_GLOBAL_DATA];
+    if (window.isSWA) {
+      const storage = window.localStorage;
+      storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
+      storage.removeItem(
+          `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
+    } else {
+      // TODO(b/198106171): Remove this code.
+      delete window[DRAG_AND_DROP_GLOBAL_DATA];
+    }
   }
 
   /**

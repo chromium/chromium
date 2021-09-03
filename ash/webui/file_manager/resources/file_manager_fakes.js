@@ -5,9 +5,6 @@
 /** @suppress {checkTypes} */
 window.chrome.extension = {
   inIncognitoContext: false,
-  getViews() {
-    return [];
-  },
 };
 
 window.DriveSyncHandler = class extends EventTarget {
