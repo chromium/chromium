@@ -399,11 +399,14 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since Mojo calls is deferred on the prerendering.
-  content::ExecuteScriptAsync(prerendered_frame_host, R"(
-    var requestLEScanPromise = navigator.bluetooth.requestLEScan({
-    acceptAllAdvertisements: true});
-  )");
+  // A SecurityError is thrown when there is no user gesture.
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result = EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestLEScan({acceptAllAdvertisements: true});)",
+                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+
   // The prerendering doesn't show the bluetoothscanning prompt.
   EXPECT_FALSE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
   // ScanningClient is not created in the prerendering.
@@ -422,6 +425,12 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
       adapter());
 
   EXPECT_CALL(*adapter(), AddObserver(_));
+
+  // Scanning after the prerendering activation to ensure it shows the prompt on
+  // the activated page.
+  EXPECT_TRUE(ExecJs(GetWebContents()->GetMainFrame(), R"(
+      var requestLEScanPromise = navigator.bluetooth.requestLEScan({
+        acceptAllAdvertisements: true});)"));
   // Waits for ShowBluetoothScanningPrompt() since the page is activated.
   GetBluetoothDelegate()->WaitForShowBluetoothScanningPrompt();
   // It should show the scanning prompt.
