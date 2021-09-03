@@ -387,6 +387,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/js/ui/banners/drive_welcome_banner.js",
     "file_manager/foreground/js/ui/banners/educational_banner.js",
     "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.js",
+    "file_manager/foreground/js/ui/banners/photos_welcome_banner.js",
     "file_manager/foreground/js/ui/banners/state_banner.js",
     "file_manager/foreground/js/ui/banners/trash_banner.js",
     "file_manager/foreground/js/ui/banners/warning_banner.js",

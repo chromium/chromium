@@ -24,6 +24,7 @@ html_to_js("web_components") {
     "drive_welcome_banner.js",
     "educational_banner.js",
     "local_disk_low_space_banner.js",
+    "photos_welcome_banner.js",
     "state_banner.js",
     "trash_banner.js",
     "warning_banner.js",
@@ -43,6 +44,7 @@ js_type_check("closure_compile_jsmodules") {
     ":drive_welcome_banner",
     ":educational_banner",
     ":local_disk_low_space_banner",
+    ":photos_welcome_banner",
     ":state_banner",
     ":trash_banner",
     ":warning_banner",
@@ -78,6 +80,15 @@ js_unittest("educational_banner_unittest.m") {
     ":educational_banner",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_util",
+    "//ui/file_manager/file_manager/externs:banner",
+  ]
+}
+
+js_library("photos_welcome_banner") {
+  deps = [
+    ":educational_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
   ]
 }
