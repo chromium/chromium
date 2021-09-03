@@ -134,7 +134,7 @@ std::unique_ptr<MouseEvent> CreateMouseEvent(EventType type,
   if (crossing && crossing->detail == x11::NotifyDetail::Inferior)
     return nullptr;
 
-  PointerDetails details{EventPointerType::kMouse};
+  PointerDetails details = GetStylusPointerDetailsFromXEvent(x11_event);
   auto event = std::make_unique<MouseEvent>(
       type, EventLocationFromXEvent(x11_event),
       EventSystemLocationFromXEvent(x11_event), EventTimeFromXEvent(x11_event),

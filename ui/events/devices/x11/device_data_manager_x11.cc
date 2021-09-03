@@ -68,6 +68,13 @@
 #define AXIS_LABEL_ABS_MT_TRACKING_ID "Abs MT Tracking ID"
 #define AXIS_LABEL_TOUCH_TIMESTAMP "Touch Timestamp"
 
+// Stylus with absolute x y pressure and tilt info
+#define AXIS_LABEL_PROP_ABS_X "Abs X"
+#define AXIS_LABEL_PROP_ABS_Y "Abs Y"
+#define AXIS_LABEL_PROP_ABS_PRESSURE "Abs Pressure"
+#define AXIS_LABEL_PROP_ABS_TILT_X "Abs Tilt X"
+#define AXIS_LABEL_PROP_ABS_TILT_Y "Abs Tilt Y"
+
 // When you add new data types, please make sure the order here is aligned
 // with the order in the DataType enum in the header file because we assume
 // they are in sync when updating the device list (see UpdateDeviceList).
@@ -93,6 +100,11 @@ constexpr const char* kCachedAtoms[] = {
     AXIS_LABEL_ABS_MT_POSITION_Y,
     AXIS_LABEL_ABS_MT_TRACKING_ID,
     AXIS_LABEL_TOUCH_TIMESTAMP,
+    AXIS_LABEL_PROP_ABS_X,
+    AXIS_LABEL_PROP_ABS_Y,
+    AXIS_LABEL_PROP_ABS_PRESSURE,
+    AXIS_LABEL_PROP_ABS_TILT_X,
+    AXIS_LABEL_PROP_ABS_TILT_Y,
 };
 
 // Make sure the sizes of enum and |kCachedAtoms| are aligned.
@@ -106,6 +118,8 @@ const int kCMTDataTypeStart = ui::DeviceDataManagerX11::DT_CMT_SCROLL_X;
 const int kCMTDataTypeEnd = ui::DeviceDataManagerX11::DT_CMT_FINGER_COUNT;
 const int kTouchDataTypeStart = ui::DeviceDataManagerX11::DT_TOUCH_MAJOR;
 const int kTouchDataTypeEnd = ui::DeviceDataManagerX11::DT_TOUCH_RAW_TIMESTAMP;
+const int kStylusDataTypeStart = ui::DeviceDataManagerX11::DT_STYLUS_POSITION_X;
+const int kStylusDataTypeEnd = ui::DeviceDataManagerX11::DT_STYLUS_TILT_Y;
 
 namespace ui {
 
@@ -179,6 +193,10 @@ bool DeviceDataManagerX11::IsTouchDataType(const int type) {
   return (type >= kTouchDataTypeStart) && (type <= kTouchDataTypeEnd);
 }
 
+bool DeviceDataManagerX11::IsStylusDataType(const int type) {
+  return (type >= kStylusDataTypeStart) && (type <= kStylusDataTypeEnd);
+}
+
 // static
 void DeviceDataManagerX11::CreateInstance() {
   if (HasInstance())
@@ -246,6 +264,7 @@ bool DeviceDataManagerX11::IsXInput2Available() const {
 void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
   cmt_devices_.reset();
   touchpads_.reset();
+  stylus_.reset();
   master_pointers_.clear();
   for (int i = 0; i < kMaxDeviceNum; ++i) {
     valuator_count_[i] = 0;
@@ -288,6 +307,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
       continue;
     }
 
+    bool possible_stylus = false;
     bool possible_cmt = false;
     bool not_cmt = false;
     const auto deviceid = static_cast<uint16_t>(info.deviceid);
@@ -310,14 +330,19 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
       last_seen_valuator_[deviceid][j].resize(DT_LAST_ENTRY, 0);
     for (const auto& device_class : info.classes) {
       if (device_class.valuator.has_value()) {
-        if (UpdateValuatorClassDevice(*device_class.valuator, atoms,
-                                      deviceid)) {
+        auto dt =
+            UpdateValuatorClassDevice(*device_class.valuator, atoms, deviceid);
+        if (IsStylusDataType(dt))
+          possible_stylus = true;
+        if (IsCMTDataType(dt))
           possible_cmt = true;
-        }
       } else if (device_class.scroll.has_value()) {
         UpdateScrollClassDevice(*device_class.scroll, deviceid);
       }
     }
+
+    if (possible_stylus)
+      stylus_[deviceid] = true;
 
     if (possible_cmt && !not_cmt)
       cmt_devices_[deviceid] = true;
@@ -416,6 +441,14 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
 
 bool DeviceDataManagerX11::IsXIDeviceEvent(const x11::Event& x11_event) const {
   return x11_event.As<x11::Input::DeviceEvent>();
+}
+
+bool DeviceDataManagerX11::IsStylusXInputEvent(
+    const x11::Event& x11_event) const {
+  uint16_t source;
+  if (!GetSourceId(x11_event, &source))
+    return false;
+  return stylus_[source];
 }
 
 bool DeviceDataManagerX11::IsTouchpadXInputEvent(
@@ -778,7 +811,7 @@ void DeviceDataManagerX11::InitializeValuatorsForTest(int deviceid,
   }
 }
 
-bool DeviceDataManagerX11::UpdateValuatorClassDevice(
+DeviceDataManagerX11::DataType DeviceDataManagerX11::UpdateValuatorClassDevice(
     const x11::Input::DeviceClass::Valuator& valuator_class_info,
     x11::Atom* atoms,
     uint16_t deviceid) {
@@ -786,7 +819,7 @@ bool DeviceDataManagerX11::UpdateValuatorClassDevice(
   x11::Atom* label =
       std::find(atoms, atoms + DT_LAST_ENTRY, valuator_class_info.label);
   if (label == atoms + DT_LAST_ENTRY)
-    return false;
+    return DT_LAST_ENTRY;
   int data_type = label - atoms;
   DCHECK_GE(data_type, 0);
   DCHECK_LT(data_type, DT_LAST_ENTRY);
@@ -796,7 +829,7 @@ bool DeviceDataManagerX11::UpdateValuatorClassDevice(
   valuator_info.min = Fp3232ToDouble(valuator_class_info.min);
   valuator_info.max = Fp3232ToDouble(valuator_class_info.max);
   data_type_lookup_[deviceid][valuator_class_info.number] = data_type;
-  return IsCMTDataType(data_type);
+  return static_cast<DataType>(data_type);
 }
 
 void DeviceDataManagerX11::UpdateScrollClassDevice(
