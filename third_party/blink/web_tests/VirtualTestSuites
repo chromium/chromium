@@ -551,6 +551,15 @@
              "--site-per-process"]
   },
   {
+    "prefix": "wasm-module-sharing-enabled-not-site-per-process",
+    "bases": [
+      "external/wpt/wasm/serialization/module/window-domain-success.sub.html",
+      "external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html"
+    ],
+    "args": ["--cross-origin-webassembly-module-sharing-allowed",
+             "--disable-site-isolation-trials"]
+  },
+  {
     "prefix": "wasm-csp",
     "bases": ["wasm"],
     "args": ["--enable-blink-features=WebAssemblyCSP"]

@@ -1620,6 +1620,8 @@ virtual/not-site-per-process/external/wpt/html/browsers/windows/nested-browsing-
 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Pass ]
 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Pass ]
 virtual/not-site-per-process/external/wpt/wasm/serialization/module/share-module-cross-origin-fails.sub.html [ Pass ]
+virtual/wasm-module-sharing-enabled-not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Pass ]
+virtual/wasm-module-sharing-enabled-not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Pass ]
 # -------------------- origin-vs-url in console messages -----------------
 # Process hosting https://foo.example.com should not get any data from
 # https://bar.other-site-example.com.  This includes things like cookies
