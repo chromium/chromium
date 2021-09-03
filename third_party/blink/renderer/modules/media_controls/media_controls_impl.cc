@@ -855,7 +855,7 @@ MediaControlsImpl::ControlsState MediaControlsImpl::State() const {
                                        : ControlsState::kLoadingMetadataPlaying;
       }
       if (!MediaElement().paused() &&
-          ready_state != HTMLMediaElement::kHaveEnoughData) {
+          ready_state < HTMLMediaElement::kHaveFutureData) {
         return ControlsState::kBuffering;
       }
       break;
