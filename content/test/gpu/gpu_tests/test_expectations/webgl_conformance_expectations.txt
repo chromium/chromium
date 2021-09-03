@@ -470,13 +470,14 @@ crbug.com/844311 [ mac no-swiftshader-gl ] conformance/glsl/misc/fragcolor-fragd
 
 # Mac AMD failures
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/929009 [ mac amd ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
+crbug.com/929009 [ mac amd release-x64 ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-disabled ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-opengl ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1203167 [ mac amd angle-metal ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1230781 [ mac amd-0x679e ] conformance/canvas/to-data-url-test.html [ Failure ]
 crbug.com/1236072 [ mac amd-0x679e angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1227774 [ mac amd debug-x64 ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
@@ -813,6 +814,7 @@ crbug.com/1186499 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 
 # Flaky test on chromeos-amd64-generic-rel.
 crbug.com/1202015 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-vec3.html [ RetryOnFailure ]
+crbug.com/1227774 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/misc/shader-with-non-reserved-words.html [ RetryOnFailure ]
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
