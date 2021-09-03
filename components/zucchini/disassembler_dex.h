@@ -32,8 +32,8 @@ class DisassemblerDex : public Disassembler {
     kFieldId,
     kMethodId,
     // kClassDef,  // Unused
-    // kCallSiteId, // Unused
-    // kMethodHandle, // Unused
+    kCallSiteId,
+    // kMethodHandle,  // Unused
     kTypeList,
     kAnnotationSetRefList,
     kAnnotionSet,
@@ -43,7 +43,7 @@ class DisassemblerDex : public Disassembler {
     kAnnotation,
     kEncodedArray,
     kAnnotationsDirectory,
-    // kCallSite, // Unused
+    kCallSite,
     kNumPools
   };
 
@@ -69,14 +69,19 @@ class DisassemblerDex : public Disassembler {
     kTypeListToTypeId,
     kCodeToTypeId,
 
-    kMethodIdToProtoId,  // kProtoId
+    kCodeToProtoId,  // kProtoId
+    kMethodIdToProtoId,
 
     kCodeToFieldId,  // kFieldId
+    kMethodHandleToFieldId,
     kAnnotationsDirectoryToFieldId,
 
     kCodeToMethodId,  // kMethodId
+    kMethodHandleToMethodId,
     kAnnotationsDirectoryToMethodId,
     kAnnotationsDirectoryToParameterMethodId,
+
+    kCodeToCallSiteId,  // kCallSiteId
 
     kProtoIdToParametersTypeList,  // kTypeList
     kClassDefToInterfacesTypeList,
@@ -102,10 +107,7 @@ class DisassemblerDex : public Disassembler {
 
     kClassDefToAnnotationDirectory,  // kAnnotationsDirectory
 
-    // Intentionally ignored references (never appeared in test corpus).
-    // kMethodHandleToFieldId,
-    // kMethodHandleToMethodId,
-    // kCallSiteIdToCallSite,
+    kCallSiteIdToCallSite,  // kCallSite
 
     kNumTypes
   };
@@ -172,6 +174,13 @@ class DisassemblerDex : public Disassembler {
   std::unique_ptr<ReferenceReader> MakeReadClassDefToStaticValuesEncodedArray(
       offset_t lo,
       offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadCallSiteIdToCallSite32(offset_t lo,
+                                                                  offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadMethodHandleToFieldId16(offset_t lo,
+                                                                   offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadMethodHandleToMethodId16(
+      offset_t lo,
+      offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadTypeListToTypeId16(offset_t lo,
                                                               offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadAnnotationSetToAnnotation(
@@ -203,10 +212,14 @@ class DisassemblerDex : public Disassembler {
                                                             offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToTypeId16(offset_t lo,
                                                           offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadCodeToProtoId16(offset_t lo,
+                                                           offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToFieldId16(offset_t lo,
                                                            offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToMethodId16(offset_t lo,
                                                             offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadCodeToCallSiteId16(offset_t lo,
+                                                              offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToRelCode8(offset_t lo,
                                                           offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToRelCode16(offset_t lo,
@@ -225,6 +238,8 @@ class DisassemblerDex : public Disassembler {
   std::unique_ptr<ReferenceWriter> MakeWriteFieldId32(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteMethodId16(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteMethodId32(MutableBufferView image);
+  std::unique_ptr<ReferenceWriter> MakeWriteCallSiteId16(
+      MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteRelCode8(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteRelCode16(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteRelCode32(MutableBufferView image);
@@ -248,12 +263,12 @@ class DisassemblerDex : public Disassembler {
   dex::MapItem field_map_item_ = {};
   dex::MapItem method_map_item_ = {};
   dex::MapItem class_def_map_item_ = {};
+  dex::MapItem call_site_map_item_ = {};
+  dex::MapItem method_handle_map_item_ = {};
   dex::MapItem type_list_map_item_ = {};
-  dex::MapItem code_map_item_ = {};
-
-  // Optionally supported (not all DEX files have these).
   dex::MapItem annotation_set_ref_list_map_item_ = {};
   dex::MapItem annotation_set_map_item_ = {};
+  dex::MapItem code_map_item_ = {};
   dex::MapItem annotations_directory_map_item_ = {};
 
   // Sorted list of offsets of parsed items in |image_|.
