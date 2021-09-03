@@ -11,12 +11,17 @@
 #include "base/run_loop.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if defined(USE_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace views {
 
@@ -98,16 +103,21 @@ class TestWidgetObserver : public WidgetObserver {
   DISALLOW_COPY_AND_ASSIGN(TestWidgetObserver);
 };
 
-std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
+std::unique_ptr<Widget> CreateWidgetWithNativeWidgetWithParams(
+    Widget::InitParams params) {
   std::unique_ptr<Widget> widget(new Widget);
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.delegate = nullptr;
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.remove_standard_frame = true;
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
-  params.bounds = gfx::Rect(100, 100, 100, 100);
   widget->Init(std::move(params));
   return widget;
+}
+
+std::unique_ptr<Widget> CreateWidgetWithNativeWidget() {
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.remove_standard_frame = true;
+  params.bounds = gfx::Rect(100, 100, 100, 100);
+  return CreateWidgetWithNativeWidgetWithParams(std::move(params));
 }
 
 }  // namespace
@@ -288,6 +298,75 @@ TEST_F(DesktopWindowTreeHostPlatformTest, SetBoundsWithUnchangedSize) {
   dwth_platform->SetBoundsInPixels(gfx::Rect(2, 2, 100, 100));
   EXPECT_EQ(1, observer.bounds_change_count());
   EXPECT_EQ(0, observer.resize_count());
+}
+
+TEST_F(DesktopWindowTreeHostPlatformTest, MakesParentChildRelationship) {
+  bool context_is_also_parent = false;
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform() &&
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .set_parent_for_non_top_level_windows) {
+    context_is_also_parent = true;
+  }
+#endif
+  auto widget = CreateWidgetWithNativeWidget();
+  widget->Show();
+
+  Widget::InitParams widget_2_params(Widget::InitParams::TYPE_MENU);
+  widget_2_params.bounds = gfx::Rect(110, 110, 100, 100);
+  widget_2_params.parent = widget->GetNativeWindow();
+  auto widget2 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_2_params));
+  widget2->Show();
+
+  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  EXPECT_EQ(host_platform->window_children_.size(), 1u);
+
+  auto* host_platform2 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget2->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  EXPECT_EQ(host_platform2->window_parent_, host_platform);
+  EXPECT_EQ(*host_platform->window_children_.begin(), host_platform2);
+
+  Widget::InitParams widget_3_params(Widget::InitParams::TYPE_MENU);
+  widget_3_params.bounds = gfx::Rect(120, 120, 50, 80);
+  widget_3_params.parent = widget->GetNativeWindow();
+  auto widget3 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_3_params));
+  widget3->Show();
+
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  EXPECT_EQ(host_platform->window_children_.size(), 2u);
+
+  auto* host_platform3 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget3->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  EXPECT_EQ(host_platform3->window_parent_, host_platform);
+  EXPECT_NE(host_platform->window_children_.find(host_platform3),
+            host_platform->window_children_.end());
+
+  Widget::InitParams widget_4_params(Widget::InitParams::TYPE_TOOLTIP);
+  widget_4_params.bounds = gfx::Rect(105, 105, 10, 10);
+  widget_4_params.context = widget->GetNativeWindow();
+  auto widget4 =
+      CreateWidgetWithNativeWidgetWithParams(std::move(widget_4_params));
+  widget4->Show();
+
+  EXPECT_EQ(host_platform->window_parent_, nullptr);
+  auto* host_platform4 = DesktopWindowTreeHostPlatform::GetHostForWidget(
+      widget4->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  if (context_is_also_parent) {
+    EXPECT_EQ(host_platform->window_children_.size(), 3u);
+    EXPECT_EQ(host_platform4->window_parent_, host_platform);
+    EXPECT_NE(host_platform->window_children_.find(host_platform4),
+              host_platform->window_children_.end());
+  } else {
+    EXPECT_EQ(host_platform4->window_parent_, nullptr);
+    EXPECT_EQ(host_platform->window_children_.size(), 2u);
+    EXPECT_NE(host_platform->window_children_.find(host_platform3),
+              host_platform->window_children_.end());
+  }
 }
 
 }  // namespace views

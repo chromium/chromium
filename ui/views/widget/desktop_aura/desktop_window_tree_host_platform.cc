@@ -132,9 +132,16 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
           .set_parent_for_non_top_level_windows) {
     // If context has been set, use that as the parent_widget so that Wayland
     // creates a correct hierarchy of windows.
-    if (params.context && params.context->GetHost()) {
-      properties.parent_widget =
-          params.context->GetHost()->GetAcceleratedWidget();
+    if (params.context) {
+      auto* host = params.context->GetHost();
+      // Use this context as a parent widget iff the host for a root window is
+      // set (this happens during OnNativeWidgetCreated). Otherwise, the context
+      // can be a native window of a WindowTreeHost created by
+      // WindowTreeHost::Create, which we don't want to have as a context (this
+      // happens in tests - called by TestScreen, AuraTestHelper,
+      // aura::DemoMain, and SitePerProcessBrowserTest).
+      if (host && host->window()->GetProperty(kHostForRootWindow))
+        properties.parent_widget = host->GetAcceleratedWidget();
     }
   }
 #endif
@@ -196,19 +203,19 @@ void DesktopWindowTreeHostPlatform::Init(const Widget::InitParams& params) {
   if (params.type == Widget::InitParams::TYPE_WINDOW)
     GetContentWindow()->SetProperty(aura::client::kAnimationsDisabledKey, true);
 
-  // If we have a parent, record the parent/child relationship. We use this
-  // data during destruction to make sure that when we try to close a parent
-  // window, we also destroy all child windows.
-  if (params.parent && params.parent->GetHost()) {
-    window_parent_ =
-        static_cast<DesktopWindowTreeHostPlatform*>(params.parent->GetHost());
-    DCHECK(window_parent_);
-    window_parent_->window_children_.insert(this);
-  }
-
   ui::PlatformWindowInitProperties properties =
       ConvertWidgetInitParamsToInitProperties(params);
   AddAdditionalInitProperties(params, &properties);
+
+  // If we have a parent, record the parent/child relationship. We use this
+  // data during destruction to make sure that when we try to close a parent
+  // window, we also destroy all child windows.
+  if (properties.parent_widget) {
+    window_parent_ = DesktopWindowTreeHostPlatform::GetHostForWidget(
+        properties.parent_widget);
+    DCHECK(window_parent_);
+    window_parent_->window_children_.insert(this);
+  }
 
   // Calculate initial bounds.
   properties.bounds = ToPixelRect(params.bounds);

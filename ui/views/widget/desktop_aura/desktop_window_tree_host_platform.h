@@ -154,6 +154,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
                            UpdateWindowShapeFromWindowMask);
+  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformTest,
+                           MakesParentChildRelationship);
 
   void ScheduleRelayout();
 
