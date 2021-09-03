@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -296,8 +297,10 @@ class PreflightController::PreflightLoader final {
                             const mojom::URLResponseHead& head) {
     if (devtools_observer_) {
       DCHECK(devtools_request_id_);
+      mojom::URLResponseHeadDevToolsInfoPtr head_info =
+          ExtractDevToolsInfo(head);
       devtools_observer_->OnCorsPreflightResponse(
-          *devtools_request_id_, original_request_.url, head.Clone());
+          *devtools_request_id_, original_request_.url, std::move(head_info));
       devtools_observer_->OnCorsPreflightRequestCompleted(
           *devtools_request_id_, network::URLLoaderCompletionStatus(net::OK));
     }

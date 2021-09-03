@@ -77,6 +77,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -618,7 +619,7 @@ std::unique_ptr<Object> GetRawHeaders(
 }
 
 String GetProtocol(const GURL& url,
-                   const network::mojom::URLResponseHead& info) {
+                   const network::mojom::URLResponseHeadDevToolsInfo& info) {
   std::string protocol = info.alpn_negotiated_protocol;
   if (protocol.empty() || protocol == "unknown") {
     if (info.was_fetched_via_spdy) {
@@ -1734,7 +1735,7 @@ std::unique_ptr<protocol::Object> BuildResponseHeaders(
 }
 
 String BuildServiceWorkerResponseSource(
-    const network::mojom::URLResponseHead& info) {
+    const network::mojom::URLResponseHeadDevToolsInfo& info) {
   switch (info.service_worker_response_source) {
     case network::mojom::FetchResponseSource::kCacheStorage:
       return protocol::Network::ServiceWorkerResponseSourceEnum::CacheStorage;
@@ -1749,7 +1750,7 @@ String BuildServiceWorkerResponseSource(
 
 std::unique_ptr<Network::Response> BuildResponse(
     const GURL& url,
-    const network::mojom::URLResponseHead& info) {
+    const network::mojom::URLResponseHeadDevToolsInfo& info) {
   int status = 0;
   std::string status_text;
   if (info.headers) {
@@ -1945,8 +1946,12 @@ void NetworkHandler::NavigationRequestWillBeSent(
   const blink::mojom::CommitNavigationParams& commit_params =
       nav_request.commit_params();
   if (!commit_params.redirect_response.empty()) {
-    redirect_response = BuildResponse(commit_params.redirects.back(),
-                                      *commit_params.redirect_response.back());
+    const network::mojom::URLResponseHead& head =
+        *commit_params.redirect_response.back();
+    network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+        network::ExtractDevToolsInfo(head);
+    redirect_response =
+        BuildResponse(commit_params.redirects.back(), *head_info);
   }
   std::string url_fragment;
   std::string url_without_fragment =
@@ -2155,7 +2160,7 @@ void NetworkHandler::ResponseReceived(
     const std::string& loader_id,
     const GURL& url,
     const char* resource_type,
-    const network::mojom::URLResponseHead& head,
+    const network::mojom::URLResponseHeadDevToolsInfo& head,
     Maybe<std::string> frame_id) {
   if (!enabled_)
     return;
@@ -2204,9 +2209,11 @@ void NetworkHandler::OnSignedExchangeReceived(
     const std::vector<SignedExchangeError>& errors) {
   if (!enabled_)
     return;
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(outer_response);
   std::unique_ptr<Network::SignedExchangeInfo> signed_exchange_info =
       Network::SignedExchangeInfo::Create()
-          .SetOuterResponse(BuildResponse(outer_request_url, outer_response))
+          .SetOuterResponse(BuildResponse(outer_request_url, *head_info))
           .Build();
 
   if (envelope) {

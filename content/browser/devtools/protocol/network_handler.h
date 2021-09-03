@@ -211,7 +211,7 @@ class NetworkHandler : public DevToolsDomainHandler,
                         const std::string& loader_id,
                         const GURL& url,
                         const char* resource_type,
-                        const network::mojom::URLResponseHead& head,
+                        const network::mojom::URLResponseHeadDevToolsInfo& head,
                         Maybe<std::string> frame_id);
   void LoadingComplete(
       const std::string& request_id,

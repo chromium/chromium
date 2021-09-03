@@ -275,7 +275,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   const network::mojom::URLRequestDevToolsInfoPtr& preflight_request() const {
     return preflight_request_info_;
   }
-  const network::mojom::URLResponseHeadPtr& preflight_response() const {
+  const network::mojom::URLResponseHeadDevToolsInfoPtr& preflight_response()
+      const {
     return preflight_response_;
   }
   const absl::optional<network::URLLoaderCompletionStatus>& preflight_status()
@@ -317,7 +318,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void OnCorsPreflightResponse(
       const base::UnguessableToken& devtool_request_id,
       const GURL& url,
-      network::mojom::URLResponseHeadPtr head) override {
+      network::mojom::URLResponseHeadDevToolsInfoPtr head) override {
     preflight_response_ = std::move(head);
   }
   void OnCorsPreflightRequestCompleted(
@@ -369,7 +370,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   bool on_raw_request_called_ = false;
   bool on_raw_response_called_ = false;
   network::mojom::URLRequestDevToolsInfoPtr preflight_request_info_;
-  network::mojom::URLResponseHeadPtr preflight_response_;
+  network::mojom::URLResponseHeadDevToolsInfoPtr preflight_response_;
   absl::optional<network::URLLoaderCompletionStatus> preflight_status_;
   std::string initiator_devtools_request_id_;
 

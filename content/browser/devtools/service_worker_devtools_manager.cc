@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "ipc/ipc_listener.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -340,10 +341,13 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
   auto it = live_hosts_.find(worker_id);
   if (it == live_hosts_.end())
     return;
+
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
   for (auto* network : protocol::NetworkHandler::ForAgentHost(it->second.get()))
     network->ResponseReceived(request_id, std::string(), url,
-                              protocol::Network::ResourceTypeEnum::Other, head,
-                              protocol::Maybe<std::string>());
+                              protocol::Network::ResourceTypeEnum::Other,
+                              *head_info, protocol::Maybe<std::string>());
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(

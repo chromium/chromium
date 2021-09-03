@@ -61,7 +61,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   void OnCorsPreflightResponse(
       const base::UnguessableToken& devtool_request_id,
       const GURL& url,
-      network::mojom::URLResponseHeadPtr head) override;
+      network::mojom::URLResponseHeadDevToolsInfoPtr head) override;
 
   void OnCorsPreflightRequestCompleted(
       const base::UnguessableToken& devtool_request_id,

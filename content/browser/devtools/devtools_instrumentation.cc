@@ -43,6 +43,7 @@
 #include "net/quic/web_transport_error.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -169,9 +170,8 @@ void OnResetNavigationRequest(NavigationRequest* navigation_request) {
   }
 }
 
-void OnNavigationResponseReceived(
-    const NavigationRequest& nav_request,
-    const network::mojom::URLResponseHead& response) {
+void OnNavigationResponseReceived(const NavigationRequest& nav_request,
+                                  const network::mojom::URLResponseHead& head) {
   // This response is artificial (see CachedNavigationURLLoader), so we don't
   // want to report it.
   if (nav_request.IsPageActivation())
@@ -181,9 +181,12 @@ void OnNavigationResponseReceived(
   std::string id = nav_request.devtools_navigation_token().ToString();
   std::string frame_id = ftn->devtools_frame_token().ToString();
   GURL url = nav_request.common_params().url;
+
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
   DispatchToAgents(ftn, &protocol::NetworkHandler::ResponseReceived, id, id,
-                   url, protocol::Network::ResourceTypeEnum::Document, response,
-                   frame_id);
+                   url, protocol::Network::ResourceTypeEnum::Document,
+                   *head_info, frame_id);
 }
 
 void BackForwardCacheNotUsed(
@@ -370,9 +373,11 @@ void OnSignedExchangeCertificateResponseReceived(
     const base::UnguessableToken& loader_id,
     const GURL& url,
     const network::mojom::URLResponseHead& head) {
+  network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
+      network::ExtractDevToolsInfo(head);
   DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::ResponseReceived,
                    request_id.ToString(), loader_id.ToString(), url,
-                   protocol::Network::ResourceTypeEnum::Other, head,
+                   protocol::Network::ResourceTypeEnum::Other, *head_info,
                    protocol::Maybe<std::string>());
 }
 

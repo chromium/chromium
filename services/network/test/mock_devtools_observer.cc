@@ -85,7 +85,7 @@ void MockDevToolsObserver::OnCorsPreflightRequest(
 void MockDevToolsObserver::OnCorsPreflightResponse(
     const base::UnguessableToken& devtool_request_id,
     const GURL& url,
-    network::mojom::URLResponseHeadPtr head) {}
+    network::mojom::URLResponseHeadDevToolsInfoPtr head) {}
 
 void MockDevToolsObserver::OnCorsPreflightRequestCompleted(
     const base::UnguessableToken& devtool_request_id,

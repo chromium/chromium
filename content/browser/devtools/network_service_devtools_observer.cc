@@ -159,7 +159,7 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
 void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
     const base::UnguessableToken& devtools_request_id,
     const GURL& url,
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadDevToolsInfoPtr head) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
