@@ -8599,26 +8599,6 @@
             ]
         }
     ],
-    "TurnOffStreamingMediaCaching": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TurnOffStreamingMediaCaching",
-                    "enable_features": [
-                        "TurnOffStreamingMediaCachingOnBattery"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnidoPreferSync": [
         {
             "platforms": [
