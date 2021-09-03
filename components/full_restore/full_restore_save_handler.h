@@ -176,7 +176,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
 
  private:
   friend class FullRestoreSaveHandlerTestApi;
-  friend class ::ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
+  friend class ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
 
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;

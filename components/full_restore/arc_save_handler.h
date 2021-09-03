@@ -102,9 +102,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // created, the window is removed from |arc_window_candidates_|.
   std::set<aura::Window*> arc_window_candidates_;
 
-  // Timer used to whether a task is created.  App launching could have failed.
-  // If an app is launched without a task created, the launch record should be
-  // removed from |session_id_to_app_launch_info_|.
+  // Timer used to check whether a task is created. App launching could have
+  // failed. If an app is launched without a task created, the launch record
+  // should be removed from |session_id_to_app_launch_info_|.
   base::RepeatingTimer check_timer_;
 
   base::WeakPtrFactory<ArcSaveHandler> weak_factory_{this};

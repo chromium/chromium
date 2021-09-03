@@ -152,10 +152,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
  private:
   friend class ArcReadHandler;
-  friend class ::ash::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
-  friend class ::ash::full_restore::
+  friend class ash::full_restore::FullRestoreAppLaunchHandlerBrowserTest;
+  friend class ash::full_restore::
       FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest;
-  friend class ::ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
+  friend class ash::full_restore::FullRestoreServiceTestHavingFullRestoreFile;
   friend class FullRestoreReadHandlerTestApi;
 
   // Gets the app launch information from `profile_path` for `app_id` and

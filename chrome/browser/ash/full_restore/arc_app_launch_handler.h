@@ -120,11 +120,6 @@ class ArcAppLaunchHandler
   // add the ARC apps windows to `windows_` and `no_stack_windows_`.
   void RestoreArcApps(FullRestoreAppLaunchHandler* app_launch_handler);
 
-  // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override;
-
   void OnAppConnectionReady();
 
   // Invoked when ChromeShelfController is created.
@@ -134,11 +129,15 @@ class ArcAppLaunchHandler
 
   void LaunchApp(const std::string& app_id);
 
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
   // wm::ActivationChangeObserver:
-  void OnWindowActivated(
-      ::wm::ActivationChangeObserver::ActivationReason reason,
-      aura::Window* new_active,
-      aura::Window* old_active) override;
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* new_active,
+                         aura::Window* old_active) override;
 
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;

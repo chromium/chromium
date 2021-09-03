@@ -167,32 +167,6 @@ void ArcAppLaunchHandler::RestoreArcApps(
     OnAppConnectionReady();
 }
 
-void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
-  if (!update.ReadinessChanged() ||
-      update.AppType() != apps::mojom::AppType::kArc) {
-    return;
-  }
-
-  if (!apps_util::IsInstalled(update.Readiness())) {
-    RemoveWindowsForApp(update.AppId());
-    return;
-  }
-
-  // If the app is not ready, don't launch the app for the restoration.
-  if (update.Readiness() != apps::mojom::Readiness::kReady)
-    return;
-
-  if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId())) {
-    AddWindows(update.AppId());
-    PrepareAppLaunching(update.AppId());
-  }
-}
-
-void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
-    apps::AppRegistryCache* cache) {
-  apps::AppRegistryCache::Observer::Observe(nullptr);
-}
-
 void ArcAppLaunchHandler::OnAppConnectionReady() {
   is_app_connection_ready_ = true;
 
@@ -280,8 +254,34 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
   RemoveWindowsForApp(app_id);
 }
 
+void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
+  if (!update.ReadinessChanged() ||
+      update.AppType() != apps::mojom::AppType::kArc) {
+    return;
+  }
+
+  if (!apps_util::IsInstalled(update.Readiness())) {
+    RemoveWindowsForApp(update.AppId());
+    return;
+  }
+
+  // If the app is not ready, don't launch the app for the restoration.
+  if (update.Readiness() != apps::mojom::Readiness::kReady)
+    return;
+
+  if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId())) {
+    AddWindows(update.AppId());
+    PrepareAppLaunching(update.AppId());
+  }
+}
+
+void ArcAppLaunchHandler::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  apps::AppRegistryCache::Observer::Observe(nullptr);
+}
+
 void ArcAppLaunchHandler::OnWindowActivated(
-    ::wm::ActivationChangeObserver::ActivationReason reason,
+    wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* new_active,
     aura::Window* old_active) {
   const auto session_id = arc::GetWindowSessionId(new_active);
@@ -491,14 +491,14 @@ bool ArcAppLaunchHandler::HasRestoreData() {
 bool ArcAppLaunchHandler::CanLaunchApp() {
   // Checks CPU usage limiting and memory pressure, make sure it can
   // be recorded for UMA statistic data.
-  bool isUnderCPUUsageLimiting = IsUnderCPUUsageLimiting();
-  if (isUnderCPUUsageLimiting)
+  bool is_under_cpu_usage_limiting = IsUnderCPUUsageLimiting();
+  if (is_under_cpu_usage_limiting)
     was_cpu_usage_limited_ = true;
-  bool isUnderMemoryPressure = IsUnderMemoryPressure();
-  if (isUnderMemoryPressure)
+  bool is_under_memory_pressure = IsUnderMemoryPressure();
+  if (is_under_memory_pressure)
     was_memory_pressured_ = true;
 
-  return !isUnderCPUUsageLimiting && !isUnderMemoryPressure;
+  return !is_under_cpu_usage_limiting && !is_under_memory_pressure;
 }
 
 bool ArcAppLaunchHandler::IsUnderMemoryPressure() {

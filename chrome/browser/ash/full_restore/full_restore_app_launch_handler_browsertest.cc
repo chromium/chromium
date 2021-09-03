@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Create FullRestoreAppLaunchHandler to simulate the system startup.
   auto* full_restore_service = FullRestoreService::GetForProfile(profile());
-  full_restore_service->SetAppLaunchHanlderForTesting(
+  full_restore_service->SetAppLaunchHandlerForTesting(
       std::make_unique<FullRestoreAppLaunchHandler>(
           profile(), /*should_init_service=*/true));
   auto* app_launch_handler1 = full_restore_service->app_launch_handler();
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ::full_restore::FullRestoreSaveHandler::GetInstance()->ClearForTesting();
 
   // Create FullRestoreAppLaunchHandler to simulate the system startup again.
-  full_restore_service->SetAppLaunchHanlderForTesting(
+  full_restore_service->SetAppLaunchHandlerForTesting(
       std::make_unique<FullRestoreAppLaunchHandler>(
           profile(), /*should_init_service=*/true));
   auto* app_launch_handler2 = full_restore_service->app_launch_handler();
@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Create FullRestoreAppLaunchHandler to simulate the system startup.
   auto* full_restore_service = FullRestoreService::GetForProfile(profile());
-  full_restore_service->SetAppLaunchHanlderForTesting(
+  full_restore_service->SetAppLaunchHandlerForTesting(
       std::make_unique<FullRestoreAppLaunchHandler>(
           profile(), /*should_init_service=*/true));
   auto* app_launch_handler1 = full_restore_service->app_launch_handler();

@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_throbber.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -114,6 +115,9 @@ void ArcGhostWindowView::OnIconLoaded(apps::mojom::IconType icon_type,
   icon_view_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON));
 }
+
+BEGIN_METADATA(ArcGhostWindowView, views::View)
+END_METADATA
 
 }  // namespace full_restore
 }  // namespace ash

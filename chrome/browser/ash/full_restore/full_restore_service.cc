@@ -297,7 +297,7 @@ void FullRestoreService::OnAcceleratorControllerWillBeDestroyed(
   accelerator_controller_observer_.Reset();
 }
 
-void FullRestoreService::SetAppLaunchHanlderForTesting(
+void FullRestoreService::SetAppLaunchHandlerForTesting(
     std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler) {
   app_launch_handler_ = std::move(app_launch_handler);
 }

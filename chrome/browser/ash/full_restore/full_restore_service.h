@@ -64,10 +64,9 @@ class FullRestoreService : public KeyedService,
   static void MaybeCloseNotification(Profile* profile);
 
   explicit FullRestoreService(Profile* profile);
-  ~FullRestoreService() override;
-
   FullRestoreService(const FullRestoreService&) = delete;
   FullRestoreService& operator=(const FullRestoreService&) = delete;
+  ~FullRestoreService() override;
 
   void Init();
 
@@ -98,7 +97,7 @@ class FullRestoreService : public KeyedService,
     return app_launch_handler_.get();
   }
 
-  void SetAppLaunchHanlderForTesting(
+  void SetAppLaunchHandlerForTesting(
       std::unique_ptr<FullRestoreAppLaunchHandler> app_launch_handler);
 
  private:
