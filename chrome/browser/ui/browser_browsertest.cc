@@ -522,8 +522,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
 // verifying that we don't crash when we pass this limit.
 // Warning: this test can take >30 seconds when running on a slow (low
 // memory?) Mac builder.
-// Test is flaky on Win: https://crbug.com/1099186.
-#if defined(OS_WIN)
+// Test is flaky on Win, Linux, Mac: https://crbug.com/1099186.
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
 #define MAYBE_ThirtyFourTabs DISABLED_ThirtyFourTabs
 #else
 #define MAYBE_ThirtyFourTabs ThirtyFourTabs
