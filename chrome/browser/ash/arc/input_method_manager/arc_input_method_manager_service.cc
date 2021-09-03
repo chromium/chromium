@@ -465,6 +465,9 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
     // If no ARC IME is installed or allowed, remove ARC IME entry from
     // preferences.
     prefs_.UpdateEnabledImes({});
+
+    SyncEnabledImesInArc();
+    SyncCurrentImeInArc();
     return;
   }
 
@@ -481,13 +484,9 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
     state->EnableInputMethod(descriptor.id());
 
   state->ChangeInputMethod(active_ime_id, false);
-  is_updating_imm_entry_ = false;
 
-  // Call ImeMenuListChanged() here to notify the latest state.
-  ImeMenuListChanged();
-  // If the active input method is changed, call InputMethodChanged() here.
-  if (active_ime_id != state->GetCurrentInputMethod().id())
-    InputMethodChanged(InputMethodManager::Get(), nullptr, false);
+  SyncEnabledImesInArc();
+  SyncCurrentImeInArc();
 }
 
 void ArcInputMethodManagerService::OnConnectionClosed() {
@@ -507,54 +506,7 @@ void ArcInputMethodManagerService::ImeMenuListChanged() {
   if (is_updating_imm_entry_)
     return;
 
-  auto* manager = chromeos::input_method::InputMethodManager::Get();
-  if (!manager || !manager->GetActiveIMEState()) {
-    LOG(WARNING) << "InputMethodManager is not ready yet";
-    return;
-  }
-
-  auto new_active_ime_ids =
-      manager->GetActiveIMEState()->GetActiveInputMethodIds();
-
-  // Filter out non ARC IME ids.
-  std::set<std::string> new_arc_active_ime_ids;
-  std::copy_if(
-      new_active_ime_ids.begin(), new_active_ime_ids.end(),
-      std::inserter(new_arc_active_ime_ids, new_arc_active_ime_ids.end()),
-      [](const auto& id) {
-        return chromeos::extension_ime_util::IsArcIME(id);
-      });
-
-  // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
-  // probably better to just observe the pref (and not disabling ones still
-  // in the prefs.) See also the comment below in the second for-loop.
-  const std::set<std::string> active_ime_ids_on_prefs = prefs_.GetEnabledImes();
-
-  for (const auto& id : new_arc_active_ime_ids) {
-    // Enable the IME which is not currently enabled.
-    if (!active_arc_ime_ids_.count(id))
-      EnableIme(id, true /* enable */);
-  }
-
-  for (const auto& id : active_arc_ime_ids_) {
-    if (!new_arc_active_ime_ids.count(id) &&
-        !active_ime_ids_on_prefs.count(id)) {
-      // This path is taken in the following two cases:
-      // 1) The device is in tablet mode, and the user disabled the IME via
-      //    chrome://settings.
-      // 2) The device was just switched to laptop mode, and this service
-      //    disallowed Android IMEs.
-      // In the former case, |active_ime_ids_on_prefs| doesn't have the IME,
-      // but in the latter case, the set still has it. Here, disable the IME
-      // only for the former case so that the temporary deactivation of the
-      // IME on laptop mode wouldn't be propagated to the container. Otherwise,
-      // the IME confirmation dialog will be shown again next time when you
-      // use the IME in tablet mode.
-      // TODO(yhanada|yusukes): Only observe the prefs and remove the hack.
-      EnableIme(id, false /* enable */);
-    }
-  }
-  active_arc_ime_ids_.swap(new_arc_active_ime_ids);
+  SyncEnabledImesInArc();
 }
 
 void ArcInputMethodManagerService::InputMethodChanged(
@@ -566,20 +518,7 @@ void ArcInputMethodManagerService::InputMethodChanged(
   if (is_updating_imm_entry_)
     return;
 
-  scoped_refptr<chromeos::input_method::InputMethodManager::State> state =
-      manager->GetActiveIMEState();
-  if (!state)
-    return;
-  SwitchImeTo(state->GetCurrentInputMethod().id());
-
-  if (chromeos::extension_ime_util::IsArcIME(
-          state->GetCurrentInputMethod().id())) {
-    // Disable fallback virtual keyboard while Android IME is activated.
-    SetKeyboardDisabled(true);
-  } else {
-    // Stop overriding virtual keyboard availability.
-    SetKeyboardDisabled(false);
-  }
+  SyncCurrentImeInArc();
 }
 
 void ArcInputMethodManagerService::OnInputContextHandlerChanged() {
@@ -641,14 +580,76 @@ void ArcInputMethodManagerService::EnableIme(const std::string& ime_id,
           ime_id, enable));
 }
 
-void ArcInputMethodManagerService::SwitchImeTo(const std::string& ime_id) {
+void ArcInputMethodManagerService::SyncEnabledImesInArc() {
+  auto* manager = chromeos::input_method::InputMethodManager::Get();
+  if (!manager || !manager->GetActiveIMEState()) {
+    LOG(WARNING) << "InputMethodManager is not ready yet.";
+    return;
+  }
+
+  const auto new_active_ime_ids =
+      manager->GetActiveIMEState()->GetActiveInputMethodIds();
+
+  // Filter out non ARC IME ids.
+  std::set<std::string> new_arc_active_ime_ids;
+  std::copy_if(
+      new_active_ime_ids.begin(), new_active_ime_ids.end(),
+      std::inserter(new_arc_active_ime_ids, new_arc_active_ime_ids.end()),
+      [](const auto& id) {
+        return chromeos::extension_ime_util::IsArcIME(id);
+      });
+
+  // TODO(yhanada|yusukes): Instead of observing ImeMenuListChanged(), it's
+  // probably better to just observe the pref (and not disabling ones still
+  // in the prefs.) See also the comment below in the second for-loop.
+  const std::set<std::string> active_ime_ids_on_prefs = prefs_.GetEnabledImes();
+
+  for (const auto& id : new_arc_active_ime_ids) {
+    // Enable the IME which is not currently enabled.
+    if (!active_arc_ime_ids_.count(id))
+      EnableIme(id, true /* enable */);
+  }
+
+  for (const auto& id : active_arc_ime_ids_) {
+    if (!new_arc_active_ime_ids.count(id) &&
+        !active_ime_ids_on_prefs.count(id)) {
+      // This path is taken in the following two cases:
+      // 1) The device is in tablet mode, and the user disabled the IME via
+      //    chrome://settings.
+      // 2) The device was just switched to laptop mode, and this service
+      //    disallowed Android IMEs.
+      // In the former case, |active_ime_ids_on_prefs| doesn't have the IME,
+      // but in the latter case, the set still has it. Here, disable the IME
+      // only for the former case so that the temporary deactivation of the
+      // IME on laptop mode wouldn't be propagated to the container. Otherwise,
+      // the IME confirmation dialog will be shown again next time when you
+      // use the IME in tablet mode.
+      // TODO(yhanada|yusukes): Only observe the prefs and remove the hack.
+      EnableIme(id, false /* enable */);
+    }
+  }
+  active_arc_ime_ids_.swap(new_arc_active_ime_ids);
+}
+
+void ArcInputMethodManagerService::SyncCurrentImeInArc() {
   namespace ceiu = chromeos::extension_ime_util;
 
+  auto* manager = chromeos::input_method::InputMethodManager::Get();
+  if (!manager || !manager->GetActiveIMEState()) {
+    LOG(WARNING) << "InputMethodManager is not ready yet.";
+    return;
+  }
+
+  const std::string ime_id =
+      manager->GetActiveIMEState()->GetCurrentInputMethod().id();
   std::string component_id = ceiu::GetComponentIDByInputMethodID(ime_id);
   if (!ceiu::IsArcIME(ime_id))
     component_id = kChromeOSIMEIdInArcContainer;
   imm_bridge_->SendSwitchImeTo(
       component_id, base::BindOnce(&SwitchImeToCallback, ime_id, component_id));
+
+  // Disable fallback virtual keyboard while Android IME is activated.
+  SetKeyboardDisabled(ceiu::IsArcIME(ime_id));
 }
 
 void ArcInputMethodManagerService::Focus(int context_id) {

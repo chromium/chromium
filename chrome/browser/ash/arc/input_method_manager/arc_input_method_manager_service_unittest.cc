@@ -410,7 +410,7 @@ TEST_F(ArcInputMethodManagerServiceTest, SwitchImeTo) {
 
   ToggleTabletMode(true);
 
-  ASSERT_EQ(0u, bridge()->switch_ime_to_calls_.size());
+  bridge()->switch_ime_to_calls_.clear();
 
   const std::string extension_ime_id =
       ceiu::GetInputMethodID(GenerateId("test.extension.ime"), "us");
