@@ -1082,8 +1082,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       IsAudioRobustnessSupported(kExternalClearKey, "SW_SECURE_CRYPTO"));
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_EncryptionScheme DISABLED_EncryptionScheme
+#else
+#define MAYBE_EncryptionScheme EncryptionScheme
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       EncryptionScheme) {
+                       MAYBE_EncryptionScheme) {
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, nullptr));
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cenc"));
   EXPECT_SUCCESS(IsAudioEncryptionSchemeSupported(kExternalClearKey, "cbcs"));
@@ -1418,8 +1424,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
 #endif
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_EncryptionScheme DISABLED_EncryptionScheme
+#else
+#define MAYBE_EncryptionScheme EncryptionScheme
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
-                       EncryptionScheme) {
+                       MAYBE_EncryptionScheme) {
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, nullptr));
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
@@ -1536,8 +1548,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
 #endif
 }
 
+// TODO(https://crbug.com/1244450): Flaky on macOS
+#if defined(OS_MAC)
+#define MAYBE_EncryptionScheme DISABLED_EncryptionScheme
+#else
+#define MAYBE_EncryptionScheme EncryptionScheme
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
-                       EncryptionScheme) {
+                       MAYBE_EncryptionScheme) {
   // Both encryption schemes are supported when no robustness is specified.
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cenc"));
   EXPECT_WV(IsAudioEncryptionSchemeSupported(kWidevine, "cbcs"));
