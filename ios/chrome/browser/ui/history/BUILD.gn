@@ -33,7 +33,6 @@ source_set("history") {
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/util",
   ]
   frameworks = [
@@ -130,7 +129,6 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/url_loading",
     "//ios/web/public",
@@ -169,7 +167,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/settings/cells:clear_browsing_data_constants",
     "//ios/chrome/browser/ui/table_view:constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/common",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

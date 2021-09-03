@@ -83,12 +83,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kCollectionsCardPresentationStyleName[] =
-    "Card style presentation for Collections.";
-const char kCollectionsCardPresentationStyleDescription[] =
-    "When enabled collections are presented using the new iOS13 card "
-    "style.";
-
 const char kContextMenuActionsRefreshName[] = "Context menu actions refresh";
 const char kContextMenuActionsRefreshDescription[] =
     "When enabled, context menu actions are updated";

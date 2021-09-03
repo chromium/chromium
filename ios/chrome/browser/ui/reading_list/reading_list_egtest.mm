@@ -1142,9 +1142,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
   }
-  if (![ChromeEarlGreyAppInterface isCollectionsCardPresentationStyleEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
 
   GREYAssertNil(
       [ReadingListAppInterface addEntryWithURL:[NSURL URLWithString:kUnreadURL]

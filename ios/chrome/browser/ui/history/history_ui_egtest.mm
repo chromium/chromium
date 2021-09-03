@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/string_util.h"
@@ -341,10 +340,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests clear browsing history.
 - (void)testClearBrowsingHistorySwipeDownDismiss {
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
-
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -487,9 +482,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -518,9 +510,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   }
 #endif
 
-  if (!IsCollectionsCardPresentationStyleEnabled()) {
-    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
-  }
   [self loadTestURLs];
   [self openHistoryPanel];
 

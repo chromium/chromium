@@ -41,7 +41,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -153,17 +152,11 @@
   [self readingListHasItems:self.mediator.hasElements];
 
   BOOL useCustomPresentation = YES;
-  if (IsCollectionsCardPresentationStyleEnabled()) {
-    if (@available(iOS 13, *)) {
-#if defined(__IPHONE_13_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0)
       [self.navigationController
           setModalPresentationStyle:UIModalPresentationFormSheet];
       self.navigationController.presentationController.delegate =
           self.tableViewController;
       useCustomPresentation = NO;
-#endif
-    }
-  }
 
   if (useCustomPresentation) {
     self.navigationController.transitioningDelegate = self;

@@ -498,9 +498,6 @@
 // with custom WebKit frameworks.
 + (BOOL)isCustomWebKitLoadedIfRequested WARN_UNUSED_RESULT;
 
-// Returns YES if collections are presented in cards.
-+ (BOOL)isCollectionsCardPresentationStyleEnabled WARN_UNUSED_RESULT;
-
 // Returns whether the mobile version of the websites are requested by default.
 + (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 

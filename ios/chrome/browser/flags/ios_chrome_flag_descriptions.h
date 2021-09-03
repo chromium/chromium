@@ -82,11 +82,6 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCrashpadIOSName[];
 extern const char kCrashpadIOSDescription[];
 
-// Title and description for the flag that controls whether Collections are
-// presented using the new iOS13 Card style or the custom legacy one.
-extern const char kCollectionsCardPresentationStyleName[];
-extern const char kCollectionsCardPresentationStyleDescription[];
-
 // Title and description for the flag to enable context menu actions refresh.
 extern const char kContextMenuActionsRefreshName[];
 extern const char kContextMenuActionsRefreshDescription[];

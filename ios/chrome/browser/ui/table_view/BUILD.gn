@@ -15,7 +15,6 @@ source_set("table_view") {
     "table_view_navigation_controller.mm",
   ]
   deps = [
-    ":feature_flags",
     ":presentation",
     ":styler",
     ":views",
@@ -93,15 +92,6 @@ source_set("views") {
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]
-}
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "feature_flags.h",
-    "feature_flags.mm",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("test_support") {
