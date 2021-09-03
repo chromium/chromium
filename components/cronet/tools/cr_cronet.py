@@ -129,6 +129,7 @@ def get_ios_gn_args(is_release, bundle_id_prefix, target_cpu):
       'ios_app_bundle_id_prefix="%s" '
       'ios_deployment_target="10.0" '
       'enable_dsyms=true '
+      'ios_stack_profiler_enabled=false '
       'target_cpu="%s" ') % (bundle_id_prefix, target_cpu)
 
 
