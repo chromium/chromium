@@ -17,9 +17,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector_input.h"
 #include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
@@ -82,7 +82,7 @@ class AudioOutputRedirector::RedirectionConnection
     mixer_service::Generic message;
     mixer_service::StreamConfig* config = message.mutable_stream_config();
     config->set_sample_format(
-        mixer_service::ConvertSampleFormat(sample_format));
+        audio_service::ConvertSampleFormat(sample_format));
     config->set_sample_rate(sample_rate);
     config->set_num_channels(num_channels);
     config->set_data_size(data_size);
@@ -110,8 +110,9 @@ class AudioOutputRedirector::RedirectionConnection
 
     Patterns new_patterns;
     for (const auto& p : message.redirected_stream_patterns().patterns()) {
-      new_patterns.emplace_back(ConvertContentType(p.content_type()),
-                                p.device_id_pattern());
+      new_patterns.emplace_back(
+          audio_service::ConvertContentType(p.content_type()),
+          p.device_id_pattern());
     }
     mixer_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&AudioOutputRedirector::UpdatePatterns,
@@ -272,9 +273,10 @@ AudioOutputRedirector::Config AudioOutputRedirector::ParseConfig(
   if (request.has_num_channels()) {
     config.num_output_channels = request.num_channels();
   }
-  if (request.has_channel_layout()) {
+  if (request.has_channel_layout() &&
+      request.channel_layout() != audio_service::CHANNEL_LAYOUT_BITSTREAM) {
     config.output_channel_layout =
-        ConvertChannelLayout(request.channel_layout());
+        audio_service::ConvertChannelLayout(request.channel_layout());
   } else {
     config.output_channel_layout = media::ChannelLayout::UNSUPPORTED;
   }

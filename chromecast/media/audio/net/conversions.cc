@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromecast/media/audio/mixer_service/conversions.h"
+#include "chromecast/media/audio/net/conversions.h"
 
 #include "base/notreached.h"
 
 namespace chromecast {
 namespace media {
-namespace mixer_service {
+namespace audio_service {
 
 media::SampleFormat ConvertSampleFormat(SampleFormat format) {
   switch (format) {
@@ -50,7 +50,7 @@ SampleFormat ConvertSampleFormat(media::SampleFormat format) {
   return SAMPLE_FORMAT_INT16_I;
 }
 
-int GetSampleSizeBytes(mixer_service::SampleFormat format) {
+int GetSampleSizeBytes(SampleFormat format) {
   if (format == SAMPLE_FORMAT_INT16_I || format == SAMPLE_FORMAT_INT16_P) {
     return 2;
   }
@@ -94,6 +94,6 @@ AudioCodec ConvertAudioCodec(media::AudioCodec codec) {
   return static_cast<AudioCodec>(codec);
 }
 
-}  // namespace mixer_service
+}  // namespace audio_service
 }  // namespace media
 }  // namespace chromecast

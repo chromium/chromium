@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "net/socket/stream_socket.h"
 
 namespace chromecast {

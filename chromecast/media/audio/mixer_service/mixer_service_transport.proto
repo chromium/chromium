@@ -8,67 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package chromecast.media.mixer_service;
 
-enum ContentType {
-  CONTENT_TYPE_MEDIA = 0;
-  CONTENT_TYPE_ALARM = 1;
-  CONTENT_TYPE_COMMUNICATION = 2;
-  CONTENT_TYPE_OTHER = 3;
-}
-
-enum SampleFormat {
-  // Interleaved formats:
-  SAMPLE_FORMAT_INT16_I = 0;
-  SAMPLE_FORMAT_INT32_I = 1;
-  SAMPLE_FORMAT_FLOAT_I = 2;
-  // Planar formats:
-  SAMPLE_FORMAT_INT16_P = 3;
-  SAMPLE_FORMAT_INT32_P = 4;
-  SAMPLE_FORMAT_FLOAT_P = 5;
-}
-
-enum ChannelLayout {
-  CHANNEL_LAYOUT_NONE = 0;
-  CHANNEL_LAYOUT_MONO = 1;
-  CHANNEL_LAYOUT_STEREO = 2;
-  CHANNEL_LAYOUT_5_1 = 3;
-  // CHANNEL_LAYOUT_BITSTREAM not supported.
-  reserved 4;
-  CHANNEL_LAYOUT_DISCRETE = 5;
-}
-
-enum AudioCodec {
-  AUDIO_CODEC_UNKNOWN = 0;
-  AUDIO_CODEC_AAC = 1;
-  AUDIO_CODEC_MP3 = 2;
-  AUDIO_CODEC_PCM = 3;
-  AUDIO_CODEC_PCM_S16BE = 4;
-  AUDIO_CODEC_VORBIS = 5;
-  AUDIO_CODEC_OPUS = 6;
-  AUDIO_CODEC_EAC3 = 7;
-  AUDIO_CODEC_AC3 = 8;
-  AUDIO_CODEC_DTS = 9;
-  AUDIO_CODEC_FLAC = 10;
-  AUDIO_CODEC_MPEG_H_AUDIO = 11;
-}
-
-message AudioDecoderConfig {
-  optional AudioCodec audio_codec = 1;
-  optional ChannelLayout channel_layout = 2;
-  optional SampleFormat sample_format = 3;
-  optional int32 num_channels = 4;
-  optional int32 sample_rate = 5;
-  optional bytes extra_data = 6;
-}
-
-message ApplicationMediaInfo {
-  optional string application_session_id = 1;
-  optional bool mixer_audio_enabled = 2;
-}
-
-message CmaBackendParams {
-  optional ApplicationMediaInfo application_media_info = 1;
-  optional AudioDecoderConfig audio_decoder_config = 2;
-}
+import "chromecast/media/audio/net/common.proto";
 
 message OutputStreamParams {
   enum StreamType {
@@ -77,14 +17,14 @@ message OutputStreamParams {
   }
   optional StreamType stream_type = 1;
 
-  optional ContentType content_type = 2;
-  optional SampleFormat sample_format = 3;
+  optional audio_service.ContentType content_type = 2;
+  optional audio_service.SampleFormat sample_format = 3;
 
   optional string device_id = 4;
 
   optional int32 sample_rate = 5;
   optional int32 num_channels = 6;
-  optional ChannelLayout channel_layout = 7;
+  optional audio_service.ChannelLayout channel_layout = 7;
   optional sint32 channel_selection = 8 [default = -1];
 
   optional int32 fill_size_frames = 9;
@@ -106,7 +46,7 @@ message OutputStreamParams {
 
   // If present, volume limits apply to this stream based on the |focus_type|
   // instead of the |content_type|.
-  optional ContentType focus_type = 16;
+  optional audio_service.ContentType focus_type = 16;
 
   message TimestampedAudioConfig {
     // How frequently to change clock rate to fix timestamp errors, in
@@ -194,7 +134,7 @@ message ReadyForPlayback {
 // Sent whenever the config changes; will be sent at least once before any audio
 // data is sent.
 message StreamConfig {
-  optional SampleFormat sample_format = 1;
+  optional audio_service.SampleFormat sample_format = 1;
   optional int32 sample_rate = 2;
   optional int32 num_channels = 3;
   optional int32 data_size = 4;  // Expected size of audio data in bytes.
@@ -208,10 +148,10 @@ message LoopbackDataRequest {}
 message StreamInterruption {
   enum InterruptionReason {
     INTERRUPTED_UNKNOWN = 0;
-    INTERRUPTED_DISCONNECTED = 1;    // Disconnected from mixer.
-    INTERRUPTED_UNDERRUN = 2;        // Mixer output underrun.
-    INTERRUPTED_CONFIG_CHANGE = 3;   // Mixer output config changed.
-    INTERRUPTED_OUTPUT_STOPPED = 4;  // Mixer stopped playing out audio.
+    INTERRUPTED_DISCONNECTED = 1;     // Disconnected from mixer.
+    INTERRUPTED_UNDERRUN = 2;         // Mixer output underrun.
+    INTERRUPTED_CONFIG_CHANGE = 3;    // Mixer output config changed.
+    INTERRUPTED_OUTPUT_STOPPED = 4;   // Mixer stopped playing out audio.
     INTERRUPTED_SOCKET_OVERFLOW = 5;  // Mixer couldn't send over the socket.
   }
 
@@ -223,7 +163,7 @@ message StreamInterruption {
 message RedirectionRequest {
   optional int32 order = 1;
   optional int32 num_channels = 2;
-  optional ChannelLayout channel_layout = 3;
+  optional audio_service.ChannelLayout channel_layout = 3;
   optional bool apply_volume = 4;
   optional int64 extra_delay_microseconds = 5;
 }
@@ -232,7 +172,7 @@ message RedirectionRequest {
 // redirected.
 message RedirectedStreamPatterns {
   message Pattern {
-    optional ContentType content_type = 1;
+    optional audio_service.ContentType content_type = 1;
     optional string device_id_pattern = 2;
   }
   repeated Pattern patterns = 1;
@@ -240,26 +180,26 @@ message RedirectedStreamPatterns {
 
 // Sets volume multiplier for all streams of a given content type.
 message SetDeviceVolume {
-  optional ContentType content_type = 1;
+  optional audio_service.ContentType content_type = 1;
   optional float volume_multiplier = 2;
 }
 
 // Sets mute state all streams of a given content type.
 message SetDeviceMuted {
-  optional ContentType content_type = 1;
+  optional audio_service.ContentType content_type = 1;
   optional bool muted = 2;
 }
 
 // Sets the maximum effective volume multiplier for a given content type.
 message SetVolumeLimit {
-  optional ContentType content_type = 1;
+  optional audio_service.ContentType content_type = 1;
   optional float max_volume_multiplier = 2;
 }
 
 // Asks the mixer to return a list of registered builtin post processors.
 message ListPostprocessors {}
 
-message PostprocessorList{
+message PostprocessorList {
   repeated string postprocessors = 1;
 }
 
@@ -313,27 +253,6 @@ message TimestampAdjustment {
   optional int64 adjustment = 1;
 }
 
-message CurrentMediaTimestamp {
-  optional int64 media_timestamp_microseconds = 1;
-  optional int64 reference_timestamp_microseconds = 2;
-}
-
-message StopPlayback {}
-
-// Indicates the status of the initialization of the audio pipeline backend.
-message BackendInitializationStatus {
-  enum Status {
-    // Audio pipeline backend is successfully initialized.
-    SUCCESS = 0;
-    // There was an error during the initialization of audio pipeline backend.
-    ERROR = 1;
-  }
-  optional Status status = 1;
-}
-
-// Used to keep the socket connection active.
-message Heartbeat {}
-
 message Generic {
   optional OutputStreamParams output_stream_params = 1;
   optional SetStartTimestamp set_start_timestamp = 2;
@@ -362,9 +281,4 @@ message Generic {
   optional ListPostprocessors list_postprocessors = 25;
   optional PostprocessorList postprocessor_list = 26;
   optional TimestampAdjustment timestamp_adjustment = 27;
-  optional CmaBackendParams backend_params = 28;
-  optional CurrentMediaTimestamp current_media_timestamp = 29;
-  optional StopPlayback stop_playback = 30;
-  optional BackendInitializationStatus backend_initialization_status = 31;
-  optional Heartbeat heartbeat = 32;
 }

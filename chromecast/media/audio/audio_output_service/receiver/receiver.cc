@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "net/socket/stream_socket.h"
 

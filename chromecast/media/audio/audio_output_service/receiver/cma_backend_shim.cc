@@ -15,7 +15,7 @@
 #include "chromecast/common/mojom/constants.mojom.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/base/audio_device_ids.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
@@ -305,7 +305,7 @@ bool CmaBackendShim::SetAudioConfig() {
   AudioConfig audio_config;
   audio_config.id = kPrimary;
   audio_config.codec =
-      mixer_service::ConvertAudioCodec(audio_decoder_config.audio_codec());
+      audio_service::ConvertAudioCodec(audio_decoder_config.audio_codec());
   audio_config.channel_layout =
       ConvertChannelLayout(audio_decoder_config.channel_layout());
   if (audio_config.channel_layout == media::ChannelLayout::UNSUPPORTED) {
@@ -313,9 +313,9 @@ bool CmaBackendShim::SetAudioConfig() {
         ChannelLayoutFromChannelNumber(audio_decoder_config.num_channels());
   }
   audio_config.sample_format =
-      mixer_service::ConvertSampleFormat(audio_decoder_config.sample_format());
+      audio_service::ConvertSampleFormat(audio_decoder_config.sample_format());
   audio_config.bytes_per_channel =
-      mixer_service::GetSampleSizeBytes(audio_decoder_config.sample_format());
+      audio_service::GetSampleSizeBytes(audio_decoder_config.sample_format());
   audio_config.channel_number = audio_decoder_config.num_channels();
   audio_config.samples_per_second = audio_decoder_config.sample_rate();
   audio_config.extra_data =

@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
 #include "chromecast/media/audio/mixer_service/loopback_interrupt_reason.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/net/io_buffer_pool.h"
 
 namespace chromecast {
@@ -48,7 +49,7 @@ void MixerLoopbackConnection::SetStreamConfig(SampleFormat sample_format,
                                               int data_size) {
   mixer_service::Generic message;
   mixer_service::StreamConfig* config = message.mutable_stream_config();
-  config->set_sample_format(mixer_service::ConvertSampleFormat(sample_format));
+  config->set_sample_format(audio_service::ConvertSampleFormat(sample_format));
   config->set_sample_rate(sample_rate);
   config->set_num_channels(num_channels);
   config->set_data_size(data_size);

@@ -25,8 +25,9 @@
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_utils.h"
 #include "chromecast/media/audio/cma_audio_output_stream.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/output_stream_connection.h"
+#include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
@@ -72,15 +73,15 @@ AudioContentType GetContentType(const std::string& device_id) {
   return AudioContentType::kMedia;
 }
 
-mixer_service::ContentType ConvertContentType(AudioContentType content_type) {
+audio_service::ContentType ConvertContentType(AudioContentType content_type) {
   switch (content_type) {
     case AudioContentType::kMedia:
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
     case AudioContentType::kCommunication:
-      return mixer_service::CONTENT_TYPE_COMMUNICATION;
+      return audio_service::CONTENT_TYPE_COMMUNICATION;
     default:
       NOTREACHED();
-      return mixer_service::CONTENT_TYPE_MEDIA;
+      return audio_service::CONTENT_TYPE_MEDIA;
   }
 }
 
@@ -162,12 +163,12 @@ void CastAudioOutputStream::MixerServiceWrapper::Start(
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   mixer_service::OutputStreamParams params;
-  params.set_content_type(mixer_service::CONTENT_TYPE_MEDIA);
+  params.set_content_type(audio_service::CONTENT_TYPE_MEDIA);
   params.set_focus_type(ConvertContentType(GetContentType(device_id_)));
   params.set_device_id(device_id_);
   params.set_stream_type(
       mixer_service::OutputStreamParams::STREAM_TYPE_DEFAULT);
-  params.set_sample_format(mixer_service::SAMPLE_FORMAT_FLOAT_P);
+  params.set_sample_format(audio_service::SAMPLE_FORMAT_FLOAT_P);
   params.set_sample_rate(audio_params_.sample_rate());
   params.set_num_channels(audio_params_.channels());
 

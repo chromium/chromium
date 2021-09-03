@@ -10,7 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/audio_output_service/output_connection.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
 
 namespace net {

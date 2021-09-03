@@ -13,7 +13,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -95,7 +96,8 @@ void CmaBackendShim::InitializeOnMediaThread() {
   MediaPipelineDeviceParams device_params(
       MediaPipelineDeviceParams::kModeIgnorePts,
       ConvertStreamType(params_.stream_type()), &backend_task_runner_,
-      ConvertContentType(params_.content_type()), params_.device_id());
+      audio_service::ConvertContentType(params_.content_type()),
+      params_.device_id());
   device_params.audio_channel =
       ConvertChannelSelection(params_.channel_selection());
   cma_backend_ = backend_manager_->CreateBackend(device_params);
@@ -111,13 +113,17 @@ void CmaBackendShim::InitializeOnMediaThread() {
   AudioConfig audio_config;
   audio_config.id = kPrimary;
   audio_config.codec = kCodecPCM;
-  audio_config.channel_layout = ConvertChannelLayout(params_.channel_layout());
-  if (audio_config.channel_layout == media::ChannelLayout::UNSUPPORTED) {
+  audio_config.channel_layout =
+      audio_service::ConvertChannelLayout(params_.channel_layout());
+  if (audio_config.channel_layout == media::ChannelLayout::UNSUPPORTED ||
+      audio_config.channel_layout == media::ChannelLayout::BITSTREAM) {
     audio_config.channel_layout =
         ChannelLayoutFromChannelNumber(params_.num_channels());
   }
-  audio_config.sample_format = ConvertSampleFormat(params_.sample_format());
-  audio_config.bytes_per_channel = GetSampleSizeBytes(params_.sample_format());
+  audio_config.sample_format =
+      audio_service::ConvertSampleFormat(params_.sample_format());
+  audio_config.bytes_per_channel =
+      audio_service::GetSampleSizeBytes(params_.sample_format());
   audio_config.channel_number = params_.num_channels();
   audio_config.samples_per_second = params_.sample_rate();
   if (!audio_decoder_->SetConfig(audio_config)) {

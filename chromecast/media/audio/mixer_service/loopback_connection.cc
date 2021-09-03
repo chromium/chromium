@@ -9,8 +9,9 @@
 #include <utility>
 
 #include "base/check.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/socket/stream_socket.h"
 
@@ -67,7 +68,8 @@ void LoopbackConnection::OnConnectionError() {
 
 bool LoopbackConnection::HandleMetadata(const Generic& message) {
   if (message.has_stream_config()) {
-    format_ = ConvertSampleFormat(message.stream_config().sample_format());
+    format_ = audio_service::ConvertSampleFormat(
+        message.stream_config().sample_format());
     sample_rate_ = message.stream_config().sample_rate();
     num_channels_ = message.stream_config().num_channels();
   }

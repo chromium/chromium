@@ -14,8 +14,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_io_thread.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
@@ -47,11 +47,11 @@ mixer_service::AudioDecoderConfig ConvertAudioDecoderConfig(
                                               audio_decoder_config);
   mixer_service::AudioDecoderConfig proto_audio_config;
   proto_audio_config.set_audio_codec(
-      mixer_service::ConvertAudioCodec(audio_config.codec));
+      audio_service::ConvertAudioCodec(audio_config.codec));
   proto_audio_config.set_channel_layout(
-      mixer_service::ConvertChannelLayout(audio_config.channel_layout));
+      audio_service::ConvertChannelLayout(audio_config.channel_layout));
   proto_audio_config.set_sample_format(
-      mixer_service::ConvertSampleFormat(audio_config.sample_format));
+      audio_service::ConvertSampleFormat(audio_config.sample_format));
   proto_audio_config.set_num_channels(audio_config.channel_number);
   proto_audio_config.set_sample_rate(audio_config.samples_per_second);
   proto_audio_config.set_extra_data(

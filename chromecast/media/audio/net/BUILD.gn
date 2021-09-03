@@ -3,6 +3,26 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_out_dir = "chromecast/media/audio/net"
+  sources = [ "common.proto" ]
+}
+
+cast_source_set("common") {
+  sources = [
+    "conversions.cc",
+    "conversions.h",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+  ]
+}
 
 cast_source_set("audio_socket") {
   sources = [

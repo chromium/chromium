@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 #include "chromecast/media/audio/mixer_service/receiver/receiver.h"
 
 namespace chromecast {

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_CONVERSIONS_H_
-#define CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_CONVERSIONS_H_
+#ifndef CHROMECAST_MEDIA_AUDIO_NET_CONVERSIONS_H_
+#define CHROMECAST_MEDIA_AUDIO_NET_CONVERSIONS_H_
 
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/volume_control.h"
 
 namespace chromecast {
 namespace media {
-namespace mixer_service {
+namespace audio_service {
 
 media::SampleFormat ConvertSampleFormat(SampleFormat format);
 SampleFormat ConvertSampleFormat(media::SampleFormat format);
@@ -26,8 +26,8 @@ media::ChannelLayout ConvertChannelLayout(ChannelLayout channel_layout);
 media::AudioCodec ConvertAudioCodec(AudioCodec codec);
 AudioCodec ConvertAudioCodec(media::AudioCodec codec);
 
-}  // namespace mixer_service
+}  // namespace audio_service
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_MIXER_SERVICE_CONVERSIONS_H_
+#endif  // CHROMECAST_MEDIA_AUDIO_NET_CONVERSIONS_H_

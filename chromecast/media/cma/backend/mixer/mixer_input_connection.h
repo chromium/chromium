@@ -18,8 +18,8 @@
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/audio/audio_clock_simulator.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/net/common.pb.h"
 #include "chromecast/media/audio/playback_rate_shifter.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -158,7 +158,7 @@ class MixerInputConnection : public mixer_service::MixerSocket::Delegate,
   const int num_channels_;
   const ::media::ChannelLayout channel_layout_;
   const int input_samples_per_second_;
-  const mixer_service::SampleFormat sample_format_;
+  const audio_service::SampleFormat sample_format_;
   const bool primary_;
   const std::string device_id_;
   const AudioContentType content_type_;
