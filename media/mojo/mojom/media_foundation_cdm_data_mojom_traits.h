@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "media/cdm/media_foundation_cdm_data.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
@@ -25,11 +24,6 @@ struct StructTraits<media::mojom::MediaFoundationCdmDataDataView,
   static const absl::optional<std::vector<uint8_t>>& client_token(
       const std::unique_ptr<media::MediaFoundationCdmData>& input) {
     return input->client_token;
-  }
-
-  static const base::FilePath& cdm_store_path_root(
-      const std::unique_ptr<media::MediaFoundationCdmData>& input) {
-    return input->cdm_store_path_root;
   }
 
   static bool Read(media::mojom::MediaFoundationCdmDataDataView input,

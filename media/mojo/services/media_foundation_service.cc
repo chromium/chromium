@@ -254,8 +254,9 @@ absl::optional<CdmCapability> GetCdmCapability(IsTypeSupportedCB callback,
 }  // namespace
 
 MediaFoundationService::MediaFoundationService(
-    mojo::PendingReceiver<mojom::MediaFoundationService> receiver)
-    : receiver_(this, std::move(receiver)) {
+    mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
+    const base::FilePath& user_data_dir)
+    : receiver_(this, std::move(receiver)), mojo_media_client_(user_data_dir) {
   DVLOG(1) << __func__;
   mojo_media_client_.Initialize();
 }

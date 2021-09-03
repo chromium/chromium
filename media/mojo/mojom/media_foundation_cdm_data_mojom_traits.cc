@@ -21,12 +21,8 @@ bool StructTraits<media::mojom::MediaFoundationCdmDataDataView,
   if (!input.ReadClientToken(&client_token))
     return false;
 
-  base::FilePath cdm_store_path_root;
-  if (!input.ReadCdmStorePathRoot(&cdm_store_path_root))
-    return false;
-
   *output = std::make_unique<media::MediaFoundationCdmData>(
-      origin_id, std::move(client_token), std::move(cdm_store_path_root));
+      origin_id, std::move(client_token));
   return true;
 }
 

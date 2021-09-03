@@ -17,8 +17,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -171,7 +169,8 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
     PrefService* user_prefs,
     base::Time start,
     base::Time end,
-    const base::RepeatingCallback<bool(const GURL&)>& filter) {
+    const base::RepeatingCallback<bool(const GURL&)>& filter,
+    base::OnceClosure complete_cb) {
   DVLOG(1) << __func__ << " From [" << start << ", " << end << "]";
 
   DictionaryPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
@@ -193,11 +192,6 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
 
     std::unique_ptr<CdmPrefData> cdm_pref_data = FromDictValue(origin_dict);
 
-    if (!cdm_pref_data) {
-      origins_to_delete.push_back(origin);
-      continue;
-    }
-
     if (TimeIsBetween(cdm_pref_data->origin_id_creation_time(), start, end)) {
       DVLOG(1) << "Clearing cdm pref data for " << origin;
       origins_to_delete.push_back(origin);
@@ -212,6 +206,7 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
   for (const auto& origin_str : origins_to_delete)
     update->RemoveKey(origin_str);
 
+  std::move(complete_cb).Run();
   DVLOG(1) << __func__ << "Done removing CDM preference data";
 }
 
@@ -291,28 +286,4 @@ void CdmPrefServiceHelper::SetCdmClientToken(
 
   cdm_pref_data->SetClientToken(client_token, base::Time::Now());
   dict->SetKey(serialized_cdm_origin, ToDictValue(*cdm_pref_data));
-}
-
-std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
-    PrefService* user_prefs) {
-  std::map<std::string, url::Origin> mapping;
-  const base::DictionaryValue* dict =
-      user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
-
-  for (auto key_value : dict->DictItems()) {
-    const base::Value* origin_id_value = key_value.second.FindKey(kOriginId);
-    if (!origin_id_value)
-      continue;
-
-    absl::optional<base::UnguessableToken> origin_id =
-        base::ValueToUnguessableToken(*origin_id_value);
-    if (!origin_id)
-      continue;
-
-    const url::Origin origin = url::Origin::Create(GURL(key_value.first));
-
-    mapping[origin_id->ToString()] = origin;
-  }
-
-  return mapping;
 }

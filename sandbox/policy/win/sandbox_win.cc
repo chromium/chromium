@@ -42,7 +42,6 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
-#include "sandbox/policy/win/lpac_capability.h"
 #include "sandbox/policy/win/sandbox_diagnostics.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/job.h"
@@ -758,10 +757,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-  if (sandbox_type == SandboxType::kMediaFoundationCdm) {
-    container->AddCapability(kMediaFoundationCdmData);
+  if (sandbox_type == SandboxType::kMediaFoundationCdm)
     container->SetEnableLowPrivilegeAppContainer(true);
-  }
 
   return SBOX_ALL_OK;
 }

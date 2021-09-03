@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/document_service_base.h"
 #include "media/mojo/mojom/cdm_document_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -50,13 +49,6 @@ class CdmDocumentServiceImpl final
   void GetMediaFoundationCdmData(
       GetMediaFoundationCdmDataCallback callback) final;
   void SetCdmClientToken(const std::vector<uint8_t>& client_token) final;
-
-  static void ClearCdmData(
-      Profile* profile,
-      base::Time start,
-      base::Time end,
-      const base::RepeatingCallback<bool(const GURL&)>& filter,
-      base::OnceClosure complete_cb);
 #endif  // defined(OS_WIN)
 
  private:

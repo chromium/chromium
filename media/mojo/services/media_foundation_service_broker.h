@@ -25,6 +25,7 @@ class MEDIA_MOJO_EXPORT MediaFoundationServiceBroker final
   // initialization to ensure the process is sandboxed.
   MediaFoundationServiceBroker(
       mojo::PendingReceiver<mojom::MediaFoundationServiceBroker> receiver,
+      const base::FilePath& user_data_dir,
       base::OnceClosure ensure_sandboxed_cb);
   MediaFoundationServiceBroker(const MediaFoundationServiceBroker&) = delete;
   MediaFoundationServiceBroker operator=(const MediaFoundationServiceBroker&) =
@@ -38,6 +39,7 @@ class MEDIA_MOJO_EXPORT MediaFoundationServiceBroker final
 
  private:
   mojo::Receiver<mojom::MediaFoundationServiceBroker> receiver_;
+  base::FilePath user_data_dir_;
   base::OnceClosure ensure_sandboxed_cb_;
   std::unique_ptr<MediaFoundationService> media_foundation_service_;
 };

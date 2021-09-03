@@ -11,7 +11,9 @@
 
 namespace media {
 
-MediaFoundationMojoMediaClient::MediaFoundationMojoMediaClient() {
+MediaFoundationMojoMediaClient::MediaFoundationMojoMediaClient(
+    const base::FilePath& user_data_dir)
+    : user_data_dir_(user_data_dir) {
   DVLOG_FUNC(1);
 }
 
@@ -36,7 +38,7 @@ std::unique_ptr<CdmFactory> MediaFoundationMojoMediaClient::CreateCdmFactory(
     mojom::FrameInterfaceFactory* frame_interfaces) {
   DVLOG_FUNC(1);
   return std::make_unique<MediaFoundationCdmFactory>(
-      std::make_unique<MojoCdmHelper>(frame_interfaces));
+      std::make_unique<MojoCdmHelper>(frame_interfaces), user_data_dir_);
 }
 
 }  // namespace media

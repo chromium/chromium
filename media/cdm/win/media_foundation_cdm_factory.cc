@@ -179,8 +179,10 @@ crash_reporter::CrashKeyString<256> g_origin_crash_key("cdm-origin");
 }  // namespace
 
 MediaFoundationCdmFactory::MediaFoundationCdmFactory(
-    std::unique_ptr<CdmAuxiliaryHelper> helper)
+    std::unique_ptr<CdmAuxiliaryHelper> helper,
+    const base::FilePath& user_data_dir)
     : helper_(std::move(helper)),
+      user_data_dir_(user_data_dir),
       cdm_origin_crash_key_(&g_origin_crash_key,
                             helper_->GetCdmOrigin().Serialize()) {}
 
@@ -242,8 +244,7 @@ void MediaFoundationCdmFactory::OnCdmOriginIdObtained(
       base::BindRepeating(&MediaFoundationCdmFactory::CreateMfCdm,
                           weak_factory_.GetWeakPtr(), key_system, cdm_config,
                           media_foundation_cdm_data->origin_id,
-                          media_foundation_cdm_data->client_token,
-                          media_foundation_cdm_data->cdm_store_path_root),
+                          media_foundation_cdm_data->client_token),
       base::BindRepeating(&MediaFoundationCdmFactory::IsTypeSupported,
                           weak_factory_.GetWeakPtr(), key_system),
       base::BindRepeating(&MediaFoundationCdmFactory::StoreClientToken,
@@ -313,7 +314,6 @@ HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
     const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-    const base::FilePath& cdm_store_path_root,
     ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   RETURN_IF_FAILED(GetCdmFactory(key_system, cdm_factory));
@@ -336,8 +336,7 @@ HRESULT MediaFoundationCdmFactory::CreateMfCdmInternal(
       &cdm_access));
 
   // Provide a per-user, per-arch, per-origin and per-key-system path.
-  auto store_path =
-      GetCdmStorePath(cdm_store_path_root, cdm_origin_id, key_system);
+  auto store_path = GetCdmStorePath(user_data_dir_, cdm_origin_id, key_system);
   DVLOG(1) << "store_path=" << store_path;
 
   // Ensure the path exists. If it already exists, this call will do nothing.
@@ -363,11 +362,10 @@ void MediaFoundationCdmFactory::CreateMfCdm(
     const CdmConfig& cdm_config,
     const base::UnguessableToken& cdm_origin_id,
     const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-    const base::FilePath& cdm_store_path_root,
     HRESULT& hresult,
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm) {
   hresult = CreateMfCdmInternal(key_system, cdm_config, cdm_origin_id,
-                                cdm_client_token, cdm_store_path_root, mf_cdm);
+                                cdm_client_token, mf_cdm);
 }
 
 }  // namespace media

@@ -26,7 +26,8 @@ namespace media {
 
 class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
  public:
-  MediaFoundationCdmFactory(std::unique_ptr<CdmAuxiliaryHelper> helper);
+  MediaFoundationCdmFactory(std::unique_ptr<CdmAuxiliaryHelper> helper,
+                            const base::FilePath& user_data_dir);
   MediaFoundationCdmFactory(const MediaFoundationCdmFactory&) = delete;
   MediaFoundationCdmFactory& operator=(const MediaFoundationCdmFactory&) =
       delete;
@@ -78,7 +79,6 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
       const CdmConfig& cdm_config,
       const base::UnguessableToken& cdm_origin_id,
       const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-      const base::FilePath& cdm_store_path_root,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
   // Same as `CreateMfCdmInternal()`, but returns the HRESULT in out parameter
@@ -87,11 +87,11 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
                    const CdmConfig& cdm_config,
                    const base::UnguessableToken& cdm_origin_id,
                    const absl::optional<std::vector<uint8_t>>& cdm_client_token,
-                   const base::FilePath& cdm_store_path_root,
                    HRESULT& hresult,
                    Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
   std::unique_ptr<CdmAuxiliaryHelper> helper_;
+  base::FilePath user_data_dir_;
 
   // CDM origin crash key used in crash reporting.
   crash_reporter::ScopedCrashKeyString cdm_origin_crash_key_;

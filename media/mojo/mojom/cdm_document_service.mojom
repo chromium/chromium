@@ -6,7 +6,6 @@
 module media.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 
 // Contains data linked to an origin that the CDM stores in the browser
 // process.
@@ -20,10 +19,6 @@ struct MediaFoundationCdmData {
   // The token is set by the CDM. The token is then saved in the Pref Service so
   // that it can be reused by the CDM for that same origin in the future.
   array<uint8>? client_token;
-
-  // The path where the MediaFoundation CDM should store its data. The path is
-  // specific to the current chrome user and the device's architecture.
-  mojo_base.mojom.FilePath cdm_store_path_root;
 };
 
 // The service itself is associated with a RenderFrameHost in the browser

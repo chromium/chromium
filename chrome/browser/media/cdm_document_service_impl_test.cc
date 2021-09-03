@@ -59,16 +59,14 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<media::MediaFoundationCdmData> GetMediaFoundationCdmData() {
     std::unique_ptr<media::MediaFoundationCdmData> media_foundation_cdm_data;
     GetMediaFoundationCdmDataMockCB mock_cb;
-    base::RunLoop run_loop;
     EXPECT_CALL(mock_cb, Run(_))
-        .WillOnce([&media_foundation_cdm_data, &run_loop](
+        .WillOnce([&media_foundation_cdm_data](
                       std::unique_ptr<media::MediaFoundationCdmData> ptr) {
           media_foundation_cdm_data = std::move(ptr);
-          run_loop.Quit();
         });
 
     cdm_document_service_->GetMediaFoundationCdmData(mock_cb.Get());
-    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
 
     return media_foundation_cdm_data;
   }
@@ -79,7 +77,8 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CorruptCdmPreference() {
-    PrefService* user_prefs = profile()->GetPrefs();
+    PrefService* user_prefs = user_prefs::UserPrefs::Get(
+        web_contents()->GetMainFrame()->GetBrowserContext());
 
     // Create (or overwrite) an entry with only an origin id to simulate some
     // kind of corruption or simply an update to the preference format.
@@ -208,9 +207,10 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceData) {
   base::RunLoop loop1;
 
   // With the filter returning false, the origin id should not be destroyed.
-  CdmDocumentServiceImpl::ClearCdmData(
-      profile(), start, end,
-      base::BindRepeating([](const GURL& url) { return false; }),
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, base::BindRepeating([](const GURL& url) { return false; }),
       loop1.QuitClosure());
 
   loop1.Run();
@@ -220,9 +220,10 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceData) {
 
   base::RunLoop loop2;
 
-  CdmDocumentServiceImpl::ClearCdmData(
-      profile(), start, end,
-      base::BindRepeating([](const GURL& url) { return true; }),
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, base::BindRepeating([](const GURL& url) { return true; }),
       loop2.QuitClosure());
 
   loop2.Run();
@@ -246,8 +247,10 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataWrongTime) {
 
   base::RunLoop loop;
 
-  CdmDocumentServiceImpl::ClearCdmData(profile(), start, end, null_filter,
-                                       loop.QuitClosure());
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, null_filter, loop.QuitClosure());
 
   loop.Run();
 
@@ -271,8 +274,10 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataNullFilter) {
 
   base::RunLoop loop;
 
-  CdmDocumentServiceImpl::ClearCdmData(profile(), start, end, null_filter,
-                                       loop.QuitClosure());
+  CdmPrefServiceHelper::ClearCdmPreferenceData(
+      user_prefs::UserPrefs::Get(
+          web_contents()->GetMainFrame()->GetBrowserContext()),
+      start, end, null_filter, loop.QuitClosure());
 
   loop.Run();
 

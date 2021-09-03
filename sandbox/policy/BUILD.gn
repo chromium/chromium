@@ -119,8 +119,6 @@ component("policy") {
   }
   if (is_win) {
     sources += [
-      "win/lpac_capability.cc",
-      "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
       "win/sandbox_win.cc",
