@@ -959,9 +959,8 @@ void NotificationViewBase::CreateOrUpdateTitleView(
     title_view_ =
         new views::Label(title, views::style::CONTEXT_DIALOG_BODY_TEXT);
     title_view_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    // TODO(knollr): multiline should not be required, but we need to set the
-    // width of |title_view_| (because of crbug.com/682266), which only works in
-    // multiline mode.
+    // TODO(crbug.com/682266): multiline should not be required, but we need to
+    // set the width of |title_view_|, which only works in multiline mode.
     title_view_->SetMultiLine(true);
     title_view_->SetMaxLines(kMaxLinesForTitleView);
     title_view_->SetAllowCharacterBreak(true);
@@ -1143,8 +1142,8 @@ void NotificationViewBase::CreateOrUpdateSmallIconView(
           .color;
 
   auto* theme = GetNativeTheme();
-  // TODO(knollr): figure out if this has a performance impact and
-  // cache images if so. (crbug.com/768748)
+  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // cache images if so.
   gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
       kSmallImageSizeMD, icon_color,
       theme->GetSystemColor(

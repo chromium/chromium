@@ -146,9 +146,9 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
   // user-visible action done in response to a push message - but make sure that
   // sending two messages in rapid succession which show then hide a
   // notification doesn't count.
-  // TODO(knollr): Scheduling a notification should count as a user-visible
-  // action, if it is not immediately cancelled or the |origin| schedules too
-  // many notifications too far in the future.
+  // TODO(crbug.com/891339): Scheduling a notification should count as a
+  // user-visible action, if it is not immediately cancelled or the |origin|
+  // schedules too many notifications too far in the future.
   bool notification_shown = notification_count > 0;
   bool notification_needed = true;
 

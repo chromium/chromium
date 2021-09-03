@@ -489,7 +489,6 @@ void ToolbarView::ShowIntentPickerBubble(
       location_bar(), intent_picker_view, icon_type, GetWebContents(),
       std::move(app_info), show_stay_in_chrome, show_remember_selection,
       initiating_origin, std::move(callback));
-  // TODO(knollr): find a way that the icon updates implicitly.
   intent_picker_view->Update();
 }
 

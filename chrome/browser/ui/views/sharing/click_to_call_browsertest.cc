@@ -368,7 +368,6 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, ContextMenu_UKM) {
   EXPECT_EQ(true, *has_devices);
   EXPECT_EQ(static_cast<int64_t>(SharingClickToCallSelection::kDevice),
             *selection);
-  // TODO(knollr): mock apps and verify |has_apps| here too.
 }
 
 IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, CloseTabWithBubble) {

@@ -93,7 +93,6 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-  // TODO(knollr): Find a better place for this.
   PrecompilePhoneNumberRegexesAsync();
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
