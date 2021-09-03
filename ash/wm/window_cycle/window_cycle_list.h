@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -29,8 +30,6 @@ class Widget;
 
 namespace ash {
 
-class WindowCycleView;
-
 // Tracks a set of Windows that can be stepped through. This class is used by
 // the WindowCycleController.
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
@@ -42,9 +41,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   WindowCycleList(const WindowCycleList&) = delete;
   WindowCycleList& operator=(const WindowCycleList&) = delete;
   ~WindowCycleList() override;
-
-  // Horizontal padding between the alt-tab bandshield and the window previews.
-  static constexpr int kInsideBorderHorizontalPaddingDp = 64;
 
   // Returns the |target_window_| from |cycle_view_|.
   aura::Window* GetTargetWindow();

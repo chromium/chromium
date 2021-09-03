@@ -1564,7 +1564,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
                                          base::TimeDelta::FromSeconds(1), 10);
   EXPECT_EQ(cycle_view_bounds.right(),
             preview_items[4]->GetBoundsInScreen().right() +
-                WindowCycleList::kInsideBorderHorizontalPaddingDp);
+                WindowCycleView::kInsideBorderHorizontalPaddingDp);
   EXPECT_EQ(window2.get(), GetTargetWindow());
 
   // Diagonally drag from the middle of the fourth item to the right, ending up
