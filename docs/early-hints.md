@@ -68,7 +68,7 @@ Content-Type: text/html; charset=utf-8
 ...
 ```
 
-`<meta http-equiv=”origin-trial” content=”**your token**”>` also works for the
+`<meta http-equiv="origin-trial" content="**your token**">` also works for the
 final response but doesn’t work for Early Hints since Early Hints cannot convey
 a response body.
 
@@ -78,7 +78,7 @@ If a resource is preloaded by Early Hints, the corresponding
 [PerformanceResourceTiming](https://w3c.github.io/resource-timing/#sec-performanceresourcetiming)
 object reports `initiatorType` is "early-hints".
 ```
-performance.getEntriesByName('https://a.test/style.css”)[0].initiatorType
+performance.getEntriesByName('https://a.test/style.css')[0].initiatorType
 // => 'early-hints'
 ```
 
