@@ -489,11 +489,11 @@
   # start with the same id because only one of them is built depending on if
   # src_internal is available.
   "chromeos/components/eche_app_ui/resources/prod/eche_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [120],}},
     "includes": [2690],
   },
   "chromeos/components/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"sizes": {"includes": [120],}},
     "includes": [2690],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/personalization_app/resources/chromeos_personalization_app_resources.grd": {

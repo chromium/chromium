@@ -7,6 +7,7 @@
 #include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_eche_app_resources.h"
 #include "chromeos/grit/chromeos_eche_bundle_resources.h"
+#include "chromeos/grit/chromeos_eche_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -46,6 +47,9 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_CHROMEOS_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js",
                                IDR_CHROMEOS_ECHE_APP_RECEIVER_JS);
+
+  html_source->AddResourcePaths(base::make_span(
+      kChromeosEcheBundleResources, kChromeosEcheBundleResourcesSize));
 
   html_source->AddFrameAncestor(GURL(eche_app::kChromeUIEcheAppURL));
 
