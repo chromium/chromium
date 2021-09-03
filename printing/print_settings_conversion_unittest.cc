@@ -4,6 +4,7 @@
 
 #include "printing/print_settings_conversion.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -92,5 +93,28 @@ TEST(PrintSettingsConversionTest, ConversionTest_DontSendUsername) {
   EXPECT_EQ("", settings->username());
 }
 #endif
+
+#if defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(USE_CUPS))
+TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
+  absl::optional<base::Value> value = base::JSONReader::Read(kPrinterSettings);
+  ASSERT_TRUE(value.has_value());
+
+  {
+    base::Value advanced_attributes(base::Value::Type::DICTIONARY);
+    advanced_attributes.SetStringKey("printer-info", "yada");
+    advanced_attributes.SetStringKey("printer-make-and-model", "yada");
+    advanced_attributes.SetStringKey("system_driverinfo", "yada");
+    advanced_attributes.SetStringKey("Foo", "Bar");
+    value->SetKey(kSettingAdvancedSettings, std::move(advanced_attributes));
+  }
+
+  std::unique_ptr<PrintSettings> settings =
+      PrintSettingsFromJobSettings(value.value());
+  ASSERT_TRUE(settings);
+  EXPECT_EQ(settings->advanced_settings().size(), 1u);
+  ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));
+  EXPECT_EQ(settings->advanced_settings().at("Foo"), base::Value("Bar"));
+}
+#endif  // defined(OS_CHROMEOS) || (defined(OS_LINUX) && defined(USE_CUPS))
 
 }  // namespace printing
