@@ -57,10 +57,12 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   // |callback| will be run upon completion and it's allowed to delete this
   // object upon |callback| call. For GET requests, |serialized_request_proto|
   // must be null. For |POST| requests, it can be either way (optional payload).
+  // |url_loader_factory| must not be null.
   TrustedVaultRequest(
       HttpMethod http_method,
       const GURL& request_url,
-      const absl::optional<std::string>& serialized_request_proto);
+      const absl::optional<std::string>& serialized_request_proto,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   TrustedVaultRequest(const TrustedVaultRequest& other) = delete;
   TrustedVaultRequest& operator=(const TrustedVaultRequest& other) = delete;
   ~TrustedVaultRequest() override;
@@ -70,18 +72,15 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   // called at most once.
   void FetchAccessTokenAndSendRequest(
       const CoreAccountId& account_id,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       TrustedVaultAccessTokenFetcher* access_token_fetcher,
       CompletionCallback callback);
 
  private:
   void OnAccessTokenFetched(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       absl::optional<signin::AccessTokenInfo> access_token_info);
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token) const;
 
   // Running |completion_callback_| may cause destroying of this object, so all
@@ -93,6 +92,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   const HttpMethod http_method_;
   const GURL request_url_;
   const absl::optional<std::string> serialized_request_proto_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   CompletionCallback completion_callback_;
 

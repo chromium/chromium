@@ -298,11 +298,11 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       GURL(trusted_vault_service_url_.spec() +
            GetGetSecurityDomainMemberURLPathAndQuery(
                device_key_pair->public_key().ExportToBytes())),
-      /*serialized_request_proto=*/absl::nullopt);
+      /*serialized_request_proto=*/absl::nullopt,
+      GetOrCreateURLLoaderFactory());
 
   request->FetchAccessTokenAndSendRequest(
-      account_info.account_id, GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_.get(),
+      account_info.account_id, access_token_fetcher_.get(),
       base::BindOnce(
           &ProcessDownloadKeysResponse,
           /*response_processor=*/
@@ -321,11 +321,11 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
       TrustedVaultRequest::HttpMethod::kGet,
       GURL(trusted_vault_service_url_.spec() +
            kGetSecurityDomainURLPathAndQuery),
-      /*serialized_request_proto=*/absl::nullopt);
+      /*serialized_request_proto=*/absl::nullopt,
+      GetOrCreateURLLoaderFactory());
 
   request->FetchAccessTokenAndSendRequest(
-      account_info.account_id, GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_.get(),
+      account_info.account_id, access_token_fetcher_.get(),
       base::BindOnce(&ProcessDownloadIsRecoverabilityDegradedResponse,
                      std::move(callback)));
 
@@ -349,11 +349,11 @@ TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
           trusted_vault_keys, last_trusted_vault_key_version,
           authentication_factor_public_key, authentication_factor_type,
           authentication_factor_type_hint)
-          .SerializeAsString());
+          .SerializeAsString(),
+      GetOrCreateURLLoaderFactory());
 
   request->FetchAccessTokenAndSendRequest(
-      account_info.account_id, GetOrCreateURLLoaderFactory(),
-      access_token_fetcher_.get(),
+      account_info.account_id, access_token_fetcher_.get(),
       base::BindOnce(&ProcessJoinSecurityDomainsResponse, std::move(callback)));
   return request;
 }

@@ -76,10 +76,13 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
 TrustedVaultRequest::TrustedVaultRequest(
     HttpMethod http_method,
     const GURL& request_url,
-    const absl::optional<std::string>& serialized_request_proto)
+    const absl::optional<std::string>& serialized_request_proto,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : http_method_(http_method),
       request_url_(request_url),
-      serialized_request_proto_(serialized_request_proto) {
+      serialized_request_proto_(serialized_request_proto),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
          !serialized_request_proto.has_value());
 }
@@ -88,20 +91,16 @@ TrustedVaultRequest::~TrustedVaultRequest() = default;
 
 void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
     const CoreAccountId& account_id,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TrustedVaultAccessTokenFetcher* access_token_fetcher,
     CompletionCallback callback) {
-  DCHECK(url_loader_factory);
   DCHECK(access_token_fetcher);
   completion_callback_ = std::move(callback);
   access_token_fetcher->FetchAccessToken(
-      account_id,
-      base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
-                     weak_ptr_factory_.GetWeakPtr(), url_loader_factory));
+      account_id, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrustedVaultRequest::OnAccessTokenFetched(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     absl::optional<signin::AccessTokenInfo> access_token_info) {
   base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
                             access_token_info.has_value());
@@ -113,11 +112,11 @@ void TrustedVaultRequest::OnAccessTokenFetched(
     return;
   }
 
-  url_loader_ = CreateURLLoader(url_loader_factory, access_token_info->token);
+  url_loader_ = CreateURLLoader(access_token_info->token);
   // Destroying |this| object will cancel the request, so use of Unretained() is
   // safe here.
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      url_loader_factory_.get(),
       base::BindOnce(&TrustedVaultRequest::OnURLLoadComplete,
                      base::Unretained(this)));
 }
@@ -161,7 +160,6 @@ void TrustedVaultRequest::OnURLLoadComplete(
 }
 
 std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) const {
   auto request = std::make_unique<network::ResourceRequest>();
   // Specify that the server's response body should be formatted as a
