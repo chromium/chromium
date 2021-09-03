@@ -183,7 +183,7 @@ def WaitForWindow(title, class_name, timeout=30):
       elapsed = time.perf_counter() - start
       logging.info('Window ["%s"] found in %f seconds', title, elapsed)
       return (hwnd, title)
-    logging.info('Window with any title in %s has not appeared yet.', titles)
+    logging.info('Window with any title in %s has not appeared yet.', title)
     time.sleep(0.5)
 
   logging.warning('WARNING: (%s,"%s") not found within %f seconds', title,
