@@ -97,6 +97,23 @@ void LayoutNGSVGText::UpdateFont() {
   }
 }
 
+void LayoutNGSVGText::UpdateTransformAffectsVectorEffect() {
+  if (StyleRef().VectorEffect() == EVectorEffect::kNonScalingStroke) {
+    SetTransformAffectsVectorEffect(true);
+    return;
+  }
+
+  SetTransformAffectsVectorEffect(false);
+  for (LayoutObject* descendant = FirstChild(); descendant;
+       descendant = descendant->NextInPreOrder(this)) {
+    if (descendant->IsSVGInline() && descendant->StyleRef().VectorEffect() ==
+                                         EVectorEffect::kNonScalingStroke) {
+      SetTransformAffectsVectorEffect(true);
+      break;
+    }
+  }
+}
+
 void LayoutNGSVGText::Paint(const PaintInfo& paint_info) const {
   if (paint_info.phase != PaintPhase::kForeground &&
       paint_info.phase != PaintPhase::kForcedColorsModeBackplate &&
@@ -159,6 +176,8 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
   // If our bounds changed, notify the parents.
   if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
     SetNeedsBoundariesUpdate();
+
+  UpdateTransformAffectsVectorEffect();
 }
 
 bool LayoutNGSVGText::IsObjectBoundingBoxValid() const {

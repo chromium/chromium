@@ -10,8 +10,6 @@ namespace blink {
 using LayoutSVGContainerTest = RenderingTest;
 
 TEST_F(LayoutSVGContainerTest, TransformAffectsVectorEffect) {
-  // TODO(crbug.com/1179585): Need a fix for SVGTextNG.
-  ScopedSVGTextNGForTest disable_svg_text_ng(false);
   SetBodyInnerHTML(R"HTML(
     <svg id="svg" width="300" height="300">
       <g id="g">

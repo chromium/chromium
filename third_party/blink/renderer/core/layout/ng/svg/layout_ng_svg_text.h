@@ -54,6 +54,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
   void UpdateBlockLayout(bool relayout_children) override;
 
   void UpdateFont();
+  void UpdateTransformAffectsVectorEffect();
 
   // bounding_box_* are mutable for on-demand computation in a const method.
   mutable FloatRect bounding_box_;
