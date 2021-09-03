@@ -26,7 +26,8 @@ var allTests = [
     const hitButton1 = await new Promise(
         resolve => desktop.hitTestWithReply(
             button1.location.left + 5, button1.location.top + 5, resolve));
-    chrome.test.assertEq(button1, hitButton1);
+    chrome.test.assertTrue(
+        button1 === hitButton1 || button1 === hitButton1.parent);
 
     chrome.windows.create({url: url2, focused: true});
     const button2 = await new Promise(resolve => {
