@@ -28,28 +28,6 @@ namespace web_app {
 
 namespace {
 
-WebAppInstallParams CreateSyncInstallParams(
-    const absl::optional<std::string>& manifest_id,
-    const GURL& start_url,
-    const std::u16string& app_name,
-    DisplayMode user_display_mode) {
-  const bool locally_install_we_apps_on_sync = AreAppsLocallyInstalledBySync();
-
-  WebAppInstallParams params;
-  params.force_reinstall = true;
-  params.override_manifest_id = manifest_id;
-  params.user_display_mode = user_display_mode;
-  params.fallback_start_url = start_url;
-  params.fallback_app_name = app_name;
-  // If app is not locally installed then no OS integration like OS shortcuts.
-  params.locally_installed = locally_install_we_apps_on_sync;
-  params.add_to_applications_menu = locally_install_we_apps_on_sync;
-  params.add_to_desktop = locally_install_we_apps_on_sync;
-  // Never add the app to the quick launch bar after sync.
-  params.add_to_quick_launch_bar = false;
-  return params;
-}
-
 bool TaskExpectsAppId(const WebAppInstallTask* task, const AppId& app_id) {
   return task && task->app_id_to_expect().has_value() &&
          task->app_id_to_expect().value() == app_id;
@@ -230,9 +208,20 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
       data_retriever_factory_.Run(), registrar_);
 
   task->ExpectAppId(sync_app_id);
-  task->SetInstallParams(CreateSyncInstallParams(
-      web_application_info->manifest_id, start_url, web_application_info->title,
-      web_application_info->user_display_mode));
+
+  WebAppInstallParams params;
+  params.force_reinstall = true;
+  params.override_manifest_id = web_application_info->manifest_id;
+  params.user_display_mode = web_application_info->user_display_mode;
+  params.fallback_start_url = start_url;
+  params.fallback_app_name = web_application_info->title;
+  // If app is not locally installed then no OS integration like OS shortcuts.
+  params.locally_installed = AreAppsLocallyInstalledBySync();
+  params.add_to_applications_menu = AreAppsLocallyInstalledBySync();
+  params.add_to_desktop = AreAppsLocallyInstalledBySync();
+  // Never add the app to the quick launch bar after sync.
+  params.add_to_quick_launch_bar = false;
+  task->SetInstallParams(params);
 
   OnceInstallCallback task_completed_callback = base::BindOnce(
       &WebAppInstallManager::
