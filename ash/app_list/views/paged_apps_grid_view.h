@@ -43,7 +43,8 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
  public:
   PagedAppsGridView(ContentsView* contents_view,
                     AppListA11yAnnouncer* a11y_announcer,
-                    AppsGridViewFolderDelegate* folder_delegate);
+                    AppsGridViewFolderDelegate* folder_delegate,
+                    AppListFolderController* folder_controller);
   PagedAppsGridView(const PagedAppsGridView&) = delete;
   PagedAppsGridView& operator=(const PagedAppsGridView&) = delete;
   ~PagedAppsGridView() override;
@@ -87,10 +88,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int TilesPerPage(int page) const override;
-
-  // AppListItemView::GridDelegate:
-  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
-                                  const ui::Event& event) override;
 
   // PaginationModelObserver:
   void TotalPagesChanged(int previous_page_count, int new_page_count) override;

@@ -175,11 +175,13 @@ class PagedAppsGridView::FadeoutLayerDelegate : public ui::LayerDelegate {
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
     AppListA11yAnnouncer* a11y_announcer,
-    AppsGridViewFolderDelegate* folder_delegate)
+    AppsGridViewFolderDelegate* folder_delegate,
+    AppListFolderController* folder_controller)
     : AppsGridView(contents_view,
                    a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
-                   folder_delegate),
+                   folder_delegate,
+                   folder_controller),
       contents_view_(contents_view),
       page_flip_delay_(kPageFlipDelay),
       is_app_list_bubble_enabled_(features::IsAppListBubbleEnabled()) {
@@ -582,32 +584,6 @@ int PagedAppsGridView::TilesPerPage(int page) const {
     return page == 0 ? 15 : 20;
 
   return cols() * rows_per_page();
-}
-
-void PagedAppsGridView::OnAppListItemViewActivated(
-    AppListItemView* pressed_item_view,
-    const ui::Event& event) {
-  if (IsDragging())
-    return;
-
-  if (contents_view_->apps_container_view()
-          ->app_list_folder_view()
-          ->IsAnimationRunning()) {
-    return;
-  }
-
-  // Always set the previous `activated_folder_item_view_` to be visible. This
-  // prevents a case where the item would remain hidden due the
-  // `activated_folder_item_view_` changing during the animation. We only
-  // need to track `activated_folder_item_view_` in the root level grid view.
-  if (!folder_delegate()) {
-    if (activated_folder_item_view())
-      activated_folder_item_view()->SetVisible(true);
-    set_activated_folder_item_view(
-        IsFolderItem(pressed_item_view->item()) ? pressed_item_view : nullptr);
-  }
-  contents_view_->GetAppListMainView()->ActivateApp(pressed_item_view->item(),
-                                                    event.flags());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -389,6 +389,29 @@ class AppsGridViewTest : public views::ViewsTestBase {
     return gesture_event;
   }
 
+  // Sends left mouse button press and release events to `view`. The events will
+  // be located at the view center point.
+  void SimulateLeftClickOnView(views::View* view) {
+    gfx::Point press_point = view->GetLocalBounds().CenterPoint();
+    gfx::Point press_point_in_root = press_point;
+    views::View::ConvertPointToWidget(view, &press_point_in_root);
+    aura::Window* view_window = view->GetWidget()->GetNativeWindow();
+    aura::Window::ConvertPointToTarget(
+        view_window, view_window->GetRootWindow(), &press_point_in_root);
+
+    ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, press_point,
+                               press_point_in_root, ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+    view->OnMouseEvent(&press_event);
+
+    ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, press_point,
+                                 press_point_in_root, ui::EventTimeForNow(),
+                                 ui::EF_LEFT_MOUSE_BUTTON,
+                                 ui::EF_LEFT_MOUSE_BUTTON);
+    view->OnMouseEvent(&release_event);
+  }
+
   // Tests that the order of item views in the AppsGridView is in accordance
   // with the order in the view model.
   void TestAppListItemViewIndice() {
@@ -686,8 +709,7 @@ TEST_F(AppsGridViewTest, UMATestForLaunchingApps) {
   model_->PopulateApps(5);
 
   // Select the first app in grid and launch it.
-  contents_view_->GetAppListMainView()->ActivateApp(
-      GetItemViewInTopLevelGrid(0)->item(), 0);
+  SimulateLeftClickOnView(GetItemViewInTopLevelGrid(0));
 
   // Test that histogram recorded app launch from grid.
   histogram_tester.ExpectBucketCount(

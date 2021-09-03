@@ -499,9 +499,6 @@ PaginationModel* ContentsView::GetAppsPaginationModel() {
   return apps_container_view_->apps_grid_view()->pagination_model();
 }
 
-void ContentsView::ShowFolderContent(AppListFolderItem* item) {
-  apps_container_view_->ShowActiveFolder(item);
-}
 
 AppListPage* ContentsView::GetPageView(int index) const {
   DCHECK_GT(static_cast<int>(app_list_pages_.size()), index);

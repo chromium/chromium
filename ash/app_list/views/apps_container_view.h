@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "ash/app_list/model/app_list_folder_item.h"
+#include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"
@@ -30,13 +31,11 @@ class SuggestionChipContainerView;
 // app items, and a AppListFolderView to render the app items inside the
 // active folder.
 class ASH_EXPORT AppsContainerView : public AppListPage,
+                                     public AppListFolderController,
                                      public AppListFolderView::Delegate {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
   ~AppsContainerView() override;
-
-  // Shows the active folder content specified by |folder_item|.
-  void ShowActiveFolder(AppListFolderItem* folder_item);
 
   // Resets the app list to a state where it shows the main grid view. This is
   // called when the user opens the launcher for the first time or when the user
@@ -106,6 +105,9 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
   void AnimateYPosition(AppListViewState target_view_state,
                         const TransformAnimator& animator,
                         float default_offset) override;
+
+  // AppListFolderController:
+  void ShowFolderForItemView(AppListItemView* folder_item_view) override;
 
   // AppListFolderView::Delegate:
   void ShowApps(AppListFolderItem* folder_item) override;

@@ -46,6 +46,7 @@ class AppDragIconProxy;
 class AppListA11yAnnouncer;
 class ApplicationDragAndDropHost;
 class AppListConfig;
+class AppListFolderController;
 class AppListItem;
 class AppListItemList;
 class AppListItemView;
@@ -98,7 +99,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridView(ContentsView* contents_view,
                AppListA11yAnnouncer* a11y_announcer,
                AppListViewDelegate* app_list_view_delegate,
-               AppsGridViewFolderDelegate* folder_delegate);
+               AppsGridViewFolderDelegate* folder_delegate,
+               AppListFolderController* folder_controller);
   AppsGridView(const AppsGridView&) = delete;
   AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
@@ -161,6 +163,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool UpdateDragFromItem(bool is_touch,
                           const ui::LocatedEvent& event) override;
   void EndDrag(bool cancel) override;
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override;
 
   bool IsDragging() const;
   bool IsDraggedView(const AppListItemView* view) const;
@@ -226,6 +230,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Handles EndDrag event dispatched from the hidden folder grid view in the
   // root level grid view to end reparenting a folder item.
+  // |original_parent_item_view|: The folder AppListView for the folder from
+  // which drag item is being dragged.
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
@@ -233,6 +239,7 @@ class ASH_EXPORT AppsGridView : public views::View,
   // folder grid view for the drag. It's passed on the the root apps grid so the
   // root apps grid can set up the icon drop animation.
   void EndDragFromReparentItemInRootLevel(
+      AppListItemView* original_parent_item_view,
       bool events_forwarded_to_drag_drop_host,
       bool cancel_drag,
       std::unique_ptr<AppDragIconProxy> drag_icon_proxy);
@@ -245,9 +252,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The grid view must be inside a folder view.
   void OnFolderItemRemoved();
 
-  // Moves |reparented_item| from its folder to the root AppsGridView in the
+  // Moves |reparented_view| from its folder to the root AppsGridView in the
   // direction of |key_code|.
+  // |original_parent_item_view|: The folder AppListView for the folder from
+  // which drag item is being dragged.
   void HandleKeyboardReparent(AppListItemView* reparented_view,
+                              AppListItemView* original_parent_item_view,
                               ui::KeyboardCode key_code);
 
   // Returns the first app list item view in the selected page in the folder.
@@ -301,14 +311,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
     folder_delegate_ = folder_delegate;
-  }
-
-  AppListItemView* activated_folder_item_view() const {
-    return activated_folder_item_view_;
-  }
-
-  void set_activated_folder_item_view(AppListItemView* item_view) {
-    activated_folder_item_view_ = item_view;
   }
 
   const AppListModel* model() const { return model_; }
@@ -738,7 +740,10 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Returns the target GridIndex to move an item from a folder to the root
   // AppsGridView.
+  // `folder_index` - the grid index of the folder from which an item is
+  // reparented.
   GridIndex GetTargetGridIndexForKeyboardReparent(
+      const GridIndex& folder_index,
       ui::KeyboardCode key_code) const;
 
   // Swaps |selected_view_| with the item in relative position specified by
@@ -774,6 +779,12 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // This can be nullptr. Only grid views inside folders have a folder delegate.
   AppsGridViewFolderDelegate* folder_delegate_ = nullptr;
+
+  // Used to request showing a folder UI for a folder item view.
+  // May be nullptr if the AppsGridView is never expected to request a folder to
+  // be shown. For example, it will be nullptr for folder items grids (which do
+  // not support nested folder items).
+  AppListFolderController* const folder_controller_;
 
   // Created by AppListMainView, owned by views hierarchy.
   // TODO(crbug.com/1211608): Remove this member.
@@ -857,9 +868,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Used to animate individual icon positions.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
-
-  // The most recent activated folder item view.
-  AppListItemView* activated_folder_item_view_ = nullptr;
 
   // Tracks if drag_view_ is dragged out of the folder container bubble
   // when dragging a item inside a folder.

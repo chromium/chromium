@@ -33,7 +33,6 @@ class ASH_EXPORT FolderHeaderView : public views::View,
 
   void SetFolderItem(AppListFolderItem* folder_item);
   void UpdateFolderNameVisibility(bool visible);
-  void OnFolderItemRemoved();
   bool HasTextFocus() const;
   void SetTextFocus();
   bool is_tablet_mode() const { return is_tablet_mode_; }

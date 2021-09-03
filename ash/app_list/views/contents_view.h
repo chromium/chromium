@@ -36,7 +36,6 @@ class AppListConfig;
 class AppListPage;
 class AppListView;
 class ApplicationDragAndDropHost;
-class AppListFolderItem;
 class AppListMainView;
 class AppsContainerView;
 class AppsGridView;
@@ -105,8 +104,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // ShowSearchResults(true) was invoked.
   void ShowEmbeddedAssistantUI(bool show);
   bool IsShowingEmbeddedAssistantUI() const;
-
-  void ShowFolderContent(AppListFolderItem* folder);
 
   // Sets the active launcher page and animates the pages into place.
   void SetActiveState(AppListState state);

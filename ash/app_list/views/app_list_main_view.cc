@@ -33,8 +33,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -145,25 +143,6 @@ void AppListMainView::Layout() {
   gfx::Rect rect = GetContentsBounds();
   if (!rect.IsEmpty())
     contents_view_->SetBoundsRect(rect);
-}
-
-void AppListMainView::ActivateApp(AppListItem* item, int event_flags) {
-  // TODO(jennyz): Activate the folder via AppListModel notification.
-  if (IsFolderItem(item)) {
-    contents_view_->ShowFolderContent(static_cast<AppListFolderItem*>(item));
-    UMA_HISTOGRAM_ENUMERATION("Apps.AppListFolderOpened",
-                              kFullscreenAppListFolders, kMaxFolderOpened);
-  } else {
-    base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
-
-    // Avoid using |item->id()| as the parameter. In some rare situations,
-    // activating the item may destruct it. Using the reference to an object
-    // which may be destroyed during the procedure as the function parameter
-    // may bring the crash like https://crbug.com/990282.
-    const std::string id = item->id();
-    delegate_->ActivateItem(id, event_flags,
-                            AppListLaunchedFrom::kLaunchedFromGrid);
-  }
 }
 
 void AppListMainView::CancelDragInActiveFolder() {

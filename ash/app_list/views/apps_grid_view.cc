@@ -19,6 +19,7 @@
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -42,6 +43,7 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -278,8 +280,10 @@ class AppsGridView::ScopedModelUpdate {
 AppsGridView::AppsGridView(ContentsView* contents_view,
                            AppListA11yAnnouncer* a11y_announcer,
                            AppListViewDelegate* app_list_view_delegate,
-                           AppsGridViewFolderDelegate* folder_delegate)
+                           AppsGridViewFolderDelegate* folder_delegate,
+                           AppListFolderController* folder_controller)
     : folder_delegate_(folder_delegate),
+      folder_controller_(folder_controller),
       contents_view_(contents_view),
       a11y_announcer_(a11y_announcer),
       app_list_view_delegate_(app_list_view_delegate) {
@@ -863,8 +867,6 @@ void AppsGridView::ViewHierarchyChanged(
 
     if (selected_view_ == details.child)
       selected_view_ = nullptr;
-    if (activated_folder_item_view_ == details.child)
-      activated_folder_item_view_ = nullptr;
 
     if (app_list_features::IsAppGridGhostEnabled()) {
       if (current_ghost_view_ == details.child)
@@ -1632,25 +1634,26 @@ void AppsGridView::DispatchDragEventForReparent(Pointer pointer,
 }
 
 void AppsGridView::EndDragFromReparentItemInRootLevel(
+    AppListItemView* original_parent_item_view,
     bool events_forwarded_to_drag_drop_host,
     bool cancel_drag,
     std::unique_ptr<AppDragIconProxy> drag_icon_proxy) {
+  DCHECK(!IsInFolder());
+  DCHECK_NE(-1, view_model_.GetIndexOfView(original_parent_item_view));
+
   // EndDrag was called before if |drag_view_| is nullptr.
   if (!drag_item_)
     return;
 
   drag_icon_proxy_ = std::move(drag_icon_proxy);
 
-  DCHECK(activated_folder_item_view_);
-  static_cast<AppListFolderItem*>(activated_folder_item_view_->item())
-      ->NotifyOfDraggedItem(nullptr);
-
   DCHECK(IsDraggingForReparentInRootLevelGridView());
   bool cancel_reparent = cancel_drag || drop_target_region_ == NO_TARGET;
 
   // This is the folder view to drop an item into. Cache the |drag_view_|'s item
   // and its bounds for later use in folder dropping animation.
-  AppListItemView* folder_item_view = nullptr;
+  AppListItemView* folder_item_view =
+      cancel_reparent ? original_parent_item_view : nullptr;
   AppListItem* drag_item = drag_item_;
 
   if (!events_forwarded_to_drag_drop_host && !cancel_reparent) {
@@ -1664,7 +1667,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
         folder_item_view =
             GetViewDisplayedAtSlotOnCurrentPage(drop_target_.slot);
       } else {
-        folder_item_view = activated_folder_item_view_;
+        folder_item_view = original_parent_item_view;
       }
     } else if (drop_target_region_ != NO_TARGET &&
                IsValidReorderTargetIndex(drop_target_)) {
@@ -1728,18 +1731,20 @@ void AppsGridView::OnFolderItemRemoved() {
   item_list_ = nullptr;
 }
 
-void AppsGridView::HandleKeyboardReparent(AppListItemView* reparented_view,
-                                          ui::KeyboardCode key_code) {
+void AppsGridView::HandleKeyboardReparent(
+    AppListItemView* reparented_view,
+    AppListItemView* original_parent_item_view,
+    ui::KeyboardCode key_code) {
   DCHECK(key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT ||
          key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN);
   DCHECK(!folder_delegate_);
-  DCHECK(activated_folder_item_view_);
+  DCHECK_NE(-1, view_model_.GetIndexOfView(original_parent_item_view));
 
-  // Set |activated_folder_item_view_| selected so |target_index| will be
+  // Set |original_parent_item_view| selected so |target_index| will be
   // computed relative to the open folder.
-  SetSelectedView(activated_folder_item_view_);
-  const GridIndex target_index =
-      GetTargetGridIndexForKeyboardReparent(key_code);
+  SetSelectedView(original_parent_item_view);
+  const GridIndex target_index = GetTargetGridIndexForKeyboardReparent(
+      GetIndexOfView(original_parent_item_view), key_code);
   AnnounceReorder(target_index);
   ReparentItemForReorder(reparented_view->item(), target_index);
 
@@ -2364,11 +2369,10 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
 }
 
 GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
+    const GridIndex& folder_index,
     ui::KeyboardCode key_code) const {
   DCHECK(!folder_delegate_) << "Reparenting target calculations occur from the "
                                "root AppsGridView, not the folder AppsGridView";
-
-  const GridIndex folder_index = GetIndexOfView(activated_folder_item_view_);
 
   // A backward move means the item will be placed previous to the folder. To do
   // this without displacing other items, place the item in the folders slot.
@@ -2686,6 +2690,33 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
 
   if (current_ghost_view_)
     current_ghost_view_->FadeOut();
+}
+
+void AppsGridView::OnAppListItemViewActivated(
+    AppListItemView* pressed_item_view,
+    const ui::Event& event) {
+  if (IsDragging())
+    return;
+
+  if (IsFolderItem(pressed_item_view->item())) {
+    // `folder_controller_` is currently not supported in the bubble launcher
+    // apps grid. When this changes the if can be converted to DCHECK. Note that
+    // `folder_controller_` will be null inside a folder apps grid, but those
+    // grids are not expected to contain folder items.
+    if (folder_controller_)
+      folder_controller_->ShowFolderForItemView(pressed_item_view);
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction("AppList_ClickOnApp"));
+
+  // Avoid using |item->id()| as the parameter. In some rare situations,
+  // activating the item may destruct it. Using the reference to an object
+  // which may be destroyed during the procedure as the function parameter
+  // may bring the crash like https://crbug.com/990282.
+  const std::string id = pressed_item_view->item()->id();
+  app_list_view_delegate()->ActivateItem(
+      id, event.flags(), AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 void AppsGridView::OnHostDragStartTimerFired() {

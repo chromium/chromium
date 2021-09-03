@@ -7,17 +7,19 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
+#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
-#include "ui/views/view_model.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -36,6 +38,7 @@ class PageSwitcher;
 class ASH_EXPORT AppListFolderView : public views::View,
                                      public FolderHeaderViewDelegate,
                                      public AppListModelObserver,
+                                     public views::ViewObserver,
                                      public AppsGridViewFolderDelegate {
  public:
   METADATA_HEADER(AppListFolderView);
@@ -68,11 +71,17 @@ class ASH_EXPORT AppListFolderView : public views::View,
   class Animation {
    public:
     virtual ~Animation() = default;
-    virtual void ScheduleAnimation() = 0;
+    // `completion_callback` is an optional callback to be run when the
+    // animation completes. Not run if the animation gets reset before
+    // completion.
+    virtual void ScheduleAnimation(base::OnceClosure completion_callback) = 0;
     virtual bool IsAnimationRunning() = 0;
   };
 
-  void SetAppListFolderItem(AppListFolderItem* folder);
+  // Configures AppListFolderView to show the contents for the folder item
+  // associated with `folder_item_view`. The folder view will be anchored at
+  // `folder_item_view`.
+  void ConfigureForFolderItemView(AppListItemView* folder_item_view);
 
   // Schedules an animation to show or hide the view.
   // If |show| is false, the view should be set to invisible after the
@@ -97,6 +106,9 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   // Updates preferred bounds of this view based on the activated folder item
   // icon's bounds.
@@ -129,8 +141,6 @@ class ASH_EXPORT AppListFolderView : public views::View,
   }
 
   const gfx::Rect& preferred_bounds() const { return preferred_bounds_; }
-
-  AppListItemView* GetActivatedFolderItemView();
 
   // Records the smoothness of folder show/hide animations mixed with the
   // BackgroundAnimation, FolderItemTitleAnimation, TopIconAnimation, and
@@ -165,6 +175,14 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
 
+  // Resets the folder view state. Called when the folder view gets hidden (and
+  // hide animations finish) to disassociate the folder view with the current
+  // folder item (if any).
+  // `restore_folder_item_view_state` - whether the folder item view state
+  // should be restored to the default state (icon and title shown). Set to
+  // false when resetting the folder state due to folder item view deletion.
+  void ResetState(bool restore_folder_item_view_state);
+
   // Delegate interface for the container.
   Delegate* const delegate_;
 
@@ -186,6 +204,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   AppListModel* const model_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
+  AppListItemView* folder_item_view_ = nullptr;
 
   // The bounds of the activated folder item icon relative to this view.
   gfx::Rect folder_item_icon_bounds_;
@@ -199,13 +218,17 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   bool hide_for_reparent_ = false;
 
-  std::unique_ptr<Animation> background_animation_;
-  std::unique_ptr<Animation> folder_item_title_animation_;
-  std::unique_ptr<Animation> top_icon_animation_;
-  std::unique_ptr<Animation> contents_container_animation_;
+  std::vector<std::unique_ptr<Animation>> folder_visibility_animations_;
 
   // Records smoothness of the folder show/hide animation.
   absl::optional<ui::ThroughputTracker> show_hide_metrics_tracker_;
+
+  // Observes `folder_item_view_` deletion, so the folder state can be cleared
+  // if the folder item view is destroyed (for example, the view may get deleted
+  // during folder hide animation if the backing item gets deleted from the
+  // model, and animations depend on the folder item view).
+  base::ScopedObservation<views::View, views::ViewObserver>
+      folder_item_view_observer_{this};
 };
 
 }  // namespace ash

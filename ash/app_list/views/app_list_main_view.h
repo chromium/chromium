@@ -16,7 +16,6 @@
 
 namespace ash {
 
-class AppListItem;
 class AppListModel;
 class AppListView;
 class AppListViewDelegate;
@@ -59,10 +58,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   // Overridden from views::View:
   const char* GetClassName() const override;
   void Layout() override;
-
-  // Invoked when an item is activated on the grid view. |event_flags| contains
-  // the flags of the keyboard/mouse event that triggers the activation request.
-  void ActivateApp(AppListItem* item, int event_flags);
 
   // Called by the root grid view to cancel a drag that started inside a folder.
   // This can occur when the root grid is visible for a reparent and its model

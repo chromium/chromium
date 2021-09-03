@@ -30,6 +30,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/metrics/histogram_macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -203,7 +204,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
       contents_view->app_list_view()->a11y_announcer();
   apps_grid_view_ = AddChildView(
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
-                                          /*folder_delegate=*/nullptr));
+                                          /*folder_delegate=*/nullptr,
+                                          /*folder_controller=*/this));
   apps_grid_view_->Init();
 
   // Page switcher should be initialized after AppsGridView.
@@ -236,16 +238,27 @@ AppsContainerView::~AppsContainerView() {
   // Make sure |page_switcher_| is deleted before |apps_grid_view_| because
   // |page_switcher_| uses the PaginationModel owned by |apps_grid_view_|.
   delete page_switcher_;
+
+  // App list folder view, if shown, may reference/observe a root apps grid view
+  // item (associated with the item for which the folder is shown). Delete
+  // `app_list_folder_view_` explicitly to ensure it's deleted before
+  // `apps_grid_view_`.
+  delete app_list_folder_view_;
 }
 
-void AppsContainerView::ShowActiveFolder(AppListFolderItem* folder_item) {
+void AppsContainerView::ShowFolderForItemView(
+    AppListItemView* folder_item_view) {
   // Prevent new animations from starting if there are currently animations
   // pending. This fixes crbug.com/357099.
   if (app_list_folder_view_->IsAnimationRunning())
     return;
 
-  app_list_folder_view_->SetAppListFolderItem(folder_item);
+  DCHECK(folder_item_view->is_folder());
 
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppListFolderOpened",
+                            kFullscreenAppListFolders, kMaxFolderOpened);
+
+  app_list_folder_view_->ConfigureForFolderItemView(folder_item_view);
   SetShowState(SHOW_ACTIVE_FOLDER, false);
 
   // If there is no selected view in the root grid when a folder is opened,

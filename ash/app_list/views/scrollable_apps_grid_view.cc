@@ -49,7 +49,8 @@ ScrollableAppsGridView::ScrollableAppsGridView(
     : AppsGridView(/*contents_view=*/nullptr,
                    a11y_announcer,
                    view_delegate,
-                   folder_delegate),
+                   folder_delegate,
+                   /*folder_controller=*/nullptr),
       scroll_view_(parent_scroll_view) {
   view_structure_.Init(PagedViewStructure::Mode::kSinglePage);
 }
@@ -267,27 +268,6 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
 
 int ScrollableAppsGridView::TilesPerPage(int page) const {
   return cols() * rows_per_page();
-}
-
-void ScrollableAppsGridView::OnAppListItemViewActivated(
-    AppListItemView* pressed_item_view,
-    const ui::Event& event) {
-  if (IsDragging())
-    return;
-
-  if (IsFolderItem(pressed_item_view->item())) {
-    // TODO(https://crbug.com/1214064): Implement showing folder contents.
-    return;
-  }
-  // TODO(https://crbug.com/1218435): Implement metrics for app launch.
-
-  // Avoid using |item->id()| as the parameter. In some rare situations,
-  // activating the item may destruct it. Using the reference to an object
-  // which may be destroyed during the procedure as the function parameter
-  // may bring the crash like https://crbug.com/990282.
-  const std::string id = pressed_item_view->item()->id();
-  app_list_view_delegate()->ActivateItem(
-      id, event.flags(), AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 BEGIN_METADATA(ScrollableAppsGridView, AppsGridView)

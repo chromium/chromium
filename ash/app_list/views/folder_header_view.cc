@@ -291,10 +291,6 @@ void FolderHeaderView::UpdateFolderNameVisibility(bool visible) {
   SchedulePaint();
 }
 
-void FolderHeaderView::OnFolderItemRemoved() {
-  folder_item_ = nullptr;
-}
-
 void FolderHeaderView::SetTextFocus() {
   folder_name_view_->RequestFocus();
 }
