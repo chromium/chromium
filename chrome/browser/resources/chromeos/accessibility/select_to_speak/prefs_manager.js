@@ -225,7 +225,7 @@ export class PrefsManager {
                 }));
                 Promise.all(setPrefsPromises)
                     .then(
-                        this.onTtsSettingsMigrationSuccess_.bind(this),
+                        () => this.onTtsSettingsMigrationSuccess_(),
                         (error) => {
                           console.log(error);
                           this.migrationInProgress_ = false;

@@ -154,15 +154,15 @@ export class InputHandler {
    * any particular window.
    */
   setUpEventListeners() {
-    document.addEventListener('keydown', this.onKeyDown_.bind(this));
-    document.addEventListener('keyup', this.onKeyUp_.bind(this));
-    document.addEventListener('mousedown', this.onMouseDown_.bind(this));
-    document.addEventListener('mousemove', this.onMouseMove_.bind(this));
-    document.addEventListener('mouseup', this.onMouseUp_.bind(this));
+    document.addEventListener('keydown', evt => this.onKeyDown_(evt));
+    document.addEventListener('keyup', evt => this.onKeyUp_(evt));
+    document.addEventListener('mousedown', evt => this.onMouseDown_(evt));
+    document.addEventListener('mousemove', evt => this.onMouseMove_(evt));
+    document.addEventListener('mouseup', evt => this.onMouseUp_(evt));
     chrome.clipboard.onClipboardDataChanged.addListener(
-        this.onClipboardDataChanged_.bind(this));
-    document.addEventListener('paste', this.onClipboardPaste_.bind(this));
-    document.addEventListener('copy', this.onClipboardCopy_.bind(this));
+        () => this.onClipboardDataChanged_());
+    document.addEventListener('paste', evt => this.onClipboardPaste_(evt));
+    document.addEventListener('copy', evt => this.onClipboardCopy_(evt));
   }
 
   /**

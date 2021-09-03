@@ -70,15 +70,16 @@ export class SelectToSpeak {
     /** @private {number|undefined} */
     this.intervalRef_;
 
-    chrome.automation.getDesktop(function(desktop) {
+    chrome.automation.getDesktop((desktop) => {
       this.desktop_ = desktop;
 
       // After the user selects a region of the screen, we do a hit test at
       // the center of that box using the automation API. The result of the
       // hit test is a MOUSE_RELEASED accessibility event.
       desktop.addEventListener(
-          EventType.MOUSE_RELEASED, this.onAutomationHitTest_.bind(this), true);
-    }.bind(this));
+          EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
+          true);
+    });
 
     /**
      * The node groups to be spoken. We process content into node groups and
@@ -273,7 +274,7 @@ export class SelectToSpeak {
 
     var rect = this.inputHandler_.getMouseRect();
     var nodes = [];
-    chrome.automation.getFocus(function(focusedNode) {
+    chrome.automation.getFocus((focusedNode) => {
       // In some cases, e.g. ARC++, the window received in the hit test request,
       // which is computed based on which window is the event handler for the
       // hit point, isn't the part of the tree that contains the actual
@@ -302,7 +303,7 @@ export class SelectToSpeak {
       MetricsUtils.recordStartEvent(
           MetricsUtils.StartSpeechMethod.MOUSE, this.prefsManager_,
           this.enhancedVoicesFlag_);
-    }.bind(this));
+    });
   }
 
   /**
@@ -744,7 +745,8 @@ export class SelectToSpeak {
       },
       // onKeystrokeSelection: Keys pressed for reading highlighted text.
       onKeystrokeSelection: () => {
-        chrome.automation.getFocus(this.requestSpeakSelectedText_.bind(this));
+        chrome.automation.getFocus(
+            focusedNode => this.requestSpeakSelectedText_(focusedNode));
       },
       // onRequestCancel: User requested canceling input/speech.
       onRequestCancel: () => {
@@ -753,12 +755,12 @@ export class SelectToSpeak {
         this.cancelIfSpeaking_(true /* clear the focus ring */);
       },
       // onTextReceived: Text received from a 'paste' event to read aloud.
-      onTextReceived: this.startSpeech_.bind(this)
+      onTextReceived: text => this.startSpeech_(text)
     });
     this.inputHandler_.setUpEventListeners();
 
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.onPrefsChanged_.bind(this));
+        prefs => this.onPrefsChanged_(prefs));
     // Initialize the state to SelectToSpeakState.INACTIVE.
     chrome.accessibilityPrivate.setSelectToSpeakState(this.state_);
   }
@@ -1334,7 +1336,7 @@ export class SelectToSpeak {
       clearInterval(this.intervalRef_);
     }
     this.intervalRef_ = setInterval(
-        this.updateUi_.bind(this),
+        () => this.updateUi_(),
         SelectToSpeakConstants.NODE_STATE_TEST_INTERVAL_MS);
   }
 
