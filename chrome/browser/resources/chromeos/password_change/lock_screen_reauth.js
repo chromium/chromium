@@ -108,12 +108,13 @@ Polymer({
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new cr.login.Authenticator(this.signinFrame_);
     this.authenticator_.addEventListener(
-        'authDomainChange', this.onAuthDomainChange_.bind(this));
+        'authDomainChange', () => void this.onAuthDomainChange_());
     this.authenticator_.addEventListener(
-      'authCompleted', this.onAuthCompletedMessage_.bind(this));
-    this.authenticator_.confirmPasswordCallback =
-      this.onAuthConfirmPassword_.bind(this);
-    this.authenticator_.noPasswordCallback = this.onAuthNoPassword_.bind(this);
+        'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
+    this.authenticator_.confirmPasswordCallback = (email, password) =>
+        void this.onAuthConfirmPassword_(email, password);
+    this.authenticator_.noPasswordCallback = (email) =>
+        void this.onAuthNoPassword_(email);
     chrome.send('initialize');
   },
 
@@ -133,7 +134,6 @@ Polymer({
    *  vertical.
    */
   setOrientation(is_horizontal) {
-    document.documentElement.setAttribute('new-layout', '');
     if (is_horizontal) {
       document.documentElement.setAttribute('orientation', 'horizontal');
     } else {

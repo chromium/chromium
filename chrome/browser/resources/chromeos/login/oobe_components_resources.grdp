@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- OOBE Components -->
-  <include name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML" file="components/dialogs/oobe_dialog.html" type="chrome_html" />
-  <include name="IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS" file="components/dialogs/oobe_dialog.js" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML" file="components/dialogs/oobe_loading_dialog.html" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS" file="components/dialogs/oobe_loading_dialog.js" type="chrome_html" />
   <include name="IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_HTML" file="components/dialogs/oobe_modal_dialog.html" type="chrome_html" />

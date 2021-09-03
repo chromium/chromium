@@ -27,7 +27,6 @@ Polymer({
   },
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
     this.$$('#lazy').get();
     var contentContainer = this.$$('#contentContainer');
     var scrollContainer = this.$$('#scrollContainer');

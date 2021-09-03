@@ -30,19 +30,8 @@ found in the LICENSE file. -->
         --radio-button-height: 120px;
       }
 
-      :host-context(html:not([new-layout])) div[slot='content'] {
-        margin: auto 0;
-      }
-
       cr-radio-group {
         display: flex;
-      }
-
-      :host-context(html:not([new-layout])) cr-radio-group {
-        flex-direction: row;
-      }
-
-      :host-context(html[new-layout]) cr-radio-group {
         flex-direction: column;
         margin-top: 8px;
       }
@@ -59,14 +48,7 @@ found in the LICENSE file. -->
         --cr-radio-button-ink-size: 0;
       }
 
-      :host-context(html:not([new-layout])) cr-card-radio-button {
-        height: 210px;
-        margin-bottom: 20px;
-        --cr-card-radio-button-height: 100%;
-        --cr-radio-group-item-padding: 8px;
-      }
-
-      :host-context(html[new-layout]) cr-card-radio-button {
+      cr-card-radio-button {
         height: var(--radio-button-height);
         margin-bottom: 0;
         --cr-card-radio-button-checkmark-top:
@@ -78,12 +60,7 @@ found in the LICENSE file. -->
 
       }
 
-      :host-context(html:not([new-layout]))
-          cr-card-radio-button:not(:last-child) {
-        margin-inline-end: 16px;
-      }
-
-      :host-context(html[new-layout]) cr-card-radio-button:not(:last-child) {
+      cr-card-radio-button:not(:last-child) {
         margin-bottom: 16px;
       }
 
@@ -92,16 +69,7 @@ found in the LICENSE file. -->
         display: flex;
       }
 
-      :host-context(html:not([new-layout])) .card-container {
-        flex-direction: column;
-        padding-bottom: 32px;
-        padding-inline-end: 16px;
-        padding-inline-start: 16px;
-        padding-top: 50px;
-        text-align: center;
-      }
-
-      :host-context(html[new-layout]) .card-container {
+      .card-container {
         flex-direction: row;
         /* Same height to center button content in vertical dimension. */
         height: var(--radio-button-height);
@@ -112,32 +80,21 @@ found in the LICENSE file. -->
         text-align: start;
       }
 
+      .card-content {
+        padding-inline-end: 24px;
+        padding-inline-start: 24px;
+      }
+
       .card-icon {
         --iron-icon-width: 48px;
         --iron-icon-height: 48px;
       }
 
-      :host-context(html[new-layout]) .card-content {
-        padding-inline-end: 24px;
-        padding-inline-start: 24px;
-      }
-
       .card-label {
         color: var(--oobe-header-text-color);
         font-family: var(--oobe-header-font-family);
-        font-weight: 500;
-      }
-
-      :host-context(html:not([new-layout])) .card-label {
-        font-size: 16px;
-        line-height: 24px;
-        padding-inline-end: 32px;
-        padding-inline-start: 32px;
-        padding-top: 16px;
-      }
-
-      :host-context(html[new-layout]) .card-label {
         font-size: var(--oobe-radio-card-label-font-size);
+        font-weight: 500;
         line-height: var(--oobe-radio-card-label-line-height);
       }
 
@@ -146,11 +103,7 @@ found in the LICENSE file. -->
         line-height: 20px;
       }
 
-      :host-context(html:not([new-layout])) .help-text {
-        color: var(--oobe-subheader-text-color);
-      }
-
-      :host-context(html[new-layout]) .help-text {
+      .help-text {
         color: var(--oobe-subheader-text-color);
         margin-top: 16px;
       }

@@ -33,42 +33,25 @@
         display: flex;
       }
 
-      :host-context(html:not([new-layout])) #slide-container {
-        flex-direction: row;
-        max-height: calc(var(--oobe-slide-img-size) + 2 *
-                         var(--oobe-slide-vertical-margin));
-      }
-      :host-context([new-layout]) #slide-container {
+      #slide-container {
         align-items: center;
         flex-direction: column;
         justify-content: start;
       }
 
-      :host-context(html:not([new-layout])) #illustration-container {
-        height: var(--oobe-slide-img-size);
-        margin: var(--oobe-slide-vertical-margin)
-                var(--oobe-slide-horizontal-margin);
-        width: var(--oobe-slide-img-size);
-      }
-
-      :host-context([new-layout]) #illustration-container {
+      #illustration-container {
         height: var(--oobe-slide-img-size);
         width: var(--oobe-slide-img-size);
       }
 
-      :host-context(html:not([new-layout])) #context-container {
-        justify-content: center;
-        padding-inline-end: var(--oobe-slide-horizontal-margin);
-      }
-
-      :host-context([new-layout]) #context-container {
+      #context-container {
         align-items: center;
         flex-direction: column;
         justify-content: start;
         margin-bottom: 32px; /* for navigation bar */
       }
 
-      :host-context([new-layout]) #slide-title {
+      #slide-title {
         padding-top: 8px;
       }
 
@@ -96,7 +79,7 @@
         line-height: 20px;
       }
 
-      :host-context([new-layout]) #context-container ::slotted(*) {
+      #context-container ::slotted(*) {
         padding-inline-end: 20px;
         padding-inline-start: 20px;
         text-align: center;

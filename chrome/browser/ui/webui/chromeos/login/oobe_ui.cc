@@ -164,8 +164,6 @@ constexpr char kOobeAdaptiveDialogHTML[] =
 constexpr char kOobeAdaptvieDialogJS[] = "components/dialogs/oobe_adaptive_dialog.js";
 constexpr char kOobeContentDialogHTML[] = "components/dialogs/oobe_content_dialog.html";
 constexpr char kOobeContentDialogJS[] = "components/dialogs/oobe_content_dialog.js";
-constexpr char kOobeDialogHTML[] = "components/dialogs/oobe_dialog.html";
-constexpr char kOobeDialogJS[] = "components/dialogs/oobe_dialog.js";
 constexpr char kOobeLoadingDialogHTML[] = "components/dialogs/oobe_loading_dialog.html";
 constexpr char kOobeLoadingDialogJS[] = "components/dialogs/oobe_loading_dialog.js";
 constexpr char kOobeModalDialogHTML[] = "components/dialogs/oobe_modal_dialog.html";
@@ -682,9 +680,6 @@ OobeUI::~OobeUI() {
 
 void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                                const base::DictionaryValue& localized_strings) {
-  source->AddResourcePath(kOobeDialogHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML);
-  source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
   source->AddResourcePath(kOobeLoadingDialogHTML,
                           IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML);
   source->AddResourcePath(kOobeLoadingDialogJS,

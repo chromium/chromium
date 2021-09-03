@@ -30,7 +30,6 @@ js_library("active_directory_password_change") {
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_next_button",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_dialog",
   ]
 }
 
@@ -95,7 +94,6 @@ js_library("update_required_card") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_dialog",
     "../../components/dialogs:oobe_modal_dialog",
   ]
 }

@@ -32,7 +32,7 @@ Polymer({
     }
 
     this.resizeObserver_ =
-        new ResizeObserver(this.applyScrollClassTags_.bind(this));
+        new ResizeObserver(() => void this.applyScrollClassTags_());
     this.resizeObserver_.observe(scrollContainer);
     this.resizeObserver_.observe(contentContainer);
   },
@@ -60,7 +60,6 @@ Polymer({
   },
 
   onBeforeShow() {
-    document.documentElement.setAttribute('new-layout', '');
     this.$$('#lazy').get();
     this.observeScrolling_();
   },

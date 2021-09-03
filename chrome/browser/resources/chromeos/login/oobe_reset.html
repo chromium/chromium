@@ -30,8 +30,7 @@
         margin-top: 20px;
       }
 
-      .illustration,
-      .illustration-old {
+      .illustration {
         max-height: 80%;
         max-width: 100%;
         object-fit: contain;
@@ -41,13 +40,6 @@
         cursor: default;
         line-height: 20px;
         pointer-events: auto;
-      }
-
-      :host-context(html:not(html[new-layout])) .illustration {
-        display: none;
-      }
-      :host-context(html[new-layout]) .illustration-old {
-        display: none;
       }
     </style>
     <link rel="stylesheet" href="chrome://resources/css/throbber.css">
@@ -93,9 +85,6 @@
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <!-- Reset screen illustration -->
-        <img srcset="images/1x/reset_illustration_1x.svg 1x,
-                     images/2x/reset_illustration_2x.svg 2x"
-            class="illustration-old">
         <img src="images/powerwash.svg" class="illustration">
         <!-- TPM Update - Only shown during powerwash state -->
         <div id="tpmFirmwareUpdate" class="layout horizontal"

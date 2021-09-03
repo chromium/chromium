@@ -40,15 +40,6 @@
           width: 100%;
         }
 
-        :host-context(html:not([new-layout])) {
-          --button-alignment: flex-end;
-          --lock-screen-reauth-dialog-content-direction: column;
-          --lock-screen-reauth-dialog-item-alignment: unset;
-          --lock-screen-reauth-dialog-text-line-height: 150%;
-          --lock-screen-reauth-dialog-title-top-padding: 15px;
-          --lock-screen-reauth-text-alignment: start;
-        }
-
         :host-context([orientation=horizontal]) {
           --button-alignment: flex-end;
           --lock-screen-reauth-dialog-content-direction: row;
@@ -96,8 +87,8 @@
         .main-container {
           align-items: var(--lock-screen-reauth-dialog-item-alignment);
           display: flex;
-          flex-direction: var(--lock-screen-reauth-dialog-content-direction);
           flex: 1;
+          flex-direction: var(--lock-screen-reauth-dialog-content-direction);
         }
 
         #body {
@@ -147,16 +138,7 @@
           align-self: var(--lock-screen-reauth-dialog-item-alignment);
         }
 
-        :host-context(html:not([new-layout])) .header {
-          background: white;
-          flex: 1;
-          padding-bottom: 0;
-          padding-inline-end: 64px;
-          padding-inline-start: 64px;
-          padding-top: 64px;
-        }
-
-        :host-context([new-layout]) .header {
+        .header {
           background: white;
           display: flex;
           flex-direction: column;
@@ -188,14 +170,7 @@
           text-align: var(--lock-screen-reauth-text-alignment);
         }
 
-        :host-context(html:not([new-layout])) .illustration-container {
-          align-items: center;
-          display: flex;
-          flex: 3;
-          justify-content: center;
-        }
-
-        :host-context([new-layout]) .illustration-container {
+        .illustration-container {
           align-items: center;
           display: flex;
           justify-content: center;
@@ -233,15 +208,7 @@
           display: none !important;
         }
 
-        :host-context(html:not([new-layout])) .input-container {
-          border: 0;
-          flex: 2;
-          justify-content: flex-start;
-          padding-inline-start: 64px;
-          width: 75%;
-        }
-
-        :host-context([new-layout]) .input-container {
+        .input-container {
           border: 0;
           flex: 2;
           padding-bottom: 0;
@@ -259,7 +226,7 @@
           padding-bottom: 8px;
         }
 
-        :host-context([new-layout]) cr-button {
+        cr-button {
           border-radius: 16px;
         }
 

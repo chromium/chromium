@@ -19,25 +19,10 @@
 <dom-module id="app-downloading-element">
   <template>
     <style include="oobe-dialog-host-styles">
-      #video-container video {
-        height: 247px;
-        margin-bottom: auto;
-        margin-top: auto;
-        width: 278px;
-      }
-
-      :host-context(html[new-layout]) #video-container {
+      #video-container {
         height: 80%;
         min-width: 344px;
         width: 80%;
-      }
-
-      :host-context(html[new-layout]) #video {
-        display: none;
-      }
-
-      :host-context(html:not([new-layout])) #downloadingApps {
-        display: none;
       }
     </style>
     <oobe-adaptive-dialog id="app-downloading-dialog" role="dialog"
@@ -59,10 +44,6 @@
       </div>
       <div id="video-container" slot="content" class="content-centered">
         <if expr="chromeos and _google_chrome">
-          <video id="video" loop="loop" muted preload="auto">
-            <source src="chrome://oobe/res/arc_app_dowsnloading.mp4"
-                type="video/mp4">
-          </video>
           <cr-lottie id="downloadingApps" animation-url="downloading_apps.json"
               singleLoop="false"></cr-lottie>
         </if>

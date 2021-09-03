@@ -77,9 +77,6 @@ Polymer({
       this.singularTitleVisible_ = this.hasSingleApp_(this.numOfApps);
       this.pluralTitleVisible_ = !this.hasSingleApp_(this.numOfApps);
     }
-    if (this.$.video && !this.newLayoutEnabled_) {
-      this.$.video.play();
-    }
     if (this.$.downloadingApps && this.newLayoutEnabled_) {
       this.$.downloadingApps.setPlay(true);
     }
@@ -87,9 +84,6 @@ Polymer({
 
   /** Called when dialog is hidden */
   onBeforeHide() {
-    if (this.$.video && !this.newLayoutEnabled_) {
-      this.$.video.pause();
-    }
     if (this.$.downloadingApps && this.newLayoutEnabled_) {
       this.$.downloadingApps.setPlay(false);
     }

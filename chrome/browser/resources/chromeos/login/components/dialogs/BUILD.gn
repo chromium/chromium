@@ -20,7 +20,6 @@ js_type_check("closure_compile") {
   deps = [
     ":oobe_adaptive_dialog",
     ":oobe_content_dialog",
-    ":oobe_dialog",
     ":oobe_loading_dialog",
     ":oobe_modal_dialog",
   ]
@@ -47,15 +46,6 @@ js_library("oobe_content_dialog") {
     "../behaviors:oobe_scrollable_behavior",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
   ]
-}
-
-js_library("oobe_dialog") {
-  deps = [
-    "../behaviors:oobe_i18n_behavior",
-    "../behaviors:oobe_scrollable_behavior",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
 }
 
 js_library("oobe_loading_dialog") {
