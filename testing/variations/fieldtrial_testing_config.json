@@ -4380,21 +4380,6 @@
             ]
         }
     ],
-    "IOSTabGridContextMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGridContextMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUMABackgroundSessions": [
         {
             "platforms": [

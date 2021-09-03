@@ -96,17 +96,6 @@ id<GREYMatcher> SelectAllButton() {
   // Features are enabled or disabled based on the name of the test that is
   // running. This is done because it is inefficient to use
   // ensureAppLaunchedWithConfiguration for each test.
-  if ([self isRunningTest:@selector(testTabGridItemContextMenuShare)] ||
-      [self isRunningTest:@selector
-            (testTabGridItemContextMenuAddToReadingList)] ||
-      [self isRunningTest:@selector(testTabGridItemContextCloseTab)] ||
-      [self
-          isRunningTest:@selector(testTabGridItemContextMenuAddToBookmarks)] ||
-      [self isRunningTest:@selector
-            (testTabGridItemContextMenuAddToBookmarkGreyed)]) {
-    config.features_enabled.push_back(kTabGridContextMenu);
-  }
-
   if ([self isRunningTest:@selector(testTabGridBulkActionCloseTabs)] ||
       [self isRunningTest:@selector(testTabGridBulkActionDeselectAll)] ||
       [self isRunningTest:@selector(testTabGridBulkActionSelectAll)] ||

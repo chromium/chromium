@@ -451,7 +451,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
   // Context menu shouldn't appear in the selection mode.
-  if (!IsTabGridContextMenuEnabled() || _mode == TabGridModeSelection) {
+  if (_mode == TabGridModeSelection) {
     return nil;
   }
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(

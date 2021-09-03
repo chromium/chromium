@@ -408,10 +408,6 @@ extern const char kSyncTrustedVaultPassphrasePromoDescription[];
 extern const char kSyncTrustedVaultPassphraseRecoveryName[];
 extern const char kSyncTrustedVaultPassphraseRecoveryDescription[];
 
-// Title and description for the flag to enable context menu in the Tab grid.
-extern const char kTabGridContextMenuName[];
-extern const char kTabGridContextMenuDescription[];
-
 // Title and description for the flag to enable tabs bulk actions feature.
 extern const char kTabsBulkActionsName[];
 extern const char kTabsBulkActionsDescription[];
