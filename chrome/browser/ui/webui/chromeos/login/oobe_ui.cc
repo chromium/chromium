@@ -153,25 +153,12 @@ constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
-constexpr char kOobeIconsHTML[] = "components/oobe_icons.html";
-
-// Stylesheets
-constexpr char kOobeCSSPath[] = "oobe.css";
-constexpr char kOobePopupOverlayCSSPath[] = "oobe_popup_overlay.css";
-constexpr char kOobeScreenCSSPath[] = "oobe_screen.css";
 
 // Components
-constexpr char kOobeSharedVarsCssHTML[] =
-    "components/oobe_vars/oobe_shared_vars_css.html";
 constexpr char kOobeCustomVarsCssHTML[] =
     "components/oobe_vars/oobe_custom_vars_css.html";
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
-constexpr char kCommonStylesHTML[] = "components/common_styles/common_styles.html";
-constexpr char kOobeFlexLayoutStylesHTML[] = "components/common_styles/oobe_flex_layout_styles.html";
-constexpr char kDialogHostStylesHTML[] = "components/common_styles/oobe_dialog_host_styles.html";
-constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
-constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
     "components/dialogs/oobe_adaptive_dialog.html";
 constexpr char kOobeAdaptvieDialogJS[] = "components/dialogs/oobe_adaptive_dialog.js";
@@ -695,29 +682,6 @@ OobeUI::~OobeUI() {
 
 void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                                const base::DictionaryValue& localized_strings) {
-  source->AddResourcePath(kOobeIconsHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_ICONS_HTML);
-
-  source->AddResourcePath(kCommonStylesHTML,
-                          IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
-  source->AddResourcePath(kOobeFlexLayoutStylesHTML,
-                          IDR_OOBE_FLEX_LAYOUT_STYLES_HTML);
-  source->AddResourcePath(kDialogHostStylesHTML,
-                          IDR_OOBE_COMPONENTS_DIALOG_HOST_STYLES_HTML);
-  source->AddResourcePath(kOobeSharedVarsCssHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_SHARED_VARS_CSS_HTML);
-
-  source->AddResourcePath(kOobeCSSPath,
-                          IDR_OOBE_CSS);
-  source->AddResourcePath(kOobePopupOverlayCSSPath,
-                          IDR_OOBE_POPUP_OVERLAY_CSS);
-  source->AddResourcePath(kOobeScreenCSSPath,
-                          IDR_OOBE_SCREENS_CSS);
-
-  source->AddResourcePath(kHDIronIconHTML,
-                          IDR_OOBE_COMPONENTS_HD_IRON_ICON_HTML);
-  source->AddResourcePath(kHDIronIconJS, IDR_OOBE_COMPONENTS_HD_IRON_ICON_JS);
-
   source->AddResourcePath(kOobeDialogHTML,
                           IDR_OOBE_COMPONENTS_OOBE_DIALOG_HTML);
   source->AddResourcePath(kOobeDialogJS, IDR_OOBE_COMPONENTS_OOBE_DIALOG_JS);
