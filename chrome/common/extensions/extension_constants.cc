@@ -62,8 +62,10 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     kIdentityApiUiAppId,
     kTextEditorAppId,
     kInAppPaymentsSupportAppId,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     kAssessmentAssistantExtensionId,
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     kAccessibilityCommonExtensionId,
     kSelectToSpeakExtensionId,
     kSwitchAccessExtensionId,
@@ -76,9 +78,11 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
     nullptr,  // Null-terminated array.
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 const char kAssessmentAssistantExtensionId[] =
     "gndmhdcefbhlchkhipcnnbkcmicncehk";
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kAccessibilityCommonExtensionId[] =
     "egfdjlfmgnehecnclamagfafdccgfndp";
 const char kAccessibilityCommonExtensionPath[] = "chromeos/accessibility";

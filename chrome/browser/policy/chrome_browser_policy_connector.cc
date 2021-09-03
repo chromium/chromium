@@ -121,6 +121,12 @@ void ChromeBrowserPolicyConnector::Init(
   InitInternal(local_state, std::move(device_management_service));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ChromeBrowserPolicyConnector::IsMainUserManaged() const {
+  return PolicyLoaderLacros::IsMainUserManaged();
+}
+#endif
+
 bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
   NOTREACHED() << "This method is only defined for Chrome OS";
   return false;

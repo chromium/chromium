@@ -46,6 +46,11 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/profiles/profile_manager.h"
+#include "components/user_manager/user_manager.h"
+#endif
+
 namespace policy {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -158,6 +163,10 @@ void ProfilePolicyConnector::Init(
       static_cast<BrowserPolicyConnectorAsh*>(connector);
 #else
   DCHECK_EQ(nullptr, user);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  browser_policy_connector_ = connector;
 #endif
 
   ConfigurationPolicyProvider* platform_provider =
@@ -293,8 +302,37 @@ bool ProfilePolicyConnector::IsManaged() const {
   const CloudPolicyStore* actual_policy_store = GetActualPolicyStore();
   if (actual_policy_store)
     return actual_policy_store->is_managed();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // As Lacros uses different ways to handle the main and the secondary
+  // profiles, these profiles need to be handled differently:
+  // ChromeOS's way is using mirror and we need to check with Ash using the
+  // device account (via IsManagedDeviceAccount).
+  // Desktop's way is used for secondary profiles and is using dice, which
+  // can be read directly from the profile.
+  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  if (browser_policy_connector_ && IsMainProfile())
+    return browser_policy_connector_->IsMainUserManaged();
+#endif
   return false;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ProfilePolicyConnector::IsMainProfile() const {
+  // If there is only a single profile or this connector object is owned by the
+  // main profile, it must be the main profile.
+  // TODO(crbug/1245077): Remove this once Lacros only uses mirror.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (profile_manager->GetNumberOfProfiles() <= 1)
+    return true;
+
+  auto profiles = profile_manager->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(
+      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  if (main_it == profiles.end())
+    return false;
+  return (*main_it)->GetProfilePolicyConnector() == this;
+}
+#endif
 
 bool ProfilePolicyConnector::IsProfilePolicy(const char* policy_key) const {
   const ConfigurationPolicyProvider* const provider =

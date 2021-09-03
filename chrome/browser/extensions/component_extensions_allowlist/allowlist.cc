@@ -30,9 +30,11 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   const char* const kAllowed[] = {
     extension_misc::kInAppPaymentsSupportAppId,
     extension_misc::kPdfExtensionId,
+#if defined(OS_CHROMEOS)
+    extension_misc::kAssessmentAssistantExtensionId,
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extension_misc::kAccessibilityCommonExtensionId,
-    extension_misc::kAssessmentAssistantExtensionId,
     extension_misc::kCameraAppId,
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kEnhancedNetworkTtsExtensionId,

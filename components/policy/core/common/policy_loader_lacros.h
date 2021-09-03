@@ -51,6 +51,10 @@ class POLICY_EXPORT PolicyLoaderLacros
   void OnPolicyUpdated(
       const std::vector<uint8_t>& policy_fetch_response) override;
 
+  // Returns if the main user is managed or not.
+  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  static bool IsMainUserManaged();
+
  private:
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

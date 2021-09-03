@@ -106,6 +106,12 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   virtual base::flat_set<std::string> device_affiliation_ids() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Checks if the main / primary user is managed or not.
+  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  bool IsMainUserManaged() const;
+#endif
+
  protected:
   // BrowserPolicyConnectorBase::
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
