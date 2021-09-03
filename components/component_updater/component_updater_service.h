@@ -56,13 +56,15 @@ struct ComponentInfo {
                 const std::u16string& name,
                 const base::Version& version);
   ComponentInfo(const ComponentInfo& other);
+  ComponentInfo& operator=(const ComponentInfo& other);
   ComponentInfo(ComponentInfo&& other);
+  ComponentInfo& operator=(ComponentInfo&& other);
   ~ComponentInfo();
 
-  const std::string id;
-  const std::string fingerprint;
-  const std::u16string name;
-  const base::Version version;
+  std::string id;
+  std::string fingerprint;
+  std::u16string name;
+  base::Version version;
 };
 
 // The component update service is in charge of installing or upgrading
