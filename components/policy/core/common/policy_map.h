@@ -265,7 +265,8 @@ class POLICY_EXPORT PolicyMap {
                 PolicySource source);
 
   // Returns true if |lhs| has higher priority than |rhs|. The priority of the
-  // fields are |level| > |scope| > |source|.
+  // fields are |level| > |PolicyPriority| for browser and |level| > |scope| >
+  // |source| for OS.
   bool EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                               const PolicyMap::Entry& rhs) const;
 

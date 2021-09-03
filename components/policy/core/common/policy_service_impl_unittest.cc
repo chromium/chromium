@@ -66,14 +66,14 @@ void AddTestPolicies(PolicyBundle* bundle,
   policy_map->Set(kSameLevelPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(value),
                   nullptr);
-  policy_map->Set(kDiffLevelPolicy, level, scope, POLICY_SOURCE_PLATFORM,
+  policy_map->Set(kDiffLevelPolicy, level, scope, POLICY_SOURCE_CLOUD,
                   base::Value(value), nullptr);
   policy_map =
       &bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension));
   policy_map->Set(kSameLevelPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                   POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(value),
                   nullptr);
-  policy_map->Set(kDiffLevelPolicy, level, scope, POLICY_SOURCE_PLATFORM,
+  policy_map->Set(kDiffLevelPolicy, level, scope, POLICY_SOURCE_CLOUD,
                   base::Value(value), nullptr);
 }
 
@@ -618,7 +618,7 @@ TEST_F(PolicyServiceTest, NamespaceMerge) {
   // For policies with different levels and scopes, the highest priority
   // level/scope combination takes precedence, on every namespace.
   expected.Set(kDiffLevelPolicy, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-               POLICY_SOURCE_PLATFORM, base::Value("bundle2"), nullptr);
+               POLICY_SOURCE_CLOUD, base::Value("bundle2"), nullptr);
   expected.GetMutable(kDiffLevelPolicy)
       ->AddMessage(PolicyMap::MessageType::kWarning,
                    IDS_POLICY_CONFLICT_DIFF_VALUE);
@@ -1215,6 +1215,62 @@ TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
+  base::Value dict1 = base::Value(base::Value::Type::DICTIONARY);
+  dict1.SetBoolKey(kUrl3, false);
+  dict1.SetBoolKey(kUrl2, true);
+  base::Value dict2 = base::Value(base::Value::Type::DICTIONARY);
+  dict2.SetBoolKey(kUrl1, true);
+  dict2.SetBoolKey(kUrl2, false);
+  base::Value result = base::Value(base::Value::Type::DICTIONARY);
+  result.SetBoolKey(kUrl1, true);
+  result.SetBoolKey(kUrl2, true);
+  result.SetBoolKey(kUrl3, false);
+
+  std::unique_ptr<base::Value> policy =
+      std::make_unique<base::Value>(base::Value::Type::LIST);
+  policy->Append(base::Value(key::kExtensionSettings));
+
+  auto policy_bundle1 = std::make_unique<PolicyBundle>();
+  PolicyMap& policy_map1 = policy_bundle1->Get(chrome_namespace);
+  policy_map1.Set(key::kPolicyDictionaryMultipleSourceMergeList,
+                  POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                  POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+  PolicyMap::Entry entry_dict_1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_PLATFORM, std::move(dict1),
+                                nullptr);
+  policy_map1.Set(key::kExtensionSettings, entry_dict_1.DeepCopy());
+
+  auto policy_bundle2 = std::make_unique<PolicyBundle>();
+  PolicyMap& policy_map2 = policy_bundle2->Get(chrome_namespace);
+  PolicyMap::Entry entry_dict_2(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                                POLICY_SOURCE_CLOUD, std::move(dict2), nullptr);
+  policy_map2.Set(key::kExtensionSettings, entry_dict_2.DeepCopy());
+
+  PolicyMap expected_chrome;
+  expected_chrome.Set(key::kPolicyDictionaryMultipleSourceMergeList,
+                      POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                      POLICY_SOURCE_PLATFORM, policy->Clone(), nullptr);
+  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+
+  PolicyMap::Entry merged(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                          POLICY_SOURCE_MERGED, std::move(result), nullptr);
+  merged.AddConflictingPolicy(entry_dict_2.DeepCopy());
+  merged.AddConflictingPolicy(entry_dict_1.DeepCopy());
+  expected_chrome.Set(key::kExtensionSettings, std::move(merged));
+
+  provider0_.UpdatePolicy(std::move(policy_bundle1));
+  provider1_.UpdatePolicy(std::move(policy_bundle2));
+  RunUntilIdle();
+
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+}
+
+#if !defined(OS_CHROMEOS)
+// Policy precedence changes are not supported on Chrome OS.
+TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
   base::Value dict1(base::Value::Type::DICTIONARY);
   dict1.SetBoolKey(kUrl3, false);
   dict1.SetBoolKey(kUrl2, true);
@@ -1271,6 +1327,7 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
 
   EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
 }
+#endif  // !defined(OS_CHROMEOS)
 
 TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());

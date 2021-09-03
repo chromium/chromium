@@ -53,40 +53,41 @@ base::flat_set<std::string> CombineIds(
   return combined_ids;
 }
 
-PolicyPriority GetPriority(PolicySource source,
-                           PolicyScope scope,
-                           bool cloud_policy_overrides_platform_policy) {
+#if !defined(OS_CHROMEOS)
+// Returns the calculated priority of the policy entry based on the policy's
+// scope and source, in addition to external factors such as precedence
+// metapolicy values. Used for browser policies.
+PolicyPriorityBrowser GetPriority(PolicySource source,
+                                  PolicyScope scope,
+                                  bool cloud_policy_overrides_platform_policy) {
   switch (source) {
     case POLICY_SOURCE_ENTERPRISE_DEFAULT:
-      return POLICY_PRIORITY_ENTERPRISE_DEFAULT;
+      return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
     case POLICY_SOURCE_COMMAND_LINE:
-      return POLICY_PRIORITY_COMMAND_LINE;
+      return POLICY_PRIORITY_BROWSER_COMMAND_LINE;
     case POLICY_SOURCE_CLOUD:
-      // Raise the priority only for cloud machine policies when the metapolicy
-      // CloudPolicyOverridesPlatformPolicy is set to true.
-      return scope == POLICY_SCOPE_MACHINE &&
-                     cloud_policy_overrides_platform_policy
-                 ? POLICY_PRIORITY_CLOUD_RAISED
-                 : POLICY_PRIORITY_CLOUD;
+      if (scope == POLICY_SCOPE_MACHINE) {
+        // Raise the priority for cloud machine policies when the metapolicy
+        // CloudPolicyOverridesPlatformPolicy is set to true.
+        return cloud_policy_overrides_platform_policy
+                   ? POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED
+                   : POLICY_PRIORITY_BROWSER_CLOUD_MACHINE;
+      }
+      return POLICY_PRIORITY_BROWSER_CLOUD_USER;
     case POLICY_SOURCE_PRIORITY_CLOUD:
-      return POLICY_PRIORITY_CLOUD_RAISED;
-    case POLICY_SOURCE_ACTIVE_DIRECTORY:
-      return POLICY_PRIORITY_ACTIVE_DIRECTORY;
-    case POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED:
-      return POLICY_PRIORITY_DEVICE_LOCAL_ACCOUNT_OVERRIDE;
+      return POLICY_PRIORITY_BROWSER_CLOUD_MACHINE_RAISED;
     case POLICY_SOURCE_PLATFORM:
-      return POLICY_PRIORITY_PLATFORM;
+      return scope == POLICY_SCOPE_MACHINE
+                 ? POLICY_PRIORITY_BROWSER_PLATFORM_MACHINE
+                 : POLICY_PRIORITY_BROWSER_PLATFORM_USER;
     case POLICY_SOURCE_MERGED:
-      return POLICY_PRIORITY_MERGED;
-    case POLICY_SOURCE_CLOUD_FROM_ASH:
-      return POLICY_PRIORITY_CLOUD_FROM_ASH;
-    case POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE:
-      return POLICY_PRIORITY_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE;
+      return POLICY_PRIORITY_BROWSER_MERGED;
     default:
       NOTREACHED();
-      return POLICY_PRIORITY_ENTERPRISE_DEFAULT;
+      return POLICY_PRIORITY_BROWSER_ENTERPRISE_DEFAULT;
   }
 }
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -514,12 +515,16 @@ void PolicyMap::FilterErase(
 
 bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                                        const PolicyMap::Entry& rhs) const {
-  PolicyPriority lhs_priority = GetPriority(
+#if defined(OS_CHROMEOS)
+  return std::tie(lhs.level, lhs.scope, lhs.source) >
+         std::tie(rhs.level, rhs.scope, rhs.source);
+#else   // defined(OS_CHROMEOS)
+  PolicyPriorityBrowser lhs_priority = GetPriority(
       lhs.source, lhs.scope, cloud_policy_overrides_platform_policy_);
-  PolicyPriority rhs_priority = GetPriority(
+  PolicyPriorityBrowser rhs_priority = GetPriority(
       rhs.source, rhs.scope, cloud_policy_overrides_platform_policy_);
-  return std::tie(lhs.level, lhs.scope, lhs_priority) >
-         std::tie(rhs.level, rhs.scope, rhs_priority);
+  return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
+#endif  // defined(OS_CHROMEOS)
 }
 
 bool PolicyMap::IsUserAffiliated() const {
