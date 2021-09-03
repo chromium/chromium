@@ -5989,6 +5989,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
 class RenderFrameHostImplAnonymousIframeNikBrowserTest
     : public RenderFrameHostImplAnonymousIframeBrowserTest {
  public:
+  RenderFrameHostImplAnonymousIframeNikBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
+  }
+
   void SetUpOnMainThread() override {
     alternate_test_server_ =
         std::make_unique<net::test_server::EmbeddedTestServer>();
@@ -6016,11 +6021,13 @@ class RenderFrameHostImplAnonymousIframeNikBrowserTest
  protected:
   std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
   std::unique_ptr<net::EmbeddedTestServer> alternate_test_server_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Failing on some builders, see https://crbug.com/1245980.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
-                       DISABLED_AnonymousIframeHasPartitionedNetworkState) {
+                       AnonymousIframeHasPartitionedNetworkState) {
   GURL main_url = embedded_test_server()->GetURL("/title1.html");
 
   for (bool anonymous : {false, true}) {
