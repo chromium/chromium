@@ -55,6 +55,7 @@ static SkBitmap CreateBackgroundBitmap(const SkBitmap* foreground) {
 
 void ScreenshotFlow::OnSnapshotComplete(gfx::Image snapshot) {
   image_foreground_ = snapshot.AsImageSkia();
+
   const SkBitmap* bitmap_foreground = snapshot.ToSkBitmap();
   image_background_ = gfx::ImageSkia::CreateFrom1xBitmap(
       CreateBackgroundBitmap(bitmap_foreground));
@@ -95,7 +96,6 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
   // clicking on browser chrome, etc.
   native_window->AddPreTargetHandler(this);
 #endif
-
   content_layer->Add(screen_capture_layer_.get());
   content_layer->StackAtTop(screen_capture_layer_.get());
   screen_capture_layer_->SetBounds(bounds);
@@ -200,9 +200,11 @@ void ScreenshotFlow::CompleteCapture(const gfx::Rect& region) {
   if (!region.IsEmpty()) {
     const int w = region.width();
     const int h = region.height();
-    gfx::Canvas canvas(gfx::Size(w, h), 1.0f, /*is_opaque=*/true);
-    canvas.DrawImageInt(image_foreground_, region.x(), region.y(), w, h, 0, 0,
-                        w, h, false);
+    float scale = screen_capture_layer_->device_scale_factor();
+    gfx::Canvas canvas(gfx::Size(w, h), scale, /*is_opaque=*/true);
+    canvas.DrawImageInt(image_foreground_, region.x() * scale,
+                        region.y() * scale, w * scale, h * scale, 0, 0, w, h,
+                        false);
     result.image = gfx::Image::CreateFrom1xBitmap(canvas.GetBitmap());
     result.screen_bounds = screen_capture_layer_->bounds();
   }
@@ -245,6 +247,9 @@ void ScreenshotFlow::PaintSelectionLayer(gfx::Canvas* canvas,
     return;
   }
 
+  // Captured image is in native scale.
+  canvas->UndoDeviceScaleFactor();
+
   if (selection.IsEmpty()) {
     canvas->DrawImageInt(image_background_, 0, 0);
     return;
@@ -252,15 +257,18 @@ void ScreenshotFlow::PaintSelectionLayer(gfx::Canvas* canvas,
 
   // At this point we have a nonempty selection region.
   // Draw the background, then copy over the relevant region of the foreground.
-  const int x = selection.x();
-  const int y = selection.y();
-  const int w = selection.width();
-  const int h = selection.height();
+  float scale_factor = screen_capture_layer_->device_scale_factor();
+  gfx::Rect selection_scaled =
+      gfx::ScaleToEnclosingRect(selection, scale_factor);
+  const int x = selection_scaled.x();
+  const int y = selection_scaled.y();
+  const int w = selection_scaled.width();
+  const int h = selection_scaled.height();
   canvas->DrawImageInt(image_background_, 0, 0);
   canvas->DrawImageInt(image_foreground_, x, y, w, h, x, y, w, h, false);
 
   // Add a small border around the selection region.
-  canvas->DrawRect(gfx::RectF(selection), kColorSelectionRect);
+  canvas->DrawRect(gfx::RectF(selection_scaled), kColorSelectionRect);
 }
 
 }  // namespace image_editor
