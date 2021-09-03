@@ -644,8 +644,6 @@ TEST_P(LayoutSelectionTest, ClearSelection) {
 }
 
 TEST_P(LayoutSelectionTest, SVG) {
-  // TODO(crbug.com/1179585): Need a fix for SVGTextNG.
-  ScopedSVGTextNGForTest disable_svg_text_ng(false);
   const SelectionInDOMTree& selection =
       SetSelectionTextToBody("<svg><text x=10 y=10>fo^o|bar</text></svg>");
   Selection().SetSelectionAndEndTyping(selection);
@@ -682,8 +680,6 @@ TEST_P(LayoutSelectionTest, SVG) {
 
 // crbug.com/781705
 TEST_P(LayoutSelectionTest, SVGAncestor) {
-  // TODO(crbug.com/1179585): Need a fix for SVGTextNG.
-  ScopedSVGTextNGForTest disable_svg_text_ng(false);
   const SelectionInDOMTree& selection = SetSelectionTextToBody(
       "<svg><text x=10 y=10><tspan>fo^o|bar</tspan></text></svg>");
   Selection().SetSelectionAndEndTyping(selection);
