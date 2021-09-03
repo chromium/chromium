@@ -414,6 +414,9 @@ crbug.com/1213170 [ mac ] Pixel_WebGPUImport* [ Skip ]
 crbug.com/1213170 [ mac ] Pixel_WebGPUCanvas* [ Skip ]
 crbug.com/1213170 [ mac ] Pixel_WebGPUWebGL* [ Skip ]
 
+# WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
+crbug.com/1245704 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
+
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] Pixel_WebGPU* [ Skip ]
 
