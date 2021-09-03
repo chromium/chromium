@@ -2104,7 +2104,7 @@
     },
     {
       name: "SVGTextNG",
-      status: "test"
+      status: "experimental"
     },
     {
       // Synchronously load web fonts inlined as data urls (crbug.com/1236283)
