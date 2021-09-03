@@ -76,12 +76,10 @@
     padding-inline: 20px;
   }
 </style>
-<div class="card-container">
-  <div id="title" class="card-header">
-    <slot name="title"></slot>
-    <slot name="chip"></slot>
-  </div>
-  <div class="card-wrapper">
+<diagnostics-card-frame>
+  <slot name="title" slot="title"></slot>
+  <slot name="chip" slot="chip"></slot>
+  <div slot="contents">
     <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
       <slot name="icon"></slot>
       <slot name="left-panel"></slot>
@@ -94,4 +92,4 @@
       <slot name="routines"></slot>
     </div>
   </div>
-</div>
+</diagnostics-card-frame>
