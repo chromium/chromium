@@ -139,7 +139,7 @@ class WaylandWindow : public PlatformWindow,
 
   // WmDragHandler
   bool StartDrag(const ui::OSExchangeData& data,
-                 int operation,
+                 int operations,
                  mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,

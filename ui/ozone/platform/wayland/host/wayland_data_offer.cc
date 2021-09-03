@@ -60,7 +60,7 @@ void WaylandDataOffer::FinishOffer() {
   }
 }
 
-void WaylandDataOffer::SetActions(uint32_t dnd_actions) {
+void WaylandDataOffer::SetDndActions(uint32_t dnd_actions) {
   if (wl::get_version_of_object(data_offer_.get()) <
       WL_DATA_OFFER_SET_ACTIONS_SINCE_VERSION) {
     return;

@@ -176,7 +176,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
 
   // WmDragHandler
   bool StartDrag(const OSExchangeData& data,
-                 int operation,
+                 int operations,
                  mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,

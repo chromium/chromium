@@ -36,7 +36,7 @@ class WaylandDataOffer : public WaylandDataOfferBase {
 
   uint32_t source_actions() const { return source_actions_; }
   uint32_t dnd_action() const { return dnd_action_; }
-  void SetActions(uint32_t dnd_actions);
+  void SetDndActions(uint32_t dnd_actions);
 
  private:
   // wl_data_offer_listener callbacks.

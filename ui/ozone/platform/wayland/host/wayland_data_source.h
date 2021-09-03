@@ -72,7 +72,7 @@ class DataSource {
 
   void Initialize();
   void Offer(const std::vector<std::string>& mime_types);
-  void SetAction(int operation);
+  void SetDndActions(uint32_t dnd_actions);
 
   uint32_t dnd_action() const { return dnd_action_; }
   T* data_source() const { return data_source_.get(); }

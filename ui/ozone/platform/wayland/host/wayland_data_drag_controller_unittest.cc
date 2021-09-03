@@ -293,8 +293,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   // The client starts dragging offering data with |kMimeTypeHTML|
   OSExchangeData os_exchange_data;
   os_exchange_data.SetHtml(sample_text_for_dnd(), {});
-  int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation,
+  int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
+  drag_controller()->StartSession(os_exchange_data, operations,
                                   DragEventSource::kMouse);
   Sync();
 
@@ -332,8 +332,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomDataDontCrash) {
                            pickle);
   OSExchangeData os_exchange_data(std::move(provider));
 
-  int operation = DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation,
+  drag_controller()->StartSession(os_exchange_data, DragDropTypes::DRAG_MOVE,
                                   DragEventSource::kMouse);
   Sync();
 
@@ -347,8 +346,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
   // The client starts dragging offering text mime type.
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
-  int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation,
+  int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
+  drag_controller()->StartSession(os_exchange_data, operations,
                                   DragEventSource::kMouse);
   Sync();
 
@@ -378,8 +377,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
   os_exchange_data.SetFileContents(
       base::FilePath(FILE_PATH_LITERAL("t\\est\".jpg")),
       kSampleTextForDragAndDrop);
-  int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation,
+  int operations = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
+  drag_controller()->StartSession(os_exchange_data, operations,
                                   DragEventSource::kMouse);
   Sync();
 

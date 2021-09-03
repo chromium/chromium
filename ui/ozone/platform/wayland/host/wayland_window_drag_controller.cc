@@ -124,7 +124,7 @@ bool WaylandWindowDragController::StartDragSession() {
   DCHECK(!data_source_);
   data_source_ = data_device_manager_->CreateSource(this);
   data_source_->Offer({kMimeTypeChromiumWindow});
-  data_source_->SetAction(DragDropTypes::DRAG_MOVE);
+  data_source_->SetDndActions(kDndActionWindowDrag);
 
   if (IsExtendedDragAvailable()) {
     extended_drag_source_ = std::make_unique<ExtendedDragSource>(
@@ -230,7 +230,7 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   DCHECK_EQ(data_offer_->mime_types().front(), kMimeTypeChromiumWindow);
 
   // Accept the offer and set the dnd action.
-  data_offer_->SetActions(kDndActionWindowDrag);
+  data_offer_->SetDndActions(kDndActionWindowDrag);
   data_offer_->Accept(serial, kMimeTypeChromiumWindow);
 }
 

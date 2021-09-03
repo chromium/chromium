@@ -102,7 +102,7 @@ WaylandDataDragController::WaylandDataDragController(
 WaylandDataDragController::~WaylandDataDragController() = default;
 
 bool WaylandDataDragController::StartSession(const OSExchangeData& data,
-                                             int operation,
+                                             int operations,
                                              DragEventSource source) {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!origin_window_);
@@ -131,7 +131,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // Create new new data source and offers |data|.
   if (!data_source_)
     data_source_ = data_device_manager_->CreateSource(this);
-  Offer(data, operation);
+  Offer(data, operations);
 
   // Create drag icon surface (if any) and store the data to be exchanged.
   icon_bitmap_ = GetDragImage(data);
@@ -238,7 +238,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
       DndActionsToDragOperations(data_offer_->source_actions());
   int client_operations = window_->OnDragMotion(location, available_operations);
 
-  data_offer_->SetActions(DragOperationsToDndActions(client_operations));
+  data_offer_->SetDndActions(DragOperationsToDndActions(client_operations));
 }
 
 void WaylandDataDragController::OnDragLeave() {
@@ -310,7 +310,7 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
 }
 
 void WaylandDataDragController::Offer(const OSExchangeData& data,
-                                      int operation) {
+                                      int operations) {
   DCHECK(data_source_);
 
   // Drag'n'drop manuals usually suggest putting data in order so the more
@@ -372,7 +372,7 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
 
   DCHECK(!mime_types.empty());
   data_source_->Offer(mime_types);
-  data_source_->SetAction(operation);
+  data_source_->SetDndActions(DragOperationsToDndActions(operations));
 }
 
 // Asynchronously requests and reads data for every negotiated/supported mime

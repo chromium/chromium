@@ -88,7 +88,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // successfully started, false otherwise. Only one DND session can run at a
   // given time.
   bool StartSession(const ui::OSExchangeData& data,
-                    int operation,
+                    int operations,
                     mojom::DragEventSource source);
 
   State state() const { return state_; }

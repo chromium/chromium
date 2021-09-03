@@ -101,19 +101,14 @@ void DataSource<wl_data_source>::Offer(
 }
 
 template <typename T>
-void DataSource<T>::SetAction(int operation) {
+void DataSource<T>::SetDndActions(uint32_t dnd_actions) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 template <>
-void DataSource<wl_data_source>::SetAction(int operation) {
+void DataSource<wl_data_source>::SetDndActions(uint32_t dnd_actions) {
   if (wl::get_version_of_object(data_source_.get()) >=
       WL_DATA_SOURCE_SET_ACTIONS_SINCE_VERSION) {
-    uint32_t dnd_actions = WL_DATA_DEVICE_MANAGER_DND_ACTION_NONE;
-    if (operation & ui::DragDropTypes::DRAG_COPY)
-      dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
-    if (operation & ui::DragDropTypes::DRAG_MOVE)
-      dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
     wl_data_source_set_actions(data_source_.get(), dnd_actions);
   }
 }

@@ -1388,7 +1388,7 @@ void X11Window::EndMoveLoop() {
 }
 
 bool X11Window::StartDrag(const OSExchangeData& data,
-                          int operation,
+                          int operations,
                           mojom::DragEventSource source,
                           gfx::NativeCursor cursor,
                           bool can_grab_pointer,
@@ -1397,7 +1397,7 @@ bool X11Window::StartDrag(const OSExchangeData& data,
   DCHECK(!drag_handler_delegate_);
 
   drag_handler_delegate_ = delegate;
-  drag_drop_client_->InitDrag(operation, &data);
+  drag_drop_client_->InitDrag(operations, &data);
   allowed_drag_operations_ = 0;
   notified_enter_ = false;
 
