@@ -79,6 +79,8 @@ class ClientTest(unittest.TestCase):
                      failure_reason='omg test failure')
     data = json.loads(mock_post.call_args[1]['data'])
     self.assertEqual(data['testResults'][0]['status'], 'FAIL')
+    self.assertEqual(data['testResults'][0]['testMetadata']['name'],
+                     'some-test')
     self.assertEqual(
         data['testResults'][0]['failureReason']['primaryErrorMessage'],
         'omg test failure')
@@ -91,6 +93,8 @@ class ClientTest(unittest.TestCase):
     self.assertEqual(
         data['testResults'][0]['testMetadata']['location']['file_name'],
         '//some/test.cc')
+    self.assertEqual(data['testResults'][0]['testMetadata']['name'],
+                     'some-test')
     self.assertIsNotNone(data['testResults'][0]['summaryHtml'])
 
 

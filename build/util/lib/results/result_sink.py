@@ -106,6 +106,9 @@ class ResultSinkClient(object):
         ],
         'testId':
         test_id,
+        'testMetadata': {
+            'name': test_id,
+        }
     }
 
     artifacts = artifacts or {}
@@ -128,12 +131,9 @@ class ResultSinkClient(object):
       tr['duration'] = '%.9fs' % float(duration / 1000.0)
 
     if test_file and str(test_file).startswith('//'):
-      tr['testMetadata'] = {
-          'name': test_id,
-          'location': {
-              'file_name': test_file,
-              'repo': 'https://chromium.googlesource.com/chromium/src',
-          }
+      tr['testMetadata']['location'] = {
+          'file_name': test_file,
+          'repo': 'https://chromium.googlesource.com/chromium/src',
       }
 
     res = requests.post(url=self.test_results_url,
