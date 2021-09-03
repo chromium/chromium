@@ -1808,7 +1808,7 @@
   {
     "name": "enable-desktop-pwas-prefix-app-name-in-window-title",
     "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "enable-desktop-pwas-protocol-handling",
@@ -1818,7 +1818,7 @@
   {
     "name": "enable-desktop-pwas-remove-status-bar",
     "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
