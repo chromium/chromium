@@ -21,7 +21,6 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 
 import android.app.Activity;
 import android.app.Instrumentation;
-import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -69,7 +68,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -91,8 +89,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
 import org.chromium.chrome.browser.WarmupManager;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
@@ -107,15 +103,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
 import org.chromium.chrome.browser.history.HistoryItem;
 import org.chromium.chrome.browser.history.TestBrowsingHistoryObserver;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -128,7 +121,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
@@ -141,7 +133,6 @@ import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
@@ -163,15 +154,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabActivityTest {
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
-
     private static final int TIMEOUT_PAGE_LOAD_SECONDS = 10;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
-    private static final String POPUP_PAGE =
-            "/chrome/test/data/popup_blocker/popup-window-open.html";
-    private static final String SELECT_POPUP_PAGE = "/chrome/test/data/android/select.html";
     private static final String FRAGMENT_TEST_PAGE = "/chrome/test/data/android/fragment.html";
     private static final String TARGET_BLANK_TEST_PAGE =
             "/chrome/test/data/android/cct_target_blank.html";
@@ -189,6 +174,9 @@ public class CustomTabActivityTest {
             + "        }"
             + "   </script>"
             + "</body></html>";
+
+    @Rule
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private static int sIdToIncrement = 1;
 
@@ -359,12 +347,6 @@ public class CustomTabActivityTest {
         return bitmap;
     }
 
-    private static boolean isSelectPopupVisible(ChromeActivity activity) {
-        Tab tab = activity.getActivityTab();
-        if (tab == null || tab.getWebContents() == null) return false;
-        return WebContentsUtils.isSelectPopupVisible(tab.getWebContents());
-    }
-
     private void setCanUseHiddenTabForSession(
             CustomTabsConnection connection, CustomTabsSessionToken token, boolean useHiddenTab) {
         assert mConnectionToCleanup == null || mConnectionToCleanup == connection;
@@ -403,73 +385,6 @@ public class CustomTabActivityTest {
         Assert.assertNotNull(linkMenu.findItem(R.id.contextmenu_copy_link_address));
     }
 
-    /**
-     * Test whether a custom tab can be reparented to a new activity.
-     */
-    @Test
-    @SmallTest
-    public void testTabReparentingBasic() {
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                        LaunchCauseMetrics.LaunchCause.CUSTOM_TAB));
-        reparentAndVerifyTab();
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
-                        LaunchCauseMetrics.LaunchCause.OPEN_IN_BROWSER_FROM_MENU));
-    }
-
-    /**
-     * Test whether a custom tab can be reparented to a new activity while showing an infobar.
-     */
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
-    public void testTabReparentingInfoBar() {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
-                        mTestServer.getURL(POPUP_PAGE)));
-        CriteriaHelper.pollUiThread(
-                () -> isInfoBarSizeOne(mCustomTabActivityTestRule.getActivity().getActivityTab()));
-
-        ChromeActivity newActivity = reparentAndVerifyTab();
-        CriteriaHelper.pollUiThread(() -> isInfoBarSizeOne(newActivity.getActivityTab()));
-    }
-
-    private static boolean isInfoBarSizeOne(Tab tab) {
-        if (tab == null) return false;
-        InfoBarContainer container = InfoBarContainer.get(tab);
-        if (container == null) return false;
-        return container.getInfoBarsForTesting().size() == 1;
-    }
-
-    /**
-     * Test whether a custom tab can be reparented to a new activity while showing a select popup.
-     */
-    // @SmallTest
-    @Test
-    @DisabledTest // Disabled due to flakiness on browser_side_navigation apk - see crbug.com/707766
-    public void testTabReparentingSelectPopup() throws TimeoutException {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
-                CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
-                        mTestServer.getURL(SELECT_POPUP_PAGE)));
-        CriteriaHelper.pollUiThread(() -> {
-            Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(currentTab, Matchers.notNullValue());
-            Criteria.checkThat(currentTab.getWebContents(), Matchers.notNullValue());
-        });
-        DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "select");
-        CriteriaHelper.pollUiThread(
-                () -> isSelectPopupVisible(mCustomTabActivityTestRule.getActivity()));
-        final ChromeActivity newActivity = reparentAndVerifyTab();
-        CriteriaHelper.pollUiThread(() -> isSelectPopupVisible(newActivity));
-    }
     /**
      * Test whether the color of the toolbar is correctly customized. For L or later releases,
      * status bar color is also tested.
@@ -1796,55 +1711,6 @@ public class CustomTabActivityTest {
                 CustomTabsTestUtils.createMinimalCustomTabIntent(context, mTestPage));
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         assertEquals(mTestPage, ChromeTabUtils.getUrlStringOnUiThread(tab));
-    }
-
-    private ChromeActivity reparentAndVerifyTab() {
-        final ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
-                ChromeTabbedActivity.class.getName(), /* result = */ null, false);
-        final Tab tabToBeReparented = getActivity().getActivityTab();
-        final CallbackHelper tabHiddenHelper = new CallbackHelper();
-        TabObserver observer = new EmptyTabObserver() {
-            @Override
-            public void onHidden(Tab tab, @TabHidingType int type) {
-                tabHiddenHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabToBeReparented.addObserver(observer));
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
-            getActivity().getComponent().resolveNavigationController()
-                    .openCurrentUrlInBrowser(true);
-            assertNull(getActivity().getActivityTab());
-        });
-        // Use the extended CriteriaHelper timeout to make sure we get an activity
-        final Activity lastActivity =
-                monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(
-                "Monitor did not get an activity before hitting the timeout", lastActivity);
-        Assert.assertTrue("Expected lastActivity to be a ChromeActivity, was "
-                        + lastActivity.getClass().getName(),
-                lastActivity instanceof ChromeActivity);
-        final ChromeActivity newActivity = (ChromeActivity) lastActivity;
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(newActivity.getActivityTab(), Matchers.notNullValue());
-            Criteria.checkThat(newActivity.getActivityTab(), is(tabToBeReparented));
-        });
-        assertEquals(newActivity.getWindowAndroid(), tabToBeReparented.getWindowAndroid());
-        assertEquals(newActivity.getWindowAndroid(),
-                tabToBeReparented.getWebContents().getTopLevelNativeWindow());
-        Assert.assertFalse(TabTestUtils.getDelegateFactory(tabToBeReparented)
-                                   instanceof CustomTabDelegateFactory);
-        assertEquals("The tab should never be hidden during the reparenting process", 0,
-                tabHiddenHelper.getCallCount());
-        Assert.assertFalse(TabTestUtils.isCustomTab(tabToBeReparented));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabToBeReparented.removeObserver(observer);
-            RewindableIterator<TabObserver> observers =
-                    TabTestUtils.getTabObservers(tabToBeReparented);
-            while (observers.hasNext()) {
-                Assert.assertFalse(observers.next() instanceof CustomTabObserver);
-            }
-        });
-        return newActivity;
     }
 
     private void checkPageLoadMetrics(boolean allowMetrics) throws TimeoutException {
