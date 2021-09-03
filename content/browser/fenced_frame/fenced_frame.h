@@ -73,6 +73,8 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void WaitForDidStopLoadingForTesting();
   void SetOnDestroyedCallbackForTesting(base::OnceClosure cb);
 
+  RenderFrameHostImpl* GetInnerRoot() { return frame_tree_->GetMainFrame(); }
+
  private:
   // Called when a fenced frame is created from a synchronous IPC from the
   // renderer. This creates a proxy to the main frame of the inner `FrameTree`,

@@ -1755,10 +1755,17 @@ void NavigationRequest::BeginNavigationImpl() {
   // starting the request.
   if (frame_tree_node_->IsFencedFrameRoot() && common_params_->url.is_valid() &&
       common_params_->url.scheme() == url::kUrnScheme) {
-    // TODO(crbug.com/1123606): With MPArch, make sure that the mapping is
-    // retrieved from the primary root instead of this tree's root.
+    // `inner_frame_tree` is true for navigations inside the main frame of a
+    // nested fenced frame's `FrameTree`, and false otherwise. This is only the
+    // case for the MPArch implementation of fenced frames.
+    bool is_inner_frame_tree =
+        frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame;
+    FrameTreeNode* node_to_use =
+        is_inner_frame_tree
+            ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
+            : frame_tree_node_;
     absl::optional<GURL> mapped_url =
-        frame_tree_node_->current_frame_host()
+        node_to_use->current_frame_host()
             ->GetPage()
             .fenced_frame_urls_map()
             .ConvertFencedFrameURNToURL(common_params_->url);
