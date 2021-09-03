@@ -14,10 +14,10 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -41,7 +41,7 @@ using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreChange;
 using password_manager::PasswordStoreChangeList;
-using password_manager::AndroidAffiliationService;
+using password_manager::AffiliationService;
 
 // ASCredentialIdentityStoreError enum to report UMA metrics. Must be in sync
 // with iOSCredentialIdentityStoreErrorForReporting in
@@ -273,7 +273,7 @@ void CredentialProviderService::OnGetPasswordStoreResults(
   if (matcher) {
     matcher->InjectAffiliationAndBrandingInformation(
         std::move(results),
-        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(results));
@@ -332,7 +332,7 @@ void CredentialProviderService::OnLoginsChanged(
   if (matcher) {
     matcher->InjectAffiliationAndBrandingInformation(
         std::move(forms_to_add),
-        AndroidAffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+        AffiliationService::StrategyOnCacheMiss::FETCH_OVER_NETWORK,
         std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms_to_add));

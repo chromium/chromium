@@ -6,15 +6,29 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/macros.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_backend.h"
+#include "components/password_manager/core/browser/android_affiliation/fake_affiliation_api.h"
+#include "components/password_manager/core/browser/android_affiliation/mock_affiliation_consumer.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_base.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
-
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,6 +53,21 @@ constexpr char k3ExampleURL[] = "https://3.example.com";
 constexpr char k4ExampleURL[] = "https://4.example.com";
 constexpr char k5ExampleURL[] = "https://5.example.com";
 
+using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
+
+constexpr char kTestFacetURIAlpha1[] = "https://one.alpha.example.com";
+constexpr char kTestFacetURIAlpha2[] = "https://two.alpha.example.com";
+constexpr char kTestFacetURIAlpha3[] = "https://three.alpha.example.com";
+constexpr char kTestFacetURIBeta1[] = "https://one.beta.example.com";
+
+AffiliatedFacets GetTestEquivalenceClassAlpha() {
+  return {
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1)},
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha2)},
+      {FacetURI::FromCanonicalSpec(kTestFacetURIAlpha3)},
+  };
+}
+
 std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
   std::vector<FacetURI> facet_URIs;
   for (const auto& url : urls) {
@@ -53,25 +82,72 @@ std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
 class AffiliationServiceImplTest : public testing::Test {
  public:
   AffiliationServiceImplTest()
-      : service_(base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {
-    auto fetcher_factory = std::make_unique<MockAffiliationFetcherFactory>();
-    mock_fetcher_factory_ = fetcher_factory.get();
-    service_.SetFetcherFactoryForTesting(std::move(fetcher_factory));
-  }
-
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AffiliationServiceImplTest() override = default;
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
-  AffiliationServiceImpl* service() { return &service_; }
   MockAffiliationFetcherFactory& mock_fetcher_factory() {
-    return *mock_fetcher_factory_;
+    return *fetcher_factory_;
   }
 
+  void CreateService() {
+    service_ = std::make_unique<AffiliationServiceImpl>(
+        base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
+        background_task_runner());
+
+    network::TestNetworkConnectionTracker* network_connection_tracker =
+        network::TestNetworkConnectionTracker::GetInstance();
+    network_connection_tracker->SetConnectionType(
+        network::mojom::ConnectionType::CONNECTION_ETHERNET);
+    base::FilePath database_path;
+    ASSERT_TRUE(CreateTemporaryFile(&database_path));
+    service_->Init(network_connection_tracker, database_path);
+  }
+
+  void DestroyService() { service_->Shutdown(); }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  AffiliationServiceImpl* service() { return service_.get(); }
+  MockAffiliationConsumer* mock_consumer() { return &mock_consumer_; }
+
+  base::TestSimpleTaskRunner* background_task_runner() {
+    return background_task_runner_.get();
+  }
+
+  FakeAffiliationAPI* fake_affiliation_api() { return &fake_affiliation_api_; }
+
+ protected:
+  std::unique_ptr<AffiliationServiceImpl> service_;
+  FakeAffiliationAPI fake_affiliation_api_;
+  scoped_refptr<base::TestSimpleTaskRunner> background_task_runner_ =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
  private:
-  base::test::TaskEnvironment task_env_;
+  void SetUp() override {
+    CreateService();
+    auto mock_fetcher_factory =
+        std::make_unique<MockAffiliationFetcherFactory>();
+    fetcher_factory_ = mock_fetcher_factory.get();
+    service_->SetFetcherFactoryForTesting(std::move(mock_fetcher_factory));
+    fake_affiliation_api_.AddTestEquivalenceClass(
+        GetTestEquivalenceClassAlpha());
+  }
+
+  void TearDown() override {
+    // The service uses DeleteSoon to asynchronously destroy its backend. Pump
+    // the background thread to make sure destruction actually takes place.
+    DestroyService();
+    background_task_runner_->RunUntilIdle();
+  }
+
   base::HistogramTester histogram_tester_;
-  AffiliationServiceImpl service_;
-  MockAffiliationFetcherFactory* mock_fetcher_factory_;
+  MockAffiliationFetcherFactory* fetcher_factory_;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  MockAffiliationConsumer mock_consumer_;
 };
 
 TEST_F(AffiliationServiceImplTest, GetChangePasswordURLReturnsEmpty) {
@@ -425,6 +501,94 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
       new_raw_mock_fetcher, std::move(test_result2));
   EXPECT_EQ(GURL(k2ExampleChangePasswordURL),
             service()->GetChangePasswordURL(origin2));
+}
+
+// Test fixture to imitate a fetch factory for testing and not just mock it.
+class AffiliationServiceImplTestWithFetcherFactory
+    : public AffiliationServiceImplTest {
+ public:
+  void SetUp() override {
+    CreateService();
+
+    auto fake_fetcher_factory =
+        std::make_unique<FakeAffiliationFetcherFactory>();
+    fake_affiliation_api_.SetFetcherFactory(fake_fetcher_factory.get());
+    fake_affiliation_api_.AddTestEquivalenceClass(
+        GetTestEquivalenceClassAlpha());
+    background_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AffiliationBackend::SetFetcherFactoryForTesting,
+                       base::Unretained(service_->GetBackendForTesting()),
+                       std::move(fake_fetcher_factory)));
+  }
+};
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       GetAffiliationsAndBrandingSucceds) {
+  // The first request allows on-demand fetching, and should trigger a fetch.
+  // Then, it should succeed after the fetch is complete.
+  service()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+      StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      mock_consumer()->GetResultCallback());
+
+  background_task_runner()->RunUntilIdle();
+  ASSERT_TRUE(fake_affiliation_api()->HasPendingRequest());
+  fake_affiliation_api()->ServeNextRequest();
+
+  const auto equivalence_class_alpha(GetTestEquivalenceClassAlpha());
+  mock_consumer()->ExpectSuccessWithResult(equivalence_class_alpha);
+  EXPECT_THAT(
+      equivalence_class_alpha,
+      testing::Contains(testing::Field(
+          &Facet::uri, FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1))));
+
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
+
+  // The second request should be (and can be) served from cache.
+  service()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+      StrategyOnCacheMiss::FAIL, mock_consumer()->GetResultCallback());
+
+  background_task_runner()->RunUntilIdle();
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+
+  mock_consumer()->ExpectSuccessWithResult(equivalence_class_alpha);
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
+}
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       GetAffiliationsAndBrandingFails) {
+  // The third request is also restricted to the cache, but cannot be served
+  // from cache, thus it should fail.
+  service()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIBeta1),
+      StrategyOnCacheMiss::FAIL, mock_consumer()->GetResultCallback());
+
+  background_task_runner()->RunUntilIdle();
+  ASSERT_FALSE(fake_affiliation_api()->HasPendingRequest());
+
+  mock_consumer()->ExpectFailure();
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
+}
+
+TEST_F(AffiliationServiceImplTestWithFetcherFactory,
+       ShutdownWhileTasksArePosted) {
+  service()->GetAffiliationsAndBranding(
+      FacetURI::FromCanonicalSpec(kTestFacetURIAlpha1),
+      StrategyOnCacheMiss::FETCH_OVER_NETWORK,
+      mock_consumer()->GetResultCallback());
+  EXPECT_TRUE(background_task_runner()->HasPendingTask());
+
+  DestroyService();
+  background_task_runner()->RunUntilIdle();
+
+  mock_consumer()->ExpectFailure();
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(mock_consumer());
 }
 
 }  // namespace password_manager

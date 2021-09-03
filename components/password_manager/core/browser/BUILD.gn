@@ -31,8 +31,6 @@ static_library("browser") {
     "android_affiliation/affiliation_fetcher_delegate.cc",
     "android_affiliation/affiliation_fetcher_delegate.h",
     "android_affiliation/affiliation_fetcher_interface.h",
-    "android_affiliation/android_affiliation_service.cc",
-    "android_affiliation/android_affiliation_service.h",
     "android_affiliation/facet_manager.cc",
     "android_affiliation/facet_manager.h",
     "android_affiliation/facet_manager_host.h",
@@ -517,6 +515,8 @@ static_library("test_support") {
     "password_manager_test_utils.h",
     "site_affiliation/mock_affiliation_fetcher_factory.cc",
     "site_affiliation/mock_affiliation_fetcher_factory.h",
+    "site_affiliation/mock_affiliation_service.cc",
+    "site_affiliation/mock_affiliation_service.h",
     "stub_credentials_filter.cc",
     "stub_credentials_filter.h",
     "stub_form_saver.cc",
@@ -553,6 +553,7 @@ static_library("test_support") {
     "//base",
     "//components/autofill/core/common",
     "//net:net",
+    "//services/network:test_support",
   ]
 }
 
@@ -610,7 +611,6 @@ source_set("unit_tests") {
     "android_affiliation/affiliation_backend_unittest.cc",
     "android_affiliation/affiliation_database_unittest.cc",
     "android_affiliation/affiliation_fetch_throttler_unittest.cc",
-    "android_affiliation/android_affiliation_service_unittest.cc",
     "android_affiliation/facet_manager_unittest.cc",
     "browser_save_password_progress_logger_unittest.cc",
     "bulk_leak_check_service_unittest.cc",

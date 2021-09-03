@@ -4,18 +4,22 @@
 
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
 
+#include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/timer/mock_timer.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/mock_affiliation_fetcher_factory.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -41,19 +45,6 @@ class MockWellKnownChangePasswordStateDelegate
   ~MockWellKnownChangePasswordStateDelegate() override = default;
 
   MOCK_METHOD(void, OnProcessingFinished, (bool), (override));
-};
-
-class MockAffiliationService : public AffiliationService {
- public:
-  MockAffiliationService() = default;
-  ~MockAffiliationService() override = default;
-
-  MOCK_METHOD(void,
-              PrefetchChangePasswordURLs,
-              (const std::vector<GURL>&, base::OnceClosure),
-              (override));
-  MOCK_METHOD(void, Clear, (), (override));
-  MOCK_METHOD(GURL, GetChangePasswordURL, (const GURL&), (override, const));
 };
 
 class WellKnownChangePasswordStateTest
@@ -236,12 +227,20 @@ TEST_P(WellKnownChangePasswordStateTest,
   auto mock_fetcher_factory = std::make_unique<MockAffiliationFetcherFactory>();
   EXPECT_CALL(*(mock_fetcher_factory.get()), CreateInstance)
       .WillOnce(testing::Return(testing::ByMove(std::move(mock_fetcher))));
+  scoped_refptr<base::TestMockTimeTaskRunner> background_task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  auto affiliation_service = std::make_unique<AffiliationServiceImpl>(
+      test_shared_loader_factory(), background_task_runner);
 
-  AffiliationServiceImpl affiliation_service(test_shared_loader_factory());
-  affiliation_service.SetFetcherFactoryForTesting(
+  network::TestNetworkConnectionTracker* network_connection_tracker =
+      network::TestNetworkConnectionTracker::GetInstance();
+  base::FilePath database_path;
+  ASSERT_TRUE(CreateTemporaryFile(&database_path));
+  affiliation_service->Init(network_connection_tracker, database_path);
+  affiliation_service->SetFetcherFactoryForTesting(
       std::move(mock_fetcher_factory));
 
-  state()->PrefetchChangePasswordURLs(&affiliation_service,
+  state()->PrefetchChangePasswordURLs(affiliation_service.get(),
                                       {GURL("https://example.com")});
 
   ResponseDelayParams params = GetParam();
@@ -253,10 +252,14 @@ TEST_P(WellKnownChangePasswordStateTest,
   FastForwardBy(base::TimeDelta::FromMilliseconds(ms_to_forward));
 
   EXPECT_CALL(*delegate(), OnProcessingFinished(false));
-  static_cast<AffiliationFetcherDelegate*>(&affiliation_service)
+  static_cast<AffiliationFetcherDelegate*>(affiliation_service.get())
       ->OnFetchSucceeded(
           raw_mock_fetcher,
           std::make_unique<AffiliationFetcherDelegate::Result>());
+
+  // Destroy the affiliation service and backend.
+  affiliation_service->Shutdown();
+  background_task_runner->RunUntilIdle();
 }
 
 constexpr ResponseDelayParams kDelayParams[] = {{0, 1}, {1, 0}};

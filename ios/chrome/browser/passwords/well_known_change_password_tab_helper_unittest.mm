@@ -44,6 +44,7 @@ using net::test_server::EmbeddedTestServer;
 using net::test_server::EmbeddedTestServerHandle;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using password_manager::FacetURI;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
 using password_manager::WellKnownChangePasswordResult;
@@ -70,6 +71,15 @@ class TestAffiliationService : public password_manager::AffiliationService {
     }
     return GURL();
   }
+  void GetAffiliationsAndBranding(
+      const FacetURI& facet_uri,
+      AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
+      ResultCallback result_callback) override {}
+  void Prefetch(const FacetURI& facet_uri,
+                const base::Time& keep_fresh_until) override {}
+  void CancelPrefetch(const FacetURI& facet_uri,
+                      const base::Time& keep_fresh_until) override {}
+  void TrimCacheForFacetURI(const FacetURI& facet_uri) override {}
 
   void SetOverrideAvailable(bool available) { override_available_ = available; }
 

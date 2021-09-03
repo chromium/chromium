@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -77,6 +78,7 @@ PasswordStoreFactory::PasswordStoreFactory()
     : RefcountedBrowserContextKeyedServiceFactory(
           "PasswordStore",
           BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(WebDataServiceFactory::GetInstance());
 }
 
@@ -132,11 +134,10 @@ PasswordStoreFactory::BuildServiceInstanceFor(
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    password_manager::EnableAffiliationBasedMatching(
-        ps.get(),
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        content::GetNetworkConnectionTracker(), profile->GetPath());
+    password_manager::AffiliationService* affiliation_service =
+        AffiliationServiceFactory::GetForProfile(profile);
+    password_manager::EnableAffiliationBasedMatching(ps.get(),
+                                                     affiliation_service);
   }
   DelayReportingPasswordStoreMetrics(profile);
   return ps;

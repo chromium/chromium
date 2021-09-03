@@ -4,11 +4,16 @@
 
 #include "chrome/browser/password_manager/affiliation_service_factory.h"
 
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -32,9 +37,19 @@ password_manager::AffiliationService* AffiliationServiceFactory::GetForProfile(
 
 KeyedService* AffiliationServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  network::SharedURLLoaderFactory* url_loader_factory =
+  Profile* profile = Profile::FromBrowserContext(context);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       context->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get();
-  return new password_manager::AffiliationServiceImpl(url_loader_factory);
+          ->GetURLLoaderFactoryForBrowserProcess();
+  auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+  auto* affiliation_service = new password_manager::AffiliationServiceImpl(
+      url_loader_factory, backend_task_runner);
+
+  base::FilePath database_path =
+      profile->GetPath().Append(password_manager::kAffiliationDatabaseFileName);
+  affiliation_service->Init(content::GetNetworkConnectionTracker(),
+                            database_path);
+
+  return affiliation_service;
 }

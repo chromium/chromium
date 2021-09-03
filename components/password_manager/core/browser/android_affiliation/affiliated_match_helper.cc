@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -22,9 +21,9 @@ constexpr base::TimeDelta AffiliatedMatchHelper::kInitializationDelayOnStartup;
 
 AffiliatedMatchHelper::AffiliatedMatchHelper(
     PasswordStore* password_store,
-    std::unique_ptr<AndroidAffiliationService> affiliation_service)
+    AffiliationService* affiliation_service)
     : password_store_(password_store),
-      affiliation_service_(std::move(affiliation_service)) {}
+      affiliation_service_(affiliation_service) {}
 
 AffiliatedMatchHelper::~AffiliatedMatchHelper() {
   if (password_store_)
@@ -48,7 +47,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
     FacetURI facet_uri(
         FacetURI::FromPotentiallyInvalidSpec(observed_form.signon_realm));
     affiliation_service_->GetAffiliationsAndBranding(
-        facet_uri, AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+        facet_uri, AffiliationService::StrategyOnCacheMiss::FAIL,
         base::BindOnce(
             &AffiliatedMatchHelper::CompleteGetAffiliatedAndroidAndWebRealms,
             weak_ptr_factory_.GetWeakPtr(), facet_uri,
@@ -60,7 +59,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndroidAndWebRealms(
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
-    AndroidAffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
+    AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
     PasswordFormsCallback result_callback) {
   std::vector<PasswordForm*> android_credentials;
   for (const auto& form : forms) {

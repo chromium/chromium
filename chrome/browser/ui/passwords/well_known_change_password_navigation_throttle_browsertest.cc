@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliation_api.pb.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/site_affiliation/hash_affiliation_fetcher.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -58,8 +59,10 @@ using net::test_server::EmbeddedTestServer;
 using net::test_server::EmbeddedTestServerHandle;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using password_manager::FacetURI;
 using password_manager::kWellKnownChangePasswordPath;
 using password_manager::kWellKnownNotExistingResourcePath;
+using password_manager::MockAffiliationService;
 using password_manager::WellKnownChangePasswordResult;
 using testing::Return;
 
@@ -81,16 +84,6 @@ struct ResponseDelayParams {
 };
 
 }  // namespace
-
-class MockAffiliationService : public password_manager::AffiliationService {
- public:
-  MOCK_METHOD(void,
-              PrefetchChangePasswordURLs,
-              (const std::vector<GURL>& urls, base::OnceClosure callback),
-              (override));
-  MOCK_METHOD(void, Clear, (), (override));
-  MOCK_METHOD(GURL, GetChangePasswordURL, (const GURL&), (override, const));
-};
 
 class ChangePasswordNavigationThrottleBrowserTestBase
     : public CertVerifierBrowserTest,

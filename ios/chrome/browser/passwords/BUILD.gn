@@ -7,8 +7,6 @@ import("//ios/web/js_compile.gni")
 source_set("passwords") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_chrome_affiliation_service_factory.cc",
-    "ios_chrome_affiliation_service_factory.h",
     "ios_chrome_bulk_leak_check_service_factory.cc",
     "ios_chrome_bulk_leak_check_service_factory.h",
     "ios_chrome_password_check_manager.h",
@@ -123,6 +121,8 @@ source_set("store_factory") {
   sources = [
     "credentials_cleaner_runner_factory.cc",
     "credentials_cleaner_runner_factory.h",
+    "ios_chrome_affiliation_service_factory.cc",
+    "ios_chrome_affiliation_service_factory.h",
     "ios_chrome_password_reuse_manager_factory.cc",
     "ios_chrome_password_reuse_manager_factory.h",
     "ios_chrome_password_store_factory.cc",

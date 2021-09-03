@@ -7,53 +7,21 @@
 #include <memory>
 #include <utility>
 
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
 
-namespace {
-
-base::FilePath GetAffiliationDatabasePath(const base::FilePath& profile_path) {
-  return profile_path.Append(kAffiliationDatabaseFileName);
-}
-
-}  // namespace
-
-void EnableAffiliationBasedMatching(
-    PasswordStore* password_store,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    const base::FilePath& profile_path) {
+void EnableAffiliationBasedMatching(PasswordStore* password_store,
+                                    AffiliationService* affiliation_service) {
   DCHECK(password_store);
   // Return if the matching is already enabled.
   if (password_store->affiliated_match_helper())
     return;
 
-  // The PasswordStore is so far the only consumer of the
-  // AndroidAffiliationService, therefore the service is owned by the
-  // AffiliatedMatchHelper, which in turn is owned by the PasswordStore.
-  // Task priority is USER_VISIBLE, because AndroidAffiliationService-related
-  // tasks block obtaining credentials from PasswordStore, hence password
-  // autofill.
-  std::unique_ptr<AndroidAffiliationService> affiliation_service(
-      new AndroidAffiliationService(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})));
-  affiliation_service->Initialize(std::move(url_loader_factory),
-                                  network_connection_tracker,
-                                  GetAffiliationDatabasePath(profile_path));
-  std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper(
-      new AffiliatedMatchHelper(password_store,
-                                std::move(affiliation_service)));
+  auto affiliated_match_helper = std::make_unique<AffiliatedMatchHelper>(
+      password_store, affiliation_service);
   affiliated_match_helper->Initialize();
   password_store->SetAffiliatedMatchHelper(std::move(affiliated_match_helper));
 }

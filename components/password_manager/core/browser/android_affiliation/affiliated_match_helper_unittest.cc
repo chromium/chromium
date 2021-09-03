@@ -18,10 +18,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_affiliation/android_affiliation_service.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,19 +32,17 @@ namespace password_manager {
 
 namespace {
 
-using StrategyOnCacheMiss = AndroidAffiliationService::StrategyOnCacheMiss;
+using StrategyOnCacheMiss = AffiliationService::StrategyOnCacheMiss;
 
-class MockAndroidAffiliationService : public AndroidAffiliationService {
+class OverloadedMockAffiliationService : public MockAffiliationService {
  public:
-  MockAndroidAffiliationService() : AndroidAffiliationService(nullptr) {
+  OverloadedMockAffiliationService() {
     testing::DefaultValue<AffiliatedFacets>::Set(AffiliatedFacets());
   }
 
-  MOCK_METHOD2(OnGetAffiliationsAndBrandingCalled,
-               AffiliatedFacets(const FacetURI&, StrategyOnCacheMiss));
-  MOCK_METHOD2(Prefetch, void(const FacetURI&, const base::Time&));
-  MOCK_METHOD2(CancelPrefetch, void(const FacetURI&, const base::Time&));
-  MOCK_METHOD1(TrimCacheForFacetURI, void(const FacetURI&));
+  MOCK_METHOD(AffiliatedFacets,
+              OnGetAffiliationsAndBrandingCalled,
+              (const FacetURI&, StrategyOnCacheMiss));
 
   void GetAffiliationsAndBranding(const FacetURI& facet_uri,
                                   StrategyOnCacheMiss cache_miss_strategy,
@@ -302,7 +303,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
       std::vector<std::unique_ptr<PasswordForm>> forms) {
     expecting_result_callback_ = true;
     match_helper()->InjectAffiliationAndBrandingInformation(
-        std::move(forms), AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+        std::move(forms), AffiliationService::StrategyOnCacheMiss::FAIL,
         base::BindOnce(&AffiliatedMatchHelperTest::OnFormsCallback,
                        base::Unretained(this)));
     RunUntilIdle();
@@ -314,8 +315,8 @@ class AffiliatedMatchHelperTest : public testing::Test,
 
   TestPasswordStore* password_store() { return password_store_.get(); }
 
-  MockAndroidAffiliationService* mock_affiliation_service() {
-    return mock_affiliation_service_;
+  OverloadedMockAffiliationService* mock_affiliation_service() {
+    return mock_affiliation_service_.get();
   }
 
   AffiliatedMatchHelper* match_helper() { return match_helper_.get(); }
@@ -336,23 +337,22 @@ class AffiliatedMatchHelperTest : public testing::Test,
 
   // testing::Test:
   void SetUp() override {
-    auto service =
-        std::make_unique<testing::StrictMock<MockAndroidAffiliationService>>();
-    mock_affiliation_service_ = service.get();
-
+    mock_affiliation_service_ = std::make_unique<
+        testing::StrictMock<OverloadedMockAffiliationService>>();
     password_store_->Init(nullptr);
-
     match_helper_ = std::make_unique<AffiliatedMatchHelper>(
-        password_store_.get(), std::move(service));
+        password_store_.get(), mock_affiliation_service_.get());
   }
 
   void TearDown() override {
     match_helper_.reset();
     password_store_->ShutdownOnUIThread();
     password_store_ = nullptr;
+    mock_affiliation_service_.reset();
     // Clean up on the background thread.
     RunUntilIdle();
   }
+
   base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedMockTimeMessageLoopTaskRunner mock_time_task_runner_;
@@ -365,8 +365,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
       base::MakeRefCounted<TestPasswordStore>();
   std::unique_ptr<AffiliatedMatchHelper> match_helper_;
 
-  // Owned by |match_helper_|.
-  MockAndroidAffiliationService* mock_affiliation_service_ = nullptr;
+  std::unique_ptr<OverloadedMockAffiliationService> mock_affiliation_service_;
 };
 
 // GetAffiliatedAndroidRealm* tests verify that

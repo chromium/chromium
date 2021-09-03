@@ -16,20 +16,15 @@
 #include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace network {
-class NetworkConnectionTracker;
-}  // namespace network
-
 namespace password_manager {
+
+class AffiliationService;
 
 // Activates affiliation-based matching for |password_store|, The
 // AffiliationService will use |url_loader_factory| to fetch affiliation
 // information.
-void EnableAffiliationBasedMatching(
-    PasswordStore* password_store,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker,
-    const base::FilePath& profile_path);
+void EnableAffiliationBasedMatching(PasswordStore* password_store,
+                                    AffiliationService* affiliation_service);
 
 // Creates a LoginDatabase. Looks in |profile_path| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be

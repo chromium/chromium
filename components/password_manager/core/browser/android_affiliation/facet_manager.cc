@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note: Read the class comment of AndroidAffiliationService for the definition
+// Note: Read the class comment of AffiliationService for the definition
 // of the terms used below.
 //
 // On-demand fetching strategy
@@ -89,7 +89,7 @@ static_assert(
 
 // Encapsulates the details of a pending GetAffiliationsAndBranding() request.
 struct FacetManager::RequestInfo {
-  AndroidAffiliationService::ResultCallback callback;
+  AffiliationService::ResultCallback callback;
   scoped_refptr<base::TaskRunner> callback_task_runner;
 };
 
@@ -112,7 +112,7 @@ FacetManager::~FacetManager() {
 
 void FacetManager::GetAffiliationsAndBranding(
     StrategyOnCacheMiss cache_miss_strategy,
-    AndroidAffiliationService::ResultCallback callback,
+    AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   RequestInfo request_info;
   request_info.callback = std::move(callback);

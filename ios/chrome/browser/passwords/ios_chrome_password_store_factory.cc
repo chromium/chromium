@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
+#include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_password_store_utils.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
@@ -69,6 +70,7 @@ IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
 }
 
@@ -108,10 +110,10 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    password_manager::EnableAffiliationBasedMatching(
-        store.get(), context->GetSharedURLLoaderFactory(),
-        GetApplicationContext()->GetNetworkConnectionTracker(),
-        context->GetStatePath());
+    password_manager::AffiliationService* affiliation_service =
+        IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+    password_manager::EnableAffiliationBasedMatching(store.get(),
+                                                     affiliation_service);
   }
   DelayReportingPasswordStoreMetrics(
       ChromeBrowserState::FromBrowserState(context));

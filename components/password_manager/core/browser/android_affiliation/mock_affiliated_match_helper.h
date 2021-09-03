@@ -56,7 +56,7 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
 
   void InjectAffiliationAndBrandingInformation(
       std::vector<std::unique_ptr<PasswordForm>> forms,
-      AndroidAffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
+      AffiliationService::StrategyOnCacheMiss strategy_on_cache_miss,
       PasswordFormsCallback result_callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(MockAffiliatedMatchHelper);
