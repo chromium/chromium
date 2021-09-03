@@ -279,8 +279,13 @@ const char kChromeStyleInvalidForManifestV3[] =
     "The chrome_style option cannot be used with manifest version 3.";
 const char kChromeVersionTooLow[] =
     "This extension requires * version * or greater.";
+
+// TODO(crbug.com/1034407): Include the declarativeNetRequestWithHostAccess
+// permission here once it lands on Stable.
 const char kDeclarativeNetRequestPermissionNeeded[] =
-    "The extension requires '*' permission for the '*' manifest key.";
+    "The extension requires the 'declarativeNetRequest' permission for the '*' "
+    "manifest key.";
+
 const char kDefaultStateShouldNotBeSet[] =
     "The default_state key cannot be set for browser_action or page_action "
     "keys.";

@@ -136,14 +136,21 @@
   "clipboard.setImageData": {
     "dependencies": ["permission:clipboardWrite"]
   },
-  "declarativeNetRequest": {
+  "declarativeNetRequest": [{
     "dependencies": ["permission:declarativeNetRequest"],
+    "contexts": ["blessed_extension"],
+    "default_parent": true
+  }, {
+    "dependencies": ["permission:declarativeNetRequestWithHostAccess"],
     "contexts": ["blessed_extension"]
-  },
-  "declarativeNetRequest.onRuleMatchedDebug": {
-    "dependencies": ["permission:declarativeNetRequest", "permission:declarativeNetRequestFeedback"],
+  }],
+  "declarativeNetRequest.onRuleMatchedDebug": [{
+    "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequest"],
     "location": "unpacked"
-  },
+  }, {
+    "dependencies": ["permission:declarativeNetRequestFeedback", "permission:declarativeNetRequestWithHostAccess"],
+    "location": "unpacked"
+  }],
   "declarativeWebRequest": {
     "dependencies": ["permission:declarativeWebRequest"],
     "contexts": ["blessed_extension"]

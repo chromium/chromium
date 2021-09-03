@@ -11,7 +11,7 @@ namespace extensions {
 namespace declarative_net_request {
 
 // Permission name.
-extern const char kAPIPermission[];
+extern const char kDeclarativeNetRequestPermission[];
 
 // Feedback permission name.
 extern const char kFeedbackAPIPermission[];

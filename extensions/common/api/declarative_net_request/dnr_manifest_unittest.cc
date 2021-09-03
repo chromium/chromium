@@ -249,7 +249,7 @@ TEST_F(DNRManifestTest, NeedsDeclarativeNetRequestPermission) {
   WriteManifestAndRuleset(*manifest, rulesets);
 
   LoadAndExpectError(ErrorUtils::FormatErrorMessage(
-      errors::kDeclarativeNetRequestPermissionNeeded, kAPIPermission,
+      errors::kDeclarativeNetRequestPermissionNeeded,
       dnr_api::ManifestKeys::kDeclarativeNetRequest));
 }
 

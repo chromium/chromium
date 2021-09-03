@@ -29789,6 +29789,7 @@ Called by update_extension_permission.py.-->
   <int value="230" label="kScripting"/>
   <int value="231" label="kWmDesksPrivate"/>
   <int value="232" label="kWebAuthenticationProxy"/>
+  <int value="233" label="kDeclarativeNetRequestWithHostAccess"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

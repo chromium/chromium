@@ -189,7 +189,9 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
     new_apis.insert(mojom::APIPermissionID::kTab);
 
     if (permissions_data->HasAPIPermission(
-            mojom::APIPermissionID::kDeclarativeNetRequest)) {
+            mojom::APIPermissionID::kDeclarativeNetRequest) ||
+        permissions_data->HasAPIPermission(
+            mojom::APIPermissionID::kDeclarativeNetRequestWithHostAccess)) {
       new_apis.insert(mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
     }
   }

@@ -421,14 +421,15 @@ std::unique_ptr<WebRequestEventDetails> CreateEventDetails(
   return std::make_unique<WebRequestEventDetails>(request, extra_info_spec);
 }
 
-// Checks whether the extension has any permissions that would use the web
-// request API.
+// Checks whether the extension has any permissions that would intercept or
+// modify network requests.
 bool HasAnyWebRequestPermissions(const Extension* extension) {
   static const APIPermissionID kWebRequestPermissions[] = {
       APIPermissionID::kWebRequest,
       APIPermissionID::kWebRequestBlocking,
       APIPermissionID::kDeclarativeWebRequest,
       APIPermissionID::kDeclarativeNetRequest,
+      APIPermissionID::kDeclarativeNetRequestWithHostAccess,
       APIPermissionID::kWebView,
   };
 

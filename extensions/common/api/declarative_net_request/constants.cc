@@ -7,7 +7,7 @@
 namespace extensions {
 namespace declarative_net_request {
 
-const char kAPIPermission[] = "declarativeNetRequest";
+const char kDeclarativeNetRequestPermission[] = "declarativeNetRequest";
 const char kFeedbackAPIPermission[] = "declarativeNetRequestFeedback";
 
 const char kIDKey[] = "id";

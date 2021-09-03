@@ -70,9 +70,14 @@ void LogLoadRulesetResult(LoadRulesetResult result) {
   UMA_HISTOGRAM_ENUMERATION(kLoadRulesetResultHistogram, result);
 }
 
+// Whether the `extension` has the permission to use the declarativeNetRequest
+// API.
 bool HasAPIPermission(const Extension& extension) {
-  return extension.permissions_data()->HasAPIPermission(
-      mojom::APIPermissionID::kDeclarativeNetRequest);
+  const PermissionsData* permissions = extension.permissions_data();
+  return permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequest) ||
+         permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequestWithHostAccess);
 }
 
 // Returns whether the extension's allocation should be released. This would
