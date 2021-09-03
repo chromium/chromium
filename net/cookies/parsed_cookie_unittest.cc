@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -248,6 +250,26 @@ TEST(ParsedCookieTest, MissingName) {
   EXPECT_EQ("ABC", pc.Value());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(0U, pc.NumberOfAttributes());
+
+  // Ensure that a preceding equal sign is emitted in the cookie line.
+
+  // Note that this goes against what's specified in RFC6265bis and differs from
+  // how CanonicalCookie produces cookie lines. As currently written (draft 9),
+  // the spec says that a cookie with an empty name should not prepend an '='
+  // character when writing out the cookie line, but in the case where the value
+  // already contains an equal sign the cookie line will be parsed incorrectly
+  // on the receiving end. ParsedCookie.ToCookieLine is only used by the
+  // extensions API to feed modified cookies into a network request for
+  // reparsing, though, so here it's more important that the values always
+  // deserialize correctly than conform to the spec
+  ParsedCookie pc2("=ABC");
+  EXPECT_EQ("=ABC", pc2.ToCookieLine());
+  EXPECT_TRUE(pc2.SetValue("param=value"));
+  EXPECT_EQ("=param=value", pc2.ToCookieLine());
+  ParsedCookie pc3("=param=value");
+  EXPECT_EQ("", pc3.Name());
+  EXPECT_EQ("param=value", pc3.Value());
+  EXPECT_EQ("=param=value", pc3.ToCookieLine());
 }
 
 TEST(ParsedCookieTest, MissingValue) {
@@ -259,6 +281,10 @@ TEST(ParsedCookieTest, MissingValue) {
   EXPECT_EQ("/wee", pc.Path());
   EXPECT_EQ(COOKIE_PRIORITY_DEFAULT, pc.Priority());
   EXPECT_EQ(1U, pc.NumberOfAttributes());
+
+  // Ensure that a trailing equal sign is emitted in the cookie line
+  ParsedCookie pc2("ABC=");
+  EXPECT_EQ("ABC=", pc2.ToCookieLine());
 }
 
 TEST(ParsedCookieTest, Whitespace) {
@@ -334,8 +360,11 @@ TEST(ParsedCookieTest, LotsOfPairs) {
   }
 }
 
-// TODO(erikwright): some better test cases for invalid cookies.
-TEST(ParsedCookieTest, InvalidTooLong) {
+TEST(ParsedCookieTest, EnforceSizeConstraintsLegacy) {
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
+                                          false);
+
   std::string maxstr;
   maxstr.resize(ParsedCookie::kMaxCookieSize, 'a');
 
@@ -344,6 +373,97 @@ TEST(ParsedCookieTest, InvalidTooLong) {
 
   ParsedCookie pc2(maxstr + "A");
   EXPECT_FALSE(pc2.IsValid());
+}
+
+TEST(ParsedCookieTest, EnforceSizeConstraints) {
+  base::test::ScopedFeatureList scope_feature_list;
+  scope_feature_list.InitWithFeatureState(features::kExtraCookieValidityChecks,
+                                          true);
+
+  // Create maximum size and one-less-than-maximum size name and value
+  // strings for testing.
+  std::string max_name(ParsedCookie::kMaxCookieNamePlusValueSize, 'a');
+  std::string max_value(ParsedCookie::kMaxCookieNamePlusValueSize, 'b');
+  std::string almost_max_name = max_name.substr(1, std::string::npos);
+  std::string almost_max_value = max_value.substr(1, std::string::npos);
+
+  // Test name + value size limits enforced by the constructor.
+  ParsedCookie pc1(max_name + "=");
+  EXPECT_TRUE(pc1.IsValid());
+  EXPECT_EQ(max_name, pc1.Name());
+
+  ParsedCookie pc2(max_name + "=; path=/foo;");
+  EXPECT_TRUE(pc2.IsValid());
+  EXPECT_EQ(max_name, pc2.Name());
+
+  ParsedCookie pc3(max_name + "X=");
+  EXPECT_FALSE(pc3.IsValid());
+
+  ParsedCookie pc4("=" + max_value);
+  EXPECT_TRUE(pc4.IsValid());
+  EXPECT_EQ(max_value, pc4.Value());
+
+  ParsedCookie pc5("=" + max_value + "; path=/foo;");
+  EXPECT_TRUE(pc5.IsValid());
+  EXPECT_EQ(max_value, pc5.Value());
+
+  ParsedCookie pc6("=" + max_value + "X");
+  EXPECT_FALSE(pc6.IsValid());
+
+  ParsedCookie pc7(almost_max_name + "=x");
+  EXPECT_TRUE(pc7.IsValid());
+  EXPECT_EQ(almost_max_name, pc7.Name());
+  EXPECT_EQ("x", pc7.Value());
+
+  ParsedCookie pc8(almost_max_name + "=x; path=/foo;");
+  EXPECT_TRUE(pc8.IsValid());
+  EXPECT_EQ(almost_max_name, pc8.Name());
+  EXPECT_EQ("x", pc8.Value());
+
+  ParsedCookie pc9(almost_max_name + "=xX");
+  EXPECT_FALSE(pc9.IsValid());
+
+  ParsedCookie pc10("x=" + almost_max_value);
+  EXPECT_TRUE(pc10.IsValid());
+  EXPECT_EQ("x", pc10.Name());
+  EXPECT_EQ(almost_max_value, pc10.Value());
+
+  ParsedCookie pc11("x=" + almost_max_value + "; path=/foo;");
+  EXPECT_TRUE(pc11.IsValid());
+  EXPECT_EQ("x", pc11.Name());
+  EXPECT_EQ(almost_max_value, pc11.Value());
+
+  ParsedCookie pc12("xX=" + almost_max_value);
+  EXPECT_FALSE(pc12.IsValid());
+
+  // Test attribute value size limits enforced by the constructor.
+  std::string almost_max_path(ParsedCookie::kMaxCookieAttributeValueSize - 1,
+                              'c');
+
+  ParsedCookie pc20("name=value; path=/" + almost_max_path);
+  EXPECT_TRUE(pc20.IsValid());
+  EXPECT_TRUE(pc20.HasPath());
+  EXPECT_EQ("/" + almost_max_path, pc20.Path());
+
+  ParsedCookie pc21("name=value; path=/X" + almost_max_path);
+  EXPECT_TRUE(pc21.IsValid());
+  EXPECT_FALSE(pc21.HasPath());
+
+  // NOTE: max_domain is based on the max attribute value as defined in
+  // RFC6525bis, but this is larger than what is recommended by RFC1123.
+  // In theory some browsers could restrict domains to that smaller size,
+  // but ParsedCookie doesn't.
+  std::string max_domain(ParsedCookie::kMaxCookieAttributeValueSize, 'd');
+  max_domain.replace(ParsedCookie::kMaxCookieAttributeValueSize - 4, 4, ".com");
+
+  ParsedCookie pc30("name=value; domain=" + max_domain);
+  EXPECT_TRUE(pc30.IsValid());
+  EXPECT_TRUE(pc30.HasDomain());
+  EXPECT_EQ(max_domain, pc30.Domain());
+
+  ParsedCookie pc31("name=value; domain=X" + max_domain);
+  EXPECT_TRUE(pc31.IsValid());
+  EXPECT_FALSE(pc31.HasDomain());
 }
 
 TEST(ParsedCookieTest, EmbeddedTerminator) {
@@ -395,13 +515,6 @@ TEST(ParsedCookieTest, SetNameAndValue) {
   EXPECT_TRUE(cookie.SetValue("value"));
   EXPECT_EQ("name=value; domain=foobar.com", cookie.ToCookieLine());
   EXPECT_TRUE(cookie.IsValid());
-
-  // We don't test
-  //   ParsedCookie invalid("@foo=bar");
-  //   EXPECT_FALSE(invalid.IsValid());
-  // here because we are slightly more tolerant to invalid cookie names and
-  // values that are set by webservers. We only enforce a correct name and
-  // value if set via SetName() and SetValue().
 
   ParsedCookie pc("name=value");
   EXPECT_TRUE(pc.IsValid());
@@ -903,6 +1016,7 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
   const char pc6_literal[] = "普通話=value";
   const char pc7_literal[] = "ภาษาไทย=value";
   const char pc8_literal[] = "עִבְרִית=value";
+  const char pc9_literal[] = "@foo=bar";
   ParsedCookie pc1(pc1_literal);
   ParsedCookie pc2(pc2_literal);
   ParsedCookie pc3(pc3_literal);
@@ -911,6 +1025,7 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
   ParsedCookie pc6(pc6_literal);
   ParsedCookie pc7(pc7_literal);
   ParsedCookie pc8(pc8_literal);
+  ParsedCookie pc9(pc9_literal);
 
   EXPECT_TRUE(pc1.IsValid());
   EXPECT_EQ(pc1_literal, pc1.ToCookieLine());
@@ -928,6 +1043,8 @@ TEST(ParsedCookieTest, ValidNonAlphanumericChars) {
   EXPECT_EQ(pc7_literal, pc7.ToCookieLine());
   EXPECT_TRUE(pc8.IsValid());
   EXPECT_EQ(pc8_literal, pc8.ToCookieLine());
+  EXPECT_TRUE(pc9.IsValid());
+  EXPECT_EQ(pc9_literal, pc9.ToCookieLine());
 }
 
 TEST(ParsedCookieTest, TruncatedNameOrValue) {

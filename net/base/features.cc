@@ -263,5 +263,8 @@ const base::Feature kSamePartyCookiesConsideredFirstParty{
 const base::Feature kPartitionedCookies{"PartitionedCookies",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kExtraCookieValidityChecks{
+    "ExtraCookieValidityChecks", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace net
