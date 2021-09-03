@@ -66,8 +66,10 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
 };
 
 AnimationBuilder::Observer::~Observer() {
-  if (*on_observer_deleted_.get())
-    on_observer_deleted_->Run();
+  base::RepeatingClosure& on_observer_deleted =
+      AnimationBuilder::GetObserverDeletedCallback();
+  if (on_observer_deleted)
+    on_observer_deleted.Run();
 }
 
 void AnimationBuilder::Observer::SetOnStarted(base::OnceClosure callback) {
@@ -98,6 +100,10 @@ void AnimationBuilder::Observer::SetOnScheduled(base::OnceClosure callback) {
 
 void AnimationBuilder::Observer::OnLayerAnimationStarted(
     ui::LayerAnimationSequence* sequence) {
+  if (abort_handle_ && abort_handle_->animation_state() ==
+                           AnimationAbortHandle::AnimationState::kNotStarted) {
+    abort_handle_->OnAnimationStarted();
+  }
   if (on_started_)
     std::move(on_started_).Run();
 }
@@ -203,9 +209,6 @@ AnimationBuilder::~AnimationBuilder() {
     target->GetAnimator()->StartTogether(std::move(sequences));
     it = end_it;
   }
-
-  if (abort_handle_ && !layer_animation_sequences_.empty())
-    abort_handle_->OnAnimationStarted();
 }
 
 AnimationBuilder& AnimationBuilder::SetPreemptionStrategy(
@@ -317,7 +320,7 @@ AnimationBuilder::Observer* AnimationBuilder::GetObserver() {
 // static
 void AnimationBuilder::SetObserverDeletedCallbackForTesting(
     base::RepeatingClosure deleted_closure) {
-  *on_observer_deleted_.get() = std::move(deleted_closure);
+  GetObserverDeletedCallback() = std::move(deleted_closure);
 }
 
 AnimationSequenceBlock AnimationBuilder::NewSequence() {
@@ -327,7 +330,9 @@ AnimationSequenceBlock AnimationBuilder::NewSequence() {
 }
 
 // static
-base::NoDestructor<base::RepeatingClosure>
-    AnimationBuilder::on_observer_deleted_;
+base::RepeatingClosure& AnimationBuilder::GetObserverDeletedCallback() {
+  static base::NoDestructor<base::RepeatingClosure> on_observer_deleted;
+  return *on_observer_deleted;
+}
 
 }  // namespace views

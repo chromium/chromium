@@ -89,6 +89,9 @@ class VIEWS_EXPORT AnimationBuilder {
   // initial block.
   AnimationSequenceBlock NewSequence();
 
+  // Returns a reference to the observer deleted callback used for testing.
+  static base::RepeatingClosure& GetObserverDeletedCallback();
+
   // Data for all sequences.
   std::multimap<ui::Layer*, std::unique_ptr<ui::LayerAnimationSequence>>
       layer_animation_sequences_;
@@ -102,9 +105,6 @@ class VIEWS_EXPORT AnimationBuilder {
   std::map<AnimationKey, std::vector<Value>> values_;
 
   AnimationAbortHandle* abort_handle_ = nullptr;
-
-  // Callback used for testing.
-  static base::NoDestructor<base::RepeatingClosure> on_observer_deleted_;
 };
 
 }  // namespace views
