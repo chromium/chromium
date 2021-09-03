@@ -347,6 +347,7 @@ class WizardController {
       EduCoexistenceLoginScreen::Result result);
   void OnParentalHandoffScreenExit(ParentalHandoffScreen::Result result);
   void OnOfflineLoginScreenExit(OfflineLoginScreen::Result result);
+  void OnOsInstallScreenExit();
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

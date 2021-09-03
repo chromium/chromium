@@ -53,6 +53,14 @@ Polymer({
     this.setUIStep(step);
   },
 
+  /**
+   * This is the 'on-click' event handler for the 'back' button.
+   * @private
+   */
+  onBack_() {
+    this.userActed('os-install-exit');
+  },
+
   onIntroNextButtonPressed_() {
     this.$.osInstallDialogConfirm.showDialog();
     this.$.closeConfirmDialogButton.focus();

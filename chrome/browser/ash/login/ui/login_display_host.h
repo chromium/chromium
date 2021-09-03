@@ -144,8 +144,7 @@ class LoginDisplayHost {
   // dialog.
   virtual void ShowGaiaDialog(const AccountId& prefilled_account) = 0;
 
-  // Show the gaia dialog. If available, `account` is preloaded in the gaia
-  // dialog.
+  // Show the os install dialog.
   virtual void ShowOsInstallScreen() = 0;
 
   // Hide any visible oobe dialog.

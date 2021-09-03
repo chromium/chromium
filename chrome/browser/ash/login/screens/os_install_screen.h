@@ -15,7 +15,10 @@ namespace ash {
 
 class OsInstallScreen : public BaseScreen {
  public:
-  explicit OsInstallScreen(OsInstallScreenView* view);
+  using TView = chromeos::OsInstallScreenView;
+
+  explicit OsInstallScreen(OsInstallScreenView* view,
+                           const base::RepeatingClosure& exit_callback);
   OsInstallScreen(const OsInstallScreen&) = delete;
   OsInstallScreen& operator=(const OsInstallScreen&) = delete;
   ~OsInstallScreen() override;
@@ -31,6 +34,8 @@ class OsInstallScreen : public BaseScreen {
   void Shutdown();
 
   OsInstallScreenView* view_ = nullptr;
+
+  const base::RepeatingClosure exit_callback_;
 };
 
 }  // namespace ash

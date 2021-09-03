@@ -1014,6 +1014,10 @@ void LoginDisplayHostWebUI::ShowGaiaDialog(const AccountId& prefilled_account) {
   ShowGaiaDialogCommon(prefilled_account);
 }
 
+void LoginDisplayHostWebUI::ShowOsInstallScreen() {
+  StartWizard(OsInstallScreenView::kScreenId);
+}
+
 void LoginDisplayHostWebUI::HideOobeDialog() {
   NOTREACHED();
 }

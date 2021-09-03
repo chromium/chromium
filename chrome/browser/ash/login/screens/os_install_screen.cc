@@ -12,6 +12,7 @@
 namespace ash {
 namespace {
 
+constexpr const char kUserActionExitClicked[] = "os-install-exit";
 constexpr const char kUserActionConfirmNextClicked[] =
     "os-install-confirm-next";
 constexpr const char kUserActionErrorSendFeedbackClicked[] =
@@ -23,9 +24,11 @@ constexpr const char kUserActionSuccessShutdownClicked[] =
 
 }  // namespace
 
-OsInstallScreen::OsInstallScreen(OsInstallScreenView* view)
+OsInstallScreen::OsInstallScreen(OsInstallScreenView* view,
+                                 const base::RepeatingClosure& exit_callback)
     : BaseScreen(OsInstallScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view) {
+      view_(view),
+      exit_callback_(exit_callback) {
   if (view_)
     view_->Bind(this);
 }
@@ -50,7 +53,9 @@ void OsInstallScreen::ShowImpl() {
 void OsInstallScreen::HideImpl() {}
 
 void OsInstallScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionConfirmNextClicked) {
+  if (action_id == kUserActionExitClicked) {
+    exit_callback_.Run();
+  } else if (action_id == kUserActionConfirmNextClicked) {
     view_->StartInstall();
   } else if (action_id == kUserActionErrorSendFeedbackClicked) {
     LoginDisplayHost::default_host()->HandleAccelerator(

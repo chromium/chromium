@@ -85,6 +85,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnStartAppLaunch() override;
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void ShowOsInstallScreen() override;
   void HideOobeDialog() override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;

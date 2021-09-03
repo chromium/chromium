@@ -568,10 +568,6 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   }
 }
 
-void LoginDisplayHostCommon::ShowOsInstallScreen() {
-  StartWizard(OsInstallScreenView::kScreenId);
-}
-
 void LoginDisplayHostCommon::AddWizardCreatedObserverForTests(
     base::RepeatingClosure on_created) {
   DCHECK(!on_wizard_controller_created_for_tests_);

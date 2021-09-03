@@ -358,6 +358,11 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
   ShowDialog();
 }
 
+void LoginDisplayHostMojo::ShowOsInstallScreen() {
+  StartWizard(OsInstallScreenView::kScreenId);
+  ShowDialog();
+}
+
 void LoginDisplayHostMojo::HideOobeDialog() {
   DCHECK(dialog_);
 

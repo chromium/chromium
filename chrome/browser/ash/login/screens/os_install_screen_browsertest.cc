@@ -18,6 +18,7 @@ namespace {
 const test::UIPath kWelcomeScreen = {"connect", "welcomeScreen"};
 const test::UIPath kOsInstallButton = {"connect", "welcomeScreen", "osInstall"};
 
+const test::UIPath kOsInstallExitButton = {"os-install", "osInstallExitButton"};
 const test::UIPath kOsInstallIntroNextButton = {"os-install",
                                                 "osInstallIntroNextButton"};
 const test::UIPath kOsInstallConfirmNextButton = {"os-install",
@@ -135,10 +136,11 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, StartOsInstall) {
   EXPECT_EQ(GetStatus(), OsInstallClient::Status::InProgress);
 }
 
-// Check close button for ConfirmDialog.
+// Check close button for ConfirmDialog and back button for IntroDialog.
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallBackNavigation) {
   AdvanceToOsInstallScreen();
   AdvanceThroughIntroStep();
+  // Close confirm dialog
   test::OobeJS().TapOnPath(kOsInstallConfirmCloseButton);
   test::OobeJS()
       .CreateWaiter(test::GetOobeElementPath(kOsInstallDialogConfirm) +
@@ -146,6 +148,10 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallBackNavigation) {
       ->Wait();
   test::OobeJS().ExpectFocused(kOsInstallIntroNextButton);
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogIntro);
+  // Exit os install flow
+  test::OobeJS().TapOnPath(kOsInstallExitButton);
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::OobeJS().ExpectVisiblePath(kWelcomeScreen);
 }
 
 // Check that if no destination device is found, the error step is shown.

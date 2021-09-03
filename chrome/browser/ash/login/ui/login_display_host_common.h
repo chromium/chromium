@@ -61,7 +61,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
   bool HandleAccelerator(LoginAcceleratorAction action) final;
-  void ShowOsInstallScreen() final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
 
