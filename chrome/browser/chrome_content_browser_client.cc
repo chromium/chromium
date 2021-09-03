@@ -531,8 +531,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_limit_navigation_throttle.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
 // TODO(b/195975836): Support Lacros as well.
 #include "chrome/browser/ui/ash/projector/projector_navigation_throttle.h"
@@ -4125,7 +4125,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MaybeAddThrottle(
-      ash::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(handle),
+      chromeos::KioskSettingsNavigationThrottle::MaybeCreateThrottleFor(handle),
       &throttles);
 #endif
 

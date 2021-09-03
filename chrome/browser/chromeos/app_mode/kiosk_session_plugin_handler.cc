@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
 
 #include <algorithm>
 
@@ -11,9 +11,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler_delegate.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -24,9 +24,7 @@ const int kHungWaitSeconds = 20;
 
 KioskSessionPluginHandler::Observer::Observer(content::WebContents* contents,
                                               KioskSessionPluginHandler* owner)
-    : content::WebContentsObserver(contents),
-      owner_(owner) {
-}
+    : content::WebContentsObserver(contents), owner_(owner) {}
 
 KioskSessionPluginHandler::Observer::~Observer() {}
 
@@ -118,4 +116,4 @@ void KioskSessionPluginHandler::OnWebContentsDestroyed(Observer* observer) {
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

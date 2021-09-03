@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"

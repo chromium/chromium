@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_
-#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_
 
 #include <string>
 
 #include "content/public/browser/navigation_throttle.h"
 
-namespace ash {
+namespace chromeos {
 
 // Throttle that is applied on WebContents which are opening settings pages
 // opened in kiosk mode. It restricts the navigations inside of these
@@ -41,11 +41,6 @@ class KioskSettingsNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult WillStartOrRedirectRequest();
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace chromeos {
-using ::ash::KioskSettingsNavigationThrottle;
-}
-
-#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SETTINGS_NAVIGATION_THROTTLE_H_

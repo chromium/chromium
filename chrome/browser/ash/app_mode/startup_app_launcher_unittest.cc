@@ -19,7 +19,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_command_line.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -397,7 +397,7 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     return cache;
   }
 
-  std::unique_ptr<AppSession> CreateAppSession() override {
+  std::unique_ptr<AppSessionAsh> CreateAppSession() override {
     EXPECT_FALSE(kiosk_app_session_initialized_);
     kiosk_app_session_initialized_ = true;
     return nullptr;

@@ -26,7 +26,7 @@ class FilePath;
 
 namespace ash {
 
-class AppSession;
+class AppSessionAsh;
 class KioskAppDataBase;
 class KioskAppManagerObserver;
 
@@ -81,7 +81,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   }
 
   // Session of the app that is currently running.
-  AppSession* app_session() { return app_session_.get(); }
+  AppSessionAsh* app_session() { return app_session_.get(); }
 
  protected:
   // Notifies the observers about the updates.
@@ -100,7 +100,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   base::CallbackListSubscription local_account_auto_login_id_subscription_;
 
   // Current app session.
-  std::unique_ptr<AppSession> app_session_;
+  std::unique_ptr<AppSessionAsh> app_session_;
 
   base::ObserverList<KioskAppManagerObserver, true>::Unchecked observers_;
 

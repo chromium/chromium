@@ -31,12 +31,11 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -62,6 +61,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -430,12 +430,14 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
 class ScopedSettingsPages {
  public:
   explicit ScopedSettingsPages(
-      std::vector<KioskSettingsNavigationThrottle::SettingsPage>* pages) {
-    KioskSettingsNavigationThrottle::SetSettingPagesForTesting(pages);
+      std::vector<chromeos::KioskSettingsNavigationThrottle::SettingsPage>*
+          pages) {
+    chromeos::KioskSettingsNavigationThrottle::SetSettingPagesForTesting(pages);
   }
 
   ~ScopedSettingsPages() {
-    KioskSettingsNavigationThrottle::SetSettingPagesForTesting(nullptr);
+    chromeos::KioskSettingsNavigationThrottle::SetSettingPagesForTesting(
+        nullptr);
   }
 };
 
@@ -1383,10 +1385,11 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
                               true /* keep_app_open */);
 
   // At this moment, app session should be initialized.
-  std::vector<KioskSettingsNavigationThrottle::SettingsPage> settings_pages = {
-      {"https://page1.com/", /*allow_subpages*/ true},
-      {"https://page2.com/", /*allow_subpages*/ false},
-  };
+  std::vector<chromeos::KioskSettingsNavigationThrottle::SettingsPage>
+      settings_pages = {
+          {"https://page1.com/", /*allow_subpages*/ true},
+          {"https://page2.com/", /*allow_subpages*/ false},
+      };
 
   const GURL page1("https://page1.com/");
   const GURL page1_sub("https://page1.com/sub");
@@ -1396,7 +1399,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
 
   // Replace the settings allowlist with `settings_pages`.
   ScopedSettingsPages pages(&settings_pages);
-  AppSession* app_session = KioskAppManager::Get()->app_session();
+  AppSessionAsh* app_session = KioskAppManager::Get()->app_session();
 
   // App session should be initialized.
   ASSERT_TRUE(app_session);

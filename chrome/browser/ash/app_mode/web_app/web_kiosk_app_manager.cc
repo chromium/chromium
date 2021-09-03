@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/bind.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ui/browser.h"
@@ -115,7 +115,7 @@ void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
 void WebKioskAppManager::InitSession(Browser* browser) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
-  app_session_ = std::make_unique<AppSession>();
+  app_session_ = std::make_unique<AppSessionAsh>();
   app_session_->InitForWebKiosk(browser);
   NotifySessionInitialized();
 }

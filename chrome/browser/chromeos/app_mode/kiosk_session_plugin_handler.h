@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_
-#define CHROME_BROWSER_ASH_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_
 
 #include <memory>
 #include <set>
@@ -21,7 +21,7 @@ namespace content {
 class WebContents;
 }
 
-namespace ash {
+namespace chromeos {
 
 class KioskSessionPluginHandlerDelegate;
 
@@ -74,6 +74,6 @@ class KioskSessionPluginHandler {
   std::vector<std::unique_ptr<Observer>> watchers_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_SESSION_PLUGIN_HANDLER_H_

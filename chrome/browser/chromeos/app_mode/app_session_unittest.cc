@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -16,7 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -150,4 +150,4 @@ TEST_F(AppSessionTest, OnPluginHung) {
   delegate->OnPluginHung(std::set<int>());
 }
 
-}  // namespace ash
+}  // namespace chromeos

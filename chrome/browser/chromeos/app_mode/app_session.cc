@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/chromeos/app_mode/app_session.h"
 
 #include <errno.h>
 #include <signal.h>
@@ -14,14 +14,10 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
-#include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler.h"
-#include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,9 +27,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
@@ -49,10 +42,20 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -64,15 +67,24 @@ bool IsPepperPlugin(const base::FilePath& plugin_path) {
 }
 
 void RebootDevice() {
+  // TODO (anqing): a new crosapi needs to be built to notify the reboot from
+  // lacros to ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void StartFloatingAccessibilityMenu() {
-  AccessibilityController* accessibility_controller =
-      AccessibilityController::Get();
+  // TODO (anqing): this method needs to be moved to `AppSessionAsh`. We need
+  // to make sure that all a11y features including the floating menu can work as
+  // before after Lacros is supported.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::AccessibilityController* accessibility_controller =
+      ash::AccessibilityController::Get();
   if (accessibility_controller)
     accessibility_controller->ShowFloatingMenuIfEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Sends a SIGFPE signal to plugin subprocesses that matches |child_ids|
@@ -241,6 +253,8 @@ AppSession::AppSession()
     : attempt_user_exit_(base::BindOnce(chrome::AttemptUserExit)) {}
 AppSession::~AppSession() {}
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 void AppSession::Init(Profile* profile, const std::string& app_id) {
   profile_ = profile;
   app_window_handler_ = std::make_unique<AppWindowHandler>(this);
@@ -254,8 +268,8 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
   StartFloatingAccessibilityMenu();
 
   // Set the app_id for the current instance of KioskAppUpdateService.
-  KioskAppUpdateService* update_service =
-      KioskAppUpdateServiceFactory::GetForProfile(profile);
+  ash::KioskAppUpdateService* update_service =
+      ash::KioskAppUpdateServiceFactory::GetForProfile(profile);
   DCHECK(update_service);
   if (update_service)
     update_service->Init(app_id);
@@ -274,6 +288,8 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
     KioskModeIdleAppNameNotification::Initialize();
   }
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AppSession::InitForWebKiosk(Browser* browser) {
   profile_ = browser->profile();
@@ -351,4 +367,4 @@ void AppSession::OnPluginHung(const std::set<int>& hung_plugins) {
       base::BindOnce(&DumpPluginProcessOnProcessThread, hung_plugins));
 }
 
-}  // namespace ash
+}  // namespace chromeos

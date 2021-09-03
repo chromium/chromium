@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_H_
-#define CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_H_
+#ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_
+#define CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_
 
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler_delegate.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
 class Profile;
 class Browser;
@@ -23,7 +23,7 @@ namespace extensions {
 class AppWindow;
 }
 
-namespace ash {
+namespace chromeos {
 
 class KioskSessionPluginHandler;
 
@@ -86,12 +86,6 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   base::RepeatingClosure on_handle_browser_callback_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when the migration of
-// //chrome/browser/chromeos is finished.
-namespace chromeos {
-using ::ash::AppSession;
-}
-
-#endif  // CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_H_
+#endif  // CHROME_BROWSER_CHROMEOS_APP_MODE_APP_SESSION_H_

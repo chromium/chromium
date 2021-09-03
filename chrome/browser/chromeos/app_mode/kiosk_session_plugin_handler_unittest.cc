@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler.h"
 
-#include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler_delegate.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -14,7 +14,7 @@
 using content::WebContents;
 using content::WebContentsObserver;
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
@@ -149,4 +149,4 @@ TEST_F(KioskSessionPluginHandlerTest, PluginHungStatusChanged) {
   EXPECT_EQ(observer->GetHungPluginsForTesting().size(), 1U);
 }
 
-}  // namespace ash
+}  // namespace chromeos

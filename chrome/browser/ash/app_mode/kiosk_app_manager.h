@@ -74,11 +74,11 @@ class KioskAppManager : public KioskAppManagerBase,
         chromeos::ExternalCacheDelegate* delegate,
         bool always_check_updates) = 0;
 
-    // Creates an AppSession object that will mantain a started kiosk app
+    // Creates an AppSessionAsh object that will maintain a started kiosk app
     // session.
     // Called when the KioskAppManager initializes the session.
     // It can return nullptr.
-    virtual std::unique_ptr<AppSession> CreateAppSession() = 0;
+    virtual std::unique_ptr<AppSessionAsh> CreateAppSession() = 0;
   };
 
   // Name of a dictionary that holds kiosk app info in Local State.

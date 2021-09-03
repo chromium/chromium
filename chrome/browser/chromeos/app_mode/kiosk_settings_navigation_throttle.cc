@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -10,7 +10,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 // List of pages, which along with their subpages are allowed in kiosk mode.
@@ -112,4 +112,4 @@ KioskSettingsNavigationThrottle::WillStartOrRedirectRequest() {
                                                               : CANCEL;
 }
 
-}  // namespace ash
+}  // namespace chromeos

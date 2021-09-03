@@ -22,7 +22,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -122,10 +122,10 @@ std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
   return cache;
 }
 
-std::unique_ptr<AppSession> CreateAppSession() {
+std::unique_ptr<AppSessionAsh> CreateAppSession() {
   if (g_test_overrides)
     return g_test_overrides->CreateAppSession();
-  return std::make_unique<AppSession>();
+  return std::make_unique<AppSessionAsh>();
 }
 
 base::Version GetPlatformVersion() {
