@@ -44,6 +44,7 @@ class Frame;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
 class WebPluginContainerImpl;
+class ResourceRequestHead;
 
 class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
                                           public FrameOwner {
@@ -189,6 +190,12 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void SetIsSwappingFrames(bool is_swapping) override {
     is_swapping_frames_ = is_swapping;
   }
+
+  // Check if the frame should be lazy-loaded and apply when conditions are
+  // passed. Return true when lazy-load is applied.
+  bool LazyLoadIfPossible(const KURL&,
+                          const ResourceRequestHead&,
+                          WebFrameLoadType frame_load_type);
 
   virtual network::mojom::ReferrerPolicy ReferrerPolicyAttribute() {
     return network::mojom::ReferrerPolicy::kDefault;

@@ -475,6 +475,44 @@ EmbeddedContentView* HTMLFrameOwnerElement::ReleaseEmbeddedContentView() {
   return embedded_content_view_.Release();
 }
 
+bool HTMLFrameOwnerElement::LazyLoadIfPossible(
+    const KURL& url,
+    const ResourceRequestHead& request,
+    WebFrameLoadType frame_load_type) {
+  const auto& loading_attr = FastGetAttribute(html_names::kLoadingAttr);
+  bool loading_lazy_set = EqualIgnoringASCIICase(loading_attr, "lazy");
+
+  if (!IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
+                           should_lazy_load_children_)) {
+    return false;
+  }
+
+  // Avoid automatically deferring subresources inside
+  // a lazily loaded frame. This will make it possible
+  // for subresources in hidden frames to load that
+  // will never be visible, as well as make it so that
+  // deferred frames that have multiple layers of
+  // iframes inside them can load faster once they're
+  // near the viewport or visible.
+  should_lazy_load_children_ = false;
+
+  if (lazy_load_frame_observer_)
+    lazy_load_frame_observer_->CancelPendingLazyLoad();
+
+  lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
+      *this, LazyLoadFrameObserver::LoadType::kSubsequent);
+
+  if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
+    lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
+
+  if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
+    lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
+                                                          frame_load_type);
+    return true;
+  }
+  return false;
+}
+
 bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
     const KURL& url,
     const AtomicString& frame_name,
@@ -514,9 +552,6 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (trust_token_params)
     request.SetTrustTokenParams(*trust_token_params);
 
-  const auto& loading_attr = FastGetAttribute(html_names::kLoadingAttr);
-  bool loading_lazy_set = EqualIgnoringASCIICase(loading_attr, "lazy");
-
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
     // TODO(crbug.com/1123606): This is how we're temporarily restricting the
@@ -539,29 +574,10 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
     if (replace_current_item)
       frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
-    if (IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
-                            should_lazy_load_children_)) {
-      // Avoid automatically deferring subresources inside a lazily loaded
-      // frame. This will make it possible for subresources in hidden frames to
-      // load that will never be visible, as well as make it so that deferred
-      // frames that have multiple layers of iframes inside them can load faster
-      // once they're near the viewport or visible.
-      should_lazy_load_children_ = false;
-
-      if (lazy_load_frame_observer_)
-        lazy_load_frame_observer_->CancelPendingLazyLoad();
-
-      lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
-          *this, LazyLoadFrameObserver::LoadType::kSubsequent);
-
-      if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
-        lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
-
-      if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
-        lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
-                                                              frame_load_type);
-        return true;
-      }
+    // Check if the existing frame is eligible to be lazy-loaded. This method
+    // should be called before starting the navigation.
+    if (LazyLoadIfPossible(url, request, frame_load_type)) {
+      return true;
     }
 
     ContentFrame()->Navigate(frame_load_request, frame_load_type);
@@ -604,27 +620,11 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (IsPlugin())
     request.SetSkipServiceWorker(true);
 
+  // Check if the newly created child frame is eligible to be lazy-loaded.
+  // This method should be called before starting the navigation.
   if (!lazy_load_frame_observer_ &&
-      IsFrameLazyLoadable(GetExecutionContext(), url, loading_lazy_set,
-                          should_lazy_load_children_)) {
-    // Avoid automatically deferring subresources inside a lazily loaded frame.
-    // This will make it possible for subresources in hidden frames to load that
-    // will never be visible, as well as make it so that deferred frames that
-    // have multiple layers of iframes inside them can load faster once they're
-    // near the viewport or visible.
-    should_lazy_load_children_ = false;
-
-    lazy_load_frame_observer_ = MakeGarbageCollected<LazyLoadFrameObserver>(
-        *this, LazyLoadFrameObserver::LoadType::kFirst);
-
-    if (RuntimeEnabledFeatures::LazyFrameVisibleLoadTimeMetricsEnabled())
-      lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
-
-    if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set)) {
-      lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
-                                                            child_load_type);
-      return true;
-    }
+      LazyLoadIfPossible(url, request, child_load_type)) {
+    return true;
   }
 
   FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
