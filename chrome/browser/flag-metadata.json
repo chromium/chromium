@@ -4009,8 +4009,8 @@
   },
   {
     "name": "new-shortcut-mapping",
-    "owners": [ "oshima", "afakhry" ],
-    "expiry_milestone": 93
+    "owners": [ "zentaro@google.com", "jimmyxgong@google.com", "cros-peripherals@google.com"],
+    "expiry_milestone": 98
   },
   {
     "name": "new-tabstrip-animation",
