@@ -455,11 +455,6 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
     if (launched_after_rebuild)
       command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
 
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kTestType)) {
-      command_line.AppendSwitch(app_mode::kLaunchedForTest);
-    }
-
     // Launch without activating (NSWorkspaceLaunchWithoutActivation).
     base::scoped_nsobject<NSRunningApplication> app(
         base::mac::OpenApplicationWithPath(

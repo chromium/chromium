@@ -88,7 +88,6 @@
 #endif
 
 #if defined(OS_MAC)
-#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
@@ -219,6 +218,10 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsTabStrip};
 };
+
+#if defined(OS_WIN)
+using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
+#endif
 
 using WebAppTabRestoreBrowserTest = WebAppBrowserTest;
 
@@ -1036,23 +1039,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
 }
 #endif
 
-#if defined(OS_MAC) || defined(OS_WIN)
-
-#if defined(OS_MAC)
-// A dedicated test fixture for ShortcutsMenu, which requires a command
-// line switch to enable manifest parsing.
-class WebAppBrowserTest_ShortcutMenu : public WebAppBrowserTest {
- public:
-  WebAppBrowserTest_ShortcutMenu() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsAppIconShortcutsMenuUI};
-};
-#elif defined(OS_WIN)
-using WebAppBrowserTest_ShortcutMenu = WebAppBrowserTest;
-#endif
-
+#if defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   struct ShortcutsMenuItem {
    public:
@@ -1078,12 +1065,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   base::FilePath desktop_dir = temp_dir.GetPath().AppendASCII("desktop");
 
   ShortcutOverrideForTesting shortcut_override;
-#if defined(OS_MAC)
-  shortcut_override.chrome_apps_folder = application_dir;
-#elif defined(OS_WIN)
   shortcut_override.desktop = desktop_dir;
   shortcut_override.application_menu = application_dir;
-#endif
   SetShortcutOverrideForTesting(shortcut_override);
   NavigateToURLAndWait(
       browser(),
@@ -1093,7 +1076,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
 
   std::vector<ShortcutsMenuItem> shortcuts_menu_items;
 
-#if defined(OS_WIN)
   auto SaveJumpList = base::BindLambdaForTesting(
       [&](std::wstring,
           const std::vector<scoped_refptr<ShellLinkItem>>& link_items) -> bool {
@@ -1108,7 +1090,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
       });
 
   SetUpdateJumpListForTesting(SaveJumpList);
-#endif
 
   // Wait for OS hooks and installation to complete and the app to launch.
   base::RunLoop run_loop_install;
@@ -1122,47 +1103,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenu) {
   run_loop_install.Run();
   app_loaded_observer.Wait();
 
-#if defined(OS_MAC)
-  {
-    base::RunLoop get_dock_menu_run_loop;
-    AppShimHost* shim_host =
-        apps::AppShimManager::Get()->FindHost(profile(), app_id);
-    ASSERT_NE(shim_host, nullptr);
-
-    mojo::Remote<chrome::mojom::AppShimTest> app_shim_test;
-    shim_host->GetAppShim()->BindTestInterface(
-        app_shim_test.BindNewPipeAndPassReceiver());
-    app_shim_test->GetApplicationDockMenuForTesting(base::BindLambdaForTesting(
-        [&](std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
-                dock_menu_items) {
-          for (auto& menu_item : dock_menu_items) {
-            ShortcutsMenuItem item;
-            item.title = menu_item->name;
-            item.command_line.AppendSwitchASCII(
-                switches::kAppLaunchUrlForShortcutsMenuItem,
-                menu_item->url.spec());
-            shortcuts_menu_items.push_back(item);
-          }
-
-          get_dock_menu_run_loop.Quit();
-        }));
-    get_dock_menu_run_loop.Run();
-  }
-#endif
-
   EXPECT_EQ(2U, shortcuts_menu_items.size());
   EXPECT_EQ(u"shortcut1", shortcuts_menu_items[0].title);
   EXPECT_EQ(u"shortcut2", shortcuts_menu_items[1].title);
-
-#if defined(OS_WIN)
   EXPECT_TRUE(base::PathExists(shortcuts_menu_items[0].icon_path));
   EXPECT_TRUE(base::PathExists(shortcuts_menu_items[1].icon_path));
   EXPECT_EQ(app_id, shortcuts_menu_items[0].command_line.GetSwitchValueASCII(
                         switches::kAppId));
   EXPECT_EQ(app_id, shortcuts_menu_items[1].command_line.GetSwitchValueASCII(
                         switches::kAppId));
-#endif
-
   EXPECT_NE(
       std::string::npos,
       shortcuts_menu_items[0]

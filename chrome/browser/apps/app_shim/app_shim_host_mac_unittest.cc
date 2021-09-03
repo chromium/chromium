@@ -67,8 +67,6 @@ class TestingAppShim : public chrome::mojom::AppShim {
   void UpdateApplicationDockMenu(
       std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
       override {}
-  void BindTestInterface(
-      mojo::PendingReceiver<chrome::mojom::AppShimTest> receiver) override {}
 
   bool received_launch_done_result_ = false;
   chrome::mojom::AppShimLaunchResult launch_done_result_ =

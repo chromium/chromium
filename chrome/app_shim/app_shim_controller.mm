@@ -519,32 +519,6 @@ void AppShimController::UpdateApplicationDockMenu(
   dock_menu_items_ = std::move(dock_menu_items);
 }
 
-void AppShimController::BindTestInterface(
-    mojo::PendingReceiver<chrome::mojom::AppShimTest> receiver) {
-  // The interface will only bind if launched for testing.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          app_mode::kLaunchedForTest)) {
-    return;
-  }
-
-  shim_test_receiver_.Bind(std::move(receiver),
-                           ui::WindowResizeHelperMac::Get()->task_runner());
-  shim_test_receiver_.set_disconnect_with_reason_handler(
-      base::BindOnce(&AppShimController::ChannelError, base::Unretained(this)));
-}
-
-void AppShimController::GetApplicationDockMenuForTesting(
-    GetApplicationDockMenuForTestingCallback callback) {
-  std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
-      copy_of_dock_menu_items;
-
-  for (auto& menu_item : dock_menu_items_) {
-    copy_of_dock_menu_items.push_back(menu_item->Clone());
-  }
-
-  std::move(callback).Run(std::move(copy_of_dock_menu_items));
-}
-
 void AppShimController::SetUserAttention(
     chrome::mojom::AppShimAttentionType attention_type) {
   switch (attention_type) {

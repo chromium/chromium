@@ -259,8 +259,6 @@ class TestAppShim : public chrome::mojom::AppShim {
       override {
     dock_menu_items_ = std::move(dock_menu_items);
   }
-  void BindTestInterface(
-      mojo::PendingReceiver<chrome::mojom::AppShimTest> receiver) override {}
 
   std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items_;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items_;

@@ -31,8 +31,7 @@ class MachBootstrapAcceptorTest;
 // The AppShimController is responsible for launching and maintaining the
 // connection with the main Chrome process, and generally controls the lifetime
 // of the app shim process.
-class AppShimController : public chrome::mojom::AppShim,
-                          public chrome::mojom::AppShimTest {
+class AppShimController : public chrome::mojom::AppShim {
  public:
   struct Params {
     Params();
@@ -132,12 +131,6 @@ class AppShimController : public chrome::mojom::AppShim,
   void UpdateApplicationDockMenu(
       std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
       override;
-  void BindTestInterface(
-      mojo::PendingReceiver<chrome::mojom::AppShimTest> receiver) override;
-
-  // chrome::mojom::AppShimTest implementation.
-  void GetApplicationDockMenuForTesting(
-      GetApplicationDockMenuForTestingCallback callback) override;
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.
@@ -178,7 +171,6 @@ class AppShimController : public chrome::mojom::AppShim,
   mojo::Remote<chrome::mojom::AppShimHostBootstrap> host_bootstrap_;
 
   mojo::Receiver<chrome::mojom::AppShim> shim_receiver_{this};
-  mojo::Receiver<chrome::mojom::AppShimTest> shim_test_receiver_{this};
   mojo::Remote<chrome::mojom::AppShimHost> host_;
   mojo::PendingReceiver<chrome::mojom::AppShimHost> host_receiver_;
 
