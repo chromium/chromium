@@ -7858,6 +7858,21 @@
             ]
         }
     ],
+    "ShareUsageRanking": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShareUsageRanking"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedClipboard": [
         {
             "platforms": [
