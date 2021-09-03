@@ -447,6 +447,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private recordHistoryPageView_() {
     let histogramValue = HistoryPageViewHistogram.END;
     switch (this.selectedPage_) {
+      case 'journeys':
+        histogramValue = HistoryPageViewHistogram.JOURNEYS;
+        break;
       case 'syncedTabs':
         histogramValue = this.isUserSignedIn_ ?
             HistoryPageViewHistogram.SYNCED_TABS :

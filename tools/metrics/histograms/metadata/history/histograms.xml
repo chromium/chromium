@@ -617,12 +617,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
-    expires_after="2021-03-01">
+    expires_after="2022-02-25">
   <owner>calamity@chromium.org</owner>
   <owner>src/chrome/browser/resources/history/OWNERS</owner>
   <summary>
     The page of the History page shown to the user. Logged each time the user
     loads the History page or switches pages.
+
+    This histogram expired on 2021-03-01, was renewed on 2021-09-01, and may
+    have incomplete data within that range.
   </summary>
 </histogram>
 

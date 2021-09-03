@@ -40844,6 +40844,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Grouped Month (Obsolete Feb. 2017)"/>
   <int value="3" label="Synced Tabs"/>
   <int value="4" label="Signin Promo"/>
+  <int value="5" label="Journeys"/>
 </enum>
 
 <enum name="HistoryTopSitesRecoveryEnum">
