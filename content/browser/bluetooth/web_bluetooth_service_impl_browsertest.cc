@@ -439,8 +439,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 
-// Tests that navigator.bluetooth.requestDevice() is deferred in the
-// prerendering and works after the prerendering activation.
+// Tests that navigator.bluetooth.requestDevice() has an error without a user
+// gesture in the prerendering and works in the prerendering activation.
 IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
                        RequestDeviceInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
@@ -477,19 +477,15 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since mojom::WebBluetoothService::RequestDevice() is
-  // deferred on the prerendering.
-  EXPECT_TRUE(content::ExecJs(prerendered_frame_host, R"(
-    var requestDevicePromise = (async() => {
-      try {
-        let device = await navigator.bluetooth.requestDevice({
-          filters: [{name: 'Test Device', services: ['heart_rate']}]});
-        return "";
-      } catch(e) {
-        return `${e.name}: ${e.message}`;
-      }
-    })();
-  )"));
+  // A SecurityError is thrown when there is no user gesture.
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result =
+      content::EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
 
   // WebBluetoothService is not created for `prerendered_frame_host`.
   EXPECT_EQ(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
@@ -497,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loading a new primary page removes observer.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 
-  // Navigates the primary page to the URL.
+  // Navigate to the prerendered page.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
@@ -509,11 +505,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   EXPECT_CALL(*adapter(), AddObserver(_));
   EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
 
-  EXPECT_EQ("",
-            content::EvalJs(prerendered_frame_host, "requestDevicePromise"));
+  EXPECT_TRUE(content::ExecJs(GetWebContents()->GetMainFrame(), R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))"));
 
   // WebBluetoothService is created for the activated page.
-  EXPECT_NE(GetWebBluetoothServiceForTesting(prerendered_frame_host), nullptr);
+  EXPECT_NE(GetWebBluetoothServiceForTesting(GetWebContents()->GetMainFrame()),
+            nullptr);
 
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
