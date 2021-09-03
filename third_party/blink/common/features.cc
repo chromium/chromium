@@ -651,7 +651,7 @@ const base::Feature kKeepScriptResourceAlive{"KeepScriptResourceAlive",
 // both backend and API.  If disabled, then it will turn off the backend and
 // api, regardless of the presence of valid origin trial tokens.  Disabling
 // AppCache will also delete any AppCache data from the profile directory.
-const base::Feature kAppCache{"AppCache", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kAppCache{"AppCache", base::FEATURE_DISABLED_BY_DEFAULT};
 // If AppCacheRequireOriginTrial is enabled, then the AppCache backend in the
 // browser will require origin trial tokens in order to load or store manifests
 // and their contents.
