@@ -191,7 +191,7 @@ source_set("clipboard") {
   }
 }
 
-# A source set to be shared by the host binary and the remote_open_url binary.
+# A source set to be shared by the :common and remoting/host/win.
 source_set("remote_open_url_support") {
   sources = [
     "remote_open_url_constants.cc",

@@ -36,4 +36,14 @@ const mojo::NamedPlatformChannel::ServerName& GetRemoteOpenUrlIpcChannelName() {
   return *server_name;
 }
 
+#if defined(OS_WIN)
+
+#if defined(OFFICIAL_BUILD)
+const wchar_t kUrlForwarderProgId[] = L"ChromeRemoteDesktopUrlForwarder";
+#else
+const wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
+#endif
+
+#endif  // defined (OS_WIN)
+
 }  // namespace remoting

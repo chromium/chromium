@@ -41,6 +41,10 @@ BEGIN
             format(url_forwarder_name)|
             replace('"', '""') }}"
   IDS_CANCEL "{% trans %}CANCEL{% endtrans %}"
+  IDS_URL_FORWARDER_INCORRECTLY_CONFIGURED "{{
+          gettext("URL_FORWARDER_INCORRECTLY_CONFIGURED")|
+            format(url_forwarder_name)|
+            replace('"', '""') }}"
 END
 
 IDI_CHROME_REMOTE_DESKTOP      ICON    "remoting/resources/chromoting.ico"

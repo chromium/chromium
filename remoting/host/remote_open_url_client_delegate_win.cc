@@ -16,9 +16,14 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/current_module.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/remote_open_url_constants.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/user_settings.h"
+#include "remoting/host/win/core_resource.h"
+#include "remoting/host/win/default_apps_util.h"
+#include "remoting/host/win/simple_task_dialog.h"
 
 namespace remoting {
 
@@ -43,6 +48,19 @@ std::wstring GetLaunchBrowserCommand(const std::wstring& browser_prog_id,
   return open_command;
 }
 
+void ShowIncorrectConfigurationPrompt() {
+  SimpleTaskDialog task_dialog(CURRENT_MODULE());
+  task_dialog.SetTitleTextWithStringId(IDS_URL_FORWARDER_NAME);
+  task_dialog.SetMessageTextWithStringId(
+      IDS_URL_FORWARDER_INCORRECTLY_CONFIGURED);
+  task_dialog.AppendButtonWithStringId(IDOK,
+                                       IDS_OPEN_DEFAULT_APPS_SETTINGS_BUTTON);
+  task_dialog.set_default_button(IDOK);
+  absl::optional<int> result = task_dialog.Show();
+  DCHECK_EQ(IDOK, *result);
+  LaunchDefaultAppsSettingsModernDialog();
+}
+
 }  // namespace
 
 RemoteOpenUrlClientDelegateWin::RemoteOpenUrlClientDelegateWin() = default;
@@ -58,9 +76,9 @@ void RemoteOpenUrlClientDelegateWin::OpenUrlOnFallbackBrowser(const GURL& url) {
   std::wstring fallback_browser_prog_id =
       base::UTF8ToWide(UserSettings::GetInstance()->GetString(
           kWinPreviousDefaultWebBrowserProgId));
-  if (fallback_browser_prog_id.empty()) {
-    // TODO(b/183135000): Implement some sort of fallback browser chooser.
-    LOG(ERROR) << "Cannot determine the fallback browser.";
+  if (fallback_browser_prog_id.empty() ||
+      fallback_browser_prog_id == kUrlForwarderProgId) {
+    ShowIncorrectConfigurationPrompt();
     return;
   }
 
@@ -74,6 +92,7 @@ void RemoteOpenUrlClientDelegateWin::OpenUrlOnFallbackBrowser(const GURL& url) {
   std::wstring launch_command =
       GetLaunchBrowserCommand(fallback_browser_prog_id, url);
   if (launch_command.empty()) {
+    ShowIncorrectConfigurationPrompt();
     return;
   }
   HOST_LOG << "Opening URL with fallback browser: " << fallback_browser_prog_id;

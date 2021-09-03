@@ -28,7 +28,7 @@
   <?if $(var.OfficialBuild) != 0 ?>
     <?define ChromotingKeyPath = "Google\Chrome Remote Desktop" ?>
     <?define UrlForwarderName = "Chrome Remote Desktop URL Forwarder" ?>
-    <?define UrlForwarderProgId = "CrdUrlForwarder" ?>
+    <?define UrlForwarderProgId = "ChromeRemoteDesktopUrlForwarder" ?>
   <?else?>
     <?define ChromotingKeyPath = "Chromoting" ?>
     <?define UrlForwarderName = "Chromoting URL Forwarder" ?>

@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
 #define REMOTING_HOST_REMOTE_OPEN_URL_CLIENT_DELEGATE_WIN_H_
 
+#include "base/win/scoped_com_initializer.h"
 #include "remoting/host/remote_open_url_client.h"
 
 namespace remoting {
@@ -19,6 +20,9 @@ class RemoteOpenUrlClientDelegateWin final
   bool IsInRemoteDesktopSession() override;
   void OpenUrlOnFallbackBrowser(const GURL& url) override;
   void ShowOpenUrlError(const GURL& url) override;
+
+ private:
+  base::win::ScopedCOMInitializer scoped_com_initializer_;
 };
 
 }  // namespace remoting

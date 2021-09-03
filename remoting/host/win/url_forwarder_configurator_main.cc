@@ -27,21 +27,17 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_types.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/remote_open_url_constants.h"
 #include "remoting/host/switches.h"
 #include "remoting/host/user_setting_keys.h"
 #include "remoting/host/user_settings.h"
 #include "remoting/host/win/core_resource.h"
+#include "remoting/host/win/default_apps_util.h"
 #include "remoting/host/win/simple_task_dialog.h"
 
 namespace remoting {
 
 namespace {
-
-#if defined(OFFICIAL_BUILD)
-constexpr wchar_t kUrlForwarderProgId[] = L"CrdUrlForwarder";
-#else
-constexpr wchar_t kUrlForwarderProgId[] = L"ChromotingUrlForwarder";
-#endif
 
 constexpr wchar_t kProtocolToTestSetup[] = L"http";
 
@@ -84,37 +80,6 @@ bool IsUrlForwarderSetUp(bool log_current_default_app = false) {
       HOST_LOG << "Current default app for " << kProtocolToTestSetup << " is "
                << current_app << " instead of " << kUrlForwarderProgId;
     }
-    return false;
-  }
-  return true;
-}
-
-// Launches the Windows 'settings' modern app with the 'default apps' view
-// focused. This only works for Windows 8 and Windows 10. The appModelId
-// looks arbitrary but it is the same in Win8 and Win10. There is no easy way to
-// retrieve the appModelId from the registry.
-// Returns a boolean indicating whether the default apps view is successfully
-// launched.
-bool LaunchDefaultAppsSettingsModernDialog() {
-  // This method is modified from chrome/installer/util/shell_util.cc
-
-  static const wchar_t kControlPanelAppModelId[] =
-      L"windows.immersivecontrolpanel_cw5n1h2txyewy"
-      L"!microsoft.windows.immersivecontrolpanel";
-
-  Microsoft::WRL::ComPtr<IApplicationActivationManager> activator;
-  HRESULT hr = ::CoCreateInstance(CLSID_ApplicationActivationManager, nullptr,
-                                  CLSCTX_ALL, IID_PPV_ARGS(&activator));
-  if (FAILED(hr)) {
-    PLOG(ERROR) << "Failed to create IApplicationActivationManager";
-    return false;
-  }
-  DWORD pid = 0;
-  CoAllowSetForegroundWindow(activator.Get(), nullptr);
-  hr = activator->ActivateApplication(
-      kControlPanelAppModelId, L"page=SettingsPageAppsDefaults", AO_NONE, &pid);
-  if (FAILED(hr)) {
-    PLOG(ERROR) << "Failed to activate application";
     return false;
   }
   return true;
