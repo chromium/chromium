@@ -87,6 +87,11 @@ void AssistantHeaderModel::SetChips(
   Java_AssistantHeaderModel_setChips(AttachCurrentThread(), jmodel_, jchips);
 }
 
+void AssistantHeaderModel::SetTtsButtonVisible(bool visible) {
+  Java_AssistantHeaderModel_setTtsButtonVisible(AttachCurrentThread(), jmodel_,
+                                                visible);
+}
+
 void AssistantHeaderModel::SetDisableAnimations(bool disable_animations) {
   Java_AssistantHeaderModel_setDisableAnimations(AttachCurrentThread(), jmodel_,
                                                  disable_animations);

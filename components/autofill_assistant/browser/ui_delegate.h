@@ -72,6 +72,9 @@ class UiDelegate {
   // Returns whether the progress bar is visible.
   virtual bool GetProgressVisible() const = 0;
 
+  // Returns whether the TTS button is visible.
+  virtual bool GetTtsButtonVisible() const = 0;
+
   // Returns the current configuration of the step progress bar.
   virtual absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
   GetStepProgressBarConfiguration() const = 0;

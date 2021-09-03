@@ -679,6 +679,7 @@ void UiControllerAndroid::RestoreUi() {
   UiDelegate::OverlayColors colors;
   ui_delegate_->GetOverlayColors(&colors);
   OnOverlayColorsChanged(colors);
+  OnTtsButtonVisibilityChanged(ui_delegate_->GetTtsButtonVisible());
   SetVisible(true);
   Java_AutofillAssistantUiController_restoreBottomSheetState(
       AttachCurrentThread(), java_object_,
@@ -1048,6 +1049,10 @@ void UiControllerAndroid::OnShouldShowOverlayChanged(bool should_show) {
   } else {
     ApplyOverlayState(OverlayState::HIDDEN);
   }
+}
+
+void UiControllerAndroid::OnTtsButtonVisibilityChanged(bool visible) {
+  header_model_->SetTtsButtonVisible(visible);
 }
 
 void UiControllerAndroid::OnTouchableAreaChanged(

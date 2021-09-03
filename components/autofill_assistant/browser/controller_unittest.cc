@@ -2260,6 +2260,19 @@ TEST_F(ControllerTest, SetOverlayColors) {
                          TriggerContext::Options()));
 }
 
+TEST_F(ControllerTest, EnableTts) {
+  EXPECT_CALL(mock_observer_, OnTtsButtonVisibilityChanged(true));
+
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options()));
+
+  EXPECT_TRUE(controller_->GetTtsButtonVisible());
+}
+
 TEST_F(ControllerTest, AddParametersToUserData) {
   auto script_parameters = std::make_unique<ScriptParameters>(
       std::map<std::string, std::string>{{"PARAM_A", "a"}});

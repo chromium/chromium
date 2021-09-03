@@ -349,6 +349,10 @@ bool Controller::GetProgressVisible() const {
   return progress_visible_;
 }
 
+bool Controller::GetTtsButtonVisible() const {
+  return tts_enabled_;
+}
+
 void Controller::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   step_progress_bar_configuration_ = configuration;
@@ -1232,6 +1236,15 @@ void Controller::InitFromParameters() {
     ShowProgressBarProto::StepProgressBarConfiguration mock_configuration;
     mock_configuration.set_use_step_progress_bar(true);
     SetStepProgressBarConfiguration(mock_configuration);
+  }
+
+  const absl::optional<bool> enable_tts =
+      trigger_context_->GetScriptParameters().GetEnableTts();
+  if (enable_tts && enable_tts.value()) {
+    tts_enabled_ = true;
+    for (ControllerObserver& observer : observers_) {
+      observer.OnTtsButtonVisibilityChanged(/* visible= */ true);
+    }
   }
 
   user_model_.SetCurrentURL(GetCurrentURL());

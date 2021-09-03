@@ -98,6 +98,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
        {"TRIGGER_SCRIPTS_BASE64", "abc123"},
        {"PASSWORD_CHANGE_USERNAME", "fake_username"},
        {"OVERLAY_COLORS", "#123456"},
+       {"ENABLE_TTS", "true"},
        {"DETAILS_SHOW_INITIAL", "true"},
        {"DETAILS_TITLE", "title"},
        {"DETAILS_DESCRIPTION_LINE_1", "line1"},
@@ -118,6 +119,7 @@ TEST(ScriptParametersTest, SpecialScriptParameters) {
   EXPECT_THAT(parameters.GetBase64TriggerScriptsResponseProto(), Eq("abc123"));
   EXPECT_THAT(parameters.GetPasswordChangeUsername(), Eq("fake_username"));
   EXPECT_THAT(parameters.GetOverlayColors(), Eq("#123456"));
+  EXPECT_THAT(parameters.GetEnableTts(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsShowInitial(), Eq(true));
   EXPECT_THAT(parameters.GetDetailsTitle(), Eq("title"));
   EXPECT_THAT(parameters.GetDetailsDescriptionLine1(), Eq("line1"));

@@ -24,6 +24,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -68,12 +69,14 @@ public class AutofillAssistantHeaderUiTest {
         private final MaterialProgressBar mProgressBar;
         private final View mStepProgressBar;
         private final View mProfileIcon;
+        private final ImageView mTtsButton;
 
         private ViewHolder(View rootView) {
             mStatusMessage = rootView.findViewById(R.id.status_message);
             mProgressBar = rootView.findViewById(R.id.progress_bar);
             mStepProgressBar = rootView.findViewById(R.id.step_progress_bar);
             mProfileIcon = rootView.findViewById(R.id.profile_image);
+            mTtsButton = (ImageView) rootView.findViewById(R.id.tts_button);
         }
     }
 
@@ -253,6 +256,26 @@ public class AutofillAssistantHeaderUiTest {
         verify(mRunnableMock).run();
 
         // TODO(crbug.com/806868): Test click on the "Settings" menu item.
+    }
+
+    @Test
+    @MediumTest
+    public void testTtsButtonVisibility() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        onView(is(viewHolder.mTtsButton)).check(matches(not(isDisplayed())));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, true));
+
+        onView(is(viewHolder.mTtsButton)).check(matches(isDisplayed()));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, false));
+
+        onView(is(viewHolder.mTtsButton)).check(matches(not(isDisplayed())));
     }
 
     private static Matcher<View> hasProgress(int expectedProgress) {

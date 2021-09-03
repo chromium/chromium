@@ -87,6 +87,9 @@ const char kTriggerScriptExperimentParameterName[] =
 // The intent parameter.
 const char kIntent[] = "INTENT";
 
+// Parameter that allows enabling Text-to-Speech functionality.
+const char kEnableTtsParameterName[] = "ENABLE_TTS";
+
 // The list of script parameters that trigger scripts are allowed to send to
 // the backend.
 constexpr std::array<const char*, 6> kAllowlistedTriggerScriptParameters = {
@@ -221,6 +224,10 @@ absl::optional<std::string> ScriptParameters::GetIntent() const {
 
 absl::optional<std::string> ScriptParameters::GetCallerEmail() const {
   return GetParameter(kCallerEmailParameterName);
+}
+
+absl::optional<bool> ScriptParameters::GetEnableTts() const {
+  return GetTypedParameter<bool>(parameters_, kEnableTtsParameterName);
 }
 
 absl::optional<bool> ScriptParameters::GetDetailsShowInitial() const {

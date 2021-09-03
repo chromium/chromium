@@ -35,6 +35,7 @@ class AssistantHeaderModel {
       const base::android::ScopedJavaLocalRef<jobject>& jcontext);
   void SetSpinPoodle(bool enabled);
   void SetChips(const base::android::ScopedJavaLocalRef<jobject>& jchips);
+  void SetTtsButtonVisible(bool visible);
   void SetDisableAnimations(bool disable_animations);
 
  private:

@@ -134,6 +134,10 @@ class ControllerObserver : public base::CheckedObserver {
 
   // Called when the desired overlay behavior has changed.
   virtual void OnShouldShowOverlayChanged(bool should_show) = 0;
+
+  // Called when the TTS button visibility has changed. If |visible| is true,
+  // then the button is shown.
+  virtual void OnTtsButtonVisibilityChanged(bool visible) = 0;
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_OBSERVER_H_

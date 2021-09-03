@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant.header;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ class AssistantHeaderViewBinder
         final TextView mStatusMessage;
         final AnimatedProgressBar mProgressBar;
         final AssistantStepProgressBar mStepProgressBar;
+        final ImageView mTtsButton;
         final View mProfileIconView;
         final PopupMenu mProfileIconMenu;
         final RecyclerView mChipsContainer;
@@ -64,6 +66,7 @@ class AssistantHeaderViewBinder
             mProgressBar = new AnimatedProgressBar(headerView.findViewById(R.id.progress_bar));
             mStepProgressBar =
                     new AssistantStepProgressBar(headerView.findViewById(R.id.step_progress_bar));
+            mTtsButton = (ImageView) headerView.findViewById(R.id.tts_button);
             mProfileIconView = headerView.findViewById(R.id.profile_image);
             mProfileIconMenu = new PopupMenu(context, mProfileIconView);
             mProfileIconMenu.inflate(R.menu.profile_icon_menu);
@@ -128,6 +131,8 @@ class AssistantHeaderViewBinder
             maybeShowChips(model, view);
         } else if (AssistantHeaderModel.BUBBLE_MESSAGE == propertyKey) {
             showOrDismissBubble(model, view);
+        } else if (AssistantHeaderModel.TTS_BUTTON_VISIBLE == propertyKey) {
+            showOrHideTtsButton(model, view);
         } else if (AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING == propertyKey) {
             view.disableAnimations(model.get(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING));
         } else {
@@ -195,5 +200,13 @@ class AssistantHeaderViewBinder
                 ChromeAccessibilityUtil.get().isAccessibilityEnabled());
         view.mTextBubble.setDismissOnTouchInteraction(true);
         view.mTextBubble.show();
+    }
+
+    private void showOrHideTtsButton(AssistantHeaderModel model, ViewHolder view) {
+        if (model.get(AssistantHeaderModel.TTS_BUTTON_VISIBLE)) {
+            view.mTtsButton.setVisibility(View.VISIBLE);
+        } else {
+            view.mTtsButton.setVisibility(View.GONE);
+        }
     }
 }

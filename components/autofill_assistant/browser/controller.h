@@ -198,6 +198,7 @@ class Controller : public ScriptExecutorDelegate,
   int GetProgress() const override;
   absl::optional<int> GetProgressActiveStep() const override;
   bool GetProgressVisible() const override;
+  bool GetTtsButtonVisible() const override;
   bool GetProgressBarErrorState() const override;
   absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
   GetStepProgressBarConfiguration() const override;
@@ -579,6 +580,8 @@ class Controller : public ScriptExecutorDelegate,
   bool is_focus_on_bottom_sheet_text_input_ = false;
   bool show_feedback_chip_on_graceful_shutdown_ = false;
   bool are_chips_visible_ = true;
+
+  bool tts_enabled_ = false;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;
