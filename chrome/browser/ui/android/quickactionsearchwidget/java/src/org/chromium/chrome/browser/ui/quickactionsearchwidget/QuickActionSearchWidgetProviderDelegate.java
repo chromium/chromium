@@ -124,6 +124,8 @@ public class QuickActionSearchWidgetProviderDelegate {
     private PendingIntent createPendingIntentForAction(
             @NonNull Context context, @NonNull String action) {
         Intent intent = createTrustedIntentForAction(mSearchActivityComponent, action);
+        intent.putExtra(
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
         return PendingIntent.getActivity(context, /*requestCode=*/0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
@@ -138,6 +140,8 @@ public class QuickActionSearchWidgetProviderDelegate {
      *         action.
      */
     private PendingIntent createPendingIntent(@NonNull Context context, @NonNull Intent intent) {
+        intent.putExtra(
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
         return PendingIntent.getActivity(context, /*requestCode=*/0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));

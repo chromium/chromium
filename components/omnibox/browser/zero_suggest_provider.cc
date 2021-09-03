@@ -570,8 +570,11 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
       kOmniboxZeroSuggestEligibleHistogramName, static_cast<int>(eligibility),
       static_cast<int>(ZeroSuggestEligibility::ELIGIBLE_MAX_VALUE));
 
-  if (current_page_classification == OmniboxEventProto::CHROMEOS_APP_LIST)
+  if (current_page_classification == OmniboxEventProto::CHROMEOS_APP_LIST ||
+      current_page_classification ==
+          OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET) {
     return REMOTE_NO_URL;
+  }
 
   const bool context_eligible_for_web_contextual_suggestions =
       (current_page_classification == OmniboxEventProto::OTHER) ||

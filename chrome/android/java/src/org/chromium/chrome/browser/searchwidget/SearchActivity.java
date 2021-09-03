@@ -166,7 +166,7 @@ public class SearchActivity extends AsyncInitializationActivity
     @Override
     protected void triggerLayoutInflation() {
         mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
-        mSearchBoxDataProvider = new SearchBoxDataProvider(this);
+        mSearchBoxDataProvider = new SearchBoxDataProvider(this, isFromQuickActionSearchWidget());
 
         mContentView = createContentView();
         setContentView(mContentView);
@@ -357,6 +357,11 @@ public class SearchActivity extends AsyncInitializationActivity
     private boolean isFromSearchWidget() {
         return IntentUtils.safeGetBooleanExtra(
                 getIntent(), SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
+    }
+
+    private boolean isFromQuickActionSearchWidget() {
+        return IntentUtils.safeGetBooleanExtra(getIntent(),
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, false);
     }
 
     private String getOptionalIntentQuery() {

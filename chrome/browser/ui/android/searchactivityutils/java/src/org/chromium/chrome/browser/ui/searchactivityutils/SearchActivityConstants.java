@@ -19,4 +19,8 @@ public class SearchActivityConstants {
     /** Intent Action indicating that the Intent should initiate Lens assisted search. */
     public static final String ACTION_START_LENS_SEARCH =
             "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_START_LENS_SEARCH";
+
+    /** Extra value indicating that SearchActivity was launched from QuickActionSearchWidget */
+    public static final String EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET =
+            "org.chromium.chrome.browser.ui.searchactivityutils.FROM_QUICK_ACTION_SEARCH_WIDGET";
 }

@@ -20,13 +20,16 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
+    private final boolean mIsFromQuickActionSearchWidget;
     private final @ColorInt int mPrimaryColor;
     private Tab mTab;
 
     /**
      * @param context The {@link Context} for accessing colors.
+     * @param isFromQuickActionSearchWidget
      */
-    SearchBoxDataProvider(Context context) {
+    SearchBoxDataProvider(Context context, boolean isFromQuickActionSearchWidget) {
+        mIsFromQuickActionSearchWidget = isFromQuickActionSearchWidget;
         mPrimaryColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito());
     }
 
@@ -112,7 +115,11 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
 
     @Override
     public int getPageClassification(boolean isFocusedFromFakebox) {
-        return PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
+        if (mIsFromQuickActionSearchWidget) {
+            return PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE;
+        } else {
+            return PageClassification.ANDROID_SEARCH_WIDGET_VALUE;
+        }
     }
 
     @Override

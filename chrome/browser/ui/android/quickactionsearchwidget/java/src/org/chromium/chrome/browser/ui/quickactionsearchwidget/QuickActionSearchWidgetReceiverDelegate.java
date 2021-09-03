@@ -13,6 +13,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
@@ -66,7 +67,8 @@ public class QuickActionSearchWidgetReceiverDelegate {
      */
     private void startDinoGame(final Context context) {
         Intent intent = createDinoIntent(context);
-
+        intent.putExtra(
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
         IntentUtils.safeStartActivity(context, intent,
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
                         .toBundle());
