@@ -24,6 +24,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
@@ -198,10 +199,12 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
   std::unique_ptr<WaylandWindow> CreateTestWindow(
       PlatformWindowType type,
       const gfx::Size& size,
-      MockPlatformWindowDelegate* delegate) {
+      MockPlatformWindowDelegate* delegate,
+      gfx::AcceleratedWidget context) {
     DCHECK(delegate);
     PlatformWindowInitProperties properties{gfx::Rect(size)};
     properties.type = type;
+    properties.parent_widget = context;
     EXPECT_CALL(*delegate, OnAcceleratedWidgetAvailable(_)).Times(1);
     auto window = WaylandWindow::Create(delegate, connection_.get(),
                                         std::move(properties));
@@ -642,8 +645,9 @@ TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
   auto test = [](WaylandDataDragControllerTest* self) {
     // Init and open |target_window|.
     MockPlatformWindowDelegate delegate_2;
-    auto window_2 = self->CreateTestWindow(PlatformWindowType::kWindow,
-                                           gfx::Size(80, 80), &delegate_2);
+    auto window_2 =
+        self->CreateTestWindow(PlatformWindowType::kWindow, gfx::Size(80, 80),
+                               &delegate_2, gfx::kNullAcceleratedWidget);
 
     // Leave |window_1| and enter |window_2|.
     self->SendDndLeave();
@@ -695,8 +699,9 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
 
   // Init and open |target_window|.
   MockPlatformWindowDelegate delegate_2;
-  auto window_2 = CreateTestWindow(PlatformWindowType::kPopup,
-                                   gfx::Size(80, 80), &delegate_2);
+  auto window_2 =
+      CreateTestWindow(PlatformWindowType::kPopup, gfx::Size(80, 80),
+                       &delegate_2, window_1->GetWidget());
   FocusAndPressLeftPointerButton(window_2.get(), &delegate_);
 
   // Post test task to be performed asynchronously once the drag session gets
@@ -727,11 +732,12 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
   auto test = [](WaylandDataDragControllerTest* self,
-                 PlatformWindowType window_type) {
+                 PlatformWindowType window_type,
+                 gfx::AcceleratedWidget context) {
     // Init and open |target_window|.
     MockPlatformWindowDelegate aux_window_delegate;
     auto aux_window = self->CreateTestWindow(window_type, gfx::Size(100, 40),
-                                             &aux_window_delegate);
+                                             &aux_window_delegate, context);
 
     // Leave |origin_window| and enter non-toplevel |aux_window|.
     self->SendDndLeave();
@@ -760,8 +766,12 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   constexpr PlatformWindowType kNonToplevelWindowTypes[]{
       PlatformWindowType::kPopup, PlatformWindowType::kMenu,
       PlatformWindowType::kTooltip, PlatformWindowType::kBubble};
-  for (auto window_type : kNonToplevelWindowTypes)
-    ScheduleTestTask(base::BindOnce(test, base::Unretained(this), window_type));
+  for (auto window_type : kNonToplevelWindowTypes) {
+    ScheduleTestTask(base::BindOnce(test, base::Unretained(this), window_type,
+                                    window_type == PlatformWindowType::kBubble
+                                        ? gfx::kNullAcceleratedWidget
+                                        : origin_window->GetWidget()));
+  }
 
   // Post a wl_data_source::cancelled notifying the client to tear down the drag
   // session.
@@ -782,17 +792,18 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   PopupRequestCreatesAuxiliaryWindow
 #endif
 // Ensures that requests to create a |PlatformWindowType::kPopup| during drag
-// sessions return wl_subsurface-backed windows.
+// sessions return xdg_popup-backed windows.
 TEST_P(WaylandDataDragControllerTest,
        MAYBE_PopupRequestCreatesAuxiliaryWindow) {
   auto* origin_window = window_.get();
   const bool restored_focus = origin_window->has_pointer_focus();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
-  auto test = [](WaylandDataDragControllerTest* self) {
+  auto test = [](WaylandDataDragControllerTest* self,
+                 gfx::AcceleratedWidget context) {
     MockPlatformWindowDelegate delegate;
-    auto popup_window = self->CreateTestWindow(PlatformWindowType::kPopup,
-                                               gfx::Size(100, 40), &delegate);
+    auto popup_window = self->CreateTestWindow(
+        PlatformWindowType::kPopup, gfx::Size(100, 40), &delegate, context);
     popup_window->Show(false);
     self->Sync();
 
@@ -802,7 +813,8 @@ TEST_P(WaylandDataDragControllerTest,
     EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
   };
 
-  ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
+  ScheduleTestTask(
+      base::BindOnce(test, base::Unretained(this), origin_window->GetWidget()));
 
   // Post a wl_data_source::cancelled notifying the client to tear down the drag
   // session.
@@ -821,10 +833,11 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
   const bool restored_focus = origin_window->has_pointer_focus();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
-  auto test = [](WaylandDataDragControllerTest* self) {
+  auto test = [](WaylandDataDragControllerTest* self,
+                 gfx::AcceleratedWidget context) {
     MockPlatformWindowDelegate delegate;
-    auto menu_window = self->CreateTestWindow(PlatformWindowType::kMenu,
-                                              gfx::Size(100, 40), &delegate);
+    auto menu_window = self->CreateTestWindow(
+        PlatformWindowType::kMenu, gfx::Size(100, 40), &delegate, context);
     menu_window->Show(false);
     self->Sync();
 
@@ -834,7 +847,8 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
     EXPECT_EQ(nullptr, surface->sub_surface());
   };
 
-  ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
+  ScheduleTestTask(
+      base::BindOnce(test, base::Unretained(this), origin_window->GetWidget()));
 
   // Post a wl_data_source::cancelled notifying the client to tear down the drag
   // session.

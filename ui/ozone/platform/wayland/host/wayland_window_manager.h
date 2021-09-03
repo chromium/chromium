@@ -77,13 +77,6 @@ class WaylandWindowManager {
   // The given |window| must be managed by this manager.
   void SetKeyboardFocusedWindow(WaylandWindow* window);
 
-  // Returns a parent window suitable for newly created non-toplevel windows. If
-  // the |parent_widget| is gfx::kNullAcceleratedWidget, either the currently
-  // focused or the active window is used. If the found parent has children
-  // windows, the one on top the of the stack is used as a parent.
-  WaylandWindow* FindParentForNewWindow(
-      gfx::AcceleratedWidget parent_widget) const;
-
   // TODO(crbug.com/971525): remove this in favor of targeted subscription of
   // windows to their outputs.
   std::vector<WaylandWindow*> GetWindowsOnOutput(uint32_t output_id);

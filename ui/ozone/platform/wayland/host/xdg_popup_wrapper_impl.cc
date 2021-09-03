@@ -226,12 +226,6 @@ struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
   if (!positioner)
     return nullptr;
 
-  // The parent we got must be the topmost in the stack of the same family
-  // windows.
-  auto* topmost_child = parent_window->GetTopMostChildWindow();
-  DCHECK(parent_window == parent_window->GetTopMostChildWindow() ||
-         topmost_child == wayland_window_);
-
   gfx::Rect anchor_rect;
   OwnedWindowAnchorPosition anchor_position;
   OwnedWindowAnchorGravity anchor_gravity;

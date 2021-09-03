@@ -2363,11 +2363,10 @@ TEST_P(WaylandWindowTest, WaylandPopupSimpleParent) {
   // use focused window instead.
   gfx::Rect wayland_popup_bounds(gfx::Point(15, 15), gfx::Size(10, 10));
   std::unique_ptr<WaylandWindow> wayland_popup = CreateWaylandWindowWithParams(
-      PlatformWindowType::kTooltip, gfx::kNullAcceleratedWidget,
-      wayland_popup_bounds, &delegate_);
+      PlatformWindowType::kTooltip, window_->GetWidget(), wayland_popup_bounds,
+      &delegate_);
   EXPECT_TRUE(wayland_popup);
 
-  window_->SetPointerFocus(true);
   wayland_popup->Show(false);
 
   Sync();
@@ -2799,7 +2798,7 @@ TEST_P(WaylandWindowTest, NestedPopupWindowsGetCorrectParent) {
 
   gfx::Rect menu_window_bounds2(gfx::Rect(20, 40, 30, 20));
   std::unique_ptr<WaylandWindow> menu_window2 = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds2,
+      PlatformWindowType::kMenu, menu_window->GetWidget(), menu_window_bounds2,
       &delegate_);
   EXPECT_TRUE(menu_window2);
 
@@ -2807,7 +2806,7 @@ TEST_P(WaylandWindowTest, NestedPopupWindowsGetCorrectParent) {
 
   gfx::Rect menu_window_bounds3(gfx::Rect(30, 40, 30, 20));
   std::unique_ptr<WaylandWindow> menu_window3 = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds3,
+      PlatformWindowType::kMenu, menu_window2->GetWidget(), menu_window_bounds3,
       &delegate_);
   EXPECT_TRUE(menu_window3);
 
@@ -2815,7 +2814,7 @@ TEST_P(WaylandWindowTest, NestedPopupWindowsGetCorrectParent) {
 
   gfx::Rect menu_window_bounds4(gfx::Rect(40, 40, 30, 20));
   std::unique_ptr<WaylandWindow> menu_window4 = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window_->GetWidget(), menu_window_bounds4,
+      PlatformWindowType::kMenu, menu_window3->GetWidget(), menu_window_bounds4,
       &delegate_);
   EXPECT_TRUE(menu_window4);
 
@@ -2875,117 +2874,6 @@ TEST_P(WaylandWindowTest, OneWaylandSubsurface) {
 
   EXPECT_EQ(test_subsurface->position(), subsurface_bounds.origin());
   EXPECT_TRUE(test_subsurface->sync());
-}
-
-TEST_P(WaylandWindowTest, UsesCorrectParentForChildrenWindows) {
-  uint32_t serial = 0;
-
-  MockPlatformWindowDelegate window_delegate;
-  std::unique_ptr<WaylandWindow> window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 100, 100), &window_delegate);
-  EXPECT_TRUE(window);
-
-  window->Show(false);
-
-  std::unique_ptr<WaylandWindow> another_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 300, 400), &window_delegate);
-  EXPECT_TRUE(another_window);
-
-  another_window->Show(false);
-
-  Sync();
-
-  auto* window1 = window.get();
-  auto* window2 = window_.get();
-  auto* window3 = another_window.get();
-
-  // Make sure windows are not "active".
-  auto empty_state = MakeStateArray({});
-  SendConfigureEvent(xdg_surface_, 0, 0, ++serial, empty_state.get());
-  auto* xdg_surface_window =
-      server_
-          .GetObject<wl::MockSurface>(window->root_surface()->GetSurfaceId())
-          ->xdg_surface();
-  SendConfigureEvent(xdg_surface_window, 0, 0, ++serial, empty_state.get());
-  auto* xdg_surface_another_window =
-      server_
-          .GetObject<wl::MockSurface>(
-              another_window->root_surface()->GetSurfaceId())
-          ->xdg_surface();
-  SendConfigureEvent(xdg_surface_another_window, 0, 0, ++serial,
-                     empty_state.get());
-
-  Sync();
-
-  // Case 1: provided parent window's widget..
-  MockPlatformWindowDelegate menu_window_delegate;
-  std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, window1->GetWidget(),
-      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
-
-  EXPECT_TRUE(menu_window->parent_window() == window1);
-
-  // Case 2: didn't provide parent window's widget - must use current focused.
-  //
-  // Subcase 1: pointer focus.
-  window2->SetPointerFocus(true);
-  menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
-
-  EXPECT_TRUE(menu_window->parent_window() == window2);
-  EXPECT_TRUE(menu_window->AsWaylandPopup());
-
-  // Subcase 2: keyboard focus.
-  window2->SetPointerFocus(false);
-  window2->set_keyboard_focus(true);
-  menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
-
-  // Mustn't be able to create a menu window, but rather creates a toplevel
-  // window as we must provide at least something.
-  EXPECT_TRUE(menu_window);
-  // Make it create xdg objects.
-  menu_window->Show(false);
-
-  Sync();
-
-  auto* menu_window_xdg =
-      server_
-          .GetObject<wl::MockSurface>(
-              another_window->root_surface()->GetSurfaceId())
-          ->xdg_surface();
-  EXPECT_TRUE(menu_window_xdg);
-  EXPECT_TRUE(menu_window_xdg->xdg_toplevel());
-  EXPECT_FALSE(menu_window_xdg->xdg_popup());
-
-  // Subcase 3: touch focus.
-  window2->set_keyboard_focus(false);
-  window2->set_touch_focus(true);
-  menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
-
-  EXPECT_TRUE(menu_window->parent_window() == window2);
-  EXPECT_TRUE(menu_window->AsWaylandPopup());
-
-  // Case 3: neither of the windows are focused. However, there is one that is
-  // active. Must use that then.
-  window2->set_touch_focus(false);
-
-  auto active = InitializeWlArrayWithActivatedState();
-  SendConfigureEvent(xdg_surface_another_window, 0, 0, ++serial, active.get());
-  Sync();
-
-  menu_window = CreateWaylandWindowWithParams(
-      PlatformWindowType::kMenu, gfx::kNullAcceleratedWidget,
-      gfx::Rect(10, 10, 10, 10), &menu_window_delegate);
-
-  EXPECT_TRUE(menu_window->parent_window() == window3);
-  EXPECT_TRUE(menu_window->AsWaylandPopup());
 }
 
 // Tests that WaylandPopups can be repositioned.

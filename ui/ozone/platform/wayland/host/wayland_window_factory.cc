@@ -19,7 +19,7 @@ namespace {
 
 WaylandWindow* GetParentWindow(WaylandConnection* connection,
                                gfx::AcceleratedWidget widget) {
-  return connection->wayland_window_manager()->FindParentForNewWindow(widget);
+  return connection->wayland_window_manager()->GetWindow(widget);
 }
 
 }  // namespace
@@ -32,27 +32,11 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
   std::unique_ptr<WaylandWindow> window;
   switch (properties.type) {
     case PlatformWindowType::kPopup:
-      if (connection->IsDragInProgress()) {
-        // We are in the process of drag and requested a popup. Most probably,
-        // it is an arrow window.
-        window = std::make_unique<WaylandPopup>(
-            delegate, connection,
-            GetParentWindow(connection, properties.parent_widget));
-        break;
-      }
-      window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
-      break;
     case PlatformWindowType::kTooltip:
     case PlatformWindowType::kMenu:
-      // Set the parent window in advance otherwise it is not possible to know
-      // if the popup is able to find one and if WaylandWindow::Initialize()
-      // fails or not. Otherwise, WaylandWindow::Create() returns nullptr and
-      // makes the browser to fail. To fix this problem, search for the parent
-      // window and if one is not found, create WaylandToplevelWindow instead.
-      // It's also worth noting that searching twice (one time here and
-      // another by WaylandPopup) is a bad practice, and the parent window is
-      // set here instead. TODO(crbug.com/1078328): Feed ozone/wayland with full
-      // layout info required to properly position popup windows.
+      // kPopup can be created by MessagePopupView without a parent window set.
+      // It looks like it ought to be a global notification window. Thus, use a
+      // toplevel window instead.
       if (auto* parent =
               GetParentWindow(connection, properties.parent_widget)) {
         window = std::make_unique<WaylandPopup>(delegate, connection, parent);

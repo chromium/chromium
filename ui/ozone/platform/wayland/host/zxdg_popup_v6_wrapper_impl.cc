@@ -211,10 +211,6 @@ zxdg_positioner_v6* ZXDGPopupV6WrapperImpl::CreatePositioner(
   if (!positioner)
     return nullptr;
 
-  // The parent we got must be the topmost in the stack of the same family
-  // windows.
-  DCHECK_EQ(parent_window->GetTopMostChildWindow(), parent_window);
-
   gfx::Rect anchor_rect;
   OwnedWindowAnchorPosition anchor_position;
   OwnedWindowAnchorGravity anchor_gravity;
