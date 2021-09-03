@@ -936,6 +936,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       self.currentPage = targetPage;
     }
   }
+
+  // TODO(crbug.com/872303) : This is a workaround because TabRestoreService
+  // does not notify observers when entries are removed. When close all tabs
+  // removes entries, the remote tabs page in the tab grid are not updated. This
+  // ensures that the table is updated whenever scrolling to it.
+  if (targetPage == TabGridPageRemoteTabs) {
+    [self.remoteTabsViewController loadModel];
+    [self.remoteTabsViewController.tableView reloadData];
+  }
 }
 
 // Updates the state when the scroll view stops scrolling at a given page,
