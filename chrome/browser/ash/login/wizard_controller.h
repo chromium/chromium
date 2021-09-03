@@ -203,11 +203,6 @@ class WizardController {
         screen_manager()->GetScreen(TScreen::TView::kScreenId));
   }
 
-  // Returns the current WizardContext instance.
-  WizardContext* get_wizard_context_for_testing() const {
-    return wizard_context_;
-  }
-
   // Volume percent at which spoken feedback is still audible.
   static const int kMinAudibleOutputVolumePercent;
 

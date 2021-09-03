@@ -464,7 +464,10 @@ class NativeWindowVisibilityBrowserMainExtraParts
 
   // ChromeBrowserMainExtraParts:
   void PostProfileInit() override {
-    observer_->Observe(LoginDisplayHost::default_host()->GetNativeWindow());
+    gfx::NativeWindow window =
+        LoginDisplayHost::default_host()->GetNativeWindow();
+    if (window)
+      observer_->Observe(window);
   }
 
  private:

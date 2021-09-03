@@ -390,7 +390,9 @@ bool WizardController::is_branded_build_ = false;
 // static
 WizardController* WizardController::default_controller() {
   auto* host = LoginDisplayHost::default_host();
-  return host ? host->GetWizardController() : nullptr;
+  return (host && host->IsWizardControllerCreated())
+             ? host->GetWizardController()
+             : nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

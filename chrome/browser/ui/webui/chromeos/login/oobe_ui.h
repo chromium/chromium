@@ -172,6 +172,8 @@ class OobeUI : public ui::MojoWebUIController {
   static void AddOobeComponents(content::WebUIDataSource* source,
                                 const base::DictionaryValue& localized_strings);
 
+  bool ready() const { return ready_; }
+
  private:
   void AddWebUIHandler(std::unique_ptr<BaseWebUIHandler> handler);
   void AddScreenHandler(std::unique_ptr<BaseScreenHandler> handler);

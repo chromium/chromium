@@ -273,13 +273,6 @@ LoginDisplay* GetLoginDisplay() {
   return GetLoginDisplayHost()->GetLoginDisplay();
 }
 
-void AllowOfflineLoginOnErrorScreen(bool allowed) {
-  if (!GetLoginDisplayHost()->GetOobeUI())
-    return;
-  GetLoginDisplayHost()->GetOobeUI()->GetErrorScreen()->AllowOfflineLogin(
-      allowed);
-}
-
 void SetLoginExtensionApiLaunchExtensionIdPref(const AccountId& account_id,
                                                const std::string extension_id) {
   const user_manager::User* user =
@@ -469,7 +462,7 @@ void ExistingUserController::UpdateLoginDisplay(
   user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
   // By default disable offline login from the error screen.
-  AllowOfflineLoginOnErrorScreen(false /* allowed */);
+  ErrorScreen::AllowOfflineLogin(false /* allowed */);
   for (auto* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
@@ -481,7 +474,7 @@ void ExistingUserController::UpdateLoginDisplay(
     if (user->GetType() == user_manager::USER_TYPE_REGULAR ||
         user->GetType() == user_manager::USER_TYPE_CHILD ||
         user->GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
-      AllowOfflineLoginOnErrorScreen(true /* allowed */);
+      ErrorScreen::AllowOfflineLogin(true /* allowed */);
     }
     const bool meets_allowlist_requirements =
         !user->HasGaiaAccount() ||
@@ -1710,6 +1703,8 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
   if (!user_context.HasCredentials()) {
     // If credentials are missing, refuse to log in.
 
+    // Ensure WebUI is loaded to allow security token dialog to pop up.
+    GetLoginDisplayHost()->GetWizardController();
     // Reenable clicking on other windows and status area.
     GetLoginDisplay()->SetUIEnabled(true);
     // Restart the auto-login timer.

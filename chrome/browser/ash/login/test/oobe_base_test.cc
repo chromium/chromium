@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/test/https_forwarder.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
@@ -159,7 +160,7 @@ void OobeBaseTest::SetUpOnMainThread() {
   LoginDisplayHostWebUI::DisableRestrictiveProxyCheckForTest();
 
   if (ShouldWaitForOobeUI()) {
-    WaitForOobeUI();
+    MaybeWaitForLoginScreenLoad();
   }
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 }
@@ -176,17 +177,12 @@ void OobeBaseTest::WaitForOobeUI() {
   // Wait for notification first. Otherwise LoginDisplayHost might not be
   // created yet.
   MaybeWaitForLoginScreenLoad();
-
-  // Wait for OobeUI to finish loading.
-  base::RunLoop run_loop;
-  if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
-          run_loop.QuitClosure())) {
-    run_loop.Run();
-  }
+  test::WaitForOobeJSReady();
 }
 
 void OobeBaseTest::WaitForGaiaPageLoad() {
   WaitForSigninScreen();
+  test::WaitForOobeJSReady();
   WaitForGaiaPageReload();
 }
 
@@ -196,7 +192,7 @@ void OobeBaseTest::WaitForGaiaPageLoadAndPropertyUpdate() {
   // 'ready' event arrives.  To ensure that these properties are updated before
   // they are checked, use WaitForGaiaPageBackButtonUpdate() instead of
   // WaitForGaiaPageLoad().
-  WaitForSigninScreen();
+  WaitForGaiaPageLoad();
   WaitForGaiaPageBackButtonUpdate();
 }
 

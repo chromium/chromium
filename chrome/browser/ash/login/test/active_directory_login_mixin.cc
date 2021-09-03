@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
@@ -60,6 +61,8 @@ void ActiveDirectoryLoginMixin::SetUpInProcessBrowserTestFixture() {
 }
 
 void ActiveDirectoryLoginMixin::SetUpOnMainThread() {
+  test::WaitForOobeJSReady();
+
   // Set the threshold to a max value to disable the offline message screen on
   // slow configurations like MSAN, where it otherwise triggers on every run.
   LoginDisplayHost::default_host()

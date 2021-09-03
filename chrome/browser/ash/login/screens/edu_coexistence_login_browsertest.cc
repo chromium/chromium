@@ -142,8 +142,8 @@ class EduCoexistenceLoginChildBrowserTest
   }
 
   void LoginAsNewChildUser() {
-    WizardController::default_controller()
-        ->get_wizard_context_for_testing()
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
         ->sign_in_as_child = true;
     login_manager_mixin().LoginAsNewChildUser();
 
@@ -164,10 +164,9 @@ class EduCoexistenceLoginChildBrowserTest
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
   LoginAsNewChildUser();
 
-  WizardController* wizard = WizardController::default_controller();
-
-  EXPECT_EQ(wizard->current_screen()->screen_id(),
-            EduCoexistenceLoginScreen::kScreenId);
+  EXPECT_EQ(
+      WizardController::default_controller()->current_screen()->screen_id(),
+      EduCoexistenceLoginScreen::kScreenId);
 
   EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();
 
@@ -179,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
   // Expect that the inline login dialog is hidden.
   EXPECT_FALSE(IsInlineLoginDialogShown());
 
-  screen->Show(wizard->get_wizard_context_for_testing());
+  screen->Show(LoginDisplayHost::default_host()->GetWizardContextForTesting());
 
   // Expect that the inline login dialog is shown.
   EXPECT_TRUE(IsInlineLoginDialogShown());

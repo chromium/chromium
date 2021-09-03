@@ -1339,7 +1339,9 @@ void UserSessionManager::InitProfilePreferences(
           .GetOnboardingCompletedVersion(user->GetAccountId());
   if (!onboarding_completed_version.has_value()) {
     // Kiosks do not have onboarding.
-    if (user_manager->GetPrimaryUser() == user &&
+    if (LoginDisplayHost::default_host() &&
+        LoginDisplayHost::default_host()->GetSigninUI() &&
+        user_manager->GetPrimaryUser() == user &&
         !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId()) &&
         !user->IsKioskType()) {
       LoginDisplayHost::default_host()
@@ -1800,11 +1802,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   arc::RecordPlayStoreLaunchWithinAWeek(prefs, /*launched=*/false);
 
   if (start_session_type_ == StartSessionType::kPrimary) {
-    WizardController* wizard_controller =
-        WizardController::default_controller();
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
     bool skip_post_login_screens =
-        (wizard_controller && wizard_controller->skip_post_login_screens()) ||
+        WizardController::skip_post_login_screens() ||
         cmdline->HasSwitch(switches::kOobeSkipPostLogin);
 
     user_manager::KnownUser known_user(g_browser_process->local_state());

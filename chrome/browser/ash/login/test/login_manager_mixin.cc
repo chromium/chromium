@@ -191,7 +191,6 @@ void LoginManagerMixin::LoginWithDefaultContext(const TestUserInfo& user_info) {
 void LoginManagerMixin::LoginAsNewRegularUser(
     absl::optional<UserContext> user_context) {
   ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
-  test::WaitForOobeCreated();
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   if (!user_context.has_value()) {
@@ -207,7 +206,6 @@ void LoginManagerMixin::LoginAsNewRegularUser(
 
 void LoginManagerMixin::LoginAsNewChildUser() {
   ash::LoginDisplayHost::default_host()->StartWizard(GaiaView::kScreenId);
-  test::WaitForOobeCreated();
   test::WaitForOobeJSReady();
   ASSERT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
   TestUserInfo test_child_user_(

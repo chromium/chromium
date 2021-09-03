@@ -371,7 +371,6 @@ void LoginDisplayHostCommon::ResyncUserData() {
 }
 
 bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
-  DCHECK(GetOobeUI());
   if (action == LoginAcceleratorAction::kShowFeedback) {
     login_feedback_ = std::make_unique<LoginFeedback>(
         ProfileHelper::Get()->GetSigninProfile());
@@ -395,9 +394,9 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
 
   // This path should only handle screen-specific acceletators, so we do not
   // need to create WebUI here.
-  if (GetWizardController() && GetWizardController()->is_initialized()) {
-    if (GetWizardController()->HandleAccelerator(action))
-      return true;
+  if (IsWizardControllerCreated() &&
+      GetWizardController()->HandleAccelerator(action)) {
+    return true;
   }
   // There are currently no global accelerators for the lock screen that
   // require WebUI. So we do not need to specifically load it when user is
@@ -411,12 +410,6 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     GetOobeUI()->ForwardAccelerator(MapToWebUIAccelerator(action));
   }
   return true;
-}
-
-SigninUI* LoginDisplayHostCommon::GetSigninUI() {
-  if (!GetWizardController())
-    return nullptr;
-  return this;
 }
 
 void LoginDisplayHostCommon::StartUserOnboarding() {
@@ -510,6 +503,10 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
   StartWizard(SignInFatalErrorView::kScreenId);
 }
 
+WizardContext* LoginDisplayHostCommon::GetWizardContextForTesting() {
+  return wizard_context();
+}
+
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {
   VLOG(4) << "OnBrowserAdded " << session_starting_;
   // Browsers created before session start (windows opened by extensions, for
@@ -559,8 +556,6 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   } else {
     LoadSigninWallpaper();
   }
-
-  DCHECK(GetWizardController());
 
   SetGaiaInputMethods(prefilled_account);
 

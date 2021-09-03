@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
@@ -439,7 +440,7 @@ class LoginUIDiagnosticsTest : public LoginUITestBase {
   }
   ~LoginUIDiagnosticsTest() override = default;
 
-  bool IsDiagnosticsDialogVisible() {
+  static bool IsDiagnosticsDialogVisible() {
     return chromeos::SystemWebDialogDelegate::HasInstance(
         GURL("chrome://diagnostics"));
   }
@@ -456,10 +457,11 @@ class LoginUIDiagnosticsTest : public LoginUITestBase {
 IN_PROC_BROWSER_TEST_F(LoginUIDiagnosticsTest, LaunchDiagnostics) {
   EXPECT_FALSE(IsDiagnosticsDialogVisible());
 
-  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
   EXPECT_TRUE(ash::LoginScreenTestApi::PressAccelerator(ui::Accelerator(
       ui::VKEY_ESCAPE, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN)));
-  ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  test::TestPredicateWaiter(
+      base::BindRepeating(&LoginUIDiagnosticsTest::IsDiagnosticsDialogVisible))
+      .Wait();
 
   EXPECT_TRUE(IsDiagnosticsDialogVisible());
 }

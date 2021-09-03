@@ -75,6 +75,8 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
                                     int* value) const final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
+  bool IsWizardControllerCreated() const final;
+  WizardContext* GetWizardContextForTesting() final;
 
  private:
   class FakeBaseScreen;

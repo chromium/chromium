@@ -80,10 +80,13 @@ void OfflineLoginTestMixin::GoOffline() {
           false /*use_default_devices_and_services*/);
   network_state_test_helper_->ClearServices();
   // Notify NetworkStateInformer explicitly
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->network_state_informer_for_test()
-      ->DefaultNetworkChanged(nullptr /* network */);
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetOobeUI()) {
+    LoginDisplayHost::default_host()
+        ->GetOobeUI()
+        ->network_state_informer_for_test()
+        ->DefaultNetworkChanged(nullptr /* network */);
+  }
 }
 
 void OfflineLoginTestMixin::GoOnline() {

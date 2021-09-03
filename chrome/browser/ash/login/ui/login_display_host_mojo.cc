@@ -113,35 +113,24 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
       user_board_view_mojo_(std::make_unique<UserBoardViewMojo>()),
       user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
-      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
-      displayed_screen_(displayed_screen) {
+      system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   user_selection_screen_->SetView(user_board_view_mojo_.get());
-
-  if (displayed_screen == DisplayedScreen::SIGN_IN_SCREEN) {
-    // Preload webui-based OOBE for add user, kiosk apps, etc.
-    LoadOobeDialog();
-
-    // Should be created after OobeUI loaded with the dialog.
-    wizard_controller_ = std::make_unique<WizardController>(wizard_context());
-    NotifyWizardCreated();
-
-    GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
-        &security_token_pin_dialog_host_ash_impl_);
-  }
+  // TODO (crbug.com/1218161): Remove this premature WebUI start.
+  if (displayed_screen == DisplayedScreen::SIGN_IN_SCREEN)
+    EnsureOobeDialogLoaded();
 }
 
 LoginDisplayHostMojo::~LoginDisplayHostMojo() {
-  if (displayed_screen_ == DisplayedScreen::SIGN_IN_SCREEN) {
-    GetLoginScreenCertProviderService()
-        ->pin_dialog_manager()
-        ->RemovePinDialogHost(&security_token_pin_dialog_host_ash_impl_);
-  }
   LoginScreenClientImpl::Get()->SetDelegate(nullptr);
-  if (dialog_) {
-    dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
-    StopObservingOobeUI();
-    dialog_->Close();
-  }
+  if (!dialog_)
+    return;
+
+  GetLoginScreenCertProviderService()
+      ->pin_dialog_manager()
+      ->RemovePinDialogHost(&security_token_pin_dialog_host_ash_impl_);
+  dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
+  StopObservingOobeUI();
+  dialog_->Close();
 }
 
 void LoginDisplayHostMojo::OnDialogDestroyed(
@@ -173,6 +162,7 @@ void LoginDisplayHostMojo::SetUserCount(int user_count) {
 void LoginDisplayHostMojo::ShowPasswordChangedDialog(
     const AccountId& account_id,
     bool show_password_error) {
+  EnsureOobeDialogLoaded();
   DCHECK(GetOobeUI());
   wizard_controller_->ShowGaiaPasswordChangedScreen(account_id,
                                                     show_password_error);
@@ -185,12 +175,14 @@ void LoginDisplayHostMojo::StartBrowserDataMigration() {
 }
 
 void LoginDisplayHostMojo::ShowAllowlistCheckFailedError() {
+  EnsureOobeDialogLoaded();
   DCHECK(GetOobeUI());
   GetOobeUI()->signin_screen_handler()->ShowAllowlistCheckFailedError();
   ShowDialog();
 }
 
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
+  EnsureOobeDialogLoaded();
   if (dialog_->IsVisible())
     GetOobeUI()->GetErrorScreen()->FixCaptivePortal();
   else
@@ -242,6 +234,7 @@ void LoginDisplayHostMojo::SetStatusAreaVisible(bool visible) {
 }
 
 void LoginDisplayHostMojo::StartWizard(OobeScreenId first_screen) {
+  EnsureOobeDialogLoaded();
   OobeUI* oobe_ui = GetOobeUI();
   DCHECK(oobe_ui);
   // Dialog is not shown immediately, and will be shown only when a screen
@@ -249,13 +242,16 @@ void LoginDisplayHostMojo::StartWizard(OobeScreenId first_screen) {
   // screens to show.
   ObserveOobeUI();
 
-  if (wizard_controller_->is_initialized())
+  if (wizard_controller_->is_initialized()) {
     wizard_controller_->AdvanceToScreen(first_screen);
-  else
+  } else {
     wizard_controller_->Init(first_screen);
+    NotifyWizardCreated();
+  }
 }
 
 WizardController* LoginDisplayHostMojo::GetWizardController() {
+  EnsureOobeDialogLoaded();
   return wizard_controller_.get();
 }
 
@@ -323,9 +319,6 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
 
   system_info_updater_->StartRequest();
 
-  // Update status of add user button in the shelf.
-  UpdateAddUserButtonStatus();
-
   OnStartSignInScreenCommon();
 
   login::SecurityTokenSessionController::MaybeDisplayLoginScreenNotification();
@@ -336,6 +329,8 @@ void LoginDisplayHostMojo::OnPreferencesChanged() {
 }
 
 void LoginDisplayHostMojo::OnStartAppLaunch() {
+  EnsureOobeDialogLoaded();
+
   ShowFullScreen();
 }
 
@@ -350,6 +345,7 @@ void LoginDisplayHostMojo::OnBrowserCreated() {
 }
 
 void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
+  EnsureOobeDialogLoaded();
   DCHECK(GetOobeUI());
 
   if (prefilled_account.is_valid()) {
@@ -396,7 +392,6 @@ void LoginDisplayHostMojo::UpdateOobeDialogState(OobeDialogState state) {
 }
 
 void LoginDisplayHostMojo::UpdateAddUserButtonStatus() {
-  DCHECK(GetOobeUI());
   LoginScreen::Get()->EnableAddUserButton(!AllAllowlistedUsersPresent());
 }
 
@@ -429,6 +424,14 @@ void LoginDisplayHostMojo::AddObserver(LoginDisplayHost::Observer* observer) {
 void LoginDisplayHostMojo::RemoveObserver(
     LoginDisplayHost::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+SigninUI* LoginDisplayHostMojo::GetSigninUI() {
+  return this;
+}
+
+bool LoginDisplayHostMojo::IsWizardControllerCreated() const {
+  return wizard_controller_.get();
 }
 
 void LoginDisplayHostMojo::OnCancelPasswordChangedFlow() {
@@ -526,9 +529,7 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
 void LoginDisplayHostMojo::HandleOnNoPodFocused() {
   user_selection_screen_->HandleNoPodFocused();
   focused_pod_account_id_ = EmptyAccountId();
-  if (GetOobeUI()) {
-    GetOobeUI()->GetErrorScreen()->AllowOfflineLoginPerUser(true);
-  }
+  ErrorScreen::AllowOfflineLoginPerUser(true);
 }
 
 bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
@@ -619,7 +620,12 @@ bool LoginDisplayHostMojo::IsOobeUIDialogVisible() const {
   return dialog_ && dialog_->IsVisible();
 }
 
-void LoginDisplayHostMojo::LoadOobeDialog() {
+OobeUIDialogDelegate* LoginDisplayHostMojo::EnsureDialogForTest() {
+  EnsureOobeDialogLoaded();
+  return dialog_;
+}
+
+void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   if (dialog_)
     return;
 
@@ -629,6 +635,15 @@ void LoginDisplayHostMojo::LoadOobeDialog() {
 
   views::View* web_dialog_view = dialog_->GetWebDialogView();
   scoped_observation_.Observe(web_dialog_view);
+
+  // Should be created after dialog was created and OobeUI was loaded.
+  wizard_controller_ = std::make_unique<WizardController>(wizard_context());
+
+  GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
+      &security_token_pin_dialog_host_ash_impl_);
+
+  // Update status of add user button in the shelf.
+  UpdateAddUserButtonStatus();
 }
 
 void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(
@@ -656,16 +671,21 @@ void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(
 }
 
 void LoginDisplayHostMojo::ShowDialog() {
+  EnsureOobeDialogLoaded();
   ObserveOobeUI();
   dialog_->Show();
 }
 
 void LoginDisplayHostMojo::ShowFullScreen() {
+  EnsureOobeDialogLoaded();
   ObserveOobeUI();
   dialog_->ShowFullScreen();
 }
 
 void LoginDisplayHostMojo::HideDialog() {
+  if (!dialog_)
+    return;
+
   // Stop observing so that dialog will not be shown when a screen change
   // occurs. Screen changes can occur even when the dialog is not shown (e.g.
   // with hidden error screens).
@@ -728,8 +748,6 @@ void LoginDisplayHostMojo::OnOwnerSigninSuccess() {
 
 void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
     const AccountId& account_id) {
-  if (!GetOobeUI())
-    return;
   bool offline_limit_expired = false;
 
   const absl::optional<base::TimeDelta> offline_signin_interval =
@@ -745,8 +763,7 @@ void LoginDisplayHostMojo::MaybeUpdateOfflineLoginLinkVisibility(
         base::TimeDelta();
   }
 
-  GetOobeUI()->GetErrorScreen()->AllowOfflineLoginPerUser(
-      !offline_limit_expired);
+  ErrorScreen::AllowOfflineLoginPerUser(!offline_limit_expired);
 }
 
 }  // namespace ash

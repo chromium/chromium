@@ -94,6 +94,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void StartBrowserDataMigration() override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+  SigninUI* GetSigninUI() final;
+  bool IsWizardControllerCreated() const final;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const final;
 

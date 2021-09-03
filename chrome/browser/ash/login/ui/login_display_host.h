@@ -221,8 +221,7 @@ class LoginDisplayHost {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Return sign-in UI instance, guaranteed to be non-null
-  // during OOBE/Login process. Returns nullptr on the secondary login screen.
+  // Return sign-in UI instance during OOBE/Login process.
   // Result should not be stored.
   virtual SigninUI* GetSigninUI() = 0;
 
@@ -236,13 +235,25 @@ class LoginDisplayHost {
   virtual void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) = 0;
 
+  // Returns true if WizardController was created.
+  virtual bool IsWizardControllerCreated() const = 0;
+
+  // Returns pointer to the WizardContext for tests.
+  virtual WizardContext* GetWizardContextForTesting() = 0;
+
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();
 
+  // Triggers |on_wizard_controller_created_for_tests_| callback.
+  void NotifyWizardCreated();
+
  private:
   // Global LoginDisplayHost instance.
   static LoginDisplayHost* default_host_;
+
+  // Callback to be executed when WebUI is started.
+  base::RepeatingClosure on_wizard_controller_created_for_tests_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHost);
 };

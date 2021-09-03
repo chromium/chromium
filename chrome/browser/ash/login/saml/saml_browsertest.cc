@@ -1081,8 +1081,9 @@ void SAMLPolicyTest::ShowGAIALoginForm() {
 }
 
 void SAMLPolicyTest::ShowSAMLInterstitial() {
-  WaitForOobeUI();
+  MaybeWaitForLoginScreenLoad();
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
   test::OobeJS()
       .CreateVisibilityWaiter(true, {"gaia-signin", "saml-interstitial"})
       ->Wait();
@@ -1364,6 +1365,8 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
   SetLoginVideoCaptureAllowedUrls({url1, url2});
   WaitForSigninScreen();
 
+  // Make sure WebUI is loaded.
+  LoginDisplayHost::default_host()->GetWizardController();
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
   content::WebContentsDelegate* web_contents_delegate =
       web_contents->GetDelegate();

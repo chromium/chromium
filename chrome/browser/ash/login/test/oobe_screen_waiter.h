@@ -48,6 +48,7 @@ class OobeScreenWaiter : public OobeUI::Observer,
   enum class State { IDLE, WAITING_FOR_SCREEN, DONE };
 
   OobeUI* GetOobeUI();
+  bool CheckIfDone();
   void EndWait();
 
   // Returns true if the target screen is reached.

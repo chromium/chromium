@@ -159,6 +159,15 @@ void FakeLoginDisplayHost::AddWizardCreatedObserverForTests(
   NOTREACHED();
 }
 
+bool FakeLoginDisplayHost::IsWizardControllerCreated() const {
+  return wizard_controller_.get();
+}
+
+WizardContext* FakeLoginDisplayHost::GetWizardContextForTesting() {
+  NOTREACHED();
+  return nullptr;
+}
+
 bool FakeLoginDisplayHost::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {

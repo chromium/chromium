@@ -1086,6 +1086,16 @@ void LoginDisplayHostWebUI::OnLoginOrLockScreenVisible() {
   session_observation_.Reset();
 }
 
+SigninUI* LoginDisplayHostWebUI::GetSigninUI() {
+  if (!GetWizardController())
+    return nullptr;
+  return this;
+}
+
+bool LoginDisplayHostWebUI::IsWizardControllerCreated() const {
+  return wizard_controller_.get();
+}
+
 bool LoginDisplayHostWebUI::GetKeyboardRemappedPrefValue(
     const std::string& pref_name,
     int* value) const {
@@ -1273,8 +1283,10 @@ class WebUIToViewsSwitchMetricsReporter
 
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override {
-    DCHECK_EQ(OobeUI::kGaiaSigninDisplay,
-              LoginDisplayHost::default_host()->GetOobeUI()->display_type());
+    if (LoginDisplayHost::default_host()->GetOobeUI()) {
+      DCHECK_EQ(OobeUI::kGaiaSigninDisplay,
+                LoginDisplayHost::default_host()->GetOobeUI()->display_type());
+    }
     base::UmaHistogramTimes("OOBE.WebUIToViewsSwitch.Duration",
                             timer_.Elapsed());
     base::SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, this);

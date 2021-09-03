@@ -76,11 +76,10 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   std::string authenticator_id_ = "$('gaia-signin').authenticator_";
   EmbeddedTestServerSetupMixin embedded_test_server_{&mixin_host_,
                                                      embedded_test_server()};
-
- private:
   // Waits for login_screen_load_observer_ and resets it afterwards.
   void MaybeWaitForLoginScreenLoad();
 
+ private:
   FakeUpdateEngineClient* update_engine_client_ = nullptr;
 
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;

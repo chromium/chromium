@@ -61,7 +61,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void MigrateUserData(const std::string& old_password) final;
   void ResyncUserData() final;
   bool HandleAccelerator(LoginAcceleratorAction action) final;
-  SigninUI* GetSigninUI() final;
   void ShowOsInstallScreen() final;
   void AddWizardCreatedObserverForTests(
       base::RepeatingClosure on_created) final;
@@ -78,6 +77,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       EncryptionMigrationMode migration_mode,
       base::OnceCallback<void(const UserContext&)> on_skip_migration) final;
   void ShowSigninError(SigninError error, const std::string& details) final;
+  WizardContext* GetWizardContextForTesting() final;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;

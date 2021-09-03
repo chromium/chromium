@@ -93,17 +93,6 @@ class LoginOfflineTest : public LoginManagerTest {
   }
   ~LoginOfflineTest() override = default;
 
-  void SetUpOnMainThread() override {
-    // Wait for OOBE to load.
-    base::RunLoop run_loop;
-    if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
-            run_loop.QuitClosure())) {
-      run_loop.Run();
-    }
-
-    LoginManagerTest::SetUpOnMainThread();
-  }
-
  protected:
   AccountId test_account_id_;
   LoginManagerMixin login_manager_{&mixin_host_};
