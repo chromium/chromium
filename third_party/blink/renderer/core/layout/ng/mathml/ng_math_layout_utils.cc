@@ -412,4 +412,11 @@ GetMathMLEmbellishedOperatorProperties(const NGBlockNode& node) {
   return properties;
 }
 
+bool IsStretchyOperator(const NGBlockNode& node,
+                        bool stretch_axis_is_vertical) {
+  const auto properties = GetMathMLEmbellishedOperatorProperties(node);
+  return properties && properties->is_stretchy &&
+         properties->is_vertical == stretch_axis_is_vertical;
+}
+
 }  // namespace blink

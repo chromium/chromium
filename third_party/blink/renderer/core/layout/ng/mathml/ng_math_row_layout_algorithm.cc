@@ -35,17 +35,6 @@ static void DetermineOperatorSpacing(const NGBlockNode& node,
   }
 }
 
-static bool IsStretchyOperatorWithBlockStretchAxis(const NGBlockNode& node) {
-  if (auto* core_operator =
-          DynamicTo<MathMLOperatorElement>(node.GetDOMNode())) {
-    // TODO(crbug.com/1124298): Implement embellished operators.
-    return core_operator->HasBooleanProperty(
-               MathMLOperatorElement::kStretchy) &&
-           core_operator->GetOperatorContent().is_vertical;
-  }
-  return false;
-}
-
 }  // namespace
 
 NGMathRowLayoutAlgorithm::NGMathRowLayoutAlgorithm(
@@ -59,55 +48,64 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     ChildrenVector* children,
     LayoutUnit* max_row_block_baseline,
     LogicalSize* row_total_size) {
-  bool should_add_space =
+  const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
   LayoutUnit inline_offset, max_row_ascent, max_row_descent;
 
   // https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-block-axis
+  const bool inherits_block_stretch_size_constraint =
+      ConstraintSpace().TargetStretchBlockSizes().has_value();
+  const bool inherits_inline_stretch_size_constraint =
+      !inherits_block_stretch_size_constraint &&
+      ConstraintSpace().HasTargetStretchInlineSize();
+
   NGConstraintSpace::MathTargetStretchBlockSizes stretch_sizes;
-  auto UpdateBlockStretchSizes =
-      [&](const scoped_refptr<const NGLayoutResult>& result) {
-        NGBoxFragment fragment(
-            ConstraintSpace().GetWritingDirection(),
-            To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-        LayoutUnit ascent = fragment.BaselineOrSynthesize();
-        stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
-        stretch_sizes.descent =
-            std::max(stretch_sizes.descent, fragment.BlockSize() - ascent);
-      };
+  if (!inherits_block_stretch_size_constraint &&
+      !inherits_inline_stretch_size_constraint) {
+    auto UpdateBlockStretchSizes =
+        [&](const scoped_refptr<const NGLayoutResult>& result) {
+          NGBoxFragment fragment(
+              ConstraintSpace().GetWritingDirection(),
+              To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+          LayoutUnit ascent = fragment.BaselineOrSynthesize();
+          stretch_sizes.ascent = std::max(stretch_sizes.ascent, ascent),
+          stretch_sizes.descent =
+              std::max(stretch_sizes.descent, fragment.BlockSize() - ascent);
+        };
 
-  // "Perform layout without any stretch size constraint on all the items of
-  // LNotToStretch."
-  bool should_layout_remaining_items_with_zero_block_stretch_size = true;
-  for (NGLayoutInputNode child = Node().FirstChild(); child;
-       child = child.NextSibling()) {
-    if (child.IsOutOfFlowPositioned() ||
-        IsStretchyOperatorWithBlockStretchAxis(To<NGBlockNode>(child)))
-      continue;
-    const auto child_constraint_space = CreateConstraintSpaceForMathChild(
-        Node(), ChildAvailableSize(), ConstraintSpace(), child,
-        NGCacheSlot::kMeasure);
-    const auto child_layout_result = To<NGBlockNode>(child).Layout(
-        child_constraint_space, nullptr /* break_token */);
-    UpdateBlockStretchSizes(child_layout_result);
-    should_layout_remaining_items_with_zero_block_stretch_size = false;
-  }
-
-  if (UNLIKELY(should_layout_remaining_items_with_zero_block_stretch_size)) {
-    // "If LNotToStretch is empty, perform layout with stretch size constraint
-    // 0 on all the items of LToStretch."
+    // "Perform layout without any stretch size constraint on all the items of
+    // LNotToStretch."
+    bool should_layout_remaining_items_with_zero_block_stretch_size = true;
     for (NGLayoutInputNode child = Node().FirstChild(); child;
          child = child.NextSibling()) {
-      if (child.IsOutOfFlowPositioned())
+      if (child.IsOutOfFlowPositioned() ||
+          IsBlockAxisStretchyOperator(To<NGBlockNode>(child)))
         continue;
-      DCHECK(IsStretchyOperatorWithBlockStretchAxis(To<NGBlockNode>(child)));
-      NGConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), ConstraintSpace(), child,
-          NGCacheSlot::kMeasure, zero_stretch_sizes);
+          NGCacheSlot::kMeasure);
       const auto child_layout_result = To<NGBlockNode>(child).Layout(
           child_constraint_space, nullptr /* break_token */);
       UpdateBlockStretchSizes(child_layout_result);
+      should_layout_remaining_items_with_zero_block_stretch_size = false;
+    }
+
+    if (UNLIKELY(should_layout_remaining_items_with_zero_block_stretch_size)) {
+      // "If LNotToStretch is empty, perform layout with stretch size constraint
+      // 0 on all the items of LToStretch."
+      for (NGLayoutInputNode child = Node().FirstChild(); child;
+           child = child.NextSibling()) {
+        if (child.IsOutOfFlowPositioned())
+          continue;
+        DCHECK(IsBlockAxisStretchyOperator(To<NGBlockNode>(child)));
+        NGConstraintSpace::MathTargetStretchBlockSizes zero_stretch_sizes;
+        const auto child_constraint_space = CreateConstraintSpaceForMathChild(
+            Node(), ChildAvailableSize(), ConstraintSpace(), child,
+            NGCacheSlot::kMeasure, zero_stretch_sizes);
+        const auto child_layout_result = To<NGBlockNode>(child).Layout(
+            child_constraint_space, nullptr /* break_token */);
+        UpdateBlockStretchSizes(child_layout_result);
+      }
     }
   }
 
@@ -122,15 +120,28 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
           To<NGBlockNode>(child), BorderScrollbarPadding().StartOffset());
       continue;
     }
-    // TODO(crbug.com/1124298): If there is already a stretch constraint, use
-    // for the child_constraint_space.
-    const auto child_constraint_space =
-        IsStretchyOperatorWithBlockStretchAxis(To<NGBlockNode>(child))
-            ? CreateConstraintSpaceForMathChild(
-                  Node(), ChildAvailableSize(), ConstraintSpace(), child,
-                  NGCacheSlot::kLayout, stretch_sizes)
-            : CreateConstraintSpaceForMathChild(Node(), ChildAvailableSize(),
-                                                ConstraintSpace(), child);
+    NGConstraintSpace child_constraint_space;
+    if (inherits_block_stretch_size_constraint &&
+        IsBlockAxisStretchyOperator(To<NGBlockNode>(child))) {
+      child_constraint_space = CreateConstraintSpaceForMathChild(
+          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          NGCacheSlot::kLayout, *ConstraintSpace().TargetStretchBlockSizes());
+    } else if (inherits_inline_stretch_size_constraint &&
+               IsInlineAxisStretchyOperator(To<NGBlockNode>(child))) {
+      child_constraint_space = CreateConstraintSpaceForMathChild(
+          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          NGCacheSlot::kLayout, absl::nullopt,
+          ConstraintSpace().TargetStretchInlineSize());
+    } else if (!inherits_block_stretch_size_constraint &&
+               !inherits_inline_stretch_size_constraint &&
+               IsBlockAxisStretchyOperator(To<NGBlockNode>(child))) {
+      child_constraint_space = CreateConstraintSpaceForMathChild(
+          Node(), ChildAvailableSize(), ConstraintSpace(), child,
+          NGCacheSlot::kLayout, stretch_sizes);
+    } else {
+      child_constraint_space = CreateConstraintSpaceForMathChild(
+          Node(), ChildAvailableSize(), ConstraintSpace(), child);
+    }
     const auto child_layout_result = To<NGBlockNode>(child).Layout(
         child_constraint_space, nullptr /* break_token */);
     LayoutUnit lspace, rspace;
@@ -221,7 +232,7 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
 
-  bool should_add_space =
+  const bool should_add_space =
       Node().IsMathRoot() || !GetMathMLEmbellishedOperatorProperties(Node());
 
   for (NGLayoutInputNode child = Node().FirstChild(); child;

@@ -2,12 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>Horizontal stretchy operator</title>
+<title>Horizontal stretchy operator, embellished with two nested mrows</title>
 <link rel="help" href="https://w3c.github.io/mathml-core/#layout-algorithms">
 <link rel="help" href="https://w3c.github.io/mathml-core/#dfn-algorithm-for-stretching-operators-along-the-inline-axis">
+<link rel="help" href="https://w3c.github.io/mathml-core/#algorithm-for-stretching-operators-along-the-block-axis">
+<link rel="help" href="https://w3c.github.io/mathml-core/#embellished-operators">
 <link rel="help" href="https://w3c.github.io/mathml-core/#layout-of-operators">
-<link rel="match" href="underover-stretchy-001-ref.html"/>
-<meta name="assert" content="Verify visual rendering of padding/border/margin on an operator, stretchy along the inline axis.">
+<link rel="match" href="underover-stretchy-002-ref.html"/>
+<meta name="assert" content="Verify visual rendering of padding/border/margin on an embellished operator, stretchy along the inline axis.">
 <script src="/mathml/support/feature-detection.js"></script>
 <style>
   @font-face {
@@ -40,7 +42,7 @@
       <div style="position: absolute; left: 0; top: 0;">
         <math>
           <munder>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
           </munder>
         </math>
@@ -61,7 +63,7 @@
         <math>
           <munder>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </munder>
         </math>
       </div>
@@ -80,7 +82,7 @@
       <div style="position: absolute; left: 0; top: 0;">
         <math>
           <mover>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
           </mover>
         </math>
@@ -101,7 +103,7 @@
         <math>
           <mover>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </mover>
         </math>
       </div>
@@ -121,7 +123,7 @@
       <div style="position: absolute; left: 0; top: 0;">
         <math>
           <munderover>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
             <mspace width="200px" height="0px"/>
           </munderover>
@@ -144,7 +146,7 @@
         <math>
           <munderover>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
           </munderover>
         </math>
@@ -167,7 +169,7 @@
           <munderover>
             <mspace width="200px" height="0px"/>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </munderover>
         </math>
       </div>
@@ -187,9 +189,9 @@
       <div style="position: absolute; left: 0; top: 0;">
         <math>
           <munderover>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </munderover>
         </math>
       </div>
@@ -209,9 +211,9 @@
       <div style="position: absolute; left: 0; top: 0;">
         <math>
           <munderover>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </munderover>
         </math>
       </div>
@@ -232,8 +234,8 @@
         <math>
           <munderover>
             <mspace width="200px" height="0px"/>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
-            <mo lspace="0" rspace="0" style="color: green;">⥚</mo>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
+            <mrow><mrow><mo lspace="0" rspace="0" style="color: green;">⥚</mo></mrow></mrow>
           </munderover>
         </math>
       </div>

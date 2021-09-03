@@ -81,6 +81,23 @@
 
       }, `Operators smaller and larger than non-stretchy siblings.`);
 
+      test(function() {
+          element = document.getElementById("core_operator_1");
+          assert_approx_equals(element.getBoundingClientRect().height, 6 * emToPx, epsilon, "mrow");
+
+          element = document.getElementById("core_operator_2");
+          assert_approx_equals(element.getBoundingClientRect().height, 6 * emToPx, epsilon, "munder");
+
+          element = document.getElementById("core_operator_3");
+          assert_approx_equals(element.getBoundingClientRect().height, 6 * emToPx, epsilon, "mover");
+
+          element = document.getElementById("core_operator_4");
+          assert_approx_equals(element.getBoundingClientRect().height, 6 * emToPx, epsilon, "mundeover");
+
+          element = document.getElementById("core_operator_5");
+          assert_approx_equals(element.getBoundingClientRect().height, 6 * emToPx, epsilon, "complex nesting");
+      }, `Embellished operators`);
+
       done();
   }
 </script>
@@ -116,6 +133,42 @@
         <mspace style="background: blue" width="1em" height="1.5em"/>
         <mo style="font-size: 200%" id="bigger_op" stretchy="true">⥜</mo>
         <mspace style="background: blue" width="1em" height="1em"/>
+      </mrow>
+    </math>
+  </p>
+  <p>
+    <math>
+      <mrow>
+        <mspace width="1em" height="3em" depth="3em" style="background: blue"/>
+        <mrow><mo id="core_operator_1" stretchy="true">⥜</mo></mrow>
+        <munder>
+          <mo id="core_operator_2" stretchy="true">⥜</mo>
+          <mspace></mspace>
+        </munder>
+        <mover>
+          <mo id="core_operator_3" stretchy="true">⥜</mo>
+          <mspace></mspace>
+        </mover>
+        <munderover>
+          <mo id="core_operator_4" stretchy="true">⥜</mo>
+          <mspace></mspace>
+        </munderover>
+        <mrow>
+          <mspace></mspace>
+          <munderover>
+            <mover>
+              <munder>
+                <mrow>
+                  <mo id="core_operator_5" stretchy="true">⥜</mo>
+                </mrow>
+                <mspace></mspace>
+              </munder>
+              <mspace></mspace>
+            </mover>
+            <mspace></mspace>
+            <mspace></mspace>
+          </munderover>
+        </mrow>
       </mrow>
     </math>
   </p>

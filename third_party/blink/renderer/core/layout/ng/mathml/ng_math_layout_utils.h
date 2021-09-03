@@ -114,6 +114,15 @@ struct MathMLEmbellishedOperatorProperties {
 };
 absl::optional<MathMLEmbellishedOperatorProperties>
 GetMathMLEmbellishedOperatorProperties(const NGBlockNode&);
+
+bool IsStretchyOperator(const NGBlockNode& node, bool stretch_axis_is_vertical);
+inline bool IsBlockAxisStretchyOperator(const NGBlockNode& node) {
+  return IsStretchyOperator(node, true);
+}
+inline bool IsInlineAxisStretchyOperator(const NGBlockNode& node) {
+  return IsStretchyOperator(node, false);
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_LAYOUT_UTILS_H_
