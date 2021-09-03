@@ -22,31 +22,6 @@
       }
     ]
   },
-  "linux-component-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-control-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-local-ssd-nvme-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-local-ssd-scsi-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
-  "linux-pd-ssd-rel": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "win-bootstrap-tests": {
     "gtest_tests": [
       {

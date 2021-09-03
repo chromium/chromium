@@ -723,11 +723,6 @@
 
     'infra': {
       'linux-bootstrap': 'release_bot',
-      'linux-control-rel': 'release_bot',
-      'linux-component-rel': 'shared_release_bot',
-      'linux-local-ssd-nvme-rel': 'release_bot',
-      'linux-local-ssd-scsi-rel': 'release_bot',
-      'linux-pd-ssd-rel': 'release_bot',
       'win-bootstrap': 'release_bot',
     },
 
@@ -2873,10 +2868,6 @@
     'release_bot_x86_minimal_symbols_no_clang_cxx11': [
       'release_bot', 'x86', 'minimal_symbols', 'no_clang', 'use_cxx11',
       'no_goma',
-    ],
-
-    'shared_release_bot': [
-      'shared_release_bot',
     ],
 
     'tsan_disable_nacl_debug_bot': [
