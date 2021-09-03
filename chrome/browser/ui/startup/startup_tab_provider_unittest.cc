@@ -329,6 +329,20 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     ASSERT_EQ(1u, output.size());
     EXPECT_EQ(GURL("chrome://settings/resetProfileSettings"), output[0].url);
   }
+  {
+    base::CommandLine command_line(
+        {"", "chrome://settings/resetProfileSettings#cct"});
+    StartupTabs output = StartupTabProviderImpl().GetCommandLineTabs(
+        command_line, base::FilePath(), &profile);
+    // Allowed only on Windows.
+#if defined(OS_WIN)
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://settings/resetProfileSettings#cct"),
+              output[0].url);
+#else
+    EXPECT_TRUE(output.empty());
+#endif
+  }
 
   // chrome://settings/ page handling.
   {
