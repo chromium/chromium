@@ -2609,7 +2609,7 @@ Trex.prototype = {
    * @param {number} setting
    */
   setJumpVelocity(setting) {
-    this.config.INIITAL_JUMP_VELOCITY = -setting;
+    this.config.INITIAL_JUMP_VELOCITY = -setting;
     this.config.DROP_VELOCITY = -setting / 2;
   },
 
