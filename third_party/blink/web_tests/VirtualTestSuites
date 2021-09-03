@@ -335,15 +335,6 @@
     "args": ["--enable-blink-features=LayoutNGPrinting"]
   },
   {
-    "prefix": "layout-ng-grid",
-    "bases": ["fast/css-grid-layout",
-              "external/wpt/css/css-sizing/aspect-ratio",
-              "external/wpt/css/css-grid",
-              "external/wpt/css/css-contain",
-              "external/wpt/css/css-sizing/contain-intrinsic-size"],
-    "args": ["--disable-blink-features=LayoutNGGrid"]
-  },
-  {
     "prefix": "dark-mode-default",
     "bases": ["dark-mode/colors",
               "dark-mode/images"],

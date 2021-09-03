@@ -172,14 +172,6 @@ crbug.com/1045599 external/wpt/css/css-sizing/contain-intrinsic-size/contain-int
 crbug.com/1045599 fast/css-grid-layout/grid-item-spanning-and-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 fast/css-grid-layout/grid-track-sizing-with-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-4.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-6.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-7.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-004.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-005.html [ Pass ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-area.js [ Failure ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-direction.js [ Failure ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Failure ]
@@ -659,12 +651,6 @@ virtual/layout_ng_block_frag/* [ Skip ]
 
 ### virtual/layout_ng_flex_frag/
 virtual/layout_ng_flex_frag/* [ Skip ]
-
-### virtual/layout-ng-grid/
-virtual/layout-ng-grid/* [ Skip ]
-
-### virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/
-crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogonal-positioned-grid-descendants-001.html [ Failure ]
 
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
