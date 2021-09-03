@@ -17,6 +17,7 @@
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -103,6 +104,9 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
     media::VideoFramePool pool_for_tmp_frames_;
+
+    std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
+        accelerated_frame_pool_;
 
     base::Lock context_provider_lock_;
     scoped_refptr<viz::RasterContextProvider> raster_context_provider_

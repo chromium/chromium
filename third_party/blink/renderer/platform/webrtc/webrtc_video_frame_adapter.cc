@@ -9,10 +9,16 @@
 
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/video_util.h"
+#include "media/base/wait_and_replace_sync_token_client.h"
+#include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -41,6 +47,61 @@ static void CreateContextProviderOnMainThread(
   *result = blink::Platform::Current()->SharedCompositorWorkerContextProvider();
   waitable_event->Signal();
 }
+
+class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
+ public:
+  Context(media::GpuVideoAcceleratorFactories* gpu_factories,
+          scoped_refptr<viz::RasterContextProvider> raster_context_provider)
+      : gpu_factories_(gpu_factories),
+        raster_context_provider_(std::move(raster_context_provider)) {}
+
+  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+      const gfx::Size& size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage) override {
+    return GpuMemoryBufferManager()->CreateGpuMemoryBuffer(
+        size, format, usage, gpu::kNullSurfaceHandle, nullptr);
+  }
+
+  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
+                         gfx::BufferPlane plane,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage,
+                         gpu::Mailbox& mailbox,
+                         gpu::SyncToken& sync_token) override {
+    auto* sii = SharedImageInterface();
+    if (!sii)
+      return;
+    mailbox = sii->CreateSharedImage(
+        gpu_memory_buffer, GpuMemoryBufferManager(), plane, color_space,
+        surface_origin, alpha_type, usage);
+    sync_token = sii->GenVerifiedSyncToken();
+  }
+
+  void DestroySharedImage(const gpu::SyncToken& sync_token,
+                          const gpu::Mailbox& mailbox) override {
+    auto* sii = SharedImageInterface();
+    if (!sii)
+      return;
+    sii->DestroySharedImage(sync_token, mailbox);
+  }
+
+ private:
+  gpu::SharedImageInterface* SharedImageInterface() const {
+    return raster_context_provider_->SharedImageInterface();
+  }
+
+  gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() const {
+    auto* manager = gpu_factories_->GpuMemoryBufferManager();
+    DCHECK(manager);
+    return manager;
+  }
+
+  media::GpuVideoAcceleratorFactories* gpu_factories_;
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
+};
 
 }  // namespace
 
@@ -77,6 +138,10 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
       return raster_context_provider_;
   }
 
+  // Since the accelerated frame pool is attached to the old provider, we need
+  // to release it here.
+  accelerated_frame_pool_.reset();
+
   // Recreate the context provider.
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(
@@ -93,18 +158,82 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
   return raster_context_provider_;
 }
 
+#if defined(OS_MAC)
+const base::Feature kWebRTCGpuMemoryBufferReadback{
+    "WebRTCGpuMemoryBufferReadback", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
+// static
+bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
+#if defined(OS_MAC)
+  // GMB readback only works with NV12, so only opaque buffers can be used.
+  return (format == media::PIXEL_FORMAT_XBGR ||
+          format == media::PIXEL_FORMAT_XRGB) &&
+         base::FeatureList::IsEnabled(kWebRTCGpuMemoryBufferReadback);
+#else
+  return false;
+#endif
+}
+
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     scoped_refptr<media::VideoFrame> source_frame) {
   RTC_DCHECK(source_frame->HasTextures());
 
-  scoped_refptr<viz::RasterContextProvider> raster_context_provider =
-      GetRasterContextProvider();
+  auto raster_context_provider = GetRasterContextProvider();
   if (!raster_context_provider) {
     return nullptr;
   }
+
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
+
+  if (CanUseGpuMemoryBufferReadback(source_frame->format())) {
+    if (!accelerated_frame_pool_) {
+      accelerated_frame_pool_ =
+          media::RenderableGpuMemoryBufferVideoFramePool::Create(
+              std::make_unique<Context>(gpu_factories_,
+                                        raster_context_provider));
+    }
+
+    auto origin = source_frame->metadata().texture_origin_is_top_left
+                      ? kTopLeft_GrSurfaceOrigin
+                      : kBottomLeft_GrSurfaceOrigin;
+
+    // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
+    // Expose the color space and pixel format that is backing
+    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
+    // SkImage.
+    auto format = source_frame->format() == media::PIXEL_FORMAT_XBGR
+                      ? viz::ResourceFormat::RGBA_8888
+                      : viz::ResourceFormat::BGRA_8888;
+
+    scoped_refptr<media::VideoFrame> dst_frame;
+    {
+      // Blocking is necessary to create the GpuMemoryBuffer from this thread.
+      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+      dst_frame = accelerated_frame_pool_->MaybeCreateVideoFrame(
+          source_frame->coded_size());
+      if (!dst_frame) {
+        return nullptr;
+      }
+    }
+
+    gpu::SyncToken copy_done_sync_token;
+    const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
+        raster_context_provider.get(), format, source_frame->coded_size(),
+        source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),
+        dst_frame.get(), copy_done_sync_token);
+    if (!copy_succeeded) {
+      return nullptr;
+    }
+
+    // TODO(crbug.com/1224279): We should remove this wait by internalizing
+    // it into VideoFrame::Map().
+    raster_context_provider->RasterInterface()->Finish();
+    auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
+    return vf;
+  }
 
   auto* ri = scoped_context.RasterInterface();
   auto* gr_context = raster_context_provider->GrContext();
