@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {AcceleratorConfig, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorConfigResult, AcceleratorKeys, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -20,6 +20,8 @@ export class FakeShortcutProvider {
     this.methods_.register('getAllAcceleratorConfig');
     this.methods_.register('getLayoutInfo');
     this.methods_.register('isMutable');
+    this.methods_.register('addUserAccelerator');
+    this.methods_.register('replaceAccelerator');
   }
 
   /**
@@ -43,6 +45,31 @@ export class FakeShortcutProvider {
   isMutable(source) {
     this.methods_.setResult('isMutable', source !== AcceleratorSource.kBrowser);
     return this.methods_.resolveMethod('isMutable');
+  }
+
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {!AcceleratorKeys} accelerator
+   */
+  addUserAccelerator(source, action, accelerator) {
+    // Always return kSuccess in this fake.
+    this.methods_.setResult(
+        'addUserAccelerator', AcceleratorConfigResult.kSuccess);
+    return this.methods_.resolveMethod('addUserAccelerator');
+  }
+
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {!AcceleratorKeys} oldAccelerator
+   * @param {!AcceleratorKeys} newAccelerator
+   */
+  replaceAccelerator(source, action, oldAccelerator, newAccelerator) {
+    // Always return kSuccess in this fake.
+    this.methods_.setResult(
+        'replaceAccelerator', AcceleratorConfigResult.kSuccess);
+    return this.methods_.resolveMethod('replaceAccelerator');
   }
 
   /**

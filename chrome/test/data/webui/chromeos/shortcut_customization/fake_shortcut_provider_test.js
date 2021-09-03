@@ -4,9 +4,9 @@
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorConfig, AcceleratorSource, LayoutInfoList} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorConfig, AcceleratorConfigResult, AcceleratorKeys, AcceleratorSource, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 export function fakeShortcutProviderTest() {
   /** @type {?FakeShortcutProvider} */
@@ -65,5 +65,43 @@ export function fakeShortcutProviderTest() {
         assertFalse(result);
       });
     });
+  });
+
+  test('AddUserAcceleratorFake', () => {
+    // TODO(jimmyxgong): Remove this test once real data is ready.
+    const acceleratorKeys = /** @type {!AcceleratorKeys} */ ({
+      modifiers: Modifier.SHIFT,
+      key: 79,
+      key_display: 'o',
+    });
+    return provider
+        .addUserAccelerator(
+            AcceleratorSource.kAsh, /**action=*/ 0, acceleratorKeys)
+        .then((result) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result);
+        });
+  });
+
+  test('ReplaceAcceleratorFake', () => {
+    // TODO(jimmyxgong): Remove this test once real data is ready.
+    const oldAcceleratorKeys = /** @type {!AcceleratorKeys} */ ({
+      modifiers: Modifier.SHIFT,
+      key: 79,
+      key_display: 'o',
+    });
+
+    const newAcceleratorKeys = /** @type {!AcceleratorKeys} */ ({
+      modifiers: Modifier.SHIFT,
+      key: 80,
+      key_display: 'p',
+    });
+
+    return provider
+        .replaceAccelerator(
+            AcceleratorSource.kAsh, /**action=*/ 0, oldAcceleratorKeys,
+            newAcceleratorKeys)
+        .then((result) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result);
+        });
   });
 }

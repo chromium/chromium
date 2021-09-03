@@ -57,6 +57,20 @@ export let AcceleratorState = {
 };
 
 /**
+ * Enumeration of accelerator config results from adding/replacing/removing an
+ * accelerator.
+ * @enum {number}
+ */
+export let AcceleratorConfigResult = {
+  kSuccess: 0,
+  kActionLocked: 1,
+  kAcceleratorLocked: 2,
+  kConflict: 3,
+  kNotFound: 4,
+  kDuplicate: 5,
+}
+
+/**
  * Type alias for AcceleratorKeys.
  * @typedef {{
  *   modifiers: number,
