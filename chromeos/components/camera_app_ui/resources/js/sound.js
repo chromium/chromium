@@ -2,25 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AsyncJobQueue} from './async_job_queue.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
- * @type {!Map<!HTMLAudioElement, !AsyncJobQueue>}
+ * Audio element status.
+ * @enum {string}
  */
-const jobQueueMap = new Map();
+export const Status = {
+  LOADING: 'loading',
+  PLAYING: 'playing',
+  PAUSED: 'paused',
+};
 
 /**
- * Gets the audio job queue for the element.
- * @param {!HTMLAudioElement} el
- * @return {!AsyncJobQueue}
+ * Map of audio elements and their status.
+ * @type {!Map<HTMLAudioElement>}
  */
-function getQueueFor(el) {
-  if (!jobQueueMap.has(el)) {
-    jobQueueMap.set(el, new AsyncJobQueue());
-  }
-  return jobQueueMap.get(el);
-}
+const elementsStatus = new Map();
 
 /**
  * Plays a sound.
@@ -29,35 +27,48 @@ function getQueueFor(el) {
  *     stopped. The resolved value will be true if it is ended. Otherwise, it is
  *     just paused due to cancenlation.
  */
-export function play(el) {
-  cancel(el);
-  const queue = getQueueFor(el);
-  const job = async () => {
-    el.currentTime = 0;
-    await el.play();
+export async function play(el) {
+  await cancel(el);
 
-    const audioStopped = new WaitableEvent();
-    const events = ['ended', 'pause'];
-    const onAudioStopped = () => {
-      audioStopped.signal(el.ended);
-      for (const event of events) {
-        el.removeEventListener(event, onAudioStopped);
-      }
-    };
+  el.currentTime = 0;
+  elementsStatus.set(el, Status.LOADING);
+  await el.play();
+  elementsStatus.set(el, Status.PLAYING);
+
+  const audioStopped = new WaitableEvent();
+  const events = ['ended', 'pause'];
+  const onAudioStopped = () => {
+    elementsStatus.set(el, Status.PAUSED);
+    audioStopped.signal(el.ended);
     for (const event of events) {
-      el.addEventListener(event, onAudioStopped);
+      el.removeEventListener(event, onAudioStopped);
     }
-    return audioStopped.wait();
   };
-  return queue.push(job);
+  for (const event of events) {
+    el.addEventListener(event, onAudioStopped);
+  }
+  return audioStopped.wait();
 }
 
 /**
- * Cancel a sound from playing.
+ * Cancel a sound from playing. If the sound is loading, cancel it right after
+ * it start playing. If the sound is paused, do nothing.
  * @param {!HTMLAudioElement} el Audio element to cancel.
  * @return {!Promise}
  */
 export async function cancel(el) {
-  el.pause();
-  await getQueueFor(el).flush();
+  // We can only pause the element which is currently playing.
+  // (Please refer to https://goo.gl/LdLk22)
+  const status = elementsStatus.get(el);
+  if (status === Status.PLAYING) {
+    el.pause();
+  } else if (status === Status.LOADING) {
+    const canceled = new WaitableEvent();
+    const onPlaying = () => {
+      el.pause();
+      canceled.signal();
+    };
+    el.addEventListener('playing', onPlaying, {once: true});
+    await canceled.wait();
+  }
 }
