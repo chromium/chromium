@@ -129,7 +129,7 @@ class CronetPerfTestMeasurement(
     super(CronetPerfTestMeasurement, self).__init__(options)
     self._device = device
 
-  def WillRunStory(self, platform):
+  def WillRunStory(self, platform, story=None):
     # Skip parent implementation which doesn't apply to Cronet perf test app as
     # it is not a browser with a timeline interface.
     pass
