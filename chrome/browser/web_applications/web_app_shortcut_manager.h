@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
@@ -146,12 +147,12 @@ class WebAppShortcutManager {
 
   bool suppress_shortcuts_for_testing_ = false;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppIconManager* icon_manager_ = nullptr;
-  WebAppFileHandlerManager* file_handler_manager_ = nullptr;
-  ProtocolHandlerManager* protocol_handler_manager_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
+  raw_ptr<WebAppFileHandlerManager> file_handler_manager_ = nullptr;
+  raw_ptr<ProtocolHandlerManager> protocol_handler_manager_ = nullptr;
 
   base::WeakPtrFactory<WebAppShortcutManager> weak_ptr_factory_{this};
 };

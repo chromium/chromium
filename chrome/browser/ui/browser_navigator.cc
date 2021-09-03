@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -410,8 +411,8 @@ class ScopedBrowserShower {
   }
 
  private:
-  NavigateParams* params_;
-  content::WebContents** contents_;
+  raw_ptr<NavigateParams> params_;
+  raw_ptr<content::WebContents*> contents_;
   DISALLOW_COPY_AND_ASSIGN(ScopedBrowserShower);
 };
 

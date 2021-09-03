@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 
@@ -107,8 +108,8 @@ class SensorFusionAlgorithmUsingAccelerometerTest : public testing::Test {
   scoped_refptr<FakePlatformSensorFusion> fake_gravity_fusion_sensor_;
   scoped_refptr<FakePlatformSensorFusion>
       fake_linear_acceleration_fusion_sensor_;
-  GravityFusionAlgorithmUsingAccelerometer* gravity_fusion_algorithm_;
-  LinearAccelerationFusionAlgorithmUsingAccelerometer*
+  raw_ptr<GravityFusionAlgorithmUsingAccelerometer> gravity_fusion_algorithm_;
+  raw_ptr<LinearAccelerationFusionAlgorithmUsingAccelerometer>
       linear_acceleration_fusion_algorithm_;
 };
 

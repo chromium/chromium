@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,7 +37,7 @@ class IconWrapper : public views::View {
   }
 
  private:
-  views::View* icon_;
+  raw_ptr<views::View> icon_;
 };
 
 BEGIN_METADATA(IconWrapper, views::View)

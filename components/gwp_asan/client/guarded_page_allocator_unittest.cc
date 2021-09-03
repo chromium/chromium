@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
@@ -219,8 +220,8 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  GuardedPageAllocator* gpa_;
-  std::array<void*, kMaxMetadata>* allocations_;
+  raw_ptr<GuardedPageAllocator> gpa_;
+  raw_ptr<std::array<void*, kMaxMetadata>> allocations_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedAllocCountDelegate);
 };
@@ -281,7 +282,7 @@ class ThreadedHighContentionDelegate
   }
 
  private:
-  GuardedPageAllocator* gpa_;
+  raw_ptr<GuardedPageAllocator> gpa_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedHighContentionDelegate);
 };

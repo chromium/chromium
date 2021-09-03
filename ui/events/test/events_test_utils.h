@@ -6,6 +6,7 @@
 #define UI_EVENTS_TEST_EVENTS_TEST_UTILS_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_target.h"
@@ -31,7 +32,7 @@ class EventTestApi {
  private:
   EventTestApi();
 
-  Event* event_;
+  raw_ptr<Event> event_;
 
   DISALLOW_COPY_AND_ASSIGN(EventTestApi);
 };
@@ -51,7 +52,7 @@ class LocatedEventTestApi : public EventTestApi {
  private:
   LocatedEventTestApi();
 
-  LocatedEvent* located_event_;
+  raw_ptr<LocatedEvent> located_event_;
 
   DISALLOW_COPY_AND_ASSIGN(LocatedEventTestApi);
 };
@@ -70,7 +71,7 @@ class KeyEventTestApi : public EventTestApi {
  private:
   KeyEventTestApi();
 
-  KeyEvent* key_event_;
+  raw_ptr<KeyEvent> key_event_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyEventTestApi);
 };
@@ -88,7 +89,7 @@ class EventTargetTestApi {
  private:
   EventTargetTestApi();
 
-  EventTarget* target_;
+  raw_ptr<EventTarget> target_;
 
   DISALLOW_COPY_AND_ASSIGN(EventTargetTestApi);
 };
@@ -102,7 +103,7 @@ class EventSourceTestApi {
  private:
   EventSourceTestApi();
 
-  EventSource* event_source_;
+  raw_ptr<EventSource> event_source_;
 
   DISALLOW_COPY_AND_ASSIGN(EventSourceTestApi);
 };

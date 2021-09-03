@@ -6,6 +6,7 @@
 #define CONTENT_WEB_TEST_RENDERER_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/origin.h"
@@ -38,8 +39,8 @@ class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
                                    const blink::WebURL& url) override;
 
  private:
-  TestRunner* const test_runner_;
-  WebTestRuntimeFlags* const flags_;
+  const raw_ptr<TestRunner> test_runner_;
+  const raw_ptr<WebTestRuntimeFlags> flags_;
 };
 
 }  // namespace content

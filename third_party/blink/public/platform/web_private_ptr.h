@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_PRIVATE_PTR_H_
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
@@ -132,7 +133,7 @@ class PtrStorageImpl<T,
   }
 
  private:
-  T* ptr_;
+  raw_ptr<T> ptr_;
 };
 
 template <typename T, WebPrivatePtrDestruction, WebPrivatePtrStrength>
@@ -210,7 +211,7 @@ class PtrStorageImpl<T,
   }
 
  private:
-  BlinkPtrType* handle_;
+  raw_ptr<BlinkPtrType> handle_;
 };
 
 template <typename T,

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_bus.h"
@@ -53,7 +54,7 @@ class InProcessReceiver {
     void ProcessRtpPacket(std::unique_ptr<Packet> packet) final;
 
    private:
-    InProcessReceiver* in_process_receiver_;
+    raw_ptr<InProcessReceiver> in_process_receiver_;
 
     DISALLOW_COPY_AND_ASSIGN(TransportClient);
   };

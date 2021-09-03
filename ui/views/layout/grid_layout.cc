@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
@@ -210,7 +211,7 @@ class Column : public LayoutElement {
   // one of the other linked columns. Use the method GetLastprimaryColumn
   // to resolve the true primary column.
   std::vector<Column*> same_size_columns_;
-  Column* primary_column_;
+  raw_ptr<Column> primary_column_;
 
   DISALLOW_COPY_AND_ASSIGN(Column);
 };
@@ -287,7 +288,7 @@ class Row : public LayoutElement {
  private:
   const int height_;
   // The column set used for this row; null for padding rows.
-  ColumnSet* column_set_;
+  raw_ptr<ColumnSet> column_set_;
 
   int max_ascent_;
   int max_descent_;
@@ -327,8 +328,8 @@ struct ViewState {
            (start_col + col_span) <= column_set->num_columns());
   }
 
-  ColumnSet* const column_set;
-  View* const view;
+  const raw_ptr<ColumnSet> column_set;
+  const raw_ptr<View> view;
   const int start_col;
   const int start_row;
   const int col_span;

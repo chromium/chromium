@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/views/notification_view.h"
 
 #include <stddef.h>
@@ -145,7 +146,7 @@ class ClickActivator : public ui::EventHandler {
     }
   }
 
-  NotificationViewBase* const owner_;
+  const raw_ptr<NotificationViewBase> owner_;
 };
 
 // Creates a view responsible for drawing each list notification item's title
@@ -374,18 +375,18 @@ NotificationInputContainer::NotificationInputContainer(
       },
       this));
 
-  AddChildView(ink_drop_container_);
+  AddChildView(ink_drop_container_.get());
 
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(kInputTextfieldPadding));
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   layout->SetFlexForView(textfield_, 1);
 
   button_->SetBorder(views::CreateEmptyBorder(kInputReplyButtonPadding));
   button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   OnAfterUserAction(textfield_);
-  AddChildView(button_);
+  AddChildView(button_.get());
 
   views::InstallRectHighlightPathGenerator(this);
 }
@@ -606,7 +607,7 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
             ui::NativeTheme::kColorId_NotificationBackgroundActive);
       },
       this));
-  AddChildView(ink_drop_container_);
+  AddChildView(ink_drop_container_.get());
 
   SetNotifyEnterExitOnChild(true);
 
@@ -965,7 +966,7 @@ void NotificationViewBase::CreateOrUpdateTitleView(
     title_view_->SetMultiLine(true);
     title_view_->SetMaxLines(kMaxLinesForTitleView);
     title_view_->SetAllowCharacterBreak(true);
-    left_content_->AddChildViewAt(title_view_, left_content_count_);
+    left_content_->AddChildViewAt(title_view_.get(), left_content_count_);
   } else {
     title_view_->SetText(title);
   }
@@ -1015,7 +1016,7 @@ void NotificationViewBase::CreateOrUpdateCompactTitleMessageView(
   }
   if (!compact_title_message_view_) {
     compact_title_message_view_ = new CompactTitleMessageView();
-    left_content_->AddChildViewAt(compact_title_message_view_,
+    left_content_->AddChildViewAt(compact_title_message_view_.get(),
                                   left_content_count_);
   }
 
@@ -1041,7 +1042,8 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
                                                 /* allow_round_corner */ false);
     progress_bar_view_->SetBorder(
         views::CreateEmptyBorder(kProgressBarTopPadding, 0, 0, 0));
-    left_content_->AddChildViewAt(progress_bar_view_, left_content_count_);
+    left_content_->AddChildViewAt(progress_bar_view_.get(),
+                                  left_content_count_);
   }
 
   progress_bar_view_->SetValue(notification.progress() / 100.0);
@@ -1118,7 +1120,7 @@ void NotificationViewBase::CreateOrUpdateIconView(
 
   if (!icon_view_) {
     icon_view_ = new ProportionalImageView(kIconViewSize);
-    right_content_->AddChildView(icon_view_);
+    right_content_->AddChildView(icon_view_.get());
   }
 
   icon_view_->SetImage(icon, icon.size());
@@ -1281,13 +1283,13 @@ void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
       l10n_util::GetStringUTF16(block_notifications_message_id));
   block_all_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  settings_row_->AddChildView(block_all_button_);
+  settings_row_->AddChildView(block_all_button_.get());
 
   dont_block_button_ = new InlineSettingsRadioButton(
       l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_DONT_BLOCK_NOTIFICATIONS));
   dont_block_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  settings_row_->AddChildView(dont_block_button_);
+  settings_row_->AddChildView(dont_block_button_.get());
   settings_row_->SetVisible(false);
 
   settings_done_button_ = new NotificationTextButton(
@@ -1302,7 +1304,7 @@ void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
   settings_button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   settings_button_row->SetLayoutManager(std::move(settings_button_layout));
-  settings_button_row->AddChildView(settings_done_button_);
+  settings_button_row->AddChildView(settings_done_button_.get());
   settings_row_->AddChildView(settings_button_row);
 }
 

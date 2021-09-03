@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_piece.h"
@@ -200,7 +201,7 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
   }
 
-  AutofillAgent* agent_ = nullptr;
+  raw_ptr<AutofillAgent> agent_ = nullptr;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
 };
 

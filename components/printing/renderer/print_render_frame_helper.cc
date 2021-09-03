@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -868,7 +869,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
 
   FrameReference frame_;
   FrameReference original_frame_;
-  blink::WebNavigationControl* navigation_control_ = nullptr;
+  raw_ptr<blink::WebNavigationControl> navigation_control_ = nullptr;
   blink::WebNode node_to_print_;
   bool owns_web_view_ = false;
   blink::WebPrintParams web_print_params_;

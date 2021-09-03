@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
@@ -59,7 +60,7 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
   }
 
  private:
-  ServiceWorkerNetworkProviderForFrame* owner_;
+  raw_ptr<ServiceWorkerNetworkProviderForFrame> owner_;
 };
 
 // static

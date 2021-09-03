@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "remoting/client/notification/json_fetcher.h"
@@ -103,7 +104,7 @@ class NotificationClientTest : public ::testing::Test {
                                kTestLocale, should_ignore_dev_messages));
   }
 
-  MockJsonFetcher* fetcher_;
+  raw_ptr<MockJsonFetcher> fetcher_;
   std::unique_ptr<NotificationClient> client_;
 };
 

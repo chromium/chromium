@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -149,7 +150,7 @@ class AutoSelectCertificateTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
   std::vector<scoped_refptr<net::X509Certificate>> client_certs_;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
@@ -148,7 +149,7 @@ class NavigationPredictorKeyedService : public KeyedService {
 
   base::TimeTicks last_web_contents_state_change_time_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationPredictorKeyedService);
 };

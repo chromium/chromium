@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
 #include "v8/include/v8.h"
@@ -88,7 +89,7 @@ class GuestViewContainer {
   void CallElementResizeCallback(const gfx::Size& new_size);
 
   int element_instance_id_;
-  content::RenderFrame* render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
   std::unique_ptr<RenderFrameLifetimeObserver> render_frame_lifetime_observer_;
 
   bool in_destruction_;
@@ -97,10 +98,10 @@ class GuestViewContainer {
   std::unique_ptr<GuestViewRequest> pending_response_;
 
   v8::Global<v8::Function> destruction_callback_;
-  v8::Isolate* destruction_isolate_;
+  raw_ptr<v8::Isolate> destruction_isolate_;
 
   v8::Global<v8::Function> element_resize_callback_;
-  v8::Isolate* element_resize_isolate_;
+  raw_ptr<v8::Isolate> element_resize_isolate_;
 
   base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
 

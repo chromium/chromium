@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
@@ -201,7 +202,7 @@ class IDNSpoofChecker {
   // characters that look like digits (but not exclusively actual digits).
   bool IsDigitLookalike(const icu::UnicodeString& label);
 
-  USpoofChecker* checker_;
+  raw_ptr<USpoofChecker> checker_;
   icu::UnicodeSet deviation_characters_;
   icu::UnicodeSet non_ascii_latin_letters_;
   icu::UnicodeSet kana_letters_exceptions_;

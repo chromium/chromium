@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SECURITY_INFORMATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SECURITY_INFORMATION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/link.h"
@@ -53,25 +54,25 @@ class SecurityInformationView : public views::View {
  private:
   // The icon that representes the security state for this site. Used for page
   // info v2 only.
-  NonAccessibleImageView* icon_ = nullptr;
+  raw_ptr<NonAccessibleImageView> icon_ = nullptr;
 
   // The label that displays the security summary for this site. Used for page
   // info v2 only.
-  views::StyledLabel* security_summary_label_ = nullptr;
+  raw_ptr<views::StyledLabel> security_summary_label_ = nullptr;
 
   // The label that displays the status of the identity check for this site.
   // Includes a link to open the Chrome Help Center article about connection
   // security.
-  views::StyledLabel* security_details_label_ = nullptr;
+  raw_ptr<views::StyledLabel> security_details_label_ = nullptr;
 
   // A container for the styled label with a link for resetting cert decisions.
   // This is only shown sometimes, so we use a container to keep track of
   // where to place it (if needed).
-  views::View* reset_decisions_label_container_ = nullptr;
+  raw_ptr<views::View> reset_decisions_label_container_ = nullptr;
 
   // A container for the label buttons used to change password or mark the site
   // as safe.
-  views::View* password_reuse_button_container_ = nullptr;
+  raw_ptr<views::View> password_reuse_button_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SECURITY_INFORMATION_VIEW_H_

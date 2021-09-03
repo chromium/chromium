@@ -178,7 +178,7 @@ void DecryptingRenderer::InitializeRenderer(bool success) {
   // encrypted streams.
   MediaResource* const maybe_decrypting_media_resource =
       decrypting_media_resource_ ? decrypting_media_resource_.get()
-                                 : media_resource_;
+                                 : media_resource_.get();
   renderer_->Initialize(maybe_decrypting_media_resource, client_,
                         std::move(init_cb_));
 }

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -195,8 +196,8 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
 
   ~DesktopNativeWidgetTopLevelHandler() override = default;
 
-  Widget* top_level_widget_ = nullptr;
-  aura::Window* child_window_ = nullptr;
+  raw_ptr<Widget> top_level_widget_ = nullptr;
+  raw_ptr<aura::Window> child_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetTopLevelHandler);
 };
@@ -235,7 +236,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
   }
 
  private:
-  aura::Window* root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopNativeWidgetAuraWindowParentingClient);
 };
@@ -256,7 +257,7 @@ class RootWindowDestructionObserver : public aura::WindowObserver {
     delete this;
   }
 
-  DesktopNativeWidgetAura* parent_;
+  raw_ptr<DesktopNativeWidgetAura> parent_;
 
   DISALLOW_COPY_AND_ASSIGN(RootWindowDestructionObserver);
 };

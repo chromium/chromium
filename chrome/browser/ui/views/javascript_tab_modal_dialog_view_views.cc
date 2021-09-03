@@ -97,7 +97,7 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
     message_box_view_->SetPromptField(default_prompt_text);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  AddChildView(message_box_view_);
+  AddChildView(message_box_view_.get());
 
   constrained_window::ShowWebModalDialogViews(this, parent_web_contents);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::JAVA_SCRIPT);

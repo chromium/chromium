@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -101,7 +102,7 @@ class VIEWS_EXPORT AnimationBuilder {
   // Each vector is kept in sorted order.
   std::map<AnimationKey, std::vector<Value>> values_;
 
-  AnimationAbortHandle* abort_handle_ = nullptr;
+  raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
 
   // Callback used for testing.
   static base::NoDestructor<base::RepeatingClosure> on_observer_deleted_;

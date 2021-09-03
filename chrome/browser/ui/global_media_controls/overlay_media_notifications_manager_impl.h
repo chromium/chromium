@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager.h"
 
 class MediaNotificationService;
@@ -40,7 +41,7 @@ class OverlayMediaNotificationsManagerImpl
   void OnOverlayNotificationClosed(const std::string& id) override;
 
  private:
-  MediaNotificationService* const service_;
+  const raw_ptr<MediaNotificationService> service_;
   std::map<std::string, std::unique_ptr<OverlayMediaNotification>>
       overlay_notifications_;
 };

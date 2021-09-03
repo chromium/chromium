@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/error_page/common/net_error_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -146,7 +147,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
     else
       net_error = net::ERR_TIMED_OUT;
     content::MockNavigationHandle navigation_handle(
-        bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_);
+        bogus_url_, (main_frame == MAIN_FRAME) ? main_rfh() : subframe_.get());
     navigation_handle.set_is_in_primary_main_frame(main_frame == MAIN_FRAME);
     navigation_handle.set_net_error_code(net_error);
     navigation_handle.set_has_committed(true);
@@ -183,7 +184,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
   TestNetErrorTabHelper* tab_helper() { return tab_helper_.get(); }
 
  private:
-  content::RenderFrameHost* subframe_;
+  raw_ptr<content::RenderFrameHost> subframe_;
   std::unique_ptr<TestNetErrorTabHelper> tab_helper_;
   GURL bogus_url_;
 };

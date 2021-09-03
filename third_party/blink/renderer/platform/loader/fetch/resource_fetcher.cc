@@ -489,16 +489,16 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
 
 ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
     : properties_(*init.properties),
-      context_(init.context),
+      context_(init.context.get()),
       freezable_task_runner_(init.freezable_task_runner),
       unfreezable_task_runner_(init.unfreezable_task_runner),
       use_counter_(init.use_counter
-                       ? init.use_counter
+                       ? init.use_counter.get()
                        : MakeGarbageCollected<DetachableUseCounter>(nullptr)),
       console_logger_(init.console_logger
-                          ? init.console_logger
+                          ? init.console_logger.get()
                           : MakeGarbageCollected<DetachableConsoleLogger>()),
-      loader_factory_(init.loader_factory),
+      loader_factory_(init.loader_factory.get()),
       scheduler_(MakeGarbageCollected<ResourceLoadScheduler>(
           init.initial_throttling_policy,
           init.throttle_option_override,
@@ -506,8 +506,9 @@ ResourceFetcher::ResourceFetcher(const ResourceFetcherInit& init)
           init.frame_or_worker_scheduler,
           *console_logger_,
           init.loading_behavior_observer)),
-      back_forward_cache_loader_helper_(init.back_forward_cache_loader_helper),
-      archive_(init.archive),
+      back_forward_cache_loader_helper_(
+          init.back_forward_cache_loader_helper.get()),
+      archive_(init.archive.get()),
       resource_timing_report_timer_(
           freezable_task_runner_,
           this,

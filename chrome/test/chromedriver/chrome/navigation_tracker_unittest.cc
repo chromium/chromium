@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
@@ -88,7 +89,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   bool has_empty_base_url_;
   bool is_loading_;
   std::string send_event_first_;
-  base::DictionaryValue* send_event_first_params_;
+  raw_ptr<base::DictionaryValue> send_event_first_params_;
 };
 
 class EvaluateScriptWebView : public StubWebView {

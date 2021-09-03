@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_MIGRATABLE_CARD_VIEW_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -52,13 +53,13 @@ class MigratableCardView : public views::View {
 
   // The checkbox_ can remain null if the card list in the local
   // card migration dialog contains only one card.
-  views::Checkbox* checkbox_ = nullptr;
+  raw_ptr<views::Checkbox> checkbox_ = nullptr;
 
-  views::View* checkbox_uncheck_text_container_ = nullptr;
+  raw_ptr<views::View> checkbox_uncheck_text_container_ = nullptr;
 
-  views::ImageButton* delete_card_from_local_button_ = nullptr;
+  raw_ptr<views::ImageButton> delete_card_from_local_button_ = nullptr;
 
-  LocalCardMigrationDialogView* parent_dialog_ = nullptr;
+  raw_ptr<LocalCardMigrationDialogView> parent_dialog_ = nullptr;
 };
 
 }  // namespace autofill

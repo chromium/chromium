@@ -7,6 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/value_map_pref_store.h"
 
 // Base class for a PrefStore that maps command line switches to preferences.
@@ -57,7 +58,7 @@ class COMPONENTS_PREFS_EXPORT CommandLinePrefStore : public ValueMapPrefStore {
 
  private:
   // Weak reference.
-  const base::CommandLine* command_line_;
+  raw_ptr<const base::CommandLine> command_line_;
 
   DISALLOW_COPY_AND_ASSIGN(CommandLinePrefStore);
 };

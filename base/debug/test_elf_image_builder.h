@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -49,7 +50,7 @@ class TestElfImage {
 
  private:
   std::vector<uint8_t> buffer_;
-  const void* elf_start_;
+  raw_ptr<const void> elf_start_;
 };
 
 // Builds an in-memory image of an ELF file for testing.

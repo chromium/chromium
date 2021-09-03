@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/view.h"
@@ -50,7 +51,7 @@ class TooltipControllerTestHelper {
   void MockWindowActivated(aura::Window* window, bool active);
 
  private:
-  TooltipController* controller_;
+  raw_ptr<TooltipController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipControllerTestHelper);
 };

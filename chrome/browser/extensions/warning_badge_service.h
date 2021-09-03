@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 #define CHROME_BROWSER_EXTENSIONS_WARNING_BADGE_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/warning_service.h"
@@ -43,7 +44,7 @@ class WarningBadgeService : public KeyedService,
   void UpdateBadgeStatus();
   virtual void ShowBadge(bool show);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedObservation<WarningService, WarningService::Observer>
       warning_service_observation_{this};

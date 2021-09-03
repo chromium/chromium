@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 
 class Browser;
@@ -65,7 +66,7 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   // For consent auditing.
   std::unordered_map<std::string, int> js_localized_string_to_ids_map_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncConfirmationUI);
 };

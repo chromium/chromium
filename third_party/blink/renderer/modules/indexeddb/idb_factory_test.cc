@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -49,7 +50,7 @@ class TestHelperFunction : public ScriptFunction {
     return value;
   }
 
-  bool* called_flag_;
+  raw_ptr<bool> called_flag_;
 };
 
 class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
@@ -104,7 +105,7 @@ class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
 
  private:
   mojo::Receiver<mojom::blink::IDBFactory> receiver_;
-  mojo::AssociatedRemote<mojom::blink::IDBCallbacks>* callbacks_ptr_;
+  raw_ptr<mojo::AssociatedRemote<mojom::blink::IDBCallbacks>> callbacks_ptr_;
 };
 
 class IDBFactoryTest : public testing::Test {

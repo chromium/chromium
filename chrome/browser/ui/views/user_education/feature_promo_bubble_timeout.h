@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +36,7 @@ class FeaturePromoBubbleTimeout {
   // Timer used to auto close the bubble.
   base::OneShotTimer timer_;
 
-  FeaturePromoBubbleView* feature_promo_bubble_view_;
+  raw_ptr<FeaturePromoBubbleView> feature_promo_bubble_view_;
 
   const base::TimeDelta delay_no_interaction_;
   const base::TimeDelta delay_after_interaction_;

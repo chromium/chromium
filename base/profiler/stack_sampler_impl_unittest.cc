@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/stack_buffer.h"
@@ -51,7 +52,7 @@ class TestProfileBuilder : public ProfileBuilder {
   TimeTicks last_timestamp() { return last_timestamp_; }
 
  private:
-  ModuleCache* module_cache_;
+  raw_ptr<ModuleCache> module_cache_;
   TimeTicks last_timestamp_;
 };
 
@@ -134,8 +135,8 @@ class TestUnwinder : public Unwinder {
 
  private:
   size_t stack_size_;
-  std::vector<uintptr_t>* stack_copy_;
-  uintptr_t* stack_copy_bottom_;
+  raw_ptr<std::vector<uintptr_t>> stack_copy_;
+  raw_ptr<uintptr_t> stack_copy_bottom_;
 };
 
 // Records invocations of calls to OnStackCapture()/UpdateModules().

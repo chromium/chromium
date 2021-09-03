@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "media/base/mock_audio_renderer_sink.h"
@@ -46,7 +47,7 @@ class CastStreamingRendererFactoryTest : public testing::Test {
 
  protected:
   std::unique_ptr<MockRendererFactory> mock_factory_;
-  MockRendererFactory* mock_factory_ptr_;
+  raw_ptr<MockRendererFactory> mock_factory_ptr_;
   CastStreamingRendererFactory factory_;
 };
 

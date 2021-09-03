@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_event_listeners.h"
 #include "extensions/renderer/bindings/event_emitter.h"
@@ -111,7 +112,7 @@ class APIEventHandler {
 
   // The exception handler associated with the bindings system; guaranteed to
   // outlive this object.
-  ExceptionHandler* const exception_handler_;
+  const raw_ptr<ExceptionHandler> exception_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(APIEventHandler);
 };

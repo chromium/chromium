@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "net/tools/huffman_trie/huffman/huffman_builder.h"
 #include "net/tools/huffman_trie/trie_entry.h"
 
@@ -53,8 +54,8 @@ class TopDomainTrieEntry : public net::huffman_trie::TrieEntry {
 
  private:
   const net::huffman_trie::HuffmanRepresentationTable& huffman_table_;
-  net::huffman_trie::HuffmanBuilder* huffman_builder_;
-  TopDomainEntry* entry_;
+  raw_ptr<net::huffman_trie::HuffmanBuilder> huffman_builder_;
+  raw_ptr<TopDomainEntry> entry_;
 };
 
 using TopDomainEntries = std::vector<std::unique_ptr<TopDomainEntry>>;

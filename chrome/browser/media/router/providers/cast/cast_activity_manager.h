@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -310,11 +311,11 @@ class CastActivityManager : public CastActivityManagerBase,
   absl::optional<DoLaunchSessionParams> pending_launch_;
 
   // The following raw pointer fields are assumed to outlive |this|.
-  MediaSinkServiceBase* const media_sink_service_;
-  CastSessionTracker* const session_tracker_;
-  cast_channel::CastMessageHandler* const message_handler_;
-  mojom::MediaRouter* const media_router_;
-  mojom::Logger* const logger_;
+  const raw_ptr<MediaSinkServiceBase> media_sink_service_;
+  const raw_ptr<CastSessionTracker> session_tracker_;
+  const raw_ptr<cast_channel::CastMessageHandler> message_handler_;
+  const raw_ptr<mojom::MediaRouter> media_router_;
+  const raw_ptr<mojom::Logger> logger_;
 
   const std::string hash_token_;
 

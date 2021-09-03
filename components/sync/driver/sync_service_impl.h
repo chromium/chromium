@@ -12,6 +12,7 @@
 
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -83,13 +84,14 @@ class SyncServiceImpl : public SyncService,
     std::unique_ptr<SyncClient> sync_client;
     // TODO(treib): Remove this and instead retrieve it via
     // SyncClient::GetIdentityManager (but mind LocalSync).
-    signin::IdentityManager* identity_manager = nullptr;
+    raw_ptr<signin::IdentityManager> identity_manager = nullptr;
     StartBehavior start_behavior = MANUAL_START;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    network::NetworkConnectionTracker* network_connection_tracker = nullptr;
+    raw_ptr<network::NetworkConnectionTracker> network_connection_tracker =
+        nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
-    policy::PolicyService* policy_service = nullptr;
+    raw_ptr<policy::PolicyService> policy_service = nullptr;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(InitParams);
@@ -347,7 +349,7 @@ class SyncServiceImpl : public SyncService,
   // Encapsulates user signin - used to set/get the user's authenticated
   // email address and sign-out upon error.
   // May be null (if local Sync is enabled).
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The user-configurable knobs. Non-null between Initialize() and Shutdown().
   std::unique_ptr<SyncUserSettingsImpl> user_settings_;
@@ -382,7 +384,7 @@ class SyncServiceImpl : public SyncService,
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The global NetworkConnectionTracker instance.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Indicates if this is the first time sync is being configured.
   // This is set to true if last synced time is not set at the time of

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -378,7 +379,7 @@ class ContentSubresourceFilterThrottleManager
   bool current_committed_load_has_notified_disallowed_load_ = false;
 
   // This member outlives this class.
-  VerifiedRulesetDealer::Handle* dealer_handle_;
+  raw_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
@@ -389,7 +390,7 @@ class ContentSubresourceFilterThrottleManager
   // transferred to Page once it is created. Once the Page is created and this
   // class transferred onto it (in ContentSubresourceFilterWebContentsHelper)
   // we'll set this member to point to it.
-  content::Page* page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // The helper class is attached to the WebContents so it is guaranteed to
   // outlive this class which is owned by either a Page or NavigationHandle in

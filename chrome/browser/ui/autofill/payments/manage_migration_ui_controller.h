@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_controller_impl.h"
@@ -99,8 +100,8 @@ class ManageMigrationUiController
 
   void ShowFeedbackDialog();
 
-  LocalCardMigrationBubbleControllerImpl* bubble_controller_ = nullptr;
-  LocalCardMigrationDialogControllerImpl* dialog_controller_ = nullptr;
+  raw_ptr<LocalCardMigrationBubbleControllerImpl> bubble_controller_ = nullptr;
+  raw_ptr<LocalCardMigrationDialogControllerImpl> dialog_controller_ = nullptr;
 
   // This indicates what step the migration flow is currently in and
   // what should be shown next.

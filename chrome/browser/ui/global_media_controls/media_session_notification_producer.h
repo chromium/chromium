@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
@@ -197,7 +198,7 @@ class MediaSessionNotificationProducer
 
     void MarkActiveIfNecessary();
 
-    MediaSessionNotificationProducer* const owner_;
+    const raw_ptr<MediaSessionNotificationProducer> owner_;
     const std::string id_;
     std::unique_ptr<MediaSessionNotificationItem> item_;
 
@@ -232,7 +233,7 @@ class MediaSessionNotificationProducer
     // Used to request audio output be routed to a different device.
     mojo::Remote<media_session::mojom::MediaController> controller_;
 
-    content::WebContents* const web_contents_;
+    const raw_ptr<content::WebContents> web_contents_;
 
     base::WeakPtr<media_router::WebContentsPresentationManager>
         presentation_manager_;
@@ -275,7 +276,7 @@ class MediaSessionNotificationProducer
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
       audio_focus_observer_receiver_{this};
 
-  MediaNotificationService* const service_;
+  const raw_ptr<MediaNotificationService> service_;
 
   // Keeps track of all the containers we're currently observing.
   MediaNotificationContainerObserverSet container_observer_set_;

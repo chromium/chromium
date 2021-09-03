@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "extensions/browser/value_store/value_store.h"
@@ -95,9 +96,9 @@ class LazyLevelDb {
   // unbounded attempts to open a bad/unrecoverable database.
   bool db_unrecoverable_ = false;
   // Used for UMA logging.
-  base::HistogramBase* open_histogram_ = nullptr;
-  base::HistogramBase* db_restore_histogram_ = nullptr;
-  base::HistogramBase* value_restore_histogram_ = nullptr;
+  raw_ptr<base::HistogramBase> open_histogram_ = nullptr;
+  raw_ptr<base::HistogramBase> db_restore_histogram_ = nullptr;
+  raw_ptr<base::HistogramBase> value_restore_histogram_ = nullptr;
 };
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_

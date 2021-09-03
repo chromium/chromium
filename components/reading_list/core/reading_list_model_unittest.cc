@@ -5,6 +5,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -145,8 +146,8 @@ class TestReadingListStorage : public ReadingListModelStorage {
 
  private:
   std::unique_ptr<ReadingListStoreDelegate::ReadingListEntries> entries_;
-  TestReadingListStorageObserver* observer_;
-  base::SimpleTestClock* clock_;
+  raw_ptr<TestReadingListStorageObserver> observer_;
+  raw_ptr<base::SimpleTestClock> clock_;
 };
 
 class ReadingListModelTest : public ReadingListModelObserver,

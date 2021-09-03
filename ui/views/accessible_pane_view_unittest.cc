@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -37,9 +38,9 @@ class TestBarView : public AccessiblePaneView {
  private:
   void Init();
 
-  LabelButton* child_button_;
-  LabelButton* second_child_button_;
-  LabelButton* third_child_button_;
+  raw_ptr<LabelButton> child_button_;
+  raw_ptr<LabelButton> second_child_button_;
+  raw_ptr<LabelButton> third_child_button_;
   std::unique_ptr<LabelButton> not_child_button_;
 
   DISALLOW_COPY_AND_ASSIGN(TestBarView);

@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -117,7 +118,7 @@ class ScopedTransaction {
   ~ScopedTransaction() { db_->CommitTransaction(); }
 
  private:
-  LoginDatabase* db_;
+  raw_ptr<LoginDatabase> db_;
   DISALLOW_COPY_AND_ASSIGN(ScopedTransaction);
 };
 

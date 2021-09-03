@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,7 +52,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeVideo,
         String::FromUTF8("dummy_source_name"), false /* remote */);
     stream_source_->SetPlatformSource(
-        base::WrapUnique(mock_stream_video_source_));
+        base::WrapUnique(mock_stream_video_source_.get()));
     ON_CALL(*mock_stream_video_source_, SetCanDiscardAlpha)
         .WillByDefault(Return());
     ON_CALL(*mock_stream_video_source_, SupportsEncodedOutput)
@@ -264,7 +265,7 @@ class MediaStreamVideoSourceTest : public testing::Test {
   WebString result_name_;
   Persistent<MediaStreamSource> stream_source_;
   // |mock_stream_video_source_| is owned by |stream_source_|.
-  MockMediaStreamVideoSource* mock_stream_video_source_;
+  raw_ptr<MockMediaStreamVideoSource> mock_stream_video_source_;
 };
 
 TEST_F(MediaStreamVideoSourceTest, AddTrackAndStartSource) {

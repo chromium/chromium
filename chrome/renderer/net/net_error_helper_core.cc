@@ -108,14 +108,14 @@ void NetErrorHelperCore::ErrorPageLoadedWithFinalErrorCode() {
   // The fetch functions shouldn't be triggered multiple times per page load.
   if (page_info->page_state.offline_content_feature_enabled) {
     available_content_helper_.FetchAvailableContent(base::BindOnce(
-        &Delegate::OfflineContentAvailable, base::Unretained(delegate_)));
+        &Delegate::OfflineContentAvailable, base::Unretained(delegate_.get())));
   }
 
   // |TrySchedule()| shouldn't be called more than once per page.
   if (page_info->page_state.auto_fetch_allowed) {
     page_auto_fetcher_helper_->TrySchedule(
         false, base::BindOnce(&Delegate::SetAutoFetchState,
-                              base::Unretained(delegate_)));
+                              base::Unretained(delegate_.get())));
   }
 #endif  // defined(OS_ANDROID)
 
@@ -320,8 +320,9 @@ void NetErrorHelperCore::LaunchDownloadsPage() {
 void NetErrorHelperCore::SavePageForLater() {
 #if defined(OS_ANDROID)
   page_auto_fetcher_helper_->TrySchedule(
-      /*user_requested=*/true, base::BindOnce(&Delegate::SetAutoFetchState,
-                                              base::Unretained(delegate_)));
+      /*user_requested=*/true,
+      base::BindOnce(&Delegate::SetAutoFetchState,
+                     base::Unretained(delegate_.get())));
 #endif
 }
 

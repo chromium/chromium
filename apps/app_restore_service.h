@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "apps/app_lifetime_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -70,7 +71,7 @@ class AppRestoreService : public KeyedService,
   void StartObservingAppLifetime();
   void StopObservingAppLifetime();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace apps

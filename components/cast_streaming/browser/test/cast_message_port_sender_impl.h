@@ -6,6 +6,7 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/openscreen/src/cast/common/public/message_port.h"
 
@@ -44,7 +45,7 @@ class CastMessagePortSenderImpl final
                      ports) override;
   void OnPipeError() override;
 
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   base::OnceClosure on_close_;
 };

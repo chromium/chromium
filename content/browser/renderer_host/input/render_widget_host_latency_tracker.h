@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -55,7 +56,7 @@ class CONTENT_EXPORT RenderWidgetHostLatencyTracker {
   // default action prevented. Only valid for single finger gestures.
   bool touch_start_default_prevented_;
 
-  RenderWidgetHostDelegate* render_widget_host_delegate_;
+  raw_ptr<RenderWidgetHostDelegate> render_widget_host_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostLatencyTracker);
 };

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -25,7 +26,7 @@ class FullscreenChangeWaiter {
   void Wait();
 
  private:
-  extensions::NativeAppWindow* window_;
+  raw_ptr<extensions::NativeAppWindow> window_;
   bool initial_fullscreen_state_;
 };
 

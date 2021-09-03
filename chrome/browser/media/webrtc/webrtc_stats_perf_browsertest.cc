@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -265,8 +266,8 @@ class WebRtcStatsPerfBrowserTest : public WebRtcTestBase {
   }
 
  private:
-  content::WebContents* left_tab_ = nullptr;
-  content::WebContents* right_tab_ = nullptr;
+  raw_ptr<content::WebContents> left_tab_ = nullptr;
+  raw_ptr<content::WebContents> right_tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(

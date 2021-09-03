@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_FILE_TRANSFER_RTC_LOG_FILE_OPERATIONS_H_
 #define REMOTING_HOST_FILE_TRANSFER_RTC_LOG_FILE_OPERATIONS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 
 namespace remoting {
@@ -28,7 +29,7 @@ class RtcLogFileOperations : public FileOperations {
   std::unique_ptr<Writer> CreateWriter() override;
 
  private:
-  protocol::ConnectionToClient* connection_;
+  raw_ptr<protocol::ConnectionToClient> connection_;
 };
 
 }  // namespace remoting

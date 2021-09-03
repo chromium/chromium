@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer.h"
@@ -62,7 +63,7 @@ class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
   base::OnceClosure on_aborted_;
   base::OnceClosure on_scheduled_;
 
-  AnimationAbortHandle* abort_handle_ = nullptr;
+  raw_ptr<AnimationAbortHandle> abort_handle_ = nullptr;
 };
 
 AnimationBuilder::Observer::~Observer() {

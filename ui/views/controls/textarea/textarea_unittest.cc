@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -73,7 +74,7 @@ class TextareaTest : public test::TextfieldTest {
     SendKeyEvent(ui::VKEY_END, shift, TestingNativeMac());
   }
 
-  Textarea* textarea_ = nullptr;
+  raw_ptr<Textarea> textarea_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TextareaTest);

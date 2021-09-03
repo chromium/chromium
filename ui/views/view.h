@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -1985,7 +1986,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Tree operations -----------------------------------------------------------
 
   // This view's parent.
-  View* parent_ = nullptr;
+  raw_ptr<View> parent_ = nullptr;
 
   // This view's children.
   Views children_;
@@ -2074,7 +2075,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // A native theme for this view and its descendants. Typically null, in which
   // case the native theme is drawn from the parent view (eventually the
   // widget).
-  ui::NativeTheme* native_theme_ = nullptr;
+  raw_ptr<ui::NativeTheme> native_theme_ = nullptr;
 
   // RTL painting --------------------------------------------------------------
 
@@ -2110,7 +2111,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Accelerators --------------------------------------------------------------
 
   // Focus manager accelerators registered on.
-  FocusManager* accelerator_focus_manager_ = nullptr;
+  raw_ptr<FocusManager> accelerator_focus_manager_ = nullptr;
 
   // The list of accelerators. List elements in the range
   // [0, registered_accelerator_count_) are already registered to FocusManager,
@@ -2121,10 +2122,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Focus ---------------------------------------------------------------------
 
   // Next view to be focused when the Tab key is pressed.
-  View* next_focusable_view_ = nullptr;
+  raw_ptr<View> next_focusable_view_ = nullptr;
 
   // Next view to be focused when the Shift-Tab key combination is pressed.
-  View* previous_focusable_view_ = nullptr;
+  raw_ptr<View> previous_focusable_view_ = nullptr;
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
@@ -2136,11 +2137,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Context menus -------------------------------------------------------------
 
   // The menu controller.
-  ContextMenuController* context_menu_controller_ = nullptr;
+  raw_ptr<ContextMenuController> context_menu_controller_ = nullptr;
 
   // Drag and drop -------------------------------------------------------------
 
-  DragController* drag_controller_ = nullptr;
+  raw_ptr<DragController> drag_controller_ = nullptr;
 
   // Input  --------------------------------------------------------------------
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -48,7 +49,7 @@ class ChromeKeySystemsProvider {
   // Throttle how often we signal an update is needed to avoid unnecessary high
   // frequency of expensive IPC calls.
   base::TimeTicks last_update_time_ticks_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Ensure all methods are called from the same (Main) thread.
   base::ThreadChecker thread_checker_;

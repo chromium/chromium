@@ -6,6 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_TRACED_VALUE_PROTO_WRITER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "third_party/perfetto/include/perfetto/protozero/contiguous_memory_range.h"
 
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProtoAppender
 
  private:
   std::vector<protozero::ContiguousMemoryRange> ranges_;
-  perfetto::protos::pbzero::DebugAnnotation* annotation_proto_;
+  raw_ptr<perfetto::protos::pbzero::DebugAnnotation> annotation_proto_;
 };
 
 void COMPONENT_EXPORT(TRACING_CPP) RegisterTracedValueProtoWriter();

@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -296,9 +297,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // frame.
   FormCache form_cache_;
 
-  PasswordAutofillAgent* password_autofill_agent_;      // Weak reference.
-  PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
-  AutofillAssistantAgent* autofill_assistant_agent_;    // Weak reference.
+  raw_ptr<PasswordAutofillAgent> password_autofill_agent_;  // Weak reference.
+  raw_ptr<PasswordGenerationAgent>
+      password_generation_agent_;                             // Weak reference.
+  raw_ptr<AutofillAssistantAgent> autofill_assistant_agent_;  // Weak reference.
 
   // The ID of the last request sent for form field Autofill.  Used to ignore
   // out of date responses.

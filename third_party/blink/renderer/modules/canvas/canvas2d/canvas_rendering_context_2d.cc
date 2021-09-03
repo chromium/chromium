@@ -33,6 +33,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/features.h"
@@ -110,7 +111,7 @@ class CanvasRenderingContext2DAutoRestoreSkCanvas {
   }
 
  private:
-  CanvasRenderingContext2D* context_;
+  raw_ptr<CanvasRenderingContext2D> context_;
   int save_count_;
 };
 

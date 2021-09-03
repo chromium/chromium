@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "remoting/proto/audio.pb.h"
@@ -62,7 +63,7 @@ class WebrtcAudioSourceAdapterTest : public testing::Test {
     audio_source_adapter_ = new rtc::RefCountedObject<WebrtcAudioSourceAdapter>(
         task_environment_.GetMainThreadTaskRunner());
     audio_source_ = new FakeAudioSource();
-    audio_source_adapter_->Start(base::WrapUnique(audio_source_));
+    audio_source_adapter_->Start(base::WrapUnique(audio_source_.get()));
     audio_source_adapter_->AddSink(&sink_);
     base::RunLoop().RunUntilIdle();
   }
@@ -74,7 +75,7 @@ class WebrtcAudioSourceAdapterTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FakeAudioSource* audio_source_;
+  raw_ptr<FakeAudioSource> audio_source_;
   scoped_refptr<WebrtcAudioSourceAdapter> audio_source_adapter_;
   FakeAudioSink sink_;
 };

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -114,7 +115,7 @@ class PageDiscardingHelper : public GraphOwned,
   std::unique_ptr<performance_manager::mechanism::PageDiscarder>
       page_discarder_;
 
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

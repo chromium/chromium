@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefService;
 
@@ -46,7 +47,7 @@ class PrefServiceAndroid {
       const base::android::JavaParamRef<jstring>& j_preference);
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 

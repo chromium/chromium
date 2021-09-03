@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/messages/android/message_enums.h"
@@ -50,7 +51,7 @@ class AdsBlockedMessageDelegate
   void HandleClick();
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
 
   AdsBlockedDialogFactory ads_blocked_dialog_factory_;

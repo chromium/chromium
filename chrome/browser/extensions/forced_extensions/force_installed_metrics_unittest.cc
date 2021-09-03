@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -228,7 +229,7 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
 
  protected:
   base::HistogramTester histogram_tester_;
-  base::MockOneShotTimer* fake_timer_;
+  raw_ptr<base::MockOneShotTimer> fake_timer_;
   std::unique_ptr<ForceInstalledMetrics> metrics_;
 };
 

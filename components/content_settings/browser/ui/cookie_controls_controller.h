@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -66,7 +67,7 @@ class CookieControlsController : content_settings::CookieSettings::Observer {
     void OnSiteDataAccessed() override;
 
    private:
-    CookieControlsController* cookie_controls_;
+    raw_ptr<CookieControlsController> cookie_controls_;
 
     DISALLOW_COPY_AND_ASSIGN(TabObserver);
   };

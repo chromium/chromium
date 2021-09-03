@@ -20,6 +20,7 @@
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -567,7 +568,7 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
  private:
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -593,7 +594,7 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       browser_view_->MaybeInitializeWebUITabStrip();
   }
 
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -751,7 +752,7 @@ BrowserView::~BrowserView() {
   // The TabStrip attaches a listener to the model. Make sure we shut down the
   // TabStrip first so that it can cleanly remove the listener.
   if (tabstrip_)
-    tabstrip_->parent()->RemoveChildViewT(tabstrip_);
+    tabstrip_->parent()->RemoveChildViewT(tabstrip_.get());
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.

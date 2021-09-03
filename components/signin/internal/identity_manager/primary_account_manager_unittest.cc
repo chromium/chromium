@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -139,7 +140,7 @@ class PrimaryAccountManagerTest : public testing::Test,
   AccountTrackerService account_tracker_;
   AccountFetcherService account_fetcher_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  PrimaryAccountPolicyManagerImpl* policy_manager_;
+  raw_ptr<PrimaryAccountPolicyManagerImpl> policy_manager_;
 #endif
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;

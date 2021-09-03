@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -312,7 +313,7 @@ class OriginIsolationPrerenderOptInHeaderTest
   test::PrerenderTestHelper prerender_helper_;
 
  private:
-  WebContents* prerender_web_contents_;
+  raw_ptr<WebContents> prerender_web_contents_;
 };  // class OriginIsolationPrerenderOptInHeaderTest
 
 // As in OriginIsolationOptInHeaderTest, but with same-process origin
@@ -2067,8 +2068,8 @@ class InjectIsolationRequestingNavigation
     return true;
   }
 
-  OriginIsolationOptInHeaderTest* test_framework_;
-  Shell* tab2_;
+  raw_ptr<OriginIsolationOptInHeaderTest> test_framework_;
+  raw_ptr<Shell> tab2_;
   const GURL& url_;
   bool was_called_ = false;
 };
@@ -3327,7 +3328,7 @@ class StoragePartitonInterceptor
  private:
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
-  blink::mojom::DomStorage* dom_storage_;
+  raw_ptr<blink::mojom::DomStorage> dom_storage_;
 
   url::Origin origin_to_inject_;
 };
@@ -4759,7 +4760,8 @@ class BroadcastChannelProviderInterceptor
  private:
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
-  blink::mojom::BroadcastChannelProvider* original_broadcast_channel_provider_;
+  raw_ptr<blink::mojom::BroadcastChannelProvider>
+      original_broadcast_channel_provider_;
 
   url::Origin origin_to_inject_;
 };
@@ -5256,7 +5258,7 @@ class COOPIsolationTest : public IsolatedOriginTestBase {
   net::EmbeddedTestServer https_server_;
 
   NoSiteIsolationContentBrowserClient browser_client_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 };
 
 // Check that a main frame navigation to a COOP site (with no subsequent user
@@ -5893,7 +5895,7 @@ class JITIsolationTest : public IsolatedOriginTest,
 
    private:
     std::unique_ptr<JitContentBrowserClient> overriden_client_;
-    ContentBrowserClient* original_client_;
+    raw_ptr<ContentBrowserClient> original_client_;
   };
 };
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace permissions {
 
@@ -173,7 +174,7 @@ class ChooserController {
 
  private:
   std::u16string title_;
-  View* view_ = nullptr;
+  raw_ptr<View> view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserController);
 };

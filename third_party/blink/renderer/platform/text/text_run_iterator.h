@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_RUN_ITERATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -64,7 +65,7 @@ class TextRunIterator {
   bool operator!=(const TextRunIterator& other) { return !operator==(other); }
 
  private:
-  const TextRun* text_run_;
+  raw_ptr<const TextRun> text_run_;
   unsigned offset_;
   unsigned length_;
 };

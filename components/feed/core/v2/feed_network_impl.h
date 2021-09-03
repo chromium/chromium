@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "components/feed/core/v2/enums.h"
@@ -86,11 +87,11 @@ class FeedNetworkImpl : public FeedNetwork {
                     base::OnceCallback<void(RawResponse)> callback,
                     RawResponse raw_response);
 
-  Delegate* delegate_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   const std::string api_key_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::flat_set<std::unique_ptr<NetworkFetch>, base::UniquePtrComparator>
       pending_requests_;
 };

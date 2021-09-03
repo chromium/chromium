@@ -23,7 +23,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   auto* delegate_ptr = GetDelegate();
   label_ = CreateLabel(delegate_ptr->GetMessageText());
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
-  AddChildView(label_);
+  AddChildView(label_.get());
 
   const auto create_button = [this](ConfirmInfoBarDelegate::InfoBarButton type,
                                     void (ConfirmInfoBar::*click_function)()) {
@@ -61,7 +61,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   }
 
   link_ = CreateLink(delegate_ptr->GetLinkText());
-  AddChildView(link_);
+  AddChildView(link_.get());
 }
 
 ConfirmInfoBar::~ConfirmInfoBar() {

@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
@@ -42,7 +43,7 @@ class ResourceRequestPolicy {
                           const absl::optional<url::Origin>& initiator_origin);
 
  private:
-  Dispatcher* dispatcher_;
+  raw_ptr<Dispatcher> dispatcher_;
 
   // The set of extension IDs with any potentially web- or webview-accessible
   // resources.

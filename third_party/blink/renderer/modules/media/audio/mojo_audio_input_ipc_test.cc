@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "media/audio/audio_device_description.h"
@@ -122,7 +123,7 @@ class FakeStreamCreator {
   }
 
  private:
-  media::mojom::blink::AudioInputStream* stream_;
+  raw_ptr<media::mojom::blink::AudioInputStream> stream_;
   mojo::Remote<media::mojom::blink::AudioInputStreamClient> stream_client_;
   mojo::Remote<mojom::blink::RendererAudioInputStreamFactoryClient>
       factory_client_;

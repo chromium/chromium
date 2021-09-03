@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_EXTENSION_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension_name.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -46,7 +47,7 @@ class WebGLExtensionScopedContext final {
   WebGLRenderingContextBase* Context() const { return context_; }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
 
   DISALLOW_COPY_AND_ASSIGN(WebGLExtensionScopedContext);
 };

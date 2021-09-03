@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
@@ -31,7 +32,7 @@ class FakeFileOperations::FakeFileReader : public FileOperations::Reader {
   void DoReadChunk(std::size_t size, ReadCallback callback);
 
   FileOperations::State state_ = FileOperations::kCreated;
-  TestIo* test_io_;
+  raw_ptr<TestIo> test_io_;
   protocol::FileTransferResult<InputFile> input_file_;
   base::FilePath filename_;
   std::size_t filesize_ = 0;
@@ -54,7 +55,7 @@ class FakeFileOperations::FakeFileWriter : public FileOperations::Writer {
   void DoWrite(std::vector<std::uint8_t> data, Callback callback);
   void DoClose(Callback callback);
   FileOperations::State state_ = FileOperations::kCreated;
-  TestIo* test_io_;
+  raw_ptr<TestIo> test_io_;
   base::FilePath filename_;
   std::vector<std::vector<std::uint8_t>> chunks_;
   base::WeakPtrFactory<FakeFileWriter> weak_ptr_factory_{this};

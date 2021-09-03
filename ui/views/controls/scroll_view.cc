@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -175,7 +176,7 @@ class ScrollView::Viewport : public View {
     return parent() && scroll_view_->contents_viewport_ == this;
   }
 
-  ScrollView* scroll_view_;
+  raw_ptr<ScrollView> scroll_view_;
 };
 
 BEGIN_METADATA(ScrollView, Viewport, View)
@@ -439,7 +440,7 @@ ScrollBar* ScrollView::SetHorizontalScrollBar(
     std::unique_ptr<ScrollBar> horiz_sb) {
   horiz_sb->SetVisible(horiz_sb_->GetVisible());
   horiz_sb->set_controller(this);
-  RemoveChildViewT(horiz_sb_);
+  RemoveChildViewT(horiz_sb_.get());
   horiz_sb_ = AddChildView(std::move(horiz_sb));
   return horiz_sb_;
 }
@@ -449,7 +450,7 @@ ScrollBar* ScrollView::SetVerticalScrollBar(
   DCHECK(vert_sb);
   vert_sb->SetVisible(vert_sb_->GetVisible());
   vert_sb->set_controller(this);
-  RemoveChildViewT(vert_sb_);
+  RemoveChildViewT(vert_sb_.get());
   vert_sb_ = AddChildView(std::move(vert_sb));
   return vert_sb_;
 }

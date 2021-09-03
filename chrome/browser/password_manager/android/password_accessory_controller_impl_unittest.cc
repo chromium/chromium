@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -143,7 +144,7 @@ class MockPasswordManagerClient
   }
 
  private:
-  PasswordStore* password_store_;
+  raw_ptr<PasswordStore> password_store_;
 };
 
 class MockPasswordManagerDriver

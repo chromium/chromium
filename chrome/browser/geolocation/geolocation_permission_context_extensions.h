@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -42,7 +43,7 @@ class GeolocationPermissionContextExtensions {
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextExtensions);

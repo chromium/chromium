@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LOAD_TRACKER_DECORATOR_HELPER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LOAD_TRACKER_DECORATOR_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
 
 namespace performance_manager {
@@ -34,7 +35,7 @@ class PageLoadTrackerDecoratorHelper
   // destroyed. Additionally, all WebContentsObservers that are still in this
   // list when the destructor of PageLoadTrackerDecoratorHelper is invoked are
   // destroyed.
-  WebContentsObserver* first_web_contents_observer_ = nullptr;
+  raw_ptr<WebContentsObserver> first_web_contents_observer_ = nullptr;
 };
 
 }  // namespace performance_manager

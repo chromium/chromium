@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -85,8 +86,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
                              history::QueryResults results);
 #endif
 
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
   // Tracker for query requests to the HistoryClustersService.
   base::CancelableTaskTracker query_task_tracker_;
   // Tracker for remove requests to the HistoryClustersService.

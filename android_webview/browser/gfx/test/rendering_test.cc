@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -44,7 +45,7 @@ class TestBrowserViewRenderer : public BrowserViewRenderer {
   }
 
  private:
-  RenderingTest* const rendering_test_;
+  const raw_ptr<RenderingTest> rendering_test_;
 };
 }  // namespace
 

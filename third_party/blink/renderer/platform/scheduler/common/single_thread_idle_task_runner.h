@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -107,8 +108,8 @@ class SingleThreadIdleTaskRunner
 
   scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner_;
   std::multimap<base::TimeTicks, DelayedIdleTask> delayed_idle_tasks_;
-  Delegate* delegate_;                              // NOT OWNED
-  base::trace_event::BlameContext* blame_context_;  // Not owned.
+  raw_ptr<Delegate> delegate_;                              // NOT OWNED
+  raw_ptr<base::trace_event::BlameContext> blame_context_;  // Not owned.
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
   base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};
 };

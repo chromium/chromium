@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -132,7 +133,7 @@ class RemovePasswordOperation : public UndoOperation {
   int GetRedoLabelId() const override;
 
  private:
-  PasswordManagerPresenter* page_;
+  raw_ptr<PasswordManagerPresenter> page_;
   password_manager::PasswordForm form_;
 
   DISALLOW_COPY_AND_ASSIGN(RemovePasswordOperation);
@@ -169,7 +170,7 @@ class AddPasswordOperation : public UndoOperation {
   int GetRedoLabelId() const override;
 
  private:
-  PasswordManagerPresenter* page_;
+  raw_ptr<PasswordManagerPresenter> page_;
   password_manager::PasswordForm form_;
 
   DISALLOW_COPY_AND_ASSIGN(AddPasswordOperation);

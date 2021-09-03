@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -58,7 +59,7 @@ class BackForwardCachePageLoadMetricsObserverTest
   }
 
   page_load_metrics::mojom::PageLoadTiming timing_;
-  BackForwardCachePageLoadMetricsObserver* observer_;
+  raw_ptr<BackForwardCachePageLoadMetricsObserver> observer_;
 };
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,

@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_NOTIFICATION_BLOCKER_H_
 #define UI_MESSAGE_CENTER_NOTIFICATION_BLOCKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/message_center/message_center_export.h"
@@ -50,7 +51,7 @@ class MESSAGE_CENTER_EXPORT NotificationBlocker {
 
  private:
   base::ObserverList<Observer> observers_;
-  MessageCenter* message_center_;  // weak
+  raw_ptr<MessageCenter> message_center_;  // weak
 };
 
 typedef std::vector<NotificationBlocker*> NotificationBlockers;

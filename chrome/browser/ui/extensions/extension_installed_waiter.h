@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_WAITER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extension_removal_watcher.h"
@@ -60,7 +61,7 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   void OnExtensionRemoved();
 
   const scoped_refptr<const extensions::Extension> extension_;
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   base::OnceClosure done_callback_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,

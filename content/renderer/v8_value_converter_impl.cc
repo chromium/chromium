@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "v8/include/v8.h"
 
@@ -75,7 +76,7 @@ class V8ValueConverterImpl::FromV8ValueState {
     }
 
    private:
-    FromV8ValueState* state_;
+    raw_ptr<FromV8ValueState> state_;
   };
 
   explicit FromV8ValueState(bool avoid_identity_hash_for_testing)
@@ -163,7 +164,7 @@ class V8ValueConverterImpl::ScopedUniquenessGuard {
 
  private:
   typedef std::multimap<int, v8::Local<v8::Object> > HashToHandleMap;
-  V8ValueConverterImpl::FromV8ValueState* state_;
+  raw_ptr<V8ValueConverterImpl::FromV8ValueState> state_;
   v8::Local<v8::Object> value_;
   bool is_valid_;
 

@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/password_manager_driver_factory.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
@@ -83,7 +84,7 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
 
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_{this};
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
 };
 
 PasswordManagerDriverFactory::PasswordManagerDriverFactory(

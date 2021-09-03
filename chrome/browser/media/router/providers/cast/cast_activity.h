@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
@@ -178,9 +179,9 @@ class CastActivity {
   // TODO(https://crbug.com/809249): Consider wrapping CastMessageHandler with
   // known parameters (sink, client ID, session transport ID) and passing them
   // to objects that need to send messages to the receiver.
-  cast_channel::CastMessageHandler* const message_handler_;
+  const raw_ptr<cast_channel::CastMessageHandler> message_handler_;
 
-  CastSessionTracker* const session_tracker_;
+  const raw_ptr<CastSessionTracker> session_tracker_;
 
   // Set by CastActivityManager after the session is launched successfully.
   absl::optional<std::string> session_id_;

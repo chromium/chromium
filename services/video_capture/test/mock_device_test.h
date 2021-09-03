@@ -5,6 +5,7 @@
 #ifndef SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
 #define SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "media/capture/video/mock_device.h"
 #include "media/capture/video/mock_device_factory.h"
@@ -36,7 +37,7 @@ class MockDeviceTest : public ::testing::Test {
   void SetUp() override;
 
  protected:
-  media::MockDeviceFactory* mock_device_factory_;
+  raw_ptr<media::MockDeviceFactory> mock_device_factory_;
   std::unique_ptr<DeviceFactoryMediaToMojoAdapter> mock_device_factory_adapter_;
 
   mojo::Remote<mojom::DeviceFactory> factory_;

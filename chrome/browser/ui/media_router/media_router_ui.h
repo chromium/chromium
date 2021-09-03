@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -185,7 +186,7 @@ class MediaRouterUI
 
    private:
     // Reference back to the owning MediaRouterUI instance.
-    MediaRouterUI* const ui_;
+    const raw_ptr<MediaRouterUI> ui_;
 
     DISALLOW_COPY_AND_ASSIGN(UiIssuesObserver);
   };
@@ -349,7 +350,8 @@ class MediaRouterUI
     start_presentation_context_ = std::move(start_presentation_context);
   }
 
-  content::WebContentsObserver* web_contents_observer_for_test_ = nullptr;
+  raw_ptr<content::WebContentsObserver> web_contents_observer_for_test_ =
+      nullptr;
 
   // This value is set whenever there is an outstanding issue.
   absl::optional<Issue> issue_;
@@ -402,7 +404,7 @@ class MediaRouterUI
   base::WeakPtr<WebContentsPresentationManager> presentation_manager_;
 
   // WebContents for the tab for which the Cast dialog is shown.
-  content::WebContents* const initiator_;
+  const raw_ptr<content::WebContents> initiator_;
 
   // The dialog that handles opening the file dialog and validating and
   // returning the results.
@@ -418,7 +420,7 @@ class MediaRouterUI
 #if defined(OS_MAC)
   absl::optional<bool> screen_capture_allowed_for_testing_;
 #endif
-  LoggerImpl* logger_;
+  raw_ptr<LoggerImpl> logger_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   // Therefore |weak_factory_| must be placed at the end.

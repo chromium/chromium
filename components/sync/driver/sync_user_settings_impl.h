@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -83,9 +84,9 @@ class SyncUserSettingsImpl : public SyncUserSettings {
       UserSelectableTypeSet selected_types);
 
  private:
-  SyncServiceCrypto* const crypto_;
-  SyncPrefs* const prefs_;
-  const SyncTypePreferenceProvider* const preference_provider_;
+  const raw_ptr<SyncServiceCrypto> crypto_;
+  const raw_ptr<SyncPrefs> prefs_;
+  const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
   const ModelTypeSet registered_model_types_;
   base::RepeatingCallback<void(bool)> sync_allowed_by_platform_changed_cb_;
 };

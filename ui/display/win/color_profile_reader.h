@@ -6,6 +6,7 @@
 #define UI_DISPLAY_WIN_COLOR_PROFILE_READER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display_export.h"
 #include "ui/gfx/icc_profile.h"
@@ -60,7 +61,7 @@ class DISPLAY_EXPORT ColorProfileReader {
   // Called on the main thread when the read has completed.
   void ReadProfilesCompleted(DeviceToDataMap device_to_data_map);
 
-  Client* const client_ = nullptr;
+  const raw_ptr<Client> client_ = nullptr;
   bool update_in_flight_ = false;
   DeviceToPathMap device_to_path_map_;
   std::map<int64_t, gfx::ICCProfile> display_id_to_profile_map_;

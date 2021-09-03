@@ -21,6 +21,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -334,7 +335,7 @@ class RemoveDownloadsTester {
   explicit RemoveDownloadsTester(BrowserContext* browser_context)
       : download_manager_(new MockDownloadManager()) {
     browser_context->SetDownloadManagerForTesting(
-        base::WrapUnique(download_manager_));
+        base::WrapUnique(download_manager_.get()));
     EXPECT_EQ(download_manager_, browser_context->GetDownloadManager());
     EXPECT_CALL(*download_manager_, Shutdown());
   }
@@ -344,7 +345,7 @@ class RemoveDownloadsTester {
   MockDownloadManager* download_manager() { return download_manager_; }
 
  private:
-  MockDownloadManager* download_manager_;  // Owned by browser context.
+  raw_ptr<MockDownloadManager> download_manager_;  // Owned by browser context.
 
   DISALLOW_COPY_AND_ASSIGN(RemoveDownloadsTester);
 };
@@ -475,12 +476,12 @@ class BrowsingDataRemoverImplTest : public testing::Test {
 
  private:
   // Cached pointer to BrowsingDataRemoverImpl for access to testing methods.
-  BrowsingDataRemoverImpl* remover_;
+  raw_ptr<BrowsingDataRemoverImpl> remover_;
 
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
 
-  network::mojom::NetworkContext* network_context_override_ = nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_override_ = nullptr;
 
   std::vector<StoragePartitionRemovalData> storage_partition_removal_data_;
 
@@ -1371,7 +1372,7 @@ class MultipleTasksObserver {
     }
 
    private:
-    MultipleTasksObserver* parent_;
+    raw_ptr<MultipleTasksObserver> parent_;
     base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
         observation_{this};
   };

@@ -8,6 +8,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
@@ -80,7 +81,7 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
  private:
   std::unique_ptr<OneTimeMessageHandler> message_handler_;
 
-  ScriptContext* script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 
   DISALLOW_COPY_AND_ASSIGN(OneTimeMessageHandlerTest);

@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
@@ -161,7 +162,7 @@ class SyncErrorFactoryStub : public syncer::SyncErrorFactory {
   }
 
  private:
-  int* error_counter_;
+  raw_ptr<int> error_counter_;
   DISALLOW_COPY_AND_ASSIGN(SyncErrorFactoryStub);
 };
 

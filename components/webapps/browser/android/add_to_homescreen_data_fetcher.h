@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
@@ -101,8 +102,8 @@ class AddToHomescreenDataFetcher {
 
   base::WeakPtr<content::WebContents> web_contents_;
 
-  InstallableManager* installable_manager_;
-  Observer* observer_;
+  raw_ptr<InstallableManager> installable_manager_;
+  raw_ptr<Observer> observer_;
 
   // The icons must only be set on the UI thread for thread safety.
   SkBitmap raw_primary_icon_;

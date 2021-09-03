@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/code_injection.mojom.h"
@@ -126,7 +127,7 @@ class ScriptExecutor {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   ScriptsExecutedNotification observer_;
 

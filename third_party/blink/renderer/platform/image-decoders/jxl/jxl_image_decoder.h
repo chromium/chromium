@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JXL_JXL_IMAGE_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_JXL_JXL_IMAGE_DECODER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
@@ -98,7 +99,7 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   bool have_color_info_ = false;
 
   // Preserved for JXL pixel callback. Not owned.
-  ColorProfileTransform* xform_;
+  raw_ptr<ColorProfileTransform> xform_;
 
   // Fields for animation support.
 

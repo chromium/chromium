@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_view_impl.h"
@@ -31,7 +32,7 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
   TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
-  bool* alive_;
+  raw_ptr<bool> alive_;
 
   DISALLOW_COPY_AND_ASSIGN(TestGinObject);
 };

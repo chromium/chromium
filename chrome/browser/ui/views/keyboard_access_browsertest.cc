@@ -4,6 +4,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -75,7 +76,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
     }
   }
 
-  views::FocusManager* focus_manager_;
+  raw_ptr<views::FocusManager> focus_manager_;
   int previous_view_id_;
   base::WeakPtrFactory<ViewFocusChangeWaiter> weak_factory_{this};
 
@@ -115,7 +116,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
   int menu_open_count() const { return menu_open_count_; }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   // Keeps track of the number of times the menu was opened.
   int menu_open_count_;
   // If this is set then on receiving a notification that the menu was opened

@@ -5,6 +5,7 @@
 #ifndef MEDIA_REMOTING_REMOTING_RENDERER_FACTORY_H_
 #define MEDIA_REMOTING_REMOTING_RENDERER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,9 +43,9 @@ class RemotingRendererFactory : public RendererFactory {
   // Indicates whether RPC_ACQUIRE_RENDERER_DONE is sent or not.
   bool is_acquire_renderer_done_sent_ = false;
 
-  ReceiverController* const receiver_controller_;
+  const raw_ptr<ReceiverController> receiver_controller_;
 
-  openscreen::cast::RpcMessenger* const rpc_messenger_;
+  const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
 
   // The RPC handle used by all Receiver instances created by |this|. Sent only
   // once to the sender side, through RPC_ACQUIRE_RENDERER_DONE, regardless of

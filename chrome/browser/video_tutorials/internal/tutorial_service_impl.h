@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_SERVICE_IMPL_H_
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_TUTORIAL_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/video_tutorials/video_tutorial_service.h"
 
 #include "base/memory/weak_ptr.h"
@@ -45,7 +46,7 @@ class TutorialServiceImpl : public VideoTutorialService {
   std::unique_ptr<TutorialFetcher> tutorial_fetcher_;
 
   // PrefService.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<TutorialServiceImpl> weak_ptr_factory_{this};
 };

@@ -32,6 +32,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
@@ -139,7 +140,7 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
   // Ordered the members to compact the class instance.
   std::string pref_name_;
   NamedChangeCallback observer_;
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
  protected:
   bool setting_value_;

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/touch_selection/selection_event_type.h"
@@ -60,7 +61,7 @@ class SelectionPopupController : public RenderWidgetHostConnector {
  private:
   ~SelectionPopupController() override;
   base::android::ScopedJavaLocalRef<jobject> GetContext() const;
-  RenderWidgetHostViewAndroid* rwhva_ = nullptr;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
 
   JavaObjectWeakGlobalRef java_obj_;
 };

@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
@@ -202,7 +203,7 @@ struct SpdySessionDependencies {
   bool enable_websocket_over_http2;
   absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;
-  NetLog* net_log;
+  raw_ptr<NetLog> net_log;
   bool disable_idle_sockets_close_on_memory_pressure;
   bool enable_early_data;
   bool key_auth_cache_server_entries_by_network_isolation_key;
@@ -253,7 +254,7 @@ class SpdySessionPoolPeer {
   void SetEnableSendingInitialData(bool enabled);
 
  private:
-  SpdySessionPool* const pool_;
+  const raw_ptr<SpdySessionPool> pool_;
 
   DISALLOW_COPY_AND_ASSIGN(SpdySessionPoolPeer);
 };

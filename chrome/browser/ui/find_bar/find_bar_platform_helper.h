@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class FindBarController;
 
@@ -27,7 +28,7 @@ class FindBarPlatformHelper {
   explicit FindBarPlatformHelper(FindBarController* find_bar_controller);
 
   // Owns FindBarPlatformHelper.
-  FindBarController* const find_bar_controller_;
+  const raw_ptr<FindBarController> find_bar_controller_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelper);

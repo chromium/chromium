@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -144,11 +145,11 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
-  BrowserPpapiHostImpl* host_;
+  raw_ptr<BrowserPpapiHostImpl> host_;
   // Non-owning ptr.
-  ppapi::host::PpapiHost* ppapi_host_;
+  raw_ptr<ppapi::host::PpapiHost> ppapi_host_;
   // Non-owning ptr.
-  ContentBrowserPepperHostFactory* factory_;
+  raw_ptr<ContentBrowserPepperHostFactory> factory_;
   PP_Instance instance_;
 
   State state_;
