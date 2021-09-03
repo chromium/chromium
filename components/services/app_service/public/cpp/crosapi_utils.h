@@ -10,13 +10,18 @@
 #include <memory>
 #include <vector>
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
-
 namespace apps_util {
 
-// Clone a list of apps::mojom::AppPtr.
-std::vector<apps::mojom::AppPtr> CloneApps(
-    const std::vector<apps::mojom::AppPtr>& clone_from);
+// Clone a list of StructPtr.
+template <typename StructPtr>
+std::vector<StructPtr> CloneStructPtrVector(
+    const std::vector<StructPtr>& clone_from) {
+  std::vector<StructPtr> clone_to;
+  for (const auto& struct_ptr : clone_from) {
+    clone_to.push_back(struct_ptr->Clone());
+  }
+  return clone_to;
+}
 
 }  // namespace apps_util
 

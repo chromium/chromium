@@ -21,19 +21,6 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
-namespace {
-
-std::vector<apps::mojom::CapabilityAccessPtr> CloneCapabilityAccesses(
-    const std::vector<apps::mojom::CapabilityAccessPtr>& clone_from) {
-  std::vector<apps::mojom::CapabilityAccessPtr> clone_to;
-  for (const auto& capability_access : clone_from) {
-    clone_to.push_back(capability_access->Clone());
-  }
-  return clone_to;
-}
-
-}  // namespace
-
 namespace apps {
 
 WebAppsCrosapi::WebAppsCrosapi(Profile* profile) : profile_(profile) {
@@ -230,8 +217,8 @@ void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;
   for (auto& subscriber : subscribers_) {
-    subscriber->OnApps(apps_util::CloneApps(deltas), apps::mojom::AppType::kWeb,
-                       should_notify_initialized_);
+    subscriber->OnApps(apps_util::CloneStructPtrVector(deltas),
+                       apps::mojom::AppType::kWeb, should_notify_initialized_);
   }
   should_notify_initialized_ = false;
 }
@@ -251,7 +238,7 @@ void WebAppsCrosapi::OnCapabilityAccesses(
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;
   for (auto& subscriber : subscribers_) {
-    subscriber->OnCapabilityAccesses(CloneCapabilityAccesses(deltas));
+    subscriber->OnCapabilityAccesses(apps_util::CloneStructPtrVector(deltas));
   }
 }
 

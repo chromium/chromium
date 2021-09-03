@@ -195,10 +195,7 @@ source_set("types") {
 }
 
 source_set("crosapi_utils") {
-  sources = [
-    "crosapi_utils.cc",
-    "crosapi_utils.h",
-  ]
+  sources = [ "crosapi_utils.h" ]
 
   deps = [ "//components/services/app_service/public/mojom" ]
 }

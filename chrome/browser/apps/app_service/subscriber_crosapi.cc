@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace {
@@ -57,8 +56,7 @@ void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType app_type,
                                bool should_notify_initialized) {
   if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
-    subscriber_->OnApps(apps_util::CloneApps(deltas), app_type,
-                        should_notify_initialized);
+    subscriber_->OnApps(std::move(deltas), app_type, should_notify_initialized);
   }
 }
 
