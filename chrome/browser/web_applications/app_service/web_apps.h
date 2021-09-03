@@ -40,7 +40,6 @@ namespace web_app {
 
 class WebApp;
 class WebAppProvider;
-class WebAppRegistrar;
 
 // An app publisher (in the App Service sense) of Web Apps.
 class WebApps : public apps::PublisherBase,
@@ -77,9 +76,6 @@ class WebApps : public apps::PublisherBase,
 
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
-
-  // Can return nullptr in tests.
-  const WebAppRegistrar* GetRegistrar() const;
 
   apps::mojom::AppType app_type() { return app_type_; }
 

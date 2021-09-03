@@ -120,13 +120,8 @@ void WebApps::Shutdown() {
 }
 
 const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
-  // TODO(crbug.com/1065748): GetRegistrar() must not return nullptr. We should
-  // always call GetRegistrar().GetAppById(app_id).
-  //
-  // GetRegistrar() could return nullptr if the legacy bookmark apps registry
-  // was enabled. This could happen in migration browser tests which were
-  // deleted.
-  return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
+  DCHECK(provider_);
+  return provider_->registrar().GetAppById(app_id);
 }
 
 bool WebApps::Accepts(const std::string& app_id) const {
@@ -144,11 +139,6 @@ void WebApps::Initialize(
 
   PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
-}
-
-const WebAppRegistrar* WebApps::GetRegistrar() const {
-  DCHECK(provider_);
-  return &provider_->registrar();
 }
 
 void WebApps::Connect(
@@ -235,12 +225,9 @@ void WebApps::ModifyWebAppCapabilityAccess(
 }
 
 void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
-  const WebAppRegistrar* registrar = GetRegistrar();
-  // Can be nullptr in tests.
-  if (!registrar)
-    return;
+  DCHECK(provider_);
 
-  for (const WebApp& web_app : registrar->GetApps()) {
+  for (const WebApp& web_app : provider_->registrar().GetApps()) {
     if (Accepts(web_app.app_id())) {
       apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
     }
