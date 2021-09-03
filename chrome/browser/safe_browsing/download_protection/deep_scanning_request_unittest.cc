@@ -319,7 +319,23 @@ class DeepScanningRequestTest : public testing::Test {
   DownloadCheckResult last_result_;
 };
 
-TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
+class DeepScanningRequestFeaturesEnabledTest
+    : public DeepScanningRequestTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DeepScanningRequestFeaturesEnabledTest() {
+    if (GetParam())
+      EnableAllFeatures();
+    else
+      DisableAllFeatures();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DeepScanningRequestFeaturesEnabledTest,
+                         testing::Bool());
+
+TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -349,16 +365,6 @@ TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
   };
 
   {
-    EnableAllFeatures();
-    DeepScanningRequest request(
-        &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        base::DoNothing(), &download_protection_service_,
-        dlp_and_malware_settings());
-    request.Start();
-    expect_dlp_and_malware_tags();
-  }
-  {
-    DisableAllFeatures();
     DeepScanningRequest request(
         &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
         base::DoNothing(), &download_protection_service_,
@@ -368,9 +374,16 @@ TEST_F(DeepScanningRequestTest, ChecksFeatureFlags) {
   }
 }
 
-TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
-  EnableAllFeatures();
+class DeepScanningRequestAllFeaturesEnabledTest
+    : public DeepScanningRequestTest {
+ public:
+  DeepScanningRequestAllFeaturesEnabledTest() {
+    EnableAllFeatures();
+  }
+};
 
+TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
+       GeneratesCorrectRequestFromPolicy) {
   {
     SetAnalysisConnector(profile_->GetPrefs(),
                          enterprise_connectors::FILE_DOWNLOADED,
@@ -452,17 +465,17 @@ TEST_F(DeepScanningRequestTest, GeneratesCorrectRequestFromPolicy) {
 class DeepScanningAPPRequestTest : public DeepScanningRequestTest,
                                    public testing::WithParamInterface<bool> {
  public:
-  DeepScanningAPPRequestTest() = default;
+  DeepScanningAPPRequestTest() {
+    // APP requests should be correct even when the Connectors feature is
+    // disabled.
+    if (GetParam())
+      DisableAllFeatures();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
 
 TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
-  // APP requests should be correct even when the Connectors feature is
-  // disabled.
-  if (GetParam())
-    DisableAllFeatures();
-
   enterprise_connectors::AnalysisSettings settings;
   settings.tags = {"malware"};
   DeepScanningRequest request(
@@ -485,6 +498,10 @@ TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
 
 class DeepScanningReportingTest : public DeepScanningRequestTest {
  public:
+  DeepScanningReportingTest() {
+    EnableAllFeatures();
+  }
+
   void SetUp() override {
     DeepScanningRequestTest::SetUp();
 
@@ -505,7 +522,6 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         ->SetAuthForTesting("dm_token", true);
 
     SetOnSecurityEventReporting(profile_->GetPrefs(), true);
-    EnableAllFeatures();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
@@ -1317,9 +1333,18 @@ TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   }
 }
 
-TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
-  SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
-              /*disabled*/ {});
+class DeepScanningRequestConnectorsFeatureTest
+    : public DeepScanningRequestTest {
+ public:
+  DeepScanningRequestConnectorsFeatureTest() {
+    SetFeatures(
+        /*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
+        /*disabled*/ {});
+  }
+};
+
+TEST_F(DeepScanningRequestConnectorsFeatureTest,
+       ShouldUploadBinary_MalwareListPolicy) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
@@ -1352,9 +1377,7 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_F(DeepScanningRequestTest, ShouldUploadBinary_FileURLs) {
-  SetFeatures(/*enabled*/ {enterprise_connectors::kEnterpriseConnectorsEnabled},
-              /*disabled*/ {});
+TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -1380,12 +1403,11 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_FileURLs) {
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_F(DeepScanningRequestTest, PopulatesRequest) {
+TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
 
-  EnableAllFeatures();
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
       base::DoNothing(), &download_protection_service_, settings().value());
