@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_protocol_handler_manager.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 
 namespace web_app {
@@ -21,7 +21,7 @@ TestOsIntegrationManager::TestOsIntegrationManager(
     Profile* profile,
     std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
     std::unique_ptr<UrlHandlerManager> url_handler_manager)
     : OsIntegrationManager(profile,
                            std::move(shortcut_manager),
@@ -127,7 +127,7 @@ void TestOsIntegrationManager::SetFileHandlerManager(
 }
 
 void TestOsIntegrationManager::SetProtocolHandlerManager(
-    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager) {
+    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager) {
   set_protocol_handler_manager(std::move(protocol_handler_manager));
 }
 

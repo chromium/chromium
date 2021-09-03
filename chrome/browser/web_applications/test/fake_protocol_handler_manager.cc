@@ -7,7 +7,7 @@
 namespace web_app {
 
 FakeProtocolHandlerManager::FakeProtocolHandlerManager(Profile* profile)
-    : ProtocolHandlerManager(profile) {}
+    : WebAppProtocolHandlerManager(profile) {}
 
 FakeProtocolHandlerManager::~FakeProtocolHandlerManager() = default;
 

@@ -8,12 +8,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 
 namespace web_app {
 
-// Fake implementation of ProtocolHandlerManager
-class FakeProtocolHandlerManager : public ProtocolHandlerManager {
+// Fake implementation of WebAppProtocolHandlerManager
+// TODO(crbug.com/1225132): Rename FakeProtocolHandlerManager.
+class FakeProtocolHandlerManager : public WebAppProtocolHandlerManager {
  public:
   explicit FakeProtocolHandlerManager(Profile* profile);
   ~FakeProtocolHandlerManager() override;

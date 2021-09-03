@@ -4,15 +4,58 @@
 
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 
+#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_protocol_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 namespace web_app {
 
 WebAppProtocolHandlerManager::WebAppProtocolHandlerManager(Profile* profile)
-    : ProtocolHandlerManager(profile) {}
+    : app_registrar_(nullptr), profile_(profile) {}
 
 WebAppProtocolHandlerManager::~WebAppProtocolHandlerManager() = default;
+
+void WebAppProtocolHandlerManager::SetSubsystems(WebAppRegistrar* registrar) {
+  app_registrar_ = registrar;
+}
+
+void WebAppProtocolHandlerManager::Start() {
+  DCHECK(app_registrar_);
+}
+
+absl::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
+    const AppId& app_id,
+    const GURL& protocol_url) const {
+  std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
+
+  for (const auto& handler : handlers) {
+    if (handler.protocol() == protocol_url.scheme()) {
+      return handler.TranslateUrl(protocol_url);
+    }
+  }
+
+  return absl::nullopt;
+}
+
+std::vector<ProtocolHandler> WebAppProtocolHandlerManager::GetHandlersFor(
+    const std::string& protocol) const {
+  std::vector<ProtocolHandler> protocol_handlers;
+
+  for (const auto& app_id : app_registrar_->GetAppIds()) {
+    const std::vector<ProtocolHandler> handlers =
+        GetAppProtocolHandlers(app_id);
+    for (const auto& handler : handlers) {
+      if (handler.protocol() == protocol)
+        protocol_handlers.push_back(handler);
+    }
+  }
+
+  return protocol_handlers;
+}
 
 std::vector<apps::ProtocolHandlerInfo>
 WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
@@ -23,6 +66,50 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
     return {};
 
   return web_app->protocol_handlers();
+}
+
+std::vector<ProtocolHandler>
+WebAppProtocolHandlerManager::GetAppProtocolHandlers(
+    const AppId& app_id) const {
+  std::vector<apps::ProtocolHandlerInfo> infos =
+      GetAppProtocolHandlerInfos(app_id);
+
+  std::vector<ProtocolHandler> protocol_handlers;
+  for (const auto& info : infos) {
+    ProtocolHandler handler = ProtocolHandler::CreateWebAppProtocolHandler(
+        info.protocol, GURL(info.url), app_id);
+    protocol_handlers.push_back(handler);
+  }
+
+  return protocol_handlers;
+}
+
+void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool)> callback) {
+  const std::vector<apps::ProtocolHandlerInfo> handlers =
+      GetAppProtocolHandlerInfos(app_id);
+  RegisterOsProtocolHandlers(app_id, handlers, std::move(callback));
+}
+
+void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
+    const AppId& app_id,
+    const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
+    base::OnceCallback<void(bool)> callback) {
+  if (!app_registrar_->IsLocallyInstalled(app_id))
+    return;
+
+  if (!protocol_handlers.empty()) {
+    RegisterProtocolHandlersWithOs(
+        app_id, app_registrar_->GetAppShortName(app_id), profile_,
+        protocol_handlers, std::move(callback));
+  }
+}
+
+void WebAppProtocolHandlerManager::UnregisterOsProtocolHandlers(
+    const AppId& app_id,
+    base::OnceCallback<void(bool)> callback) {
+  UnregisterProtocolHandlersWithOs(app_id, profile_, std::move(callback));
 }
 
 }  // namespace web_app

@@ -13,13 +13,13 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,7 +81,7 @@ class OsIntegrationManager {
       Profile* profile,
       std::unique_ptr<WebAppShortcutManager> shortcut_manager,
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
       std::unique_ptr<UrlHandlerManager> url_handler_manager);
   virtual ~OsIntegrationManager();
 
@@ -146,7 +146,7 @@ class OsIntegrationManager {
   void ForceEnableFileHandlingOriginTrial(const AppId& app_id);
   void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
 
-  // Proxy calls for ProtocolHandlerManager.
+  // Proxy calls for WebAppProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
                                                     const GURL& protocol_url);
   virtual std::vector<ProtocolHandler> GetHandlersForProtocol(
@@ -159,7 +159,7 @@ class OsIntegrationManager {
 
   UrlHandlerManager& url_handler_manager_for_testing();
 
-  ProtocolHandlerManager& protocol_handler_manager_for_testing();
+  WebAppProtocolHandlerManager& protocol_handler_manager_for_testing();
 
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
@@ -183,7 +183,7 @@ class OsIntegrationManager {
   WebAppFileHandlerManager* file_handler_manager() {
     return file_handler_manager_.get();
   }
-  ProtocolHandlerManager* protocol_handler_manager() {
+  WebAppProtocolHandlerManager* protocol_handler_manager() {
     return protocol_handler_manager_.get();
   }
   UrlHandlerManager* url_handler_manager() {
@@ -198,7 +198,7 @@ class OsIntegrationManager {
     file_handler_manager_ = std::move(file_handler_manager);
   }
   void set_protocol_handler_manager(
-      std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager) {
+      std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager) {
     protocol_handler_manager_ = std::move(protocol_handler_manager);
   }
 
@@ -282,7 +282,7 @@ class OsIntegrationManager {
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;
-  std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager_;
+  std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager_;
   std::unique_ptr<UrlHandlerManager> url_handler_manager_;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};

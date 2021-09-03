@@ -96,7 +96,7 @@ OsIntegrationManager::OsIntegrationManager(
     Profile* profile,
     std::unique_ptr<WebAppShortcutManager> shortcut_manager,
     std::unique_ptr<WebAppFileHandlerManager> file_handler_manager,
-    std::unique_ptr<ProtocolHandlerManager> protocol_handler_manager,
+    std::unique_ptr<WebAppProtocolHandlerManager> protocol_handler_manager,
     std::unique_ptr<UrlHandlerManager> url_handler_manager)
     : profile_(profile),
       shortcut_manager_(std::move(shortcut_manager)),
@@ -351,7 +351,7 @@ UrlHandlerManager& OsIntegrationManager::url_handler_manager_for_testing() {
   return *url_handler_manager_;
 }
 
-ProtocolHandlerManager&
+WebAppProtocolHandlerManager&
 OsIntegrationManager::protocol_handler_manager_for_testing() {
   DCHECK(protocol_handler_manager_);
   return *protocol_handler_manager_;
