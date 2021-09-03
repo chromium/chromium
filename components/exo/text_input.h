@@ -8,13 +8,15 @@
 #include <string>
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
+#include "base/i18n/rtl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 
 namespace ui {
 class InputMethod;
@@ -66,7 +68,9 @@ class TextInput : public ui::TextInputClient,
         base::i18n::TextDirection direction) = 0;
   };
 
-  TextInput(std::unique_ptr<Delegate> delegate);
+  explicit TextInput(std::unique_ptr<Delegate> delegate);
+  TextInput(const TextInput&) = delete;
+  TextInput& operator=(const TextInput&) = delete;
   ~TextInput() override;
 
   // Activates the text input context on the surface. Note that surface can be
@@ -174,8 +178,6 @@ class TextInput : public ui::TextInputClient,
   std::u16string surrounding_text_;
   absl::optional<gfx::Range> cursor_pos_;
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInput);
 };
 
 }  // namespace exo

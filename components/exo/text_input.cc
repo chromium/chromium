@@ -5,8 +5,11 @@
 #include "components/exo/text_input.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
