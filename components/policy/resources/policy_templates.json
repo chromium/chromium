@@ -23821,7 +23821,7 @@
           'caption': 'Do not block legacy extension points in the Browser process',
         },
       ],
-      'supported_on': ['chrome.win:94-'],
+      'supported_on': ['chrome.win:95-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
