@@ -1955,7 +1955,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, FCPHiddenWhileFlushing) {
   timing.parse_timing->parse_start = base::TimeDelta();
   timing.navigation_start = base::Time::FromDoubleT(1);
   timing.paint_timing->first_contentful_paint =
-      tester()->GetDelegateForCommittedLoad().GetFirstBackgroundTime();
+      tester()->GetDelegateForCommittedLoad().GetTimeToFirstBackground();
   PopulateRequiredTimingFields(&timing);
 
   // Simulate FCP at the same time as the hide (but reported after).
@@ -1979,14 +1979,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, LCPHiddenWhileFlushing) {
 
   // Simulate hiding the tab.
   web_contents()->WasHidden();
-  base::TimeDelta background_time =
-      *tester()->GetDelegateForCommittedLoad().GetFirstBackgroundTime();
+  base::TimeDelta time_to_first_background =
+      *tester()->GetDelegateForCommittedLoad().GetTimeToFirstBackground();
 
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
   timing.paint_timing->largest_contentful_paint->largest_image_paint =
-      background_time;
+      time_to_first_background;
   timing.paint_timing->largest_contentful_paint->largest_image_paint_size = 50u;
   PopulateExperimentalLCP(timing.paint_timing);
   PopulateRequiredTimingFields(&timing);
@@ -1998,7 +1998,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LCPHiddenWhileFlushing) {
   DeleteContents();
 
   // Check that we reported the LCP UKM.
-  TestLCP(background_time.InMilliseconds(), LargestContentType::kImage,
+  TestLCP(time_to_first_background.InMilliseconds(), LargestContentType::kImage,
           true /* test_main_frame */);
 }
 

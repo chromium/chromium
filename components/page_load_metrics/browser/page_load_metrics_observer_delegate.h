@@ -62,13 +62,15 @@ class PageLoadMetricsObserverDelegate {
   // The time the navigation was initiated.
   virtual base::TimeTicks GetNavigationStart() const = 0;
 
-  // The first time that the page was backgrounded since the navigation started.
-  virtual const absl::optional<base::TimeDelta>& GetFirstBackgroundTime()
-      const = 0;
+  // The duration until the first time that the page was backgrounded since the
+  // navigation started. Will be nullopt if the page has never been
+  // backgrounded.
+  virtual absl::optional<base::TimeDelta> GetTimeToFirstBackground() const = 0;
 
-  // The first time that the page was foregrounded since the navigation started.
-  virtual const absl::optional<base::TimeDelta>& GetFirstForegroundTime()
-      const = 0;
+  // The duration until the first time that the page was foregrounded since the
+  // navigation started. Will be nullopt if the page has never been in the
+  // foreground.
+  virtual absl::optional<base::TimeDelta> GetTimeToFirstForeground() const = 0;
 
   // The state of index-th restore from the back-forward cache.
   virtual const BackForwardCacheRestore& GetBackForwardCacheRestore(
@@ -123,7 +125,7 @@ class PageLoadMetricsObserverDelegate {
   // * a new navigation which later commits is initiated in the same tab
   // This field will not be set if the page is still active and hasn't yet
   // finished.
-  virtual absl::optional<base::TimeDelta> GetPageEndTime() const = 0;
+  virtual absl::optional<base::TimeDelta> GetTimeToPageEnd() const = 0;
 
   // Extra information supplied to the page load metrics system from the
   // renderer for the main frame.

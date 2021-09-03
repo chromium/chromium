@@ -13,13 +13,13 @@ namespace page_load_metrics {
 namespace {
 
 bool IsBackgroundAbort(const PageLoadMetricsObserverDelegate& delegate) {
-  if (!delegate.StartedInForeground() || !delegate.GetFirstBackgroundTime())
+  if (!delegate.StartedInForeground() || !delegate.GetTimeToFirstBackground())
     return false;
 
-  if (!delegate.GetPageEndTime())
+  if (!delegate.GetTimeToPageEnd())
     return true;
 
-  return delegate.GetFirstBackgroundTime() <= delegate.GetPageEndTime();
+  return delegate.GetTimeToFirstBackground() <= delegate.GetTimeToPageEnd();
 }
 
 PageAbortReason GetAbortReasonForEndReason(PageEndReason end_reason) {
@@ -105,16 +105,16 @@ bool WasStartedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() && event &&
-         (!delegate.GetFirstBackgroundTime() ||
-          event.value() <= delegate.GetFirstBackgroundTime().value());
+         (!delegate.GetTimeToFirstBackground() ||
+          event.value() <= delegate.GetTimeToFirstBackground().value());
 }
 
 bool WasActivatedInForegroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.WasPrerenderedThenActivatedInForeground() && event &&
-         (!delegate.GetFirstBackgroundTime() ||
-          event.value() <= delegate.GetFirstBackgroundTime().value());
+         (!delegate.GetTimeToFirstBackground() ||
+          event.value() <= delegate.GetTimeToFirstBackground().value());
 }
 
 bool WasStartedInForegroundOptionalEventInForegroundAfterBackForwardCacheRestore(
@@ -134,14 +134,14 @@ bool WasStartedInBackgroundOptionalEventInForeground(
     const absl::optional<base::TimeDelta>& event,
     const PageLoadMetricsObserverDelegate& delegate) {
   return !delegate.StartedInForeground() && event &&
-         delegate.GetFirstForegroundTime() &&
-         delegate.GetFirstForegroundTime().value() <= event.value() &&
-         (!delegate.GetFirstBackgroundTime() ||
-          event.value() <= delegate.GetFirstBackgroundTime().value());
+         delegate.GetTimeToFirstForeground() &&
+         delegate.GetTimeToFirstForeground().value() <= event.value() &&
+         (!delegate.GetTimeToFirstBackground() ||
+          event.value() <= delegate.GetTimeToFirstBackground().value());
 }
 
 bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate) {
-  return delegate.StartedInForeground() || delegate.GetFirstForegroundTime();
+  return delegate.StartedInForeground() || delegate.GetTimeToFirstForeground();
 }
 
 PageAbortInfo GetPageAbortInfo(
@@ -152,7 +152,7 @@ PageAbortInfo GetPageAbortInfo(
     // example, on Android, the screen times out after a period of inactivity,
     // resulting in a non-user-initiated backgrounding.
     return {ABORT_BACKGROUND, UserInitiatedInfo::NotUserInitiated(),
-            delegate.GetFirstBackgroundTime().value()};
+            delegate.GetTimeToFirstBackground().value()};
   }
 
   PageAbortReason abort_reason =
@@ -161,7 +161,7 @@ PageAbortInfo GetPageAbortInfo(
     return PageAbortInfo();
 
   return {abort_reason, delegate.GetPageEndUserInitiatedInfo(),
-          delegate.GetPageEndTime().value()};
+          delegate.GetTimeToPageEnd().value()};
 }
 
 absl::optional<base::TimeDelta> GetInitialForegroundDuration(
@@ -170,8 +170,8 @@ absl::optional<base::TimeDelta> GetInitialForegroundDuration(
   if (!delegate.StartedInForeground())
     return absl::optional<base::TimeDelta>();
 
-  absl::optional<base::TimeDelta> time_on_page =
-      OptionalMin(delegate.GetFirstBackgroundTime(), delegate.GetPageEndTime());
+  absl::optional<base::TimeDelta> time_on_page = OptionalMin(
+      delegate.GetTimeToFirstBackground(), delegate.GetTimeToPageEnd());
 
   // If we don't have a time_on_page value yet, and we have an app background
   // time, use the app background time as our end time. This addresses cases

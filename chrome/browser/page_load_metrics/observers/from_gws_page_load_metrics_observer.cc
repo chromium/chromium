@@ -285,7 +285,7 @@ bool WasAbortedInForeground(
     return true;
 
   const base::TimeDelta time_to_first_background =
-      delegate.GetFirstBackgroundTime().value();
+      delegate.GetTimeToFirstBackground().value();
   DCHECK_GT(abort_info.time_to_abort, time_to_first_background);
   base::TimeDelta background_abort_delta =
       abort_info.time_to_abort - time_to_first_background;

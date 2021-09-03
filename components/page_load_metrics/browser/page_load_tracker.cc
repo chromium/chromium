@@ -381,7 +381,7 @@ void PageLoadTracker::PageHidden() {
     DCHECK_GE(background_time, navigation_start_);
 
     if (!first_background_time_.has_value())
-      first_background_time_ = background_time - navigation_start_;
+      first_background_time_ = background_time;
 
     if (!back_forward_cache_restores_.empty() &&
         !back_forward_cache_restores_.back()
@@ -406,7 +406,7 @@ void PageLoadTracker::PageShown() {
     foreground_time = base::TimeTicks::Now();
     ClampBrowserTimestampIfInterProcessTimeTickSkew(&foreground_time);
     DCHECK_GE(foreground_time, navigation_start_);
-    first_foreground_time_ = foreground_time - navigation_start_;
+    first_foreground_time_ = foreground_time;
   }
 
   visibility_tracker_.OnShown();
@@ -887,14 +887,27 @@ base::TimeTicks PageLoadTracker::GetNavigationStart() const {
   return navigation_start_;
 }
 
-const absl::optional<base::TimeDelta>& PageLoadTracker::GetFirstBackgroundTime()
-    const {
-  return first_background_time_;
+absl::optional<base::TimeDelta>
+PageLoadTracker::DurationSinceNavigationStartForTime(
+    const absl::optional<base::TimeTicks>& time) const {
+  absl::optional<base::TimeDelta> duration;
+
+  if (!time.has_value())
+    return duration;
+
+  DCHECK_GE(time.value(), navigation_start_);
+  duration = time.value() - navigation_start_;
+  return duration;
 }
 
-const absl::optional<base::TimeDelta>& PageLoadTracker::GetFirstForegroundTime()
+absl::optional<base::TimeDelta> PageLoadTracker::GetTimeToFirstBackground()
     const {
-  return first_foreground_time_;
+  return DurationSinceNavigationStartForTime(first_background_time_);
+}
+
+absl::optional<base::TimeDelta> PageLoadTracker::GetTimeToFirstForeground()
+    const {
+  return DurationSinceNavigationStartForTime(first_foreground_time_);
 }
 
 const PageLoadMetricsObserverDelegate::BackForwardCacheRestore&
@@ -934,17 +947,12 @@ const UserInitiatedInfo& PageLoadTracker::GetPageEndUserInitiatedInfo() const {
   return page_end_user_initiated_info_;
 }
 
-absl::optional<base::TimeDelta> PageLoadTracker::GetPageEndTime() const {
-  absl::optional<base::TimeDelta> page_end_time;
-
+absl::optional<base::TimeDelta> PageLoadTracker::GetTimeToPageEnd() const {
   if (page_end_reason_ != END_NONE) {
-    DCHECK_GE(page_end_time_, navigation_start_);
-    page_end_time = page_end_time_ - navigation_start_;
-  } else {
-    DCHECK(page_end_time_.is_null());
+    return DurationSinceNavigationStartForTime(page_end_time_);
   }
-
-  return page_end_time;
+  DCHECK(page_end_time_.is_null());
+  return absl::optional<base::TimeDelta>();
 }
 
 const mojom::FrameMetadata& PageLoadTracker::GetMainFrameMetadata() const {

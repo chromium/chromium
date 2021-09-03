@@ -221,10 +221,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;
   base::TimeTicks GetNavigationStart() const override;
-  const absl::optional<base::TimeDelta>& GetFirstBackgroundTime()
-      const override;
-  const absl::optional<base::TimeDelta>& GetFirstForegroundTime()
-      const override;
+  absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
+  absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
@@ -235,7 +233,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   bool DidCommit() const override;
   PageEndReason GetPageEndReason() const override;
   const UserInitiatedInfo& GetPageEndUserInitiatedInfo() const override;
-  absl::optional<base::TimeDelta> GetPageEndTime() const override;
+  absl::optional<base::TimeDelta> GetTimeToPageEnd() const override;
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;
@@ -408,6 +406,12 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // committed load.
   void LogAbortChainHistograms(content::NavigationHandle* final_navigation);
 
+  // Given a |time|, returns the duration between |navigation_start_| and
+  // |time|. |time| must be greater than or equal to |navigation_start_|.
+  // Returns nullopt if and only if the |time| passed is nullopt.
+  absl::optional<base::TimeDelta> DurationSinceNavigationStartForTime(
+      const absl::optional<base::TimeTicks>& time) const;
+
   // Whether we stopped tracking this navigation after it was initiated. We may
   // stop tracking a navigation if it doesn't meet the criteria for tracking
   // metrics in DidFinishNavigation.
@@ -457,8 +461,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // We record separate metrics for events that occur after a background,
   // because metrics like layout/paint are delayed artificially
   // when they occur in the background.
-  absl::optional<base::TimeDelta> first_background_time_;
-  absl::optional<base::TimeDelta> first_foreground_time_;
+  absl::optional<base::TimeTicks> first_background_time_;
+  absl::optional<base::TimeTicks> first_foreground_time_;
   std::vector<BackForwardCacheRestore> back_forward_cache_restores_;
   const bool started_in_foreground_;
   bool was_prerendered_then_activated_in_foreground_ = false;

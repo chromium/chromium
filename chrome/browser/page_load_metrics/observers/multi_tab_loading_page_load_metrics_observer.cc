@@ -80,7 +80,7 @@ void MultiTabLoadingPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     RECORD_HISTOGRAMS(
         internal::kHistogramForegroundToFirstContentfulPaintSuffix,
         timing.paint_timing->first_contentful_paint.value() -
-            GetDelegate().GetFirstForegroundTime().value());
+            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 

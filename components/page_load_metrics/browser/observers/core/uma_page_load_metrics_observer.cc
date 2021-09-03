@@ -508,7 +508,7 @@ void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
           timing.paint_timing->first_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstPaint,
                         timing.paint_timing->first_paint.value() -
-                            GetDelegate().GetFirstForegroundTime().value());
+                            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 
@@ -595,7 +595,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       }
     }
 
-    if (GetDelegate().GetFirstBackgroundTime()) {
+    if (GetDelegate().GetTimeToFirstBackground()) {
       // We were started in the foreground, and got FCP while in foreground, but
       // became hidden while propagating the FCP value from Blink into the PLM
       // observer. In this case, we will have missed the FCP UKM value, since it
@@ -660,7 +660,7 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramForegroundToFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value() -
-                            GetDelegate().GetFirstForegroundTime().value());
+                            GetDelegate().GetTimeToFirstForeground().value());
   }
 }
 
@@ -1050,9 +1050,9 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
   // Log time to first foreground / time to first background. Log counts that we
   // started a relevant page load in the foreground / background.
   if (!GetDelegate().StartedInForeground() &&
-      GetDelegate().GetFirstForegroundTime()) {
+      GetDelegate().GetTimeToFirstForeground()) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstForeground,
-                        GetDelegate().GetFirstForegroundTime().value());
+                        GetDelegate().GetTimeToFirstForeground().value());
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1202,9 +1202,9 @@ void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(
   if (GetDelegate().GetPageEndReason() == page_load_metrics::END_FORWARD_BACK &&
       GetDelegate().GetUserInitiatedInfo().user_gesture &&
       !GetDelegate().GetUserInitiatedInfo().browser_initiated &&
-      GetDelegate().GetPageEndTime() <= foreground_duration) {
+      GetDelegate().GetTimeToPageEnd() <= foreground_duration) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramUserGestureNavigationToForwardBack,
-                        GetDelegate().GetPageEndTime().value());
+                        GetDelegate().GetTimeToPageEnd().value());
   }
 }
 
