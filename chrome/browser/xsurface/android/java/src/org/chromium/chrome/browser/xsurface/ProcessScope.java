@@ -41,6 +41,11 @@ public interface ProcessScope {
     }
 
     @Nullable
+    default ImageCacheHelper provideImageCacheHelper() {
+        return provideImagePrefetcher();
+    }
+
+    @Nullable
     default ReliabilityLoggingTestUtil provideReliabilityLoggingTestUtil() {
         return null;
     }

@@ -16,7 +16,7 @@ import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
+import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
 import java.util.Locale;
@@ -87,9 +87,9 @@ public final class FeedServiceBridge {
     public static void prefetchImage(String url) {
         ProcessScope processScope = xSurfaceProcessScope();
         if (processScope != null) {
-            ImagePrefetcher imagePrefetcher = processScope.provideImagePrefetcher();
-            if (imagePrefetcher != null) {
-                imagePrefetcher.prefetchImage(url);
+            ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
+            if (imageCacheHelper != null) {
+                imageCacheHelper.prefetchImage(url);
             }
         }
     }

@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+// TODO(freedjm): Remove ImagePrefetcher after internal changes
+//                land for ImageCacheHelper.
+
 /**
  * Interface to prefetch an image and cache it on disk. This
  * allows native code to call to the image loader across the
  * xsurface.
  */
-public interface ImagePrefetcher {
-    default void prefetchImage(String url) {}
-}
+@Deprecated
+public interface ImagePrefetcher extends ImageCacheHelper {}

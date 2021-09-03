@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
+import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
@@ -385,6 +386,7 @@ public class FeedSurfaceCoordinator
             mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                     .removeObserver(mSectionHeaderListModelChangeProcessor);
         }
+        clearImageMemoryCache();
         FeedSurfaceTracker.getInstance().untrackSurface(this);
         if (mHybridListRenderer != null) {
             mHybridListRenderer.unbind();
@@ -944,5 +946,15 @@ public class FeedSurfaceCoordinator
                 && (mPrivacyPreferencesManager.isMetricsReportingEnabled()
                         || CommandLine.getInstance().hasSwitch(
                                 "force-enable-feed-reliability-logging"));
+    }
+
+    private void clearImageMemoryCache() {
+        ProcessScope processScope = FeedSurfaceTracker.getInstance().getXSurfaceProcessScope();
+        if (processScope != null) {
+            ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
+            if (imageCacheHelper != null) {
+                imageCacheHelper.clearMemoryCache();
+            }
+        }
     }
 }
