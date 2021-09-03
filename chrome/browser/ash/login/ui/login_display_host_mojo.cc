@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -115,9 +116,12 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   user_selection_screen_->SetView(user_board_view_mojo_.get());
-  // TODO (crbug.com/1218161): Remove this premature WebUI start.
-  if (displayed_screen == DisplayedScreen::SIGN_IN_SCREEN)
+
+  // Do not load WebUI before it is needed if feature permits.
+  if (!base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading) &&
+      (displayed_screen == DisplayedScreen::SIGN_IN_SCREEN)) {
     EnsureOobeDialogLoaded();
+  }
 }
 
 LoginDisplayHostMojo::~LoginDisplayHostMojo() {

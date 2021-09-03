@@ -167,6 +167,8 @@ extern const base::Feature kEnableInputInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputNoiseCancellationUi;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableLazyLoginWebUILoading;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableNetworkingInDiagnosticsApp;
