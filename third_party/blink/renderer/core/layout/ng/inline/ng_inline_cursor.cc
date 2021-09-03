@@ -81,6 +81,10 @@ bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
           // // All/LayoutViewHitTestTest.EmptySpan needs this.
           return true;
         }
+        if (box_fragment->IsBlockInInline()) {
+          // "label-contains-other-interactive-content.html" reaches here.
+          return false;
+        }
         // Skip pseudo element ::before/::after
         // All/LayoutViewHitTestTest.PseudoElementAfter* needs this.
         return !item.GetLayoutObject()->NonPseudoNode();
@@ -106,6 +110,26 @@ bool ShouldIgnoreForPositionForPoint(const NGFragmentItem& item) {
       break;
   }
   return false;
+}
+
+bool ShouldIgnoreForPositionForPoint(const NGInlineCursor& line) {
+  if (line.CurrentItem()->Type() != NGFragmentItem::kLine)
+    return false;
+  for (auto cursor = line.CursorForDescendants(); cursor; cursor.MoveToNext()) {
+    if (cursor.CurrentItem()->IsBlockInInline()) {
+      // We should enter block-in-inline. Following tests require this:
+      //  * editing/pasteboard/paste-sanitize-crash-2.html
+      //  * editing/selection/click-after-nested-block.html
+      return false;
+    }
+    // See also |NGInlineCursor::TryMoveToFirstInlineLeafChild()|.
+    if (cursor.Current().IsInlineLeaf())
+      return false;
+  }
+  // There are no block-in-inline and inline leaf.
+  // Note: editing/selection/last-empty-inline.html requires this to skip
+  // empty <span> with padding.
+  return true;
 }
 
 }  // namespace
@@ -581,9 +605,7 @@ PositionWithAffinity NGInlineCursor::PositionForPointInInlineFormattingContext(
     const NGFragmentItem* child_item = CurrentItem();
     DCHECK(child_item);
     if (child_item->Type() == NGFragmentItem::kLine) {
-      if (!CursorForDescendants().TryMoveToFirstInlineLeafChild()) {
-        // editing/selection/last-empty-inline.html requires this to skip
-        // empty <span> with padding.
+      if (ShouldIgnoreForPositionForPoint(*this)) {
         MoveToNextSkippingChildren();
         continue;
       }

@@ -2165,6 +2165,13 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
       return NGBoxFragmentPainter(cursor, *item, fragment)
           .NodeAtPoint(hit_test, physical_offset);
     }
+
+    if (fragment.IsBlockInInline()) {
+      // "label-contains-other-interactive-content.html" reaches here.
+      return NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
+                                                        physical_offset);
+    }
+
     // When traversing into a different inline formatting context,
     // |inline_root_offset| needs to be updated.
     return NGBoxFragmentPainter(cursor, *item, fragment)
