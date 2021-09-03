@@ -67,6 +67,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   // credProtect CTAP extension.
   bool SupportsCredProtectExtension() const override;
   bool SupportsHMACSecretExtension() const override;
+  bool SupportsEnterpriseAttestation() const override;
+  bool SupportsCredBlobOfSize(size_t num_bytes) const override;
   const absl::optional<AuthenticatorSupportedOptions>& Options() const override;
   absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   bool IsWinNativeApiAuthenticator() const override;

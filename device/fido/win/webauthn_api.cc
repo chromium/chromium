@@ -204,6 +204,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     CtapMakeCredentialRequest request,
                                     MakeCredentialOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
+  const int api_version = webauthn_api->Version();
 
   std::u16string rp_id = base::UTF8ToUTF16(request.rp.id);
   std::u16string rp_name = base::UTF8ToUTF16(request.rp.name.value_or(""));
@@ -261,8 +262,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   if (request.cred_protect) {
     // MakeCredentialRequestHandler rejects a request with credProtect
     // enforced=true if webauthn.dll does not support credProtect.
-    if (request.cred_protect_enforce &&
-        webauthn_api->Version() < WEBAUTHN_API_VERSION_2) {
+    if (request.cred_protect_enforce && api_version < WEBAUTHN_API_VERSION_2) {
       NOTREACHED();
       return {CtapDeviceResponseCode::kCtap2ErrNotAllowed, absl::nullopt};
     }
@@ -297,6 +297,35 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
         ToWinAuthenticatorAttachment(request.authenticator_attachment);
   }
 
+  WEBAUTHN_CRED_BLOB_EXTENSION cred_blob_ext;
+  if (request.cred_blob && api_version >= WEBAUTHN_API_VERSION_3 &&
+      request.cred_blob->size() <=
+          std::numeric_limits<decltype(cred_blob_ext.cbCredBlob)>::max()) {
+    cred_blob_ext = {
+        /*cbCredBlob=*/base::checked_cast<decltype(cred_blob_ext.cbCredBlob)>(
+            request.cred_blob->size()),
+        /*pbCredBlob=*/request.cred_blob->data(),
+    };
+    extensions.emplace_back(WEBAUTHN_EXTENSION{
+        /*pwszExtensionIdentifier=*/WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB,
+        /*cbExtension=*/sizeof(cred_blob_ext),
+        /*pvExtension=*/&cred_blob_ext,
+    });
+  }
+
+  DWORD enterprise_attestation = WEBAUTHN_ENTERPRISE_ATTESTATION_NONE;
+  switch (request.attestation_preference) {
+    case AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator:
+      enterprise_attestation =
+          WEBAUTHN_ENTERPRISE_ATTESTATION_VENDOR_FACILITATED;
+      break;
+    case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
+      enterprise_attestation = WEBAUTHN_ENTERPRISE_ATTESTATION_PLATFORM_MANAGED;
+      break;
+    default:
+      break;
+  }
+
   // Note that entries in |exclude_list_credentials| hold pointers
   // into request.exclude_list.
   std::vector<WEBAUTHN_CREDENTIAL_EX> exclude_list_credentials =
@@ -310,7 +339,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       exclude_list_ptrs.data()};
 
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_3,
+      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4,
       kWinWebAuthnTimeoutMilliseconds,
       WEBAUTHN_CREDENTIALS{
           0, nullptr},  // Ignored because pExcludeCredentialList is set.
@@ -319,10 +348,14 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       authenticator_attachment,
       request.resident_key_required,
       ToWinUserVerificationRequirement(request.user_verification),
-      ToWinAttestationConveyancePreference(request.attestation_preference),
+      ToWinAttestationConveyancePreference(request.attestation_preference,
+                                           api_version),
       /*dwFlags=*/0,
       &cancellation_id,
       &exclude_credential_list,
+      enterprise_attestation,
+      WEBAUTHN_LARGE_BLOB_SUPPORT_NONE,
+      /*bPreferResidentKey=*/FALSE,
   };
 
   WEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation = nullptr;
@@ -413,6 +446,17 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
   }
 
+  std::vector<WEBAUTHN_EXTENSION> extensions;
+  if (webauthn_api->Version() >= WEBAUTHN_API_VERSION_3 &&
+      request.get_cred_blob) {
+    static const BOOL kCredBlobTrue = TRUE;
+    extensions.emplace_back(WEBAUTHN_EXTENSION{
+        /*pwszExtensionIdentifier=*/WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB,
+        /*cbExtension=*/sizeof(kCredBlobTrue),
+        /*pvExtension=*/const_cast<BOOL*>(&kCredBlobTrue),
+    });
+  }
+
   static BOOL kUseAppIdTrue = TRUE;    // const
   static BOOL kUseAppIdFalse = FALSE;  // const
   WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS options{
@@ -430,7 +474,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
       // pCredentials data.
       WEBAUTHN_CREDENTIALS{base::checked_cast<DWORD>(legacy_credentials.size()),
                            legacy_credentials.data()},
-      WEBAUTHN_EXTENSIONS{0, nullptr},
+      WEBAUTHN_EXTENSIONS{base::checked_cast<DWORD>(extensions.size()),
+                          extensions.data()},
       authenticator_attachment,
       ToWinUserVerificationRequirement(request.user_verification),
       /*dwFlags=*/0,

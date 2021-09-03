@@ -72,13 +72,20 @@ ToAuthenticatorMakeCredentialResponse(
     }
   }
 
-  return AuthenticatorMakeCredentialResponse(
+  AuthenticatorMakeCredentialResponse ret(
       transport_used,
       AttestationObject(
           std::move(*authenticator_data),
           std::make_unique<OpaqueAttestationStatement>(
               base::WideToUTF8(credential_attestation.pwszFormatType),
               std::move(*cbor_attestation_statement))));
+
+  if (credential_attestation.dwVersion >=
+      WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
+    ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
+  }
+
+  return ret;
 }
 
 absl::optional<AuthenticatorGetAssertionResponse>
@@ -270,7 +277,8 @@ GetAssertionStatus WinCtapDeviceResponseCodeToGetAssertionStatus(
 }
 
 uint32_t ToWinAttestationConveyancePreference(
-    const AttestationConveyancePreference& value) {
+    const AttestationConveyancePreference& value,
+    int api_version) {
   switch (value) {
     case AttestationConveyancePreference::kNone:
       return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
@@ -280,8 +288,10 @@ uint32_t ToWinAttestationConveyancePreference(
       return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT;
     case AttestationConveyancePreference::kEnterpriseIfRPListedOnAuthenticator:
     case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:
-      // Windows does not support enterprise attestation.
-      return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+      // Enterprise attestation is supported in API version 3.
+      return api_version >= 3
+                 ? WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
+                 : WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
   }
   NOTREACHED();
   return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
