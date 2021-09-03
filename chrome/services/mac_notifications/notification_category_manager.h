@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/mac/scoped_nsobject.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mac_notifications {
 
@@ -26,7 +27,9 @@ namespace mac_notifications {
 // buttons.
 class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
  public:
-  using Buttons = std::vector<std::u16string>;
+  using Button = std::pair</*title*/ std::u16string,
+                           /*placeholder*/ absl::optional<std::u16string>>;
+  using Buttons = std::vector<Button>;
 
   explicit NotificationCategoryManager(
       UNUserNotificationCenter* notification_center);

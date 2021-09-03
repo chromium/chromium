@@ -20,6 +20,7 @@
 #include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 // This uses a private API so that updated banners do not keep reappearing on
@@ -80,6 +81,15 @@ int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
   return kNotificationInvalidButtonIndex;
 }
 
+API_AVAILABLE(macosx(10.14))
+absl::optional<std::u16string> GetReplyFromResponse(
+    UNNotificationResponse* response) {
+  if (![response isKindOfClass:[UNTextInputNotificationResponse class]])
+    return absl::nullopt;
+  auto* textResponse = static_cast<UNTextInputNotificationResponse*>(response);
+  return base::SysNSStringToUTF16([textResponse userText]);
+}
+
 }  // namespace
 
 namespace mac_notifications {
@@ -128,10 +138,9 @@ void MacNotificationServiceUN::DisplayNotification(
   // Keep track of delivered notifications to detect when they get closed.
   delivered_notifications_[notification_id] = notification->meta.Clone();
 
-  // TODO(knollr): Also pass placeholder once we support inline replies.
   NotificationCategoryManager::Buttons buttons;
   for (const auto& button : notification->buttons)
-    buttons.push_back(button->title);
+    buttons.push_back({button->title, button->placeholder});
 
   NSString* category_id = category_manager_.GetOrCreateCategory(
       notification_id, buttons, notification->show_settings_button);
@@ -424,8 +433,9 @@ void MacNotificationServiceUN::OnNotificationsClosed(
   NotificationOperation operation =
       GetNotificationOperationFromAction([response actionIdentifier]);
   int buttonIndex = GetActionButtonIndexFromAction([response actionIdentifier]);
+  absl::optional<std::u16string> reply = GetReplyFromResponse(response);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
-      std::move(meta), operation, buttonIndex, /*reply=*/absl::nullopt);
+      std::move(meta), operation, buttonIndex, std::move(reply));
   _handler.Run(std::move(actionInfo));
   completionHandler();
 }

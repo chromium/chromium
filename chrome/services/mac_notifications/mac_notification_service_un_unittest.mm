@@ -399,6 +399,7 @@ struct NotificationActionParams {
   NSString* action_identifier;
   NotificationOperation operation;
   int button_index;
+  absl::optional<std::u16string> reply;
 };
 
 TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
@@ -407,36 +408,54 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     // UNNotificationDefaultActionIdentifier etc. outside an @available block.
     NotificationActionParams kNotificationActionParams[] = {
         {UNNotificationDismissActionIdentifier, NotificationOperation::kClose,
-         kNotificationInvalidButtonIndex},
+         kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
         {UNNotificationDefaultActionIdentifier, NotificationOperation::kClick,
-         kNotificationInvalidButtonIndex},
+         kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
         {kNotificationButtonOne, NotificationOperation::kClick,
-         /*button_index=*/0},
+         /*button_index=*/0, /*reply=*/absl::nullopt},
         {kNotificationButtonTwo, NotificationOperation::kClick,
-         /*button_index=*/1},
+         /*button_index=*/1, /*reply=*/absl::nullopt},
         {kNotificationSettingsButtonTag, NotificationOperation::kSettings,
-         kNotificationInvalidButtonIndex},
+         kNotificationInvalidButtonIndex, /*reply=*/absl::nullopt},
+        {kNotificationButtonOne, NotificationOperation::kClick,
+         /*button_index=*/0, u"reply"},
     };
 
     for (const auto& params : kNotificationActionParams) {
+      base::scoped_nsobject<FakeUNNotification> notification =
+          CreateNotification("notificationId", "profileId",
+                             /*incognito=*/false);
+
       base::RunLoop run_loop;
       EXPECT_CALL(mock_handler_, OnNotificationAction)
           .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+            EXPECT_EQ("notificationId", action_info->meta->id->id);
+            EXPECT_EQ("profileId", action_info->meta->id->profile->id);
+            EXPECT_FALSE(action_info->meta->id->profile->incognito);
             EXPECT_EQ(params.operation, action_info->operation);
             EXPECT_EQ(params.button_index, action_info->button_index);
+            EXPECT_EQ(params.reply, action_info->reply);
             run_loop.Quit();
           });
 
       // Simulate a notification action and wait until we acknowledge it.
       base::RunLoop inner_run_loop;
       base::RepeatingClosure inner_quit_closure = inner_run_loop.QuitClosure();
-      base::scoped_nsobject<FakeUNNotificationResponse> response =
-          CreateFakeUNNotificationResponse(@{});
-      [response setActionIdentifier:params.action_identifier];
+
+      id response = [OCMockObject
+          mockForClass:params.reply ? [UNTextInputNotificationResponse class]
+                                    : [UNNotificationResponse class]];
+      [[[response stub] andReturn:params.action_identifier] actionIdentifier];
+      [[[response stub] andReturn:notification.get()] notification];
+
+      if (params.reply) {
+        [[[response stub] andReturn:base::SysUTF16ToNSString(*params.reply)]
+            userText];
+      }
+
       [notification_center_delegate_
                   userNotificationCenter:mock_notification_center_
-          didReceiveNotificationResponse:static_cast<UNNotificationResponse*>(
-                                             response.get())
+          didReceiveNotificationResponse:response
                    withCompletionHandler:^() {
                      inner_quit_closure.Run();
                    }];

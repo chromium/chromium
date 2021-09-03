@@ -45,8 +45,9 @@ void DoProcessMacNotificationResponse(
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      static_cast<NotificationOperation>(info->operation),
                      static_cast<NotificationHandler::Type>(info->meta->type),
-                     info->meta->origin_url, info->meta->id->id, action_index,
-                     absl::nullopt /* reply */, true /* by_user */));
+                     std::move(info->meta->origin_url),
+                     std::move(info->meta->id->id), std::move(action_index),
+                     std::move(info->reply), true /* by_user */));
 }
 
 }  // namespace

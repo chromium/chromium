@@ -13,6 +13,7 @@
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace mac_notifications {
@@ -102,7 +103,8 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
 TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
   if (@available(macOS 10.14, *)) {
     NSString* category_id = manager_->GetOrCreateCategory(
-        "notification_id", /*buttons=*/{u"Button1"},
+        "notification_id",
+        /*buttons=*/{{u"Button1", /*placeholder=*/absl::nullopt}},
         /*settings_button=*/true);
     ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
     UNNotificationCategory* category =
@@ -160,65 +162,60 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationOneButton) {
 
 TEST_F(NotificationCategoryManagerTest, TestNotificationTwoButtons) {
   if (@available(macOS 10.14, *)) {
-    NSString* category_id =
-        manager_->GetOrCreateCategory("notification_id", /*buttons=*/
-                                      {u"Button1", u"Button2"},
-                                      /*settings_button=*/true);
+    NSString* category_id = manager_->GetOrCreateCategory(
+        "notification_id", /*buttons=*/
+        {{u"Button1", /*placeholder=*/absl::nullopt},
+         {u"Button2", u"placeholder"}},
+        /*settings_button=*/true);
     ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
     UNNotificationCategory* category =
         [[fake_notification_center_ categories] anyObject];
     EXPECT_NSEQ(category_id, [category identifier]);
 
+    UNNotificationAction* action_1 = nullptr;
+    UNNotificationAction* action_2 = nullptr;
+
     // Test contents of the category
     if (base::mac::IsAtLeastOS11()) {
-      EXPECT_EQ("Button1",
-                base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
-                base::SysNSStringToUTF8([[category actions][0] identifier]));
-
-      EXPECT_EQ("Button2",
-                base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
-                base::SysNSStringToUTF8([[category actions][1] identifier]));
-
-      EXPECT_EQ(3ul, [[category actions] count]);
+      ASSERT_EQ(3ul, [[category actions] count]);
+      action_1 = [category actions][0];
+      action_2 = [category actions][1];
     } else if ([category respondsToSelector:@selector(alternateAction)]) {
+      ASSERT_EQ(3ul, [[category actions] count]);
+      action_1 = [category actions][0];
+      action_2 = [category actions][1];
+
       EXPECT_EQ("Close", base::SysNSStringToUTF8([[category
                              valueForKey:@"_alternateAction"] title]));
       EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[category valueForKey:@"_alternateAction"] identifier]));
-
-      EXPECT_EQ("Button1",
-                base::SysNSStringToUTF8([[category actions][0] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
-                base::SysNSStringToUTF8([[category actions][0] identifier]));
-
-      EXPECT_EQ("Button2",
-                base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
-                base::SysNSStringToUTF8([[category actions][1] identifier]));
-
-      EXPECT_EQ(3ul, [[category actions] count]);
     } else {
+      ASSERT_EQ(4ul, [[category actions] count]);
+      action_1 = [category actions][1];
+      action_2 = [category actions][2];
+
       EXPECT_EQ("Close", base::SysNSStringToUTF8(
                              [[[category actions] firstObject] title]));
       EXPECT_EQ(base::SysNSStringToUTF8(kNotificationCloseButtonTag),
                 base::SysNSStringToUTF8(
                     [[[category actions] firstObject] identifier]));
-
-      EXPECT_EQ("Button1",
-                base::SysNSStringToUTF8([[category actions][1] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
-                base::SysNSStringToUTF8([[category actions][1] identifier]));
-
-      EXPECT_EQ("Button2",
-                base::SysNSStringToUTF8([[category actions][2] title]));
-      EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
-                base::SysNSStringToUTF8([[category actions][2] identifier]));
-
-      EXPECT_EQ(4ul, [[category actions] count]);
     }
+
+    EXPECT_EQ("Button1", base::SysNSStringToUTF8([action_1 title]));
+    EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonOne),
+              base::SysNSStringToUTF8([action_1 identifier]));
+
+    EXPECT_EQ("Button2", base::SysNSStringToUTF8([action_2 title]));
+    EXPECT_EQ(base::SysNSStringToUTF8(kNotificationButtonTwo),
+              base::SysNSStringToUTF8([action_2 identifier]));
+
+    ASSERT_TRUE([action_2 isKindOfClass:[UNTextInputNotificationAction class]]);
+    auto* text_action = static_cast<UNTextInputNotificationAction*>(action_2);
+    EXPECT_EQ("Button2",
+              base::SysNSStringToUTF8([text_action textInputButtonTitle]));
+    EXPECT_EQ("placeholder",
+              base::SysNSStringToUTF8([text_action textInputPlaceholder]));
 
     EXPECT_EQ("Settings",
               base::SysNSStringToUTF8([[[category actions] lastObject] title]));
@@ -267,10 +264,11 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionNoButtons) {
 
 TEST_F(NotificationCategoryManagerTest, TestNotificationExtensionTwoButtons) {
   if (@available(macOS 10.14, *)) {
-    NSString* category_id =
-        manager_->GetOrCreateCategory("notification_id", /*buttons=*/
-                                      {u"Button1", u"Button2"},
-                                      /*settings_button=*/false);
+    NSString* category_id = manager_->GetOrCreateCategory(
+        "notification_id", /*buttons=*/
+        {{u"Button1", /*placeholder=*/absl::nullopt},
+         {u"Button2", /*placeholder=*/absl::nullopt}},
+        /*settings_button=*/false);
     ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
     UNNotificationCategory* category =
         [[fake_notification_center_ categories] anyObject];

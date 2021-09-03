@@ -12,6 +12,29 @@
 
 namespace mac_notifications {
 
+namespace {
+
+API_AVAILABLE(macos(10.14))
+UNNotificationAction* CreateAction(
+    const NotificationCategoryManager::Button& button,
+    NSString* identifier) {
+  if (button.second) {
+    return [UNTextInputNotificationAction
+        actionWithIdentifier:identifier
+                       title:base::SysUTF16ToNSString(button.first)
+                     options:UNNotificationActionOptionNone
+        textInputButtonTitle:base::SysUTF16ToNSString(button.first)
+        textInputPlaceholder:base::SysUTF16ToNSString(*button.second)];
+  }
+
+  return [UNNotificationAction
+      actionWithIdentifier:identifier
+                     title:base::SysUTF16ToNSString(button.first)
+                   options:UNNotificationActionOptionNone];
+}
+
+}  // namespace
+
 NotificationCategoryManager::NotificationCategoryManager(
     UNUserNotificationCenter* notification_center)
     : notification_center_([notification_center retain]) {}
@@ -110,20 +133,10 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
 
   // We only support up to two user action buttons.
   DCHECK_LE(buttons.size(), 2u);
-  if (buttons.size() >= 1u) {
-    UNNotificationAction* button = [UNNotificationAction
-        actionWithIdentifier:kNotificationButtonOne
-                       title:base::SysUTF16ToNSString(buttons[0])
-                     options:UNNotificationActionOptionNone];
-    [buttons_array addObject:button];
-  }
-  if (buttons.size() >= 2u) {
-    UNNotificationAction* button = [UNNotificationAction
-        actionWithIdentifier:kNotificationButtonTwo
-                       title:base::SysUTF16ToNSString(buttons[1])
-                     options:UNNotificationActionOptionNone];
-    [buttons_array addObject:button];
-  }
+  if (buttons.size() >= 1u)
+    [buttons_array addObject:CreateAction(buttons[0], kNotificationButtonOne)];
+  if (buttons.size() >= 2u)
+    [buttons_array addObject:CreateAction(buttons[1], kNotificationButtonTwo)];
 
   if (settings_button) {
     UNNotificationAction* button = [UNNotificationAction
