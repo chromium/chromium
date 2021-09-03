@@ -22,6 +22,10 @@ class UnexportableSigningKey;
 
 namespace enterprise_connectors {
 
+namespace test {
+class ScopedTpmSigningKeyPair;
+}  // namespace test
+
 // This class manages the CBCM signing key used by DeviceTrustService and
 // DeviceTrustNavigationThrottle.  It saves and loads the key from platform
 // specific storage locations and provides methods for accessing properties
@@ -63,6 +67,14 @@ class SigningKeyPair {
   void Init();
 
  private:
+  friend class test::ScopedTpmSigningKeyPair;
+
+  // Sets a `wrapped` TPM key and force its usage in test environments.
+  static void SetTpmKeyWrappedForTesting(const std::vector<uint8_t>& wrapped);
+
+  // Clears any previously stored wrapped TPM key.
+  static void ClearTpmKeyWrappedForTesting();
+
   // Creates a signing key pair that is specific to the platform.
   static std::unique_ptr<SigningKeyPair> CreatePlatformKeyPair();
 

@@ -67,7 +67,9 @@ void ConfigureProxyBlanket(IUnknown* interface_pointer) {
 
 DesktopAttestationService::DesktopAttestationService(
     std::unique_ptr<SigningKeyPair> key_pair)
-    : key_pair_(std::move(key_pair)) {}
+    : key_pair_(std::move(key_pair)) {
+  DCHECK(key_pair_);
+}
 
 DesktopAttestationService::~DesktopAttestationService() = default;
 

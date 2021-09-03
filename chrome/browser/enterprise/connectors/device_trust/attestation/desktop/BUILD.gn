@@ -38,10 +38,23 @@ source_set("elevated_command_support") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "memory_signing_key_pair.cc",
+  public = [
     "memory_signing_key_pair.h",
+    "scoped_tpm_signing_key_pair.h",
   ]
 
-  public_deps = [ ":elevated_command_support" ]
+  sources = [
+    "memory_signing_key_pair.cc",
+    "scoped_tpm_signing_key_pair.cc",
+  ]
+
+  public_deps = [
+    ":elevated_command_support",
+    "//crypto:test_support",
+  ]
+
+  deps = [
+    "//base",
+    "//crypto",
+  ]
 }

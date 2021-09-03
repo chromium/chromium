@@ -2630,6 +2630,12 @@ if (!is_android && !is_fuchsia) {
       }
 
       if (is_win) {
+        sources += [ "../browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
+
+        deps += [ "//chrome/browser/enterprise/connectors/device_trust/attestation/desktop:test_support" ]
+      }
+
+      if (is_win) {
         sources += [
           "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_impl_browsertest_win.cc",
           "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_reboot_dialog_controller_impl_browsertest_win.cc",

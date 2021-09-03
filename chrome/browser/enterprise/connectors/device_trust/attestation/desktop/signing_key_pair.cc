@@ -4,9 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/signing_key_pair.h"
 
+#include <stdint.h>
+
 #include <tuple>
+#include <vector>
 
 #include "base/containers/span.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
 #include "crypto/unexportable_key.h"
@@ -15,6 +19,15 @@
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 namespace enterprise_connectors {
+
+namespace {
+
+absl::optional<std::vector<uint8_t>>& GetForcedTpmKeyStorage() {
+  static base::NoDestructor<absl::optional<std::vector<uint8_t>>> storage;
+  return *storage;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<SigningKeyPair> SigningKeyPair::Create() {
@@ -25,6 +38,17 @@ std::unique_ptr<SigningKeyPair> SigningKeyPair::Create() {
   return key_pair;
 }
 
+// static
+void SigningKeyPair::SetTpmKeyWrappedForTesting(
+    const std::vector<uint8_t>& wrapped) {
+  GetForcedTpmKeyStorage().emplace(wrapped);
+}
+
+// static
+void SigningKeyPair::ClearTpmKeyWrappedForTesting() {
+  GetForcedTpmKeyStorage().reset();
+}
+
 SigningKeyPair::SigningKeyPair() = default;
 
 SigningKeyPair::~SigningKeyPair() = default;
@@ -32,7 +56,17 @@ SigningKeyPair::~SigningKeyPair() = default;
 void SigningKeyPair::Init() {
   KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
   std::vector<uint8_t> wrapped;
-  std::tie(trust_level, wrapped) = LoadKeyPair();
+
+  auto& forced_tpm_key_wrapped = GetForcedTpmKeyStorage();
+  if (forced_tpm_key_wrapped) {
+    // Test hook to make use of ScopedMockUnexportableKeyProvider with the
+    // appropriate algorithm.
+    trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
+    wrapped = forced_tpm_key_wrapped.value();
+  } else {
+    std::tie(trust_level, wrapped) = LoadKeyPair();
+  }
+
   if (wrapped.empty()) {
     // No persisted key pair with a known trust level found.  This is not an
     // error, it could be that no key has been created yet.
