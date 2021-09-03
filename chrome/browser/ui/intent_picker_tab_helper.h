@@ -62,6 +62,8 @@ class IntentPickerTabHelper
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
+  web_app::WebAppRegistrar* const registrar_;
+
   bool should_show_icon_ = false;
 
   base::ScopedObservation<web_app::WebAppRegistrar,
