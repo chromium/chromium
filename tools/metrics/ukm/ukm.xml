@@ -6842,6 +6842,118 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SmoothnessBad">
+    <summary>
+      The percentage of sliding windows with bad smoothness, or a
+      PercentDroppedFrames of 12% to 25%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessGood">
+    <summary>
+      The percentage of sliding windows with good smoothness, or a
+      PercentDroppedFrames of 3% to 6%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessOkay">
+    <summary>
+      The percentage of sliding windows with okay smoothness, or a
+      PercentDroppedFrames of 6% to 12%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad25to50">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 25% to 50%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad50to75">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 50% to 75%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryBad75to100">
+    <summary>
+      The percentage of sliding windows with a subset of very bad smoothness, or
+      a PercentDroppedFrames of 75% to 100%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SmoothnessVeryGood">
+    <summary>
+      The percentage of sliding windows with very good smoothness, or a
+      PercentDroppedFrames of 0% to 3%.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <index fields="profile.form_factor"/>
+        <index fields="profile.system_ram"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="TimingSinceFCPWorstCase">
     <summary>
       The Time From FCP when the worst case happened

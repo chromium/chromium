@@ -17,6 +17,21 @@
 #include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
+namespace {
+
+// The start ranges of each bucket, up to but not including the start of the
+// next bucket. The last bucket contains the remaining values.
+constexpr double kBucketBounds[7] = {0, 3, 6, 12, 25, 50, 75};
+
+// Search backwards using the bucket bounds defined above.
+size_t DecideSmoothnessBucket(double pdf) {
+  size_t i = base::size(kBucketBounds) - 1;
+  while (pdf < kBucketBounds[i])
+    i--;
+  return i;
+}
+
+}  // namespace
 
 using SlidingWindowHistogram = DroppedFrameCounter::SlidingWindowHistogram;
 
@@ -26,6 +41,7 @@ void SlidingWindowHistogram::AddPercentDroppedFrame(
   DCHECK_GE(percent_dropped_frame, 0.0);
   DCHECK_GE(100.0, percent_dropped_frame);
   histogram_bins_[static_cast<int>(std::round(percent_dropped_frame))] += count;
+  smoothness_buckets_[DecideSmoothnessBucket(percent_dropped_frame)] += count;
   total_count_ += count;
 }
 
@@ -47,8 +63,21 @@ uint32_t SlidingWindowHistogram::GetPercentDroppedFramePercentile(
   return current_index;
 }
 
+std::vector<double> SlidingWindowHistogram::GetPercentDroppedFrameBuckets()
+    const {
+  if (total_count_ == 0)
+    return std::vector<double>(base::size(kBucketBounds), 0);
+  std::vector<double> buckets(base::size(kBucketBounds));
+  for (size_t i = 0; i < base::size(kBucketBounds); ++i) {
+    buckets[i] =
+        static_cast<double>(smoothness_buckets_[i]) * 100 / total_count_;
+  }
+  return buckets;
+}
+
 void SlidingWindowHistogram::Clear() {
   std::fill(std::begin(histogram_bins_), std::end(histogram_bins_), 0);
+  std::fill(std::begin(smoothness_buckets_), std::end(smoothness_buckets_), 0);
   total_count_ = 0;
 }
 
@@ -249,6 +278,13 @@ void DroppedFrameCounter::ReportFrames() {
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
+
+    std::vector<double> sliding_window_buckets =
+        sliding_window_histogram_.GetPercentDroppedFrameBuckets();
+    DCHECK_EQ(sliding_window_buckets.size(),
+              base::size(smoothness_data.buckets));
+    std::copy(sliding_window_buckets.begin(), sliding_window_buckets.end(),
+              smoothness_data.buckets);
 
     if (sliding_window_max_percent_dropped_After_1_sec_.has_value())
       smoothness_data.worst_smoothness_after1sec =

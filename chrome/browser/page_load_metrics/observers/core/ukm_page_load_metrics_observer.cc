@@ -1138,7 +1138,14 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
       .SetAboveThreshold(smoothness_data.above_threshold)
       .SetWorstCase(smoothness_data.worst_smoothness)
       .SetTimingSinceFCPWorstCase(
-          smoothness_data.time_max_delta.InMilliseconds());
+          smoothness_data.time_max_delta.InMilliseconds())
+      .SetSmoothnessVeryGood(smoothness_data.buckets[0])
+      .SetSmoothnessGood(smoothness_data.buckets[1])
+      .SetSmoothnessOkay(smoothness_data.buckets[2])
+      .SetSmoothnessBad(smoothness_data.buckets[3])
+      .SetSmoothnessVeryBad25to50(smoothness_data.buckets[4])
+      .SetSmoothnessVeryBad50to75(smoothness_data.buckets[5])
+      .SetSmoothnessVeryBad75to100(smoothness_data.buckets[6]);
   if (smoothness_data.worst_smoothness_after1sec >= 0)
     builder.SetWorstCaseAfter1Sec(smoothness_data.worst_smoothness_after1sec);
   if (smoothness_data.worst_smoothness_after2sec >= 0)

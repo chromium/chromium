@@ -9,6 +9,7 @@
 #include <map>
 #include <queue>
 #include <utility>
+#include <vector>
 
 #include "base/containers/ring_buffer.h"
 #include "cc/cc_export.h"
@@ -33,6 +34,7 @@ class CC_EXPORT DroppedFrameCounter {
    public:
     void AddPercentDroppedFrame(double percent_dropped_frame, size_t count = 1);
     uint32_t GetPercentDroppedFramePercentile(double percentile) const;
+    std::vector<double> GetPercentDroppedFrameBuckets() const;
     void Clear();
     std::ostream& Dump(std::ostream& stream) const;
 
@@ -40,6 +42,7 @@ class CC_EXPORT DroppedFrameCounter {
 
    private:
     uint32_t histogram_bins_[101] = {0};
+    uint32_t smoothness_buckets_[7] = {0};
     uint32_t total_count_ = 0;
   };
 
