@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
 #include "base/stl_util.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +26,9 @@ EditAddressProfileDialogControllerImpl::EditAddressProfileDialogControllerImpl(
 }
 
 EditAddressProfileDialogControllerImpl::
-    ~EditAddressProfileDialogControllerImpl() = default;
+    ~EditAddressProfileDialogControllerImpl() {
+  HideDialog();
+}
 
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
@@ -37,8 +40,9 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  browser->window()->GetAutofillBubbleHandler()->ShowEditAddressProfileDialog(
-      web_contents(), this);
+  dialog_view_ = browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowEditAddressProfileDialog(web_contents(), this);
 }
 
 std::u16string EditAddressProfileDialogControllerImpl::GetWindowTitle() const {
@@ -85,6 +89,18 @@ void EditAddressProfileDialogControllerImpl::OnDialogClosed() {
     OnUserDecision(
         AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
         address_profile_to_edit_);
+  }
+  dialog_view_ = nullptr;
+}
+
+void EditAddressProfileDialogControllerImpl::WebContentsDestroyed() {
+  HideDialog();
+}
+
+void EditAddressProfileDialogControllerImpl::HideDialog() {
+  if (dialog_view_) {
+    dialog_view_->Hide();
+    dialog_view_ = nullptr;
   }
 }
 
