@@ -2539,7 +2539,7 @@
 <translation id="3683524264665795342"><ph name="APP_NAME" /> திரை பகிர்தல் கோரிக்கை</translation>
 <translation id="3685598397738512288">Linux USB விருப்பத்தேர்வுகள்</translation>
 <translation id="368789413795732264"><ph name="ERROR_TEXT" /> என்ற கோப்பை எழுத முயற்சிக்கும்போது ஒரு பிழை ஏற்பட்டது.</translation>
-<translation id="3688507211863392146">பயன்பாட்டில் நீங்கள் திறக்கும் ஃபைல்கள்  மற்றும் கோப்புறைகளில் எழுதலாம்</translation>
+<translation id="3688507211863392146">பயன்பாட்டில் நீங்கள் திறக்கும் ஃபைல்கள்  மற்றும் ஃபோல்டர்களில் எழுதலாம்</translation>
 <translation id="3688526734140524629">சேனலை மாற்று</translation>
 <translation id="3688578402379768763">புதுப்பித்த நிலையில்</translation>
 <translation id="3688794912214798596">மொழிகளை மாற்றுக...</translation>
@@ -2671,7 +2671,7 @@
 <translation id="38089336910894858">⌘Qஐ அழுத்தி வெளியேறுவதற்கு முன்னதாக எச்சரிக்கையைக் காட்டு</translation>
 <translation id="3809272675881623365">முயல்</translation>
 <translation id="3809280248639369696">மூன்பீம்</translation>
-<translation id="3810593934879994994">பின்வரும் கோப்புறைகளில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் பார்க்க முடியும்</translation>
+<translation id="3810593934879994994">பின்வரும் ஃபோல்டர்களில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் பார்க்க முடியும்</translation>
 <translation id="3810914450553844415">கூடுதல் Google கணக்குகளைச் சேர்க்க உங்கள் நிர்வாகி அனுமதிக்கவில்லை.</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="381202950560906753">மற்றொன்றைச் சேர்</translation>
@@ -2819,7 +2819,7 @@
 <translation id="3943857333388298514">ஒட்டு</translation>
 <translation id="3945513714196326460">சிறிய பெயரை வழங்கவும்</translation>
 <translation id="3948116654032448504">படத்தைத் &amp;தேடு <ph name="SEARCH_ENGINE" /></translation>
-<translation id="3948507072814225786">பின்வரும் கோப்புறைகளில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
+<translation id="3948507072814225786">பின்வரும் ஃபோல்டர்களில் உள்ள கோப்புகளை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="394984172568887996">IE இலிருந்து இறக்குமதி செய்யப்பட்டது</translation>
 <translation id="3949981384795585075">{NUM_APPS,plural, =1{இந்த ஆப்ஸ் ஆபத்தானதாக இருக்கக்கூடும்}other{இந்த ஆப்ஸ் ஆபத்தானதாக இருக்கக்கூடும்}}</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
