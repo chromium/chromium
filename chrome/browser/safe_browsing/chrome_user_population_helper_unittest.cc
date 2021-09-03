@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/user_population.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
 #include "base/feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -31,7 +31,7 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 }  // namespace
 
-TEST(GetUserPopulationTest, PopulatesPopulation) {
+TEST(GetUserPopulationForProfileTest, PopulatesPopulation) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   SetSafeBrowsingState(profile.GetPrefs(),
@@ -53,7 +53,7 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
             ChromeUserPopulation::EXTENDED_REPORTING);
 }
 
-TEST(GetUserPopulationTest, PopulatesMBB) {
+TEST(GetUserPopulationForProfileTest, PopulatesMBB) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   profile.GetPrefs()->SetBoolean(
@@ -67,7 +67,7 @@ TEST(GetUserPopulationTest, PopulatesMBB) {
   EXPECT_TRUE(population.is_mbb_enabled());
 }
 
-TEST(GetUserPopulationTest, PopulatesIncognito) {
+TEST(GetUserPopulationForProfileTest, PopulatesIncognito) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
@@ -80,7 +80,7 @@ TEST(GetUserPopulationTest, PopulatesIncognito) {
   EXPECT_TRUE(population.is_incognito());
 }
 
-TEST(GetUserPopulationTest, PopulatesSync) {
+TEST(GetUserPopulationForProfileTest, PopulatesSync) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
@@ -129,7 +129,7 @@ TEST(GetUserPopulationTest, PopulatesSync) {
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
+TEST(GetUserPopulationForProfileTest, PopulatesAdvancedProtection) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 
@@ -145,7 +145,7 @@ TEST(GetUserPopulationTest, PopulatesAdvancedProtection) {
 }
 #endif
 
-TEST(GetUserPopulationTest, PopulatesUserAgent) {
+TEST(GetUserPopulationForProfileTest, PopulatesUserAgent) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
 

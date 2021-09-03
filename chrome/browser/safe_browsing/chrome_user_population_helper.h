@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_USER_POPULATION_H_
-#define CHROME_BROWSER_SAFE_BROWSING_USER_POPULATION_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -16,4 +16,4 @@ ChromeUserPopulation GetUserPopulationForProfile(Profile* profile);
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_USER_POPULATION_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_USER_POPULATION_HELPER_H_

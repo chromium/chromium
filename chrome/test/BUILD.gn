@@ -6934,8 +6934,8 @@ test("unit_tests") {
       "../browser/safe_browsing/certificate_reporting_service_unittest.cc",
       "../browser/safe_browsing/chrome_password_protection_service_unittest.cc",
       "../browser/safe_browsing/chrome_ui_manager_delegate_unittest.cc",
+      "../browser/safe_browsing/chrome_user_population_helper_unittest.cc",
       "../browser/safe_browsing/threat_details_unittest.cc",
-      "../browser/safe_browsing/user_population_unittest.cc",
     ]
 
     deps += [

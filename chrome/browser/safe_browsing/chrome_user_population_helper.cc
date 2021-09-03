@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/user_population.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
