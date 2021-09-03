@@ -373,16 +373,27 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
     intrinsic_block_size_ +=
         NGFragment(writing_direction_, result->PhysicalFragment()).BlockSize();
     container_builder_.SetHasSeenAllChildren();
+  } else if (break_status == NGBreakStatus::kBrokeBefore) {
+    ConsumeRemainingFragmentainerSpace();
   }
 
   return break_status;
 }
 
-bool NGFieldsetLayoutAlgorithm::IsFragmentainerOutOfSpace(
-    LayoutUnit block_offset) const {
-  if (!ConstraintSpace().HasKnownFragmentainerBlockSize())
-    return false;
-  return block_offset >= FragmentainerSpaceAtBfcStart(ConstraintSpace());
+LayoutUnit NGFieldsetLayoutAlgorithm::FragmentainerSpaceAvailable() const {
+  // The legend may have extended past the end of the fragmentainer. Clamp to
+  // zero if this is the case.
+  return std::max(
+      LayoutUnit(),
+      FragmentainerSpaceAtBfcStart(ConstraintSpace()) - intrinsic_block_size_);
+}
+
+void NGFieldsetLayoutAlgorithm::ConsumeRemainingFragmentainerSpace() {
+  if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    // The remaining part of the fragmentainer (the unusable space for child
+    // content, due to the break) should still be occupied by this container.
+    intrinsic_block_size_ += FragmentainerSpaceAvailable();
+  }
 }
 
 MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(

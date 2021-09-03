@@ -54,7 +54,16 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
       LogicalSize padding_box_size,
       LayoutUnit block_offset,
       NGCacheSlot slot);
-  bool IsFragmentainerOutOfSpace(LayoutUnit block_offset) const;
+
+  // Return the amount of block space available in the current fragmentainer
+  // for the node being laid out by this algorithm.
+  LayoutUnit FragmentainerSpaceAvailable() const;
+
+  // Consume all remaining fragmentainer space. This happens when we decide to
+  // break before a child.
+  //
+  // https://www.w3.org/TR/css-break-3/#box-splitting
+  void ConsumeRemainingFragmentainerSpace();
 
   const WritingDirectionMode writing_direction_;
 

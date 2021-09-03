@@ -1424,9 +1424,9 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
 
   String dump = DumpFragmentTree(fragment.get());
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x75
+  offset:unplaced size:1000x100
     offset:0,0 size:20x50
-    offset:0,50 size:100x25
+    offset:0,50 size:100x50
       offset:0,0 size:10x25
 )DUMP";
   EXPECT_EQ(expectation, dump);
@@ -1500,56 +1500,47 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
 TEST_F(NGFieldsetLayoutAlgorithmTest, BreakAfterAvoid) {
   SetBodyInnerHTML(R"HTML(
     <style>
+      #multicol {
+        columns:2; column-gap:0; column-fill:auto; width: 200px;
+        height: 100px;
+      }
       #fieldset {
-        border:none; margin:0; padding:0px; width: 100px;
+        border:none; margin:0; padding:0px; width: 100px; height:50px;
       }
       #legend {
         padding:0px; margin:0px;
       }
     </style>
     <div id="container">
-      <div style="width:20px; height:50px;"></div>
-      <fieldset id="fieldset">
-        <legend id="legend" style="width:10px; height:25px;"></legend>
-        <div style="break-after:avoid; width:30px; height:25px;"></div>
-        <div style="width:15px; height:25px;"></div>
-      </fieldset>
+      <div id="multicol">
+        <div style="width:20px; height:50px;"></div>
+        <fieldset id="fieldset">
+          <legend id="legend" style="width:10px; height:25px;"></legend>
+          <div style="break-after:avoid; width:30px; height:25px;"></div>
+          <div style="width:15px; height:25px; break-after:column;"></div>
+          <div style="width:12px; height:25px;"></div>
+        </fieldset>
+      </div>
     </div>
   )HTML");
 
-  LayoutUnit kFragmentainerSpaceAvailable(100);
-
-  NGBlockNode node(GetLayoutBoxByElementId("container"));
-  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
-      {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
-      /* stretch_inline_size_if_auto */ true,
-      node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
-
-  scoped_refptr<const NGPhysicalBoxFragment> fragment =
-      NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(node, space);
-  ASSERT_TRUE(fragment->BreakToken());
-
-  String dump = DumpFragmentTree(fragment.get());
+  String dump = DumpFragmentTree(GetElementById("container"));
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x75
-    offset:0,0 size:20x50
-    offset:0,50 size:100x25
-      offset:0,0 size:10x25
-)DUMP";
-  EXPECT_EQ(expectation, dump);
-
-  fragment = NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
-      node, space, fragment->BreakToken());
-  ASSERT_FALSE(fragment->BreakToken());
-
-  dump = DumpFragmentTree(fragment.get());
-  expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x50
-    offset:0,0 size:100x50
-      offset:0,0 size:100x50
-        offset:0,0 size:30x25
-        offset:0,25 size:15x25
+  offset:unplaced size:1000x100
+    offset:0,0 size:200x100
+      offset:0,0 size:100x100
+        offset:0,0 size:20x50
+        offset:0,50 size:100x50
+          offset:0,0 size:10x25
+      offset:100,0 size:100x100
+        offset:0,0 size:100x0
+          offset:0,0 size:100x0
+            offset:0,0 size:30x25
+            offset:0,25 size:15x25
+      offset:200,0 size:100x100
+        offset:0,0 size:100x0
+          offset:0,0 size:100x0
+            offset:0,0 size:12x25
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }
