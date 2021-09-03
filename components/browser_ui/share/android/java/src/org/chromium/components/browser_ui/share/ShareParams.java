@@ -41,6 +41,9 @@ public class ShareParams {
     /** The list of Uris of the files to be shared. */
     private final ArrayList<Uri> mFileUris;
 
+    /** The alt-text for the shared files. */
+    private final ArrayList<String> mFileAltTexts;
+
     /** The Uri to the offline MHTML file to be shared. */
     private final Uri mOfflineUri;
 
@@ -64,9 +67,10 @@ public class ShareParams {
 
     private ShareParams(WindowAndroid window, String title, String text, String textFormat,
             String url, @Nullable String fileContentType, @Nullable ArrayList<Uri> fileUris,
-            @Nullable Uri offlineUri, @Nullable Uri screenshotUri,
-            @Nullable TargetChosenCallback callback, @Nullable Boolean linkToTextSuccessful,
-            @Nullable String previewText, String previewTextFormat) {
+            @Nullable ArrayList<String> fileAltTexts, @Nullable Uri offlineUri,
+            @Nullable Uri screenshotUri, @Nullable TargetChosenCallback callback,
+            @Nullable Boolean linkToTextSuccessful, @Nullable String previewText,
+            String previewTextFormat) {
         mWindow = window;
         mTitle = title;
         mText = text;
@@ -74,6 +78,7 @@ public class ShareParams {
         mUrl = url;
         mFileContentType = fileContentType;
         mFileUris = fileUris;
+        mFileAltTexts = fileAltTexts;
         mOfflineUri = offlineUri;
         mScreenshotUri = screenshotUri;
         mCallback = callback;
@@ -158,6 +163,14 @@ public class ShareParams {
     }
 
     /**
+     * @return The alt-texts related to the files to be shared.
+     */
+    @Nullable
+    public ArrayList<String> getFileAltTexts() {
+        return mFileAltTexts;
+    }
+
+    /**
      * @return The Uri to the offline MHTML file to be shared.
      */
     @Nullable
@@ -214,6 +227,7 @@ public class ShareParams {
         private String mUrl;
         private String mFileContentType;
         private ArrayList<Uri> mFileUris;
+        private ArrayList<String> mFileAltTexts;
         private Uri mOfflineUri;
         private Uri mScreenshotUri;
         private TargetChosenCallback mCallback;
@@ -269,6 +283,14 @@ public class ShareParams {
         }
 
         /**
+         * Sets the alt-texts associated with the files to be shared.
+         */
+        public Builder setFileAltTexts(@Nullable ArrayList<String> fileAltTexts) {
+            mFileAltTexts = fileAltTexts;
+            return this;
+        }
+
+        /**
          * Sets the Uri of the offline MHTML file to be shared.
          */
         public Builder setOfflineUri(@Nullable Uri offlineUri) {
@@ -306,8 +328,8 @@ public class ShareParams {
                 mUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(mUrl);
             }
             return new ShareParams(mWindow, mTitle, mText, mTextFormat, mUrl, mFileContentType,
-                    mFileUris, mOfflineUri, mScreenshotUri, mCallback, mLinkToTextSuccessful,
-                    mPreviewText, mPreviewTextFormat);
+                    mFileUris, mFileAltTexts, mOfflineUri, mScreenshotUri, mCallback,
+                    mLinkToTextSuccessful, mPreviewText, mPreviewTextFormat);
         }
     }
 
