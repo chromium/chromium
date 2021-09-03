@@ -2905,7 +2905,7 @@
         {
           'name': 'any',
           'value': 'any',
-          'caption': '''Allow printing both with and without background graphcis''',
+          'caption': '''Allow printing both with and without background graphics''',
         },
         {
           'name': 'enabled',
