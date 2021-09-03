@@ -1551,7 +1551,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
     user_cascade_layer_map_ =
         MakeGarbageCollected<CascadeLayerMap>(new_style_sheets);
 
-    // TODO(crbug.com/1095765): Invalidate user style.
+    if (resolver_)
+      resolver_->InvalidateMatchedPropertiesCache();
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
@@ -1668,7 +1669,8 @@ void StyleEngine::ApplyRuleSetChanges(
       // sub-layer can precede an original layer in the final ordering.
       resolver.RebuildCascadeLayerMap(new_style_sheets);
 
-      // TODO(crbug.com/1095765): Invalidate style.
+      if (resolver_)
+        resolver_->InvalidateMatchedPropertiesCache();
     }
 
     resolver.AppendActiveStyleSheets(append_start_index, new_style_sheets);
