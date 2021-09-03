@@ -312,14 +312,12 @@ class BrowserAutofillManager : public AutofillManager,
 
  protected:
   // Test code should prefer to use this constructor.
-  BrowserAutofillManager(
-      AutofillDriver* driver,
-      AutofillClient* client,
-      PersonalDataManager* personal_data,
-      const std::string app_locale = "en-US",
-      AutofillDownloadManagerState enable_download_manager =
-          DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
-      std::unique_ptr<CreditCardAccessManager> cc_access_manager = nullptr);
+  BrowserAutofillManager(AutofillDriver* driver,
+                         AutofillClient* client,
+                         PersonalDataManager* personal_data,
+                         const std::string app_locale = "en-US",
+                         AutofillDownloadManagerState enable_download_manager =
+                             DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
   // Uploads the form data to the Autofill server. |observed_submission|
   // indicates that upload is the result of a submission event.
@@ -381,6 +379,11 @@ class BrowserAutofillManager : public AutofillManager,
   void set_single_field_form_fill_router_for_test(
       std::unique_ptr<SingleFieldFormFillRouter> router) {
     single_field_form_fill_router_ = std::move(router);
+  }
+
+  void set_credit_card_access_manager_for_test(
+      std::unique_ptr<CreditCardAccessManager> manager) {
+    credit_card_access_manager_ = std::move(manager);
   }
 #endif  // UNIT_TEST
 

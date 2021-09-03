@@ -430,8 +430,7 @@ BrowserAutofillManager::BrowserAutofillManager(
     AutofillClient* client,
     PersonalDataManager* personal_data,
     const std::string app_locale,
-    AutofillDownloadManagerState enable_download_manager,
-    std::unique_ptr<CreditCardAccessManager> cc_access_manager)
+    AutofillDownloadManagerState enable_download_manager)
     : AutofillManager(driver, client, enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
@@ -448,11 +447,9 @@ BrowserAutofillManager::BrowserAutofillManager(
       driver->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
       client);
 
-  credit_card_access_manager_ = cc_access_manager
-                                    ? std::move(cc_access_manager)
-                                    : std::make_unique<CreditCardAccessManager>(
-                                          driver, client, personal_data_,
-                                          credit_card_form_event_logger_.get());
+  credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
+      driver, client, personal_data_, credit_card_form_event_logger_.get());
+
   CountryNames::SetLocaleString(app_locale_);
   offer_manager_ = client->GetAutofillOfferManager();
 }
