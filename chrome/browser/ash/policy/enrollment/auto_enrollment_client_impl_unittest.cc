@@ -603,6 +603,16 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -617,6 +627,16 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -659,6 +679,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time histogram has been
+  // recorded correctly. And its success time histogram has not been recorded.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/false);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -679,6 +709,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/3);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -703,6 +743,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/3);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -723,6 +773,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time histogram has been
+  // recorded correctly. And its success time histogram has not been recorded.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/false);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -737,6 +797,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time histogram has been
+  // recorded correctly. And its success time histogram has not been recorded.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/false);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
@@ -754,6 +824,16 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -771,6 +851,16 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -796,6 +886,16 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -824,6 +924,16 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -852,6 +962,16 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -873,6 +993,16 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -893,6 +1023,16 @@ TEST_P(AutoEnrollmentClientImplTest, NoReEnrollment) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -916,6 +1056,16 @@ TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
@@ -965,6 +1115,16 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/3);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1021,6 +1181,16 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/2);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
@@ -1230,6 +1400,16 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
                                         /*dm_status_count=*/1);
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
                                         /*dm_status_count=*/3);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  // Note: The expected time is the difference between starting off the client,
+  // and finishing executing the protocol successfully. In this test, the
+  // protocol requests are synchronized. Then the recorded time will be zero.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta(),
+      /*success_time_recorded=*/true);
+
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
