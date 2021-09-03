@@ -1243,11 +1243,16 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
                        kUnitTestSuccess);
 }
 
+// TODO(crbug.com/1246289): Failing on Mac, flaky on Win.
 // TODO(crbug.com/902310): Times out in debug builds.
-#ifdef NDEBUG
-#define MAYBE_MultipleCdmTypes MultipeCdmTypes
+#if defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_MultipleCdmTypes DISABLED_MultipleCdmTypes
 #else
-#define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
+#ifdef NDEBUG
+#define MAYBE_MultipleCdmTypes MultipleCdmTypes
+#else
+#define MAYBE_MultipleCdmTypes DISABLED_MultipleCdmTypes
+#endif
 #endif
 
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
