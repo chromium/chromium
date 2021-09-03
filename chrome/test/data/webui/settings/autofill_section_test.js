@@ -69,7 +69,7 @@ function createAutofillSection(addresses, prefValues) {
   // Override the AutofillManagerImpl for testing.
   const autofillManager = new TestAutofillManager();
   autofillManager.data.addresses = addresses;
-  AutofillManagerImpl.instance_ = autofillManager;
+  AutofillManagerImpl.setInstance(autofillManager);
 
   const section = document.createElement('settings-autofill-section');
   section.prefs = {autofill: prefValues};
@@ -107,7 +107,7 @@ function createRemoveAddressDialog(autofillManager) {
 
   // Override the AutofillManagerImpl for testing.
   autofillManager.data.addresses = [address];
-  AutofillManagerImpl.instance_ = autofillManager;
+  AutofillManagerImpl.setInstance(autofillManager);
 
   document.body.innerHTML = '';
   const section = document.createElement('settings-autofill-section');
@@ -155,7 +155,7 @@ suite('AutofillSectionUiTest', function() {
 
 suite('AutofillSectionAddressTests', function() {
   suiteSetup(function() {
-    CountryDetailManagerImpl.instance_ = new CountryDetailManagerTestImpl();
+    CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
   });
 
   setup(function() {
@@ -525,7 +525,7 @@ suite('AutofillSectionAddressTests', function() {
 
 suite('AutofillSectionAddressLocaleTests', function() {
   suiteSetup(function() {
-    CountryDetailManagerImpl.instance_ = new CountryDetailManagerTestImpl();
+    CountryDetailManagerImpl.setInstance(new CountryDetailManagerTestImpl());
   });
 
   setup(function() {

@@ -22,7 +22,6 @@ import './passwords_shared_css.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,83 +29,96 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {SettingsAddressRemoveConfirmationDialogElement} from './address_remove_confirmation_dialog.js';
 
-/** @typedef {chrome.autofillPrivate.CreditCardEntry} */
-let CreditCardEntry;
+type PersonalDataChangedListener =
+    (addresses: Array<chrome.autofillPrivate.AddressEntry>,
+     creditCards: Array<chrome.autofillPrivate.CreditCardEntry>) => void;
 
 /**
  * Interface for all callbacks to the autofill API.
- * @interface
  */
-export class AutofillManager {
+export interface AutofillManager {
   /**
    * Add an observer to the list of personal data.
-   * @param {function(!Array<!AutofillManager.AddressEntry>,
-   *     !Array<!CreditCardEntry>):void} listener
    */
-  setPersonalDataManagerListener(listener) {}
+  setPersonalDataManagerListener(listener: PersonalDataChangedListener): void;
 
   /**
    * Remove an observer from the list of personal data.
-   * @param {function(!Array<!AutofillManager.AddressEntry>,
-   *     !Array<!CreditCardEntry>):void} listener
    */
-  removePersonalDataManagerListener(listener) {}
+  removePersonalDataManagerListener(listener: PersonalDataChangedListener):
+      void;
 
   /**
    * Request the list of addresses.
-   * @param {function(!Array<!AutofillManager.AddressEntry>):void}
-   *     callback
    */
-  getAddressList(callback) {}
+  getAddressList(
+      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void):
+      void;
 
   /**
    * Saves the given address.
-   * @param {!AutofillManager.AddressEntry} address
    */
-  saveAddress(address) {}
+  saveAddress(address: chrome.autofillPrivate.AddressEntry): void;
 
-  /** @param {string} guid The guid of the address to remove.  */
-  removeAddress(guid) {}
+  /** @param guid The guid of the address to remove.  */
+  removeAddress(guid: string): void;
 }
-
-/** @typedef {chrome.autofillPrivate.AddressEntry} */
-AutofillManager.AddressEntry;
 
 /**
  * Implementation that accesses the private API.
- * @implements {AutofillManager}
  */
-export class AutofillManagerImpl {
-  /** @override */
-  setPersonalDataManagerListener(listener) {
+export class AutofillManagerImpl implements AutofillManager {
+  setPersonalDataManagerListener(listener: PersonalDataChangedListener) {
     chrome.autofillPrivate.onPersonalDataChanged.addListener(listener);
   }
 
-  /** @override */
-  removePersonalDataManagerListener(listener) {
+  removePersonalDataManagerListener(listener: PersonalDataChangedListener) {
     chrome.autofillPrivate.onPersonalDataChanged.removeListener(listener);
   }
 
-  /** @override */
-  getAddressList(callback) {
+  getAddressList(
+      callback: (entries: Array<chrome.autofillPrivate.AddressEntry>) => void) {
     chrome.autofillPrivate.getAddressList(callback);
   }
 
-  /** @override */
-  saveAddress(address) {
+  saveAddress(address: chrome.autofillPrivate.AddressEntry) {
     chrome.autofillPrivate.saveAddress(address);
   }
 
-  /** @override */
-  removeAddress(guid) {
+  removeAddress(guid: string) {
     chrome.autofillPrivate.removeEntry(assert(guid));
+  }
+
+  static getInstance(): AutofillManager {
+    return instance || (instance = new AutofillManagerImpl());
+  }
+
+  static setInstance(obj: AutofillManager) {
+    instance = obj;
   }
 }
 
-addSingletonGetter(AutofillManagerImpl);
+let instance: AutofillManager|null = null;
 
+declare global {
+  interface HTMLElementEventMap {
+    'save-address': CustomEvent<chrome.autofillPrivate.AddressEntry>;
+  }
+}
 
-/** @polymer */
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: chrome.autofillPrivate.AddressEntry,
+  };
+}
+
+interface SettingsAutofillSectionElement {
+  $: {
+    addressSharedMenu: CrActionMenuElement,
+    addAddress: HTMLElement,
+  };
+}
+
 class SettingsAutofillSectionElement extends PolymerElement {
   static get is() {
     return 'settings-autofill-section';
@@ -118,25 +130,24 @@ class SettingsAutofillSectionElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * An array of saved addresses.
-       * @type {!Array<!AutofillManager.AddressEntry>}
-       */
+      /** An array of saved addresses. */
       addresses: Array,
 
-      /**
-       * The model for any address related action menus or dialogs.
-       * @private {?chrome.autofillPrivate.AddressEntry}
-       */
+      /** The model for any address related action menus or dialogs. */
       activeAddress: Object,
 
-      /** @private */
       showAddressDialog_: Boolean,
-
-      /** @private */
       showAddressRemoveConfirmationDialog_: Boolean,
     };
   }
+
+  addresses: Array<chrome.autofillPrivate.AddressEntry>;
+  activeAddress: chrome.autofillPrivate.AddressEntry|null;
+  private showAddressDialog_: boolean;
+  private showAddressRemoveConfirmationDialog_: boolean;
+  private activeDialogAnchor_: HTMLElement|null;
+  private autofillManager_: AutofillManager = AutofillManagerImpl.getInstance();
+  private setPersonalDataListener_: PersonalDataChangedListener|null = null;
 
   constructor() {
     super();
@@ -144,53 +155,31 @@ class SettingsAutofillSectionElement extends PolymerElement {
     /**
      * The element to return focus to, when the currently active dialog is
      * closed.
-     * @private {?HTMLElement}
      */
     this.activeDialogAnchor_ = null;
-
-    /**
-     * @type {AutofillManager}
-     * @private
-     */
-    this.autofillManager_ = null;
-
-    /**
-     * @type {?function(!Array<!AutofillManager.AddressEntry>,
-     *     !Array<!CreditCardEntry>)}
-     * @private
-     */
-    this.setPersonalDataListener_ = null;
   }
 
-  /** @override */
   ready() {
     super.ready();
     this.addEventListener('save-address', this.saveAddress_);
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
     // Create listener functions.
-    /** @type {function(!Array<!AutofillManager.AddressEntry>)} */
-    const setAddressesListener = addressList => {
-      this.addresses = addressList;
-    };
+    const setAddressesListener =
+        (addressList: Array<chrome.autofillPrivate.AddressEntry>) => {
+          this.addresses = addressList;
+        };
 
-    /**
-     * @type {function(!Array<!AutofillManager.AddressEntry>,
-     *     !Array<!CreditCardEntry>)}
-     */
-    const setPersonalDataListener = (addressList, cardList) => {
-      this.addresses = addressList;
-    };
+    const setPersonalDataListener: PersonalDataChangedListener =
+        (addressList, _cardList) => {
+          this.addresses = addressList;
+        };
 
     // Remember the bound reference in order to detach.
     this.setPersonalDataListener_ = setPersonalDataListener;
-
-    // Set the managers. These can be overridden by tests.
-    this.autofillManager_ = AutofillManagerImpl.getInstance();
 
     // Request initial data.
     this.autofillManager_.getAddressList(setAddressesListener);
@@ -203,107 +192,85 @@ class SettingsAutofillSectionElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction('AutofillAddressesViewed');
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
     this.autofillManager_.removePersonalDataManagerListener(
-        /**
-           @type {function(!Array<!AutofillManager.AddressEntry>,
-               !Array<!CreditCardEntry>)}
-         */
-        (this.setPersonalDataListener_));
+        this.setPersonalDataListener_!);
+    this.setPersonalDataListener_ = null;
   }
 
   /**
    * Open the address action menu.
-   * @param {!Event} e The polymer event.
-   * @private
    */
-  onAddressMenuTap_(e) {
-    const menuEvent = /** @type {!{model: !{item: !Object}}} */ (e);
-    const item = menuEvent.model.item;
+  private onAddressMenuTap_(e: RepeaterEvent) {
+    const item = e.model.item;
 
     // Copy item so dialog won't update model on cancel.
-    this.activeAddress = /** @type {!chrome.autofillPrivate.AddressEntry} */ (
-        Object.assign({}, item));
+    this.activeAddress = Object.assign({}, item);
 
-    const dotsButton = /** @type {!HTMLElement} */ (e.target);
-    /** @type {!CrActionMenuElement} */ (this.$.addressSharedMenu)
-        .showAt(dotsButton);
+    const dotsButton = e.target as HTMLElement;
+    this.$.addressSharedMenu.showAt(dotsButton);
     this.activeDialogAnchor_ = dotsButton;
   }
 
   /**
    * Handles tapping on the "Add address" button.
-   * @param {!Event} e The polymer event.
-   * @private
    */
-  onAddAddressTap_(e) {
+  private onAddAddressTap_(e: Event) {
     e.preventDefault();
     this.activeAddress = {};
     this.showAddressDialog_ = true;
-    this.activeDialogAnchor_ = /** @type {HTMLElement} */ (this.$.addAddress);
+    this.activeDialogAnchor_ = this.$.addAddress;
   }
 
-  /** @private */
-  onAddressDialogClose_() {
+  private onAddressDialogClose_() {
     this.showAddressDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_));
+    focusWithoutInk(assert(this.activeDialogAnchor_!));
     this.activeDialogAnchor_ = null;
   }
 
   /**
    * Handles tapping on the "Edit" address button.
-   * @param {!Event} e The polymer event.
-   * @private
    */
-  onMenuEditAddressTap_(e) {
+  private onMenuEditAddressTap_(e: Event) {
     e.preventDefault();
     this.showAddressDialog_ = true;
     this.$.addressSharedMenu.close();
   }
 
-  /** @private */
-  onAddressRemoveConfirmationDialogClose_() {
+  private onAddressRemoveConfirmationDialogClose_() {
     // Check if the dialog was confirmed before closing it.
-    if (/** @type {!SettingsAddressRemoveConfirmationDialogElement} */
-        (this.shadowRoot.querySelector(
-             'settings-address-remove-confirmation-dialog'))
+    if (this.shadowRoot!
+            .querySelector('settings-address-remove-confirmation-dialog')!
             .wasConfirmed()) {
-      this.autofillManager_.removeAddress(
-          /** @type {string} */ (this.activeAddress.guid));
+      this.autofillManager_.removeAddress(this.activeAddress!.guid as string);
     }
     this.showAddressRemoveConfirmationDialog_ = false;
-    focusWithoutInk(assert(this.activeDialogAnchor_));
+    focusWithoutInk(assert(this.activeDialogAnchor_!));
     this.activeDialogAnchor_ = null;
   }
 
   /**
    * Handles tapping on the "Remove" address button.
-   * @private
    */
-  onMenuRemoveAddressTap_() {
+  private onMenuRemoveAddressTap_() {
     this.showAddressRemoveConfirmationDialog_ = true;
     this.$.addressSharedMenu.close();
   }
 
   /**
-   * Returns true if the list exists and has items.
-   * @param {Array<Object>} list
-   * @return {boolean}
-   * @private
+   * @return Whether the list exists and has items.
    */
-  hasSome_(list) {
+  private hasSome_(list: Array<Object>): boolean {
     return !!(list && list.length);
   }
 
   /**
    * Listens for the save-address event, and calls the private API.
-   * @param {!Event} event
-   * @private
    */
-  saveAddress_(event) {
+  private saveAddress_(event:
+                           CustomEvent<chrome.autofillPrivate.AddressEntry>) {
     this.autofillManager_.saveAddress(event.detail);
   }
 }

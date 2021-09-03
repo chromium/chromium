@@ -30,8 +30,6 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
-import {AutofillManager} from './autofill_section.js';
-
 /** @typedef {chrome.autofillPrivate.CreditCardEntry} */
 let CreditCardEntry;
 
@@ -42,14 +40,14 @@ let CreditCardEntry;
 export class PaymentsManager {
   /**
    * Add an observer to the list of personal data.
-   * @param {function(!Array<!AutofillManager.AddressEntry>,
+   * @param {function(!Array<!chrome.autofillPrivate.AddressEntry>,
    *   !Array<!CreditCardEntry>):void} listener
    */
   setPersonalDataManagerListener(listener) {}
 
   /**
    * Remove an observer from the list of personal data.
-   * @param {function(!Array<!AutofillManager.AddressEntry>,
+   * @param {function(!Array<!chrome.autofillPrivate.AddressEntry>,
    *     !Array<!CreditCardEntry>):void} listener
    */
   removePersonalDataManagerListener(listener) {}
@@ -257,7 +255,7 @@ class SettingsPaymentsSectionElement extends
     this.paymentsManager_ = null;
 
     /**
-     * @type {?function(!Array<!AutofillManager.AddressEntry>,
+     * @type {?function(!Array<!chrome.autofillPrivate.AddressEntry>,
      *     !Array<!CreditCardEntry>)}
      * @private
      */
@@ -297,7 +295,7 @@ class SettingsPaymentsSectionElement extends
     }
 
     /**
-     * @type {function(!Array<!AutofillManager.AddressEntry>,
+     * @type {function(!Array<!chrome.autofillPrivate.AddressEntry>,
      *     !Array<!CreditCardEntry>)}
      */
     const setPersonalDataListener = (addressList, cardList) => {
@@ -333,7 +331,7 @@ class SettingsPaymentsSectionElement extends
 
     this.paymentsManager_.removePersonalDataManagerListener(
         /**
-           @type {function(!Array<!AutofillManager.AddressEntry>,
+           @type {function(!Array<!chrome.autofillPrivate.AddressEntry>,
                !Array<!CreditCardEntry>)}
          */
         (this.setPersonalDataListener_));

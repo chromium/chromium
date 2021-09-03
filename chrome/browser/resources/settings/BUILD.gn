@@ -204,9 +204,9 @@ preprocess_if_expr("preprocess_generated") {
     "autofill_page/upi_id_list_entry.js",
     "autofill_page/passwords_shared_css.js",
     "autofill_page/credit_card_edit_dialog.js",
-    "autofill_page/autofill_section.js",
-    "autofill_page/address_edit_dialog.js",
-    "autofill_page/address_remove_confirmation_dialog.js",
+    "autofill_page/autofill_section.ts",
+    "autofill_page/address_edit_dialog.ts",
+    "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/password_check.js",
     "autofill_page/password_check_edit_dialog.js",
     "autofill_page/password_check_edit_disclaimer_dialog.js",
@@ -479,7 +479,6 @@ js_library("lazy_load") {
   sources =
       [ "$root_gen_dir/chrome/browser/resources/settings/tsc/lazy_load.js" ]
   deps = [
-    "autofill_page:autofill_section",
     "autofill_page:payments_section",
     "privacy_page:cookies_page",
     "privacy_page:security_page",
@@ -642,10 +641,10 @@ ts_library("build_ts") {
     "appearance_page/appearance_page.ts",
     "appearance_page/fonts_browser_proxy.ts",
     "appearance_page/home_url_input.ts",
-    "autofill_page/address_edit_dialog.js",
-    "autofill_page/address_remove_confirmation_dialog.js",
+    "autofill_page/address_edit_dialog.ts",
+    "autofill_page/address_remove_confirmation_dialog.ts",
     "autofill_page/autofill_page.js",
-    "autofill_page/autofill_section.js",
+    "autofill_page/autofill_section.ts",
     "autofill_page/avatar_icon.js",
     "autofill_page/credit_card_edit_dialog.js",
     "autofill_page/credit_card_list_entry.js",
@@ -877,6 +876,7 @@ ts_library("build_ts") {
   }
 
   definitions = [
+    "//tools/typescript/definitions/autofill_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/management.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",

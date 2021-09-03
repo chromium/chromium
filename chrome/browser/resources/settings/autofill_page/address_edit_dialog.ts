@@ -16,23 +16,24 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import '../controls/settings_textarea.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {flush, html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
+interface SettingsAddressEditDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
 const SettingsAddressEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SettingsAddressEditDialogElement extends
     SettingsAddressEditDialogElementBase {
   static get is() {
@@ -45,39 +46,27 @@ class SettingsAddressEditDialogElement extends
 
   static get properties() {
     return {
-      /** @type {chrome.autofillPrivate.AddressEntry} */
       address: Object,
 
-      /** @private */
       title_: String,
 
-      /** @private {!Array<!chrome.autofillPrivate.CountryEntry>} */
       countries_: Array,
 
       /**
        * Updates the address wrapper.
-       * @private {string|undefined}
        */
       countryCode_: {
         type: String,
         observer: 'onUpdateCountryCode_',
       },
 
-      /** @private {!Array<!Array<!AddressComponentUI>>} */
       addressWrapper_: Object,
-
-      /** @private */
       phoneNumber_: String,
-
-      /** @private */
       email_: String,
-
-      /** @private */
       canSave_: Boolean,
 
       /**
        * True if honorifics are enabled.
-       * @private
        */
       showHonorific_: {
         type: Boolean,
@@ -88,15 +77,18 @@ class SettingsAddressEditDialogElement extends
     };
   }
 
+  address: chrome.autofillPrivate.AddressEntry;
+  private title_: string;
+  private countries_: Array<chrome.autofillPrivate.CountryEntry>;
+  private countryCode_: string|undefined;
+  private addressWrapper_: Array<Array<AddressComponentUI>>;
+  private phoneNumber_: string;
+  private email_: string;
+  private canSave_: boolean;
+  private showHonorific_: boolean;
+  private countryInfo: CountryDetailManager =
+      CountryDetailManagerImpl.getInstance();
 
-  constructor() {
-    super();
-
-    /** @type {!CountryDetailManager} */
-    this.countryInfo = CountryDetailManagerImpl.getInstance();
-  }
-
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -132,63 +124,54 @@ class SettingsAddressEditDialogElement extends
     // updated.
   }
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /**
-   * Returns a class to denote how long this entry is.
-   * @param {AddressComponentUI} setting
-   * @return {string}
+   * @return A CSS class to denote how long this entry is.
    */
-  long_(setting) {
+  private long_(setting: AddressComponentUI): string {
     return setting.component.isLongField ? 'long' : '';
   }
 
   /**
    * Updates the wrapper that represents this address in the country's format.
-   * @private
    */
-  updateAddressWrapper_() {
+  private updateAddressWrapper_() {
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
-    this.countryInfo.getAddressFormat(/** @type {string} */ (countryCode))
-        .then(format => {
-          this.addressWrapper_ = format.components.flatMap(component => {
-            // If this is the name field, add a honorific title row before the
-            // name.
-            const addHonorific = component.row[0].field ===
-                    chrome.autofillPrivate.AddressField.FULL_NAME &&
-                this.showHonorific_;
-            const row = component.row.map(
-                component => new AddressComponentUI(this.address, component));
-            return addHonorific ?
-                [[this.createHonorificAddressComponentUI(this.address)], row] :
-                [row];
-          });
+    this.countryInfo.getAddressFormat(countryCode as string).then(format => {
+      this.addressWrapper_ = format.components.flatMap(component => {
+        // If this is the name field, add a honorific title row before the
+        // name.
+        const addHonorific = component.row[0].field ===
+                chrome.autofillPrivate.AddressField.FULL_NAME &&
+            this.showHonorific_;
+        const row = component.row.map(
+            component => new AddressComponentUI(this.address, component));
+        return addHonorific ?
+            [[this.createHonorificAddressComponentUI(this.address)], row] :
+            [row];
+      });
 
-          // Flush dom before resize and savability updates.
-          flush();
+      // Flush dom before resize and savability updates.
+      flush();
 
-          this.updateCanSave_();
+      this.updateCanSave_();
 
-          this.fire_('on-update-address-wrapper');  // For easier testing.
+      this.fire_('on-update-address-wrapper');  // For easier testing.
 
-          const dialog = /** @type {HTMLDialogElement} */ (this.$.dialog);
-          if (!dialog.open) {
-            dialog.showModal();
-          }
-        });
+      if (!this.$.dialog.open) {
+        this.$.dialog.showModal();
+      }
+    });
   }
 
-  updateCanSave_() {
-    const inputs = this.$.dialog.querySelectorAll('.address-column, select');
+  private updateCanSave_() {
+    const inputs = this.$.dialog.querySelectorAll('.address-column, select') as
+        NodeListOf<HTMLSelectElement|CrInputElement>;
 
     for (let i = 0; i < inputs.length; ++i) {
       if (inputs[i].value) {
@@ -202,43 +185,26 @@ class SettingsAddressEditDialogElement extends
     this.fire_('on-update-can-save');  // For easier testing.
   }
 
-  /**
-   * @param {!chrome.autofillPrivate.CountryEntry} country
-   * @return {string}
-   * @private
-   */
-  getCode_(country) {
+  private getCode_(country: chrome.autofillPrivate.CountryEntry): string {
     return country.countryCode || 'SPACER';
   }
 
-  /**
-   * @param {!chrome.autofillPrivate.CountryEntry} country
-   * @return {string}
-   * @private
-   */
-  getName_(country) {
+  private getName_(country: chrome.autofillPrivate.CountryEntry): string {
     return country.name || '------';
   }
 
-  /**
-   * @param {!chrome.autofillPrivate.CountryEntry} country
-   * @return {boolean}
-   * @private
-   */
-  isDivision_(country) {
+  private isDivision_(country: chrome.autofillPrivate.CountryEntry): boolean {
     return !country.countryCode;
   }
 
-  /** @private */
-  onCancelTap_() {
+  private onCancelTap_() {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for tapping the save button.
-   * @private
    */
-  onSaveButtonTap_() {
+  private onSaveButtonTap_() {
     // The Enter key can call this function even if the button is disabled.
     if (!this.canSave_) {
       return;
@@ -259,56 +225,42 @@ class SettingsAddressEditDialogElement extends
   /**
    * Syncs the country code back to the address and rebuilds the address
    * wrapper for the new location.
-   * @param {string|undefined} countryCode
-   * @private
    */
-  onUpdateCountryCode_(countryCode) {
+  private onUpdateCountryCode_(countryCode: string|undefined) {
     this.address.countryCode = countryCode;
     this.updateAddressWrapper_();
   }
 
-  /** @private */
-  onCountryChange_() {
-    const countrySelect =
-        /** @type {!HTMLSelectElement} */ (
-            this.shadowRoot.querySelector('select'));
-    this.countryCode_ = countrySelect.value;
+  private onCountryChange_() {
+    const countrySelect = this.shadowRoot!.querySelector('select');
+    this.countryCode_ = countrySelect!.value;
   }
 
   /**
    * Propagates focus to the <select> when country row is focused
    * (e.g. using tab navigation).
-   * @private
    */
-  onCountryRowFocus_() {
-    const countrySelect =
-        /** @type {!HTMLSelectElement} */ (
-            this.shadowRoot.querySelector('select'));
-    countrySelect.focus();
+  private onCountryRowFocus_() {
+    this.shadowRoot!.querySelector('select')!.focus();
   }
 
   /**
    * Prevents clicking random spaces within country row but outside of <select>
    * from triggering focus.
-   * @param {!Event} e
-   * @private
    */
-  onCountryRowPointerDown_(e) {
-    if (e.path[0].tagName !== 'SELECT') {
+  private onCountryRowPointerDown_(e: Event) {
+    if ((e.composedPath()[0] as HTMLElement).tagName !== 'SELECT') {
       e.preventDefault();
     }
   }
 
-  /**
-   * @param {!chrome.autofillPrivate.AddressEntry} address
-   * @returns {AddressComponentUI}
-   */
-  createHonorificAddressComponentUI(address) {
+  createHonorificAddressComponentUI(
+      address: chrome.autofillPrivate.AddressEntry): AddressComponentUI {
     return new AddressComponentUI(address, {
       field: chrome.autofillPrivate.AddressField.HONORIFIC,
       fieldName: this.i18n('honorificLabel'),
       isLongField: true,
-      placerholder: undefined,
+      placeholder: undefined,
     });
   }
 }
@@ -320,11 +272,13 @@ customElements.define(
  * Creates a wrapper against a single data member for an address.
  */
 class AddressComponentUI {
-  /**
-   * @param {!chrome.autofillPrivate.AddressEntry} address
-   * @param {!chrome.autofillPrivate.AddressComponent} component
-   */
-  constructor(address, component) {
+  private address_: chrome.autofillPrivate.AddressEntry;
+  component: chrome.autofillPrivate.AddressComponent;
+  isTextArea: boolean;
+
+  constructor(
+      address: chrome.autofillPrivate.AddressEntry,
+      component: chrome.autofillPrivate.AddressComponent) {
     Object.defineProperty(this, 'value', {
       get() {
         return this.getValue_();
@@ -341,10 +295,8 @@ class AddressComponentUI {
 
   /**
    * Gets the value from the address that's associated with this component.
-   * @return {string|undefined}
-   * @private
    */
-  getValue_() {
+  private getValue_(): string|undefined {
     const address = this.address_;
     switch (this.component.field) {
       case chrome.autofillPrivate.AddressField.HONORIFIC:
@@ -371,15 +323,14 @@ class AddressComponentUI {
         return address.countryCode;
       default:
         assertNotReached();
+        return '';
     }
   }
 
   /**
    * Sets the value in the address that's associated with this component.
-   * @param {string} value
-   * @private
    */
-  setValue_(value) {
+  private setValue_(value: string) {
     const address = this.address_;
     switch (this.component.field) {
       case chrome.autofillPrivate.AddressField.HONORIFIC:
@@ -418,42 +369,46 @@ class AddressComponentUI {
   }
 }
 
-/** @interface */
-class CountryDetailManager {
+interface CountryDetailManager {
   /**
    * Gets the list of available countries.
    * The default country will be first, followed by a separator, followed by
    * an alphabetized list of countries available.
-   * @return {!Promise<!Array<!chrome.autofillPrivate.CountryEntry>>}
    */
-  getCountryList() {}
+  getCountryList(): Promise<Array<chrome.autofillPrivate.CountryEntry>>;
 
   /**
    * Gets the address format for a given country code.
-   * @param {string} countryCode
-   * @return {!Promise<!chrome.autofillPrivate.AddressComponents>}
    */
-  getAddressFormat(countryCode) {}
+  getAddressFormat(countryCode: string):
+      Promise<chrome.autofillPrivate.AddressComponents>;
 }
 
 /**
  * Default implementation. Override for testing.
- * @implements {CountryDetailManager}
  */
-export class CountryDetailManagerImpl {
-  /** @override */
+export class CountryDetailManagerImpl implements CountryDetailManager {
   getCountryList() {
-    return new Promise(function(callback) {
+    return new Promise<Array<chrome.autofillPrivate.CountryEntry>>(function(
+        callback) {
       chrome.autofillPrivate.getCountryList(callback);
     });
   }
 
-  /** @override */
-  getAddressFormat(countryCode) {
-    return new Promise(function(callback) {
+  getAddressFormat(countryCode: string) {
+    return new Promise<chrome.autofillPrivate.AddressComponents>(function(
+        callback) {
       chrome.autofillPrivate.getAddressComponents(countryCode, callback);
     });
   }
+
+  static getInstance(): CountryDetailManager {
+    return instance || (instance = new CountryDetailManagerImpl());
+  }
+
+  static setInstance(obj: CountryDetailManager) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(CountryDetailManagerImpl);
+let instance: CountryDetailManager|null = null;

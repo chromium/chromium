@@ -147,7 +147,7 @@ suite('PasswordsAndForms', function() {
 
     // Override the AutofillManagerImpl for testing.
     autofillManager = new TestAutofillManager();
-    AutofillManagerImpl.instance_ = autofillManager;
+    AutofillManagerImpl.setInstance(autofillManager);
 
     // Override the PaymentsManagerImpl for testing.
     paymentsManager = new TestPaymentsManager();

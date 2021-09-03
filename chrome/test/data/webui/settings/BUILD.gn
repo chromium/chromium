@@ -73,7 +73,7 @@ js_type_check("closure_compile") {
     #":languages_tests",
     #":metrics_reporting_tests",
     #":password_check_test",
-    ":passwords_and_autofill_fake_data",
+    #":passwords_and_autofill_fake_data",
 
     #":passwords_export_test",
     #":passwords_section_test",
@@ -152,7 +152,8 @@ js_type_check("closure_compile") {
     ":test_local_data_browser_proxy",
     ":test_metrics_browser_proxy",
     ":test_open_window_proxy",
-    ":test_password_manager_proxy",
+
+    #":test_password_manager_proxy",
     ":test_privacy_page_browser_proxy",
 
     #":test_profile_info_browser_proxy",
@@ -254,20 +255,6 @@ js_library("languages_page_metrics_test_browser") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("passwords_and_autofill_fake_data") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/settings:lazy_load",
-    "//chrome/browser/resources/settings:settings",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [
-    "$externs_path/autofill_private.js",
-    "$externs_path/passwords_private.js",
-  ]
-}
-
 js_library("privacy_page_test") {
   deps = [
     ":test_hats_browser_proxy",
@@ -341,15 +328,6 @@ js_library("test_metrics_browser_proxy") {
 
 js_library("test_open_window_proxy") {
   deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/settings:settings",
-  ]
-}
-
-js_library("test_password_manager_proxy") {
-  deps = [
-    ":passwords_and_autofill_fake_data",
-    "..:chai_assert",
     "..:test_browser_proxy",
     "//chrome/browser/resources/settings:settings",
   ]
