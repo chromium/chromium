@@ -147,27 +147,27 @@ struct TraceEvent {
   double GetAbsTimeToOtherEvent() const;
 
   // Return the argument value if it exists and it is a string.
-  bool GetArgAsString(const std::string& name, std::string* arg) const;
+  bool GetArgAsString(const std::string& arg_name, std::string* arg) const;
   // Return the argument value if it exists and it is a number.
-  bool GetArgAsNumber(const std::string& name, double* arg) const;
+  bool GetArgAsNumber(const std::string& arg_name, double* arg) const;
   // Return the argument value if it exists.
-  bool GetArgAsValue(const std::string& name, base::Value* arg) const;
+  bool GetArgAsValue(const std::string& arg_name, base::Value* arg) const;
 
   // Check if argument exists and is string.
-  bool HasStringArg(const std::string& name) const;
+  bool HasStringArg(const std::string& arg_name) const;
   // Check if argument exists and is number (double, int or bool).
-  bool HasNumberArg(const std::string& name) const;
+  bool HasNumberArg(const std::string& arg_name) const;
   // Check if argument exists.
-  bool HasArg(const std::string& name) const;
+  bool HasArg(const std::string& arg_name) const;
 
   // Get known existing arguments as specific types.
   // Useful when you have already queried the argument with
   // Query(HAS_NUMBER_ARG) or Query(HAS_STRING_ARG).
-  std::string GetKnownArgAsString(const std::string& name) const;
-  double GetKnownArgAsDouble(const std::string& name) const;
-  int GetKnownArgAsInt(const std::string& name) const;
-  bool GetKnownArgAsBool(const std::string& name) const;
-  base::Value GetKnownArgAsValue(const std::string& name) const;
+  std::string GetKnownArgAsString(const std::string& arg_name) const;
+  double GetKnownArgAsDouble(const std::string& arg_name) const;
+  int GetKnownArgAsInt(const std::string& arg_name) const;
+  bool GetKnownArgAsBool(const std::string& arg_name) const;
+  base::Value GetKnownArgAsValue(const std::string& arg_name) const;
 
   // Process ID and Thread ID.
   ProcessThreadID thread;

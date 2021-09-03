@@ -263,10 +263,8 @@ void TestResultsTracker::AddTestResult(const TestResult& result) {
   if (test_name_without_pre_prefix != test_name_without_disabled_prefix) {
     if (result.status != TestResult::TEST_SUCCESS) {
       it = results_map.find(test_name_without_pre_prefix);
-      AggregateTestResult& aggregate_test_result = it->second;
-      if (!aggregate_test_result.test_results.empty() &&
-          aggregate_test_result.test_results.back().status ==
-              TestResult::TEST_NOT_RUN) {
+      if (!it->second.test_results.empty() &&
+          it->second.test_results.back().status == TestResult::TEST_NOT_RUN) {
         // Also need to remove the non-PRE test's placeholder.
         it->second.test_results.pop_back();
       }

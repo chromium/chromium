@@ -103,7 +103,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   SkiaPaintCanvas canvas(bitmap);
 
   Color opaque(1.0f, 0.0f, 0.0f, 1.0f);
-  Color alpha(0.0f, 0.0f, 0.0f, 0.0f);
+  Color transparent(0.0f, 0.0f, 0.0f, 0.0f);
   FloatRect bounds(0, 0, 100, 100);
 
   auto paint_controller = std::make_unique<PaintController>();
@@ -137,7 +137,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   path.MoveTo(FloatPoint(10, 10));
   path.AddLineTo(FloatPoint(40, 40));
   PaintFlags flags;
-  flags.setColor(alpha.Rgb());
+  flags.setColor(transparent.Rgb());
   flags.setBlendMode(SkBlendMode::kSrcOut);
   context.DrawPath(path.GetSkPath(), flags);
 

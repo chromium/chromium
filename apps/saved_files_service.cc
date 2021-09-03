@@ -305,10 +305,10 @@ void SavedFilesService::SavedFiles::RegisterFileEntry(
 }
 
 void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
-  auto it = registered_file_entries_.find(id);
-  DCHECK(it != registered_file_entries_.end());
+  auto id_it = registered_file_entries_.find(id);
+  DCHECK(id_it != registered_file_entries_.end());
 
-  SavedFileEntry* file_entry = it->second.get();
+  SavedFileEntry* file_entry = id_it->second.get();
   int old_sequence_number = file_entry->sequence_number;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -380,14 +380,14 @@ void SavedFilesService::SavedFiles::MaybeCompactSequenceNumbers() {
   DCHECK_GE(g_max_sequence_number, 0);
   DCHECK_GE(static_cast<size_t>(g_max_sequence_number),
             g_max_saved_file_entries);
-  std::map<int, SavedFileEntry*>::reverse_iterator it =
+  std::map<int, SavedFileEntry*>::reverse_iterator last_it =
       saved_file_lru_.rbegin();
-  if (it == saved_file_lru_.rend())
+  if (last_it == saved_file_lru_.rend())
     return;
 
   // Only compact sequence numbers if the last entry's sequence number is the
   // maximum value.  This should almost never be the case.
-  if (it->first < g_max_sequence_number)
+  if (last_it->first < g_max_sequence_number)
     return;
 
   int sequence_number = 0;
