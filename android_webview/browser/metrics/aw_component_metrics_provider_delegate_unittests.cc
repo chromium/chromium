@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/metrics/aw_components_metrics_provider.h"
+#include "android_webview/browser/metrics/aw_component_metrics_provider_delegate.h"
 
 #include <memory>
 #include <utility>
@@ -14,6 +14,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/metrics/component_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,9 +32,9 @@ class AwMetricsServiceClientTestDelegate
   bool HasAwContentsEverCreated() const override { return false; }
 };
 
-class AwComponentsMetricsProviderTest : public testing::Test {
+class AwComponentMetricsProviderDelegateTest : public testing::Test {
  protected:
-  AwComponentsMetricsProviderTest()
+  AwComponentMetricsProviderDelegateTest()
       : task_runner_(new base::TestSimpleTaskRunner),
         prefs_(std::make_unique<TestingPrefServiceSimple>()),
         client_(std::make_unique<AwMetricsServiceClient>(
@@ -55,17 +56,20 @@ class AwComponentsMetricsProviderTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(AwComponentsMetricsProviderTest,
+TEST_F(AwComponentMetricsProviderDelegateTest,
        TestAppsPackageNamesComponent_NotLoaded) {
-  AwComponentsMetricsProvider provider(GetClient());
+  metrics::ComponentMetricsProvider provider(
+      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
 
   metrics::SystemProfileProto system_profile;
   provider.ProvideSystemProfileMetrics(&system_profile);
   EXPECT_TRUE(system_profile.chrome_component().empty());
 }
 
-TEST_F(AwComponentsMetricsProviderTest, TestAppsPackageNamesComponent_Loaded) {
-  AwComponentsMetricsProvider provider(GetClient());
+TEST_F(AwComponentMetricsProviderDelegateTest,
+       TestAppsPackageNamesComponent_Loaded) {
+  metrics::ComponentMetricsProvider provider(
+      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
 
   std::string allowlist_version = "123.456.78.9";
   GetClient()->SetAppPackageNameLoggingRule(AppPackageNameLoggingRule(

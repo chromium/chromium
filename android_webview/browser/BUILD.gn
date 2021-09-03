@@ -231,6 +231,7 @@ source_set("browser") {
     "//components/js_injection/common",
     "//components/js_injection/common:common_mojom",
     "//components/metrics",
+    "//components/metrics:component_metrics",
     "//components/minidump_uploader",
     "//components/navigation_interception",
     "//components/page_load_metrics/browser",
