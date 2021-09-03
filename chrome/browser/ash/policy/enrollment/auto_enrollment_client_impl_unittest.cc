@@ -210,22 +210,8 @@ class AutoEnrollmentClientImplTest
     // FRE use case.
     ASSERT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
 
-    em::DeviceManagementResponse response;
-    em::DeviceAutoEnrollmentResponse* enrollment_response =
-        response.mutable_auto_enrollment_response();
-    if (modulus >= 0)
-      enrollment_response->set_expected_modulus(modulus);
-    if (with_hashes) {
-      for (int i = 0; i < 10; ++i) {
-        std::string state_key = base::StringPrintf("state_key %d", i);
-        std::string hash = crypto::SHA256HashString(state_key);
-        enrollment_response->mutable_hashes()->Add()->assign(hash);
-      }
-    }
-    if (with_id_hash) {
-      enrollment_response->mutable_hashes()->Add()->assign(
-          kStateKeyHash, crypto::kSHA256Length);
-    }
+    em::DeviceManagementResponse response =
+        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
 
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
         .WillOnce(DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
@@ -577,6 +563,34 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
  private:
+  em::DeviceManagementResponse GetAutoEnrollmentResponse(
+      int64_t modulus,
+      bool with_hashes,
+      bool with_id_hash) const {
+    // This method should be called only when the client has been created for
+    // FRE use case.
+    EXPECT_EQ(GetAutoEnrollmentProtocol(), AutoEnrollmentProtocol::kFRE);
+
+    em::DeviceManagementResponse response;
+    em::DeviceAutoEnrollmentResponse* enrollment_response =
+        response.mutable_auto_enrollment_response();
+    if (modulus >= 0)
+      enrollment_response->set_expected_modulus(modulus);
+    if (with_hashes) {
+      for (int i = 0; i < 10; ++i) {
+        std::string state_key = base::StringPrintf("state_key %d", i);
+        std::string hash = crypto::SHA256HashString(state_key);
+        enrollment_response->mutable_hashes()->Add()->assign(hash);
+      }
+    }
+    if (with_id_hash) {
+      enrollment_response->mutable_hashes()->Add()->assign(
+          kStateKeyHash, crypto::kSHA256Length);
+    }
+
+    return response;
+  }
+
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<AutoEnrollmentClient> client_;
