@@ -3331,7 +3331,13 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
       internal::PageLoadBackForwardCacheEvent::kRestoreFromBackForwardCache, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, EarlyHints) {
+// TODO(crbug.com/1246479): Flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_EarlyHints DISABLED_EarlyHints
+#else
+#define MAYBE_EarlyHints EarlyHints
+#endif
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_EarlyHints) {
   content::NavigationHandleTiming timing =
       NavigateWithEarlyHints(EarlyHintsPolicy::OneHint);
 
