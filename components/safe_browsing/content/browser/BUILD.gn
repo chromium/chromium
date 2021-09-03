@@ -83,6 +83,8 @@ source_set("browser") {
     "threat_details_cache.h",
     "threat_details_history.cc",
     "threat_details_history.h",
+    "user_population.cc",
+    "user_population.h",
     "web_api_handshake_checker.cc",
     "web_api_handshake_checker.h",
   ]
@@ -108,6 +110,8 @@ source_set("browser") {
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/signin/public/identity_manager",
+    "//components/unified_consent",
+    "//components/version_info",
     "//content/public/browser:browser",
     "//content/public/common",
     "//net",

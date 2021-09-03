@@ -9,6 +9,7 @@ include_rules = [
   "+components/security_interstitials/content",
   "+components/sessions/content",
   "+components/sessions/core/session_id.h",
+  "+components/version_info",
   "+content/public/browser",
   "+content/public/test",
   "+crypto/sha2.h",
