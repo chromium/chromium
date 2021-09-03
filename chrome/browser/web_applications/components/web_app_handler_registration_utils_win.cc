@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_win.h"
@@ -137,8 +138,7 @@ base::CommandLine GetAppLauncherCommand(const AppId& app_id,
                                         const base::FilePath& app_launcher_path,
                                         const base::FilePath& profile_path) {
   base::CommandLine app_launcher_command(app_launcher_path);
-  app_launcher_command.AppendSwitchPath(switches::kProfileDirectory,
-                                        profile_path.BaseName());
+  shell_integration::AppendProfileArgs(profile_path, &app_launcher_command);
   app_launcher_command.AppendSwitchASCII(switches::kAppId, app_id);
   return app_launcher_command;
 }
