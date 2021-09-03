@@ -2610,7 +2610,7 @@
     // Note: while password-triggered site isolation launched in M77, it only
     // affected devices above a predefined memory threshold.  This flag is kept
     // around because it allows users of low-memory devices to opt in.
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "enable-site-per-process",
