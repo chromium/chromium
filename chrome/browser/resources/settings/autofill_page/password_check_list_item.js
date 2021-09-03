@@ -45,7 +45,7 @@ class PasswordCheckListItemElement extends PolymerElement {
 
       /**
        * The password that is being displayed.
-       * @type {!PasswordManagerProxy.InsecureCredential}
+       * @type {!chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
 

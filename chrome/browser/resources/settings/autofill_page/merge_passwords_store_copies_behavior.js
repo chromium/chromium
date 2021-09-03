@@ -32,7 +32,7 @@ const MergePasswordsStoreCopiesBehaviorImpl = {
   },
 
   /**
-   * @type {?function(!Array<PasswordManagerProxy.PasswordUiEntry>):void}
+   * @type {?function(!Array<chrome.passwordsPrivate.PasswordUiEntry>):void}
    * @private
    */
   setSavedPasswordsListener_: null,
@@ -65,7 +65,7 @@ const MergePasswordsStoreCopiesBehaviorImpl = {
   },
 
   /**
-   * @param {!Array<!PasswordManagerProxy.PasswordUiEntry>} passwordList
+   * @param {!Array<!chrome.passwordsPrivate.PasswordUiEntry>} passwordList
    * @return {!Array<!MultiStorePasswordUiEntry>}
    * @private
    */

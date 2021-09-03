@@ -31,7 +31,7 @@ export const MergeExceptionsStoreCopiesBehavior = {
   },
 
   /**
-   * @type {?function(!Array<PasswordManagerProxy.ExceptionEntry>):void}
+   * @type {?function(!Array<chrome.passwordsPrivate.ExceptionEntry>):void}
    * @private
    */
   setPasswordExceptionsListener_: null,
@@ -55,7 +55,7 @@ export const MergeExceptionsStoreCopiesBehavior = {
   },
 
   /**
-   * @param {!Array<!PasswordManagerProxy.ExceptionEntry>} exceptionList
+   * @param {!Array<!chrome.passwordsPrivate.ExceptionEntry>} exceptionList
    * @return {!Array<!MultiStoreExceptionEntry>}
    * @private
    */

@@ -42,7 +42,7 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
 
         /**
          * An array of leaked passwords to display.
-         * @type {!Array<!PasswordManagerProxy.InsecureCredential>}
+         * @type {!Array<!chrome.passwordsPrivate.InsecureCredential>}
          */
         leakedPasswords: {
           type: Array,
@@ -51,7 +51,7 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
 
         /**
          * An array of weak passwords to display.
-         * @type {!Array<!PasswordManagerProxy.InsecureCredential>}
+         * @type {!Array<!chrome.passwordsPrivate.InsecureCredential>}
          */
         weakPasswords: {
           type: Array,
@@ -60,7 +60,7 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
 
         /**
          * The status indicates progress and affects banner, title and icon.
-         * @type {!PasswordManagerProxy.PasswordCheckStatus}
+         * @type {!chrome.passwordsPrivate.PasswordCheckStatus}
          */
         status: {
           type: Object,
@@ -83,17 +83,17 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
       super();
 
       /**
-       * @private {?function(!PasswordManagerProxy.InsecureCredentials):void}
+       * @private {?function(!Array<!chrome.passwordsPrivate.InsecureCredential>):void}
        */
       this.leakedCredentialsListener_ = null;
 
       /**
-       * @private {?function(!PasswordManagerProxy.InsecureCredentials):void}
+       * @private {?function(!Array<!chrome.passwordsPrivate.InsecureCredential>):void}
        */
       this.weakCredentialsListener_ = null;
 
       /**
-       * @private {?function(!PasswordManagerProxy.PasswordCheckStatus):void}
+       * @private {?function(!chrome.passwordsPrivate.PasswordCheckStatus):void}
        */
       this.statusChangedListener_ = null;
 
@@ -190,7 +190,7 @@ export const PasswordCheckMixin = dedupingMixin(superClass => {
     /**
      * Function to update compromised credentials in a proper way. New entities
      * should appear in the bottom.
-     * @param {!Array<!PasswordManagerProxy.InsecureCredential>} newList
+     * @param {!Array<!chrome.passwordsPrivate.InsecureCredential>} newList
      * @private
      */
     updateCompromisedPasswordList(newList) {
@@ -243,10 +243,10 @@ export class PasswordCheckMixinInterface {
   /** @return {?PasswordManagerProxy} */
   get passwordManager() {}
 
-  /** @return {!Array<!PasswordManagerProxy.InsecureCredential>} */
+  /** @return {!Array<!chrome.passwordsPrivate.InsecureCredential>} */
   get leakedPasswords() {}
 
-  /** @return {!Array<!PasswordManagerProxy.InsecureCredential>} */
+  /** @return {!Array<!chrome.passwordsPrivate.InsecureCredential>} */
   get weakPasswords() {}
 
   /** @return {string} */
@@ -258,7 +258,7 @@ export class PasswordCheckMixinInterface {
   /** @return {string} */
   get insecurePasswordsCount() {}
 
-  /** @return {!PasswordManagerProxy.PasswordCheckStatus} */
+  /** @return {!chrome.passwordsPrivate.PasswordCheckStatus} */
   get status() {}
 
   /** @return {boolean} */

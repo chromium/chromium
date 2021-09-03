@@ -13,17 +13,17 @@ import {MultiStoreIdHandler} from './multi_store_id_handler.js';
 import {PasswordManagerProxy} from './password_manager_proxy.js';
 
 /**
- * A version of PasswordManagerProxy.ExceptionEntry used for deduplicating
+ * A version of chrome.passwordsPrivate.ExceptionEntry used for deduplicating
  * exceptions from the device and the account.
  */
 export class MultiStoreExceptionEntry extends MultiStoreIdHandler {
   /**
-   * @param {!PasswordManagerProxy.ExceptionEntry} entry
+   * @param {!chrome.passwordsPrivate.ExceptionEntry} entry
    */
   constructor(entry) {
     super();
 
-    /** @type {!PasswordManagerProxy.UrlCollection} */
+    /** @type {!chrome.passwordsPrivate.UrlCollection} */
     this.urls_ = entry.urls;
 
     this.setId(entry.id, entry.fromAccountStore);
@@ -33,7 +33,7 @@ export class MultiStoreExceptionEntry extends MultiStoreIdHandler {
    * Incorporates the id of |otherEntry|, as long as |otherEntry| matches
    * |contents_| and the id corresponding to its store is not set. If these
    * preconditions are not satisfied, results in a no-op.
-   * @param {!PasswordManagerProxy.ExceptionEntry} otherEntry
+   * @param {!chrome.passwordsPrivate.ExceptionEntry} otherEntry
    * @return {boolean} Returns whether the merge succeeded.
    */
   // TODO(crbug.com/1102294) Consider asserting frontendId as well.

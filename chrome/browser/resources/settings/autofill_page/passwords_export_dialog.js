@@ -100,7 +100,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
     this.passwordManager_ = null;
 
     /**
-     * @private {?function(!PasswordManagerProxy.PasswordExportProgress):void}
+     * @private {?function(!chrome.passwordsPrivate.PasswordExportProgress):void}
      */
     this.onPasswordsFileExportProgressListener_ = null;
 
@@ -125,7 +125,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
      * We display the progress bar for at least |progressBarBlockMs|. If
      * progress is achieved earlier; we store the update here and consume it
      * later.
-     * @private {?PasswordManagerProxy.PasswordExportProgress}
+     * @private {?chrome.passwordsPrivate.PasswordExportProgress}
      */
     this.delayedProgress_ = null;
   }
@@ -162,7 +162,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   /**
    * Handles an export progress event by changing the visible dialog or caching
    * the event for later consumption.
-   * @param {!PasswordManagerProxy.PasswordExportProgress} progress
+   * @param {!chrome.passwordsPrivate.PasswordExportProgress} progress
    * @private
    */
   onPasswordsFileExportProgress_(progress) {
@@ -215,7 +215,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
     this.delayedCompletionToken_ = null;
     this.passwordManager_.removePasswordsFileExportProgressListener(
         /**
-         * @type {function(!PasswordManagerProxy.PasswordExportProgress):
+         * @type {function(!chrome.passwordsPrivate.PasswordExportProgress):
          *             void}
          */
         (this.onPasswordsFileExportProgressListener_));
@@ -258,7 +258,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
 
   /**
    * Prepares and displays the appropriate view (with delay, if necessary).
-   * @param {!PasswordManagerProxy.PasswordExportProgress} progress
+   * @param {!chrome.passwordsPrivate.PasswordExportProgress} progress
    * @private
    */
   processProgress_(progress) {

@@ -122,7 +122,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
 
       /**
        * The password that the user is interacting with now.
-       * @private {?PasswordManagerProxy.InsecureCredential}
+       * @private {?chrome.passwordsPrivate.InsecureCredential}
        */
       activePassword_: Object,
 
@@ -199,7 +199,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
      * Observer for saved passwords to update startCheckAutomaticallySucceeded
      * once they are changed. It's needed to run password check on navigation
      * again once passwords changed.
-     * @private {?function(!Array<PasswordManagerProxy.PasswordUiEntry>):void}
+     * @private {?function(!Array<chrome.passwordsPrivate.PasswordUiEntry>):void}
      */
     this.setSavedPasswordsListener_ = null;
   }
@@ -813,7 +813,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   /**
-   * @param {!PasswordManagerProxy.InsecureCredential} item
+   * @param {!chrome.passwordsPrivate.InsecureCredential} item
    * @return {boolean}
    * @private
    */

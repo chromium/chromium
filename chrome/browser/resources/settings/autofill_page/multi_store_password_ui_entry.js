@@ -13,12 +13,12 @@ import {MultiStoreIdHandler} from './multi_store_id_handler.js';
 import {PasswordManagerProxy} from './password_manager_proxy.js';
 
 /**
- * A version of PasswordManagerProxy.PasswordUiEntry used for deduplicating
+ * A version of chrome.passwordsPrivate.PasswordUiEntry used for deduplicating
  * entries from the device and the account.
  */
 export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
   /**
-   * @param {!PasswordManagerProxy.PasswordUiEntry} entry
+   * @param {!chrome.passwordsPrivate.PasswordUiEntry} entry
    */
   constructor(entry) {
     super();
@@ -36,7 +36,7 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
    * Incorporates the id of |otherEntry|, as long as |otherEntry| matches
    * |contents_| and the id corresponding to its store is not set. If these
    * preconditions are not satisfied, results in a no-op.
-   * @param {!PasswordManagerProxy.PasswordUiEntry} otherEntry
+   * @param {!chrome.passwordsPrivate.PasswordUiEntry} otherEntry
    * @return {boolean} Returns whether the merge succeeded.
    */
   // TODO(crbug.com/1102294) Consider asserting frontendId as well.
@@ -55,7 +55,7 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
     return true;
   }
 
-  /** @return {!PasswordManagerProxy.UrlCollection} */
+  /** @return {!chrome.passwordsPrivate.UrlCollection} */
   get urls() {
     return this.contents_.urls;
   }
@@ -78,7 +78,7 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
 
   /**
    * Extract all the information except for the id and fromPasswordStore.
-   * @param {!PasswordManagerProxy.PasswordUiEntry} entry
+   * @param {!chrome.passwordsPrivate.PasswordUiEntry} entry
    * @return {!MultiStorePasswordUiEntry.Contents}
    */
   static getContents_(entry) {
@@ -92,7 +92,7 @@ export class MultiStorePasswordUiEntry extends MultiStoreIdHandler {
 
 /**
  * @typedef {{
- *   urls: !PasswordManagerProxy.UrlCollection,
+ *   urls: !chrome.passwordsPrivate.UrlCollection,
  *   username: string,
  *   federationText: (string|undefined)
  * }}

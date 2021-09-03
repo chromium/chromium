@@ -7,6 +7,9 @@
  * chrome.passwordsPrivate which facilitates testing.
  */
 
+/** @typedef {!Array<!chrome.passwordsPrivate.InsecureCredential>} */
+let InsecureCredentials;
+
 /**
  * Interface for all callbacks to the password API.
  * @interface
@@ -14,14 +17,14 @@
 export class PasswordManagerProxy {
   /**
    * Add an observer to the list of saved passwords.
-   * @param {function(!Array<!PasswordManagerProxy.PasswordUiEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>):void}
    *     listener
    */
   addSavedPasswordListChangedListener(listener) {}
 
   /**
    * Remove an observer from the list of saved passwords.
-   * @param {function(!Array<!PasswordManagerProxy.PasswordUiEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>):void}
    *     listener
    */
   removeSavedPasswordListChangedListener(listener) {}
@@ -30,7 +33,7 @@ export class PasswordManagerProxy {
    * Request the list of saved passwords.
    * TODO(https://crbug.com/919483): Return a promise instead of taking a
    * callback argument.
-   * @param {function(!Array<!PasswordManagerProxy.PasswordUiEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.PasswordUiEntry>):void}
    *     callback
    */
   getSavedPasswordList(callback) {}
@@ -72,14 +75,14 @@ export class PasswordManagerProxy {
 
   /**
    * Add an observer to the list of password exceptions.
-   * @param {function(!Array<!PasswordManagerProxy.ExceptionEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.ExceptionEntry>):void}
    *     listener
    */
   addExceptionListChangedListener(listener) {}
 
   /**
    * Remove an observer from the list of password exceptions.
-   * @param {function(!Array<!PasswordManagerProxy.ExceptionEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.ExceptionEntry>):void}
    *     listener
    */
   removeExceptionListChangedListener(listener) {}
@@ -88,7 +91,7 @@ export class PasswordManagerProxy {
    * Request the list of password exceptions.
    * TODO(https://crbug.com/919483): Return a promise instead of taking a
    * callback argument.
-   * @param {function(!Array<!PasswordManagerProxy.ExceptionEntry>):void}
+   * @param {function(!Array<!chrome.passwordsPrivate.ExceptionEntry>):void}
    *     callback
    */
   getExceptionList(callback) {}
@@ -140,21 +143,21 @@ export class PasswordManagerProxy {
    * Queries the status of any ongoing export.
    * TODO(https://crbug.com/919483): Return a promise instead of taking a
    * callback argument.
-   * @param {function(!PasswordManagerProxy.ExportProgressStatus):void}
+   * @param {function(!chrome.passwordsPrivate.ExportProgressStatus):void}
    *     callback
    */
   requestExportProgressStatus(callback) {}
 
   /**
    * Add an observer to the export progress.
-   * @param {function(!PasswordManagerProxy.PasswordExportProgress):void}
+   * @param {function(!chrome.passwordsPrivate.PasswordExportProgress):void}
    *     listener
    */
   addPasswordsFileExportProgressListener(listener) {}
 
   /**
    * Remove an observer from the export progress.
-   * @param {function(!PasswordManagerProxy.PasswordExportProgress):void}
+   * @param {function(!chrome.passwordsPrivate.PasswordExportProgress):void}
    *     listener
    */
   removePasswordsFileExportProgressListener(listener) {}
@@ -198,74 +201,72 @@ export class PasswordManagerProxy {
 
   /**
    * Requests the latest information about compromised credentials.
-   * @return {!Promise<(PasswordManagerProxy.InsecureCredentials)>}
+   * @return {!Promise<InsecureCredentials>}
    */
   getCompromisedCredentials() {}
 
   /**
    * Requests the latest information about weak credentials.
-   * @return {!Promise<(PasswordManagerProxy.InsecureCredentials)>}
+   * @return {!Promise<InsecureCredentials>}
    */
   getWeakCredentials() {}
 
   /**
    * Returns the current status of the check via |callback|.
-   * @return {!Promise<(PasswordManagerProxy.PasswordCheckStatus)>}
+   * @return {!Promise<(chrome.passwordsPrivate.PasswordCheckStatus)>}
    */
   getPasswordCheckStatus() {}
 
   /**
    * Requests to remove |insecureCredential| from the password store.
-   * @param {!PasswordManagerProxy.InsecureCredential} insecureCredential
+   * @param {!chrome.passwordsPrivate.InsecureCredential} insecureCredential
    */
   removeInsecureCredential(insecureCredential) {}
 
   /**
    * Add an observer to the compromised passwords change.
-   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
-   *      listener
+   * @param {function(!InsecureCredentials):void} listener
    */
   addCompromisedCredentialsListener(listener) {}
 
   /**
    * Remove an observer to the compromised passwords change.
-   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
-   *     listener
+   * @param {function(!InsecureCredentials):void} listener
    */
   removeCompromisedCredentialsListener(listener) {}
 
   /**
    * Add an observer to the weak passwords change.
-   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
-   *      listener
+   * @param {function(!InsecureCredentials):void} listener
    */
   addWeakCredentialsListener(listener) {}
 
   /**
    * Remove an observer to the weak passwords change.
-   * @param {function(!PasswordManagerProxy.InsecureCredentials):void}
-   *     listener
+   * @param {function(!InsecureCredentials):void} listener
    */
   removeWeakCredentialsListener(listener) {}
 
   /**
    * Add an observer to the passwords check status change.
-   * @param {function(!PasswordManagerProxy.PasswordCheckStatus):void} listener
+   * @param {function(!chrome.passwordsPrivate.PasswordCheckStatus):void}
+   *     listener
    */
   addPasswordCheckStatusListener(listener) {}
 
   /**
    * Remove an observer to the passwords check status change.
-   * @param {function(!PasswordManagerProxy.PasswordCheckStatus):void} listener
+   * @param {function(!chrome.passwordsPrivate.PasswordCheckStatus):void}
+   *     listener
    */
   removePasswordCheckStatusListener(listener) {}
 
   /**
    * Requests the plaintext password for |credential|. |callback| gets invoked
    * with the same |credential|, whose |password| field will be set.
-   * @param {!PasswordManagerProxy.InsecureCredential} credential
+   * @param {!chrome.passwordsPrivate.InsecureCredential} credential
    * @param {!chrome.passwordsPrivate.PlaintextReason} reason
-   * @return {!Promise<!PasswordManagerProxy.InsecureCredential>} A promise
+   * @return {!Promise<!chrome.passwordsPrivate.InsecureCredential>} A promise
    *     that resolves to the InsecureCredential with the password field
    *     populated.
    */
@@ -273,7 +274,7 @@ export class PasswordManagerProxy {
 
   /**
    * Requests to change the password of |credential| to |new_password|.
-   * @param {!PasswordManagerProxy.InsecureCredential} credential
+   * @param {!chrome.passwordsPrivate.InsecureCredential} credential
    * @param {string} newPassword
    * @return {!Promise<void>} A promise that resolves when the password is
    *     updated.
@@ -292,34 +293,6 @@ export class PasswordManagerProxy {
    */
   recordPasswordCheckReferrer(referrer) {}
 }
-
-// TODO(https://crbug.com/1047726): Instead of exposing these classes on
-// PasswordManagerProxy, they should be living in their own "settings.passwords"
-// namespace and be exported by this file.
-
-/** @typedef {chrome.passwordsPrivate.PasswordUiEntry} */
-PasswordManagerProxy.PasswordUiEntry;
-
-/** @typedef {chrome.passwordsPrivate.UrlCollection} */
-PasswordManagerProxy.UrlCollection;
-
-/** @typedef {chrome.passwordsPrivate.ExceptionEntry} */
-PasswordManagerProxy.ExceptionEntry;
-
-/** @typedef {chrome.passwordsPrivate.PasswordExportProgress} */
-PasswordManagerProxy.PasswordExportProgress;
-
-/** @typedef {chrome.passwordsPrivate.ExportProgressStatus} */
-PasswordManagerProxy.ExportProgressStatus;
-
-/** @typedef {chrome.passwordsPrivate.InsecureCredential} */
-PasswordManagerProxy.InsecureCredential;
-
-/** @typedef {Array<!chrome.passwordsPrivate.InsecureCredential>} */
-PasswordManagerProxy.InsecureCredentials;
-
-/** @typedef {chrome.passwordsPrivate.PasswordCheckStatus} */
-PasswordManagerProxy.PasswordCheckStatus;
 
 /**
  * Represents different interactions the user can perform on the Password Check

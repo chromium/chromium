@@ -50,7 +50,7 @@ class SettingsPasswordCheckEditDialogElement extends
     return {
       /**
        * The password that the user is interacting with now.
-       * @type {?PasswordManagerProxy.InsecureCredential}
+       * @type {?chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
 

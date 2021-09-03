@@ -36,7 +36,7 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
     return {
       /**
        * The password that is being displayed.
-       * @private {?PasswordManagerProxy.InsecureCredential}
+       * @private {?chrome.passwordsPrivate.InsecureCredential}
        */
       item: Object,
     };

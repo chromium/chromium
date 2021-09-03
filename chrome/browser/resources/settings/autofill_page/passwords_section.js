@@ -311,7 +311,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.setIsOptedInForAccountStorageListener_ = null;
 
     /**
-     * @private {?function(!Array<PasswordManagerProxy.ExceptionEntry>):void}
+     * @private {?function(!Array<chrome.passwordsPrivate.ExceptionEntry>):void}
      */
     this.setPasswordExceptionsListener_ = null;
   }
