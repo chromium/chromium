@@ -6607,7 +6607,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Never remember for this site' option">
           Never
         </message>
-        <message name="IDS_PASSWORD_MANAGER_UPDATE_BUTTON" desc="Label for the 'update' button in the Update Password infobar. This infobar asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update.">
+        <message name="IDS_PASSWORD_MANAGER_UPDATE_BUTTON" desc="Label for the 'update' button in the Update Password infobar. This infobar asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update." formatter_data="android_java">
           Update
         </message>
         <message name="IDS_PASSWORD_MANAGER_UPDATE_WITH_FOLLOWUP_BUTTON" desc="Label for the 'update' button in the Update Password prompt that will be followed by username confirmation dialog. This prompt asks if the user wishes to update the saved password for a site to a new password the user has just entered; the button applies the suggested update.">
