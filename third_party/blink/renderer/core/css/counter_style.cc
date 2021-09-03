@@ -50,6 +50,14 @@ namespace {
 // limit string length at 120.
 const wtf_size_t kCounterLengthLimit = 120;
 
+const CounterStyle& GetDisc() {
+  const CounterStyle* disc =
+      CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
+          "disc");
+  DCHECK(disc);
+  return *disc;
+}
+
 bool HasSymbols(CounterStyleSystem system) {
   switch (system) {
     case CounterStyleSystem::kCyclic:
@@ -960,6 +968,83 @@ void CounterStyle::TraverseAndMarkDirtyIfNeeded(
       SetIsDirty();
       return;
     }
+  }
+}
+
+CounterStyleSpeakAs CounterStyle::EffectiveSpeakAs() const {
+  switch (speak_as_) {
+    case CounterStyleSpeakAs::kBullets:
+    case CounterStyleSpeakAs::kNumbers:
+    case CounterStyleSpeakAs::kWords:
+      return speak_as_;
+    case CounterStyleSpeakAs::kReference:
+      return GetSpeakAsStyle().EffectiveSpeakAs();
+    case CounterStyleSpeakAs::kAuto:
+      switch (system_) {
+        case CounterStyleSystem::kCyclic:
+          return CounterStyleSpeakAs::kBullets;
+        case CounterStyleSystem::kAlphabetic:
+          // Spec requires 'spell-out', which we don't support. Use 'words'
+          // instead as the best effort, and also to align with Firefox.
+          return CounterStyleSpeakAs::kWords;
+        case CounterStyleSystem::kFixed:
+        case CounterStyleSystem::kSymbolic:
+        case CounterStyleSystem::kNumeric:
+        case CounterStyleSystem::kAdditive:
+        case CounterStyleSystem::kHebrew:
+        case CounterStyleSystem::kLowerArmenian:
+        case CounterStyleSystem::kUpperArmenian:
+        case CounterStyleSystem::kSimpChineseInformal:
+        case CounterStyleSystem::kSimpChineseFormal:
+        case CounterStyleSystem::kTradChineseInformal:
+        case CounterStyleSystem::kTradChineseFormal:
+        case CounterStyleSystem::kKoreanHangulFormal:
+        case CounterStyleSystem::kKoreanHanjaInformal:
+        case CounterStyleSystem::kKoreanHanjaFormal:
+        case CounterStyleSystem::kEthiopicNumeric:
+          return CounterStyleSpeakAs::kNumbers;
+        case CounterStyleSystem::kUnresolvedExtends:
+          NOTREACHED();
+          return CounterStyleSpeakAs::kNumbers;
+      }
+  }
+}
+
+String CounterStyle::GenerateTextAlternative(int value) const {
+  if (!RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled())
+    return GenerateRepresentationWithPrefixAndSuffix(value);
+
+  String text_without_prefix_suffix =
+      GenerateTextAlternativeWithoutPrefixSuffix(value);
+
+  // 'bullets' requires "a UA-defined phrase or audio cue", so we cannot use
+  // custom prefix or suffix. Use the suffix of the predefined symbolic
+  // styles instead.
+  if (EffectiveSpeakAs() == CounterStyleSpeakAs::kBullets)
+    return text_without_prefix_suffix + " ";
+
+  return prefix_ + text_without_prefix_suffix + suffix_;
+}
+
+String CounterStyle::GenerateTextAlternativeWithoutPrefixSuffix(
+    int value) const {
+  if (speak_as_ == CounterStyleSpeakAs::kReference) {
+    return GetSpeakAsStyle().GenerateTextAlternativeWithoutPrefixSuffix(value);
+  }
+
+  switch (EffectiveSpeakAs()) {
+    case CounterStyleSpeakAs::kNumbers:
+      return GetDecimal().GenerateRepresentation(value);
+    case CounterStyleSpeakAs::kBullets:
+      if (IsPredefinedSymbolMarker())
+        return GenerateRepresentation(value);
+      return GetDisc().GenerateRepresentation(value);
+    case CounterStyleSpeakAs::kWords:
+      return GenerateRepresentation(value);
+    case CounterStyleSpeakAs::kAuto:
+    case CounterStyleSpeakAs::kReference:
+      NOTREACHED();
+      return String();
   }
 }
 

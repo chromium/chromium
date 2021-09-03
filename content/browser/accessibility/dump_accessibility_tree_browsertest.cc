@@ -2338,6 +2338,30 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityListMarkers) {
   RunHtmlTest(FILE_PATH_LITERAL("list-markers.html"));
 }
 
+// Explicitly enables 'speak-as' descriptor for CSS @counter-style rule to test
+// accessibility tree with custom counter styles.
+// TODO(xiaochengh): Remove this class after shipping 'speak-as'.
+class DumpAccessibilityTreeWithSpeakAsDescriptorTest
+    : public DumpAccessibilityTreeTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures,
+        "CSSAtRuleCounterStyleSpeakAsDescriptor");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeWithSpeakAsDescriptorTest,
+    ::testing::ValuesIn(DumpAccessibilityTestHelper::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithSpeakAsDescriptorTest,
+                       AccessibilityListMarkerStylesCustom) {
+  RunCSSTest(FILE_PATH_LITERAL("list-marker-styles-custom.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityLongText) {
   RunHtmlTest(FILE_PATH_LITERAL("long-text.html"));
 }

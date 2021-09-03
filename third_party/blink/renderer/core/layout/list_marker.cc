@@ -176,22 +176,34 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
     case ListStyleCategory::kSymbol: {
       const CounterStyle& counter_style =
           GetCounterStyle(marker.GetDocument(), style);
-      if (format == kWithPrefixSuffix)
-        text->Append(counter_style.GetPrefix());
-      text->Append(counter_style.GenerateRepresentation(0));
-      if (format == kWithPrefixSuffix)
-        text->Append(counter_style.GetSuffix());
+      switch (format) {
+        case kWithPrefixSuffix:
+          text->Append(
+              counter_style.GenerateRepresentationWithPrefixAndSuffix(0));
+          break;
+        case kWithoutPrefixSuffix:
+          text->Append(counter_style.GenerateRepresentation(0));
+          break;
+        case kAlternativeText:
+          text->Append(counter_style.GenerateTextAlternative(0));
+      }
       return kSymbolValue;
     }
     case ListStyleCategory::kLanguage: {
       int value = ListItemValue(*list_item);
       const CounterStyle& counter_style =
           GetCounterStyle(marker.GetDocument(), style);
-      if (format == kWithPrefixSuffix)
-        text->Append(counter_style.GetPrefix());
-      text->Append(counter_style.GenerateRepresentation(value));
-      if (format == kWithPrefixSuffix)
-        text->Append(counter_style.GetSuffix());
+      switch (format) {
+        case kWithPrefixSuffix:
+          text->Append(
+              counter_style.GenerateRepresentationWithPrefixAndSuffix(value));
+          break;
+        case kWithoutPrefixSuffix:
+          text->Append(counter_style.GenerateRepresentation(value));
+          break;
+        case kAlternativeText:
+          text->Append(counter_style.GenerateTextAlternative(value));
+      }
       return kOrdinalValue;
     }
   }
@@ -216,11 +228,19 @@ String ListMarker::MarkerTextWithoutSuffix(const LayoutObject& marker) const {
 String ListMarker::TextAlternative(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   DCHECK_NE(marker_text_type_, kUnresolved);
-  if (marker_text_type_ == kNotText || marker_text_type_ == kUnresolved) {
-    // For accessibility, return the marker string in the logical order even in
-    // RTL, reflecting speech order.
+  // For accessibility, return the marker string in the logical order even in
+  // RTL, reflecting speech order.
+  if (marker_text_type_ == kNotText)
     return MarkerTextWithSuffix(marker);
+
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
+    StringBuilder text;
+    MarkerText(marker, &text, kAlternativeText);
+    return text.ToString();
   }
+
+  if (marker_text_type_ == kUnresolved)
+    return MarkerTextWithSuffix(marker);
   return GetTextChild(marker).PlainText();
 }
 

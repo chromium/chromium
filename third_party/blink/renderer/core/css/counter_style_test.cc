@@ -657,4 +657,38 @@ TEST_F(CounterStyleTest, EthiopicNumeric) {
             style.GenerateRepresentation(1000001));
 }
 
+TEST_F(CounterStyleTest, GenerateTextAlternativeSpeakAsDisabled) {
+  ScopedCSSAtRuleCounterStyleSpeakAsDescriptorForTest disabled(false);
+
+  AddCounterStyle("base", R"CSS(
+    system: fixed;
+    symbols: 'One' 'Two' 'Three';
+    suffix: '. ';
+  )CSS");
+
+  const CounterStyle& bullets = AddCounterStyle("bullets", R"CSS(
+    system: extends base;
+    speak-as: bullets;
+  )CSS");
+  EXPECT_EQ("One. ", bullets.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", bullets.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", bullets.GenerateTextAlternative(3));
+
+  const CounterStyle& numbers = AddCounterStyle("numbers", R"CSS(
+    system: extends base;
+    speak-as: numbers;
+  )CSS");
+  EXPECT_EQ("One. ", numbers.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", numbers.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", numbers.GenerateTextAlternative(3));
+
+  const CounterStyle& words = AddCounterStyle("words", R"CSS(
+    system: extends base;
+    speak-as: words;
+  )CSS");
+  EXPECT_EQ("One. ", words.GenerateTextAlternative(1));
+  EXPECT_EQ("Two. ", words.GenerateTextAlternative(2));
+  EXPECT_EQ("Three. ", words.GenerateTextAlternative(3));
+}
+
 }  // namespace blink

@@ -212,6 +212,8 @@ String LayoutListMarker::TextAlternative() const {
     return "";
 
   const CounterStyle& counter_style = GetCounterStyle();
+  if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled())
+    return counter_style.GenerateTextAlternative(ListItem()->Value());
   return counter_style.GetPrefix() + text_ + counter_style.GetSuffix();
 }
 
