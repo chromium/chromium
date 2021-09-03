@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -162,6 +163,10 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
           },
           this)),
       controller_(controller) {
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks. This crashes if fetching a11y node
+  // data during paint because message_view_ is null.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(),
                                                    kMediaControlsCornerRadius));

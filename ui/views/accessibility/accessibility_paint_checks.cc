@@ -13,6 +13,8 @@
 
 namespace views {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipAccessibilityPaintChecks, false)
+
 namespace {
 
 std::string GetViewTreeAsString(View* view) {
@@ -24,6 +26,8 @@ std::string GetViewTreeAsString(View* view) {
 }  // namespace
 
 void RunAccessibilityPaintChecks(View* view) {
+  if (view->GetProperty(kSkipAccessibilityPaintChecks))
+    return;
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
 

@@ -31,6 +31,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -280,6 +281,17 @@ class PropertyWaiter {
   base::RunLoop run_loop_;
   base::RepeatingTimer timer_;
 };
+
+// TODO(pbos): Rewrite this to return unique_ptr.
+views::Textfield* CreateTextfield() {
+  auto textfield = std::make_unique<Textfield>();
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce. Consider
+  // adding bogus placeholder text here.
+  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  return textfield.release();
+}
 
 }  // namespace
 
@@ -911,7 +923,7 @@ TEST_F(DesktopWidgetTestInteractive,
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
   widget->SetBounds(gfx::Rect(0, 0, 200, 200));
 
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   textfield->SetBounds(0, 0, 200, 20);
   textfield->SetText(u"some text");
   widget->GetRootView()->AddChildView(textfield);
@@ -1261,7 +1273,7 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create a top level desktop native widget.
   WidgetAutoclosePtr top_level(CreateTopLevelNativeWidget());
 
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   textfield->SetBounds(0, 0, 200, 20);
   top_level->GetRootView()->AddChildView(textfield);
   ShowSync(top_level.get());
@@ -1275,7 +1287,7 @@ TEST_F(DesktopWidgetTestInteractive,
   Widget* modal_dialog_widget = DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(0, 0, 100, 10));
-  Textfield* dialog_textfield = new Textfield;
+  Textfield* dialog_textfield = CreateTextfield();
   dialog_textfield->SetBounds(0, 0, 50, 5);
   modal_dialog_widget->GetRootView()->AddChildView(dialog_textfield);
   // Dialog widget doesn't need a ShowSync as it gains active status
@@ -1943,7 +1955,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
 // Test input method focus changes affected by top window activaction.
 TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   textfield->RequestFocus();
 
@@ -1961,8 +1973,8 @@ TEST_F(WidgetInputMethodInteractiveTest, MAYBE_Activation) {
 // Test input method focus changes affected by focus changes within 1 window.
 TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield1 = new Textfield;
-  Textfield* textfield2 = new Textfield;
+  Textfield* textfield1 = CreateTextfield();
+  Textfield* textfield2 = CreateTextfield();
   textfield2->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   widget->GetRootView()->AddChildView(textfield1);
   widget->GetRootView()->AddChildView(textfield2);
@@ -2008,8 +2020,8 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
   child->SetBounds(gfx::Rect(0, 0, 50, 50));
   child->Show();
 
-  Textfield* textfield_parent = new Textfield;
-  Textfield* textfield_child = new Textfield;
+  Textfield* textfield_parent = CreateTextfield();
+  Textfield* textfield_child = CreateTextfield();
   textfield_parent->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   parent->GetRootView()->AddChildView(textfield_parent);
   child->GetRootView()->AddChildView(textfield_child);
@@ -2051,7 +2063,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 // Test input method focus changes affected by textfield's state changes.
 TEST_F(WidgetInputMethodInteractiveTest, TextField) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   ShowSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
@@ -2077,7 +2089,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TextField) {
 // Test input method should not work for accelerator.
 TEST_F(WidgetInputMethodInteractiveTest, AcceleratorInTextfield) {
   WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
-  Textfield* textfield = new Textfield;
+  Textfield* textfield = CreateTextfield();
   widget->GetRootView()->AddChildView(textfield);
   ShowSync(widget.get());
   textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);

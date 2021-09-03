@@ -46,6 +46,7 @@
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/transform_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -269,6 +270,10 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
       view_delegate_(view_delegate),
       is_notification_indicator_enabled_(
           features::IsNotificationIndicatorEnabled()) {
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks. This crashes if fetching a11y node
+  // data during paint because message_view_ is null.
+  SetProperty(views::kSkipAccessibilityPaintChecks, true);
   DCHECK(grid_delegate_);
   DCHECK(view_delegate_);
   SetFocusBehavior(FocusBehavior::ALWAYS);
