@@ -39,7 +39,18 @@ std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
 
 }  // namespace
 
-RemoteOpenUrlClient::RemoteOpenUrlClient() : delegate_(CreateDelegate()) {}
+RemoteOpenUrlClient::RemoteOpenUrlClient()
+    : RemoteOpenUrlClient(CreateDelegate(),
+                          GetRemoteOpenUrlIpcChannelName(),
+                          kRequestTimeout) {}
+
+RemoteOpenUrlClient::RemoteOpenUrlClient(
+    std::unique_ptr<Delegate> delegate,
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    base::TimeDelta request_timeout)
+    : delegate_(std::move(delegate)),
+      server_name_(server_name),
+      request_timeout_(request_timeout) {}
 
 RemoteOpenUrlClient::~RemoteOpenUrlClient() {
   DCHECK(!done_);
@@ -79,8 +90,7 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
     return;
   }
 
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(
-      GetRemoteOpenUrlIpcChannelName());
+  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name_);
   if (!endpoint.is_valid()) {
     HOST_LOG << "Can't make IPC connection. URL forwarding is probably "
              << "disabled by the client.";
@@ -97,7 +107,7 @@ void RemoteOpenUrlClient::OpenUrl(const GURL& url, base::OnceClosure done) {
   }
 
   remote_.Bind(std::move(pending_remote));
-  timeout_timer_.Start(FROM_HERE, kRequestTimeout, this,
+  timeout_timer_.Start(FROM_HERE, request_timeout_, this,
                        &RemoteOpenUrlClient::OnRequestTimeout);
   remote_->OpenUrl(url_, base::BindOnce(&RemoteOpenUrlClient::OnOpenUrlResponse,
                                         base::Unretained(this)));

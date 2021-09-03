@@ -4,27 +4,20 @@
 
 #include "remoting/host/mojo_ipc_server.h"
 
-#include <inttypes.h>
-
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/no_destructor.h"
-#include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,6 +25,7 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "remoting/host/mojo_ipc_test_util.h"
 #include "remoting/host/mojom/testing.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,23 +40,6 @@ using testing::Return;
 using EchoStringHandler = base::RepeatingCallback<void(
     const std::string& input,
     test::mojom::Echo::EchoStringCallback callback)>;
-
-const mojo::NamedPlatformChannel::ServerName GenerateRandomServerName() {
-  std::string temp_path;
-#if defined(OS_POSIX)
-  // Posix server names should start with the temp directory path. Otherwise the
-  // socket file will be created under the current working directory.
-  base::FilePath temp_file_path;
-  if (base::GetTempDir(&temp_file_path)) {
-    temp_path = temp_file_path.AsEndingWithSeparator().value();
-  } else {
-    LOG(ERROR) << "Failed to retrieve temporary directory.";
-  }
-#endif
-  return mojo::NamedPlatformChannel::ServerNameFromUTF8(
-      base::StringPrintf("%sremoting_mojo_ipc_server_test.%" PRIu64,
-                         temp_path.c_str(), base::RandUint64()));
-}
 
 void SendEchoAndVerifyResponse(mojo::Remote<test::mojom::Echo>& echo_remote) {
   base::RunLoop echo_response_run_loop;
@@ -112,7 +89,7 @@ class MojoIpcServerTest : public testing::Test, public test::mojom::Echo {
 };
 
 MojoIpcServerTest::MojoIpcServerTest() {
-  test_server_name_ = GenerateRandomServerName();
+  test_server_name_ = test::GenerateRandomServerName();
   ipc_server_ = std::make_unique<MojoIpcServer<test::mojom::Echo>>(
       test_server_name_, this);
   ipc_server_->set_on_invitation_sent_callback_for_testing(base::BindRepeating(

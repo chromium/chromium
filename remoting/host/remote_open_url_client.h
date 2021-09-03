@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 
@@ -49,10 +51,19 @@ class RemoteOpenUrlClient final {
   RemoteOpenUrlClient& operator=(const RemoteOpenUrlClient&) = delete;
 
  private:
+  friend class RemoteOpenUrlClientTest;
+
+  // Ctor for unittests.
+  RemoteOpenUrlClient(std::unique_ptr<Delegate> delegate,
+                      const mojo::NamedPlatformChannel::ServerName& server_name,
+                      base::TimeDelta request_timeout);
+
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
   void OnRequestTimeout();
 
   std::unique_ptr<Delegate> delegate_;
+  mojo::NamedPlatformChannel::ServerName server_name_;
+  base::TimeDelta request_timeout_;
   base::OneShotTimer timeout_timer_;
   GURL url_;
   base::OnceClosure done_;
