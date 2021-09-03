@@ -208,7 +208,7 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
   const std::set<std::string>& words = dictionary->GetWords();
   std::unique_ptr<base::ListValue> output(new base::ListValue());
   for (auto it = words.begin(); it != words.end(); ++it) {
-    output->AppendString(*it);
+    output->Append(*it);
   }
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(output))));

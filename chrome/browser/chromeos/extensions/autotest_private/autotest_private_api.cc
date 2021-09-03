@@ -222,7 +222,7 @@ base::ListValue GetHostPermissions(const Extension* ext, bool effective_perm) {
 
   base::ListValue permissions;
   for (const auto& perm : *pattern_set)
-    permissions.AppendString(perm.GetAsString());
+    permissions.Append(perm.GetAsString());
 
   return permissions;
 }
@@ -233,7 +233,7 @@ base::ListValue GetAPIPermissions(const Extension* ext) {
       ext->permissions_data()->active_permissions().GetAPIsAsStrings();
   for (std::set<std::string>::const_iterator perm = perm_list.begin();
        perm != perm_list.end(); ++perm) {
-    permissions.AppendString(*perm);
+    permissions.Append(*perm);
   }
   return permissions;
 }

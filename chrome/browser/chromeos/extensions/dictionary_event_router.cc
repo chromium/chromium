@@ -73,11 +73,11 @@ void ExtensionDictionaryEventRouter::OnCustomDictionaryChanged(
 
   std::unique_ptr<base::ListValue> added_words(new base::ListValue());
   for (const std::string& word : dictionary_change.to_add())
-    added_words->AppendString(word);
+    added_words->Append(word);
 
   std::unique_ptr<base::ListValue> removed_words(new base::ListValue());
   for (const std::string& word : dictionary_change.to_remove())
-    removed_words->AppendString(word);
+    removed_words->Append(word);
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   args->Append(std::move(added_words));

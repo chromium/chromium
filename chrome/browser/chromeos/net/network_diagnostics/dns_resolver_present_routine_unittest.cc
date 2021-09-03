@@ -113,7 +113,7 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
     // Set up the name servers
     base::ListValue dns_servers;
     for (const std::string& name_server : name_servers) {
-      dns_servers.AppendString(name_server);
+      dns_servers.Append(name_server);
     }
 
     // Set up the IP v4 config

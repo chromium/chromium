@@ -384,7 +384,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     manifest_platform_app.Set(extensions::manifest_keys::kPlatformAppBackground,
                               std::make_unique<base::DictionaryValue>());
     auto scripts = std::make_unique<base::ListValue>();
-    scripts->AppendString("main.js");
+    scripts->Append("main.js");
     manifest_platform_app.Set(
         extensions::manifest_keys::kPlatformAppBackgroundScripts,
         std::move(scripts));

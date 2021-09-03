@@ -241,7 +241,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsSuccess) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
   handler()->HandleGetParents(&list_args);
@@ -266,7 +266,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
   SetupNetwork();
   constexpr char callback_id[] = "handle-get-parents-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
 
   EXPECT_CALL(*handler(), FetchFamilyMembers());
   handler()->HandleGetParents(&list_args);
@@ -285,7 +285,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
 
@@ -318,7 +318,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
 
@@ -344,7 +344,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
 
   constexpr char callback_id[] = "handle-parent-signin-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
   list_args.Append(GetFakeParent());
   list_args.Append(kFakeParentCredential);
 
@@ -410,7 +410,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOffline) {
   SetupNetwork(/*network_status_online=*/false);
   constexpr char callback_id[] = "is-network-ready-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
 
   handler()->HandleIsNetworkReady(&list_args);
 
@@ -426,7 +426,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleIsNetworkReadyOnline) {
   SetupNetwork(/*network_status_online=*/true);
   constexpr char callback_id[] = "is-network-ready-callback";
   base::ListValue list_args;
-  list_args.AppendString(callback_id);
+  list_args.Append(callback_id);
 
   handler()->HandleIsNetworkReady(&list_args);
 

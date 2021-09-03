@@ -142,7 +142,7 @@ void MarkDefaultPinLayoutRolled(Profile* profile,
   DCHECK(!IsDefaultPinLayoutRolled(profile, default_pin_layout));
 
   ListPrefUpdate update(profile->GetPrefs(), GetShelfDefaultPinLayoutPref());
-  update->AppendString(default_pin_layout);
+  update->Append(default_pin_layout);
 }
 
 // Returns true in case default pin layout configuration could be applied

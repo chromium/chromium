@@ -182,13 +182,13 @@ void AppShimRegistry::SetAppInfo(
   if (installed_profiles) {
     auto values = std::make_unique<base::ListValue>();
     for (const auto& profile : *installed_profiles)
-      values->AppendString(profile.BaseName().value());
+      values->Append(profile.BaseName().value());
     app_info->Set(kInstalledProfiles, std::move(values));
   }
   if (last_active_profiles) {
     auto values = std::make_unique<base::ListValue>();
     for (const auto& profile : *last_active_profiles)
-      values->AppendString(profile.BaseName().value());
+      values->Append(profile.BaseName().value());
     app_info->Set(kLastActiveProfiles, std::move(values));
   }
 }

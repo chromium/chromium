@@ -67,7 +67,7 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
   manifest.SetKey(extensions::manifest_keys::kName, base::Value("unused"));
 
   base::ListValue permissions_list;
-  permissions_list.AppendString("fileSystemProvider");
+  permissions_list.Append("fileSystemProvider");
   manifest.SetKey(extensions::manifest_keys::kPermissions,
                   std::move(permissions_list));
 

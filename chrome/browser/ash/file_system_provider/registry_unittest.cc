@@ -78,7 +78,7 @@ void RememberFakeFileSystem(TestingProfile* profile,
   auto persistent_origins_value = std::make_unique<base::ListValue>();
   for (const auto& subscriber_it : watcher.subscribers) {
     if (subscriber_it.second.persistent)
-      persistent_origins_value->AppendString(subscriber_it.first.spec());
+      persistent_origins_value->Append(subscriber_it.first.spec());
   }
 
   watcher_value->SetKey(

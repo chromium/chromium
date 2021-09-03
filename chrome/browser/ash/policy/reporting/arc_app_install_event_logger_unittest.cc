@@ -236,7 +236,7 @@ class AppInstallEventLoggerTest : public testing::Test {
 // that the lists are cleared.
 TEST_F(AppInstallEventLoggerTest, Clear) {
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
   ArcAppInstallEventLogger::Clear(&profile_);

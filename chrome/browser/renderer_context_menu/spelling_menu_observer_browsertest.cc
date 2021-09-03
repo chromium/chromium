@@ -43,7 +43,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
       return;
 
     base::ListValue dictionary;
-    dictionary.AppendString("en-US");
+    dictionary.Append("en-US");
     menu()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                             dictionary);
     // Use SetTestingFactoryAndUse to force creation and initialization of

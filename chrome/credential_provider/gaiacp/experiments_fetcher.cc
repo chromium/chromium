@@ -115,7 +115,7 @@ std::unique_ptr<base::DictionaryValue> GetExperimentsRequestDict(
 
   auto keys = std::make_unique<base::ListValue>();
   for (auto& experiment : ExperimentsManager::Get()->GetExperimentsList())
-    keys->AppendString(experiment);
+    keys->Append(experiment);
 
   dict->Set(kFeaturesKey, std::move(keys));
 

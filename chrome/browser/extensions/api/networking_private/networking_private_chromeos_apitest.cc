@@ -300,7 +300,7 @@ class NetworkingPrivateChromeOSApiTest : public extensions::ExtensionApiTest {
     device_test()->AddDevice(kWifiDevicePath, shill::kTypeWifi,
                              "stub_wifi_device1");
     base::ListValue wifi_ip_configs;
-    wifi_ip_configs.AppendString(kIPConfigPath);
+    wifi_ip_configs.Append(kIPConfigPath);
     SetDeviceProperty(kWifiDevicePath, shill::kIPConfigsProperty,
                       wifi_ip_configs);
     SetDeviceProperty(kWifiDevicePath, shill::kAddressProperty,

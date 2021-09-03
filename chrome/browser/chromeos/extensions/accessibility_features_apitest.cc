@@ -168,12 +168,12 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
 
     base::ListValue enabled_list;
     for (size_t i = 0; i < enabled_features.size(); ++i)
-      enabled_list.AppendString(enabled_features[i]);
+      enabled_list.Append(enabled_features[i]);
     test_arg.SetKey(kEnabledFeaturesKey, std::move(enabled_list));
 
     base::ListValue disabled_list;
     for (size_t i = 0; i < disabled_features.size(); ++i)
-      disabled_list.AppendString(disabled_features[i]);
+      disabled_list.Append(disabled_features[i]);
     test_arg.SetKey(kDisabledFeaturesKey, std::move(disabled_list));
 
     return base::JSONWriter::Write(test_arg, result);

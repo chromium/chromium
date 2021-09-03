@@ -321,7 +321,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
       }
     }
     if (!user_found)
-      users->AppendString(user_id);
+      users->Append(user_id);
 
     // unpacked_extension_root will be deleted by CrxInstaller.
     GetExtensionFileTaskRunner()->PostTask(

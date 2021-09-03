@@ -90,7 +90,7 @@ class EnterprisePrintersProviderTest : public testing::Test {
   void SetPolicyPrinters(const std::vector<std::string>& printer_json_blobs) {
     auto value = std::make_unique<base::ListValue>();
     for (const std::string& blob : printer_json_blobs) {
-      value->AppendString(blob);
+      value->Append(blob);
     }
 
     sync_preferences::TestingPrefServiceSyncable* prefs =

@@ -739,7 +739,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, Clear) {
   log.Store();
 
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
 
@@ -773,7 +773,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, RunClearRun) {
   VerifyLogFile();
 
   base::ListValue list;
-  list.AppendString("test");
+  list.Append("test");
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsRequested, list);
   profile_.GetPrefs()->Set(arc::prefs::kArcPushInstallAppsPending, list);
 

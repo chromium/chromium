@@ -1228,7 +1228,7 @@ void FileManagerPrivateSearchFilesByHashesFunction::OnSearchByHashes(
     DCHECK(result->HasKey(hashAndPath.hash));
     base::ListValue* list;
     result->GetListWithoutPathExpansion(hashAndPath.hash, &list);
-    list->AppendString(hashAndPath.path.value());
+    list->Append(hashAndPath.path.value());
   }
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }

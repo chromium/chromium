@@ -206,8 +206,8 @@ std::unique_ptr<base::ListValue> GetTimezoneList() {
   auto timezone_list = std::make_unique<base::ListValue>();
   for (const auto& timezone : timezones) {
     auto option = std::make_unique<base::ListValue>();
-    option->AppendString(TimezoneSettings::GetTimezoneID(*timezone));
-    option->AppendString(GetTimezoneName(*timezone));
+    option->Append(TimezoneSettings::GetTimezoneID(*timezone));
+    option->Append(GetTimezoneName(*timezone));
     timezone_list->Append(std::move(option));
   }
   return timezone_list;

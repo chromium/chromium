@@ -240,7 +240,7 @@ void EasyUnlockServiceRegular::UseLoadedRemoteDevices(
       base::Base64UrlEncode(
           multidevice::ToCryptAuthSeed(beacon_seed).SerializeAsString(),
           base::Base64UrlEncodePolicy::INCLUDE_PADDING, &b64_beacon_seed);
-      beacon_seed_list->AppendString(b64_beacon_seed);
+      beacon_seed_list->Append(b64_beacon_seed);
     }
 
     std::string serialized_beacon_seeds;

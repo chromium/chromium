@@ -64,7 +64,7 @@ class AppInstallEventLogManagerWrapperTest : public testing::Test {
       : log_file_path_(profile_.GetPath().Append(kLogFileName)) {}
 
   // testing::Test:
-  void SetUp() override { app_list_.AppendString(kPackageName); }
+  void SetUp() override { app_list_.Append(kPackageName); }
 
   void PopulateLogFileAndPrefs() {
     ArcAppInstallEventLog log(log_file_path_);

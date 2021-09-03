@@ -168,7 +168,7 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
 
     auto users_list = std::make_unique<base::ListValue>();
     for (auto* user_id : kTestUserIds)
-      users_list->AppendString(user_id);
+      users_list->Append(user_id);
 
     local_state.SetList("LoggedInUsers", std::move(users_list));
     local_state.SetString("LastActiveUser", kUserId3);

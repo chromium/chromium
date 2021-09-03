@@ -52,8 +52,8 @@ void RestoreOnStartupTest::GetMandatoryPoliciesValue(
   policy->SetInteger(key::kRestoreOnStartup,
                      SessionStartupPref::kPrefValueURLs);
   base::ListValue urls;
-  urls.AppendString(kStartUpURL1);
-  urls.AppendString(kStartUpURL2);
+  urls.Append(kStartUpURL1);
+  urls.Append(kStartUpURL2);
   policy->SetKey(key::kRestoreOnStartupURLs, std::move(urls));
 }
 

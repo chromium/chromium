@@ -299,7 +299,7 @@ class QuickUnlockPrivateUnitTest
   // Wrapper for chrome.quickUnlockPrivate.setLockScreenEnabled.
   void SetLockScreenEnabled(const std::string& token, bool enabled) {
     auto params = std::make_unique<base::ListValue>();
-    params->AppendString(token);
+    params->Append(token);
     params->Append(enabled);
     RunFunction(new QuickUnlockPrivateSetLockScreenEnabledFunction(),
                 std::move(params));
@@ -308,7 +308,7 @@ class QuickUnlockPrivateUnitTest
   // Wrapper for chrome.quickUnlockPrivate.setLockScreenEnabled.
   std::string SetLockScreenEnabledWithInvalidToken(bool enabled) {
     auto params = std::make_unique<base::ListValue>();
-    params->AppendString(kInvalidToken);
+    params->Append(kInvalidToken);
     params->Append(enabled);
     return RunFunctionAndReturnError(
         new QuickUnlockPrivateSetLockScreenEnabledFunction(),
@@ -385,8 +385,8 @@ class QuickUnlockPrivateUnitTest
 
   CredentialCheck CheckCredentialUsingPin(const std::string& pin) {
     auto params = std::make_unique<base::ListValue>();
-    params->AppendString(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
-    params->AppendString(pin);
+    params->Append(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
+    params->Append(pin);
 
     std::unique_ptr<base::Value> result = RunFunction(
         new QuickUnlockPrivateCheckCredentialFunction(), std::move(params));
@@ -399,7 +399,7 @@ class QuickUnlockPrivateUnitTest
   void CheckGetCredentialRequirements(int expected_pin_min_length,
                                       int expected_pin_max_length) {
     auto params = std::make_unique<base::ListValue>();
-    params->AppendString(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
+    params->Append(ToString(QuickUnlockMode::QUICK_UNLOCK_MODE_PIN));
 
     std::unique_ptr<base::Value> result =
         RunFunction(new QuickUnlockPrivateGetCredentialRequirementsFunction(),
@@ -417,16 +417,16 @@ class QuickUnlockPrivateUnitTest
       const QuickUnlockModeList& modes,
       const CredentialList& passwords) {
     auto params = std::make_unique<base::ListValue>();
-    params->AppendString(token);
+    params->Append(token);
 
     auto serialized_modes = std::make_unique<base::ListValue>();
     for (QuickUnlockMode mode : modes)
-      serialized_modes->AppendString(quick_unlock_private::ToString(mode));
+      serialized_modes->Append(quick_unlock_private::ToString(mode));
     params->Append(std::move(serialized_modes));
 
     auto serialized_passwords = std::make_unique<base::ListValue>();
     for (const std::string& password : passwords)
-      serialized_passwords->AppendString(password);
+      serialized_passwords->Append(password);
     params->Append(std::move(serialized_passwords));
 
     return params;

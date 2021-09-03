@@ -765,7 +765,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
         changed = true;
       } else {
         if ((*it)->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
-          prefs_users_update->AppendString(account_id.GetUserEmail());
+          prefs_users_update->Append(account_id.GetUserEmail());
         ++it;
       }
     }
@@ -1014,7 +1014,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
       GetLocalState(), kDeviceLocalAccountsWithSavedData);
   prefs_device_local_accounts_update->ClearList();
   for (const auto& account : device_local_accounts)
-    prefs_device_local_accounts_update->AppendString(account.user_id);
+    prefs_device_local_accounts_update->Append(account.user_id);
 
   // Remove the old device local accounts from the user list.
   for (user_manager::UserList::iterator it = users_.begin();

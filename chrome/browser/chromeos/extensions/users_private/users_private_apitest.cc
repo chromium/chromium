@@ -54,7 +54,7 @@ class TestPrefsUtil : public PrefsUtil {
 
     base::ListValue* value = new base::ListValue();
     for (auto& email : user_list_) {
-      value->AppendString(email);
+      value->Append(email);
     }
     pref_object->value.reset(value);
 

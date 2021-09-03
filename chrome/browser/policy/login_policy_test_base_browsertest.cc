@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, PRE_AllowedLanguages) {
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
   base::ListValue allowed_languages;
-  allowed_languages.AppendString("fr");
+  allowed_languages.Append("fr");
   policy->SetKey(key::kAllowedLanguages, std::move(allowed_languages));
 
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
@@ -116,9 +116,9 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   std::unique_ptr<base::DictionaryValue> policy =
       std::make_unique<base::DictionaryValue>();
   base::ListValue allowed_input_methods;
-  allowed_input_methods.AppendString("xkb:fr::fra");
-  allowed_input_methods.AppendString("xkb:de::ger");
-  allowed_input_methods.AppendString("invalid_value_will_be_ignored");
+  allowed_input_methods.Append("xkb:fr::fra");
+  allowed_input_methods.Append("xkb:de::ger");
+  allowed_input_methods.Append("invalid_value_will_be_ignored");
   policy->SetKey(key::kAllowedInputMethods, std::move(allowed_input_methods));
   user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
                                          profile);
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   std::unique_ptr<base::DictionaryValue> policy_invalid =
       std::make_unique<base::DictionaryValue>();
   base::ListValue invalid_input_methods;
-  invalid_input_methods.AppendString("invalid_value_will_be_ignored");
+  invalid_input_methods.Append("invalid_value_will_be_ignored");
   policy_invalid->SetKey(key::kAllowedInputMethods,
                          std::move(invalid_input_methods));
   user_policy_helper()->SetPolicyAndWait(*policy_invalid,
