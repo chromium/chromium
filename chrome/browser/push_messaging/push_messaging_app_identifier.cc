@@ -159,7 +159,7 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByAppId(
   DCHECK_EQ(app_id.substr(app_id.size() - kGuidLength),
             base::ToUpperASCII(app_id.substr(app_id.size() - kGuidLength)));
 
-  const base::DictionaryValue* map =
+  const base::Value* map =
       profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
 
   const std::string* map_value = map->FindStringKey(app_id);
@@ -193,14 +193,14 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::FindByServiceWorker(
   const std::string base_pref_value =
       MakePrefValue(origin, service_worker_registration_id);
 
-  const base::DictionaryValue* map =
+  const base::Value* map =
       profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
-  for (auto it = base::DictionaryValue::Iterator(*map); !it.IsAtEnd();
-       it.Advance()) {
-    if (it.value().is_string() &&
-        base::StartsWith(it.value().GetString(), base_pref_value,
-                         base::CompareCase::SENSITIVE))
-      return FindByAppId(profile, it.key());
+  for (auto entry : map->DictItems()) {
+    if (entry.second.is_string() &&
+        base::StartsWith(entry.second.GetString(), base_pref_value,
+                         base::CompareCase::SENSITIVE)) {
+      return FindByAppId(profile, entry.first);
+    }
   }
   return PushMessagingAppIdentifier();
 }
@@ -210,11 +210,10 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
     Profile* profile) {
   std::vector<PushMessagingAppIdentifier> result;
 
-  const base::DictionaryValue* map =
+  const base::Value* map =
       profile->GetPrefs()->GetDictionary(prefs::kPushMessagingAppIdentifierMap);
-  for (auto it = base::DictionaryValue::Iterator(*map); !it.IsAtEnd();
-       it.Advance()) {
-    result.push_back(FindByAppId(profile, it.key()));
+  for (auto entry : map->DictItems()) {
+    result.push_back(FindByAppId(profile, entry.first));
   }
 
   return result;
@@ -224,8 +223,8 @@ std::vector<PushMessagingAppIdentifier> PushMessagingAppIdentifier::GetAll(
 void PushMessagingAppIdentifier::DeleteAllFromPrefs(Profile* profile) {
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
-  base::DictionaryValue* map = update.Get();
-  map->Clear();
+  base::Value* map = update.Get();
+  map->DictClear();
 }
 
 // static
@@ -262,7 +261,7 @@ void PushMessagingAppIdentifier::PersistToPrefs(Profile* profile) const {
 
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
-  base::DictionaryValue* map = update.Get();
+  base::Value* map = update.Get();
 
   // Delete any stale entry with the same origin and Service Worker
   // registration id (hence we ensure there is a 1:1 not 1:many mapping).
@@ -281,7 +280,7 @@ void PushMessagingAppIdentifier::DeleteFromPrefs(Profile* profile) const {
 
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingAppIdentifierMap);
-  base::DictionaryValue* map = update.Get();
+  base::Value* map = update.Get();
   map->RemoveKey(app_id_);
 }
 
