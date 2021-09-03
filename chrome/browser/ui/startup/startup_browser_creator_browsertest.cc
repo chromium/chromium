@@ -106,6 +106,7 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
@@ -154,10 +155,6 @@ using testing::Return;
 
 #if defined(OS_MAC)
 #include "chrome/browser/chrome_browser_application_mac.h"
-#endif
-
-#if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #endif
 
 using extensions::Extension;
@@ -3214,11 +3211,17 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
 };
 
 struct ProfilePickerSetup {
+  enum class ShutdownType {
+    kNormal,  // Normal shutdown (e.g. by closing the browser window).
+    kExit,    // Exit through the application menu.
+    kRestart  // Restart (e.g. after an update).
+  };
+
   bool expected_to_show;
   absl::optional<std::string> switch_name;
   absl::optional<std::string> switch_value_ascii;
   absl::optional<GURL> url_arg;
-  bool session_restore = false;
+  ShutdownType shutdown_type = ShutdownType::kNormal;
 };
 
 // Checks the correct behavior of the profile picker on startup. This feature is
@@ -3227,7 +3230,9 @@ class StartupBrowserCreatorPickerTest
     : public StartupBrowserCreatorPickerTestBase,
       public ::testing::WithParamInterface<ProfilePickerSetup> {
  public:
-  StartupBrowserCreatorPickerTest() = default;
+  StartupBrowserCreatorPickerTest()
+      : relaunch_chrome_override_(base::BindRepeating(
+            [](const base::CommandLine&) { return true; })) {}
   StartupBrowserCreatorPickerTest(const StartupBrowserCreatorPickerTest&) =
       delete;
   StartupBrowserCreatorPickerTest& operator=(
@@ -3245,16 +3250,35 @@ class StartupBrowserCreatorPickerTest
       command_line->AppendSwitch(*GetParam().switch_name);
     }
   }
+
+ private:
+  // Prevent the browser from automatically relaunching in the PRE_ test. The
+  // browser will be relaunched by the main test.
+  upgrade_util::ScopedRelaunchChromeBrowserOverride relaunch_chrome_override_;
 };
 
 // Create a secondary profile in a separate PRE run because the existence of
 // profiles is checked during startup in the actual test.
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, PRE_TestSetup) {
   CreateMultipleProfiles();
-  // Need to close the browser window manually so that the real test does not
-  // treat it as session restore.
-  if (!GetParam().session_restore)
-    CloseAllBrowsers();
+
+  switch (GetParam().shutdown_type) {
+    case ProfilePickerSetup::ShutdownType::kNormal:
+      // Need to close the browser window manually so that the real test does
+      // not treat it as session restore.
+      CloseAllBrowsers();
+      break;
+    case ProfilePickerSetup::ShutdownType::kExit:
+      chrome::AttemptExit();
+      break;
+    case ProfilePickerSetup::ShutdownType::kRestart:
+      chrome::AttemptRestart();
+      break;
+  }
+
+  ASSERT_EQ(
+      g_browser_process->local_state()->GetBoolean(prefs::kWasRestarted),
+      GetParam().shutdown_type == ProfilePickerSetup::ShutdownType::kRestart);
 }
 
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, TestSetup) {
@@ -3298,12 +3322,23 @@ INSTANTIATE_TEST_SUITE_P(
                            /*switch_value_ascii=*/absl::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
         // Regression test for http://crbug.com/1166192
-        // Picker should be shown even in case of session restore.
-        ProfilePickerSetup{/*expected_to_show=*/true,
-                           /*switch_name=*/absl::nullopt,
-                           /*switch_value_ascii=*/absl::nullopt,
-                           /*url_arg=*/absl::nullopt,
-                           /*session_restore=*/true}));
+        // Picker should be shown after exit.
+        ProfilePickerSetup{
+            /*expected_to_show=*/true,
+            /*switch_name=*/absl::nullopt,
+            /*switch_value_ascii=*/absl::nullopt,
+            /*url_arg=*/absl::nullopt,
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kExit},
+        // Regression test for http://crbug.com/1245374
+        // Picker should not be shown after restart.
+        ProfilePickerSetup{
+            /*expected_to_show=*/false,
+            /*switch_name=*/absl::nullopt,
+            /*switch_value_ascii=*/absl::nullopt,
+            /*url_arg=*/absl::nullopt,
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart}
+
+        ));
 
 class GuestStartupBrowserCreatorPickerTest
     : public StartupBrowserCreatorPickerTestBase {

@@ -301,6 +301,12 @@ bool ShouldShowProfilePickerAtProcessLaunch(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return false;
 #else
+
+  // Skip the profile picker when Chrome is restarted (e.g. after an update) so
+  // that the session can be restored.
+  if (StartupBrowserCreator::WasRestarted())
+    return false;
+
   // Don't show the picker if a certain profile (or an incognito window in the
   // default profile) is explicitly requested.
   if (profiles::IsGuestModeRequested(command_line,
