@@ -90,6 +90,9 @@
     <cr-icon-button id="editHostnameButton"
         class="icon-edit"
         on-click="onEditHostnameTap_"
+        aria-label="[[i18n('aboutDeviceNameEditBtnA11yLabel')]]"
+        aria-description=
+            "[[getDeviceNameEditButtonA11yDescription_(deviceNameMetadata_)]]"
         disabled="[[!canEditDeviceName_(deviceNameMetadata_)]]"
         deep-link-focus-id$="[[Setting.kChangeDeviceName]]">
     </cr-icon-button>

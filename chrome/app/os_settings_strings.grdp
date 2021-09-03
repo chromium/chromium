@@ -186,6 +186,12 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL" desc="The a11y label for the done button in the edit device name dialog">
     Name device to <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL" desc="The a11y label for the edit button for device name on the detailed build into page">
+    Change device name
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION" desc="The a11y description for the edit button for device name on the detailed build into page">
+    Current device name is <ph name="DEVICE_NAME">$1<ex>MyChromebook</ex></ph>
+  </message>
   <message name="IDS_SETTINGS_UPGRADE_TRY_AGAIN" desc="Status label: Update check error (ChromiumOS/ChromeOS)">
     Couldn't update your Chromebook. Please try again later.
   </message>

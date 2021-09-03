@@ -193,6 +193,19 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getDeviceNameEditButtonA11yDescription_() {
+    if (!this.deviceNameMetadata_) {
+      return '';
+    }
+
+    return this.i18n(
+        'aboutDeviceNameEditBtnA11yDescription', this.getDeviceNameText_());
+  },
+
+  /**
    * @return {boolean}
    * @private
    */
@@ -330,6 +343,5 @@ Polymer({
   onEditHostnameDialogClosed_() {
     this.showEditHostnameDialog_ = false;
     focusWithoutInk(assert(this.$$('cr-button')));
-    // TODO(jhawkins): Verify hostname property updated at this point.
   },
 });
