@@ -540,11 +540,10 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 }
 
 // Tests that creating a route with a local file opens in fullscreen.
-// TODO(https://crbug.com/903016) Could be flaky in entering fullscreen.
-// This test passed locally when running with native test provider, so it
-// is updated to MANUAL and is allowed to run on private waterfall.
+// TODO(https://crbug.com/903016) Disabled for being flaky in entering
+// fullscreen.
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
-                       MANUAL_OpenLocalMediaFileFullscreen) {
+                       DISABLED_OpenLocalMediaFileFullscreen) {
   // Start at a new tab, the file should open in the same tab.
   ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   // Make sure there is 1 tab.
@@ -561,9 +560,6 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
   // Wait for capture poll timer to pick up change.
   Wait(base::TimeDelta::FromSeconds(3));
-
-  // Enter full screen
-  ExecuteScript(web_contents, "document.body.requestFullscreen();");
 
   // Expect that fullscreen was entered.
   ASSERT_TRUE(
