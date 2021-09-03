@@ -5,6 +5,8 @@
 #ifndef ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_TEST_API_H_
 #define ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_TEST_API_H_
 
+#include <string>
+
 #include "ash/app_list/views/apps_grid_view.h"
 #include "base/macros.h"
 
@@ -46,6 +48,9 @@ class AppsGridViewTestApi {
   AppListItemView* GetViewAtIndex(GridIndex index) const;
 
   AppListItemView* GetViewAtVisualIndex(int page, int slot) const;
+
+  // Returns the name of the item specified by the grid location.
+  const std::string& GetNameAtVisualIndex(int page, int slot) const;
 
   // Returns tile bounds for item in the provided grid `slot` and `page`.
   // Item slot indicates the index of the item in the apps grid.

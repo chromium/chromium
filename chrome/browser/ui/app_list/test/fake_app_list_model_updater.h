@@ -61,6 +61,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   void GetContextMenuModel(const std::string& id,
                            GetMenuModelCallback callback) override;
   size_t BadgedItemCount() override;
+  void OnSortRequested(ash::AppListSortOrder order) override {}
   // For SearchModel:
   bool SearchEngineIsGoogle() override;
   const std::vector<ChromeSearchResult*>& search_results() const {

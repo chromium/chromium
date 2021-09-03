@@ -57,6 +57,8 @@ class TestAppListClient : public AppListClient {
   void OnPageBreakItemDeleted(int profile_id, const std::string& id) override {}
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override {}
+  void OnAppListSortRequested(int profile_id, AppListSortOrder order) override {
+  }
   void OnQuickSettingsChanged(
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}

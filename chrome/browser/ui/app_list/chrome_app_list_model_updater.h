@@ -110,6 +110,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void OnItemUpdated(std::unique_ptr<ash::AppListItemMetadata> item) override;
   void OnFolderDeleted(std::unique_ptr<ash::AppListItemMetadata> item) override;
   void OnPageBreakItemDeleted(const std::string& id) override;
+  void OnSortRequested(ash::AppListSortOrder order) override;
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;

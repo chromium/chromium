@@ -79,6 +79,20 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
                          // should be reloaded.
 };
 
+// All possible orders to sort app list items.
+enum class AppListSortOrder {
+  // The sort order is not set.
+  kEmpty = 0,
+
+  // Items are sorted by the name alphabetical order. Note that folders are
+  // always placed in front of other types of items.
+  kNameAlphabetical,
+
+  // Items are sorted by the name reverse alphabetical order. Note that folders
+  // are always placed in front of other types of items.
+  kNameReverseAlphabetical
+};
+
 // All possible states of the app list.
 // Note: Do not change the order of these as they are used for metrics.
 enum class AppListState {

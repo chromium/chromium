@@ -32,6 +32,10 @@ class AppServiceAppModelBuilder;
 class ChromeAppListItem;
 class Profile;
 
+namespace ash {
+enum class AppListSortOrder;
+}
+
 namespace extensions {
 class ExtensionRegistry;
 class ExtensionSystem;
@@ -46,6 +50,7 @@ class PrefRegistrySyncable;
 }
 
 namespace app_list {
+class AppListReorderDelegate;
 
 // Keyed Service that owns, stores, and syncs an AppListModel for a profile.
 class AppListSyncableService : public syncer::SyncableService,
@@ -54,6 +59,8 @@ class AppListSyncableService : public syncer::SyncableService,
   struct SyncItem {
     SyncItem(const std::string& id,
              sync_pb::AppListSpecifics::AppListItemType type);
+    SyncItem(const SyncItem&) = delete;
+    SyncItem& operator=(const SyncItem&) = delete;
     ~SyncItem();
     const std::string item_id;
     sync_pb::AppListSpecifics::AppListItemType item_type;
@@ -125,6 +132,9 @@ class AppListSyncableService : public syncer::SyncableService,
   // Removes sync item matching |id| after item uninstall.
   void RemoveUninstalledItem(const std::string& id);
 
+  // Sorts items following the given order.
+  void SortSyncItems(ash::AppListSortOrder order);
+
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);
 
@@ -180,6 +190,8 @@ class AppListSyncableService : public syncer::SyncableService,
   }
 
   void InstallDefaultPageBreaksForTest();
+
+  void PopulateSyncItemsForTest(std::vector<std::unique_ptr<SyncItem>>&& items);
 
   const SyncItemMap& sync_items() const { return sync_items_; }
 
@@ -359,6 +371,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // Only set for first time user for tablet form devices.
   base::OnceClosure install_default_page_breaks_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
+
+  std::unique_ptr<AppListReorderDelegate> reorder_delegate_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

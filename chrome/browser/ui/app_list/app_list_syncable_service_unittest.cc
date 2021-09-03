@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/bind.h"
@@ -1409,4 +1410,347 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   EXPECT_TRUE(AreAllAppAtributesEqualInAppList(webstore_item, youtube_item));
   EXPECT_TRUE(
       AreAllAppAtributesEqualInSync(webstore_sync_item, youtube_sync_item));
+}
+
+class AppListSortUnitTest : public AppListSyncableServiceTest {
+ public:
+  AppListSortUnitTest() {
+    feature_list_.InitWithFeatures({ash::features::kLauncherAppSort,
+                                    ash::features::kLauncherRemoveEmptySpace},
+                                   {});
+  }
+  AppListSortUnitTest(const AppListSortUnitTest&) = delete;
+  AppListSortUnitTest& operator=(const AppListSortUnitTest&) = delete;
+  ~AppListSortUnitTest() override = default;
+
+  std::vector<std::string> GetItemIdInOrdinalOrder() {
+    std::vector<std::string> ids;
+    app_list::AppListSyncableService* service = app_list_syncable_service();
+    const auto& sync_items = service->sync_items();
+    for (const auto& id_item_mapping : sync_items) {
+      ids.push_back(id_item_mapping.first);
+    }
+
+    std::sort(ids.begin(), ids.end(),
+              [service](const std::string& id1, const std::string& id2) {
+                return service->GetSyncItem(id1)->item_ordinal.LessThan(
+                    service->GetSyncItem(id2)->item_ordinal);
+              });
+
+    return ids;
+  }
+
+  std::vector<std::string> GetItemNamesInOrdinalOrder() {
+    const std::vector<std::string> ids = GetItemIdInOrdinalOrder();
+    std::vector<std::string> names;
+    for (const auto& id : ids) {
+      names.push_back(app_list_syncable_service()->GetSyncItem(id)->item_name);
+    }
+    return names;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_lists_;
+};
+
+// Verifies that sorting works for the mixture of valid and invalid positions.
+TEST_F(AppListSortUnitTest, SortMixedPositionValidityItems) {
+  RemoveAllExistingItems();
+
+  using SyncItem = app_list::AppListSyncableService::SyncItem;
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  auto item1 =
+      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  item1->item_name = "a";
+  item1->item_ordinal = syncer::StringOrdinal(GetLastPositionString());
+
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  auto item2 =
+      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  item2->item_name = "b";
+
+  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  auto item3 =
+      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  item3->item_name = "c";
+
+  std::vector<std::unique_ptr<SyncItem>> sync_items;
+  sync_items.push_back(std::move(item1));
+  sync_items.push_back(std::move(item2));
+  sync_items.push_back(std::move(item3));
+
+  // Populate items and verify their validity. Only `item1` has the valid
+  // position.
+  app_list_syncable_service()->PopulateSyncItemsForTest(std::move(sync_items));
+  EXPECT_TRUE(app_list_syncable_service()
+                  ->GetSyncItem(kItemId1)
+                  ->item_ordinal.IsValid());
+  EXPECT_FALSE(app_list_syncable_service()
+                   ->GetSyncItem(kItemId2)
+                   ->item_ordinal.IsValid());
+  EXPECT_FALSE(app_list_syncable_service()
+                   ->GetSyncItem(kItemId3)
+                   ->item_ordinal.IsValid());
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
+}
+
+// Verifies that sorting works if all item positions are invalid.
+TEST_F(AppListSortUnitTest, SortInvalidPositionItems) {
+  RemoveAllExistingItems();
+
+  using SyncItem = app_list::AppListSyncableService::SyncItem;
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  auto item1 =
+      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  item1->item_name = "a";
+
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  auto item2 =
+      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  item2->item_name = "b";
+
+  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  auto item3 =
+      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  item3->item_name = "c";
+
+  std::vector<std::unique_ptr<SyncItem>> sync_items;
+  sync_items.push_back(std::move(item1));
+  sync_items.push_back(std::move(item2));
+  sync_items.push_back(std::move(item3));
+
+  // Verify the validity of sync item positions.
+  app_list_syncable_service()->PopulateSyncItemsForTest(std::move(sync_items));
+  EXPECT_FALSE(app_list_syncable_service()
+                   ->GetSyncItem(kItemId1)
+                   ->item_ordinal.IsValid());
+  EXPECT_FALSE(app_list_syncable_service()
+                   ->GetSyncItem(kItemId2)
+                   ->item_ordinal.IsValid());
+  EXPECT_FALSE(app_list_syncable_service()
+                   ->GetSyncItem(kItemId3)
+                   ->item_ordinal.IsValid());
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
+}
+
+// Verifies that sorting with alphateical order works as expected for both
+// folder items and app items.
+TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderForFolderItems) {
+  RemoveAllExistingItems();
+  syncer::SyncDataList sync_list;
+
+  // Add two apps.
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId1, "a", "", GetLastPositionString(), kUnset));
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId2, "b", "", GetLastPositionString(), kUnset));
+
+  // Add one folder containing two apps.
+  const std::string kFolderId1 = GenerateId("FolderId1");
+  const std::string kChildItemId1_1 = CreateNextAppId(kItemId2);
+  const std::string kChildItemId1_2 = CreateNextAppId(kChildItemId1_1);
+  sync_list.push_back(CreateAppRemoteData(
+      kFolderId1, "Folder1", "", GetLastPositionString(), kUnset,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId1_1, "folder1_child1",
+                                          kFolderId1, GetLastPositionString(),
+                                          kUnset));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId1_2, "folder1_child2",
+                                          kFolderId1, GetLastPositionString(),
+                                          kUnset));
+
+  // Add one folder containing three apps.
+  const std::string kFolderId2 = GenerateId("FolderId2");
+  const std::string kChildItemId2_1 = CreateNextAppId(kChildItemId1_2);
+  const std::string kChildItemId2_2 = CreateNextAppId(kChildItemId2_1);
+  const std::string kChildItemId2_3 = CreateNextAppId(kChildItemId2_2);
+  sync_list.push_back(CreateAppRemoteData(
+      kFolderId2, "Folder2", "", GetLastPositionString(), kUnset,
+      sync_pb::AppListSpecifics_AppListItemType_TYPE_FOLDER));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId2_1, "folder2_child1",
+                                          kFolderId2, GetLastPositionString(),
+                                          kUnset));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId2_2, "folder2_child2",
+                                          kFolderId2, GetLastPositionString(),
+                                          kUnset));
+  sync_list.push_back(CreateAppRemoteData(kChildItemId2_3, "folder2_child3",
+                                          kFolderId2, GetLastPositionString(),
+                                          kUnset));
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Check the default status before sorting.
+  EXPECT_EQ(
+      GetItemIdInOrdinalOrder(),
+      std::vector<std::string>({kItemId1, kItemId2, kFolderId1, kChildItemId1_1,
+                                kChildItemId1_2, kFolderId2, kChildItemId2_1,
+                                kChildItemId2_2, kChildItemId2_3}));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+
+  // Folders should be in front of apps.
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>({kFolderId2, kFolderId1, kChildItemId2_3,
+                                      kChildItemId2_2, kChildItemId2_1,
+                                      kChildItemId1_2, kChildItemId1_1,
+                                      kItemId2, kItemId1}));
+}
+
+// Verifies that sorting app items with the alphabetical order should work as
+// expected. Meanwhile, sorting should incur the minimum orinal changes.
+TEST_F(AppListSortUnitTest, VerifyAlphabeticalOrderSort) {
+  RemoveAllExistingItems();
+  syncer::SyncDataList sync_list;
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId1, "A", "", GetLastPositionString(), kUnset));
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId2, "B", "", GetLastPositionString(), kUnset));
+  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId3, "C", "", GetLastPositionString(), kUnset));
+  const std::string kItemId4 = CreateNextAppId(kItemId3);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId4, "D", "", GetLastPositionString(), kUnset));
+  const std::string kItemId5 = CreateNextAppId(kItemId4);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId5, "E", "", GetLastPositionString(), kUnset));
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  // Record the mappings between ids and default ordinals.
+  std::unordered_map<std::string, syncer::StringOrdinal> id_ordinal_mappings;
+  for (const auto& id_item_pair : app_list_syncable_service()->sync_items()) {
+    id_ordinal_mappings[id_item_pair.first] = id_item_pair.second->item_ordinal;
+  }
+
+  // Sorting in alphabetical order should not change any ordinal. Because apps
+  // are already in order.
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>(
+                {kItemId1, kItemId2, kItemId3, kItemId4, kItemId5}));
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  for (const auto& id_item_pair : app_list_syncable_service()->sync_items()) {
+    EXPECT_EQ(id_ordinal_mappings[id_item_pair.first],
+              id_item_pair.second->item_ordinal);
+  }
+
+  // Sort in reverse alphabetical order. Verify the app order after sorting.
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>(
+                {kItemId5, kItemId4, kItemId3, kItemId2, kItemId1}));
+
+  const auto* sync_item = app_list_syncable_service()->GetSyncItem(kItemId4);
+  syncer::SyncChangeList change_list{syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateAppRemoteData(kItemId4, sync_item->item_name, sync_item->parent_id,
+                          app_list_syncable_service()
+                              ->GetSyncItem(kItemId1)
+                              ->item_ordinal.CreateAfter()
+                              .ToDebugString(),
+                          sync_item->item_pin_ordinal.ToDebugString()))};
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
+  content::RunAllTasksUntilIdle();
+
+  // Move Item 4 to the end. Record the mappings between ids and ordinals.
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>(
+                {kItemId5, kItemId3, kItemId2, kItemId1, kItemId4}));
+  id_ordinal_mappings.clear();
+  for (const auto& id_item_pair : app_list_syncable_service()->sync_items()) {
+    id_ordinal_mappings[id_item_pair.first] = id_item_pair.second->item_ordinal;
+  }
+
+  // Sort and then verify the app order.
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetItemIdInOrdinalOrder(),
+            std::vector<std::string>(
+                {kItemId5, kItemId4, kItemId3, kItemId2, kItemId1}));
+
+  // Verify that only Item 4's ordinal changes.
+  for (const auto& id_item_pair : app_list_syncable_service()->sync_items()) {
+    if (id_item_pair.first == kItemId4) {
+      EXPECT_NE(id_ordinal_mappings[id_item_pair.first],
+                id_item_pair.second->item_ordinal);
+    } else {
+      EXPECT_EQ(id_ordinal_mappings[id_item_pair.first],
+                id_item_pair.second->item_ordinal);
+    }
+  }
+}
+
+// Verifies that sorting app items with the alphabetical order should work for
+// the apps with the duplicate names.
+TEST_F(AppListSortUnitTest, VerifyAlphabeticalSortWithDuplicateNames) {
+  RemoveAllExistingItems();
+  syncer::SyncDataList sync_list;
+  const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId1, "B", "", GetLastPositionString(), kUnset));
+  const std::string kItemId2 = CreateNextAppId(kItemId1);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId2, "A", "", GetLastPositionString(), kUnset));
+  const std::string kItemId3 = CreateNextAppId(kItemId2);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId3, "C", "", GetLastPositionString(), kUnset));
+  const std::string kItemId4 = CreateNextAppId(kItemId3);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId4, "D", "", GetLastPositionString(), kUnset));
+  const std::string kItemId5 = CreateNextAppId(kItemId4);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId5, "C", "", GetLastPositionString(), kUnset));
+  const std::string kItemId6 = CreateNextAppId(kItemId5);
+  sync_list.push_back(
+      CreateAppRemoteData(kItemId6, "A", "", GetLastPositionString(), kUnset));
+
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, sync_list,
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameAlphabetical);
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"A", "A", "B", "C", "C", "D"}));
+
+  app_list_syncable_service()->SortSyncItems(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetItemNamesInOrdinalOrder(),
+            std::vector<std::string>({"D", "C", "C", "B", "A", "A"}));
 }

@@ -600,6 +600,11 @@ void ChromeAppListModelUpdater::OnPageBreakItemDeleted(const std::string& id) {
   items_.erase(id);
 }
 
+void ChromeAppListModelUpdater::OnSortRequested(ash::AppListSortOrder order) {
+  for (AppListModelUpdaterObserver& observer : observers_)
+    observer.OnAppListSortRequested(order);
+}
+
 std::vector<ChromeAppListItem*> ChromeAppListModelUpdater::GetTopLevelItems()
     const {
   std::vector<ChromeAppListItem*> top_level_items;

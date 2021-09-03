@@ -138,6 +138,7 @@ class AppListModelUpdater {
   virtual void OnFolderDeleted(
       std::unique_ptr<ash::AppListItemMetadata> item) = 0;
   virtual void OnPageBreakItemDeleted(const std::string& id) = 0;
+  virtual void OnSortRequested(ash::AppListSortOrder order) = 0;
 
   virtual void AddObserver(AppListModelUpdaterObserver* observer) = 0;
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;

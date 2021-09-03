@@ -9,6 +9,11 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+
+namespace views {
+class View;
+}
 
 namespace ash {
 class PaginationModel;
@@ -54,6 +59,9 @@ class ASH_EXPORT AppListTestApi {
 
   // Updates the paged view structure.
   void UpdatePagedViewStructure();
+
+  // Returns the view able to trigger app list sort with `order`.
+  views::View* GetViewForAppListSort(AppListSortOrder order);
 };
 
 }  // namespace ash

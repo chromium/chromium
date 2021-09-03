@@ -8,4 +8,8 @@ specific_include_rules = {
     "+ash/app_list/model/app_list_item.h",
     "+ash/shell.h",
   ],
+
+  "app_list_sort_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
 }

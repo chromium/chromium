@@ -1513,6 +1513,11 @@ void AppListControllerImpl::GetContextMenuModel(
     client_->GetContextMenuModel(profile_id_, id, std::move(callback));
 }
 
+void AppListControllerImpl::SortAppList(AppListSortOrder order) {
+  if (client_)
+    client_->OnAppListSortRequested(profile_id_, order);
+}
+
 ui::ImplicitAnimationObserver* AppListControllerImpl::GetAnimationObserver(
     AppListViewState target_state) {
   // |presenter_| observes the close animation only.

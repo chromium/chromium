@@ -137,6 +137,10 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Invoked to load an icon of the app identified by `app_id`.
   virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
 
+  // Invoked when app list sort is requested.
+  virtual void OnAppListSortRequested(int profile_id,
+                                      AppListSortOrder order) = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

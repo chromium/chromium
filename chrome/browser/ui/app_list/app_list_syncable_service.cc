@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -36,6 +37,8 @@
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/page_break_app_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_delegate.h"
+#include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -305,6 +308,13 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
+  void OnAppListSortRequested(ash::AppListSortOrder order) override {
+    if (!active_)
+      return;
+    VLOG(2) << owner_ << " OnAppListSortRequested";
+    owner_->SortSyncItems(order);
+  }
+
   AppListSyncableService* const owner_;
   std::string adding_item_id_;
 
@@ -338,6 +348,9 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
     : profile_(profile),
       extension_system_(extensions::ExtensionSystem::Get(profile)),
       extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
+  if (ash::features::IsLauncherAppSortEnabled())
+    reorder_delegate_ = std::make_unique<AppListReorderDelegate>(this);
+
   if (g_model_updater_factory_callback_for_test_)
     model_updater_ = g_model_updater_factory_callback_for_test_->Run();
   else
@@ -829,6 +842,46 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
   PruneRedundantPageBreakItems();
 }
 
+void AppListSyncableService::SortSyncItems(ash::AppListSortOrder order) {
+  // Too few sync items. Return early.
+  if (sync_items_.size() < 2)
+    return;
+
+  const auto reorder_params = reorder_delegate_->GenerateReorderParams(order);
+  for (const auto& reorder_param : reorder_params) {
+    sync_pb::AppListSpecifics specifics;
+    const SyncItem* sync_item = GetSyncItem(reorder_param.sync_item_id);
+    const syncer::StringOrdinal& old_ordinal = sync_item->item_ordinal;
+    const syncer::StringOrdinal& new_ordinal = reorder_param.ordinal;
+
+    // If the old ordinal is valid, the new ordinal should be different.
+    DCHECK(!old_ordinal.IsValid() || !old_ordinal.Equals(new_ordinal));
+
+    // The new ordinal should be valid.
+    DCHECK(new_ordinal.IsValid());
+
+    GetSyncSpecificsFromSyncItem(sync_item, &specifics);
+    specifics.set_item_ordinal(new_ordinal.ToInternalValue());
+    ProcessSyncItemSpecifics(specifics);
+    SendSyncChange(FindSyncItem(reorder_param.sync_item_id),
+                   SyncChange::ACTION_UPDATE);
+  }
+
+  // Delete all the page breakers so that empty spaces are removed on the
+  // devices with the old OS version.
+  // TODO(https://crbug.com/1242649): add page breaks to avoid page overflow on
+  // devices that expect at most 20 items per page.
+  std::vector<std::string> page_breaker_ids;
+  for (const auto& id_item_pair : sync_items_) {
+    if (id_item_pair.second->item_type ==
+        sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
+      page_breaker_ids.push_back(id_item_pair.first);
+    }
+  }
+  for (const auto& page_break_id : page_breaker_ids)
+    DeleteSyncItem(page_break_id);
+}
+
 void AppListSyncableService::RemoveItem(const std::string& id) {
   RemoveSyncItem(id);
   model_updater_->RemoveItem(id);
@@ -933,10 +986,19 @@ void AppListSyncableService::PruneEmptySyncFolders() {
   }
 }
 
-// AppListSyncableService syncer::SyncableService
-
 void AppListSyncableService::InstallDefaultPageBreaksForTest() {
   InstallDefaultPageBreaks();
+}
+
+void AppListSyncableService::PopulateSyncItemsForTest(
+    std::vector<std::unique_ptr<SyncItem>>&& items) {
+  for (auto& sync_item : items) {
+    const bool success =
+        sync_items_
+            .emplace(std::make_pair(sync_item->item_id, std::move(sync_item)))
+            .second;
+    DCHECK(success);
+  }
 }
 
 void AppListSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {

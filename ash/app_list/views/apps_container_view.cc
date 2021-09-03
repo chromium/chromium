@@ -89,8 +89,12 @@ class SortButton : public views::ImageButton {
  public:
   METADATA_HEADER(SortButton);
 
-  explicit SortButton(bool is_alphabetical)
-      : is_alphabetical_(is_alphabetical) {
+  SortButton(bool is_alphabetical, AppListViewDelegate* delegate)
+      : views::ImageButton(
+            base::BindRepeating(&SortButton::LauncherSortTriggered,
+                                base::Unretained(this))),
+        is_alphabetical_(is_alphabetical),
+        delegate_(delegate) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -110,7 +114,7 @@ class SortButton : public views::ImageButton {
     views::View::OnThemeChanged();
     AshColorProvider::Get()->DecorateIconButton(
         /*button=*/this,
-        is_alphabetical_ ? kOverflowShelfRightIcon : kOverflowShelfLeftIcon,
+        is_alphabetical_ ? kOverflowShelfLeftIcon : kOverflowShelfRightIcon,
         /*toggled=*/false, GetPreferredSize().width());
 
     auto* inkdrop_host = views::InkDrop::Get(this);
@@ -125,10 +129,20 @@ class SortButton : public views::ImageButton {
                                                  /*highlight_on_focus=*/true);
   }
 
+  void LauncherSortTriggered() {
+    views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTION_TRIGGERED);
+    delegate_->SortAppList(is_alphabetical_
+                               ? AppListSortOrder::kNameAlphabetical
+                               : AppListSortOrder::kNameReverseAlphabetical);
+  }
+
  private:
   // If true, apps are sorted by the app name alphabetical order; otherwise,
   // apps are sorted by the app name reverse alphabetical order.
   const bool is_alphabetical_;
+
+  AppListViewDelegate* const delegate_;
 };
 
 BEGIN_METADATA(SortButton, views::View)
@@ -140,7 +154,7 @@ class SortButtonContainer : public views::View {
  public:
   METADATA_HEADER(SortButtonContainer);
 
-  SortButtonContainer() {
+  explicit SortButtonContainer(AppListViewDelegate* delegate) {
     // The layer is required in animation.
     SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
 
@@ -156,8 +170,10 @@ class SortButtonContainer : public views::View {
     SetLayoutManager(std::move(box_layout));
 
     // Add children.
-    AddChildView(std::make_unique<SortButton>(/*is_alphabetical_=*/false));
-    AddChildView(std::make_unique<SortButton>(/*is_alphabetical_=*/true));
+    AddChildView(
+        std::make_unique<SortButton>(/*is_alphabetical_=*/true, delegate));
+    AddChildView(
+        std::make_unique<SortButton>(/*is_alphabetical_=*/false, delegate));
 
     GetViewAccessibility().OverrideIsIgnored(true);
   }
@@ -208,7 +224,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
 
   if (features::IsLauncherAppSortEnabled()) {
     sort_button_container_ =
-        AddChildView(std::make_unique<SortButtonContainer>());
+        AddChildView(std::make_unique<SortButtonContainer>(view_delegate));
   }
 
   apps_grid_view_->SetModel(model);

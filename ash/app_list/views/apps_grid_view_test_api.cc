@@ -110,6 +110,11 @@ AppListItemView* AppsGridViewTestApi::GetViewAtVisualIndex(int page,
   return view_structure[page][slot];
 }
 
+const std::string& AppsGridViewTestApi::GetNameAtVisualIndex(int page,
+                                                             int slot) const {
+  return GetViewAtVisualIndex(page, slot)->item()->name();
+}
+
 gfx::Rect AppsGridViewTestApi::GetItemTileRectAtVisualIndex(int page,
                                                             int slot) const {
   // `GetExpectedTileBounds()` returns expected bounds for item at provided grid

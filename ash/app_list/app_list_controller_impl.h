@@ -54,6 +54,7 @@ namespace ash {
 class AppListBubblePresenter;
 class AppListControllerObserver;
 class AppListPresenterImpl;
+enum class AppListSortOrder;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
@@ -206,6 +207,7 @@ class ASH_EXPORT AppListControllerImpl
                     AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(const std::string& id,
                            GetContextMenuModelCallback callback) override;
+  void SortAppList(AppListSortOrder order) override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,

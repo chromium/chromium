@@ -116,6 +116,8 @@ class AppListClientImpl
       int position_index) override;
   ash::AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
+  void OnAppListSortRequested(int profile_id,
+                              ash::AppListSortOrder order) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

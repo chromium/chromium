@@ -13,8 +13,11 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/app_list/views/contents_view.h"
 #include "ash/shell.h"
 #include "ui/views/view_model.h"
 
@@ -26,6 +29,16 @@ AppsGridView* GetAppsGridView() {
   AppListView* app_list_view =
       Shell::Get()->app_list_controller()->presenter()->GetView();
   return AppListView::TestApi(app_list_view).GetRootAppsGridView();
+}
+
+AppsContainerView* GetAppsContainerView() {
+  return Shell::Get()
+      ->app_list_controller()
+      ->presenter()
+      ->GetView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view();
 }
 
 AppListModel* GetAppListModel() {
@@ -121,6 +134,20 @@ PaginationModel* AppListTestApi::GetPaginationModel() {
 
 void AppListTestApi::UpdatePagedViewStructure() {
   GetAppsGridView()->UpdatePagedViewStructure();
+}
+
+views::View* AppListTestApi::GetViewForAppListSort(AppListSortOrder order) {
+  views::View* sort_button_container =
+      GetAppsContainerView()->sort_button_container_for_test();
+  switch (order) {
+    case AppListSortOrder::kEmpty:
+      NOTREACHED();
+      return nullptr;
+    case AppListSortOrder::kNameAlphabetical:
+      return sort_button_container->children()[0];
+    case AppListSortOrder::kNameReverseAlphabetical:
+      return sort_button_container->children()[1];
+  }
 }
 
 }  // namespace ash
