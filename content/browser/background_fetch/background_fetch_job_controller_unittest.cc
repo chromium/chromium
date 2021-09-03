@@ -432,6 +432,39 @@ TEST_F(BackgroundFetchJobControllerTest, Abort) {
             GetCompletionStatus(registration_id));
 }
 
+TEST_F(BackgroundFetchJobControllerTest, AbortDownloadExceededCrossOrigin) {
+  BackgroundFetchRegistrationId registration_id;
+
+  auto requests = CreateRegistrationForRequests(
+      &registration_id, {{GURL("https://example2.com/funny_cat.png"), "GET"}},
+      /* auto_complete_requests= */ true);
+
+  EXPECT_EQ(JobCompletionStatus::kRunning,
+            GetCompletionStatus(registration_id));
+
+  std::unique_ptr<BackgroundFetchJobController> controller =
+      CreateJobController(registration_id, requests.size());
+
+  controller->StartRequest(requests[0], base::DoNothing());
+
+  controller->DidStartRequest(
+      requests[0]->download_guid(),
+      std::make_unique<BackgroundFetchResponse>(
+          std::vector<GURL>{GURL("https://example2.com/funny_cat.png")},
+          nullptr));
+  EXPECT_FALSE(requests[0]->can_populate_body());
+
+  controller->AbortFromDelegate(
+      blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(JobCompletionStatus::kAborted,
+            GetCompletionStatus(registration_id));
+  EXPECT_EQ(finished_requests_[registration_id],
+            blink::mojom::BackgroundFetchFailureReason::FETCH_ERROR);
+}
+
 TEST_F(BackgroundFetchJobControllerTest, Progress) {
   BackgroundFetchRegistrationId registration_id;
 
