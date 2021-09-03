@@ -3340,11 +3340,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "global-media-controls-for-cast",
-    "owners": [ "takumif", "openscreen-eng@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "global-media-controls-for-chromeos",
     "owners": [ "jazzhsu", "steimel", "media-dev" ],
     "expiry_milestone": 96
