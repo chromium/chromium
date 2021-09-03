@@ -33,7 +33,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:contentDescription="@string/close"
-                android:gravity="center_vertical|start"/>
+                android:gravity="center_vertical|start"
+                app:tint="@color/default_icon_color_tint_list"/>
         </LinearLayout>
 
         <LinearLayout
