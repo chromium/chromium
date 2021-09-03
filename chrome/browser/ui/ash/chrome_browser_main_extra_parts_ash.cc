@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/night_light/night_light_client.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -242,6 +244,12 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
     microphone_mute_notification_delegate_ =
         std::make_unique<MicrophoneMuteNotificationDelegateImpl>();
   }
+
+  // Check if Lacros is enabled for crash reporting here to give the user
+  // manager a chance to be initialized first.
+  constexpr char kLacrosEnabledDataKey[] = "lacros-enabled";
+  static crash_reporter::CrashKeyString<4> key(kLacrosEnabledDataKey);
+  key.Set(crosapi::browser_util::IsLacrosEnabled() ? "yes" : "no");
 
   // Instantiate DisplaySettingsHandler after CrosSettings has been
   // initialized.
