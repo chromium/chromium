@@ -6965,3 +6965,4 @@ crbug.com/webrtc/12951 external/wpt/webrtc-stats/supported-stats.html [ Pass Fai
 # Sheriff 2021-09-03
 crbug.com/1246238 http/tests/devtools/security/mixed-content-sidebar.js [ Pass Failure ]
 crbug.com/1246238 http/tests/devtools/security/interstitial-sidebar.js [ Pass Failure ]
+crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Pass Failure ]
