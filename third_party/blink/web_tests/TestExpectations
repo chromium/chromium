@@ -5646,9 +5646,6 @@ crbug.com/1120330 virtual/threaded/external/wpt/permissions-policy/experimental-
 
 crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Failure Pass ]
 
-# Mac11.0 rebaseline
-crbug.com/1123002 [ Mac11.0 ] external/wpt/html/dom/elements/global-attributes/dir_auto-textarea-script-N-between-Rs.html [ Failure ]
-
 # Sheriff 2020-09-09
 crbug.com/1126709 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
 crbug.com/1126709 [ Win ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-1.https.html [ Failure Pass ]
