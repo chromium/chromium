@@ -65,9 +65,8 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
                         ParsedCertificateList* issuers) override;
 
   // TrustStore implementation:
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override;
 
  private:
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;

@@ -299,7 +299,7 @@ void CertIssuersIter::AddIssuers(ParsedCertificateList new_issuers) {
     // Look up the trust for this issuer.
     IssuerEntry entry;
     entry.cert = std::move(issuer);
-    trust_store_->GetTrust(entry.cert, &entry.trust, debug_data_);
+    entry.trust = trust_store_->GetTrust(entry.cert.get(), debug_data_);
     entry.trust_and_key_id_match_ordering = TrustAndKeyIdentifierMatchToOrder(
         cert(), entry.cert.get(), entry.trust);
 
@@ -487,7 +487,8 @@ CertPathIter::CertPathIter(scoped_refptr<ParsedCertificate> cert,
     : trust_store_(trust_store), debug_data_(debug_data) {
   // Initialize |next_issuer_| to the target certificate.
   next_issuer_.cert = std::move(cert);
-  trust_store_->GetTrust(next_issuer_.cert, &next_issuer_.trust, debug_data_);
+  next_issuer_.trust =
+      trust_store_->GetTrust(next_issuer_.cert.get(), debug_data_);
 }
 
 void CertPathIter::AddCertIssuerSource(CertIssuerSource* cert_issuer_source) {

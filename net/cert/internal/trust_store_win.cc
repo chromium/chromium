@@ -234,9 +234,9 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // of the certificate found are usable for TLS server auth).
 //
 // TODO(https://crbug.com/1239258): look in the Disallowed store.
-void TrustStoreWin::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                             CertificateTrust* trust,
-                             base::SupportsUserData* debug_data) const {
+CertificateTrust TrustStoreWin::GetTrust(
+    const ParsedCertificate* cert,
+    base::SupportsUserData* debug_data) const {
   base::span<const uint8_t> cert_span = cert->der_cert().AsSpan();
   base::SHA1Digest cert_hash = base::SHA1HashSpan(cert_span);
   CRYPT_HASH_BLOB cert_hash_blob;
@@ -263,8 +263,7 @@ void TrustStoreWin::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   // Found at least one instance of the cert in the root store, and all
   // instances found are trusted for TLS server auth.
   if (root_found && root_is_trusted) {
-    *trust = CertificateTrust::ForTrustAnchor();
-    return;
+    return CertificateTrust::ForTrustAnchor();
   }
 
   cert_from_store = nullptr;
@@ -286,8 +285,7 @@ void TrustStoreWin::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   // Found at least one instance of the cert in the intermediate store, and all
   // instances found are trusted for TLS server auth.
   if (intermediate_found && intermediate_is_trusted) {
-    *trust = CertificateTrust::ForUnspecified();
-    return;
+    return CertificateTrust::ForUnspecified();
   }
 
   // If we fall through here, we've either
@@ -299,9 +297,9 @@ void TrustStoreWin::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   // or
   //
   // (b) Haven't found the cert. Tell everyone Unspecified.
-  *trust = (root_found || intermediate_found)
-               ? CertificateTrust::ForDistrusted()
-               : CertificateTrust::ForUnspecified();
+  return (root_found || intermediate_found)
+             ? CertificateTrust::ForDistrusted()
+             : CertificateTrust::ForUnspecified();
 }
 
 }  // namespace net

@@ -105,9 +105,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
 }
 
@@ -121,9 +121,9 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 
@@ -135,9 +135,9 @@ TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
-  CertificateTrust trust;
-  system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(), &trust,
-                                                /*debug_data=*/nullptr);
+  CertificateTrust trust =
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
+                                                    /*debug_data=*/nullptr);
   EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
 }
 

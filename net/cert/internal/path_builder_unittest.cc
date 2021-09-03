@@ -138,10 +138,10 @@ class TrustStoreThatStoresUserData : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override {}
-  void GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                CertificateTrust* trust,
-                base::SupportsUserData* debug_data) const override {
+  CertificateTrust GetTrust(const ParsedCertificate* cert,
+                            base::SupportsUserData* debug_data) const override {
     debug_data->SetUserData(kKey, std::make_unique<Data>(1234));
+    return CertificateTrust::ForUnspecified();
   }
 };
 

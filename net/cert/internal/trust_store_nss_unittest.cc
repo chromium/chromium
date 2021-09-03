@@ -236,8 +236,8 @@ class TrustStoreNSSTestBase : public ::testing::Test {
                 CertificateTrustType expected_trust) {
     bool success = true;
     for (const scoped_refptr<ParsedCertificate>& cert : certs) {
-      CertificateTrust trust;
-      trust_store_nss_->GetTrust(cert.get(), &trust, /*debug_data=*/nullptr);
+      CertificateTrust trust =
+          trust_store_nss_->GetTrust(cert.get(), /*debug_data=*/nullptr);
       if (trust.type != expected_trust) {
         EXPECT_EQ(expected_trust, trust.type) << GetCertString(cert);
         success = false;

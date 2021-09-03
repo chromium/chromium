@@ -218,9 +218,8 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
        {a_by_b, b_by_c, b_by_f, c_by_d, c_by_e, f_by_e, d_by_d, e_by_e}) {
     if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_BEFORE)
       EXPECT_FALSE(trust_store.IsKnownRoot(cert.get()));
-    CertificateTrust trust = CertificateTrust::ForTrustAnchor();
     DebugData debug_data;
-    trust_store.GetTrust(cert.get(), &trust, &debug_data);
+    CertificateTrust trust = trust_store.GetTrust(cert.get(), &debug_data);
     EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
     // The combined_trust_debug_info should be 0 since no trust records
     // should exist for these test certs.
@@ -328,9 +327,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     }
 
     // Check if this cert is considered a trust anchor by TrustStoreMac.
-    CertificateTrust cert_trust;
     DebugData debug_data;
-    trust_store.GetTrust(cert, &cert_trust, &debug_data);
+    CertificateTrust cert_trust = trust_store.GetTrust(cert.get(), &debug_data);
     bool is_trust_anchor = cert_trust.IsTrustAnchor();
 
     // Check if this cert is considered a trust anchor by the OS.
@@ -374,9 +372,9 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 
     // Call GetTrust again on the same cert. This should exercise the code
     // that checks the trust value for a cert which has already been cached.
-    CertificateTrust cert_trust2;
     DebugData debug_data2;
-    trust_store.GetTrust(cert, &cert_trust2, &debug_data2);
+    CertificateTrust cert_trust2 =
+        trust_store.GetTrust(cert.get(), &debug_data2);
     EXPECT_EQ(cert_trust.type, cert_trust2.type);
     auto* trust_debug_data = TrustStoreMac::ResultDebugData::Get(&debug_data);
     ASSERT_TRUE(trust_debug_data);

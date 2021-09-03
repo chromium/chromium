@@ -133,10 +133,10 @@ TEST(TrustStoreWin, GetTrust) {
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
-    CertificateTrust trust;
     auto parsed_cert = ParseCertFromFile(test_data.file_name);
     ASSERT_TRUE(parsed_cert);
-    trust_store_win->GetTrust(parsed_cert, &trust, nullptr);
+    CertificateTrust trust =
+        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
     EXPECT_EQ(test_data.expected_result, trust.type);
   }
 }
@@ -194,10 +194,10 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
-    CertificateTrust trust;
     auto parsed_cert = ParseCertFromFile(test_data.file_name);
     ASSERT_TRUE(parsed_cert);
-    trust_store_win->GetTrust(parsed_cert, &trust, nullptr);
+    CertificateTrust trust =
+        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
     EXPECT_EQ(test_data.expected_result, trust.type);
   }
 }
@@ -235,10 +235,10 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);
-    CertificateTrust trust;
     auto parsed_cert = ParseCertFromFile(test_data.file_name);
     ASSERT_TRUE(parsed_cert);
-    trust_store_win->GetTrust(parsed_cert, &trust, nullptr);
+    CertificateTrust trust =
+        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
     EXPECT_EQ(test_data.expected_result, trust.type);
   }
 }
