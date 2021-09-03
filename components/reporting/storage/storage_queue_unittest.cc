@@ -402,9 +402,6 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_TRUE(location_.CreateUniqueTempDir());
     options_.set_directory(base::FilePath(location_.GetPath()))
         .set_single_file_size(GetParam());
-    sequenced_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
     EXPECT_CALL(set_mock_uploader_expectations_, Call(_, NotNull()))
         .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason,
                                   TestUploader* test_uploader) {
@@ -532,8 +529,11 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_{
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()})};
 
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir location_;
   StorageOptions options_;
