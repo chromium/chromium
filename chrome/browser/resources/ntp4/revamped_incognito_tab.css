@@ -28,11 +28,14 @@ h1 {
   font-size: calc(100% + 8px);
   font-weight: 700;
   line-height: calc(100% + 8px);
+  text-align: center;
 }
 
 h2 {
+  font-size: 17px;
   font-weight: 500;
-  min-height: 28px;
+  margin-block-start: 0;
+  margin-block-end: 8px;
 }
 
 em {
@@ -87,15 +90,7 @@ em {
   }
 }
 
-/* Incognito Does and Does not do Icon */
-.incognito-description-icon {
-  display: inline-block;
-  vertical-align: middle;
-  fill: rgb(142, 145, 143);
-}
-
 /** Cookie Controls --------------------------------------------------------- */
-
 #cookie-controls {
   align-items: center;
   background-color: rgb(42, 42, 43);
@@ -145,10 +140,6 @@ em {
   margin-inline-start: auto;
 }
 
-h1 {
-  text-align: center;
-}
-
 /* Align the two columns of descriptions next to each other. */
 #descriptions-wrapper {
   display: flex;
@@ -164,6 +155,13 @@ h1 {
 
 .descriptions.first {
   margin-inline-end: 30px;
+}
+
+h1,
+.learn-more-wrapper,
+.descriptions,
+.icon {
+  margin-block-end: 32px;
 }
 
 /* On narrow screens, align everything to the left. */
@@ -186,24 +184,15 @@ h1 {
 /** Paddings and margins ---------------------------------------------------- */
 
 .descriptions ul {
-  margin: 4px 0 0;
+  margin: 8px 0 0;
   padding-inline-start: 16px;
 }
 
 /* Wide screens. */
 @media (min-width: 720px) {
   .icon,
-  h1,
-  #subtitle {
+  h1 {
     margin-top: 1.5rem;
-  }
-
-  .icon,
-  h1,
-  #subtitle,
-  .descriptions,
-  .learn-more-wrapper {
-    margin-bottom: 1.5rem;
   }
 
   .content {
@@ -236,17 +225,8 @@ h1 {
 
   /* Smaller vertical margins on very short screens. */
   @media (max-height: 320px) {
-    h1,
-    #subtitle {
-      margin-bottom: 16px;
+    h1 {
       margin-top: 16px;
-    }
-
-    .learn-more-wrapper,
-    .descriptions,
-    .icon,
-    #cookie-controls {
-      margin-bottom: 16px;
     }
   }
 }
@@ -258,17 +238,9 @@ h1 {
     padding: 72px 32px;
   }
 
-  .icon,
-  h1,
-  #subtitle {
+  .icon {
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
-  }
-
-  .descriptions,
-  .learn-more-wrapper,
-  #cookie-controls {
-    margin-bottom: 1.5rem;
   }
 
   /* Smaller offsets on smaller screens. */
@@ -277,17 +249,9 @@ h1 {
       padding-top: 48px;
     }
 
-    .icon,
-    h1,
-    #subtitle {
+    .icon {
       margin-bottom: 1rem;
       margin-top: 1rem;
-    }
-
-    .descriptions,
-    .learn-more-wrapper,
-    #cookie-controls {
-      margin-bottom: 1rem;
     }
   }
 
@@ -296,11 +260,6 @@ h1 {
     .content {
       padding-top: 32px;
     }
-  }
-
-  /* Undo the first and last elements margins. */
-  .icon {
-    margin-top: 0;
   }
 }
 
