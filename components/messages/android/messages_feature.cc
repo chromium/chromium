@@ -46,6 +46,9 @@ const base::Feature kMessagesForAndroidSaveCard{
 const base::Feature kMessagesForAndroidUpdatePassword{
     "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMessagesForAndroidReduceLayoutChanges{
+    "MessagesForAndroidReduceLayoutChanges", base::FEATURE_ENABLED_BY_DEFAULT};
+
 constexpr base::FeatureParam<bool>
     kMessagesForAndroidUpdatePassword_UseFollowupButtonText{
         &kMessagesForAndroidUpdatePassword, "use_followup_button_text", false};
