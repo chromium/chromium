@@ -45,7 +45,8 @@ bool EnterpriseConnectorsPolicyHandler::CheckPolicySettings(
   if (!policy)
     return true;
 
-  if (policy->source != policy::POLICY_SOURCE_CLOUD) {
+  if (policy->source != policy::POLICY_SOURCE_CLOUD &&
+      policy->source != policy::POLICY_SOURCE_CLOUD_FROM_ASH) {
     errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
     return false;
   }
