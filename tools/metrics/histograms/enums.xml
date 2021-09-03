@@ -3538,6 +3538,18 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="PROMO_SEEN"/>
 </enum>
 
+<enum name="AppReadiness">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Installed and launchable"/>
+  <int value="2" label="Disabled by SafeBrowsing"/>
+  <int value="3" label="Disabled by admin policy"/>
+  <int value="4" label="Disabled by explicit user action"/>
+  <int value="5" label="Renderer process crashed"/>
+  <int value="6" label="Uninstalled by user"/>
+  <int value="7" label="Removed"/>
+  <int value="8" label="Uninstalled by migration"/>
+</enum>
+
 <enum name="AppSeedRequestState">
   <obsolete>
     Removed from code October 2020.

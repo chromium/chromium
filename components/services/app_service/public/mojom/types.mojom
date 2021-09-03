@@ -109,6 +109,8 @@ enum AppType {
 };
 
 // Whether an app is ready to launch, i.e. installed.
+// Note the enumeration is used in UMA histogram so entries should not be
+// re-ordered or removed. New entries should be added at the bottom.
 enum Readiness {
   kUnknown = 0,
   kReady,                // Installed and launchable.

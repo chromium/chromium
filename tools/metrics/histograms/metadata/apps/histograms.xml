@@ -21,6 +21,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="App">
+  <variant name="Contacts" summary="Contacts"/>
+  <variant name="FileManager" summary="FileManager"/>
+  <variant name="PlayStore" summary="PlayStore"/>
+</variants>
+
 <variants name="AppType">
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
@@ -2383,6 +2389,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     indicate the type of update action. This was briefly logged under
     PreferredApps.UpdateAction in milestone 85.
   </summary>
+</histogram>
+
+<histogram name="Apps.PreviousReadinessStatus.{App}" enum="AppReadiness"
+    expires_after="2021-12-31">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Recorded the previous readiness status when the app is ready. This is logged
+    when the app readiness status is ready.
+  </summary>
+  <token key="App" variants="App"/>
 </histogram>
 
 <histogram name="Apps.RestoreArcAppsResult" enum="RestoreResult"

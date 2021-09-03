@@ -269,6 +269,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Returns the SourceId of UKM for `app_id`.
   ukm::SourceId GetSourceId(const std::string& app_id);
 
+  // Records the previous app readiness status.
+  void RecordAppReadinessStatus(const apps::AppUpdate& update);
+
   Profile* const profile_ = nullptr;
 
   AppRegistryCache& app_registry_cache_;
