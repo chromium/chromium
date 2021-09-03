@@ -191,6 +191,7 @@ public class SmartSelectionProvider {
             int end = mOriginalEnd;
 
             TextSelection textSelection = null;
+            TextClassification textClassification = null;
 
             try {
                 if (mRequestType == RequestType.SUGGEST_AND_CLASSIFY) {
@@ -200,12 +201,11 @@ public class SmartSelectionProvider {
                     if (isCancelled()) {
                         return new SelectionClient.Result();
                     }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        textClassification = ApiHelperForS.getTextClassification(textSelection);
+                    }
                 }
 
-                TextClassification textClassification = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    textClassification = ApiHelperForS.getTextClassification(textSelection);
-                }
                 if (textClassification == null) {
                     textClassification = mTextClassifier.classifyText(
                             mText, start, end, LocaleList.getAdjustedDefault());
