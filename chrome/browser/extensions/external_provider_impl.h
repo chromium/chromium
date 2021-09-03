@@ -19,7 +19,7 @@
 class Profile;
 
 namespace base {
-class DictionaryValue;
+class Value;
 class Version;
 }
 
@@ -55,11 +55,11 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   // Sets underlying prefs and notifies provider. Only to be called by the
   // owned ExternalLoader instance.
-  virtual void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs);
+  virtual void SetPrefs(std::unique_ptr<base::Value> prefs);
 
   // Updates the underlying prefs and notifies provider.
   // Only to be called by the owned ExternalLoader instance.
-  void UpdatePrefs(std::unique_ptr<base::DictionaryValue> prefs);
+  void UpdatePrefs(std::unique_ptr<base::Value> prefs);
 
   // ExternalProvider implementation:
   void ServiceShutdown() override;
@@ -97,12 +97,12 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   void set_allow_updates(bool allow_updates) { allow_updates_ = allow_updates; }
 
  private:
-  bool HandleMinProfileVersion(const base::DictionaryValue* extension,
+  bool HandleMinProfileVersion(const base::Value* extension,
                                const std::string& extension_id,
                                std::set<std::string>* unsupported_extensions);
 
   bool HandleDoNotInstallForEnterprise(
-      const base::DictionaryValue* extension,
+      const base::Value* extension,
       const std::string& extension_id,
       std::set<std::string>* unsupported_extensions);
 
@@ -124,7 +124,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   VisitorInterface* service_;  // weak
 
   // Dictionary of the external extensions that are provided by this provider.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  std::unique_ptr<base::Value> prefs_;
 
   // Indicates that the extensions provided by this provider are loaded
   // entirely.

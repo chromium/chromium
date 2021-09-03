@@ -150,14 +150,14 @@ void Provider::VisitRegisteredExtension() {
     // If pre-installed apps aren't enabled for the profile, we short-circuit
     // the flow to load them from the file (which happens as a result of
     // VisitRegisteredExtension()), and immediately set empty prefs.
-    ExternalProviderImpl::SetPrefs(std::make_unique<base::DictionaryValue>());
+    ExternalProviderImpl::SetPrefs(std::make_unique<base::Value>());
     return;
   }
 
   extensions::ExternalProviderImpl::VisitRegisteredExtension();
 }
 
-void Provider::SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) {
+void Provider::SetPrefs(std::unique_ptr<base::Value> prefs) {
   DCHECK(preinstalled_apps_enabled_);
 
   // First, check if this is for a migration from around 2013. Likely not.
