@@ -13,7 +13,12 @@
   }
 
   #networkListContainer {
-    overflow: hidden;
+   align-items: center;
+   box-sizing: border-box;
+   display: flex;
+   flex-direction: column;
+   height: inherit;
+   position: relative;
   }
 
   #settingsLink {
@@ -25,7 +30,7 @@
     display: flex;
   }
 </style>
-<div id="networkListContainer" class="diagnostics-cards-container">
+<div id="networkListContainer">
   <div class="diagnostics-cards-container">
     <template is="dom-if" if="[[activeGuid_]]" restamp>
       <connectivity-card class="card-width" active-guid="[[activeGuid_]]"
@@ -33,13 +38,13 @@
           is-active="[[isActive]]">
       </connectivity-card>
     </template>
+    <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
+      <template>
+        <network-card class="card-width" guid="[[guid]]">
+        </network-card>
+      </template>
+    </dom-repeat>
   </div>
-  <dom-repeat id="networkCardList" items="[[otherNetworkGuids_]]" as="guid">
-    <template>
-      <network-card class="card-width" guid="[[guid]]">
-      </network-card>
-    </template>
-  </dom-repeat>
   <div class="settings-link-container">
     <iron-icon icon="cr:settings_icon" id="settingsIcon"></iron-icon>
     <div id="settingsLink" inner-h-t-m-l="[[getSettingsString_()]]"></div>
