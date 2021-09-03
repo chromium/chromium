@@ -31,45 +31,13 @@ namespace blink {
 
 namespace {
 
-const char* GetUpdatedBlendFactor(WGPUBlendFactor blend_factor) {
-  switch (blend_factor) {
-    case WGPUBlendFactor_SrcColor:
-      return "src";
-    case WGPUBlendFactor_OneMinusSrcColor:
-      return "one-minus-src";
-    case WGPUBlendFactor_DstColor:
-      return "dst";
-    case WGPUBlendFactor_OneMinusDstColor:
-      return "one-minus-dst";
-    case WGPUBlendFactor_BlendColor:
-      return "constant";
-    case WGPUBlendFactor_OneMinusBlendColor:
-      return "one-minus-constant";
-    default:
-      return "";
-  }
-}
-
-WGPUBlendFactor AsDawnBlendFactor(const String& blend_factor,
-                                  GPUDevice* device) {
-  WGPUBlendFactor dawn_blend_factor = AsDawnEnum<WGPUBlendFactor>(blend_factor);
-  if (dawn_blend_factor >= WGPUBlendFactor_SrcColor && device != nullptr) {
-    WTF::String message = String("The blend factor '") +
-                          IDLEnumAsString(blend_factor) +
-                          String("' has been deprecated in favor of '") +
-                          GetUpdatedBlendFactor(dawn_blend_factor) + "'.";
-    device->AddConsoleWarning(message.Utf8().data());
-  }
-  return dawn_blend_factor;
-}
-
 WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc,
                               GPUDevice* device) {
   DCHECK(webgpu_desc);
 
   WGPUBlendComponent dawn_desc = {};
-  dawn_desc.dstFactor = AsDawnBlendFactor(webgpu_desc->dstFactor(), device);
-  dawn_desc.srcFactor = AsDawnBlendFactor(webgpu_desc->srcFactor(), device);
+  dawn_desc.dstFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->dstFactor());
+  dawn_desc.srcFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->srcFactor());
   dawn_desc.operation =
       AsDawnEnum<WGPUBlendOperation>(webgpu_desc->operation());
 
