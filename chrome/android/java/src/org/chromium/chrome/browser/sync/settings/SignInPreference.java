@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.settings;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -35,9 +34,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays
  * the user's name, email, profile image and sync error icon if necessary when the user is signed
@@ -46,24 +42,12 @@ import java.lang.annotation.RetentionPolicy;
 public class SignInPreference
         extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
                                       SyncStateChangedListener, AccountsChangeObserver {
-    // TODO(https://crbug.com/1245603): Remove state
-    @IntDef({State.SIGNIN_DISABLED_BY_POLICY, State.SIGNIN_DISALLOWED, State.GENERIC_PROMO,
-            State.SIGNED_IN})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface State {
-        int SIGNIN_DISABLED_BY_POLICY = 0;
-        int SIGNIN_DISALLOWED = 1;
-        int GENERIC_PROMO = 2;
-        int SIGNED_IN = 3;
-    }
-
     private final PrefService mPrefService;
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
     private boolean mIsShowingSigninPromo;
     private final ProfileDataCache mProfileDataCache;
     private final AccountManagerFacade mAccountManagerFacade;
-    private @State int mState;
 
     /**
      * Constructor for inflating from XML.
@@ -75,9 +59,6 @@ public class SignInPreference
         mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-
-        // State will be updated in registerForUpdates.
-        mState = State.SIGNED_IN;
         mIsShowingSigninPromo = false;
     }
 
@@ -112,12 +93,6 @@ public class SignInPreference
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
-    }
-
-    /** Returns the state of the preference. Not valid until registerForUpdates is called. */
-    @State
-    public int getState() {
-        return mState;
     }
 
     /**
@@ -160,7 +135,6 @@ public class SignInPreference
     }
 
     private void setupSigninDisabledByPolicy() {
-        mState = State.SIGNIN_DISABLED_BY_POLICY;
         setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
@@ -175,12 +149,10 @@ public class SignInPreference
     }
 
     private void setupSigninDisallowed() {
-        mState = State.SIGNIN_DISALLOWED;
         mWasGenericSigninPromoDisplayed = false;
     }
 
     private void setupGenericPromo() {
-        mState = State.GENERIC_PROMO;
         setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.signin_pref_summary);
 
@@ -200,7 +172,6 @@ public class SignInPreference
     }
 
     private void setupSignedIn(String accountName) {
-        mState = State.SIGNED_IN;
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
 
         setTitle(profileData.getFullNameOrEmail());
