@@ -101,12 +101,12 @@ password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store) {
   if (use_account_store) {
-    return AccountPasswordStoreFactory::GetForProfile(
+    return AccountPasswordStoreFactory::GetInterfaceForProfile(
                profile, ServiceAccessType::EXPLICIT_ACCESS)
         .get();
   }
-  return PasswordStoreFactory::GetForProfile(profile,
-                                             ServiceAccessType::EXPLICIT_ACCESS)
+  return PasswordStoreFactory::GetInterfaceForProfile(
+             profile, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 

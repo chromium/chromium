@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -837,8 +837,7 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
                                       PrefRegistry::NO_REGISTRATION_FLAGS);
   ASSERT_FALSE(prefs_.HasPrefPath(prefs::kSyncPasswordHash));
 
-  auto store = base::MakeRefCounted<MockPasswordStore>();
-  store->Init(nullptr);
+  auto store = base::MakeRefCounted<MockPasswordStoreInterface>();
 
   MockPasswordReuseManager reuse_manager;
 
@@ -858,8 +857,6 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsForAdvancedProtection) {
   // Wait for the metrics to get reported, which involves queries to the stores,
   // i.e. to background task runners.
   RunUntilIdle();
-
-  store->ShutdownOnUIThread();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, StoreMetricsReporterTestWithParams, Bool());

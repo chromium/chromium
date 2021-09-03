@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/test/navigation_simulator.h"
@@ -78,10 +78,10 @@ PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
 
   PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
-      base::BindRepeating(
-          &password_manager::BuildPasswordStore<
-              content::BrowserContext,
-              testing::NiceMock<password_manager::MockPasswordStore>>));
+      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                          content::BrowserContext,
+                          testing::NiceMock<
+                              password_manager::MockPasswordStoreInterface>>));
   SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildTestSyncService));
 }

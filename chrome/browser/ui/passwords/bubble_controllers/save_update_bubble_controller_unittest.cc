@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -95,11 +95,11 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                content::BrowserContext,
-                testing::StrictMock<password_manager::MockPasswordStore>>));
+        profile(), base::BindRepeating(
+                       &password_manager::BuildPasswordStoreInterface<
+                           content::BrowserContext,
+                           testing::StrictMock<
+                               password_manager::MockPasswordStoreInterface>>));
     EXPECT_CALL(*GetStore(), GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&mock_smart_bubble_stats_store_));
     pending_password_.url = GURL(kSiteOrigin);
@@ -118,10 +118,11 @@ class SaveUpdateBubbleControllerTest : public ::testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
-  password_manager::MockPasswordStore* GetStore() {
-    return static_cast<password_manager::MockPasswordStore*>(
+  password_manager::MockPasswordStoreInterface* GetStore() {
+    return static_cast<password_manager::MockPasswordStoreInterface*>(
         PasswordStoreFactory::GetInstance()
-            ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
+            ->GetInterfaceForProfile(profile(),
+                                     ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 

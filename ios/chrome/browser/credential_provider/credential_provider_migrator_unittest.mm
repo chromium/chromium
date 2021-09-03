@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #import "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
@@ -25,7 +25,7 @@ namespace {
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
-using password_manager::MockPasswordStore;
+using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
 
 ArchivableCredential* TestCredential() {
@@ -47,17 +47,15 @@ class CredentialProviderMigratorTest : public PlatformTest {
  protected:
   void SetUp() override {
     [user_defaults_ removeObjectForKey:store_key_];
-    mock_store_->Init(nullptr);
   }
   void TearDown() override {
     [user_defaults_ removeObjectForKey:store_key_];
-    mock_store_->ShutdownOnUIThread();
   }
 
   NSUserDefaults* user_defaults_ = [NSUserDefaults standardUserDefaults];
   NSString* store_key_ = @"store_key";
-  scoped_refptr<MockPasswordStore> mock_store_ =
-      base::MakeRefCounted<testing::NiceMock<MockPasswordStore>>();
+  scoped_refptr<MockPasswordStoreInterface> mock_store_ =
+      base::MakeRefCounted<testing::NiceMock<MockPasswordStoreInterface>>();
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
