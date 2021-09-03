@@ -230,6 +230,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kKitKatSupported,
     &kLensCameraAssistedSearch,
+    &kLightweightReactions,
     &kNewWindowAppMenu,
     &kOfflineIndicatorV2,
     &kOfflineMeasurementsBackgroundTask,
@@ -515,6 +516,9 @@ const base::Feature kGoogleLensSdkIntent{"GoogleLensSdkIntent",
 
 const base::Feature kLensCameraAssistedSearch{
     "LensCameraAssistedSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kLightweightReactions{"LightweightReactions",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
