@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
@@ -116,7 +117,7 @@ mojom::WiFiStatePropertiesPtr CreateWiFiStateProperties(
   wifi_props->signal_strength = network_type_props.get_wifi()->signal_strength;
   wifi_props->frequency = network_type_props.get_wifi()->frequency;
   wifi_props->ssid = network_type_props.get_wifi()->ssid;
-  wifi_props->bssid = network_type_props.get_wifi()->bssid;
+  wifi_props->bssid = base::ToUpperASCII(network_type_props.get_wifi()->bssid);
   wifi_props->security =
       ConvertSecurityType(network_type_props.get_wifi()->security);
   return wifi_props;

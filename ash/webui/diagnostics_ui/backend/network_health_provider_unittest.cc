@@ -626,18 +626,20 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
       signal_strength_2);
 
   // Set BSSID.
-  const std::string bssid_1("wifi_bssid_1");
+  const std::string bssid_1("01:23:cd:67:89:ab");
+  const std::string bssid_formatted_1("01:23:CD:67:89:AB");
   SetWifiBssid(bssid_1);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
-            bssid_1);
+            bssid_formatted_1);
 
   // Change BSSID.
-  const std::string bssid_2("wifi_bssid_2");
+  const std::string bssid_2("01:aa:45:67:89:ab");
+  const std::string bssid_formatted_2("01:AA:45:67:89:AB");
   SetWifiBssid(bssid_2);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
-            bssid_2);
+            bssid_formatted_2);
 
   // Set frequency.
   const int frequency_1 = 2400;
@@ -668,7 +670,7 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
       observer.GetLatestState()->type_properties->get_wifi()->signal_strength,
       signal_strength_2);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->bssid,
-            bssid_2);
+            bssid_formatted_2);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->frequency,
             frequency_2);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
