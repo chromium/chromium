@@ -6829,7 +6829,6 @@ static_library("browser") {
   }
 
   if (use_cups) {
-    configs += [ "//printing:cups" ]
     if (is_chromeos) {
       sources += [
         "chromeos/printing/cups_wrapper.cc",

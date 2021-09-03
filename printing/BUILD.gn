@@ -49,7 +49,7 @@ component("printing_base") {
   }
 
   if (use_cups) {
-    configs += [ ":cups" ]
+    public_configs = [ ":cups" ]
   }
 
   configs += [ "//build/config/compiler:noshadowing" ]
@@ -212,8 +212,6 @@ component("printing") {
   }
 
   if (use_cups) {
-    configs += [ ":cups" ]
-
     if (is_chromeos) {
       sources += [
         "printing_context_chromeos.cc",
@@ -326,8 +324,6 @@ test("printing_unittests") {
   }
 
   if (use_cups) {
-    configs += [ ":cups" ]
-
     if (use_cups_ipp) {
       sources += [ "backend/cups_ipp_helper_unittest.cc" ]
     }

@@ -3303,7 +3303,6 @@ source_set("chromeos") {
   ]
 
   if (use_cups) {
-    configs += [ "//printing:cups" ]
     deps += [
       "//chrome/services/cups_proxy",
       "//chrome/services/cups_proxy/public/mojom",

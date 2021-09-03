@@ -27,8 +27,6 @@ source_set("cpp") {
     "//chrome/services/ipp_parser/public/cpp",
     "//printing",
   ]
-
-  configs += [ "//printing:cups" ]
 }
 
 source_set("unit_tests") {

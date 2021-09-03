@@ -18,7 +18,5 @@ if (use_cups) {
       "//chrome/services/ipp_parser/public/mojom",
       "//content/public/browser",
     ]
-
-    configs += [ "//printing:cups" ]
   }
 }

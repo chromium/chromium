@@ -399,7 +399,6 @@ static_library("renderer") {
       "extensions/file_manager_private_custom_bindings.h",
     ]
     if (use_cups) {
-      configs += [ "//printing:cups" ]
       sources += [
         "extensions/printing_hooks_delegate.cc",
         "extensions/printing_hooks_delegate.h",

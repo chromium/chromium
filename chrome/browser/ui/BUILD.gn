@@ -4972,9 +4972,6 @@ static_library("ui") {
       "//components/printing/browser",
       "//printing",
     ]
-    if (use_cups) {
-      configs += [ "//printing:cups" ]
-    }
   }
   if (enable_print_preview) {
     sources += [

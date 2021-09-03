@@ -87,10 +87,6 @@ component("gtk") {
     configs += [ "//build/linux:gio_config" ]
   }
 
-  if (use_cups) {
-    configs += [ "//printing:cups" ]
-  }
-
   deps = [
     ":gtk_stubs",
     "//base",
