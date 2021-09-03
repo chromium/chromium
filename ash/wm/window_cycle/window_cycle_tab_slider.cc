@@ -160,11 +160,6 @@ gfx::Size WindowCycleTabSlider::CalculatePreferredSize() const {
   return buttons_container_->GetPreferredSize();
 }
 
-const views::View::Views& WindowCycleTabSlider::GetTabSliderButtonsForTesting()
-    const {
-  return buttons_container_->children();
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // WindowCycleTabSlider, private:
 

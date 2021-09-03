@@ -141,21 +141,6 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns the number of windows in the window cycle list for all desks.
   int GetNumberOfWindowsAllDesks() const;
 
-  // Returns the views for the window cycle list.
-  const views::View::Views& GetWindowCycleItemViewsForTesting() const;
-
-  // Returns the views for the window cycle tab slider buttons.
-  const views::View::Views& GetWindowCycleTabSliderButtonsForTesting() const;
-
-  // Returns no recent items label.
-  const views::Label* GetWindowCycleNoRecentItemsLabelForTesting() const;
-
-  // Returns the window cycle list's target window.
-  const aura::Window* GetTargetWindowForTesting() const;
-
-  // Returns whether the cycle view is animating.
-  bool IsCycleViewAnimatingForTesting() const;
-
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the
   // first time) and is emptied when the gesture is complete (i.e. releases the

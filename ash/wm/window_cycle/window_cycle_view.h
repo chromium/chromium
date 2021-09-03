@@ -116,17 +116,9 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
-  const views::View::Views& GetPreviewViewsForTesting() const;
-
-  const views::View::Views& GetTabSliderButtonsForTesting() const;
-
-  const views::Label* GetNoRecentItemsLabelForTesting() const;
-
-  const aura::Window* GetTargetWindowForTesting() const;
-
-  bool IsCycleViewAnimatingForTesting();
-
  private:
+  friend class WindowCycleListTestApi;
+
   // Returns a bound of alt-tab content container, which represents the mirror
   // container when there is at least one window and represents no-recent-items
   // label when there is no window to be shown.

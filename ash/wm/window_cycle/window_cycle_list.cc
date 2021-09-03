@@ -448,27 +448,4 @@ int WindowCycleList::GetNumberOfWindowsAllDesks() const {
       .size();
 }
 
-const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
-    const {
-  return cycle_view_->GetPreviewViewsForTesting();  // IN-TEST
-}
-
-const views::View::Views&
-WindowCycleList::GetWindowCycleTabSliderButtonsForTesting() const {
-  return cycle_view_->GetTabSliderButtonsForTesting();  // IN-TEST
-}
-
-const views::Label*
-WindowCycleList::GetWindowCycleNoRecentItemsLabelForTesting() const {
-  return cycle_view_->GetNoRecentItemsLabelForTesting();  // IN-TEST
-}
-
-const aura::Window* WindowCycleList::GetTargetWindowForTesting() const {
-  return cycle_view_->GetTargetWindowForTesting();  // IN-TEST
-}
-
-bool WindowCycleList::IsCycleViewAnimatingForTesting() const {
-  return cycle_view_->IsCycleViewAnimatingForTesting();  // IN-TEST
-}
-
 }  // namespace ash

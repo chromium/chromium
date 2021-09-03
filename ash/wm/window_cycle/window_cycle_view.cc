@@ -596,31 +596,6 @@ void WindowCycleView::OnImplicitAnimationsCompleted() {
   }
 }
 
-const views::View::Views& WindowCycleView::GetPreviewViewsForTesting() const {
-  return mirror_container_->children();
-}
-
-const views::View::Views& WindowCycleView::GetTabSliderButtonsForTesting()
-    const {
-  if (!tab_slider_container_) {
-    static const views::View::Views empty;
-    return empty;
-  }
-  return tab_slider_container_->GetTabSliderButtonsForTesting();
-}
-
-const views::Label* WindowCycleView::GetNoRecentItemsLabelForTesting() const {
-  return no_recent_items_label_;
-}
-
-const aura::Window* WindowCycleView::GetTargetWindowForTesting() const {
-  return target_window_;
-}
-
-bool WindowCycleView::IsCycleViewAnimatingForTesting() {
-  return layer()->GetAnimator()->is_animating();
-}
-
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {
   const bool empty_mirror_container = mirror_container_->children().empty();
   if (empty_mirror_container && no_recent_items_label_)

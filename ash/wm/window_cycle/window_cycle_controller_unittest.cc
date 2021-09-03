@@ -42,7 +42,9 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
+#include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -59,6 +61,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_layout_store.h"
@@ -156,7 +160,32 @@ class WindowCycleListTestApi {
 
   WindowCycleView* cycle_view() const { return cycle_list_->cycle_view_; }
 
+  const views::Label* no_recent_items_label() const {
+    return cycle_view()->no_recent_items_label_;
+  }
+
+  const aura::Window* target_window() const {
+    return cycle_view()->target_window_;
+  }
+
   int current_index() const { return cycle_list_->current_index_; }
+
+  const views::View::Views& GetWindowCycleItemViews() const {
+    return cycle_view()->mirror_container_->children();
+  }
+
+  const views::View::Views& GetTabSliderButtons() const {
+    auto* tab_slider_container = cycle_view()->tab_slider_container_;
+    if (!tab_slider_container) {
+      static const views::View::Views empty;
+      return empty;
+    }
+    return tab_slider_container->buttons_container_->children();
+  }
+
+  bool IsCycleViewAnimating() const {
+    return cycle_view()->layer()->GetAnimator()->is_animating();
+  }
 
  private:
   const WindowCycleList* const cycle_list_;
@@ -191,19 +220,19 @@ class WindowCycleControllerTest : public AshTestBase {
   }
 
   const views::View::Views& GetWindowCycleItemViews() const {
-    return GetCycleList()->GetWindowCycleItemViewsForTesting();
+    return WindowCycleListTestApi(GetCycleList()).GetWindowCycleItemViews();
   }
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
-    return GetCycleList()->GetWindowCycleTabSliderButtonsForTesting();
+    return WindowCycleListTestApi(GetCycleList()).GetTabSliderButtons();
   }
 
   const views::Label* GetWindowCycleNoRecentItemsLabel() const {
-    return GetCycleList()->GetWindowCycleNoRecentItemsLabelForTesting();
+    return WindowCycleListTestApi(GetCycleList()).no_recent_items_label();
   }
 
   const aura::Window* GetTargetWindow() const {
-    return GetCycleList()->GetTargetWindowForTesting();
+    return WindowCycleListTestApi(GetCycleList()).target_window();
   }
 
   bool CycleViewExists() const {
@@ -1844,8 +1873,8 @@ class ModeSelectionWindowCycleControllerTest
               Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk());
   }
 
-  bool IsAnimatingModeSwitch(WindowCycleController* controller) {
-    return controller->window_cycle_list()->IsCycleViewAnimatingForTesting();
+  bool IsAnimatingModeSwitch() const {
+    return WindowCycleListTestApi(GetCycleList()).IsCycleViewAnimating();
   }
 
  private:
@@ -2795,7 +2824,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestruction) {
   // |w5|. This shouldn't crash, the mode should be switched and we should still
   // be cycling.
   SwitchPerDeskAltTabMode(true, /*use_slow_duration=*/true);
-  EXPECT_TRUE(IsAnimatingModeSwitch(cycle_controller));
+  EXPECT_TRUE(IsAnimatingModeSwitch());
   w5.reset();
   EXPECT_EQ(1u, GetWindows(cycle_controller).size());
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
@@ -2934,15 +2963,15 @@ class MultiUserWindowCycleControllerTest
   }
 
   const views::View::Views& GetWindowCycleItemViews() const {
-    return GetCycleList()->GetWindowCycleItemViewsForTesting();
+    return WindowCycleListTestApi(GetCycleList()).GetWindowCycleItemViews();
   }
 
   const views::View::Views& GetWindowCycleTabSliderButtons() const {
-    return GetCycleList()->GetWindowCycleTabSliderButtonsForTesting();
+    return WindowCycleListTestApi(GetCycleList()).GetTabSliderButtons();
   }
 
   const aura::Window* GetTargetWindow() const {
-    return GetCycleList()->GetTargetWindowForTesting();
+    return WindowCycleListTestApi(GetCycleList()).target_window();
   }
 
   void CompleteCycling(WindowCycleController* controller) {
