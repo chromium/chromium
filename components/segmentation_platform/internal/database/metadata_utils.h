@@ -61,11 +61,13 @@ void SetFeatureNameHashesFromName(
 
 // Whether a segment has expired results or no result. Called to determine
 // whether the model should be rerun.
-bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info);
+bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info,
+                                   const base::Time& now);
 
 // Whether the results were computed too recently for a given segment. If
 // true, the model execution should be skipped for the time being.
-bool HasFreshResults(const proto::SegmentInfo& segment_info);
+bool HasFreshResults(const proto::SegmentInfo& segment_info,
+                     const base::Time& now);
 
 // Helper method to read the time unit from the proto.
 base::TimeDelta GetTimeUnit(

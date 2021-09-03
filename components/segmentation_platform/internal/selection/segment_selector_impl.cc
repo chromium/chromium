@@ -5,8 +5,11 @@
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -15,12 +18,17 @@
 
 namespace segmentation_platform {
 
-SegmentSelectorImpl::SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
-                                         SegmentationResultPrefs* result_prefs,
-                                         Config* config)
+SegmentSelectorImpl::SegmentSelectorImpl(
+    SegmentInfoDatabase* segment_database,
+    SignalStorageConfig* signal_storage_config,
+    SegmentationResultPrefs* result_prefs,
+    Config* config,
+    base::Clock* clock)
     : segment_database_(segment_database),
+      signal_storage_config_(signal_storage_config),
       result_prefs_(result_prefs),
       config_(config),
+      clock_(clock),
       initialized_(false) {
   // Read selected segment from prefs.
   const auto& selected_segment =
@@ -71,12 +79,52 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
     OptimizationTarget segment_id) {
   segment_database_->GetSegmentInfoForSegments(
       config_->segment_ids,
-      base::BindOnce(&SegmentSelectorImpl::FindBestSegment,
+      base::BindOnce(&SegmentSelectorImpl::RunSegmentSelection,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SegmentSelectorImpl::FindBestSegment(
+void SegmentSelectorImpl::RunSegmentSelection(
     std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
+        all_segments) {
+  if (!CanComputeSegmentSelection(all_segments))
+    return;
+
+  OptimizationTarget selected_segment = FindBestSegment(all_segments);
+  UpdateSelectedSegment(selected_segment);
+}
+
+bool SegmentSelectorImpl::CanComputeSegmentSelection(
+    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
+        all_segments) {
+  // Don't compute results if we don't have enough signals, or don't have
+  // valid unexpired results for any of the segments.
+  for (const auto& pair : all_segments) {
+    const proto::SegmentInfo& segment_info = pair.second;
+    if (!signal_storage_config_->MeetsSignalCollectionRequirement(
+            segment_info.model_metadata())) {
+      return false;
+    }
+
+    if (metadata_utils::HasExpiredOrUnavailableResult(segment_info,
+                                                      clock_->Now())) {
+      return false;
+    }
+  }
+
+  // Don't compute results if segment selection TTL hasn't expired.
+  const auto& previous_selection =
+      result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
+  if (previous_selection.has_value() &&
+      previous_selection->selection_time + config_->segment_selection_ttl >
+          clock_->Now()) {
+    return false;
+  }
+
+  return true;
+}
+
+OptimizationTarget SegmentSelectorImpl::FindBestSegment(
+    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
         all_segments) {
   int max_score = 0;
   OptimizationTarget max_score_id =
@@ -86,12 +134,6 @@ void SegmentSelectorImpl::FindBestSegment(
   for (const auto& pair : all_segments) {
     OptimizationTarget id = pair.first;
     const proto::SegmentInfo& info = pair.second;
-    if (id == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN)
-      continue;
-
-    if (!info.has_prediction_result())
-      continue;
-
     int score = ConvertToDiscreteScore(id, config_->segmentation_key,
                                        info.prediction_result().result(),
                                        info.model_metadata());
@@ -103,7 +145,7 @@ void SegmentSelectorImpl::FindBestSegment(
     }
   }
 
-  UpdateSelectedSegment(max_score_id);
+  return max_score_id;
 }
 
 void SegmentSelectorImpl::UpdateSelectedSegment(
@@ -111,12 +153,14 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
 
+  // Auto-extend the results, if
+  // (1) segment selection hasn't changed.
+  // (2) or the new segment is UNKNOWN, and the previous one was a valid one.
   bool skip_updating_prefs = false;
   if (previous_selection.has_value()) {
     skip_updating_prefs =
         new_selection == previous_selection->segment_id ||
-        (previous_selection->selection_time + config_->segment_selection_ttl >
-         base::Time::Now());
+        new_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
     // TODO(shaktisahu): Use segment selection inertia.
   }
 
@@ -128,12 +172,10 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
   if (skip_updating_prefs)
     return;
 
-  // Write result to prefs. Delete if no valid selection.
-  absl::optional<SelectedSegment> updated_selection;
-  if (new_selection != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
-    updated_selection = absl::make_optional<SelectedSegment>(new_selection);
-    updated_selection->selection_time = base::Time::Now();
-  }
+  // Write result to prefs.
+  auto updated_selection = absl::make_optional<SelectedSegment>(new_selection);
+  updated_selection->selection_time = clock_->Now();
+
   result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,
                                               updated_selection);
 }
