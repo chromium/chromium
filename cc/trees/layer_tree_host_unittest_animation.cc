@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/statistics_recorder.h"
+#include "build/build_config.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_id_provider.h"
@@ -1063,7 +1064,10 @@ class LayerTreeHostPresentationDuringAnimation
   uint32_t received_token_ = 0;
 };
 
+// Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
+#if !defined(OS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostPresentationDuringAnimation);
+#endif
 
 // Verifies that when the main thread removes a scroll animation and sets a new
 // scroll position, the active tree takes on exactly this new scroll position
@@ -1750,7 +1754,12 @@ class LayerTreeHostAnimationTestRemoveKeyframeModel
   bool animation_stopped_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
+// Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
+#if !defined(OS_CHROMEOS)
+SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
+#endif
+
+MULTI_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
 
 class LayerTreeHostAnimationTestIsAnimating
     : public LayerTreeHostAnimationTest {
