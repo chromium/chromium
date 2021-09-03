@@ -812,15 +812,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 // External Clear Key
 //
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
+// TODO(https://crbug.com/1243903): Flaky on Mac, Windows, Linux
 // When BUILDFLAG(ENABLE_LIBRARY_CDMS), this also tests the Pepper CDM check.
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       MAYBE_Basic) {
+                       DISABLED_Basic) {
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kVideoWebMMimeType,
                                     video_webm_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kAudioWebMMimeType,
