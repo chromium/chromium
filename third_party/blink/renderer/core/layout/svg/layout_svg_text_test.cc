@@ -36,6 +36,8 @@ TEST_F(LayoutSVGTextTest, RectBasedHitTest) {
 }
 
 TEST_F(LayoutSVGTextTest, TransformAffectsVectorEffect) {
+  // TODO(crbug.com/1179585): Need a fix for SVGTextNG.
+  ScopedSVGTextNGForTest disable_svg_text_ng(false);
   SetBodyInnerHTML(R"HTML(
     <svg width="300" height="300">
       <text id="text1">A<tspan id="tspan1">B</tspan>C</text>

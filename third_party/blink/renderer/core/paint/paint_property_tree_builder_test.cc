@@ -6714,6 +6714,8 @@ TEST_P(PaintPropertyTreeBuilderTest, NoPaintPropertyForInlineText) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, NoPaintPropertyForSVGText) {
+  // TODO(crbug.com/1179585): Need a fix for SVGTextNG.
+  ScopedSVGTextNGForTest disable_svg_text_ng(false);
   SetBodyInnerHTML("<svg><text id='container' style='" ALL_PROPERTY_STYLES
                    "'>T</text>");
   EXPECT_TRUE(PaintPropertiesForElement("container"));

@@ -344,17 +344,6 @@
     "args": ["--disable-blink-features=LayoutNGGrid"]
   },
   {
-    "prefix": "layout_ng_svg_text",
-    "bases": ["animations/svg",
-              "animations/svg-attribute-composition",
-              "animations/svg-attribute-interpolation",
-              "external/wpt/svg",
-              "http/tests/svg",
-              "paint/invalidation/svg",
-              "svg"],
-    "args": ["--enable-blink-features=SVGTextNG"]
-  },
-  {
     "prefix": "dark-mode-default",
     "bases": ["dark-mode/colors",
               "dark-mode/images"],

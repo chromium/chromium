@@ -4076,19 +4076,16 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/* [ Skip ]
 
 ### Tests failing with SVGTextNG enabled:
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/custom/visibility-collapse.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/paintorder/paintorder-text-decorations.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow-on-path.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/bbox-with-glyph-overflow-zoomed.html [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-decorations-in-scaled-pattern.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/text/text-selection-deco-01-b.svg [ Failure ]
-crbug.com/1179585 virtual/layout_ng_svg_text/svg/W3C-SVG-1.1/text-deco-01-b.svg [ Failure ]
-# Ignore older OSes during SVGTextNG development
-crbug.com/1179585 [ Mac10.12 ] virtual/layout_ng_svg_text/* [ Skip ]
-crbug.com/1179585 [ Mac10.13 ] virtual/layout_ng_svg_text/* [ Skip ]
-crbug.com/1179585 [ Mac10.14 ] virtual/layout_ng_svg_text/* [ Skip ]
-crbug.com/1179585 [ Win7 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1179585 external/wpt/css/css-pseudo/textpath-selection-011.html [ Failure ]
+crbug.com/1179585 images/color-profile-svg-fill-text.html [ Failure ]
+crbug.com/1179585 svg/custom/visibility-collapse.html [ Failure ]
+crbug.com/1179585 svg/paintorder/paintorder-text-decorations.svg [ Failure ]
+crbug.com/1179585 svg/text/bbox-with-glyph-overflow.html [ Failure ]
+crbug.com/1179585 svg/text/bbox-with-glyph-overflow-on-path.html [ Failure ]
+crbug.com/1179585 svg/text/bbox-with-glyph-overflow-zoomed.html [ Failure ]
+crbug.com/1179585 svg/text/text-decorations-in-scaled-pattern.svg [ Failure ]
+crbug.com/1179585 svg/text/text-selection-deco-01-b.svg [ Failure ]
+crbug.com/1179585 svg/W3C-SVG-1.1/text-deco-01-b.svg [ Failure ]
 
 crbug.com/1236992 svg/dom/SVGListPropertyTearOff-gccrash.html [ Failure Pass ]
 

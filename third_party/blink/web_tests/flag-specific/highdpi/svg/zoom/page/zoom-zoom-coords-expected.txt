@@ -60,11 +60,11 @@ PASS image1.height is 25.00
 PASS image1.right is 150.00
 PASS image1.bottom is 275.00
 PASS text1.left is 100.00
-FAIL text1.top should be 282.66. Was 282.515625.
-FAIL text1.width should be 47.98. Was 47.437503814697266.
-PASS text1.height is 6.16
-FAIL text1.right should be 147.98. Was 147.4375114440918.
-FAIL text1.bottom should be 288.82. Was 288.6718683242798.
+FAIL text1.top should be 282.66. Was 282.8151550292969.
+FAIL text1.width should be 47.98. Was 46.84855651855469.
+FAIL text1.height should be 6.16. Was 5.8560686111450195.
+FAIL text1.right should be 147.98. Was 146.84856414794922.
+FAIL text1.bottom should be 288.82. Was 288.6712236404419.
 
 
 PASS svg2.left is 75.00
@@ -87,10 +87,10 @@ PASS image2.right is 225.00
 PASS image2.bottom is 125.00
 PASS text2.left is 175.00
 PASS text2.top is 132.66
-FAIL text2.width should be 47.98. Was 48.031246185302734.
+FAIL text2.width should be 47.98. Was 48.019775390625.
 PASS text2.height is 6.02
-FAIL text2.right should be 222.98. Was 223.03124618530273.
-FAIL text2.bottom should be 138.7. Was 138.6718716621399.
+FAIL text2.right should be 222.98. Was 223.019775390625.
+FAIL text2.bottom should be 138.7. Was 138.6712155342102.
 
 
 PASS svg3.left is 900.00
@@ -112,11 +112,11 @@ PASS image3.height is 50.00
 PASS image3.right is 1200.00
 PASS image3.bottom is 550.00
 PASS text3.left is 1100.00
-FAIL text3.top should be 565.33. Was 565.03125.
-FAIL text3.width should be 95.97. Was 94.87507629394531.
-PASS text3.height is 12.31
-FAIL text3.right should be 1195.97. Was 1194.8750762939453.
-FAIL text3.bottom should be 577.64. Was 577.3437366485596.
+FAIL text3.top should be 565.33. Was 565.6303100585938.
+FAIL text3.width should be 95.97. Was 93.69709777832031.
+FAIL text3.height should be 12.31. Was 11.712137222290039.
+FAIL text3.right should be 1195.97. Was 1193.6970977783203.
+FAIL text3.bottom should be 577.64. Was 577.3424472808838.
 
 
 PASS successfullyParsed is true

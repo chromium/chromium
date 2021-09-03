@@ -666,9 +666,6 @@ virtual/layout-ng-grid/* [ Skip ]
 ### virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/
 crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogonal-positioned-grid-descendants-001.html [ Failure ]
 
-### virtual/layout_ng_svg_text/
-virtual/layout_ng_svg_text/* [ Skip ]
-
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
 
