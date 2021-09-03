@@ -233,11 +233,14 @@ group("gn_all") {
   }
 
   if (!is_ios && !is_android) {
-    deps += [
-      "//components/cronet:cronet_tests",
-      "//components/cronet:cronet_unittests",
-      "//components/viz/demo:viz_demo",
-    ]
+    deps += [ "//components/viz/demo:viz_demo" ]
+    if (!use_libfuzzer) {
+      # TODO(crbug.com/1241949): libcronet.$version.so fails to link in libfuzzer builds.
+      deps += [
+        "//components/cronet:cronet_tests",
+        "//components/cronet:cronet_unittests",
+      ]
+    }
   }
 
   if (enable_openscreen) {
