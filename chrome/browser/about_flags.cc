@@ -1900,7 +1900,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
-    {"exclude_mv_tiles", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2Finale[] =
@@ -1910,6 +1909,7 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface_V2Finale[] =
      {"home_button_on_grid_tab_switcher", "true"},
      {"tab_count_button_on_start_surface", "true"},
      {"new_home_surface_from_home_button", "hide_tab_switcher_only"},
+     {"hide_switch_when_no_incognito_tabs", "true"},
      {"enable_tab_groups_continuation", "true"}};
 
 const FeatureEntry::FeatureParam
@@ -1920,6 +1920,7 @@ const FeatureEntry::FeatureParam
         {"show_ntp_tiles_on_omnibox", "true"},
         {"home_button_on_grid_tab_switcher", "true"},
         {"tab_count_button_on_start_surface", "true"},
+        {"hide_switch_when_no_incognito_tabs", "true"},
         {"new_home_surface_from_home_button", "hide_mv_tiles_and_tab_switcher"},
         {"enable_tab_groups_continuation", "true"}};
 
@@ -1931,11 +1932,13 @@ const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurfaceSingleTab[] =
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateA[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
+    {"hide_switch_when_no_incognito_tabs", "true"},
     {"tab_count_button_on_start_surface", "true"}};
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_CandidateB[] = {
     {"start_surface_variation", "single"},
     {"show_last_active_tab_only", "true"},
+    {"hide_switch_when_no_incognito_tabs", "true"},
     {"tab_count_button_on_start_surface", "true"},
     {"open_ntp_instead_of_start", "true"}};
 
