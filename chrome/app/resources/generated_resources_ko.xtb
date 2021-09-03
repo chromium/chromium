@@ -3566,7 +3566,7 @@
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4779766576531456629">eSIM 셀룰러 네트워크 이름 바꾸기</translation>
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
-<translation id="4784559565779618838">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 Tab 또는 스페이스를 누르세요.</translation>
+<translation id="4784559565779618838">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 Tab 또는 스페이스바를 누르세요.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
@@ -4496,7 +4496,7 @@
 <translation id="5817069030404929329">기기의 비밀번호를 Google 계정으로 옮기시겠습니까?</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="5821565227679781414">바로가기 만들기</translation>
-<translation id="5822865422567397338">특정 사이트 또는 Chrome의 일부를 검색하려면 여기에서 바로가기를 사용하면 됩니다. 예를 들어 Gmail만 검색하려면 '@gmail'이라고 입력한 다음 Tab 또는 스페이스를 누르세요.</translation>
+<translation id="5822865422567397338">특정 사이트 또는 Chrome의 일부를 검색하려면 여기에서 바로가기를 사용하면 됩니다. 예를 들어 Gmail만 검색하려면 '@gmail'이라고 입력한 다음 Tab 또는 스페이스바를 누르세요.</translation>
 <translation id="5825412242012995131">사용(권장)</translation>
 <translation id="5826395379250998812">휴대전화와 <ph name="DEVICE_TYPE" />을(를) 연결하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">반투명</translation>

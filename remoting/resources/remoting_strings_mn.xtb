@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />-р нэвтэрсэн байна.</translation>
 <translation id="579702532610384533">Дахин холбогд</translation>
 <translation id="5810269635982033450">Дэлгэц trackpad-н үүргийг гүйцэтгэж байна</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> таны дэлгэцийг харж, гар болон хулганыг тань удирдахын тулд хандах хүсэлт тавьсан. Хэрэв та энэ хүсэлтийг хүлээгээгүй бол ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' дээр дарна уу. Өөрөөр бэлэн үедээ холболтыг зөвшөөрөхийн тулд ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''-г сонгоно уу.</translation>
 <translation id="5823658491130719298">Алсаас хандах хүсэлтэй компьютерт Chrome-г нээж <ph name="INSTALLATION_LINK" />-д зочилно уу</translation>
 <translation id="5841343754884244200">Дэлгэцийн сонголт</translation>
 <translation id="6033507038939587647">Гарын тохируулга</translation>

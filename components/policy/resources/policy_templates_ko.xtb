@@ -746,7 +746,7 @@
       이 기업 정책은 기본적으로 사용 중지되어 있습니다.</translation>
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> 영역 검색을 사용 설정합니다.</translation>
 <translation id="1961091374249454164">관리되는 게스트 세션에만 적용되는 정책입니다.
-      정책을 설정하면 제한적인 관리되는 게스트 세션 정리 절차에서 제외할 확장 프로그램 ID 목록이 지정됩니다(<ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> 참고).
+      정책을 설정하면 제한적인 관리 게스트 세션 정리 절차에서 제외할 확장 프로그램 ID 목록이 지정됩니다(<ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> 참고).
       정책을 설정하지 않으면 어떤 확장 프로그램도 재설정 절차에서 제외되지 않습니다.</translation>
 <translation id="1962273523772270623">Google 서비스의 WebRTC 이벤트 로그 수집 허용</translation>
 <translation id="1962864958436828230">데이터 유출 방지를 위한 클립보드 제한용 최소 크기 한도 설정</translation>

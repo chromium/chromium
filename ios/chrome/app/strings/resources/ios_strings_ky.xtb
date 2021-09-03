@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="2074131957428911366">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
+<translation id="2080769225927880590">Жарактуу аккаунтуңуз менен кириңиз</translation>
 <translation id="209018056901015185">Толк верс талп кылнт</translation>
 <translation id="2103075008456228677">history.google.com сайтын ачуу</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> нерсе жылдырылды</translation>
@@ -467,6 +468,8 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5737974891429562743">Аккаунтка кирүү тууралуу маалымат эскирип калды. Шайкештирип баштоо үчүн маалыматты жаңыртыңыз.</translation>
 <translation id="5738887413654608789">Бул айланаңыздагы колдонмолордун негизинде ылайыктуу веб беттерди таап берет.</translation>
 <translation id="5758631781033351321">Окула тургандардын тизмесин ушул жерден табасыз</translation>
+<translation id="575902488528307720">Сүрөт издөө</translation>
+<translation id="5781453543752460388">Google Фотого кошуу</translation>
 <translation id="5782227691023083829">Которулууда...</translation>
 <translation id="5803566855766646066">Бул жаңы картаны чын эле өчүрөсүзбү?</translation>
 <translation id="5812974770859303494">Төмөнкүгө кошуу...</translation>
@@ -738,6 +741,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8205564605687841303">Жокко чыгаруу</translation>
 <translation id="8206354486702514201">Бул жөндөөнү администраторуңуз күчүнө киргизген.</translation>
 <translation id="8225985093977202398">Кештелген сүрөттөр жана файлдар</translation>
+<translation id="8228176677386827255">Түзмөгүңүз башкарылууда. Уюмуңуздун аккаунту менен гана кире аласыз.</translation>
 <translation id="8261506727792406068">Жок кылуу</translation>
 <translation id="8271720166617117963">Кабыл алуу жана кирүү</translation>
 <translation id="8281781826761538115">Демейки - <ph name="DEFAULT_LOCALE" /></translation>

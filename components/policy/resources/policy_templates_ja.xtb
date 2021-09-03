@@ -286,6 +286,7 @@
 
           このポリシーを未設定のままにした場合、ユーザーは <ph name="PRODUCT_NAME" /> にあらゆる拡張機能をインストールできます。</translation>
 <translation id="1393485621820363363">有効な企業デバイス プリンタ</translation>
+<translation id="1395505489889158859">ネイティブ プリンタへのユーザー名とファイル名の送信を有効にする</translation>
 <translation id="1397855852561539316">デフォルト検索プロバイダ サジェスト URL</translation>
 <translation id="1413936351612032792">Linux アプリの使用に関する情報を報告します</translation>
 <translation id="1417888712677507140">異なる生成元のサブフレームからトリガーされた JavaScript ダイアログをブロックします。</translation>
@@ -1607,6 +1608,7 @@
 <translation id="2960013482187484833">一番最後に使用したプリンタを印刷プレビューのデフォルトの選択肢とする</translation>
 <translation id="2960128438010718932">新しいアップデートの段階的な適用スケジュール</translation>
 <translation id="2960691910306063964">リモート アクセス ホストの PIN 入力なしの認証を有効または無効にする</translation>
+<translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" /> プロキシを無効にする</translation>
 <translation id="2964056138564883247">このユーザーが <ph name="BOREALIS_NAME" /> を使用できるかどうかを制御します。
 
       このポリシーを false に設定した場合、<ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
@@ -2602,6 +2604,7 @@
 
       このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はオフになります。</translation>
 <translation id="4203879074082863035">ホワイトリスト登録されているプリンタのみをユーザーに表示する</translation>
+<translation id="4205316772333487392">Google 検索でセーフサーチを強制的に適用する</translation>
 <translation id="4209297478239988291">「自動クリック」のユーザー補助機能を有効にします。
 
           この機能では、クリックしたい項目にカーソルを合わせれば、マウスやトラックパッドを押さなくてもクリックできます。
@@ -2657,6 +2660,7 @@
 <translation id="4325690621216251241">システム トレイにログアウト ボタンを追加する</translation>
 <translation id="4329095223358818804">クイック アンサーに選択したコンテンツへのアクセスを許可する</translation>
 <translation id="4330372709562934569">安全でないウェブサイトがリストに指定されている場合、そのウェブサイトからより限定されたプライベート ネットワーク エンドポイントへのリクエストは許可されます。</translation>
+<translation id="4330908525441222205">デフォルトの AppCache 動作を使用する</translation>
 <translation id="4331357743227845302">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で接続を許可する Bluetooth サービスを指定できます。
 
 このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> では特定の Bluetooth サービスへの接続のみをユーザーに許可します。ただし、リストが空の場合はあらゆるサービスの使用が許可されます。Bluetooth SIG で予約されている UUIDは、<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> または <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> の形式で指定できます。独自の UUID は <ph name="BLUETOOTH_CUSTOM_UUID" /> の形式で指定できます。UUID では大文字と小文字は区別されません。このポリシーを未設定のままにした場合、ユーザーはあらゆる Bluetooth サービスに接続できます。</translation>
@@ -2675,6 +2679,7 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
 
       有効な URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。ただし、M85 以降では、ホストに「*」と「[*.]」のワイルドカードを使用したパターンは、このポリシーでサポートされなくなります。</translation>
+<translation id="4370937370030117032">ネイティブ プリンタへのユーザー名とファイル名の送信を無効にする</translation>
 <translation id="4372704773119750918">マルチプロフィール（プライマリまたはセカンダリ）への参加を企業ユーザーに許可しない</translation>
 <translation id="4377599627073874279">すべてのサイトに対してすべての画像表示を許可する</translation>
 <translation id="437791893267799639">ポリシー未設定、データ移行と ARC を許可しない</translation>
@@ -2773,6 +2778,7 @@
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> に関連するポリシーを設定します。</translation>
 <translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
+<translation id="4513691822411041977">Google 検索または YouTube の制限付きモードでセーフサーチを強制的に適用しない</translation>
 <translation id="4515404363392014383">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="4518251772179446575">サイトがユーザーの物理的な現在地を追跡しようとしたときに毎回確認する</translation>
 <translation id="4521193243799782295"><ph name="PRODUCT_OS_NAME" /> では、ログイン時に、サーバーに対して（オンラインで）、またはキャッシュに保存されたパスワードを使用して（オフラインで）、認証を行うことができます。
@@ -3222,6 +3228,7 @@
           この設定を有効にした場合、<ph name="PRODUCT_NAME" /> では、コマンドラインで指定されたプロキシ関連の設定がすべて無視されます。
 
           このポリシーが未設定の場合、ユーザーは自分でプロキシ設定を選択できます。</translation>
+<translation id="5170018694841697392">Google 検索でセーフサーチを強制的に適用しない</translation>
 <translation id="5172841243186654432"><ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> ポリシーで前のセッションの URL を完全復元するように設定されていない場合は、<ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> を使って URL パターンのリストを作成し、1 回のセッションで Cookie の設定を許可するサイトと禁止するサイトを指定できます。
 
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。指定したパターンに URL が一致しない場合もデフォルトの設定が使用されます。
@@ -3952,6 +3959,7 @@
 <translation id="6089679180657323464">Wilco の診断およびテレメトリー用コントローラの設定を制御します。</translation>
 <translation id="6091233616732024397">ブラウザを使用するにはログインを必須とする</translation>
 <translation id="6093156968240188330">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできるようにする</translation>
+<translation id="6094314311474620462">印刷を無効にする</translation>
 <translation id="6095048925836115505">ログイン画面で仮想キーボードを有効にする</translation>
 <translation id="6097601282776163274">URL キーによる匿名化データの収集を有効にする</translation>
 <translation id="6099853574908182288">デフォルトのカラー印刷モード</translation>
@@ -4837,6 +4845,7 @@
 
       このポリシーを未設定にした場合、ブラウザは、ユーザーが設定したシステム リゾルバに関連付けられているリゾルバに DNS-over-HTTPS リクエストを送信する可能性があります。</translation>
 <translation id="7158358621906236999">デフォルトのセンサー設定</translation>
+<translation id="7161568070244869726">AppCache を強制的に有効にする</translation>
 <translation id="7165882688932913315">このポリシーでは、ユーザーの近くの検出可能なデバイスや、ユーザーに登録されているクラウド デバイスを表示するローカル検出 UI（<ph name="CHROME_DEVICES_LINK" />）の制御可能な機能へのアクセスを管理します。<ph name="PRODUCT_OS_NAME" /> 以外のすべてのオペレーティング システムでは、ローカル検出 UI を使用して、パソコンに接続された従来のプリンタを <ph name="CLOUD_PRINT_NAME" /> に追加することも可能です。
 
       このポリシーを有効に設定するか未設定のままにした場合は、ローカル デバイスの検出が許可されます。
@@ -5793,6 +5802,7 @@
 <translation id="8461914792118322307">プロキシ</translation>
 <translation id="8463569949213141467">カメラ、ブラウザ設定、OS 設定、スキャン、ウェブストア、キャンバス、使い方・ヒントの機能を無効に設定する</translation>
 <translation id="8465065632133292531">POST を使用するインスタント検索 URL のパラメータ</translation>
+<translation id="8470317291588703478">YouTube の制限付きモードを強制的に適用しない</translation>
 <translation id="847472800012384958">すべてのサイトに対してポップアップ表示を許可しない</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC は最適なパスを検索する際、すべての利用可能なインターフェースを使用できる。</translation>
@@ -5859,6 +5869,7 @@
           このポリシーを設定した場合、ユーザーによる変更やオーバーライドはできません。
 
           このポリシーを設定しない場合、ユーザー補助機能のショートカットはデフォルトで有効になります。</translation>
+<translation id="8520064498689833152">Google 検索と YouTube の制限付きモードで「中」以上のセーフサーチを強制的に適用する</translation>
 <translation id="8524334245528364388">プリント サーバーのリストを記載した JSON ファイルの URL です。</translation>
 <translation id="8525526490824335042">Linux コンテナ</translation>
 <translation id="8528951285051082869">File Handling API を通じてファイル形式にアクセスすることをウェブアプリに許可しない</translation>
@@ -5952,6 +5963,7 @@
 <translation id="8676959842615154675">このポリシーを有効に設定した場合、リモート アクセス ホストは、そのホストが関連付けられているローカル ユーザーの名前と、ホストの所有者として登録されている Google アカウントの名前（たとえば、ホストの所有者が「johndoe@example.com」の場合は「johndoe」）を比較します。ホストの所有者の名前と、ホストが関連付けられているローカル ユーザーの名前が異なる場合、このホストは起動しません。所有者の Google アカウントが必ず特定のドメインと関連付けられるようにするには、このポリシーを <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> と一緒に使用してください。
 
       このポリシーを無効に設定するか未設定のままにした場合、リモート アクセス ホストは任意のローカル ユーザーと関連付けられます。</translation>
+<translation id="867708016260789630">YouTube の「中」以上の制限付きモードを強制的に適用する</translation>
 <translation id="8685024486845674965">パスワードが再使用されたときに、パスワード保護について警告する</translation>
 <translation id="8685680544554917389">このポリシーを True に設定した場合、<ph name="PRODUCT_NAME" /> でメディアの自動再生が可能になります。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でメディアは自動再生されません。
 

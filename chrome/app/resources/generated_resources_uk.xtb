@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544">Знайдено стільки вкладок за запитом "<ph name="SEARCH_TEXT" />": <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Визначає частоту оновлення екрана</translation>
+<translation id="1061130374843955397">Вас вітає пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Невдовзі час зробити перерву</translation>
 <translation id="1066613507389053689">Оновіть ОС Chrome</translation>
 <translation id="1067048845568873861">Створено</translation>
@@ -2847,6 +2848,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставити</translation>
 <translation id="3945513714196326460">Введіть коротшу назву</translation>
+<translation id="3948027458879361203">Змінити ім’я хосту</translation>
 <translation id="3948116654032448504">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> може змінювати файли в указаних нижче папках</translation>
 <translation id="394984172568887996">Імпортовано із IE</translation>
@@ -6811,6 +6813,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Якщо ввімкнено Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини. Дізнайтеся більше про ці налаштування, а також про те, як їх змінювати, на сторінці families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Недійсний сертифікат клієнта</translation>
 <translation id="827097179112817503">Показати кнопку "Домашня сторінка"</translation>
+<translation id="8271268254812352141">Щоб дізнатися визначення тексту, перекласти його або конвертувати в іншу одиницю, натисніть його правою кнопкою миші або натисніть і втримуйте. Налаштувати мови перекладу можна в розділі <ph name="LINK_BEGIN" />Мови веб-сайтів<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Батьки, наступні кілька кроків маєте виконати ви. Ви зможете віддати дитині <ph name="DEVICE_TYPE" />, коли налаштуєте обліковий запис.</translation>
 <translation id="8272443605911821513">Керуйте своїми розширеннями, натиснувши "Розширення" в меню "Інші інструменти".</translation>
 <translation id="8274332263553132018">Транслювати файл</translation>

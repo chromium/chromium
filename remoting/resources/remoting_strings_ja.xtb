@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> としてログインしています。</translation>
 <translation id="579702532610384533">再接続</translation>
 <translation id="5810269635982033450">画面がトラックパッドとして機能します</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> さんがあなたの画面を表示して、キーボードとマウスを操作する権限をリクエストしています。このリクエストに心当たりがない場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />] を押します。それ以外の場合は、準備ができたら [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] を選択して接続を許可します。</translation>
 <translation id="5823658491130719298">リモート アクセスを行うパソコンで Chrome を開き、<ph name="INSTALLATION_LINK" /> にアクセスします</translation>
 <translation id="5841343754884244200">表示オプション</translation>
 <translation id="6033507038939587647">キーボード オプション</translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">ハイパーテキスト トランスポート プロトコル（HTTPS）</translation>
 <translation id="1059944192885972544">「<ph name="SEARCH_TEXT" />」に該当するタブが <ph name="NUM" /> 個見つかりました</translation>
 <translation id="1060292118287751956">画面の更新頻度を指定します</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> へようこそ</translation>
 <translation id="1061904396131502319">もうすぐ休憩の時間です</translation>
 <translation id="1066613507389053689">Chrome OS の更新が必要です</translation>
 <translation id="1067048845568873861">作成日</translation>
@@ -2828,6 +2829,7 @@
 <translation id="3943582379552582368">戻る(&amp;B)</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3945513714196326460">名前を短くしてください</translation>
+<translation id="3948027458879361203">ホスト名の変更</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> で画像を検索(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> は次のフォルダのファイルを編集できます</translation>
 <translation id="394984172568887996">IE ブックマーク</translation>
@@ -6790,6 +6792,7 @@
     <ph name="BEGIN_PARAGRAPH4" />お子様のアカウントで [ウェブとアプリのアクティビティ] の設定もオンにしている場合、診断と使用状況のデータはお子様の Google アカウントにも保存される可能性があります。これらの設定の詳細と設定を調整する方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">クライアント証明書が無効です</translation>
 <translation id="827097179112817503">ホームボタンを表示する</translation>
+<translation id="8271268254812352141">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />で翻訳言語をカスタマイズできます。</translation>
 <translation id="8271379370373330993">この後、保護者の方用の手順がいくつか続きます。お子様に <ph name="DEVICE_TYPE" /> を渡す前に、アカウント設定を終えてください。</translation>
 <translation id="8272443605911821513">拡張機能を管理するには、[その他のツール] メニューの [拡張機能] をクリックします。</translation>
 <translation id="8274332263553132018">ファイルをキャスト</translation>

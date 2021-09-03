@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
 <translation id="2074131957428911366">Ви можете будь-коли вибрати дані для синхронізації в <ph name="BEGIN_LINK" />налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Відмінити</translation>
+<translation id="2080769225927880590">Увійдіть у дійсний обліковий запис</translation>
 <translation id="209018056901015185">Повна версія сайту</translation>
 <translation id="2103075008456228677">Відкрити history.google.com</translation>
 <translation id="2116625576999540962">Переміщено елементів: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">Дані для входу в обліковий запис застаріли. Оновіть їх, щоб почати синхронізацію.</translation>
 <translation id="5738887413654608789">Ви зможете знаходити відповідні веб-сторінки на основі об’єктів поблизу.</translation>
 <translation id="5758631781033351321">Тут відображатиметься ваш список читання</translation>
+<translation id="575902488528307720">Шукати зображення</translation>
+<translation id="5781453543752460388">Додати у Фото</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
 <translation id="5803566855766646066">Відхилити цю нову картку?</translation>
 <translation id="5812974770859303494">Додати в…</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">Скасувати</translation>
 <translation id="8206354486702514201">Це налаштування застосовується вашим адміністратором.</translation>
 <translation id="8225985093977202398">Кешовані зображення й файли</translation>
+<translation id="8228176677386827255">Вашим пристроєм керують. Ви можете ввійти лише в обліковий запис організації.</translation>
 <translation id="8261506727792406068">Видалити</translation>
 <translation id="8271720166617117963">Прийняти й увійти</translation>
 <translation id="8281781826761538115">За умовчанням – <ph name="DEFAULT_LOCALE" /></translation>

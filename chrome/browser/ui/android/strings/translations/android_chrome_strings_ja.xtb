@@ -216,6 +216,7 @@
 <translation id="2369533728426058518">開いているタブ</translation>
 <translation id="2386938421315164605">トピックの表示と非表示を切り替えます</translation>
 <translation id="2387895666653383613">テキストの拡大と縮小</translation>
+<translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" />を再ダウンロードしますか？</translation>
 <translation id="2394602618534698961">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2407481962792080328">この機能は Google アカウントにログインすると有効になります</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
@@ -376,6 +377,7 @@
 <translation id="3295530008794733555">高速ブラウジングで、データ使用量も抑えることができます。</translation>
 <translation id="3297344142967351106">音声アシスタント</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
+<translation id="3332570638882314953">検索の関連性を高める</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341058695485821946">データ削減量を確認できます</translation>
 <translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
@@ -453,6 +455,7 @@
 <translation id="3810838688059735925">動画</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードを削除しました</translation>
+<translation id="3819183753496523827">オフラインです。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="3845098929839618392">シークレット タブで開く</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3858860766373142691">名前</translation>
@@ -707,6 +710,7 @@
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5433691172869980887">ユーザー名がコピーされました</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> 件のファイルをダウンロードしています（<ph name="MEGABYTES" />）。</translation>
+<translation id="5438292632479953702">再ダウンロード</translation>
 <translation id="5441466871879044658">この言語に翻訳する</translation>
 <translation id="5441522332038954058">アドレスバーに移動する</translation>
 <translation id="544776284582297024">タブを開いて複数のページに同時にアクセスするには、タブを開くボタンをタップします</translation>
@@ -806,6 +810,7 @@
 <translation id="5964805880140440652">このページを別のデバイスと共有するには、Chrome 設定で同期をオンにしてください</translation>
 <translation id="5964869237734432770">画像の説明文の取得を停止する</translation>
 <translation id="5979084224081478209">パスワードを確認</translation>
+<translation id="5995726099713306770">ページを再ダウンロードしますか？</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
 <translation id="6000203700195075278">再フォロー</translation>
 <translation id="6005538289190791541">推奨パスワード</translation>
@@ -942,6 +947,7 @@
 <translation id="670498945988402717">前回の確認: 昨日</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
+<translation id="6715020873764921614"><ph name="FILE_NAME" />（<ph name="FILE_SIZE" />）のダウンロードを続行しますか？</translation>
 <translation id="6738516213925468394">データは <ph name="TIME" />に<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化されました。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
 <translation id="6751521182688001123">新しいタブをすばやく開きます。このショートカットを編集するには、長押ししてください。</translation>
@@ -966,6 +972,7 @@
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
 <translation id="6883204995689174413">共有</translation>
 <translation id="688738109438487280">既存のデータを <ph name="TO_ACCOUNT" /> に追加します。</translation>
+<translation id="6889847736310813892">ページのテキストの一部を Google に送信して、選択した単語とより関連性の高い結果を取得できます。この<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />はいつでも変更できます。</translation>
 <translation id="6891726759199484455">パスワードをコピーするにはロックを解除してください</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6900532703269623216">保護強化機能</translation>

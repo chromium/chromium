@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">Аккаунтка <ph name="EMAIL_ADDRESS" /> менен кирдиңиз.</translation>
 <translation id="579702532610384533">Кайра туташуу</translation>
 <translation id="5810269635982033450">Экранды компьютердин сенсордук тактасы катары иштетүү</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көрүү жана баскычтоп менен чычканды көзөмөлдөөгө уруксат сурады. Бул сурамды күтпөсөңүз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' баскычын басыңыз. Же болбосо, даяр болгондо туташууга уруксат берүү үчүн ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' баскычын тандаңыз.</translation>
 <translation id="5823658491130719298">Алыстан колдонгуңуз келген компьютерден Chrome'ду ачып, <ph name="INSTALLATION_LINK" /> баракчасына өтүңүз</translation>
 <translation id="5841343754884244200">Көрүнүштү жөндөө</translation>
 <translation id="6033507038939587647">Баскычтоп параметрлери</translation>

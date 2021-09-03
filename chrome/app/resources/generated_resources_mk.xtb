@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Протокол за безбеден пренос на хипертекст (HTTPS)</translation>
 <translation id="1059944192885972544">Најдени се <ph name="NUM" /> картички за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="1060292118287751956">Ја одредува фреквенцијата на освежување на екранот</translation>
+<translation id="1061130374843955397">Добре дојдовте на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Речиси е време за пауза</translation>
 <translation id="1066613507389053689">Потребно е ажурирање на Chrome OS</translation>
 <translation id="1067048845568873861">Создадено</translation>
@@ -2845,6 +2846,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="3945513714196326460">Обидете се со пократко име</translation>
+<translation id="3948027458879361203">Промени го името на хостот</translation>
 <translation id="3948116654032448504">&amp;Пребарувај слика на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да изменува датотеки во следниве папки</translation>
 <translation id="394984172568887996">Увезени од IE</translation>
@@ -6811,6 +6813,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Ако дополнителната поставка „Активност на интернет и апликации“ е вклучена за вашето дете, податоциве може да се зачуваат на неговата сметка на Google. Дознајте повеќе за поставкиве и за нивното приспособување на families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Неважечки клиентски сертификат</translation>
 <translation id="827097179112817503">Прикажи го копчето Дома</translation>
+<translation id="8271268254812352141">Добивајте дефиниции, преводи или конверзии на мерни единици кога ќе кликнете со десно копче или ќе допрете и задржите текст. Приспособете ги јазиците за превод во <ph name="LINK_BEGIN" />Јазици за веб-сајтови<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следните неколку чекори се за вас. Може да му го вратите <ph name="DEVICE_TYPE" /> на детето по поставувањето на сметката.</translation>
 <translation id="8272443605911821513">Управувајте ги вашите наставки со кликнување на Наставки во менито „Повеќе алатки“.</translation>
 <translation id="8274332263553132018">Датотека за Cast</translation>

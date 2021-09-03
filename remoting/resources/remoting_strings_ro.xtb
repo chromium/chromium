@@ -109,6 +109,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="5750083143895808682">Conectat(ă) ca <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectează-te</translation>
 <translation id="5810269635982033450">Ecranul funcționează ca un trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> a solicitat acces să vadă ecranul și să controleze tastatura și mouse-ul. Apasă pe <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> dacă solicitarea este neașteptată. Sau selectează <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> pentru a permite conectarea când ești gata.</translation>
 <translation id="5823658491130719298">Pe computerul pe care dorești să îl accesezi de la distanță, deschide Chrome și accesează <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opțiuni de afișare</translation>
 <translation id="6033507038939587647">Opțiuni pentru tastatură</translation>

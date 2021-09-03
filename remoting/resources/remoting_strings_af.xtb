@@ -109,6 +109,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="5750083143895808682">Aangemeld as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Herkoppel</translation>
 <translation id="5810269635982033450">Skerm werk soos 'n stuurpaneel</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> het toegang versoek om jou skerm te sien en jou sleutelbord en muis te beheer. Druk ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' as jy nie hierdie versoek verwag nie. Anders kan jy ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' kies om die verbinding toe te laat wanneer jy gereed is.</translation>
 <translation id="5823658491130719298">Maak Chrome oop op die rekenaar waartoe jy afstandtoegang wil kry en besoek <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Vertoonopsies</translation>
 <translation id="6033507038939587647">Sleutelbordopsies</translation>

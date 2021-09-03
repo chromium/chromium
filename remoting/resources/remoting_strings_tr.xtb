@@ -109,6 +109,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> olarak oturum açtınız.</translation>
 <translation id="579702532610384533">Yeniden bağlan</translation>
 <translation id="5810269635982033450">Ekran dokunmatik yüzey gibi çalışır</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> kullanıcısı, ekranınızı görüp klavye ve farenizi kontrol etmek için erişim istedi. Bu istekten haberiniz yoksa "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" seçeneğine basın. Haberiniz varsa da hazır olduğunuzda bağlantıya izin vermek için "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçeneğini işaretleyin.</translation>
 <translation id="5823658491130719298">Uzaktan erişmek istediğiniz bilgisayarda Chrome'u açın ve <ph name="INSTALLATION_LINK" /> bağlantısını ziyaret edin</translation>
 <translation id="5841343754884244200">Görüntüleme seçenekleri</translation>
 <translation id="6033507038939587647">Klavye seçenekleri</translation>

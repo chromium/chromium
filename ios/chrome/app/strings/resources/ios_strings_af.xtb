@@ -116,6 +116,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="2074131957428911366">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
+<translation id="2080769225927880590">Meld met 'n geldige rekening aan</translation>
 <translation id="209018056901015185">Versoek werkskermwerf</translation>
 <translation id="2103075008456228677">Maak history.google.com oop</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items is geskuif</translation>
@@ -467,6 +468,8 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5737974891429562743">Rekening se aanmeldbesonderhede is verouderd. Dateer op om sinkronisering te begin.</translation>
 <translation id="5738887413654608789">Jy kan hiermee relevante webbladsye op grond van jou omgewing ontdek.</translation>
 <translation id="5758631781033351321">Jy sal jou leeslys hier kry</translation>
+<translation id="575902488528307720">Soek prent</translation>
+<translation id="5781453543752460388">Voeg by foto's</translation>
 <translation id="5782227691023083829">Vertaal tans …</translation>
 <translation id="5803566855766646066">Is jy seker jy wil hierdie nuwe kaart weggooi?</translation>
 <translation id="5812974770859303494">Voeg by …</translation>
@@ -738,6 +741,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8205564605687841303">Kanselleer</translation>
 <translation id="8206354486702514201">Hierdie instelling word deur jou administrateur afgedwing.</translation>
 <translation id="8225985093977202398">Gekaste prente en lêers</translation>
+<translation id="8228176677386827255">Jou toestel word bestuur. Jy kan net met jou organisasie se rekening aanmeld.</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="8271720166617117963">Aanvaar en meld aan</translation>
 <translation id="8281781826761538115">Verstek – <ph name="DEFAULT_LOCALE" /></translation>

@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">Влязохте като <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Повторно свързване</translation>
 <translation id="5810269635982033450">Екранът работи като тракпад</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> поиска достъп с цел да вижда екрана ви и да управлява клавиатурата и мишката ви. Натиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“, ако не очаквате тази заявка. В противен случай изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, за да разрешите осъществяването на връзката, когато имате готовност.</translation>
 <translation id="5823658491130719298">Отворете Chrome на компютъра, до който искате да осъществите отдалечен достъп, и посетете <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за изгледа</translation>
 <translation id="6033507038939587647">Опции за клавиатурата</translation>

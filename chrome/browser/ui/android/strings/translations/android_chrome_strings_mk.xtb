@@ -216,6 +216,7 @@
 <translation id="2369533728426058518">отворени картички</translation>
 <translation id="2386938421315164605">Сокривајте и прикажувајте теми</translation>
 <translation id="2387895666653383613">Скалирање текст</translation>
+<translation id="2390510615457643724">Дали сакате да ја преземете датотеката <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> повторно?</translation>
 <translation id="2394602618534698961">Датотеките што ќе ги преземете ќе се појават тука</translation>
 <translation id="2407481962792080328">Функцијава е вклучена кога ќе се најавите на сметката на Google</translation>
 <translation id="2410754283952462441">Изберете сметка</translation>
@@ -376,6 +377,7 @@
 <translation id="3295530008794733555">Прелистувајте побрзо. Користете помалку мобилен интернет.</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
 <translation id="3303414029551471755">Продолжете со преземање на содржината?</translation>
+<translation id="3332570638882314953">Добивајте порелевантни информации</translation>
 <translation id="3334729583274622784">Дали да се промени наставката на датотеката?</translation>
 <translation id="3341058695485821946">Видете колку мобилен интернет сте заштедиле</translation>
 <translation id="3341262203274374114">Не може да се отследи. Нешто тргна наопаку.</translation>
@@ -453,6 +455,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
+<translation id="3819183753496523827">Офлајн сте. Проверете ја интернет-врската и обидете се повторно.</translation>
 <translation id="3845098929839618392">Отвори во картичка „Инкогнито“</translation>
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -707,6 +710,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="543338862236136125">Измени ја лозинката</translation>
 <translation id="5433691172869980887">Корисничкото име е копирано</translation>
 <translation id="543509235395288790">Се преземаат <ph name="COUNT" /> датотеки (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Преземи повторно</translation>
 <translation id="5441466871879044658">Преведувајте на овие јазици</translation>
 <translation id="5441522332038954058">Скокнете на лентата за адреса</translation>
 <translation id="544776284582297024">За да отворате картички и да посетувате различни страници во исто време, допрете го копчето за отворање картички</translation>
@@ -806,6 +810,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5964805880140440652">За да ја споделите страницава со друг уред, вклучете ја синхронизацијата во поставките за Chrome</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
+<translation id="5995726099713306770">Да се преземе страницата повторно?</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
 <translation id="6000203700195075278">Следете пак</translation>
 <translation id="6005538289190791541">Предложена лозинка</translation>
@@ -942,6 +947,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
+<translation id="6715020873764921614">Дали сепак сакате да ја преземете датотеката <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="6738867403308150051">Се презема…</translation>
 <translation id="6751521182688001123">Брзо отворете нова картичка. За да ја измените сликава од екранот, допрете и задржете.</translation>
@@ -966,6 +972,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6882836635272038266">Стандардна заштита од веб-сајтови, преземања и екстензии за коишто се знае дека се опасни.</translation>
 <translation id="6883204995689174413">Сподели</translation>
 <translation id="688738109438487280">Додајте ги постоечките податоци во <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Гледајте подобри резултати за зборовите што ќе ги нагласите така што ќе му дозволите на Google да зема предвид дел од текстот на страницата. Може да ги промените <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> во секое време.</translation>
 <translation id="6891726759199484455">Отклучете за да ја копирате лозинката</translation>
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6900532703269623216">Подобрена заштита</translation>

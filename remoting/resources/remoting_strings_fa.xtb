@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">واردشده به سیستم به‌عنوان <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">اتصال مجدد</translation>
 <translation id="5810269635982033450">صفحه نمایش مانند ترک‌پد عمل می‌کند</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> درخواست دسترسی کرده تا صفحه‌تان را ببیند و صفحه‌کلید و موشواره‌تان را کنترل کند. اگر انتظار چنین درخواستی را ندارید، «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» را فشار دهید. درغیراین‌صورت، هر وقت آماده بودید «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» را انتخاب کنید تا اتصال مجاز شود.</translation>
 <translation id="5823658491130719298">‏در رایانه‌ای که می‌خواهید از راه‌ دور به آن دسترسی پیدا کنید، Chrome را باز کنید و به <ph name="INSTALLATION_LINK" /> بروید</translation>
 <translation id="5841343754884244200">گزینه‌های نمایش</translation>
 <translation id="6033507038939587647">گزینه‌های صفحه‌کلید</translation>

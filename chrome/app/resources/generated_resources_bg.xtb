@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544">Бяха открити <ph name="NUM" /> раздела за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="1060292118287751956">Определя честотата на актуализиране на екрана</translation>
+<translation id="1061130374843955397">Добре дошли във вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Скоро ще е време за почивка</translation>
 <translation id="1066613507389053689">Изисква се актуализация на Chrome OS</translation>
 <translation id="1067048845568873861">Дата на създаване</translation>
@@ -2841,6 +2842,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3945513714196326460">Опитайте с по-кратко име</translation>
+<translation id="3948027458879361203">Промяна на името на хоста</translation>
 <translation id="3948116654032448504">&amp;Търсене на изображението чрез <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да редактира файловете в следните папки</translation>
 <translation id="394984172568887996">Импортирани от Internet Explorer</translation>
@@ -6806,6 +6808,7 @@
 <ph name="BEGIN_PARAGRAPH4" />Ако сте включили Допълнителна активност в мрежата и приложенията за детето си, тези данни може да се запазват в профила му в Google. Научете повече за съответните настройки и как да ги коригирате на адрес families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Невалиден клиентски сертификат</translation>
 <translation id="827097179112817503">Показване на бутона за начална страница</translation>
+<translation id="8271268254812352141">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон. Персонализирайте езиците за превод в секцията <ph name="LINK_BEGIN" />Езици на уебсайтовете<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родители, следващите няколко стъпки са предназначени за вас. След настройването на профила можете да върнете устройството <ph name="DEVICE_TYPE" /> на детето.</translation>
 <translation id="8272443605911821513">Управлявайте разширенията си, като кликнете върху „Разширения“ в менюто „Още инструменти“.</translation>
 <translation id="8274332263553132018">Предаване на файл</translation>

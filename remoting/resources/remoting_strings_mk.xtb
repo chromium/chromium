@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">Најавени сте како <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Поврзи се повторно</translation>
 <translation id="5810269635982033450">Екранот дејствува како подлога на допир</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа вашиот екран и да ги контролира тастатурата и глувчето. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го очекувате ова барање. Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето кога ќе бидете спремни.</translation>
 <translation id="5823658491130719298">На компјутерот до којшто сакате да пристапите од далечина, отворете го Chrome и одете на <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за приказ</translation>
 <translation id="6033507038939587647">Опции за тастатура</translation>

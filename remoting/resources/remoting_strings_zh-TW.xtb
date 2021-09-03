@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">目前登入的帳戶是 <ph name="EMAIL_ADDRESS" />。</translation>
 <translation id="579702532610384533">重新連線</translation>
 <translation id="5810269635982033450">把螢幕當作觸控板使用</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 要求你授予螢幕的檢視權限和鍵盤與滑鼠的控制權限。如果這不是預期收到的要求，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]；否則，請在準備就緒時選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="5823658491130719298">在你要從遠端存取的電腦上，開啟 Chrome 並造訪 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">顯示選項</translation>
 <translation id="6033507038939587647">鍵盤選項</translation>

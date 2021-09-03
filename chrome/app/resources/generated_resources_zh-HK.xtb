@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">超文本傳輸協定 (HTTPS)</translation>
 <translation id="1059944192885972544">搵到 <ph name="NUM" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅分頁</translation>
 <translation id="1060292118287751956">決定螢幕更新的頻率</translation>
+<translation id="1061130374843955397">歡迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="1066613507389053689">必須更新 Chrome 作業系統</translation>
 <translation id="1067048845568873861">已建立</translation>
@@ -2843,6 +2844,7 @@
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3945513714196326460">請縮短名稱</translation>
+<translation id="3948027458879361203">變更主機名稱</translation>
 <translation id="3948116654032448504">透過 <ph name="SEARCH_ENGINE" /> 搜尋圖片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可編輯以下資料夾中的檔案</translation>
 <translation id="394984172568887996">從 IE 匯入</translation>
@@ -6807,6 +6809,7 @@
 <ph name="BEGIN_PARAGRAPH4" />如果您已為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可以前往 families.google.com 瞭解這些設定的詳情和調整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">用戶端憑證無效</translation>
 <translation id="827097179112817503">顯示 [主頁] 按鈕</translation>
+<translation id="8271268254812352141">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果。你也可以前往<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />頁面自訂翻譯語言。</translation>
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。您可在帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給子女。</translation>
 <translation id="8272443605911821513">如要管理擴充功能，只需按一下 [其他工具] 選單裡的 [擴充功能] 即可。</translation>
 <translation id="8274332263553132018">投放檔案</translation>

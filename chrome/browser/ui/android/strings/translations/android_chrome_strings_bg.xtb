@@ -216,6 +216,7 @@
 <translation id="2369533728426058518">отваряне на раздели</translation>
 <translation id="2386938421315164605">Скриване и показване на теми</translation>
 <translation id="2387895666653383613">Мащабиране на текста</translation>
+<translation id="2390510615457643724">Искате ли отново да изтеглите <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Изтеглените от вас файлове се показват тук</translation>
 <translation id="2407481962792080328">Когато влезете в профила си в Google, тази функция се включва</translation>
 <translation id="2410754283952462441">Изберете профил</translation>
@@ -376,6 +377,7 @@
 <translation id="3295530008794733555">Сърфирайте по-бързо. Използвайте по-малко данни.</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
 <translation id="3303414029551471755">Искате ли да продължите с изтеглянето на съдържанието?</translation>
+<translation id="3332570638882314953">Още подходяща информация</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341058695485821946">Вижте колко данни сте спестили</translation>
 <translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
@@ -453,6 +455,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
+<translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -707,6 +710,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
 <translation id="543509235395288790">Изтеглят се <ph name="COUNT" /> файла (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Повторно изтегляне</translation>
 <translation id="5441466871879044658">Превеждане на този език</translation>
 <translation id="5441522332038954058">Преминаване към адресната лента</translation>
 <translation id="544776284582297024">За да отваряте раздели и да посещавате различни страници едновременно, докоснете бутона за отворени раздели</translation>
@@ -806,6 +810,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5964805880140440652">За да споделите тази страница с друго устройство, включете синхронизирането от настройките за Chrome</translation>
 <translation id="5964869237734432770">Спиране на описанията</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
+<translation id="5995726099713306770">Искате ли отново да изтеглите страницата?</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
 <translation id="6000203700195075278">Повторно следене</translation>
 <translation id="6005538289190791541">Предложена парола</translation>
@@ -942,6 +947,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
+<translation id="6715020873764921614">Искате ли да изтеглите <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) въпреки това?</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
 <translation id="6751521182688001123">Бързо отваряне на нов раздел. За да редактирате този пряк път, докоснете и задръжте.</translation>
@@ -966,6 +972,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6882836635272038266">Стандартна защита срещу уебсайтове, изтеглени файлове и разширения, за които е известно, че са опасни.</translation>
 <translation id="6883204995689174413">Споделяне</translation>
 <translation id="688738109438487280">Добавяне на съществуващите данни към <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Получавайте по-добри резултати за откроените от вас думи, като разрешите на Google да взема предвид част от текста на страницата. Можете да промените <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" /> си по всяко време.</translation>
 <translation id="6891726759199484455">Отключете, за да копирате паролата си</translation>
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6900532703269623216">Подобрена защита</translation>
