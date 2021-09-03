@@ -7,6 +7,8 @@ source_set("discover_feed_preview") {
     "discover_feed_preview_coordinator.h",
     "discover_feed_preview_coordinator.mm",
     "discover_feed_preview_delegate.h",
+    "discover_feed_preview_mediator.h",
+    "discover_feed_preview_mediator.mm",
   ]
   deps = [
     ":discover_feed_preview_ui",
@@ -27,11 +29,14 @@ source_set("discover_feed_preview") {
 
 source_set("discover_feed_preview_ui") {
   sources = [
+    "discover_feed_preview_consumer.h",
     "discover_feed_preview_view_controller.h",
     "discover_feed_preview_view_controller.mm",
   ]
   deps = [
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
     "//ui/gfx",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

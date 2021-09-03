@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_view_controller.h"
 
+#import <MaterialComponents/MaterialProgressView.h>
+
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/gfx/ios/uikit_util.h"
 
@@ -15,6 +18,7 @@ namespace {
 const CGFloat kURLBarMarginVertical = 13.0;
 const CGFloat kURLBarMarginHorizontal = 16.0;
 const CGFloat kSeparatorHeight = 0.1f;
+const CGFloat kProgressBarHeight = 2.0f;
 }  // namespace
 
 @interface DiscoverFeedPreviewViewController ()
@@ -24,6 +28,12 @@ const CGFloat kSeparatorHeight = 0.1f;
 
 // The preview url.
 @property(nonatomic, copy) NSString* URL;
+
+// Progress bar displayed below the URL bar.
+@property(nonatomic, strong) MDCProgressView* progressBar;
+
+// YES if the page is loading.
+@property(nonatomic, assign, getter=isLoading) BOOL loading;
 
 @end
 
@@ -69,10 +79,15 @@ const CGFloat kSeparatorHeight = 0.1f;
   separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
 
+  self.progressBar = [[MDCProgressView alloc] init];
+  self.progressBar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.progressBar.hidden = YES;
+
   self.webStateView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self.view addSubview:URLBarView];
   [self.view addSubview:separator];
+  [self.view addSubview:self.progressBar];
   [self.view addSubview:self.webStateView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -82,12 +97,19 @@ const CGFloat kSeparatorHeight = 0.1f;
         constraintEqualToAnchor:self.view.trailingAnchor],
     [URLBarView.bottomAnchor constraintEqualToAnchor:separator.topAnchor],
     [separator.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    [separator.trailingAnchor
-        constraintLessThanOrEqualToAnchor:self.view.trailingAnchor],
-    [separator.bottomAnchor
-        constraintEqualToAnchor:self.webStateView.topAnchor],
+    [separator.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [separator.heightAnchor
         constraintEqualToConstant:ui::AlignValueToUpperPixel(kSeparatorHeight)],
+    [separator.bottomAnchor constraintEqualToAnchor:self.progressBar.topAnchor],
+    [self.progressBar.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.progressBar.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.progressBar.heightAnchor
+        constraintEqualToConstant:ui::AlignValueToUpperPixel(
+                                      kProgressBarHeight)],
+    [self.progressBar.bottomAnchor
+        constraintEqualToAnchor:self.webStateView.topAnchor],
     [self.webStateView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [self.webStateView.trailingAnchor
@@ -97,10 +119,61 @@ const CGFloat kSeparatorHeight = 0.1f;
   ]];
 }
 
+#pragma mark - DiscoverFeedPreviewConsumer
+
+- (void)setLoadingState:(BOOL)loading {
+  if (self.loading == loading)
+    return;
+
+  self.loading = loading;
+
+  if (!loading) {
+    [self finishProgressBar];
+  } else if (self.progressBar.hidden) {
+    [self.progressBar setProgress:0];
+    [self updateProgressBarVisibility];
+  }
+}
+
+- (void)setLoadingProgressFraction:(double)progress {
+  [self.progressBar setProgress:progress animated:YES completion:nil];
+}
+
+#pragma mark - Private
+
+// Reset auto layout of the webStateView to YES, otherwise it can't be
+// expanded to a tab.
 - (void)resetAutoLayoutForPreview {
-  // Reset auto layout of the webStateView to YES, otherwise it can't be
-  // expanded to a tab.
   self.webStateView.translatesAutoresizingMaskIntoConstraints = YES;
+}
+
+// Finish the progress bar when the page stops loading.
+- (void)finishProgressBar {
+  __weak __typeof(self) weakSelf = self;
+  [self.progressBar setProgress:1
+                       animated:YES
+                     completion:^(BOOL finished) {
+                       [weakSelf updateProgressBarVisibility];
+                     }];
+}
+
+// Makes sure that the visibility of the progress bar is matching the one which
+// is expected.
+- (void)updateProgressBarVisibility {
+  __weak __typeof(self) weakSelf = self;
+  if (self.loading && self.progressBar.hidden) {
+    [self.progressBar setHidden:NO
+                       animated:YES
+                     completion:^(BOOL finished) {
+                       [weakSelf updateProgressBarVisibility];
+                     }];
+  } else if (!self.loading && !self.progressBar.hidden) {
+    [self.progressBar setHidden:YES
+                       animated:YES
+                     completion:^(BOOL finished) {
+                       [weakSelf updateProgressBarVisibility];
+                     }];
+  }
 }
 
 @end

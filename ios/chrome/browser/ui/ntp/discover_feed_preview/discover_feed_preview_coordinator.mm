@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_mediator.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -28,6 +29,9 @@
   std::unique_ptr<web::WebState> _feedPreviewWebState;
 }
 
+// Mediator that updates the UI when loading the preview.
+@property(nonatomic, strong) DiscoverFeedPreviewMediator* mediator;
+
 // View controller of the discover feed preview.
 @property(nonatomic, strong) DiscoverFeedPreviewViewController* viewController;
 
@@ -38,10 +42,10 @@
 
 @implementation DiscoverFeedPreviewCoordinator
 
-- (instancetype)initWithBrowser:(Browser*)browser URL:(const GURL)URL {
+- (instancetype)initWithBrowser:(Browser*)browser URL:(const GURL&)URL {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
-    _URL = GURL(URL);
+    _URL = URL;
   }
   return self;
 }
@@ -58,6 +62,10 @@
   self.viewController = [[DiscoverFeedPreviewViewController alloc]
       initWithView:_feedPreviewWebState->GetView()
                URL:URL];
+  self.mediator = [[DiscoverFeedPreviewMediator alloc]
+      initWithWebState:_feedPreviewWebState.get()
+            previewURL:self.URL];
+  self.mediator.consumer = self.viewController;
 }
 
 - (void)stop {
@@ -98,32 +106,18 @@
   web::WebState::CreateParams createParams(browserState);
   _feedPreviewWebState = web::WebState::CreateWithStorageSession(
       createParams, currentWebState->BuildSessionStorage());
+
   // Attach tab helpers to use _feedPreviewWebState as a browser tab. It ensures
   // _feedPreviewWebState has all the expected tab helpers, including the
   // history tab helper which adding the history entry of the preview.
   AttachTabHelpers(_feedPreviewWebState.get(), /*for_prerender=*/false);
   _feedPreviewWebState->SetWebUsageEnabled(true);
 
-  std::string referrerURL = base::GetFieldTrialParamValueByFeature(
-      kEnableDiscoverFeedPreview, kDiscoverReferrerParameter);
-  if (referrerURL.empty()) {
-    referrerURL = kDefaultDiscoverReferrer;
-  }
-  web::Referrer referrer =
-      web::Referrer(GURL(referrerURL), web::ReferrerPolicyDefault);
-
   // Delay the history record when showing the preview. (The history entry will
   // be added when the user tapping on the preview.)
   HistoryTabHelper::FromWebState(_feedPreviewWebState.get())
       ->SetDelayHistoryServiceNotification(true);
 
-  // Load the preview page using the copied web state.
-  web::NavigationManager::WebLoadParams loadParams(self.URL);
-  loadParams.referrer = referrer;
-  // Attempt to prevent the WebProcess from suspending. Set this before
-  // triggering the preview page loads.
-  _feedPreviewWebState->SetKeepRenderProcessAlive(true);
-  _feedPreviewWebState->GetNavigationManager()->LoadURLWithParams(loadParams);
   _feedPreviewWebState->GetNavigationManager()->LoadIfNecessary();
 }
 

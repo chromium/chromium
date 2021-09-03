@@ -17,7 +17,7 @@ class GURL;
 
 // Inits the coordinator with |browser| and the |URL| of the feed article.
 - (instancetype)initWithBrowser:(Browser*)browser
-                            URL:(const GURL)URL NS_DESIGNATED_INITIALIZER;
+                            URL:(const GURL&)URL NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/ntp/discover_feed_preview/discover_feed_preview_consumer.h"
+
 // ViewController for the feed preview. It displays a loaded webState UIView.
-@interface DiscoverFeedPreviewViewController : UIViewController
+@interface DiscoverFeedPreviewViewController
+    : UIViewController <DiscoverFeedPreviewConsumer>
 
 // Inits the view controller with the |webStateView| and the |URL| of the
 // preview.
