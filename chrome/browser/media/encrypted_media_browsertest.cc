@@ -863,9 +863,8 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_PolicyCheck) {
 }
 
 // Only use MSE since this is independent to the demuxer.
-// Disable the test on Linux and CrOS due to flaky. crbug.com/1232895
 // TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)
+#if defined(OS_MAC)
 #define MAYBE_RemoveTemporarySession DISABLED_RemoveTemporarySession
 #else
 #define MAYBE_RemoveTemporarySession RemoveTemporarySession

@@ -116,6 +116,7 @@ class MediaKeySession final
   class PendingAction;
   friend class NewSessionResultPromise;
   friend class LoadSessionResultPromise;
+  friend class CloseSessionResultPromise;
 
   void Dispose();
 
@@ -131,6 +132,7 @@ class MediaKeySession final
   void UpdateTask(ContentDecryptionModuleResult*,
                   DOMArrayBuffer* sanitized_response);
   void CloseTask(ContentDecryptionModuleResult*);
+  void OnClosePromiseResolved();
   void RemoveTask(ContentDecryptionModuleResult*);
 
   // WebContentDecryptionModuleSession::Client
@@ -155,9 +157,10 @@ class MediaKeySession final
   Member<MediaKeyStatusMap> key_statuses_map_;
 
   // Session states.
-  bool is_uninitialized_;
-  bool is_callable_;
-  bool is_closing_or_closed_;
+  bool is_uninitialized_ = true;
+  bool is_callable_ = false;
+  bool is_closing_ = false;
+  bool is_closed_ = false;
 
   // Keep track of the closed promise.
   // absl::optional<> is needed because V8MediaKeySessionClosedReason's default
