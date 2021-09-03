@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
@@ -73,6 +74,19 @@ class MojoWebUIBrowserTest::WebUITestContentBrowserClient
     map->Add<web_ui_test::mojom::TestRunner>(
         base::BindRepeating(&WebUITestContentBrowserClient::BindWebUITestRunner,
                             base::Unretained(this)));
+  }
+
+  void RegisterWebUIInterfaceBrokers(
+      content::WebUIBrowserInterfaceBrokerRegistry& registry) override {
+    ChromeContentBrowserClient::RegisterWebUIInterfaceBrokers(registry);
+
+    registry.AddBinderForTesting(base::BindLambdaForTesting(
+        [&](content::WebUIController* controller,
+            mojo::PendingReceiver<web_ui_test::mojom::TestRunner> receiver) {
+          content::RenderFrameHost* rfh =
+              controller->web_ui()->GetWebContents()->GetMainFrame();
+          this->BindWebUITestRunner(rfh, std::move(receiver));
+        }));
   }
 
   void set_test_page_handler(WebUITestPageHandler* test_page_handler) {

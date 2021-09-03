@@ -947,10 +947,6 @@ void PopulateChromeWebUIFrameBinders(
         chromeos::DemoModeAppUI>(map);
   }
 
-  RegisterWebUIControllerInterfaceBinder<
-      ash::mojom::sample_swa::PageHandlerFactory, ash::SampleSystemWebAppUI>(
-      map);
-
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {
     RegisterWebUIControllerInterfaceBinder<
         ash::health::mojom::DiagnosticsService, ash::TelemetryExtensionUI>(map);
@@ -1011,7 +1007,12 @@ void PopulateChromeWebUIFrameBinders(
 }
 
 void PopulateChromeWebUIFrameInterfaceBrokers(
-    content::WebUIBrowserInterfaceBrokerRegistry& registry) {}
+    content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+  registry.ForWebUI<ash::SampleSystemWebAppUI>()
+      .Add<ash::mojom::sample_swa::PageHandlerFactory>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+}
 
 }  // namespace internal
 }  // namespace chrome
