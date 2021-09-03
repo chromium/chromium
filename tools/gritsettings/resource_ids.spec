@@ -133,12 +133,12 @@
     "META": {"sizes": {"includes": [50]}},
     "includes": [1366],
   },
-  "chrome/browser/resources/chromeos/login/oobe_resources.grd": {
+  "chrome/browser/resources/chromeos/login/oobe_conditional_resources.grd": {
     "META": {"sizes": {"includes": [150], "structures": [300]}},
     "includes": [1367],
     "structures": [1368],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_modulized_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/login/oobe_unconditional_resources.grd": {
     "META": {"sizes": {"includes": [150]}},
     "includes": [1369],
   },
