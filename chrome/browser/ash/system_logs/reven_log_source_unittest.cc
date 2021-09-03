@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::HasSubstr;
 
@@ -93,6 +94,28 @@ void SetMemoryInfoWithProbeError(healthd::TelemetryInfoPtr& telemetry_info) {
       healthd::ProbeError::New(healthd::ErrorType::kFileReadError, "");
   telemetry_info->memory_result =
       healthd::MemoryResult::NewError(std::move(probe_error));
+}
+
+void SetSystemInfoV2(healthd::TelemetryInfoPtr& telemetry_info,
+                     healthd::DmiInfoPtr dmi_info) {
+  auto system_info2 = healthd::SystemInfoV2::New();
+  system_info2->os_info = healthd::OsInfo::New();
+  system_info2->os_info->os_version = healthd::OsVersion::New();
+
+  if (dmi_info) {
+    system_info2->dmi_info = std::move(dmi_info);
+  }
+  telemetry_info->system_result_v2 =
+      healthd::SystemResultV2::NewSystemInfoV2(std::move(system_info2));
+}
+
+healthd::DmiInfoPtr CreateDmiInfo() {
+  healthd::DmiInfoPtr dmi_info = healthd::DmiInfo::New();
+  dmi_info->sys_vendor = absl::optional<std::string>("LENOVO");
+  dmi_info->product_name = absl::optional<std::string>("20U9001PUS");
+  dmi_info->product_version =
+      absl::optional<std::string>("ThinkPad X1 Carbon Gen 8");
+  return dmi_info;
 }
 
 }  // namespace
@@ -239,6 +262,41 @@ TEST_F(RevenLogSourceTest, FetchMemoryInfoFailure) {
   EXPECT_EQ(revenlog_iter->second.find(kTotalMemoryKey), std::string::npos);
   EXPECT_EQ(revenlog_iter->second.find(kFreeMemoryKey), std::string::npos);
   EXPECT_EQ(revenlog_iter->second.find(kAvailableMemoryKey), std::string::npos);
+}
+
+TEST_F(RevenLogSourceTest, FetchDmiInfoWithValues) {
+  auto info = healthd::TelemetryInfo::New();
+  auto dmi_info = CreateDmiInfo();
+  SetSystemInfoV2(info, std::move(dmi_info));
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("product_vendor: LENOVO"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("product_name: 20U9001PUS"));
+  EXPECT_THAT(revenlog_iter->second,
+              HasSubstr("product_version: ThinkPad X1 Carbon Gen 8"));
+}
+
+TEST_F(RevenLogSourceTest, FetchDmiInfoWithoutValues) {
+  auto info = healthd::TelemetryInfo::New();
+  auto dmi_info = healthd::DmiInfo::New();
+  SetSystemInfoV2(info, std::move(dmi_info));
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("product_vendor: \n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("product_name: \n"));
+  EXPECT_THAT(revenlog_iter->second, HasSubstr("product_version: \n"));
 }
 
 }  // namespace system_logs

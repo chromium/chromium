@@ -31,6 +31,12 @@ void AddIndentedLogEntry(std::string* log,
   base::StrAppend(log, {kNewlineWithIndent, key, kKeyValueDelimiter, value});
 }
 
+void AddLogEntry(std::string* log,
+                 const std::string& key,
+                 const std::string& value) {
+  base::StrAppend(log, {key, kKeyValueDelimiter, value, "\n"});
+}
+
 void PopulateBluetoothInfo(std::string* log, const TelemetryInfoPtr& info) {
   if (info->bluetooth_result.is_null() || info->bluetooth_result->is_error()) {
     DVLOG(1) << "BluetoothResult not found in croshealthd response";
@@ -78,6 +84,21 @@ void PopulateMemoryInfo(std::string* log, const TelemetryInfoPtr& info) {
   base::StrAppend(log, {"\n"});
 }
 
+void PopulateSystemInfo(std::string* log, const TelemetryInfoPtr& info) {
+  if (info->system_result_v2.is_null() || info->system_result_v2->is_error()) {
+    DVLOG(1) << "SystemResult2 not found in croshealthd response";
+    return;
+  }
+  healthd::DmiInfoPtr& dmi_info =
+      info->system_result_v2->get_system_info_v2()->dmi_info;
+
+  if (!dmi_info.is_null()) {
+    AddLogEntry(log, "product_vendor", dmi_info->sys_vendor.value_or(""));
+    AddLogEntry(log, "product_name", dmi_info->product_name.value_or(""));
+    AddLogEntry(log, "product_version", dmi_info->product_version.value_or(""));
+  }
+}
+
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
@@ -90,7 +111,7 @@ RevenLogSource::~RevenLogSource() = default;
 void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBluetooth, ProbeCategories::kCpu,
-       ProbeCategories::kMemory},
+       ProbeCategories::kMemory, ProbeCategories::kSystem2},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -109,6 +130,7 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     PopulateBluetoothInfo(&log_val, info_ptr);
     PopulateCpuInfo(&log_val, info_ptr);
     PopulateMemoryInfo(&log_val, info_ptr);
+    PopulateSystemInfo(&log_val, info_ptr);
   }
 
   response->emplace(kRevenLogKey, log_val);
