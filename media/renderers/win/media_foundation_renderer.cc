@@ -272,6 +272,7 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
       D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, creation_flags,
                         feature_levels, base::size(feature_levels),
                         D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr));
+  RETURN_IF_FAILED(media::SetDebugName(d3d11_device.Get(), "Media_MFRenderer"));
 
   ComPtr<ID3D10Multithread> multithreaded_device;
   RETURN_IF_FAILED(d3d11_device.As(&multithreaded_device));

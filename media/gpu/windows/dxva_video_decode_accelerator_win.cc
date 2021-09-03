@@ -1046,7 +1046,9 @@ bool DXVAVideoDecodeAccelerator::CreateDX11DevManager() {
                              &feature_level_out, &d3d11_device_context_);
       RETURN_ON_HR_FAILURE(hr, "Failed to create DX11 device", false);
     }
-
+    RETURN_ON_HR_FAILURE(
+        hr, media::SetDebugName(d3d11_device_.Get(), "DXVA_DecodeAccelerator"),
+        false);
     hr = d3d11_device_.As(&video_device_);
     RETURN_ON_HR_FAILURE(hr, "Failed to get video device", false);
   }

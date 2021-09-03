@@ -14,6 +14,7 @@
 #include "media/base/win/mf_initializer_export.h"
 
 struct ID3D11DeviceChild;
+struct ID3D11Device;
 
 namespace media {
 
@@ -83,6 +84,9 @@ MF_INITIALIZER_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
 // D3D11 retains the string passed to this function.
 MF_INITIALIZER_EXPORT HRESULT
 SetDebugName(ID3D11DeviceChild* d3d11_device_child, const char* debug_string);
+MF_INITIALIZER_EXPORT HRESULT SetDebugName(ID3D11Device* d3d11_device,
+                                           const char* debug_string);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_HELPERS_H_

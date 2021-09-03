@@ -95,6 +95,8 @@ HRESULT DXGIDeviceManager::ResetDevice() {
                                  kDeviceFlags, nullptr, 0, D3D11_SDK_VERSION,
                                  &d3d_device, nullptr, nullptr);
   RETURN_ON_HR_FAILURE(hr, "D3D11 device creation failed", hr);
+  RETURN_ON_HR_FAILURE(
+      hr, media::SetDebugName(d3d_device.Get(), "Media_DXGIDeviceManager"), hr);
   // Since FrameServerClient background threads in the video capture process
   // call EnqueueSetEvent on Chromium's D3D11 device at the same time that
   // Chromium is actively using it in a worker thread, we need to protect access
