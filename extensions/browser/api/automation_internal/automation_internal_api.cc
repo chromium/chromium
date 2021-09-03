@@ -690,9 +690,8 @@ AutomationInternalPerformActionFunction::PerformAction(
     }
 
     action_handler->PerformAction(data);
-    return result;
   }
-  result.automation_error = "Unable to perform action on unknown tree.";
+
   return result;
 }
 
