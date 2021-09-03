@@ -661,7 +661,7 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
     found = true;
     if (it->second->IsPopulated()) {
       // Assumes this method is called on a stack handling a mojo message.
-      mojo::ReportBadMessage("Cannot clone to already populated namespace");
+      receiver_.ReportBadMessage("Cannot clone to already populated namespace");
       return;
     }
   }
