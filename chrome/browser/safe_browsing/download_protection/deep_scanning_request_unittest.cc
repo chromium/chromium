@@ -335,7 +335,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          DeepScanningRequestFeaturesEnabledTest,
                          testing::Bool());
 
-TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ChecksFeatureFlags DISABLED_ChecksFeatureFlags
+#else
+#define MAYBE_ChecksFeatureFlags ChecksFeatureFlags
+#endif
+TEST_P(DeepScanningRequestFeaturesEnabledTest, MAYBE_ChecksFeatureFlags) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -475,7 +481,14 @@ class DeepScanningAPPRequestTest : public DeepScanningRequestTest,
 
 INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
 
-TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_GeneratesCorrectRequestForAPP \
+  DISABLED_GeneratesCorrectRequestForAPP
+#else
+#define MAYBE_GeneratesCorrectRequestForAPP GeneratesCorrectRequestForAPP
+#endif
+TEST_P(DeepScanningAPPRequestTest, MAYBE_GeneratesCorrectRequestForAPP) {
   enterprise_connectors::AnalysisSettings settings;
   settings.tags = {"malware"};
   DeepScanningRequest request(
@@ -1092,7 +1105,13 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
   }
 }
 
-TEST_F(DeepScanningReportingTest, Timeout) {
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_Timeout DISABLED_Timeout
+#else
+#define MAYBE_Timeout Timeout
+#endif
+TEST_F(DeepScanningReportingTest, MAYBE_Timeout) {
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
       base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
@@ -1343,8 +1362,16 @@ class DeepScanningRequestConnectorsFeatureTest
   }
 };
 
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ShouldUploadBinary_MalwareListPolicy \
+  DISABLED_ShouldUploadBinary_MalwareListPolicy
+#else
+#define MAYBE_ShouldUploadBinary_MalwareListPolicy \
+  ShouldUploadBinary_MalwareListPolicy
+#endif
 TEST_F(DeepScanningRequestConnectorsFeatureTest,
-       ShouldUploadBinary_MalwareListPolicy) {
+       MAYBE_ShouldUploadBinary_MalwareListPolicy) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
@@ -1377,7 +1404,14 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ShouldUploadBinary_FileURLs DISABLED_ShouldUploadBinary_FileURLs
+#else
+#define MAYBE_ShouldUploadBinary_FileURLs ShouldUploadBinary_FileURLs
+#endif
+TEST_F(DeepScanningRequestConnectorsFeatureTest,
+       MAYBE_ShouldUploadBinary_FileURLs) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -1403,7 +1437,13 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
   EXPECT_FALSE(settings().has_value());
 }
 
-TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
+// TODO(crbug.com/1246079): Flaky on TSAN.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_PopulatesRequest DISABLED_PopulatesRequest
+#else
+#define MAYBE_PopulatesRequest PopulatesRequest
+#endif
+TEST_F(DeepScanningRequestAllFeaturesEnabledTest, MAYBE_PopulatesRequest) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
