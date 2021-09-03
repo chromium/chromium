@@ -222,7 +222,7 @@ using l10n_util::GetNSString;
 }
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {
-  return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
+  return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_TITLE);
 }
 
 - (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:

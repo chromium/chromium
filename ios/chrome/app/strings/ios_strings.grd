@@ -1000,6 +1000,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE" desc="Title for the view in the Settings for enabling/disabling Sync. [Length: 26em] [iOS only]">
         Sync
       </message>
+      <message name="IDS_IOS_SYNC_SETTINGS_TITLE" desc="Title for the navigation item in Advanced Settings. [Length: 26em] [iOS only]">
+        Sync
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_STATUS" desc="Error displayed when the sync is disabled by the enterprise policy. The user doesn't have a regular gmail account.">
         Sync is disabled by your administrator
       </message>
