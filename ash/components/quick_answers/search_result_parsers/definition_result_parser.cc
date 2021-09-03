@@ -126,8 +126,11 @@ const std::string* DefinitionResultParser::ExtractPhoneticsText(
 GURL DefinitionResultParser::ExtractPhoneticsAudio(
     const base::Value* definition_entry) {
   const Value* first_phonetics = ExtractFirstPhonetics(definition_entry);
-  if (!first_phonetics)
+  // Sometimes the phonetics has no audio URL.
+  if (!first_phonetics ||
+      !first_phonetics->FindStringPath(kPhoneticsAudioKey)) {
     return GURL();
+  }
 
   return GURL(kHttpsPrefix +
               *first_phonetics->FindStringPath(kPhoneticsAudioKey));
