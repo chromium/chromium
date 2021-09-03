@@ -153,38 +153,6 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ESimProfile::EnableProfile(EnableProfileCallback callback) {
-  if (properties_->state == mojom::ProfileState::kActive ||
-      properties_->state == mojom::ProfileState::kPending) {
-    NET_LOG(ERROR)
-        << "Profile enable failed: Profile already enabled or not installed";
-    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
-    return;
-  }
-
-  NET_LOG(USER) << "Enabling profile with path " << path().value();
-  HermesProfileClient::Get()->EnableCarrierProfile(
-      path_,
-      base::BindOnce(&ESimProfile::OnESimOperationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void ESimProfile::DisableProfile(DisableProfileCallback callback) {
-  if (properties_->state == mojom::ProfileState::kInactive ||
-      properties_->state == mojom::ProfileState::kPending) {
-    NET_LOG(ERROR)
-        << "Profile enable failed: Profile already disabled or not installed";
-    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
-    return;
-  }
-
-  NET_LOG(USER) << "Disabling profile with path " << path().value();
-  HermesProfileClient::Get()->DisableCarrierProfile(
-      path_,
-      base::BindOnce(&ESimProfile::OnESimOperationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void ESimProfile::SetProfileNickname(const std::u16string& nickname,
                                      SetProfileNicknameCallback callback) {
   if (IsGuestModeActive()) {
@@ -445,15 +413,6 @@ void ESimProfile::OnProfileUninstallResult(bool success) {
   std::move(uninstall_callback_)
       .Run(success ? mojom::ESimOperationResult::kSuccess
                    : mojom::ESimOperationResult::kFailure);
-}
-
-void ESimProfile::OnESimOperationResult(ESimOperationResultCallback callback,
-                                        HermesResponseStatus status) {
-  if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "ESim operation error status="
-                   << static_cast<int>(status);
-  }
-  std::move(callback).Run(OperationResultFromStatus(status));
 }
 
 void ESimProfile::OnProfileNicknameSet(

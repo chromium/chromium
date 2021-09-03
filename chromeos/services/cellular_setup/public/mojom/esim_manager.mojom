@@ -144,12 +144,6 @@ interface ESimProfile {
   // Uninstalls this eSIM profile. Returns the result code for the operation.
   UninstallProfile() => (ESimOperationResult result);
 
-  // Enables this eSIM profile. Returns the result code for the operation.
-  EnableProfile() => (ESimOperationResult result);
-
-  // Disables this eSIM profile. Returns the result code for the operation.
-  DisableProfile() => (ESimOperationResult result);
-
   // Sets a nickname for this eSIM profile. Returns the result code for the
   // operation.
   SetProfileNickname(mojo_base.mojom.String16 nickname) =>
