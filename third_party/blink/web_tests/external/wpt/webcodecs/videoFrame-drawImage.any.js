@@ -57,3 +57,19 @@ test(_ => {
     ctx.drawImage(frame, 0, 0);
   }, 'drawImage with a closed VideoFrame should throw InvalidStateError.');
 }, 'drawImage on a closed VideoFrame throws InvalidStateError.');
+
+
+test(_ => {
+  let canvas = new OffscreenCanvas(128, 128);
+  let ctx = canvas.getContext('2d');
+
+  let init = {alpha: 'discard', timestamp: 33090};
+  let frame = new VideoFrame(canvas);
+  let frame2 = new VideoFrame(frame, init);
+  let frame3 = new VideoFrame(frame2, init);
+
+  ctx.drawImage(frame3, 0, 0);
+  frame.close();
+  frame2.close();
+  frame3.close();
+}, 'drawImage of nested frame works properly');

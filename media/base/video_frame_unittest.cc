@@ -170,8 +170,7 @@ void InitializeYV12Frame(VideoFrame* frame, double white_to_black) {
 
 // Given a |yv12_frame| this method converts the YV12 frame to RGBA and
 // makes sure that all the pixels of the RBG frame equal |expect_rgb_color|.
-void ExpectFrameColor(media::VideoFrame* yv12_frame,
-                      uint32_t expect_rgb_color) {
+void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
   ASSERT_EQ(PIXEL_FORMAT_YV12, yv12_frame->format());
   ASSERT_EQ(yv12_frame->stride(VideoFrame::kUPlane),
             yv12_frame->stride(VideoFrame::kVPlane));
@@ -251,12 +250,12 @@ TEST(VideoFrame, CreateFrame) {
 
   // Create a YV12 Video Frame.
   gfx::Size size(kWidth, kHeight);
-  scoped_refptr<media::VideoFrame> frame = VideoFrame::CreateFrame(
-      media::PIXEL_FORMAT_YV12, size, gfx::Rect(size), size, kTimestamp);
+  scoped_refptr<VideoFrame> frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_YV12, size, gfx::Rect(size), size, kTimestamp);
   ASSERT_TRUE(frame.get());
 
   // Test VideoFrame implementation.
-  EXPECT_EQ(media::PIXEL_FORMAT_YV12, frame->format());
+  EXPECT_EQ(PIXEL_FORMAT_YV12, frame->format());
   {
     SCOPED_TRACE("");
     InitializeYV12Frame(frame.get(), 0.0f);
@@ -279,15 +278,15 @@ TEST(VideoFrame, CreateFrame) {
   EXPECT_EQ(MD5DigestToBase16(digest), "911991d51438ad2e1a40ed5f6fc7c796");
 
   // Test single planar frame.
-  frame = VideoFrame::CreateFrame(media::PIXEL_FORMAT_ARGB, size,
-                                  gfx::Rect(size), size, kTimestamp);
-  EXPECT_EQ(media::PIXEL_FORMAT_ARGB, frame->format());
+  frame = VideoFrame::CreateFrame(PIXEL_FORMAT_ARGB, size, gfx::Rect(size),
+                                  size, kTimestamp);
+  EXPECT_EQ(PIXEL_FORMAT_ARGB, frame->format());
   EXPECT_GE(frame->stride(VideoFrame::kARGBPlane), frame->coded_size().width());
 
   // Test double planar frame.
-  frame = VideoFrame::CreateFrame(media::PIXEL_FORMAT_NV12, size,
-                                  gfx::Rect(size), size, kTimestamp);
-  EXPECT_EQ(media::PIXEL_FORMAT_NV12, frame->format());
+  frame = VideoFrame::CreateFrame(PIXEL_FORMAT_NV12, size, gfx::Rect(size),
+                                  size, kTimestamp);
+  EXPECT_EQ(PIXEL_FORMAT_NV12, frame->format());
 
   // Test an empty frame.
   frame = VideoFrame::CreateEOSFrame();
@@ -306,9 +305,8 @@ TEST(VideoFrame, CreateZeroInitializedFrame) {
 
   // Create a YV12 Video Frame.
   gfx::Size size(kWidth, kHeight);
-  scoped_refptr<media::VideoFrame> frame =
-      VideoFrame::CreateZeroInitializedFrame(media::PIXEL_FORMAT_YV12, size,
-                                             gfx::Rect(size), size, kTimestamp);
+  scoped_refptr<VideoFrame> frame = VideoFrame::CreateZeroInitializedFrame(
+      PIXEL_FORMAT_YV12, size, gfx::Rect(size), size, kTimestamp);
   ASSERT_TRUE(frame.get());
   EXPECT_TRUE(frame->IsMappable());
 
@@ -325,7 +323,7 @@ TEST(VideoFrame, CreateBlackFrame) {
   const uint8_t kExpectedYRow[] = {0, 0};
   const uint8_t kExpectedUVRow[] = {128};
 
-  scoped_refptr<media::VideoFrame> frame =
+  scoped_refptr<VideoFrame> frame =
       VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
   ASSERT_TRUE(frame.get());
   EXPECT_TRUE(frame->IsMappable());
@@ -365,41 +363,64 @@ TEST(VideoFrame, WrapVideoFrame) {
   const int kHeight = 4;
   const base::TimeDelta kFrameDuration = base::TimeDelta::FromMicroseconds(42);
 
-  scoped_refptr<media::VideoFrame> frame;
-  bool done_callback_was_run = false;
+  scoped_refptr<VideoFrame> frame, frame2;
+  bool base_frame_done_callback_was_run = false;
+  bool wrapped_frame_done_callback_was_run = false;
   {
-    scoped_refptr<media::VideoFrame> wrapped_frame =
-        VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
-    ASSERT_TRUE(wrapped_frame.get());
+    auto base_frame = VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight));
+    ASSERT_TRUE(base_frame);
 
-    gfx::Rect visible_rect(1, 1, 1, 1);
+    gfx::Rect visible_rect(0, 0, 2, 2);
     gfx::Size natural_size = visible_rect.size();
-    wrapped_frame->metadata().frame_duration = kFrameDuration;
-    frame = media::VideoFrame::WrapVideoFrame(
-        wrapped_frame, wrapped_frame->format(), visible_rect, natural_size);
-    wrapped_frame->AddDestructionObserver(
-        base::BindOnce(&FrameNoLongerNeededCallback, &done_callback_was_run));
-    EXPECT_EQ(wrapped_frame->coded_size(), frame->coded_size());
-    EXPECT_EQ(wrapped_frame->data(media::VideoFrame::kYPlane),
-              frame->data(media::VideoFrame::kYPlane));
-    EXPECT_NE(wrapped_frame->visible_rect(), frame->visible_rect());
+    base_frame->metadata().frame_duration = kFrameDuration;
+    frame = VideoFrame::WrapVideoFrame(base_frame, base_frame->format(),
+                                       visible_rect, natural_size);
+    base_frame->AddDestructionObserver(base::BindOnce(
+        &FrameNoLongerNeededCallback, &base_frame_done_callback_was_run));
+    EXPECT_EQ(base_frame->coded_size(), frame->coded_size());
+    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
+              frame->data(VideoFrame::kYPlane));
+    EXPECT_NE(base_frame->visible_rect(), frame->visible_rect());
     EXPECT_EQ(visible_rect, frame->visible_rect());
-    EXPECT_NE(wrapped_frame->natural_size(), frame->natural_size());
+    EXPECT_NE(base_frame->natural_size(), frame->natural_size());
     EXPECT_EQ(natural_size, frame->natural_size());
 
     // Verify metadata was copied to the wrapped frame.
     EXPECT_EQ(*frame->metadata().frame_duration, kFrameDuration);
 
     // Verify the metadata copy was a deep copy.
-    wrapped_frame->clear_metadata();
-    EXPECT_NE(wrapped_frame->metadata().frame_duration.has_value(),
+    base_frame->clear_metadata();
+    EXPECT_NE(base_frame->metadata().frame_duration.has_value(),
               frame->metadata().frame_duration.has_value());
+
+    frame->AddDestructionObserver(base::BindOnce(
+        &FrameNoLongerNeededCallback, &wrapped_frame_done_callback_was_run));
+
+    visible_rect = gfx::Rect(0, 0, 1, 1);
+    natural_size = visible_rect.size();
+    frame2 = VideoFrame::WrapVideoFrame(frame, frame->format(), visible_rect,
+                                        natural_size);
+    EXPECT_EQ(base_frame->coded_size(), frame2->coded_size());
+    EXPECT_EQ(base_frame->data(VideoFrame::kYPlane),
+              frame2->data(VideoFrame::kYPlane));
+    EXPECT_NE(base_frame->visible_rect(), frame2->visible_rect());
+    EXPECT_EQ(visible_rect, frame2->visible_rect());
+    EXPECT_NE(base_frame->natural_size(), frame2->natural_size());
+    EXPECT_EQ(natural_size, frame2->natural_size());
   }
 
-  // Verify that |wrapped_frame| outlives |frame|.
-  EXPECT_FALSE(done_callback_was_run);
+  // At this point |base_frame| is held by |frame|, |frame2|.
+  EXPECT_FALSE(base_frame_done_callback_was_run);
+  EXPECT_FALSE(wrapped_frame_done_callback_was_run);
+
+  // At this point |base_frame| is held by |frame2|, which also holds |frame|.
   frame.reset();
-  EXPECT_TRUE(done_callback_was_run);
+  EXPECT_FALSE(base_frame_done_callback_was_run);
+  EXPECT_FALSE(wrapped_frame_done_callback_was_run);
+
+  // Now all |base_frame| references should be released.
+  frame2.reset();
+  EXPECT_TRUE(base_frame_done_callback_was_run);
 }
 
 // Create a frame that wraps unowned memory.
@@ -409,14 +430,14 @@ TEST(VideoFrame, WrapExternalData) {
   gfx::Rect visible_rect(coded_size);
   CreateTestY16Frame(coded_size, visible_rect, memory);
   auto timestamp = base::TimeDelta::FromMilliseconds(1);
-  auto frame = VideoFrame::WrapExternalData(media::PIXEL_FORMAT_Y16, coded_size,
+  auto frame = VideoFrame::WrapExternalData(PIXEL_FORMAT_Y16, coded_size,
                                             visible_rect, visible_rect.size(),
                                             memory, sizeof(memory), timestamp);
 
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
-  EXPECT_EQ(frame->data(media::VideoFrame::kYPlane)[0], 0xff);
+  EXPECT_EQ(frame->data(VideoFrame::kYPlane)[0], 0xff);
 }
 
 // Create a frame that wraps read-only shared memory.
@@ -432,14 +453,14 @@ TEST(VideoFrame, WrapSharedMemory) {
   CreateTestY16Frame(coded_size, visible_rect, mapping.memory());
   auto timestamp = base::TimeDelta::FromMilliseconds(1);
   auto frame = VideoFrame::WrapExternalData(
-      media::PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
+      PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
       mapping.GetMemoryAsSpan<uint8_t>().data(), kDataSize, timestamp);
   frame->BackWithSharedMemory(&region);
 
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);
-  EXPECT_EQ(frame->data(media::VideoFrame::kYPlane)[0], 0xff);
+  EXPECT_EQ(frame->data(VideoFrame::kYPlane)[0], 0xff);
 }
 
 TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
@@ -455,7 +476,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
       std::make_unique<FakeGpuMemoryBuffer>(
           coded_size, gfx::BufferFormat::YUV_420_BIPLANAR, modifier);
   gfx::GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
+  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {
       gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 5),
       gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 10)};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
@@ -558,7 +579,7 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
                                    gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
   {
-    gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
+    gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {
         gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 5)};
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
         PIXEL_FORMAT_ARGB, holders,
@@ -599,7 +620,7 @@ TEST(VideoFrame,
 
   gpu::SyncToken called_sync_token;
   {
-    gpu::MailboxHolder holders[media::VideoFrame::kMaxPlanes] = {
+    gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {
         gpu::MailboxHolder(mailbox[VideoFrame::kYPlane], sync_token, target),
         gpu::MailboxHolder(mailbox[VideoFrame::kUPlane], sync_token, target),
         gpu::MailboxHolder(mailbox[VideoFrame::kVPlane], sync_token, target),

@@ -388,6 +388,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
 
   // Wrapping native textures should... have textures. https://crbug.com/864145.
   DCHECK(frame->HasTextures());
+  DCHECK_GT(frame->NumTextures(), 0u);
 
   return frame;
 }
@@ -898,6 +899,18 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     wrapping_frame->BackWithSharedMemory(frame->shm_region_);
   }
 
+  // Don't let a Matryoshka doll of frames occur. Do this here instead of above
+  // since |frame| may have different metadata than |frame->wrapped_frame_|.
+  //
+  // We must still keep |frame| alive though since it may have destruction
+  // observers which signal that the underlying resource is okay to reuse. E.g.,
+  // VideoFramePool.
+  if (frame->wrapped_frame_) {
+    wrapping_frame->AddDestructionObserver(base::BindOnce(
+        base::DoNothing::Once<scoped_refptr<VideoFrame>>(), frame));
+    frame = frame->wrapped_frame_;
+  }
+
   wrapping_frame->wrapped_frame_ = std::move(frame);
   return wrapping_frame;
 }
@@ -1152,24 +1165,22 @@ bool VideoFrame::IsMappable() const {
 }
 
 bool VideoFrame::HasTextures() const {
-  // A SharedImage can be turned into a texture, and so it counts as a texture
-  // in the context of this call.
   return wrapped_frame_ ? wrapped_frame_->HasTextures()
-                        : (mailbox_holders_[0].mailbox.IsSharedImage() ||
-                           !mailbox_holders_[0].mailbox.IsZero());
+                        : !mailbox_holders_[0].mailbox.IsZero();
 }
 
 size_t VideoFrame::NumTextures() const {
+  if (wrapped_frame_)
+    return wrapped_frame_->NumTextures();
+
   if (!HasTextures())
     return 0;
 
-  const auto& mailbox_holders =
-      wrapped_frame_ ? wrapped_frame_->mailbox_holders_ : mailbox_holders_;
   size_t i = 0;
   for (; i < NumPlanes(format()); ++i) {
-    if (mailbox_holders[i].mailbox.IsZero()) {
+    const auto& mailbox = mailbox_holders_[i].mailbox;
+    if (mailbox.IsZero())
       return i;
-    }
   }
   return i;
 }
@@ -1239,7 +1250,7 @@ const gpu::MailboxHolder& VideoFrame::mailbox_holder(
     size_t texture_index) const {
   DCHECK(HasTextures());
   DCHECK(IsValidPlane(format(), texture_index));
-  return wrapped_frame_ ? wrapped_frame_->mailbox_holders_[texture_index]
+  return wrapped_frame_ ? wrapped_frame_->mailbox_holder(texture_index)
                         : mailbox_holders_[texture_index];
 }
 
