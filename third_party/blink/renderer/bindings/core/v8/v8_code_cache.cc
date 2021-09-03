@@ -331,7 +331,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
   // v8::TryCatch is needed to suppress all exceptions thrown during the code
   // cache generation.
   v8::TryCatch block(isolate);
-  auto referrer_info = ReferrerScriptInfo::CreateNoReferencingScript();
+  ReferrerScriptInfo referrer_info;
   v8::ScriptOrigin origin(
       isolate, V8String(isolate, file_name),
       0,                                      // line_offset

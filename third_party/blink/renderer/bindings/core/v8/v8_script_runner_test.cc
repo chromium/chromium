@@ -88,8 +88,7 @@ class V8ScriptRunnerTest : public testing::Test {
         V8CodeCache::GetCompileOptions(cache_options, source_code);
     v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
         script_state, source_code, SanitizeScriptErrors::kSanitize,
-        compile_options, no_cache_reason,
-        ReferrerScriptInfo::CreateNoReferencingScript());
+        compile_options, no_cache_reason, ReferrerScriptInfo());
     if (compiled_script.IsEmpty()) {
       return false;
     }
@@ -114,8 +113,7 @@ class V8ScriptRunnerTest : public testing::Test {
     }
     v8::MaybeLocal<v8::Script> compiled_script = V8ScriptRunner::CompileScript(
         script_state, source_code, SanitizeScriptErrors::kSanitize,
-        compile_options, no_cache_reason,
-        ReferrerScriptInfo::CreateNoReferencingScript());
+        compile_options, no_cache_reason, ReferrerScriptInfo());
     if (compiled_script.IsEmpty()) {
       return false;
     }
