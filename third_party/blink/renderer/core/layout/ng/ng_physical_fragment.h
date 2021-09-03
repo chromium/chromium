@@ -36,6 +36,7 @@ class NGFragmentItem;
 class NGInlineItem;
 class PaintLayer;
 struct LogicalRect;
+struct NGFragmentedOutOfFlowData;
 struct NGPhysicalOutOfFlowPositionedNode;
 
 enum class NGOutlineType;
@@ -580,19 +581,27 @@ class CORE_EXPORT NGPhysicalFragment
   void SetChildrenInvalid() const;
   bool ChildrenValid() const { return children_valid_; }
 
+  struct OutOfFlowData {
+    Vector<NGPhysicalOutOfFlowPositionedNode> oof_positioned_descendants;
+  };
+
   bool HasOutOfFlowPositionedDescendants() const {
-    DCHECK(!oof_positioned_descendants_ ||
-           !oof_positioned_descendants_->IsEmpty());
-    return oof_positioned_descendants_.get();
+    return oof_data_ && !oof_data_->oof_positioned_descendants.IsEmpty();
   }
 
   base::span<NGPhysicalOutOfFlowPositionedNode> OutOfFlowPositionedDescendants()
       const {
     if (!HasOutOfFlowPositionedDescendants())
       return base::span<NGPhysicalOutOfFlowPositionedNode>();
-    return {oof_positioned_descendants_->data(),
-            oof_positioned_descendants_->size()};
+    return {oof_data_->oof_positioned_descendants.data(),
+            oof_data_->oof_positioned_descendants.size()};
   }
+
+  const NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+
+  // Figure out if the child has any out-of-flow positioned descendants, in
+  // which case we'll need to propagate this to the fragment builder.
+  bool NeedsOOFPositionedInfoPropagation() const;
 
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
@@ -632,6 +641,13 @@ class CORE_EXPORT NGPhysicalFragment
 
   static bool DependsOnPercentageBlockSize(const NGContainerFragmentBuilder&);
 
+  std::unique_ptr<OutOfFlowData> OutOfFlowDataFromBuilder(
+      NGContainerFragmentBuilder*);
+  std::unique_ptr<OutOfFlowData> FragmentedOutOfFlowDataFromBuilder(
+      NGContainerFragmentBuilder*);
+  void ClearOutOfFlowData();
+  std::unique_ptr<OutOfFlowData> CloneOutOfFlowData() const;
+
   UntracedMember<LayoutObject> layout_object_;
   const PhysicalSize size_;
 
@@ -664,13 +680,13 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_collapsed_borders_ : 1;
   unsigned has_baseline_ : 1;
   unsigned has_last_baseline_ : 1;
+  const unsigned has_fragmented_out_of_flow_data_ : 1;
 
   // The following are only used by NGPhysicalLineBoxFragment.
   unsigned base_direction_ : 1;  // TextDirection
 
   Persistent<const NGBreakToken> break_token_;
-  const std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
-      oof_positioned_descendants_;
+  const std::unique_ptr<OutOfFlowData> oof_data_;
 
  private:
   friend struct NGPhysicalFragmentTraits;

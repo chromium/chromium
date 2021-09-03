@@ -233,6 +233,49 @@ struct NGLogicalOutOfFlowPositionedNode final {
   NGBlockNode Node() const { return NGBlockNode(box); }
 };
 
+// This is a sub class of |NGPhysicalFragment::OutOfFlowData| that can store OOF
+// propagation data under the NG block fragmentation context.
+//
+// This class is defined here instead of |NGPhysicalFragment| because types
+// needed for this class requires full definition of |NGPhysicalFragment|, and
+// |NGPhysicalFragment| requires full definition of this class if this is put
+// into |NGPhysicalFragment|.
+struct NGFragmentedOutOfFlowData : NGPhysicalFragment::OutOfFlowData {
+  using MulticolCollection = HashMap<UntracedMember<LayoutBox>,
+                                     NGMulticolWithPendingOOFs<PhysicalOffset>>;
+
+  static bool HasOutOfFlowPositionedFragmentainerDescendants(
+      const NGPhysicalFragment& fragment) {
+    const NGFragmentedOutOfFlowData* oof_data =
+        fragment.FragmentedOutOfFlowData();
+    return oof_data &&
+           !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty();
+  }
+
+  bool NeedsOOFPositionedInfoPropagation() const {
+    return !oof_positioned_fragmentainer_descendants.IsEmpty() ||
+           !multicols_with_pending_oofs.IsEmpty();
+  }
+
+  static base::span<NGPhysicalOOFNodeForFragmentation>
+  OutOfFlowPositionedFragmentainerDescendants(
+      const NGPhysicalFragment& fragment) {
+    const NGFragmentedOutOfFlowData* oof_data =
+        fragment.FragmentedOutOfFlowData();
+    if (!oof_data ||
+        oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
+      return base::span<NGPhysicalOOFNodeForFragmentation>();
+    Vector<NGPhysicalOOFNodeForFragmentation>& descendants =
+        const_cast<Vector<NGPhysicalOOFNodeForFragmentation>&>(
+            oof_data->oof_positioned_fragmentainer_descendants);
+    return {descendants.data(), descendants.size()};
+  }
+
+  Vector<NGPhysicalOOFNodeForFragmentation>
+      oof_positioned_fragmentainer_descendants;
+  MulticolCollection multicols_with_pending_oofs;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

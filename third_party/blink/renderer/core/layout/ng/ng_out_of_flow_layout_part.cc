@@ -807,7 +807,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // Convert the OOF fragmentainer descendants to the logical coordinate space
     // and store the resulting nodes inside |oof_nodes_to_layout|.
     for (const auto& descendant :
-         multicol_box_fragment->OutOfFlowPositionedFragmentainerDescendants()) {
+         NGFragmentedOutOfFlowData::OutOfFlowPositionedFragmentainerDescendants(
+             *multicol_box_fragment)) {
       if (oof_nodes_to_layout.IsEmpty() &&
           multicol_info->fixedpos_containing_block.fragment &&
           previous_multicol_break_token) {
@@ -1582,7 +1583,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
   LayoutUnit containing_block_adjustment =
       container_builder_->BlockOffsetAdjustmentForFragmentainer(
           fragmentainer_consumed_block_size_);
-  if (NeedsOOFPositionedInfoPropagation(result->PhysicalFragment())) {
+  if (result->PhysicalFragment().NeedsOOFPositionedInfoPropagation()) {
     container_builder_->PropagateOOFPositionedInfo(
         result->PhysicalFragment(), oof_offset, relative_offset,
         offset_adjustment,

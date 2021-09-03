@@ -66,20 +66,6 @@ CORE_EXPORT void AdjustOffsetForSplitInline(
     const NGBoxFragmentBuilder* container_builder,
     LogicalOffset& offset);
 
-// Figure out if the child has any out-of-flow positioned descendants, in which
-// case we'll need to propagate this to the fragment builder.
-inline bool NeedsOOFPositionedInfoPropagation(const NGPhysicalFragment& child) {
-  if (child.HasOutOfFlowPositionedDescendants())
-    return true;
-
-  const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(&child);
-  if (!box_fragment)
-    return false;
-
-  return box_fragment->HasMulticolsWithPendingOOFs() ||
-         box_fragment->HasOutOfFlowPositionedFragmentainerDescendants();
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_

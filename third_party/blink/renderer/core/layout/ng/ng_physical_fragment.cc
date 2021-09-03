@@ -33,8 +33,7 @@ struct SameSizeAsNGPhysicalFragment
   PhysicalSize size;
   unsigned flags;
   Persistent<void*> break_token;
-  std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
-      oof_positioned_descendants_;
+  std::unique_ptr<void> oof_data;
 };
 
 ASSERT_SIZE(NGPhysicalFragment, SameSizeAsNGPhysicalFragment);
@@ -351,11 +350,14 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       has_collapsed_borders_(builder->has_collapsed_borders_),
       has_baseline_(false),
       has_last_baseline_(false),
+      has_fragmented_out_of_flow_data_(
+          !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
+          !builder->multicols_with_pending_oofs_.IsEmpty()),
       break_token_(std::move(builder->break_token_)),
-      oof_positioned_descendants_(
-          builder->oof_positioned_descendants_.IsEmpty()
-              ? nullptr
-              : new Vector<NGPhysicalOutOfFlowPositionedNode>()) {
+      oof_data_(builder->oof_positioned_descendants_.IsEmpty() &&
+                        !has_fragmented_out_of_flow_data_
+                    ? nullptr
+                    : OutOfFlowDataFromBuilder(builder)) {
   CHECK(builder->layout_object_);
   has_floating_descendants_for_paint_ =
       builder->has_floating_descendants_for_paint_;
@@ -363,11 +365,21 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
       builder->has_adjoining_object_descendants_;
   depends_on_percentage_block_size_ = DependsOnPercentageBlockSize(*builder);
   children_valid_ = true;
+}
 
-  PhysicalSize size = Size();
-  if (oof_positioned_descendants_) {
-    oof_positioned_descendants_->ReserveCapacity(
+std::unique_ptr<NGPhysicalFragment::OutOfFlowData>
+NGPhysicalFragment::OutOfFlowDataFromBuilder(
+    NGContainerFragmentBuilder* builder) {
+  std::unique_ptr<OutOfFlowData> oof_data;
+  if (has_fragmented_out_of_flow_data_)
+    oof_data = FragmentedOutOfFlowDataFromBuilder(builder);
+
+  if (!builder->oof_positioned_descendants_.IsEmpty()) {
+    if (!oof_data)
+      oof_data = std::make_unique<OutOfFlowData>();
+    oof_data->oof_positioned_descendants.ReserveCapacity(
         builder->oof_positioned_descendants_.size());
+    const PhysicalSize& size = Size();
     const WritingModeConverter converter(
         {builder->Style().GetWritingMode(), builder->Direction()}, size);
     for (const auto& descendant : builder->oof_positioned_descendants_) {
@@ -375,12 +387,13 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
           descendant.inline_container.container,
           converter.ToPhysical(descendant.inline_container.relative_offset,
                                PhysicalSize()));
-      oof_positioned_descendants_->emplace_back(
+      oof_data->oof_positioned_descendants.emplace_back(
           descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
           inline_container);
     }
   }
+  return oof_data;
 }
 
 // Even though the other constructors don't initialize many of these fields
@@ -415,13 +428,10 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
       has_collapsed_borders_(other.has_collapsed_borders_),
       has_baseline_(other.has_baseline_),
       has_last_baseline_(other.has_last_baseline_),
+      has_fragmented_out_of_flow_data_(other.has_fragmented_out_of_flow_data_),
       base_direction_(other.base_direction_),
       break_token_(other.break_token_),
-      oof_positioned_descendants_(
-          other.oof_positioned_descendants_
-              ? new Vector<NGPhysicalOutOfFlowPositionedNode>(
-                    *other.oof_positioned_descendants_)
-              : nullptr) {
+      oof_data_(other.oof_data_ ? other.CloneOutOfFlowData() : nullptr) {
   CHECK(layout_object_);
   DCHECK(other.children_valid_);
   DCHECK(children_valid_);
@@ -432,6 +442,8 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
 NGPhysicalFragment::~NGPhysicalFragment() = default;
 
 void NGPhysicalFragment::Destroy() const {
+  if (UNLIKELY(oof_data_ && has_fragmented_out_of_flow_data_))
+    const_cast<NGPhysicalFragment*>(this)->ClearOutOfFlowData();
   switch (Type()) {
     case kFragmentBox:
       delete static_cast<const NGPhysicalBoxFragment*>(this);
@@ -465,6 +477,45 @@ bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
   if (!container)
     return false;
   return container->IsLayoutNGMixin();
+}
+
+const NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData()
+    const {
+  if (!has_fragmented_out_of_flow_data_)
+    return nullptr;
+  const auto* oof_data =
+      reinterpret_cast<const NGFragmentedOutOfFlowData*>(oof_data_.get());
+  DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
+         !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
+  return oof_data;
+}
+
+bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
+  // If we have |oof_data_|, it should mean at least one of OOF propagation data
+  // exists.
+  DCHECK_EQ(
+      !!oof_data_,
+      HasOutOfFlowPositionedDescendants() ||
+          (FragmentedOutOfFlowData() &&
+           FragmentedOutOfFlowData()->NeedsOOFPositionedInfoPropagation()));
+  return !!oof_data_;
+}
+
+void NGPhysicalFragment::ClearOutOfFlowData() {
+  CHECK(oof_data_ && has_fragmented_out_of_flow_data_);
+  auto* oof_data = const_cast<std::unique_ptr<OutOfFlowData>*>(&oof_data_);
+  reinterpret_cast<std::unique_ptr<NGFragmentedOutOfFlowData>*>(oof_data)
+      ->reset();
+}
+
+std::unique_ptr<NGPhysicalFragment::OutOfFlowData>
+NGPhysicalFragment::CloneOutOfFlowData() const {
+  DCHECK(oof_data_);
+  if (!has_fragmented_out_of_flow_data_)
+    return std::make_unique<OutOfFlowData>(*oof_data_);
+  DCHECK(FragmentedOutOfFlowData());
+  return std::make_unique<NGFragmentedOutOfFlowData>(
+      *FragmentedOutOfFlowData());
 }
 
 const FragmentData* NGPhysicalFragment::GetFragmentData() const {

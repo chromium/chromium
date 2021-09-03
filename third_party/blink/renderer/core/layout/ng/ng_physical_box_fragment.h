@@ -36,8 +36,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                                const absl::optional<PhysicalRect>
                                    updated_layout_overflow = absl::nullopt);
 
-  using MulticolCollection = HashMap<UntracedMember<LayoutBox>,
-                                     NGMulticolWithPendingOOFs<PhysicalOffset>>;
   using PassKey = base::PassKey<NGPhysicalBoxFragment>;
   NGPhysicalBoxFragment(PassKey,
                         NGBoxFragmentBuilder* builder,
@@ -203,38 +201,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     if (!has_inflow_bounds_)
       return absl::nullopt;
     return *ComputeInflowBoundsAddress();
-  }
-
-  bool HasOutOfFlowPositionedFragmentainerDescendants() const {
-    if (!const_has_rare_data_)
-      return false;
-
-    return !ComputeRareDataAddress()
-                ->oof_positioned_fragmentainer_descendants.IsEmpty();
-  }
-
-  base::span<NGPhysicalOOFNodeForFragmentation>
-  OutOfFlowPositionedFragmentainerDescendants() const {
-    if (!const_has_rare_data_)
-      return base::span<NGPhysicalOOFNodeForFragmentation>();
-    Vector<NGPhysicalOOFNodeForFragmentation>& descendants =
-        const_cast<Vector<NGPhysicalOOFNodeForFragmentation>&>(
-            ComputeRareDataAddress()->oof_positioned_fragmentainer_descendants);
-    return {descendants.data(), descendants.size()};
-  }
-
-  bool HasMulticolsWithPendingOOFs() const {
-    if (!const_has_rare_data_)
-      return false;
-
-    return !ComputeRareDataAddress()->multicols_with_pending_oofs.IsEmpty();
-  }
-
-  MulticolCollection MulticolsWithPendingOOFs() const {
-    if (!const_has_rare_data_)
-      return MulticolCollection();
-    return const_cast<MulticolCollection&>(
-        ComputeRareDataAddress()->multicols_with_pending_oofs);
   }
 
   // Return true if this is either a container that establishes an inline
@@ -453,11 +419,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   struct RareData {
     RareData(const RareData&);
-    RareData(NGBoxFragmentBuilder*, PhysicalSize size);
+    explicit RareData(NGBoxFragmentBuilder*);
 
-    Vector<NGPhysicalOOFNodeForFragmentation>
-        oof_positioned_fragmentainer_descendants;
-    MulticolCollection multicols_with_pending_oofs;
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // TablesNG rare data.

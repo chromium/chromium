@@ -89,7 +89,7 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGBoxFragmentBuilder* builder,
+    NGContainerFragmentBuilder* builder,
     PhysicalSize outer_size,
     PhysicalSize inner_size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
@@ -102,7 +102,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
-    NGBoxFragmentBuilder* builder,
+    NGContainerFragmentBuilder* builder,
     PhysicalSize size,
     const NGContainingBlock<LogicalOffset>& containing_block) {
   PhysicalSize containing_block_size =
@@ -188,8 +188,6 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
 
   bool has_rare_data =
       builder->mathml_paint_info_ ||
-      !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
-      !builder->multicols_with_pending_oofs_.IsEmpty() ||
       builder->table_grid_rect_ || builder->table_column_geometries_ ||
       builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
@@ -330,8 +328,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   if (has_inflow_bounds_)
     *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) = *inflow_bounds;
   if (const_has_rare_data_) {
-    new (const_cast<RareData*>(ComputeRareDataAddress()))
-        RareData(builder, Size());
+    new (const_cast<RareData*>(ComputeRareDataAddress())) RareData(builder);
   }
 
   is_first_for_node_ = builder->is_first_for_node_;
@@ -371,8 +368,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   }
 
   has_descendants_for_table_part_ =
-      const_num_children_ || HasOutOfFlowPositionedFragmentainerDescendants() ||
-      HasOutOfFlowPositionedDescendants();
+      const_num_children_ || NeedsOOFPositionedInfoPropagation();
 
 #if DCHECK_IS_ON()
   CheckIntegrity();
@@ -468,11 +464,19 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   }
 }
 
-NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
-                                          PhysicalSize size)
-    : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
-  oof_positioned_fragmentainer_descendants.ReserveCapacity(
+// TODO(kojii): Move to ng_physical_fragment.cc
+std::unique_ptr<NGPhysicalFragment::OutOfFlowData>
+NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
+    NGContainerFragmentBuilder* builder) {
+  DCHECK(has_fragmented_out_of_flow_data_);
+  DCHECK_EQ(has_fragmented_out_of_flow_data_,
+            !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
+                !builder->multicols_with_pending_oofs_.IsEmpty());
+  std::unique_ptr<NGFragmentedOutOfFlowData> fragmented_data =
+      std::make_unique<NGFragmentedOutOfFlowData>();
+  fragmented_data->oof_positioned_fragmentainer_descendants.ReserveCapacity(
       builder->oof_positioned_fragmentainer_descendants_.size());
+  const PhysicalSize& size = Size();
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
     WritingDirectionMode writing_direction = builder->GetWritingDirection();
@@ -490,7 +494,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
     const WritingModeConverter containing_block_converter(
         writing_direction, containing_block_size);
 
-    oof_positioned_fragmentainer_descendants.emplace_back(
+    fragmented_data->oof_positioned_fragmentainer_descendants.emplace_back(
         descendant.Node(),
         descendant.static_position.ConvertToPhysical(
             containing_block_converter),
@@ -502,7 +506,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   }
   for (const auto& multicol : builder->multicols_with_pending_oofs_) {
     auto& value = multicol.value;
-    multicols_with_pending_oofs.insert(
+    fragmented_data->multicols_with_pending_oofs.insert(
         multicol.key,
         NGMulticolWithPendingOOFs<PhysicalOffset>(
             value.multicol_offset.ConvertToPhysical(
@@ -510,6 +514,11 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
             PhysicalContainingBlock(builder, size,
                                     value.fixedpos_containing_block)));
   }
+  return fragmented_data;
+}
+
+NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
+    : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
   if (builder->table_column_geometries_)
@@ -525,10 +534,7 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
 }
 
 NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
-    : oof_positioned_fragmentainer_descendants(
-          other.oof_positioned_fragmentainer_descendants),
-      multicols_with_pending_oofs(other.multicols_with_pending_oofs),
-      mathml_paint_info(other.mathml_paint_info
+    : mathml_paint_info(other.mathml_paint_info
                             ? new NGMathMLPaintInfo(*other.mathml_paint_info)
                             : nullptr),
       table_grid_rect(other.table_grid_rect),

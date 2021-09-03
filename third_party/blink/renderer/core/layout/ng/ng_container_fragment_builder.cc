@@ -43,7 +43,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
     const NGInlineContainer<LogicalOffset>* inline_container,
     absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
   if (adjustment_for_oof_propagation &&
-      NeedsOOFPositionedInfoPropagation(child)) {
+      child.NeedsOOFPositionedInfoPropagation()) {
     PropagateOOFPositionedInfo(child, child_offset, relative_offset,
                                /* offset_adjustment */ LogicalOffset(),
                                inline_container,
@@ -310,7 +310,7 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   // Calling this method without any work to do is expensive, even if it ends up
   // skipping all its parts (probably due to its size). Make sure that we have a
   // reason to be here.
-  DCHECK(NeedsOOFPositionedInfoPropagation(fragment));
+  DCHECK(fragment.NeedsOOFPositionedInfoPropagation());
 
   LogicalOffset adjusted_offset = offset + offset_adjustment + relative_offset;
 
@@ -375,14 +375,22 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
                                             new_inline_container);
   }
 
+  const NGFragmentedOutOfFlowData* oof_data =
+      fragment.FragmentedOutOfFlowData();
+  if (!oof_data)
+    return;
+  DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
+         !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  // TODO(kojii): We should propagate from line boxes too, but I'm doing it in a
+  // following patch to separate changes of the behavior.
   if (!box_fragment)
     return;
 
-  if (box_fragment->HasMulticolsWithPendingOOFs()) {
+  if (!oof_data->multicols_with_pending_oofs.IsEmpty()) {
     const auto& multicols_with_pending_oofs =
-        box_fragment->MulticolsWithPendingOOFs();
+        oof_data->multicols_with_pending_oofs;
     for (auto& multicol : multicols_with_pending_oofs) {
       auto& multicol_info = multicol.value;
       LogicalOffset multicol_offset =
@@ -432,11 +440,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     }
   }
 
-  if (!box_fragment->HasOutOfFlowPositionedFragmentainerDescendants())
+  if (oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
     return;
 
   const auto& out_of_flow_fragmentainer_descendants =
-      box_fragment->OutOfFlowPositionedFragmentainerDescendants();
+      oof_data->oof_positioned_fragmentainer_descendants;
   for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
     const NGPhysicalFragment* containing_block_fragment =
         descendant.containing_block.fragment.get();
