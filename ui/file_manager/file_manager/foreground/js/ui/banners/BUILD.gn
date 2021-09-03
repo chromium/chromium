@@ -25,6 +25,7 @@ html_to_js("web_components") {
     "educational_banner.js",
     "local_disk_low_space_banner.js",
     "state_banner.js",
+    "trash_banner.js",
     "warning_banner.js",
   ]
 }
@@ -43,6 +44,7 @@ js_type_check("closure_compile_jsmodules") {
     ":educational_banner",
     ":local_disk_low_space_banner",
     ":state_banner",
+    ":trash_banner",
     ":warning_banner",
   ]
 }
@@ -92,6 +94,15 @@ js_unittest("state_banner_unittest.m") {
     ":state_banner",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:mock_util",
+  ]
+}
+
+js_library("trash_banner") {
+  deps = [
+    ":state_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
   ]
 }
 
