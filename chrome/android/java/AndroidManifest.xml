@@ -930,7 +930,6 @@ by a child template that "extends" this file.
             android:exported="false">
         </service>
 
-        {% if channel in ['canary', 'default'] %}
         <!-- Quick Action Search widget -->
         <receiver
             android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSmall"
@@ -967,7 +966,6 @@ by a child template that "extends" this file.
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_action_search_widget_dino_info" />
         </receiver>
-        {% endif %}
 
         <receiver
             android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetReceiver"
