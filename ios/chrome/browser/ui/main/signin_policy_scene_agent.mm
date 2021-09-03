@@ -9,6 +9,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/browser/application_context.h"
@@ -18,6 +20,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -42,11 +45,17 @@ bool IsSigninForcedByPolicy() {
 
 }  // namespace
 
-@interface SigninPolicySceneAgent () <AppStateObserver, PrefObserverDelegate> {
+@interface SigninPolicySceneAgent () <AppStateObserver,
+                                      PrefObserverDelegate,
+                                      IdentityManagerObserverBridgeDelegate> {
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefsObserverBridge;
   // Registrar for pref change notifications.
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // Observes changes in identity to make sure that the sign-in state matches
+  // the BrowserSignin policy.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityObserverBridge;
 }
 
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
@@ -55,9 +64,6 @@ bool IsSigninForcedByPolicy() {
 @property(nonatomic, assign) Browser* mainBrowser;
 
 @end
-
-// TODO(crbug.com/1236593): Add an handler to prompt to sign-in when removing
-// the primary account.
 
 @implementation SigninPolicySceneAgent
 
@@ -126,20 +132,41 @@ bool IsSigninForcedByPolicy() {
   [self handleSigninPromptsIfUIAvailable];
 }
 
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  // Consider showing the sign-in prompts when there is change in the
+  // primary account.
+  [self handleSigninPromptsIfUIAvailable];
+}
+
 #pragma mark - Internal
 
 - (void)setupObservers {
   DCHECK(self.mainBrowser);
+
+  // Set observer for policy changes.
   PrefService* prefService = GetApplicationContext()->GetLocalState();
   _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
   _prefChangeRegistrar->Init(prefService);
   _prefsObserverBridge = std::make_unique<PrefObserverBridge>(self);
   _prefsObserverBridge->ObserveChangesForPreference(prefs::kBrowserSigninPolicy,
                                                     _prefChangeRegistrar.get());
+
+  // Set observer for primary account changes.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.mainBrowser->GetBrowserState());
+  _identityObserverBridge =
+      std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                              self);
 }
 
 - (void)tearDownObservers {
-  _prefChangeRegistrar->RemoveAll();
+  _prefChangeRegistrar.reset();
+  _prefsObserverBridge.reset();
+  _identityObserverBridge.reset();
 }
 
 - (BOOL)isForcedSignInRequiredByPolicy {

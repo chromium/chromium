@@ -127,7 +127,6 @@ source_set("scene") {
     "//components/signin/ios/browser:features",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/url_formatter",
     "//components/version_info",
