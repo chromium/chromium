@@ -131,7 +131,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   settings->SetAriaModalPrunesAXTree(true);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Do not ignore SVG grouping (<g>) elements on ChromeOS, which is needed so
   // Select-to-Speak can read SVG text nodes in natural reading order.
   settings->SetAccessibilityIncludeSvgGElement(true);
@@ -143,7 +143,7 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   // UI for a select element directly accessible. Disable by default on
   // Chrome OS, but some tests may override.
   bool disable_ax_menu_list = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   disable_ax_menu_list = true;
 #endif
   auto* command_line = base::CommandLine::ForCurrentProcess();

@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
@@ -2677,7 +2676,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // On ChromeOS, SVG <g> elements are included.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g-for-cros.html")
 #else
 #define AccessibilitySvgG_TestFile FILE_PATH_LITERAL("svg-g.html")
