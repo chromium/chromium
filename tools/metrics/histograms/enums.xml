@@ -79475,6 +79475,7 @@ would be helpful to identify which type is being sent.
   <int value="36" label="Customize Chrome fonts"/>
   <int value="37" label="Manage Chrome themes"/>
   <int value="38" label="Customize search engines"/>
+  <int value="39" label="Manage ChromeOS accessibility"/>
 </enum>
 
 <enum name="SuggestionsResponseState">

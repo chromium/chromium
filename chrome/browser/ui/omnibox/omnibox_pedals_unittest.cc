@@ -197,7 +197,6 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
           "manage downloads",
           "view history",
           "share current website",
-          "manage accessibility",
           "chrome fonts",
           "manage chrome themes",
           "search engines",

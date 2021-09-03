@@ -1236,6 +1236,28 @@ class OmniboxPedalManageChromeAccessibility : public OmniboxPedal {
 
 // =============================================================================
 
+class OmniboxPedalManageChromeOSAccessibility : public OmniboxPedal {
+ public:
+  OmniboxPedalManageChromeOSAccessibility()
+      : OmniboxPedal(
+            OmniboxPedalId::MANAGE_CHROMEOS_ACCESSIBILITY,
+            LabelStrings(
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_HINT,
+                IDS_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUGGESTION_CONTENTS,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY_SUFFIX,
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_CHROMEOS_ACCESSIBILITY),
+            GURL()) {}
+
+  OmniboxPedalId GetMetricsId() const override {
+    return OmniboxPedalId::MANAGE_CHROME_ACCESSIBILITY;
+  }
+
+ protected:
+  ~OmniboxPedalManageChromeOSAccessibility() override = default;
+};
+
+// =============================================================================
+
 class OmniboxPedalCustomizeChromeFonts : public OmniboxPedal {
  public:
   OmniboxPedalCustomizeChromeFonts()
@@ -1334,7 +1356,11 @@ GetPedalImplementations(bool with_branding, bool incognito) {
     add(new OmniboxPedalManageChromeDownloads());
     add(new OmniboxPedalViewChromeHistory());
     add(new OmniboxPedalShareThisPage());
+#if !defined(OS_CHROMEOS)
     add(new OmniboxPedalManageChromeAccessibility());
+#else
+    add(new OmniboxPedalManageChromeOSAccessibility());
+#endif
     add(new OmniboxPedalCustomizeChromeFonts());
     add(new OmniboxPedalManageChromeThemes());
     add(new OmniboxPedalCustomizeSearchEngines());

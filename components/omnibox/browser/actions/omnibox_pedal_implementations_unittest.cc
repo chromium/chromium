@@ -16472,19 +16472,6 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "website this share",
         },
 
-        // ID#35
-        {
-            // Generated suggestions:
-            "accessibility chrome manage",
-            "accessibility manage",
-            "accessibility manage chrome",
-            "chrome accessibility manage",
-            "chrome manage accessibility",
-            "manage accessibility",
-            "manage accessibility chrome",
-            "manage chrome accessibility",
-        },
-
         // ID#36
         {
             // Generated suggestions:
