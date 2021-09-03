@@ -70,6 +70,13 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // and implementation are validated experimentally.
 extern const base::Feature kFileAnalysisMimeTypeSniff;
 
+// Determines the tag to pass to Omaha to get a file type policy.
+extern const base::Feature kFileTypePoliciesTag;
+
+// The parameter name used for getting the tag value from
+// `kFileTypePoliciesTag`.
+const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
+
 // Enable omitting non-user gesture from referrer chain.
 extern const base::Feature kOmitNonUserGesturesFromReferrerChain;
 
@@ -165,6 +172,10 @@ bool GetShouldFillOldPhishGuardProto();
 // Returns the tag used for Client Side Phishing Detection models, as
 // computed from the current feature flags.
 std::string GetClientSideDetectionTag();
+
+// Returns the tag used for file type policies, as computed from the current
+// feature flag.
+std::string GetFileTypePoliciesTag();
 
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

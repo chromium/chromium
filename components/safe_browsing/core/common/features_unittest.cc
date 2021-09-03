@@ -91,4 +91,18 @@ TEST(SafeBrowsingFeatures, ClientSideDetectionTagAllUsersAndHighMemory) {
   }
 }
 
+TEST(SafeBrowsingFeatures, FileTypePoliciesTagDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kFileTypePoliciesTag);
+  EXPECT_EQ(GetFileTypePoliciesTag(), "default");
+}
+
+TEST(SafeBrowsingFeatures, FileTypePoliciesTagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList::FeatureAndParams feature_params(
+      kFileTypePoliciesTag, {{"policy_omaha_tag", "45"}});
+  feature_list.InitWithFeaturesAndParameters({feature_params}, {});
+  EXPECT_EQ(GetFileTypePoliciesTag(), "45");
+}
+
 }  // namespace safe_browsing

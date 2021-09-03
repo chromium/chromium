@@ -52,6 +52,9 @@ const base::Feature kClientSideDetectionReferrerChain{
 const base::Feature kFileAnalysisMimeTypeSniff{
     "FileAnalysisMimeTypeSniff", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kFileTypePoliciesTag{"FileTypePoliciesTag",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kClientSideDetectionWithToken{
     "SafeBrowsingCSDRequestWithToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -170,12 +173,13 @@ constexpr struct {
     {&kClientSideDetectionReferrerChain, true},
     {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
-    {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
+    {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
+    {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
@@ -212,6 +216,9 @@ base::ListValue GetFeatureStatusList() {
       safe_browsing::kClientSideDetectionModelHighMemoryTag,
       kClientSideDetectionTagParamName)));
   param_list.Append(base::Value(kClientSideDetectionModelHighMemoryTag.name));
+  param_list.Append(base::Value(variations::GetVariationParamValueByFeature(
+      kFileTypePoliciesTag, kFileTypePoliciesTagParamName)));
+  param_list.Append(base::Value(kFileTypePoliciesTag.name));
 
   return param_list;
 }
@@ -238,6 +245,15 @@ std::string GetClientSideDetectionTag() {
           safe_browsing::kClientSideDetectionModelHighMemoryTag,
           kClientSideDetectionTagParamName);
     }
+  }
+
+  return "default";
+}
+
+std::string GetFileTypePoliciesTag() {
+  if (base::FeatureList::IsEnabled(kFileTypePoliciesTag)) {
+    return variations::GetVariationParamValueByFeature(
+        kFileTypePoliciesTag, kFileTypePoliciesTagParamName);
   }
 
   return "default";
