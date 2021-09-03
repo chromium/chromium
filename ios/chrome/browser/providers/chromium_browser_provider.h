@@ -14,7 +14,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
 
   // ChromeBrowserProvider implementation
   UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
-  VoiceSearchProvider* GetVoiceSearchProvider() const override;
 
   id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state)
       const override NS_RETURNS_RETAINED;
@@ -25,7 +24,6 @@ class ChromiumBrowserProvider : public ios::ChromeBrowserProvider {
 
  private:
   std::unique_ptr<UserFeedbackProvider> user_feedback_provider_;
-  std::unique_ptr<VoiceSearchProvider> voice_search_provider_;
   std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
 };
 

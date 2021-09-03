@@ -20,7 +20,6 @@ source_set("public") {
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/util",
     "//ios/components/ui_util",
-    "//ios/public/provider/chrome/browser/voice",
   ]
   public_deps = [ ":constants" ]
 }

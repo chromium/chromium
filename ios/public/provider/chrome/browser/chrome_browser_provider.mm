@@ -75,10 +75,6 @@ UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
 
 void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
 
-VoiceSearchProvider* ChromeBrowserProvider::GetVoiceSearchProvider() const {
-  return nullptr;
-}
-
 id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
     Browser* browser,
     web::WebState* web_state) const {

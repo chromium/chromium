@@ -2,16 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/public/provider/chrome/browser/build_config.gni")
-
 source_set("providers") {
   sources = [
     "chromium_browser_provider.h",
     "chromium_browser_provider.mm",
     "chromium_logo_controller.h",
     "chromium_logo_controller.mm",
-    "chromium_voice_search_provider.h",
-    "chromium_voice_search_provider.mm",
   ]
   deps = [
     "//base",
@@ -23,7 +19,6 @@ source_set("providers") {
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
-    "//ios/public/provider/chrome/browser/voice",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

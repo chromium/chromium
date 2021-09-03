@@ -20,7 +20,6 @@
 class DiscoverFeedProvider;
 class MailtoHandlerProvider;
 class UserFeedbackProvider;
-class VoiceSearchProvider;
 
 namespace base {
 class CommandLine;
@@ -99,9 +98,6 @@ class ChromeBrowserProvider {
 
   // Attaches any embedder-specific browser agents to the given |browser|.
   virtual void AttachBrowserAgents(Browser* browser) const;
-
-  // Returns an instance of the voice search provider, if one exists.
-  virtual VoiceSearchProvider* GetVoiceSearchProvider() const;
 
   virtual id<LogoVendor> CreateLogoVendor(Browser* browser,
                                           web::WebState* web_state) const

@@ -7,7 +7,6 @@
 #include <memory>
 
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
-#import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
@@ -18,17 +17,12 @@
 
 ChromiumBrowserProvider::ChromiumBrowserProvider()
     : user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
-      voice_search_provider_(std::make_unique<ChromiumVoiceSearchProvider>()),
       discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
 
 UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
   return [[UITextField alloc] initWithFrame:CGRectZero];
-}
-
-VoiceSearchProvider* ChromiumBrowserProvider::GetVoiceSearchProvider() const {
-  return voice_search_provider_.get();
 }
 
 id<LogoVendor> ChromiumBrowserProvider::CreateLogoVendor(
