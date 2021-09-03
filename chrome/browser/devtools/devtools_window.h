@@ -366,6 +366,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       const content::NativeWebKeyboardEvent& event) override;
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
+  std::unique_ptr<content::EyeDropper> OpenEyeDropper(
+      content::RenderFrameHost* render_frame_host,
+      content::EyeDropperListener* listener) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;

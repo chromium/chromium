@@ -1373,6 +1373,15 @@ content::JavaScriptDialogManager* DevToolsWindow::GetJavaScriptDialogManager(
   return javascript_dialogs::AppModalDialogManager::GetInstance();
 }
 
+std::unique_ptr<content::EyeDropper> DevToolsWindow::OpenEyeDropper(
+    content::RenderFrameHost* render_frame_host,
+    content::EyeDropperListener* listener) {
+  BrowserWindow* window = GetInspectedBrowserWindow();
+  if (window)
+    return window->OpenEyeDropper(render_frame_host, listener);
+  return nullptr;
+}
+
 void DevToolsWindow::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
