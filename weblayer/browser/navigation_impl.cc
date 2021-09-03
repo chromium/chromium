@@ -46,16 +46,6 @@ NavigationImpl::~NavigationImpl() {
 #endif
 }
 
-void NavigationImpl::SetParamsToLoadWhenSafe(
-    std::unique_ptr<content::NavigationController::LoadURLParams> params) {
-  scheduled_load_params_ = std::move(params);
-}
-
-std::unique_ptr<content::NavigationController::LoadURLParams>
-NavigationImpl::TakeParamsToLoadWhenSafe() {
-  return std::move(scheduled_load_params_);
-}
-
 #if defined(OS_ANDROID)
 ScopedJavaLocalRef<jstring> NavigationImpl::GetUri(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>(

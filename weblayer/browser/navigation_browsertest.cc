@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -22,9 +23,11 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/browser.h"
+#include "weblayer/public/browser_observer.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/navigation_observer.h"
+#include "weblayer/public/new_tab_delegate.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/interstitial_utils.h"
 #include "weblayer/test/test_navigation_observer.h"
@@ -315,6 +318,72 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(2, completed_count);
   ASSERT_EQ(2, controller->GetNavigationListSize());
   EXPECT_EQ(final_url, controller->GetNavigationEntryDisplayURL(1));
+}
+
+class BrowserObserverImpl : public BrowserObserver {
+ public:
+  explicit BrowserObserverImpl(Browser* browser) : browser_(browser) {
+    browser->AddObserver(this);
+  }
+
+  ~BrowserObserverImpl() override { browser_->RemoveObserver(this); }
+
+  void SetNewTabCallback(base::RepeatingCallback<void(Tab*)> callback) {
+    new_tab_callback_ = callback;
+  }
+
+  // BrowserObserver:
+  void OnTabAdded(Tab* tab) override { new_tab_callback_.Run(tab); }
+
+ private:
+  base::RepeatingCallback<void(Tab*)> new_tab_callback_;
+  Browser* browser_;
+};
+
+class NewTabDelegateImpl : public NewTabDelegate {
+ public:
+  // NewTabDelegate:
+  void OnNewTab(Tab* new_tab, NewTabType type) override {}
+};
+
+// Ensures calling Navigate() from within NavigationStarted() for a popup does
+// not crash.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, NavigateFromNewWindow) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndWaitForCompletion(
+      embedded_test_server()->GetURL("/simple_page2.html"), shell());
+  NewTabDelegate* old_new_tab_delegate =
+      static_cast<TabImpl*>(shell()->tab())->new_tab_delegate();
+  NewTabDelegateImpl new_tab_delegate;
+  shell()->tab()->SetNewTabDelegate(&new_tab_delegate);
+  BrowserObserverImpl browser_observer(shell()->tab()->GetBrowser());
+  std::unique_ptr<NavigationObserverImpl> popup_navigation_observer;
+  base::RunLoop run_loop;
+  Tab* popup_tab = nullptr;
+  auto popup_started_navigation = [&](Navigation* navigation) {
+    if (navigation->GetURL().path() == "/simple_page.html") {
+      popup_tab->GetNavigationController()->Navigate(
+          embedded_test_server()->GetURL("/simple_page3.html"));
+    } else if (navigation->GetURL().path() == "/simple_page3.html") {
+      run_loop.Quit();
+    }
+  };
+  browser_observer.SetNewTabCallback(base::BindLambdaForTesting([&](Tab* tab) {
+    popup_tab = tab;
+    popup_navigation_observer = std::make_unique<NavigationObserverImpl>(
+        tab->GetNavigationController());
+    popup_navigation_observer->SetStartedCallback(
+        base::BindLambdaForTesting(popup_started_navigation));
+  }));
+  // 'noopener' is key to triggering the problematic case.
+  const std::string window_open = base::StringPrintf(
+      "window.open('%s', '', 'noopener')",
+      embedded_test_server()->GetURL("/simple_page.html").spec().c_str());
+  ExecuteScriptWithUserGesture(shell()->tab(), window_open);
+  run_loop.Run();
+
+  // Restore the old delegate to make sure it is cleaned up on Android.
+  shell()->tab()->SetNewTabDelegate(old_new_tab_delegate);
 }
 
 // Verifies calling Navigate() from NavigationRedirected() works.

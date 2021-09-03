@@ -153,6 +153,15 @@ class NavigationControllerImpl : public NavigationController,
   void DoNavigate(
       std::unique_ptr<content::NavigationController::LoadURLParams> params);
 
+  // Schedules a load to happen as soon as possible. This is used in cases
+  // where it is not safe to call load. In particular, if a load was just
+  // started. Content is generally not reentrant when starting a load and has
+  // CHECKs to ensure it doesn't happen.
+  void ScheduleDelayedLoad(
+      std::unique_ptr<content::NavigationController::LoadURLParams> params);
+  void CancelDelayedLoad();
+  void ProcessDelayedLoad();
+
   base::ObserverList<NavigationObserver>::Unchecked observers_;
   std::map<content::NavigationHandle*, std::unique_ptr<NavigationImpl>>
       navigation_map_;
@@ -172,6 +181,10 @@ class NavigationControllerImpl : public NavigationController,
   // delete the WebContents. This is not used for all callbacks, just the
   // ones that we need to allow deletion from (such as completed/failed).
   bool should_delay_web_contents_deletion_ = false;
+
+  // See comment in ScheduleDelayedLoad() for details.
+  std::unique_ptr<content::NavigationController::LoadURLParams>
+      delayed_load_params_;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_ptr_factory_{this};
 

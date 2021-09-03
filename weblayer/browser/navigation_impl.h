@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "content/public/browser/navigation_controller.h"
 #include "weblayer/public/navigation.h"
 
 #if defined(OS_ANDROID)
@@ -29,6 +27,8 @@ namespace weblayer {
 class NavigationImpl : public Navigation {
  public:
   explicit NavigationImpl(content::NavigationHandle* navigation_handle);
+  NavigationImpl(const NavigationImpl&) = delete;
+  NavigationImpl& operator=(const NavigationImpl&) = delete;
   ~NavigationImpl() override;
 
   int navigation_entry_unique_id() const { return navigation_entry_unique_id_; }
@@ -61,11 +61,6 @@ class NavigationImpl : public Navigation {
   bool disable_network_error_auto_reload() {
     return disable_network_error_auto_reload_;
   }
-
-  void SetParamsToLoadWhenSafe(
-      std::unique_ptr<content::NavigationController::LoadURLParams> params);
-  std::unique_ptr<content::NavigationController::LoadURLParams>
-  TakeParamsToLoadWhenSafe();
 
 #if defined(OS_ANDROID)
   int GetState(JNIEnv* env) { return static_cast<int>(GetState()); }
@@ -168,15 +163,6 @@ class NavigationImpl : public Navigation {
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_;
   std::unique_ptr<embedder_support::WebResourceResponse> response_;
 #endif
-
-  // Used to delay loading until safe. In particular, if Navigate() is called
-  // from NavigationStarted(), then the parameters are captured and the
-  // navigation started later on. The delaying is necessary as content is not
-  // reentrant, and this triggers some amount of reentrancy.
-  std::unique_ptr<content::NavigationController::LoadURLParams>
-      scheduled_load_params_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationImpl);
 };
 
 }  // namespace weblayer
