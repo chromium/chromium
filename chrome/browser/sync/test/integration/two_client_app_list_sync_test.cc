@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
 
   // Disable APP_LIST by disabling apps sync.
   SyncUserSettings* settings = GetClient(1)->service()->GetUserSettings();
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Remove(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAppListSyncTest, DisableApps) {
   ASSERT_FALSE(AllProfilesHaveSameAppList());
 
   // Enable APP_LIST by enabling apps sync.
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     UserSelectableOsTypeSet types = settings->GetSelectedOsTypes();
     types.Put(UserSelectableOsType::kOsApps);
     settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);

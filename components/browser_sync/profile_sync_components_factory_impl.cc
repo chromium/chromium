@@ -343,8 +343,7 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
   // When SyncSettingsCategorization is enabled the controller is created in
   // ChromeSyncClient.
   if (!disabled_types.Has(syncer::PRINTERS) &&
-      !(chromeos::features::IsSplitSettingsSyncEnabled() ||
-        chromeos::features::IsSyncSettingsCategorizationEnabled())) {
+      !chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     controllers.push_back(
         CreateModelTypeControllerForModelRunningOnUIThread(syncer::PRINTERS));
   }

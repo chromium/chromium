@@ -216,8 +216,11 @@ var OSSettingsPeoplePageOsSyncV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
   get featureList() {
     return {
-      enabled: super.featureList.enabled.concat(
-          ['chromeos::features::kSplitSettingsSync']),
+      enabled: super.featureList.enabled.concat([
+        // TODO(https://crbug.com/1227693): Remove kSplitSettingsSync.
+        'chromeos::features::kSplitSettingsSync',
+        'chromeos::features::kSyncSettingsCategorization'
+      ])
     };
   }
 };

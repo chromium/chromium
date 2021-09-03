@@ -34,8 +34,7 @@ OsSyncableServiceModelTypeController::OsSyncableServiceModelTypeController(
           DelegateMode::kTransportModeWithSingleModel),
       pref_service_(pref_service),
       sync_service_(sync_service) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(type == syncer::APP_LIST || type == syncer::OS_PREFERENCES ||
          type == syncer::OS_PRIORITY_PREFERENCES);
   DCHECK(pref_service_);
