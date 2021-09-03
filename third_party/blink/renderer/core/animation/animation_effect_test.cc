@@ -105,9 +105,6 @@ class TestAnimationEffect : public AnimationEffect {
     time_to_next_iteration_ = time_to_next_iteration;
     return AnimationTimeDelta::Max();
   }
-  absl::optional<AnimationTimeDelta> TimelineDuration() const override {
-    return absl::nullopt;
-  }
   double TakeLocalTime() {
     DCHECK(local_time_);
     const double result = local_time_->InSecondsF();

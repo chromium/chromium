@@ -157,13 +157,17 @@ test_csstext(
   `@scroll-timeline timeline { start: selector(#bar) start 1; }`);
 
 test_csstext(
+  'time-range descriptor',
+  `@scroll-timeline timeline { time-range: 10s; }`);
+
+test_csstext(
   'defaults',
-  `@scroll-timeline timeline { source: none; orientation: auto; start: auto; end: auto; }`);
+  `@scroll-timeline timeline { source: none; orientation: auto; start: auto; end: auto; time-range: auto; }`);
 
 test_csstext(
   'order',
-  `@scroll-timeline timeline { orientation: auto; source: none; end: auto; start: auto; }`,
-  `@scroll-timeline timeline { source: none; orientation: auto; start: auto; end: auto; }`);
+  `@scroll-timeline timeline { orientation: auto; time-range: auto; source: none; end: auto; start: auto; }`,
+  `@scroll-timeline timeline { source: none; orientation: auto; start: auto; end: auto; time-range: auto; }`);
 
 // CSSScrollTimelineRule.source
 
@@ -241,5 +245,22 @@ test_offsets('selector(#foo) 3.5');
 test_offsets('selector(#foo) end');
 test_offsets('selector(#foo) end 3');
 test_offsets('selector(#foo) 3 end', 'selector(#foo) end 3');
+
+// CSSScrollTimelineRule.timeRange
+
+function test_scroll_time_range(specified, expected) {
+  test_descriptor('time-range', specified, expected);
+}
+
+test_scroll_time_range('auto');
+test_scroll_time_range(' auto ', 'auto');
+test_scroll_time_range('1s');
+test_scroll_time_range(' 1s ', '1s');
+test_scroll_time_range('1000ms');
+
+test_scroll_time_range('', 'auto');
+test_scroll_time_range('red', 'auto');
+test_scroll_time_range('#fff', 'auto');
+test_scroll_time_range('unset', 'auto');
 
 </script>

@@ -160,12 +160,10 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void DetachTarget(Animation*);
   void RefreshTarget();
   void CountAnimatedProperties() const;
-  AnimationTimeDelta IntrinsicIterationDuration() const override;
   AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
       absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
-  absl::optional<AnimationTimeDelta> TimelineDuration() const override;
   bool HasIncompatibleStyle() const;
   bool HasMultipleTransformProperties() const;
   void RestartRunningAnimationOnCompositor();

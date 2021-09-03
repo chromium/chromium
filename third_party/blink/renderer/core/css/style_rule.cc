@@ -433,7 +433,8 @@ StyleRuleScrollTimeline::StyleRuleScrollTimeline(
       orientation_(
           properties->GetPropertyCSSValue(CSSPropertyID::kOrientation)),
       start_(properties->GetPropertyCSSValue(CSSPropertyID::kStart)),
-      end_(properties->GetPropertyCSSValue(CSSPropertyID::kEnd)) {}
+      end_(properties->GetPropertyCSSValue(CSSPropertyID::kEnd)),
+      time_range_(properties->GetPropertyCSSValue(CSSPropertyID::kTimeRange)) {}
 
 StyleRuleScrollTimeline::~StyleRuleScrollTimeline() = default;
 
@@ -443,6 +444,7 @@ void StyleRuleScrollTimeline::TraceAfterDispatch(
   visitor->Trace(orientation_);
   visitor->Trace(start_);
   visitor->Trace(end_);
+  visitor->Trace(time_range_);
 
   StyleRuleBase::TraceAfterDispatch(visitor);
 }

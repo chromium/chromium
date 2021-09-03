@@ -24,7 +24,7 @@ TEST(InertEffectTest, IsCurrent) {
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
+        TimelinePhase::kActive,
         /* playback_rate */ 1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
@@ -40,7 +40,7 @@ TEST(InertEffectTest, IsCurrent) {
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
+        TimelinePhase::kActive,
         /* playback_rate */ 1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
@@ -56,7 +56,7 @@ TEST(InertEffectTest, IsCurrent) {
 
     auto* inert_effect = MakeGarbageCollected<InertEffect>(
         opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-        TimelinePhase::kActive, absl::nullopt,
+        TimelinePhase::kActive,
         /* playback_rate */ -1.0);
     HeapVector<Member<Interpolation>> interpolations;
     // Calling Sample ensures Timing is calculated.
@@ -76,12 +76,12 @@ TEST(InertEffectTest, Affects) {
 
   auto* opacity_effect = MakeGarbageCollected<InertEffect>(
       opacity_model, timing, /* paused */ false, AnimationTimeDelta(),
-      TimelinePhase::kActive, absl::nullopt,
+      TimelinePhase::kActive,
       /* playback_rate */ 1.0);
 
   auto* color_effect = MakeGarbageCollected<InertEffect>(
       color_model, timing, /* paused */ false, AnimationTimeDelta(),
-      TimelinePhase::kActive, absl::nullopt,
+      TimelinePhase::kActive,
       /* playback_rate */ 1.0);
 
   EXPECT_TRUE(opacity_effect->Affects(PropertyHandle(GetCSSPropertyOpacity())));

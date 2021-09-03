@@ -125,6 +125,11 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // overflow, adding and removal of scrollable area.
   static void Invalidate(Node* node);
 
+  // TODO (crbug.com/1216655): Time range should be removed from ScrollTimeline.
+  // Currently still left in for the sake of backwards compatibility with
+  // existing tests.
+  double GetTimeRange() const { return time_range_ ? time_range_.value() : 0; }
+
   // Duration is the maximum value a timeline may generate for current time.
   // Used to convert time values to proportional values.
   absl::optional<AnimationTimeDelta> GetDuration() const override {

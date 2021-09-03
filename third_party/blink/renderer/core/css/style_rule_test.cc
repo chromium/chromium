@@ -29,6 +29,7 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
           source: selector(#foo);
           start: 1px;
           end: 2px;
+          time-range: 10s;
         }
       )CSS");
   }
@@ -41,6 +42,7 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineGettersWithoutFeature) {
   EXPECT_TRUE(rule->GetSource());
   EXPECT_TRUE(rule->GetStart());
   EXPECT_TRUE(rule->GetEnd());
+  EXPECT_TRUE(rule->GetTimeRange());
 }
 
 TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
@@ -51,6 +53,7 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
         source: selector(#foo);
         start: 1px;
         end: 2px;
+        time-range: 10s;
       }
     )CSS");
 
@@ -71,6 +74,7 @@ TEST_F(StyleRuleTest, StyleRuleScrollTimelineCopy) {
   EXPECT_EQ(rule->GetOrientation(), copy->GetOrientation());
   EXPECT_EQ(rule->GetStart(), copy->GetStart());
   EXPECT_EQ(rule->GetEnd(), copy->GetEnd());
+  EXPECT_EQ(rule->GetTimeRange(), copy->GetTimeRange());
 }
 
 TEST_F(StyleRuleTest, StyleRulePropertyCopy) {

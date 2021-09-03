@@ -60,6 +60,8 @@
       options.name = 'timeline';
     if (typeof(options.source) == 'undefined')
       options.source = 'selector(#scroller1)';
+    if (typeof(options.timeRange) == 'undefined')
+      options.timeRange = '1e10s';
     if (typeof(options.start) == 'undefined')
       options.start = '0px';
     if (typeof(options.end) == 'undefined')
@@ -67,6 +69,7 @@
     return insertSheet(`
       @scroll-timeline ${options.name} {
         source: ${options.source};
+        time-range: ${options.timeRange};
         start: ${options.start};
         end: ${options.end};
       }
@@ -104,13 +107,7 @@
       scroller1.scrollTop = scroller1.scrollTop - 1;
       scroller2.scrollTop = scroller2.scrollTop - 1;
       await waitForNextFrame();
-      assert_approx_equals(
-          parseFloat(getComputedStyle(element).width),
-          parseFloat(expected),
-          // converting between progress based scroll timelines and document
-          // timelines has some margin of rounding error, this check makes sure
-          // values are within 1/10th of a pixel.
-          0.1);
+      assert_equals(getComputedStyle(element).width, expected);
     }, description + ' [scroll]');
   }
 

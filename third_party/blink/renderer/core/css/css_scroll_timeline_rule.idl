@@ -11,4 +11,5 @@
     readonly attribute CSSOMString orientation;
     readonly attribute CSSOMString start;
     readonly attribute CSSOMString end;
+    readonly attribute CSSOMString timeRange;
 };
