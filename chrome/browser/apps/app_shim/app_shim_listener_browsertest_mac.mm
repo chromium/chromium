@@ -80,6 +80,8 @@ class TestShimClient : public chrome::mojom::AppShim {
   void UpdateApplicationDockMenu(
       std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
       override {}
+  void BindTestInterface(
+      mojo::PendingReceiver<chrome::mojom::AppShimTest> receiver) override {}
 
  private:
   void OnShimConnectedDone(

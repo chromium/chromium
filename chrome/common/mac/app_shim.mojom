@@ -82,6 +82,13 @@ struct ApplicationDockMenuItem {
   url.mojom.Url url;
 };
 
+// A test-only interface extending chrome.mojom.AppShim.
+interface AppShimTest {
+  // Called to retrieve the current application dock menu.
+  GetApplicationDockMenuForTesting() =>
+      (array<ApplicationDockMenuItem> dock_menu_items);
+};
+
 // Interface through which the browser communicates to a shim process.
 interface AppShim {
   // Create the interface to the NSApplication (through which NSViews and
@@ -105,6 +112,10 @@ interface AppShim {
 
   // Called to update the state of the application dock menu.
   UpdateApplicationDockMenu(array<ApplicationDockMenuItem> dock_menu_items);
+
+  // Binds the testing interface for extra functionality only available in
+  // tests.
+  BindTestInterface(pending_receiver<AppShimTest> receiver);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -170,4 +181,3 @@ interface AppShimHostBootstrap {
                       (AppShimLaunchResult launch_result,
                        pending_receiver<AppShim> app_shim_receiver);
 };
-
