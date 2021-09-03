@@ -190,11 +190,14 @@ void WaylandWindow::RemoveEnteredOutput(uint32_t output_id) {
 
 bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
                               int operation,
+                              mojom::DragEventSource source,
                               gfx::NativeCursor cursor,
                               bool can_grab_pointer,
                               WmDragHandler::Delegate* delegate) {
-  if (!connection_->data_drag_controller()->StartSession(data, operation))
+  if (!connection_->data_drag_controller()->StartSession(data, operation,
+                                                         source)) {
     return false;
+  }
 
   DCHECK(!drag_handler_delegate_);
   drag_handler_delegate_ = delegate;

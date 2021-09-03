@@ -11,11 +11,14 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
@@ -84,7 +87,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Starts a data drag and drop session for |data|. Returns true if it is
   // successfully started, false otherwise. Only one DND session can run at a
   // given time.
-  bool StartSession(const ui::OSExchangeData& data, int operation);
+  bool StartSession(const ui::OSExchangeData& data,
+                    int operation,
+                    mojom::DragEventSource source);
 
   State state() const { return state_; }
 
@@ -129,6 +134,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // then immediately calls OnDragMotion to get the actual operation.
   void PropagateOnDragEnter(const gfx::PointF& location,
                             std::unique_ptr<OSExchangeData> data);
+
+  absl::optional<wl::Serial> GetAndValidateSerialForDrag(
+      mojom::DragEventSource source);
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;

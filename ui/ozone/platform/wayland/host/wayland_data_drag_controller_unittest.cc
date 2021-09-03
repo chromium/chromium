@@ -48,8 +48,10 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::Mock;
 using ::testing::Values;
+using ui::mojom::DragEventSource;
 using ui::mojom::DragOperation;
 
 namespace ui {
@@ -186,13 +188,14 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     return kSampleTextForDragAndDrop16;
   }
 
-  void RunDragLoopWithSampleData(WaylandWindow* origin_window, int operations) {
+  void RunMouseDragWithSampleData(WaylandWindow* origin_window,
+                                  int operations) {
     ASSERT_TRUE(origin_window);
     OSExchangeData os_exchange_data;
     os_exchange_data.SetString(sample_text_for_dnd());
-    origin_window->StartDrag(os_exchange_data, operations, /*cursor=*/{},
-                             /*can_grab_pointer=*/true,
-                             drag_handler_delegate_.get());
+    origin_window->StartDrag(
+        os_exchange_data, operations, DragEventSource::kMouse, /*cursor=*/{},
+        /*can_grab_pointer=*/true, drag_handler_delegate_.get());
     Sync();
   }
 
@@ -274,7 +277,7 @@ TEST_P(WaylandDataDragControllerTest, StartDrag) {
   // objects are ready.
   ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
 
-  RunDragLoopWithSampleData(
+  RunMouseDragWithSampleData(
       window_.get(), DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE);
 
   // Ensure drag delegate it properly reset when the drag loop quits.
@@ -291,7 +294,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetHtml(sample_text_for_dnd(), {});
   int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation);
+  drag_controller()->StartSession(os_exchange_data, operation,
+                                  DragEventSource::kMouse);
   Sync();
 
   // The server should get an empty data buffer in ReadData callback when trying
@@ -329,7 +333,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomDataDontCrash) {
   OSExchangeData os_exchange_data(std::move(provider));
 
   int operation = DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation);
+  drag_controller()->StartSession(os_exchange_data, operation,
+                                  DragEventSource::kMouse);
   Sync();
 
   window_->SetPointerFocus(restored_focus);
@@ -343,7 +348,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithText) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
   int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation);
+  drag_controller()->StartSession(os_exchange_data, operation,
+                                  DragEventSource::kMouse);
   Sync();
 
   // The server should get a "text" representation in ReadData callback when
@@ -373,7 +379,8 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithFileContents) {
       base::FilePath(FILE_PATH_LITERAL("t\\est\".jpg")),
       kSampleTextForDragAndDrop);
   int operation = DragDropTypes::DRAG_COPY | DragDropTypes::DRAG_MOVE;
-  drag_controller()->StartSession(os_exchange_data, operation);
+  drag_controller()->StartSession(os_exchange_data, operation,
+                                  DragEventSource::kMouse);
   Sync();
 
   base::RunLoop run_loop;
@@ -594,7 +601,7 @@ TEST_P(WaylandDataDragControllerTest, StartAndCancel) {
   // once the drag session gets started.
   ScheduleDragCancel();
 
-  RunDragLoopWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
 
   window_->SetPointerFocus(restored_focus);
 }
@@ -671,7 +678,7 @@ TEST_P(WaylandDataDragControllerTest, DestroyEnteredSurface) {
   // started.
   ScheduleTestTask(base::BindOnce(test, base::Unretained(this)));
 
-  RunDragLoopWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
 
   window_1->SetPointerFocus(restored_focus);
 }
@@ -712,7 +719,8 @@ TEST_P(WaylandDataDragControllerTest, DestroyOriginSurface) {
   // Request to start the drag session, which spins a nested run loop.
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
-  window_2->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY, {}, true,
+  window_2->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
+                      DragEventSource::kMouse, {}, true,
                       drag_handler_delegate_.get());
   Sync();
 
@@ -778,7 +786,7 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   ScheduleDragCancel();
 
   // Request to start the drag session, which spins a nested run loop.
-  RunDragLoopWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
 
   origin_window->SetPointerFocus(restored_focus);
 }
@@ -821,7 +829,7 @@ TEST_P(WaylandDataDragControllerTest,
   ScheduleDragCancel();
 
   // Request to start the drag session, which spins a nested run loop.
-  RunDragLoopWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
 
   origin_window->SetPointerFocus(restored_focus);
 }
@@ -855,7 +863,7 @@ TEST_P(WaylandDataDragControllerTest, MenuRequestCreatesPopupWindow) {
   ScheduleDragCancel();
 
   // Request to start the drag session, which spins a nested run loop.
-  RunDragLoopWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
 
   origin_window->SetPointerFocus(restored_focus);
 }
@@ -866,15 +874,6 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
 
-  // Override test server's data device drag delegate such that
-  // wl_data_device.start_drag no-ops.
-  struct NoopDragDeviceDelegate : public wl::TestDataDevice::DragDelegate {
-    void StartDrag(wl::TestDataSource* source,
-                   wl::MockSurface* origin,
-                   uint32_t serial) override {}
-  } noop_drag_delegate;
-  data_device_manager_->data_device()->set_drag_delegate(&noop_drag_delegate);
-
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
 
   // Emulate a "quick" wl_pointer.button release event being processed by the
@@ -884,11 +883,16 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
   SendPointerButton(window_.get(), &delegate_, BTN_LEFT, /*pressed=*/false);
   Sync();
 
+  EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(0);
+
   // Attempt to start drag session and ensure it fails.
-  bool result = window_->StartDrag(
-      os_exchange_data, DragDropTypes::DRAG_COPY, /*cursor=*/{},
-      /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+  bool result = window_->StartDrag(os_exchange_data, DragDropTypes::DRAG_COPY,
+                                   DragEventSource::kMouse, /*cursor=*/{},
+                                   /*can_grab_pointer=*/true,
+                                   drag_handler_delegate_.get());
   EXPECT_FALSE(result);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Mock::VerifyAndClearExpectations(this);
 
   window_->SetPointerFocus(restored_focus);
 }
@@ -898,6 +902,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
   const bool restored_focus = window_->has_pointer_focus();
 
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  uint32_t mouse_press_serial = current_serial_;
 
   // Emulate a wl_keyboard.key press event being processed by the compositor
   // before the drag starts. In this case, the client is expected to send the
@@ -917,10 +922,66 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
   // session.
   ScheduleDragCancel();
 
-  // Request to start the drag session, which spins a nested run loop.
-  RunDragLoopWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+  // Request to start the drag session, which spins a nested run loop, and
+  // ensure correct serial (mouse button press) is sent to the server with
+  // wl_data_device.start_drag request.
+  EXPECT_CALL(*this, MockStartDrag(_, _, Eq(mouse_press_serial))).Times(1);
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Mock::VerifyAndClearExpectations(this);
 
   window_->SetPointerFocus(restored_focus);
+}
+
+// Check drag session is correctly started when there are both mouse button and
+// a touch point pressed.
+TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
+  const bool pointer_focus = window_->has_pointer_focus();
+  const bool touch_focus = window_->has_touch_focus();
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetString(sample_text_for_dnd());
+
+  auto* const window_manager = connection_->wayland_window_manager();
+  ASSERT_FALSE(window_manager->GetCurrentPointerFocusedWindow());
+  ASSERT_FALSE(window_manager->GetCurrentTouchFocusedWindow());
+
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  uint32_t mouse_press_serial = current_serial_;
+  ASSERT_EQ(window_.get(), window_manager->GetCurrentPointerFocusedWindow());
+  ASSERT_FALSE(window_manager->GetCurrentTouchFocusedWindow());
+
+  // Check drag does not start when requested with kTouch drag source, even when
+  // there is a mouse button pressed (ie: kMousePress serial available).
+  EXPECT_CALL(*this, MockStartDrag(_, _, _)).Times(0);
+  bool drag_started = window_->StartDrag(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kTouch,
+      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+  EXPECT_FALSE(drag_started);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Mock::VerifyAndClearExpectations(this);
+
+  SendTouchDown(window_.get(), &delegate_, 1, {30, 30});
+  Sync();
+  ASSERT_EQ(window_.get(), window_manager->GetCurrentTouchFocusedWindow());
+  ASSERT_EQ(window_.get(), window_manager->GetCurrentPointerFocusedWindow());
+
+  // Schedule dnd session cancellation so that the drag loop gracefully exits.
+  ScheduleDragCancel();
+
+  // Check drag is started with correct serial value, as per the drag source
+  // passed in, even when it is not the most recent serial, ie: touch down
+  // received after mouse button press.
+  EXPECT_CALL(*this, MockStartDrag(_, _, Eq(mouse_press_serial))).Times(1);
+  bool success = window_->StartDrag(
+      os_exchange_data, DragDropTypes::DRAG_COPY, DragEventSource::kMouse,
+      /*cursor=*/{}, /*can_grab_pointer=*/true, drag_handler_delegate_.get());
+  EXPECT_TRUE(success);
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  Mock::VerifyAndClearExpectations(this);
+
+  // Restore window's focus state.
+  window_->SetPointerFocus(pointer_focus);
+  window_->set_touch_focus(touch_focus);
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

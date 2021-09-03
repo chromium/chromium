@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
@@ -176,6 +177,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   // WmDragHandler
   bool StartDrag(const OSExchangeData& data,
                  int operation,
+                 mojom::DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
                  WmDragHandler::Delegate* delegate) override;

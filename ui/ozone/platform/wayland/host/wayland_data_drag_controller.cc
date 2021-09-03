@@ -38,6 +38,7 @@
 namespace ui {
 namespace {
 
+using mojom::DragEventSource;
 using mojom::DragOperation;
 
 DragOperation DndActionToDragOperation(uint32_t action) {
@@ -101,13 +102,17 @@ WaylandDataDragController::WaylandDataDragController(
 WaylandDataDragController::~WaylandDataDragController() = default;
 
 bool WaylandDataDragController::StartSession(const OSExchangeData& data,
-                                             int operation) {
+                                             int operation,
+                                             DragEventSource source) {
   DCHECK_EQ(state_, State::kIdle);
   DCHECK(!origin_window_);
 
-  origin_window_ = window_manager_->GetCurrentFocusedWindow();
+  origin_window_ = source == DragEventSource::kTouch
+                       ? window_manager_->GetCurrentTouchFocusedWindow()
+                       : window_manager_->GetCurrentPointerFocusedWindow();
   if (!origin_window_) {
-    LOG(ERROR) << "Failed to get focused window.";
+    LOG(ERROR) << "Failed to get focused window. drag_source="
+               << static_cast<int>(source);
     return false;
   }
 
@@ -116,11 +121,10 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   // pointer event (touch or mouse) has already been released. In this case,
   // make sure the flow bails earlier, otherwise the drag loop keeps running,
   // causing hangs as observerd in crbug.com/1209269.
-  auto serial = connection_->serial_tracker().GetSerial(
-      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
-  if (!serial.has_value() ||
-      (!pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON) &&
-       touch_delegate_->GetActiveTouchPointIds().empty())) {
+  auto serial = GetAndValidateSerialForDrag(source);
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Invalid state when trying to start drag. source="
+               << static_cast<int>(source);
     return false;
   }
 
@@ -460,6 +464,25 @@ void WaylandDataDragController::PropagateOnDragEnter(
       location, std::move(data),
       DndActionsToDragOperations(data_offer_->source_actions()));
   OnDragMotion(location);
+}
+
+absl::optional<wl::Serial>
+WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
+  wl::SerialType serial_type;
+  bool should_drag = false;
+  switch (source) {
+    case DragEventSource::kMouse:
+      serial_type = wl::SerialType::kMousePress;
+      should_drag =
+          pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON);
+      break;
+    case DragEventSource::kTouch:
+      serial_type = wl::SerialType::kTouchPress;
+      should_drag = !touch_delegate_->GetActiveTouchPointIds().empty();
+      break;
+  }
+  return should_drag ? connection_->serial_tracker().GetSerial(serial_type)
+                     : absl::nullopt;
 }
 
 }  // namespace ui

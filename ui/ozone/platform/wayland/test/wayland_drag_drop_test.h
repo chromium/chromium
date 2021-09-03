@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "base/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/test_data_device.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
@@ -64,6 +64,11 @@ class WaylandDragDropTest : public WaylandTest,
                                int id,
                                const gfx::Point& location);
 
+  MOCK_METHOD3(MockStartDrag,
+               void(wl::TestDataSource* source,
+                    wl::MockSurface* origin,
+                    uint32_t serial));
+
  protected:
   // WaylandTest:
   void SetUp() override;
@@ -75,7 +80,7 @@ class WaylandDragDropTest : public WaylandTest,
                  uint32_t serial) override;
 
   void OfferAndEnter(wl::MockSurface* surface, const gfx::Point& location);
-  uint32_t NextSerial() const;
+  uint32_t NextSerial();
   uint32_t NextTime() const;
   void ScheduleTestTask(base::OnceClosure test_task);
   void RunTestTask(base::OnceClosure test_task);
@@ -90,8 +95,7 @@ class WaylandDragDropTest : public WaylandTest,
   wl::MockPointer* pointer_;
   wl::TestTouch* touch_;
 
-  // Latest serial generated for pointer/touch press events.
-  absl::optional<uint32_t> latest_pointer_press_serial_;
+  uint32_t current_serial_;
 };
 
 }  // namespace ui

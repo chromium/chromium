@@ -166,7 +166,7 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   auto alive = weak_factory_.GetWeakPtr();
 
   const bool drag_succeeded = drag_handler_->StartDrag(
-      *data.get(), allowed_operations, cursor_client->GetCursor(),
+      *data.get(), allowed_operations, source, cursor_client->GetCursor(),
       !source_window->HasCapture(), this);
 
   if (!alive)

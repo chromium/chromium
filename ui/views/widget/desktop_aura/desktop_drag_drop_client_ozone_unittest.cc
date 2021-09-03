@@ -32,6 +32,7 @@
 namespace views {
 namespace {
 
+using ::ui::mojom::DragEventSource;
 using ::ui::mojom::DragOperation;
 
 // Platforms have different approaches to handling window coordinates.  For
@@ -92,6 +93,7 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   // ui::WmDragHandler
   bool StartDrag(const OSExchangeData& data,
                  int operation,
+                 DragEventSource source,
                  gfx::NativeCursor cursor,
                  bool can_grab_pointer,
                  WmDragHandler::Delegate* delegate) override {
