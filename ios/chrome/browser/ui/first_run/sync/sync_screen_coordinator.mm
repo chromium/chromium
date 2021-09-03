@@ -88,6 +88,9 @@
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
+  PolicyWatcherBrowserAgent::FromBrowser(self.browser)
+      ->AddObserver(_policyWatcherObserverBridge.get());
+
   if (!authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     // Don't show sync screen if no logged-in user account.
