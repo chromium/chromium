@@ -137,16 +137,19 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
   has_presented_since_last_set_image_ = true;
 
-  bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
-  bool gpu_image = image_->IsTextureBacked();
+  const bool gpu_compositing = SharedGpuContext::IsGpuCompositingEnabled();
+  const bool gpu_image = image_->IsTextureBacked();
 
   // Expect software images for software compositing.
   if (!gpu_compositing && gpu_image)
     return false;
 
   // If the texture comes from a software image then it does not need to be
-  // flipped.
-  layer_->SetFlipped(gpu_image);
+  // flipped, unless it has been artificially flipped during construction.
+  const bool image_flipped = image_->CurrentFrameOrientation() ==
+                             ImageOrientationEnum::kOriginBottomLeft;
+  const bool flip_layer = gpu_image ? !image_flipped : image_flipped;
+  layer_->SetFlipped(flip_layer);
 
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
