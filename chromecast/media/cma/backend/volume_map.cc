@@ -66,7 +66,7 @@ void VolumeMap::LoadVolumeMap(std::unique_ptr<base::Value> cast_audio_config) {
 
   double prev_level = -1.0;
   std::vector<LevelToDb> new_map;
-  for (size_t i = 0; i < volume_map_list->GetSize(); ++i) {
+  for (size_t i = 0; i < volume_map_list->GetList().size(); ++i) {
     const base::DictionaryValue* volume_map_entry;
     CHECK(volume_map_list->GetDictionary(i, &volume_map_entry));
 
