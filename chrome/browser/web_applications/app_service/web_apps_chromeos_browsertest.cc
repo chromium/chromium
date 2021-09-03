@@ -60,20 +60,19 @@ void CheckSeparator(const ui::SimpleMenuModel& model, int index) {
 
 }  // namespace
 
-class WebAppsWebAppsChromeOsBrowserTest
-    : public web_app::WebAppControllerBrowserTest {
+class WebAppsChromeOsBrowserTest : public web_app::WebAppControllerBrowserTest {
  public:
-  WebAppsWebAppsChromeOsBrowserTest() {
+  WebAppsChromeOsBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kDesktopPWAsAppIconShortcutsMenuUI}, {});
   }
-  ~WebAppsWebAppsChromeOsBrowserTest() override = default;
+  ~WebAppsChromeOsBrowserTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppsWebAppsChromeOsBrowserTest, ShortcutIcons) {
+IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
   const web_app::AppId app_id =
