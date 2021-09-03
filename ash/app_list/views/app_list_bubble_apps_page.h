@@ -14,6 +14,7 @@ namespace ash {
 
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
+class AppListFolderController;
 class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
@@ -30,12 +31,16 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
 
   AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
                         ApplicationDragAndDropHost* drag_and_drop_host,
-                        AppListA11yAnnouncer* a11y_announcer);
+                        AppListA11yAnnouncer* a11y_announcer,
+                        AppListFolderController* folder_controller);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
 
   views::ScrollView* scroll_view() { return scroll_view_; }
+  ScrollableAppsGridView* scrollable_apps_grid_view() {
+    return scrollable_apps_grid_view_;
+  }
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
 

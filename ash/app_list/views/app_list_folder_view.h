@@ -171,6 +171,12 @@ class ASH_EXPORT AppListFolderView : public views::View,
   const AppListConfig& GetAppListConfig() const;
 
  private:
+  // Creates an apps grid view with fixed-size pages.
+  void InitWithPagedAppsGrid(ContentsView* contents_view);
+
+  // Creates a vertically scrollable apps grid view.
+  void InitWithScrollableAppsGrid();
+
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
@@ -200,9 +206,15 @@ class ASH_EXPORT AppListFolderView : public views::View,
 
   FolderHeaderView* folder_header_view_;  // Owned by views hierarchy.
   AppsGridView* items_grid_view_;         // Owned by views hierarchy.
-  PageSwitcher* page_switcher_;           // Owned by views hierarchy.
+
+  // Only used for non-AppListBubble. Owned by views hierarchy.
+  PageSwitcher* page_switcher_ = nullptr;
+
+  // Only used for AppListBubble. Owned by views hierarchy.
+  views::ScrollView* scroll_view_ = nullptr;
 
   AppListModel* const model_;
+  AppListViewDelegate* const view_delegate_;
   AppListFolderItem* folder_item_ = nullptr;  // Not owned.
   AppListItemView* folder_item_view_ = nullptr;
 

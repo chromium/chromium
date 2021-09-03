@@ -27,6 +27,7 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -307,23 +308,28 @@ class AppListPresenterTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests search UI for all tablet/clamshell classic/bubble launcher
-// combinations.
-class SearchUITest
+// Tests all tablet/clamshell classic/bubble launcher combinations.
+class AppListBubbleAndTabletTest
     : public AshTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  SearchUITest() = default;
-  SearchUITest(const SearchUITest&) = delete;
-  SearchUITest& operator=(const SearchUITest&) = delete;
-  ~SearchUITest() override = default;
+  AppListBubbleAndTabletTest() = default;
+  AppListBubbleAndTabletTest(const AppListBubbleAndTabletTest&) = delete;
+  AppListBubbleAndTabletTest& operator=(const AppListBubbleAndTabletTest&) =
+      delete;
+  ~AppListBubbleAndTabletTest() override = default;
 
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(features::kAppListBubble,
-                                              app_list_bubble_flag());
+                                              app_list_bubble_param());
     AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
+
+    auto model = std::make_unique<test::AppListTestModel>();
+    app_list_test_model_ = model.get();
+    Shell::Get()->app_list_controller()->SetAppListModelForTest(
+        std::move(model));
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
@@ -336,17 +342,18 @@ class SearchUITest
   }
 
   // Whether we should use the AppListBubble flag.
-  bool app_list_bubble_flag() { return std::get<0>(GetParam()); }
+  bool app_list_bubble_param() { return std::get<0>(GetParam()); }
+
   // Whether we should run the test in tablet mode.
-  bool tablet_mode() { return std::get<1>(GetParam()); }
+  bool tablet_mode_param() { return std::get<1>(GetParam()); }
 
   // Bubble launcher is visible in clamshell mode with kAppListBubble enabled.
   bool should_show_bubble_launcher() {
-    return app_list_bubble_flag() && !tablet_mode();
+    return app_list_bubble_param() && !tablet_mode_param();
   }
   // Zero state be shown in clamshell mode and in tablet mode when bubble
   // launcher is not enabled.
-  bool should_show_zero_state_search() { return !app_list_bubble_flag(); }
+  bool should_show_zero_state_search() { return !app_list_bubble_param(); }
 
   void MaybeRefreshAppListSearchResultPage() {
     // Bubble launcher has an AppListBubbleSearchPage which does not need to be
@@ -373,31 +380,47 @@ class SearchUITest
   }
 
   void EnsureLauncherShown() {
+    auto* helper = GetAppListTestHelper();
     if (should_show_bubble_launcher()) {
       Shell::Get()->app_list_controller()->bubble_presenter_for_test()->Show(
           GetPrimaryDisplay().id());
-    } else if (!tablet_mode()) {
+    } else if (tablet_mode_param()) {
       // App list is always visible in tablet mode so we do not need to show it.
-      GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+    } else {
+      // Show fullscreen so folders are available.
+      helper->ShowAndRunLoop(GetPrimaryDisplayId());
+      helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
     }
+    if (should_show_bubble_launcher()) {
+      apps_grid_view_ = helper->GetScrollableAppsGridView();
+    } else {
+      apps_grid_view_ = helper->GetRootPagedAppsGridView();
+    }
+    DCHECK(apps_grid_view_);
   }
 
   gfx::Point SearchBoxCenterPoint() {
-    if (should_show_bubble_launcher()) {
-      return GetAppListTestHelper()
-          ->GetBubbleSearchBoxView()
-          ->GetBoundsInScreen()
-          .CenterPoint();
-    }
-    return GetAppListTestHelper()
-        ->GetAppListView()
-        ->search_box_view()
-        ->GetBoundsInScreen()
-        .CenterPoint();
+    SearchBoxView* search_box_view =
+        should_show_bubble_launcher()
+            ? GetAppListTestHelper()->GetBubbleSearchBoxView()
+            : GetAppListTestHelper()->GetAppListView()->search_box_view();
+    return search_box_view->GetBoundsInScreen().CenterPoint();
   }
 
- private:
+  AppListFolderView* folder_view() {
+    auto* helper = GetAppListTestHelper();
+    return should_show_bubble_launcher() ? helper->GetBubbleFolderView()
+                                         : helper->GetFullscreenFolderView();
+  }
+
+  bool AppListIsInFolderView() {
+    return GetAppListTestHelper()->IsInFolderView();
+  }
+
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  test::AppListTestModel* app_list_test_model_ = nullptr;
+  AppsGridView* apps_grid_view_ = nullptr;
 };
 
 // Used to test app_list behavior with a populated apps_grid
@@ -526,14 +549,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 // determine whether we should use the kAppListBubble feature flag. The second
 // boolean is to determine whether we should run the test in tablet mode.
 INSTANTIATE_TEST_SUITE_P(All,
-                         SearchUITest,
+                         AppListBubbleAndTabletTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests that Zero State Search is only shown when needed.
-TEST_P(SearchUITest, LauncherSearchZeroState) {
-  EnableTabletMode(tablet_mode());
-  ui::test::EventGenerator* generator = GetEventGenerator();
+TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {
+  EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
+  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Tap Search Box to activate it and check search result view visibility.
   generator->GestureTapAt(SearchBoxCenterPoint());
@@ -1530,24 +1553,27 @@ TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
 }
 
 // Tests that app list folder item reparenting drag to another folder.
-TEST_P(PopulatedAppListTest, AppsGridItemReparentToFolderDrag) {
+TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   UpdateDisplay("1200x600");
 
-  InitializeAppsGrid();
   app_list_test_model_->PopulateApps(2);
   AppListFolderItem* folder =
       app_list_test_model_->CreateAndPopulateFolderWithApps(3);
   app_list_test_model_->PopulateApps(10);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
 
   // Tap the folder item to show it.
   ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  AppListItemView* folder_item = apps_grid_view_->GetItemViewAt(2);
+  ASSERT_TRUE(folder_item);
+  event_generator->GestureTapAt(folder_item->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ASSERT_TRUE(dragged_view);
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());

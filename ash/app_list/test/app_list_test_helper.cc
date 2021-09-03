@@ -16,6 +16,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
@@ -104,8 +105,27 @@ void AppListTestHelper::AddPageBreakItem() {
       std::move(page_break_item));
 }
 
+bool AppListTestHelper::IsInFolderView() {
+  if (!Shell::Get()->IsInTabletMode() && features::IsAppListBubbleEnabled()) {
+    return GetBubbleView()->showing_folder_for_test();
+  }
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->IsInFolderView();
+}
+
 AppListView* AppListTestHelper::GetAppListView() {
   return app_list_controller_->presenter()->GetView();
+}
+
+AppListFolderView* AppListTestHelper::GetFullscreenFolderView() {
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->app_list_folder_view();
 }
 
 PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
@@ -116,10 +136,21 @@ PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
       ->apps_grid_view();
 }
 
+AppListBubbleView* AppListTestHelper::GetBubbleView() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test();
+}
+
 SearchBoxView* AppListTestHelper::GetBubbleSearchBoxView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->search_box_view_;
+}
+
+AppListFolderView* AppListTestHelper::GetBubbleFolderView() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->folder_view_;
 }
 
 AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {

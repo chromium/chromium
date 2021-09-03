@@ -43,10 +43,12 @@ constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
     ApplicationDragAndDropHost* drag_and_drop_host,
-    AppListA11yAnnouncer* a11y_announcer) {
+    AppListA11yAnnouncer* a11y_announcer,
+    AppListFolderController* folder_controller) {
   DCHECK(view_delegate);
   DCHECK(drag_and_drop_host);
   DCHECK(a11y_announcer);
+  DCHECK(folder_controller);
 
   SetUseDefaultFillLayout(true);
 
@@ -92,7 +94,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_ =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer, view_delegate,
-          /*folder_delegate=*/nullptr, scroll_view_));
+          /*folder_delegate=*/nullptr, scroll_view_, folder_controller));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   scrollable_apps_grid_view_->Init();

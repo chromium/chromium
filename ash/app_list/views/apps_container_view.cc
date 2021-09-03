@@ -551,6 +551,7 @@ void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void AppsContainerView::OnShown() {
+  DVLOG(1) << __FUNCTION__;
   // Explicitly hide the virtual keyboard before showing the apps container
   // view. This prevents the virtual keyboard's "transient blur" feature from
   // kicking in - if a text input loses focus, and a text input gains it within
@@ -563,6 +564,7 @@ void AppsContainerView::OnShown() {
 }
 
 void AppsContainerView::OnWillBeHidden() {
+  DVLOG(1) << __FUNCTION__;
   if (show_state_ == SHOW_APPS || show_state_ == SHOW_ITEM_REPARENT)
     apps_grid_view_->EndDrag(true);
   else if (show_state_ == SHOW_ACTIVE_FOLDER)

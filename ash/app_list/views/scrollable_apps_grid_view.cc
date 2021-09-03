@@ -45,13 +45,15 @@ ScrollableAppsGridView::ScrollableAppsGridView(
     AppListA11yAnnouncer* a11y_announcer,
     AppListViewDelegate* view_delegate,
     AppsGridViewFolderDelegate* folder_delegate,
-    views::ScrollView* parent_scroll_view)
+    views::ScrollView* parent_scroll_view,
+    AppListFolderController* folder_controller)
     : AppsGridView(/*contents_view=*/nullptr,
                    a11y_announcer,
                    view_delegate,
                    folder_delegate,
-                   /*folder_controller=*/nullptr),
+                   folder_controller),
       scroll_view_(parent_scroll_view) {
+  DCHECK(scroll_view_);
   view_structure_.Init(PagedViewStructure::Mode::kSinglePage);
 }
 
@@ -94,6 +96,9 @@ gfx::Size ScrollableAppsGridView::GetTileViewSize() const {
 }
 
 gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
+  if (has_fixed_tile_padding_)
+    return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
+
   int content_width = GetContentsBounds().width();
   int tile_width = GetAppListConfig().grid_tile_width();
   int width_to_distribute = content_width - cols() * tile_width;

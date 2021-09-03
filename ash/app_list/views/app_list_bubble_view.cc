@@ -6,11 +6,16 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
+#include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/app_list_folder_view.h"
+#include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
+#include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -32,11 +37,15 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 using views::BoxLayout;
 
 namespace ash {
 namespace {
+
+// Folder view inset from the edge of the bubble.
+constexpr int kFolderViewInset = 16;
 
 // A simplified horizontal separator that uses a solid color layer for painting.
 // This is more efficient than using a views::Separator, which would require
@@ -78,11 +87,14 @@ AppListBubbleView::AppListBubbleView(
   layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  SetUseDefaultFillLayout(true);
+  views::FillLayout* layout =
+      SetLayoutManager(std::make_unique<views::FillLayout>());
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
   InitContentsView(drag_and_drop_host);
   InitFolderView();
+  // Folder view is laid out manually based on its contents.
+  layout->SetChildViewIgnoredByLayout(folder_view_, true);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   AddAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_NONE));
@@ -92,6 +104,11 @@ AppListBubbleView::~AppListBubbleView() {
   // `a11y_announcer_` depends on a child view, so shut it down before view
   // hierarchy is destroyed.
   a11y_announcer_->Shutdown();
+
+  // AppListFolderView may reference/observe an item on the root apps grid view
+  // (associated with the folder), so destroy it before the root apps grid view.
+  delete folder_view_;
+  folder_view_ = nullptr;
 }
 
 void AppListBubbleView::InitContentsView(
@@ -118,7 +135,8 @@ void AppListBubbleView::InitContentsView(
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
   apps_page_ = contents->AddChildView(std::make_unique<AppListBubbleAppsPage>(
-      view_delegate_, drag_and_drop_host, a11y_announcer_.get()));
+      view_delegate_, drag_and_drop_host, a11y_announcer_.get(),
+      /*folder_controller=*/this));
 
   search_page_ =
       contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(
@@ -132,7 +150,16 @@ void AppListBubbleView::InitContentsView(
 }
 
 void AppListBubbleView::InitFolderView() {
-  // TODO(crbug.com/1214064): Add AppListFolderView here.
+  auto folder_view = std::make_unique<AppListFolderView>(
+      this, apps_page_->scrollable_apps_grid_view(), view_delegate_->GetModel(),
+      /*contents_view=*/nullptr, a11y_announcer_.get(), view_delegate_);
+  folder_background_view_ =
+      AddChildView(std::make_unique<FolderBackgroundView>(folder_view.get()));
+  folder_background_view_->SetVisible(false);
+
+  folder_view_ = AddChildView(std::move(folder_view));
+  // Folder view will be set visible by its show animation.
+  folder_view_->SetVisible(false);
 }
 
 bool AppListBubbleView::Back() {
@@ -200,6 +227,22 @@ void AppListBubbleView::OnThemeChanged() {
       AshColorProvider::BaseLayerType::kTransparent80));
 }
 
+void AppListBubbleView::Layout() {
+  // The folder view has custom layout code that centers the folder over the
+  // associated root apps grid folder item.
+  if (showing_folder_) {
+    gfx::Rect folder_bounding_box = GetLocalBounds();
+    folder_bounding_box.Inset(kFolderViewInset, kFolderViewInset);
+    folder_view_->SetBoundingBox(folder_bounding_box);
+    folder_view_->UpdatePreferredBounds();
+    // NOTE: Folder view bounds are also modified during reparent drag when the
+    // view is "visible" but hidden offscreen. See app_list_folder_view.cc.
+    folder_view_->SetBoundsRect(folder_view_->preferred_bounds());
+  }
+
+  views::View::Layout();
+}
+
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   DCHECK_EQ(sender, search_box_view_);
   // TODO(https://crbug.com/1204551): Animated transitions.
@@ -231,6 +274,63 @@ void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 
 bool AppListBubbleView::CanSelectSearchResults() {
   return search_page_->GetVisible() && search_page_->CanSelectSearchResults();
+}
+
+void AppListBubbleView::ShowFolderForItemView(
+    AppListItemView* folder_item_view) {
+  DVLOG(1) << __FUNCTION__;
+  if (folder_view_->IsAnimationRunning())
+    return;
+
+  // TODO(jamescook): Record metric for folder open. Either use the existing
+  // Apps.AppListFolderOpened or introduce a new metric.
+
+  DCHECK(folder_item_view->is_folder());
+  folder_view_->ConfigureForFolderItemView(folder_item_view);
+  showing_folder_ = true;
+  Layout();
+  folder_background_view_->SetVisible(true);
+  folder_view_->ScheduleShowHideAnimation(/*show=*/true,
+                                          /*hide_for_reparent=*/false);
+  // TODO(crbug.com/1214064): Disable items behind the folder so they will not
+  // be reached in focus traversal. See
+  // AppsContainerView::DisableFocusForShowingActiveFolder().
+}
+
+void AppListBubbleView::ShowApps(AppListFolderItem* folder_item) {
+  DVLOG(1) << __FUNCTION__;
+  if (folder_view_->IsAnimationRunning())
+    return;
+
+  showing_folder_ = false;
+  Layout();
+  folder_background_view_->SetVisible(false);
+  apps_page_->scrollable_apps_grid_view()->ResetForShowApps();
+  folder_view_->ResetItemsGridForClose();
+  if (folder_item) {
+    folder_view_->ScheduleShowHideAnimation(/*show=*/false,
+                                            /*hide_for_reparent=*/false);
+  } else {
+    folder_view_->HideViewImmediately();
+  }
+}
+
+void AppListBubbleView::ReparentFolderItemTransit(
+    AppListFolderItem* folder_item) {
+  DVLOG(1) << __FUNCTION__;
+  if (folder_view_->IsAnimationRunning())
+    return;
+
+  showing_folder_ = false;
+  Layout();
+  folder_background_view_->SetVisible(false);
+  folder_view_->ScheduleShowHideAnimation(/*show=*/false,
+                                          /*hide_for_reparent=*/true);
+}
+
+void AppListBubbleView::ReparentDragEnded() {
+  DVLOG(1) << __FUNCTION__;
+  // Nothing to do.
 }
 
 }  // namespace ash

@@ -10,6 +10,7 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
@@ -86,6 +87,15 @@ class AppListBubbleViewTest : public AshTestBase {
   }
   ~AppListBubbleViewTest() override = default;
 
+  // testing::Test:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    auto model = std::make_unique<test::AppListTestModel>();
+    app_list_test_model_ = model.get();
+    Shell::Get()->app_list_controller()->SetAppListModelForTest(
+        std::move(model));
+  }
+
   // Shows the app list on the primary display.
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
 
@@ -93,8 +103,8 @@ class AppListBubbleViewTest : public AshTestBase {
     GetAppListTestHelper()->AddAppItems(num_items);
   }
 
-  void ClickButton(views::Button* button) {
-    GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  void LeftClickOn(views::View* view) {
+    GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
     GetEventGenerator()->ClickLeftButton();
   }
 
@@ -115,6 +125,7 @@ class AppListBubbleViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_features_;
+  test::AppListTestModel* app_list_test_model_ = nullptr;
 };
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {
@@ -190,7 +201,7 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   ShowAppList();
 
   SearchBoxView* search_box = GetSearchBoxView();
-  ClickButton(search_box->assistant_button());
+  LeftClickOn(search_box->assistant_button());
 
   EXPECT_FALSE(search_box->GetVisible());
   EXPECT_FALSE(GetSeparator()->GetVisible());
@@ -210,7 +221,7 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
 
   // Clicking the close button clears the search, but the search box is still
   // focused/active.
-  ClickButton(search_box_view->close_button());
+  LeftClickOn(search_box_view->close_button());
   EXPECT_FALSE(search_box_view->close_button()->GetVisible());
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
@@ -352,6 +363,92 @@ TEST_F(AppListBubbleViewTest, DownArrowSelectsRecentsThenApps) {
   PressAndReleaseKey(ui::VKEY_DOWN);
   auto* apps_grid = GetAppListTestHelper()->GetScrollableAppsGridView();
   EXPECT_TRUE(apps_grid->Contains(focus_manager->GetFocusedView()));
+}
+
+TEST_F(AppListBubbleViewTest, ClickOnFolderOpensFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // Folder opened.
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, LargeFolderViewFitsInsideMainBubble) {
+  // Create more apps than fit in the default sized folder.
+  app_list_test_model_->CreateAndPopulateFolderWithApps(30);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // The folder fits inside the bubble.
+  gfx::Rect folder_bounds =
+      GetAppListTestHelper()->GetBubbleFolderView()->GetBoundsInScreen();
+  gfx::Rect bubble_bounds =
+      GetBubblePresenter()->bubble_view_for_test()->GetBoundsInScreen();
+  EXPECT_TRUE(bubble_bounds.Contains(folder_bounds));
+
+  // The top and bottom of the folder are inset from the bubble top and bottom.
+  constexpr int kExpectedInset = 16;
+  EXPECT_EQ(folder_bounds.y(), bubble_bounds.y() + kExpectedInset);
+  EXPECT_EQ(folder_bounds.bottom(), bubble_bounds.bottom() - kExpectedInset);
+}
+
+TEST_F(AppListBubbleViewTest, ClickOutsideFolderClosesFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  gfx::Point outside_view =
+      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+  GetEventGenerator()->MoveMouseTo(outside_view);
+  GetEventGenerator()->ClickLeftButton();
+
+  // Folder closed.
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, ReparentDragOutOfFolderClosesFolder) {
+  app_list_test_model_->CreateAndPopulateFolderWithApps(3);
+  ShowAppList();
+
+  AppListItemView* folder_item =
+      GetAppListTestHelper()->GetScrollableAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // Drag the first app from the folder's app grid.
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
+  AppListItemView* app_item = folder_view->items_grid_view()->GetItemViewAt(0);
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo(app_item->GetBoundsInScreen().CenterPoint());
+  generator->PressLeftButton();
+  app_item->FireMouseDragTimerForTest();
+
+  gfx::Point outside_view =
+      folder_view->GetBoundsInScreen().bottom_right() + gfx::Vector2d(10, 10);
+  generator->MoveMouseTo(outside_view);
+  folder_view->items_grid_view()->FireFolderItemReparentTimerForTest();
+
+  // Folder visually closed.
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+
+  // Folder is still "visible" because the drag has not ended.
+  EXPECT_TRUE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
+
+  // End the drag.
+  generator->ReleaseLeftButton();
+  EXPECT_FALSE(GetAppListTestHelper()->GetBubbleFolderView()->GetVisible());
 }
 
 }  // namespace

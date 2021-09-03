@@ -32,7 +32,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   ScrollableAppsGridView(AppListA11yAnnouncer* a11y_announcer,
                          AppListViewDelegate* view_delegate,
                          AppsGridViewFolderDelegate* folder_delegate,
-                         views::ScrollView* scroll_view);
+                         views::ScrollView* scroll_view,
+                         AppListFolderController* folder_controller);
   ScrollableAppsGridView(const ScrollableAppsGridView&) = delete;
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;
   ~ScrollableAppsGridView() override;

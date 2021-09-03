@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/app_list/views/app_list_folder_controller.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ui/views/view.h"
@@ -18,7 +20,9 @@ class AppListA11yAnnouncer;
 class AppListBubbleAppsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
+class AppListFolderItem;
 class AppListViewDelegate;
+class FolderBackgroundView;
 class SearchBoxView;
 
 // Contains the views for the bubble version of the launcher. It looks like a
@@ -26,7 +30,9 @@ class SearchBoxView;
 // focus by default, uses a different EventHandler for closing, and isn't tied
 // to the system tray area.
 class ASH_EXPORT AppListBubbleView : public views::View,
-                                     public SearchBoxViewDelegate {
+                                     public SearchBoxViewDelegate,
+                                     public AppListFolderController,
+                                     public AppListFolderView::Delegate {
  public:
   AppListBubbleView(AppListViewDelegate* view_delegate,
                     ApplicationDragAndDropHost* drag_and_drop_host);
@@ -54,6 +60,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnThemeChanged() override;
+  void Layout() override;
 
   // SearchBoxViewDelegate:
   void QueryChanged(SearchBoxViewBase* sender) override;
@@ -64,7 +71,16 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;
   bool CanSelectSearchResults() override;
 
+  // AppListFolderController:
+  void ShowFolderForItemView(AppListItemView* folder_item_view) override;
+
+  // AppListFolderView::Delegate:
+  void ShowApps(AppListFolderItem* folder_item) override;
+  void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
+  void ReparentDragEnded() override;
+
   views::View* separator_for_test() { return separator_; }
+  bool showing_folder_for_test() { return showing_folder_; }
 
  private:
   friend class AppListTestHelper;
@@ -83,6 +99,17 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   AppListBubbleAppsPage* apps_page_ = nullptr;
   AppListBubbleSearchPage* search_page_ = nullptr;
   AppListBubbleAssistantPage* assistant_page_ = nullptr;
+
+  // Lives in this class because it can overlap the search box.
+  AppListFolderView* folder_view_ = nullptr;
+
+  // Used to close an open folder view.
+  FolderBackgroundView* folder_background_view_ = nullptr;
+
+  // Whether we're showing the folder view. This is different from
+  // folder_view_->GetVisible() because the view is "visible" but hidden when
+  // dragging an item out of a folder.
+  bool showing_folder_ = false;
 };
 
 }  // namespace ash

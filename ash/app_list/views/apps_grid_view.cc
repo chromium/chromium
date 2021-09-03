@@ -289,6 +289,9 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
       app_list_view_delegate_(app_list_view_delegate) {
   DCHECK(a11y_announcer_);
   DCHECK(app_list_view_delegate_);
+  // Top-level grids must have a folder controller.
+  if (!folder_delegate_)
+    DCHECK(folder_controller_);
 }
 
 void AppsGridView::Init() {
@@ -727,6 +730,7 @@ AppListItemView* AppsGridView::GetItemViewAt(int index) const {
 void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
     AppListItemView* original_drag_view,
     const gfx::Point& drag_point) {
+  DVLOG(1) << __FUNCTION__;
   DCHECK(original_drag_view && !drag_view_);
   DCHECK(!dragging_for_reparent_item_);
 
@@ -2699,12 +2703,10 @@ void AppsGridView::OnAppListItemViewActivated(
     return;
 
   if (IsFolderItem(pressed_item_view->item())) {
-    // `folder_controller_` is currently not supported in the bubble launcher
-    // apps grid. When this changes the if can be converted to DCHECK. Note that
-    // `folder_controller_` will be null inside a folder apps grid, but those
-    // grids are not expected to contain folder items.
-    if (folder_controller_)
-      folder_controller_->ShowFolderForItemView(pressed_item_view);
+    // Note that `folder_controller_` will be null inside a folder apps grid,
+    // but those grid are not expected to contain folder items.
+    DCHECK(folder_controller_);
+    folder_controller_->ShowFolderForItemView(pressed_item_view);
     return;
   }
 

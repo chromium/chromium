@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 
 #include <algorithm>
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -18,8 +19,11 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/top_icon_animation_view.h"
+#include "ash/constants/ash_features.h"
+#include "ash/controls/rounded_scroll_bar.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -39,16 +43,23 @@
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+using views::BoxLayout;
 
 namespace ash {
 
@@ -58,6 +69,9 @@ constexpr int kFolderHeaderPadding = 12;
 constexpr int kOnscreenKeyboardTopPadding = 16;
 
 constexpr int kTileSpacingInFolder = 8;
+
+// Insets for the vertical scroll bar.
+constexpr gfx::Insets kVerticalScrollInsets(1, 0, 1, 1);
 
 // Duration for fading in the target page when opening
 // or closing a folder, and the duration for the top folder icon animation
@@ -454,11 +468,14 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
     if (!show_ && !hide_for_reparent_)
       folder_view_->SetVisible(false);
 
-    // Set the view bounds to a small rect, so that it won't overlap the root
-    // level apps grid view during folder item reparenting transitional period.
+    // Set the view bounds offscreen, so that it won't overlap the root level
+    // apps grid view during folder item reparenting transitional period.
+    // Keeping the same width and height avoids re-layout and ensures that
+    // AppListItemView continues to receive events. The view will be set
+    // invisible at the end of the drag.
     if (hide_for_reparent_) {
-      gfx::Rect rect(folder_view_->bounds());
-      folder_view_->SetBoundsRect(gfx::Rect(rect.x(), rect.y(), 1, 1));
+      const gfx::Rect& bounds = folder_view_->bounds();
+      folder_view_->SetPosition(gfx::Point(-bounds.width(), -bounds.height()));
     }
 
     // Reset the transform after animation so that the following folder's
@@ -497,11 +514,12 @@ AppListFolderView::AppListFolderView(Delegate* delegate,
     : delegate_(delegate),
       root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
-      model_(model) {
+      model_(model),
+      view_delegate_(view_delegate) {
   DCHECK(delegate_);
   DCHECK(root_apps_grid_view_);
   DCHECK(a11y_announcer_);
-  DCHECK(view_delegate);
+  DCHECK(view_delegate_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // The background's corner radius cannot be changed in the same layer of the
@@ -515,13 +533,23 @@ AppListFolderView::AppListFolderView(Delegate* delegate,
   contents_container_ = AddChildView(std::make_unique<views::View>());
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
+  if (features::IsAppListBubbleEnabled())
+    InitWithScrollableAppsGrid();
+  else
+    InitWithPagedAppsGrid(contents_view);
+
+  model_->AddObserver(this);
+}
+
+void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
+  DCHECK(contents_view);
   items_grid_view_ =
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
-          contents_view, a11y_announcer, this, /*folder_controller=*/nullptr));
+          contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr));
   items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                         kTileSpacingInFolder / 2);
   items_grid_view_->Init();
-  items_grid_view_->SetModel(model);
+  items_grid_view_->SetModel(model_);
 
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
@@ -531,7 +559,7 @@ AppListFolderView::AppListFolderView(Delegate* delegate,
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
           items_grid_view_->pagination_model(), false /* vertical */,
-          view_delegate->IsInTabletMode(),
+          view_delegate_->IsInTabletMode(),
           AppListColorProvider::Get()->GetFolderBackgroundColor()));
 
   contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -539,8 +567,63 @@ AppListFolderView::AppListFolderView(Delegate* delegate,
       .SetInteriorMargin(gfx::Insets(kTileSpacingInFolder))
       .SetCollapseMargins(true)
       .SetChildViewIgnoredByLayout(page_switcher_, true);
+}
 
-  model_->AddObserver(this);
+void AppListFolderView::InitWithScrollableAppsGrid() {
+  // The top part of the folder contents is a scrollable apps grid.
+  scroll_view_ =
+      contents_container_->AddChildView(std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled));
+  scroll_view_->ClipHeightTo(0, std::numeric_limits<int>::max());
+  scroll_view_->SetDrawOverflowIndicator(false);
+  // Don't paint a background. The folder already has one.
+  scroll_view_->SetBackgroundColor(absl::nullopt);
+  // Arrow keys are used to select app icons.
+  scroll_view_->SetAllowKeyboardScrolling(false);
+
+  // Set up scroll bars.
+  scroll_view_->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  auto vertical_scroll =
+      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  vertical_scroll->SetInsets(kVerticalScrollInsets);
+  scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
+
+  // Add margins inside the scroll contents.
+  auto scroll_contents = std::make_unique<views::View>();
+  scroll_contents->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetInteriorMargin(gfx::Insets(kTileSpacingInFolder))
+      .SetCollapseMargins(true);
+
+  // Create the apps grid.
+  items_grid_view_ =
+      scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
+          a11y_announcer_, view_delegate_, this, scroll_view_,
+          /*folder_controller=*/nullptr));
+  items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
+                                        kTileSpacingInFolder / 2);
+  items_grid_view_->Init();
+  items_grid_view_->SetModel(model_);
+  scroll_view_->SetContents(std::move(scroll_contents));
+
+  // The scroll view consumes all available vertical space in its parent. This
+  // means that when the grid has a large number of apps, the scroll view height
+  // is limited to the height of this folder view minus the header height.
+  scroll_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+
+  folder_header_view_ = contents_container_->AddChildView(
+      std::make_unique<FolderHeaderView>(this));
+  folder_header_view_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets(kFolderHeaderPadding, 0));
+
+  // No margins on `contents_container_` because the scroll view needs to fully
+  // extend to the parent's edges.
+  contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
 AppListFolderView::~AppListFolderView() {
@@ -640,18 +723,19 @@ void AppListFolderView::Layout() {
   // Position page switcher independently of the layout manager, as its
   // position does not fit with vertical layout alignment (it's expected to
   // float over the header view in the bottom right corner).
-  const gfx::Size page_switcher_size = page_switcher_->GetPreferredSize();
-  const gfx::Rect folder_header_bounds = folder_header_view_->bounds();
-  const int page_switcher_x =
-      folder_header_bounds.right() - page_switcher_size.width();
-  // The page switcher has a different height than the folder header, but it
-  // still needs to be aligned with it.
-  const int page_switcher_y =
-      folder_header_bounds.y() -
-      (page_switcher_size.height() - folder_header_bounds.height()) / 2;
-  page_switcher_->SetBoundsRect(gfx::Rect(
-      gfx::Point(page_switcher_x, page_switcher_y), page_switcher_size));
-
+  if (page_switcher_) {
+    const gfx::Size page_switcher_size = page_switcher_->GetPreferredSize();
+    const gfx::Rect folder_header_bounds = folder_header_view_->bounds();
+    const int page_switcher_x =
+        folder_header_bounds.right() - page_switcher_size.width();
+    // The page switcher has a different height than the folder header, but it
+    // still needs to be aligned with it.
+    const int page_switcher_y =
+        folder_header_bounds.y() -
+        (page_switcher_size.height() - folder_header_bounds.height()) / 2;
+    page_switcher_->SetBoundsRect(gfx::Rect(
+        gfx::Point(page_switcher_x, page_switcher_y), page_switcher_size));
+  }
   background_view_->layer()->SetClipRect(background_view_->GetLocalBounds());
 }
 
@@ -816,7 +900,8 @@ void AppListFolderView::RecordAnimationSmoothness() {
 
 void AppListFolderView::OnTabletModeChanged(bool started) {
   folder_header_view()->set_tablet_mode(started);
-  page_switcher_->set_is_tablet_mode(started);
+  if (page_switcher_)
+    page_switcher_->set_is_tablet_mode(started);
 }
 
 bool AppListFolderView::IsDragPointOutsideOfFolder(
