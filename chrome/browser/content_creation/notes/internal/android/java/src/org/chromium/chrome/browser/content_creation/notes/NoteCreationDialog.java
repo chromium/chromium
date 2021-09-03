@@ -47,6 +47,7 @@ public class NoteCreationDialog extends DialogFragment {
     private Toast mToast;
     private boolean mIsPublishAvailable;
     private int mNbTemplateSwitches;
+    private boolean mInitialized;
 
     interface NoteDialogObserver {
         void onViewCreated(View view);
@@ -60,6 +61,15 @@ public class NoteCreationDialog extends DialogFragment {
         mTitle = title;
         mSelectedText = selectedText;
         mIsPublishAvailable = isPublishAvailable;
+        mInitialized = true;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Don't create dialog before it is initialized.
+        if (!mInitialized) dismiss();
     }
 
     @Override
@@ -88,8 +98,8 @@ public class NoteCreationDialog extends DialogFragment {
         // There is a corner case where this function can be triggered by toggling the battery saver
         // state, resulting in all the variables being reset. The only way out is to destroy this
         // dialog to bring the user back to the web page.
-        if (mTitle == null) {
-            onDestroyView();
+        if (!mInitialized) {
+            dismiss();
             return;
         }
 
