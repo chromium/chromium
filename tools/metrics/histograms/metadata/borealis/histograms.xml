@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Borealis.Disk.Startup.{TypeOfSpace}Space" units="MB"
-    expires_after="M95">
+    expires_after="2022-04-08">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -216,8 +216,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
-    expires_after="2021-10-09">
+    expires_after="2022-04-08">
   <owner>cpelling@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
     A record of post-startup failures in Borealis components. Buckets are
     recorded to when we become aware that the corresponding component has
