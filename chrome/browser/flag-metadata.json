@@ -126,12 +126,12 @@
   {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "android-force-app-language-prompt",
     "owners": [" perrier", "chrome-language@google.com"],
-    "expiry_milestone": 95
+    "expiry_milestone": 97
   },
   {
     "name": "android-multiple-display",
@@ -1024,13 +1024,13 @@
   },
   {
     "name": "desktop-detailed-language-settings",
-    "owners": [ "joshsantana@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 93
+    "owners": [ "chrome-language@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "desktop-restructured-language-settings",
-    "owners": [ "joshsantana@google.com", "chrome-language@google.com"],
-    "expiry_milestone": 93
+    "owners": [ "chrome-language@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "desktop-version-default",
