@@ -146,12 +146,10 @@ bool SetupPaintForSvgText(const NGTextPainter::SvgTextPaintState& state,
           break;
         }
         case SvgPaintMode::kTextDecoration: {
-          float scaling_factor;
           Font scaled_font;
           LayoutSVGInlineText::ComputeNewScaledFontForStyle(
-              layout_parent, scaling_factor, scaled_font);
-          DCHECK(scaling_factor);
-          stroke_scale_factor = 1 / scaling_factor;
+              layout_parent, stroke_scale_factor, scaled_font);
+          DCHECK(stroke_scale_factor);
           break;
         }
       }
