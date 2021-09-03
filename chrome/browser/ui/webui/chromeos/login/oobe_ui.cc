@@ -153,11 +153,6 @@ constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
-
-constexpr char kLoginScreenBehaviorHTML[] = "components/behaviors/login_screen_behavior.html";
-constexpr char kLoginScreenBehaviorJS[] = "components/behaviors/login_screen_behavior.js";
-constexpr char kMultiStepBehaviorHTML[] = "components/behaviors/multi_step_behavior.html";
-constexpr char kMultiStepBehaviorJS[] = "components/behaviors/multi_step_behavior.js";
 constexpr char kOobeIconsHTML[] = "components/oobe_icons.html";
 
 // Stylesheets
@@ -175,19 +170,6 @@ constexpr char kOobeCustomVarsCssJsM[] =
 constexpr char kCommonStylesHTML[] = "components/common_styles/common_styles.html";
 constexpr char kOobeFlexLayoutStylesHTML[] = "components/common_styles/oobe_flex_layout_styles.html";
 constexpr char kDialogHostStylesHTML[] = "components/common_styles/oobe_dialog_host_styles.html";
-constexpr char kI18nBehaviorHTML[] = "components/behaviors/oobe_i18n_behavior.html";
-constexpr char kI18nBehaviorJS[] = "components/behaviors/oobe_i18n_behavior.js";
-constexpr char kI18nSetupHTML[] = "components/behaviors/i18n_setup.html";
-constexpr char kDialogHostBehaviorHTML[] =
-    "components/behaviors/oobe_dialog_host_behavior.html";
-constexpr char kDialogHostBehaviorJS[] =
-    "components/behaviors/oobe_dialog_host_behavior.js";
-constexpr char kFocusBehaviorHTML[] = "components/behaviors/oobe_focus_behavior.html";
-constexpr char kFocusBehaviorJS[] = "components/behaviors/oobe_focus_behavior.js";
-constexpr char kScrollableBehaviorHTML[] =
-    "components/behaviors/oobe_scrollable_behavior.html";
-constexpr char kScrollableBehaviorJS[] =
-    "components/behaviors/oobe_scrollable_behavior.js";
 constexpr char kHDIronIconHTML[] = "components/hd_iron_icon.html";
 constexpr char kHDIronIconJS[] = "components/hd_iron_icon.js";
 constexpr char kOobeAdaptiveDialogHTML[] =
@@ -713,35 +695,8 @@ OobeUI::~OobeUI() {
 
 void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                                const base::DictionaryValue& localized_strings) {
-  source->AddResourcePath(kLoginScreenBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_HTML);
-  source->AddResourcePath(kLoginScreenBehaviorJS,
-                          IDR_OOBE_COMPONENTS_LOGIN_SCREEN_BEHAVIOR_JS);
-  source->AddResourcePath(kMultiStepBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_HTML);
-  source->AddResourcePath(kMultiStepBehaviorJS,
-                          IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_JS);
-
   source->AddResourcePath(kOobeIconsHTML,
                           IDR_OOBE_COMPONENTS_OOBE_ICONS_HTML);
-
-  source->AddResourcePath(kI18nBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_HTML);
-  source->AddResourcePath(kI18nBehaviorJS,
-                          IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS);
-  source->AddResourcePath(kI18nSetupHTML, IDR_OOBE_COMPONENTS_I18N_SETUP_HTML);
-  source->AddResourcePath(kDialogHostBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_HTML);
-  source->AddResourcePath(kDialogHostBehaviorJS,
-                          IDR_OOBE_COMPONENTS_DIALOG_HOST_BEHAVIOR_JS);
-  source->AddResourcePath(kFocusBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_HTML);
-  source->AddResourcePath(kFocusBehaviorJS,
-                          IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_JS);
-  source->AddResourcePath(kScrollableBehaviorHTML,
-                          IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_HTML);
-  source->AddResourcePath(kScrollableBehaviorJS,
-                          IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_JS);
 
   source->AddResourcePath(kCommonStylesHTML,
                           IDR_OOBE_COMPONENTS_COMMON_STYLES_HTML);
