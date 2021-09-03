@@ -170,7 +170,7 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
 #if !defined(OS_ANDROID)
   on_success_follow_up =
       WTF::Bind(&MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity,
-                weak_factory_.GetWeakPtr());
+                WrapWeakPersistent(this));
 #endif
 
   auto* callbacks = MakeGarbageCollected<PromiseResolverCallbacks>(

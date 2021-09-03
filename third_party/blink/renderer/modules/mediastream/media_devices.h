@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
@@ -148,8 +147,6 @@ class MODULES_EXPORT MediaDevices final
   EnumerateDevicesTestCallback enumerate_devices_test_callback_;
   base::OnceClosure connection_error_test_callback_;
   base::OnceClosure device_change_test_callback_;
-
-  base::WeakPtrFactory<MediaDevices> weak_factory_{this};
 };
 
 }  // namespace blink
