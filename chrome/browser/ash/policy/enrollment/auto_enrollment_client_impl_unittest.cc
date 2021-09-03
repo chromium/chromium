@@ -346,6 +346,23 @@ class AutoEnrollmentClientImplTest
                         SaveArg<0>(job)));
   }
 
+  void ServerReplyAsyncJobWithAutoEnrollmentResponse(
+      int64_t modulus,
+      bool with_hashes,
+      bool with_id_hash,
+      DeviceManagementService::JobForTesting* job) {
+    em::DeviceManagementResponse response =
+        GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
+
+    service_->SendJobOKNow(job, response);
+  }
+
+  void ServerRepliesEmptyResponseForAsyncJob(
+      DeviceManagementService::JobForTesting* job) {
+    em::DeviceManagementResponse dummy_response;
+    service_->SendJobOKNow(job, dummy_response);
+  }
+
   bool HasCachedDecision() {
     // This method should be called only when the client has been created for
     // FRE use case.
@@ -924,6 +941,70 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
+}
+
+TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollmentStateRetrivalfailure) {
+  InSequence sequence;
+
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+
+  DeviceManagementService::JobForTesting hash_dance_job;
+  DeviceManagementService::JobForTesting device_state_job;
+
+  // Expect two requests and capture them, in order, when available in
+  // |hash_dance_job| and |device_state_job|.
+  ServerWillReplyAsync(&hash_dance_job);
+  ServerWillReplyAsync(&device_state_job);
+
+  // Expect none of the jobs have been captured.
+  EXPECT_FALSE(hash_dance_job.IsActive());
+  EXPECT_FALSE(device_state_job.IsActive());
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the only job that has been captured is the Hash dance request.
+  EXPECT_EQ(last_async_job_type_,
+            DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
+  ASSERT_TRUE(hash_dance_job.IsActive());
+  EXPECT_FALSE(device_state_job.IsActive());
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
+  // Succeed for Hash dance request i.e. DeviceAutoEnrollmentRequest.
+  ServerReplyAsyncJobWithAutoEnrollmentResponse(
+      /*modulus=*/-1, /*with_hashes=*/true, /*with_id_hash=*/true,
+      &hash_dance_job);
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
+  // Verify Hash dance success.
+  VerifyCachedResult(true, kPowerLimit);
+  ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                        /*dm_status_count=*/1);
+
+  // Verify Hash dance protocol overall execution time and its success time
+  // histograms were recorded correctly with the same value.
+  ExpectHashDanceExecutionTimeHistogram(
+      /*expected_time_recorded=*/base::TimeDelta::FromSeconds(1),
+      /*success_time_recorded=*/true);
+
+  // Verify device state job has been captured.
+  ASSERT_TRUE(device_state_job.IsActive());
+  EXPECT_EQ(last_async_job_type_, GetExpectedStateRetrievalJobType());
+
+  // Fail for DeviceStateRetrievalRequest request by sending an empty response.
+  ServerRepliesEmptyResponseForAsyncJob(&device_state_job);
+
+  // Verify that no enrollment has been done, and no state has been retrieved.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  EXPECT_FALSE(HasServerBackedState());
+
+  // Verify all jobs have finished.
+  EXPECT_FALSE(hash_dance_job.IsActive());
+  EXPECT_FALSE(device_state_job.IsActive());
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
@@ -1709,12 +1790,6 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   void ServerFailsForAsyncJob(DeviceManagementService::JobForTesting* job) {
     service_->SendJobResponseNow(job, net::OK,
                                  DeviceManagementService::kServiceUnavailable);
-  }
-
-  void ServerRepliesEmptyResponseForAsyncJob(
-      DeviceManagementService::JobForTesting* job) {
-    em::DeviceManagementResponse dummy_response;
-    service_->SendJobOKNow(job, dummy_response);
   }
 
   const em::PrivateSetMembershipRequest& psm_request() const {
