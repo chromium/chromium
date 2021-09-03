@@ -599,6 +599,9 @@ extern const base::Feature kSoundContentSetting;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSSLCipher3DES;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSupportTool;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSysInternals;
