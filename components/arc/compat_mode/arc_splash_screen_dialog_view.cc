@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/scoped_multi_source_observation.h"
@@ -17,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -214,6 +216,9 @@ ArcSplashScreenDialogView::ArcSplashScreenDialogView(
       parent,
       base::BindRepeating(&ArcSplashScreenDialogView::OnCloseButtonClicked,
                           base::Unretained(this)));
+
+  activation_observation_.Observe(
+      wm::GetActivationClient(parent_window()->GetRootWindow()));
 }
 
 ArcSplashScreenDialogView::~ArcSplashScreenDialogView() = default;
@@ -236,6 +241,37 @@ void ArcSplashScreenDialogView::AddedToWidget() {
   auto* const frame = GetBubbleFrameView();
   if (frame)
     frame->SetCornerRadius(kCornerRadius);
+}
+
+void ArcSplashScreenDialogView::OnWindowActivated(ActivationReason reason,
+                                                  aura::Window* gained_active,
+                                                  aura::Window* lost_active) {
+  if (gained_active != parent_window())
+    return;
+
+  // Safe-guard for the activation forwarding loop.
+  if (forwarding_activation_)
+    return;
+
+  forwarding_activation_ = true;
+  // Forward the activation to the dialog if available.
+  // To avoid nested-activation, here we post the task to the queue.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<ArcSplashScreenDialogView> view) {
+                       if (!view)
+                         return;
+
+                       base::AutoReset<bool> forwarding_activation_update(
+                           &view->forwarding_activation_, false);
+                       auto* const widget = view->GetWidget();
+                       if (!widget)
+                         return;
+                       if (widget->IsClosed())
+                         return;
+                       widget->Activate();
+                     },
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcSplashScreenDialogView::OnCloseButtonClicked() {
