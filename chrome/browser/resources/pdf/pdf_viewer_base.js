@@ -374,7 +374,7 @@ export class PDFViewerBaseElement extends PolymerElement {
       const token = /** @type {!{token: string}} */ (message.data).token;
       if (token === this.browserApi.getStreamInfo().streamUrl) {
         const port = message.ports[0];
-        this.plugin_.postMessage = m => port.postMessage(m);
+        this.plugin_.postMessage = port.postMessage.bind(port);
         PluginController.getInstance().bindUnseasonedMessageHandler(port);
       } else {
         this.dispatchEvent(new CustomEvent('connection-denied-for-testing'));
