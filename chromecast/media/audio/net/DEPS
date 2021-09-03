@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromecast/net",
   "+net/base/address_list.h",
   "+net/base/ip_address.h",
   "+net/base/ip_endpoint.h",
@@ -8,4 +9,5 @@ include_rules = [
   "+net/socket/tcp_server_socket.h",
   "+net/socket/unix_domain_client_socket_posix.h",
   "+net/socket/unix_domain_server_socket_posix.h",
+  "+third_party/protobuf/src/google/protobuf/message_lite.h",
 ]

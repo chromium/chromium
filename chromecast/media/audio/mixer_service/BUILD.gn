@@ -39,7 +39,7 @@ cast_source_set("common") {
 
   public_deps = [
     ":proto",
-    "//chromecast/net:small_message_socket",
+    "//chromecast/media/audio/net:audio_socket",
   ]
 }
 

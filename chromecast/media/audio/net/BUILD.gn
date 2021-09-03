@@ -4,6 +4,22 @@
 
 import("//chromecast/chromecast.gni")
 
+cast_source_set("audio_socket") {
+  sources = [
+    "audio_socket.cc",
+    "audio_socket.h",
+  ]
+
+  public_deps = [ "//chromecast/net:small_message_socket" ]
+
+  deps = [
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//net",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
 cast_source_set("audio_socket_service") {
   sources = [
     "audio_socket_service.cc",
