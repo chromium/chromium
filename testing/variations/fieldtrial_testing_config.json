@@ -9917,24 +9917,5 @@
                 }
             ]
         }
-    ],
-    "libvpx_for_vp8": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "libvpx_for_vp8",
-                    "disable_features": [
-                        "FFmpegDecodeOpaqueVP8"
-                    ]
-                }
-            ]
-        }
     ]
 }
