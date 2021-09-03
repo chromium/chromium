@@ -35,7 +35,7 @@ import common
 
 from wpt_android_lib import (
     WPTWeblayerAdapter, WPTWebviewAdapter, WPTClankAdapter,
-    add_emulator_args)
+    add_emulator_args, get_device)
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +51,6 @@ DEFAULT_WPT = os.path.join(
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
 TOMBSTONE_PARSER = os.path.join(SRC_DIR, 'build', 'android', 'tombstones.py')
 
-if PYUTILS not in sys.path:
-  sys.path.append(PYUTILS)
-
 if BLINK_TOOLS_DIR not in sys.path:
   sys.path.append(BLINK_TOOLS_DIR)
 
@@ -67,9 +64,6 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW, CHROME_ANDROID)
 
 from devil import devil_env
-from devil.android import device_utils
-
-from pylib.local.emulator import avd
 
 def _get_adapter(product, device):
   if product == ANDROID_WEBLAYER:
@@ -84,29 +78,6 @@ def _get_adapter(product, device):
 # any additional compile targets.
 def main_compile_targets(args):
   json.dump([], args.output)
-
-
-@contextlib.contextmanager
-def get_device(args):
-  instance = None
-  try:
-    if args.avd_config:
-      avd_config = avd.AvdConfig(args.avd_config)
-      logger.warning('Install emulator from ' + args.avd_config)
-      avd_config.Install()
-      instance = avd_config.CreateInstance()
-      instance.Start(writable_system=True, window=args.emulator_window)
-      device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted()
-
-    #TODO(weizhong): when choose device, make sure abi matches with target
-    devices = device_utils.DeviceUtils.HealthyDevices()
-    if devices:
-      yield devices[0]
-    else:
-      yield
-  finally:
-    if instance:
-      instance.Stop()
 
 
 def main():

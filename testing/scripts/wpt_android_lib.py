@@ -42,10 +42,12 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW, CHROME_ANDROID, ANDROID_DISABLED_TESTS)
 
 from devil.android import apk_helper
+from devil.android import device_utils
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
 
 from py_utils.tempfile_ext import NamedTemporaryDirectory
+from pylib.local.emulator import avd
 
 class PassThroughArgs(argparse.Action):
   pass_through_args = []
@@ -408,6 +410,29 @@ def add_emulator_args(parser):
       action='store_true',
       default=False,
       help='Enable graphical window display on the emulator.')
+
+
+@contextlib.contextmanager
+def get_device(args):
+  instance = None
+  try:
+    if args.avd_config:
+      avd_config = avd.AvdConfig(args.avd_config)
+      logger.warning('Install emulator from ' + args.avd_config)
+      avd_config.Install()
+      instance = avd_config.CreateInstance()
+      instance.Start(writable_system=True, window=args.emulator_window)
+      device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted()
+
+    #TODO(weizhong): when choose device, make sure abi matches with target
+    devices = device_utils.DeviceUtils.HealthyDevices()
+    if devices:
+      yield devices[0]
+    else:
+      yield
+  finally:
+    if instance:
+      instance.Stop()
 
 
 def _maybe_install_webview_provider(device, apk):

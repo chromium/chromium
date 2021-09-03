@@ -37,7 +37,7 @@ if (android_64bit_target_cpu) {
   }
 }
 
-script_test("crx_smoke_tests") {
+script_test("system_webview_crx_smoke_tests") {
   script =
       "//android_webview/test/components/run_webview_component_smoketest.py"
   run_under_python2 = true
@@ -46,6 +46,15 @@ script_test("crx_smoke_tests") {
   data_deps = [
     "//android_webview:system_webview_apk",
     "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+  ]
+}
+
+script_test("system_webview_finch_smoke_tests") {
+  script = "//testing/scripts/run_finch_smoke_tests_android.py"
+  data_deps = [
+    "//android_webview:system_webview_apk",
+    "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    "//testing:wpt_android_lib",
   ]
 }
 
