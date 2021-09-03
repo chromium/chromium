@@ -296,6 +296,13 @@ class DisassemblerElfArm : public DisassemblerElf<TRAITS> {
   std::unique_ptr<ReferenceReader> MakeReadAbs32(offset_t lo, offset_t hi);
   std::unique_ptr<ReferenceWriter> MakeWriteAbs32(MutableBufferView image);
 
+  // Specialized Read/Write functions for different rel32 address types.
+  template <class ADDR_TRAITS>
+  std::unique_ptr<ReferenceReader> MakeReadRel32(offset_t lower,
+                                                 offset_t upper);
+  template <class ADDR_TRAITS>
+  std::unique_ptr<ReferenceWriter> MakeWriteRel32(MutableBufferView image);
+
  protected:
   // Sorted file offsets of rel32 locations for each rel32 address type.
   std::deque<offset_t>
@@ -322,27 +329,6 @@ class DisassemblerElfAArch32 : public DisassemblerElfArm<ElfAArch32Traits> {
   // or THUMB2 mode, this function implements heuristics to distinguish between
   // the two. Returns true if section is THUMB2 mode; otherwise return false.
   bool IsExecSectionThumb2(const typename Traits::Elf_Shdr& section) const;
-
-  // Specialized Read/Write functions for different rel32 address types.
-  std::unique_ptr<ReferenceReader> MakeReadRel32A24(offset_t lower,
-                                                    offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32A24(MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32T8(offset_t lower,
-                                                   offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32T8(MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32T11(offset_t lower,
-                                                    offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32T11(MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32T20(offset_t lower,
-                                                    offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32T20(MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32T24(offset_t lower,
-                                                    offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32T24(MutableBufferView image);
 };
 
 // Disassembler for ELF with AArch64 (AKA ARM64).
@@ -360,22 +346,6 @@ class DisassemblerElfAArch64 : public DisassemblerElfArm<ElfAArch64Traits> {
   // DisassemblerElfArm:
   std::unique_ptr<typename Traits::Rel32FinderUse> MakeRel32Finder(
       const typename Traits::Elf_Shdr& section) override;
-
-  // Specialized Read/Write functions for different rel32 address types.
-  std::unique_ptr<ReferenceReader> MakeReadRel32Immd14(offset_t lower,
-                                                       offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32Immd14(
-      MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32Immd19(offset_t lower,
-                                                       offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32Immd19(
-      MutableBufferView image);
-
-  std::unique_ptr<ReferenceReader> MakeReadRel32Immd26(offset_t lower,
-                                                       offset_t upper);
-  std::unique_ptr<ReferenceWriter> MakeWriteRel32Immd26(
-      MutableBufferView image);
 };
 
 }  // namespace zucchini

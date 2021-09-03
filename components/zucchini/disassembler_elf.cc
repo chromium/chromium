@@ -596,6 +596,24 @@ std::unique_ptr<ReferenceWriter> DisassemblerElfArm<Traits>::MakeWriteAbs32(
       image, AbsoluteAddress(Traits::kBitness, 0), this->translator_);
 }
 
+template <class TRAITS>
+template <class ADDR_TRAITS>
+std::unique_ptr<ReferenceReader> DisassemblerElfArm<TRAITS>::MakeReadRel32(
+    offset_t lower,
+    offset_t upper) {
+  return std::make_unique<Rel32ReaderArm<ADDR_TRAITS>>(
+      this->translator_, this->image_,
+      this->rel32_locations_table_[ADDR_TRAITS::addr_type], lower, upper);
+}
+
+template <class TRAITS>
+template <class ADDR_TRAITS>
+std::unique_ptr<ReferenceWriter> DisassemblerElfArm<TRAITS>::MakeWriteRel32(
+    MutableBufferView image) {
+  return std::make_unique<Rel32WriterArm<ADDR_TRAITS>>(this->translator_,
+                                                       image);
+}
+
 /******** DisassemblerElfAArch32 ********/
 
 DisassemblerElfAArch32::DisassemblerElfAArch32() = default;
@@ -616,24 +634,34 @@ std::vector<ReferenceGroup> DisassemblerElfAArch32::MakeReferenceGroups()
        &DisassemblerElfAArch32::MakeWriteAbs32},
       {ReferenceTypeTraits{4, TypeTag(AArch32ReferenceType::kRel32_A24),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch32::MakeReadRel32A24,
-       &DisassemblerElfAArch32::MakeWriteRel32A24},
+       &DisassemblerElfAArch32::MakeReadRel32<
+           AArch32Rel32Translator::AddrTraits_A24>,
+       &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_A24>},
       {ReferenceTypeTraits{2, TypeTag(AArch32ReferenceType::kRel32_T8),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch32::MakeReadRel32T8,
-       &DisassemblerElfAArch32::MakeWriteRel32T8},
+       &DisassemblerElfAArch32::MakeReadRel32<
+           AArch32Rel32Translator::AddrTraits_T8>,
+       &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T8>},
       {ReferenceTypeTraits{2, TypeTag(AArch32ReferenceType::kRel32_T11),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch32::MakeReadRel32T11,
-       &DisassemblerElfAArch32::MakeWriteRel32T11},
+       &DisassemblerElfAArch32::MakeReadRel32<
+           AArch32Rel32Translator::AddrTraits_T11>,
+       &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T11>},
       {ReferenceTypeTraits{4, TypeTag(AArch32ReferenceType::kRel32_T20),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch32::MakeReadRel32T20,
-       &DisassemblerElfAArch32::MakeWriteRel32T20},
+       &DisassemblerElfAArch32::MakeReadRel32<
+           AArch32Rel32Translator::AddrTraits_T20>,
+       &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T20>},
       {ReferenceTypeTraits{4, TypeTag(AArch32ReferenceType::kRel32_T24),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch32::MakeReadRel32T24,
-       &DisassemblerElfAArch32::MakeWriteRel32T24},
+       &DisassemblerElfAArch32::MakeReadRel32<
+           AArch32Rel32Translator::AddrTraits_T24>,
+       &DisassemblerElfAArch32::MakeWriteRel32<
+           AArch32Rel32Translator::AddrTraits_T24>},
   };
 }
 
@@ -673,86 +701,6 @@ bool DisassemblerElfAArch32::IsExecSectionThumb2(
   return num < den * kAArch32BitCondAlwaysDensityThreshold;
 }
 
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch32::MakeReadRel32A24(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_A24>>(
-      translator_, image_,
-      rel32_locations_table_[AArch32Rel32Translator::ADDR_A24], lower, upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch32::MakeWriteRel32A24(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch32Rel32Translator::AddrTraits_A24>>(translator_,
-                                                              image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch32::MakeReadRel32T8(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_T8>>(
-      translator_, image_,
-      rel32_locations_table_[AArch32Rel32Translator::ADDR_T8], lower, upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch32::MakeWriteRel32T8(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T8>>(translator_,
-                                                             image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch32::MakeReadRel32T11(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_T11>>(
-      translator_, image_,
-      rel32_locations_table_[AArch32Rel32Translator::ADDR_T11], lower, upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch32::MakeWriteRel32T11(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T11>>(translator_,
-                                                              image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch32::MakeReadRel32T20(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_T20>>(
-      translator_, image_,
-      rel32_locations_table_[AArch32Rel32Translator::ADDR_T20], lower, upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch32::MakeWriteRel32T20(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T20>>(translator_,
-                                                              image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch32::MakeReadRel32T24(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch32Rel32Translator::AddrTraits_T24>>(
-      translator_, image_,
-      rel32_locations_table_[AArch32Rel32Translator::ADDR_T24], lower, upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch32::MakeWriteRel32T24(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch32Rel32Translator::AddrTraits_T24>>(translator_,
-                                                              image);
-}
-
 /******** DisassemblerElfAArch64 ********/
 
 DisassemblerElfAArch64::DisassemblerElfAArch64() = default;
@@ -774,16 +722,22 @@ std::vector<ReferenceGroup> DisassemblerElfAArch64::MakeReferenceGroups()
        &DisassemblerElfAArch64::MakeWriteAbs32},
       {ReferenceTypeTraits{4, TypeTag(AArch64ReferenceType::kRel32_Immd14),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch64::MakeReadRel32Immd14,
-       &DisassemblerElfAArch64::MakeWriteRel32Immd14},
+       &DisassemblerElfAArch64::MakeReadRel32<
+           AArch64Rel32Translator::AddrTraits_Immd14>,
+       &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd14>},
       {ReferenceTypeTraits{4, TypeTag(AArch64ReferenceType::kRel32_Immd19),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch64::MakeReadRel32Immd19,
-       &DisassemblerElfAArch64::MakeWriteRel32Immd19},
+       &DisassemblerElfAArch64::MakeReadRel32<
+           AArch64Rel32Translator::AddrTraits_Immd19>,
+       &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd19>},
       {ReferenceTypeTraits{4, TypeTag(AArch64ReferenceType::kRel32_Immd26),
                            PoolTag(ArmReferencePool::kPoolRel32)},
-       &DisassemblerElfAArch64::MakeReadRel32Immd26,
-       &DisassemblerElfAArch64::MakeWriteRel32Immd26},
+       &DisassemblerElfAArch64::MakeReadRel32<
+           AArch64Rel32Translator::AddrTraits_Immd26>,
+       &DisassemblerElfAArch64::MakeWriteRel32<
+           AArch64Rel32Translator::AddrTraits_Immd26>},
   };
 }
 
@@ -791,57 +745,6 @@ std::unique_ptr<DisassemblerElfAArch64::Traits::Rel32FinderUse>
 DisassemblerElfAArch64::MakeRel32Finder(
     const typename Traits::Elf_Shdr& section) {
   return std::make_unique<Rel32FinderAArch64>(image_, translator_);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch64::MakeReadRel32Immd14(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd14>>(
-      translator_, this->image_,
-      rel32_locations_table_[AArch64Rel32Translator::ADDR_IMMD14], lower,
-      upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch64::MakeWriteRel32Immd14(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch64Rel32Translator::AddrTraits_Immd14>>(translator_,
-                                                                 image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch64::MakeReadRel32Immd19(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd19>>(
-      translator_, this->image_,
-      rel32_locations_table_[AArch64Rel32Translator::ADDR_IMMD19], lower,
-      upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch64::MakeWriteRel32Immd19(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch64Rel32Translator::AddrTraits_Immd19>>(translator_,
-                                                                 image);
-}
-
-std::unique_ptr<ReferenceReader> DisassemblerElfAArch64::MakeReadRel32Immd26(
-    offset_t lower,
-    offset_t upper) {
-  return std::make_unique<
-      Rel32ReaderArm<AArch64Rel32Translator::AddrTraits_Immd26>>(
-      translator_, this->image_,
-      rel32_locations_table_[AArch64Rel32Translator::ADDR_IMMD26], lower,
-      upper);
-}
-
-std::unique_ptr<ReferenceWriter> DisassemblerElfAArch64::MakeWriteRel32Immd26(
-    MutableBufferView image) {
-  return std::make_unique<
-      Rel32WriterArm<AArch64Rel32Translator::AddrTraits_Immd26>>(translator_,
-                                                                 image);
 }
 
 // Explicit instantiation for supported classes.
