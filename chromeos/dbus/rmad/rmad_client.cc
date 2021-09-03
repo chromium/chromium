@@ -403,7 +403,7 @@ void RmadClient::InitializeFake() {
   rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_component_repair();
+          ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::

@@ -796,7 +796,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_component_repair();
+          ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
@@ -804,7 +804,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_component_repair();
+                  ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
@@ -869,7 +869,7 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_component_repair();
+          ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
@@ -877,7 +877,7 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_component_repair();
+                  ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
@@ -890,15 +890,15 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
-        EXPECT_EQ(2, state.components_repair().component_repair_size());
-        EXPECT_EQ(state.components_repair().component_repair(0).component(),
+        EXPECT_EQ(2, state.components_repair().components_size());
+        EXPECT_EQ(state.components_repair().components(0).component(),
                   rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
-        EXPECT_EQ(state.components_repair().component_repair(0).repair_status(),
+        EXPECT_EQ(state.components_repair().components(0).repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_REPLACED);
-        EXPECT_EQ(state.components_repair().component_repair(1).component(),
+        EXPECT_EQ(state.components_repair().components(1).component(),
                   rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
-        EXPECT_EQ(state.components_repair().component_repair(1).repair_status(),
+        EXPECT_EQ(state.components_repair().components(1).repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_ORIGINAL);
       });
@@ -967,7 +967,7 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   rmad::ComponentsRepairState::ComponentRepairStatus* component =
       components_repair_state.mutable_state()
           ->mutable_components_repair()
-          ->add_component_repair();
+          ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
@@ -975,7 +975,7 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
-                  ->add_component_repair();
+                  ->add_components();
   component->set_component(rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::

@@ -269,9 +269,8 @@ void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
     LOG(ERROR) << "GetComponentList called from incorrect state "
                << state_proto_.state_case();
   } else {
-    components.reserve(
-        state_proto_.components_repair().component_repair_size());
-    for (auto component : state_proto_.components_repair().component_repair()) {
+    components.reserve(state_proto_.components_repair().components_size());
+    for (auto component : state_proto_.components_repair().components()) {
       int component_id = component.component();
       LOG(ERROR) << "Component: " << component_id;
       components.push_back(component);
@@ -291,12 +290,12 @@ void ShimlessRmaService::SetComponentList(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  state_proto_.mutable_components_repair()->clear_component_repair();
-  state_proto_.mutable_components_repair()->mutable_component_repair()->Reserve(
+  state_proto_.mutable_components_repair()->clear_components();
+  state_proto_.mutable_components_repair()->mutable_components()->Reserve(
       component_list.size());
   for (auto& component : component_list) {
     rmad::ComponentsRepairState_ComponentRepairStatus* proto_component =
-        state_proto_.mutable_components_repair()->add_component_repair();
+        state_proto_.mutable_components_repair()->add_components();
     proto_component->set_component(component.component());
     proto_component->set_repair_status(component.repair_status());
   }
