@@ -560,7 +560,15 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
 
 // Tests that using window.open to create a popup window out of scope results in
 // a correctly sized window.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OffScopePWAPopupsHaveCorrectSize) {
+// TODO(crbug.com/1234260): Stabilize the test.
+#if defined(OS_LINUX)
+#define MAYBE_OffScopePWAPopupsHaveCorrectSize \
+  DISABLED_OffScopePWAPopupsHaveCorrectSize
+#else
+#define MAYBE_OffScopePWAPopupsHaveCorrectSize OffScopePWAPopupsHaveCorrectSize
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       MAYBE_OffScopePWAPopupsHaveCorrectSize) {
   // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
   // and becomes smaller because of that.  Investigate this and remove the line
   // below if possible.
