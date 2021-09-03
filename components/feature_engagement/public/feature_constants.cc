@@ -153,15 +153,15 @@ const base::Feature kIPHTabSwitcherButtonFeature{
 const base::Feature kIPHTranslateMenuButtonFeature{
     "IPH_TranslateMenuButton", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPChromeIntroFeature{
-    "IPH_VideoTutorial_NTP_ChromeIntro", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_VideoTutorial_NTP_ChromeIntro", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPDownloadFeature{
-    "IPH_VideoTutorial_NTP_Download", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_VideoTutorial_NTP_Download", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPSearchFeature{
-    "IPH_VideoTutorial_NTP_Search", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_VideoTutorial_NTP_Search", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPVoiceSearchFeature{
-    "IPH_VideoTutorial_NTP_VoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_VideoTutorial_NTP_VoiceSearch", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHVideoTutorialNTPSummaryFeature{
-    "IPH_VideoTutorial_NTP_Summary", base::FEATURE_DISABLED_BY_DEFAULT};
+    "IPH_VideoTutorial_NTP_Summary", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHExploreSitesTileFeature{
     "IPH_ExploreSitesTile", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFeedHeaderMenuFeature{"IPH_FeedHeaderMenu",
