@@ -890,7 +890,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Arc.ImeCount" units="units" expires_after="2021-10-01">
+<histogram name="Arc.ImeCount" units="units" expires_after="2022-04-01">
   <owner>yhanada@chromium.org</owner>
   <owner>tetsui@chromium.org</owner>
   <summary>
