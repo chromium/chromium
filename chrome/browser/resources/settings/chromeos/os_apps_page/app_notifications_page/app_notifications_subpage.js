@@ -68,8 +68,16 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
         // TODO(ethanimooney): Replace placeholders with proper implementation
         // for apps
         value: [
-          {title: 'Chrome', id: 'mgndgikekgjfcpckkfioiadnlibdjbkf'},
-          {title: 'Files', id: 'hhaomjibdihmijegdhdafkllkbggdgoj'}
+          {
+            title: 'Chrome',
+            id: 'mgndgikekgjfcpckkfioiadnlibdjbkf',
+            notificationPermission: {isManaged: true}
+          },
+          {
+            title: 'Files',
+            id: 'hhaomjibdihmijegdhdafkllkbggdgoj',
+            notificationPermission: {isManaged: false}
+          },
         ],
       },
 

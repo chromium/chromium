@@ -162,13 +162,22 @@ suite('AppNotificationsSubpageTests', function() {
     mojoApi_.getObserverRemote().onQuietModeChanged(enable);
   }
 
+  // TODO(crbug/1240175): Ensure that CrToggle is disabled correctly and
+  // CrPolicyIndicator is hidden correctly.
   test('Each app-notification-row displays correctly', function() {
+    const chromeRow = page.$.appNotificationsList.children[0];
+    const filesRow = page.$.appNotificationsList.children[1];
+
     assertTrue(!!page);
     flush();
-    assertEquals(
-        'Chrome',
-        page.$.appNotificationsList.firstElementChild.$.appTitle.textContent
-            .trim());
+
+    assertEquals('Chrome', chromeRow.$.appTitle.textContent.trim());
+    assertTrue(chromeRow.$.appToggle.disabled);
+    assertTrue(!!chromeRow.shadowRoot.querySelector('cr-policy-indicator'));
+
+    assertEquals('Files', filesRow.$.appTitle.textContent.trim());
+    assertFalse(filesRow.$.appToggle.disabled);
+    assertFalse(!!filesRow.shadowRoot.querySelector('cr-policy-indicator'));
   });
 
   test('toggleDoNotDisturb', function() {

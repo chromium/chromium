@@ -25,8 +25,16 @@
     margin-inline-start: 24px;
     width: 32px;
   }
+
+  cr-policy-indicator {
+    padding-inline-end: var(--settings-controlled-by-spacing);
+  }
 </style>
 <img id="appIcon" src="chrome://app-icon/[[app.id]]/64"
     alt="[[app.title]] app icon." aria-hidden="true">
 <div id="appTitle" aria-hidden="true">[[app.title]]</div>
-<cr-toggle id="appToggle"></cr-toggle>
+<template is="dom-if" if="[[app.notificationPermission.isManaged]]">
+  <cr-policy-indicator indicator-type="devicePolicy"></cr-policy-indicator>
+</template>
+<cr-toggle id="appToggle" disabled="[[app.notificationPermission.isManaged]]">
+</cr-toggle>
