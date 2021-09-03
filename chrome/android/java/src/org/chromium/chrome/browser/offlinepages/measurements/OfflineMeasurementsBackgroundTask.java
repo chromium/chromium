@@ -84,9 +84,11 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
 
     // The result of the HTTP probing. Defined in tools/metrics/histograms/enums.xml.
     // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
+    // numeric values should never be reused. These values are also defined in
+    // chrome/browser/offline_pages/measurements/proto/system_state.proto.
     @IntDef({ProbeResult.INVALID, ProbeResult.NO_INTERNET, ProbeResult.SERVER_ERROR,
-            ProbeResult.UNEXPECTED_RESPONSE, ProbeResult.VALIDATED, ProbeResult.CANCELLED})
+            ProbeResult.UNEXPECTED_RESPONSE, ProbeResult.VALIDATED, ProbeResult.CANCELLED,
+            ProbeResult.MULTIPLE_URL_CONNECTIONS_OPEN})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ProbeResult {
         // Value could not be parsed from Prefs.
@@ -111,7 +113,8 @@ public class OfflineMeasurementsBackgroundTask implements BackgroundTask {
 
     // The state of the phone and how / if the user is interacting with it. Defined in
     // tools/metrics/histograms/enums.xml. These values are persisted to logs. Entries should not be
-    // renumbered and numeric values should never be reused.
+    // renumbered and numeric values should never be reused. These values are also defined in
+    // chrome/browser/offline_pages/measurements/proto/system_state.proto.
     @IntDef({UserState.INVALID, UserState.PHONE_OFF, UserState.NOT_USING_PHONE,
             UserState.USING_CHROME})
     @Retention(RetentionPolicy.SOURCE)
