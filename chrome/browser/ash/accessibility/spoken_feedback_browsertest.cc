@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/browser/ui/browser.h"
@@ -428,9 +429,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
   // pinned apps in user preference will be removed.
   EnableChromeVox();
   sm_.Call([controller, title]() {
-    controller->CreateAppShortcutItem(ShelfID("FakeApp"),
-                                      controller->shelf_model()->item_count(),
-                                      base::ASCIIToUTF16(title));
+    controller->InsertAppItem(
+        std::make_unique<AppShortcutShelfItemController>(ShelfID("FakeApp")),
+        ash::STATUS_CLOSED, controller->shelf_model()->item_count(),
+        ash::TYPE_PINNED_APP, base::ASCIIToUTF16(title));
   });
 
   // Focus on the shelf.
@@ -474,8 +476,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
     for (int i = 0; i < insert_app_num; i++) {
       std::string app_title = title + base::NumberToString(i);
       std::string app_id = id + base::NumberToString(i);
-      controller->CreateAppShortcutItem(ShelfID(app_id), base_index + i,
-                                        base::ASCIIToUTF16(app_title));
+      controller->InsertAppItem(
+          std::make_unique<AppShortcutShelfItemController>(ShelfID(app_id)),
+          ash::STATUS_CLOSED, base_index + i, ash::TYPE_PINNED_APP,
+          base::ASCIIToUTF16(app_title));
     }
 
     // Enable the function of speaking text under mouse.

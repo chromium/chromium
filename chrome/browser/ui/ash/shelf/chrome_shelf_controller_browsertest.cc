@@ -58,6 +58,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -214,6 +215,14 @@ void ExtendHotseat(Browser* browser) {
             controller->shelf()->shelf_layout_manager()->hotseat_state());
 }
 
+ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
+  auto* controller = ChromeShelfController::instance();
+  return controller->InsertAppItem(
+      std::make_unique<AppShortcutShelfItemController>(shelf_id),
+      ash::STATUS_CLOSED, controller->shelf_model()->item_count(),
+      ash::TYPE_PINNED_APP, /*title=*/u"");
+}
+
 }  // namespace
 
 class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
@@ -232,11 +241,6 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
   }
 
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
-
-  ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
-    return controller_->CreateAppShortcutItem(shelf_id,
-                                              shelf_model()->item_count());
-  }
 
   // Returns the last item in the shelf.
   const ash::ShelfItem& GetLastShelfItem() {
@@ -307,8 +311,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
     // Then create a shortcut.
     int item_count = shelf_model()->item_count();
-    ash::ShelfID shortcut_id =
-        controller_->CreateAppShortcutItem(ash::ShelfID(app_id), item_count);
+    ash::ShelfID shortcut_id = CreateAppShortcutItem(ash::ShelfID(app_id));
     controller_->SyncPinPosition(shortcut_id);
     EXPECT_EQ(++item_count, shelf_model()->item_count());
     const ash::ShelfItem& item = *shelf_model()->ItemByID(shortcut_id);

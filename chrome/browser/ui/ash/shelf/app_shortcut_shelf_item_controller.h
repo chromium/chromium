@@ -37,9 +37,6 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   explicit AppShortcutShelfItemController(const ash::ShelfID& shelf_id);
   ~AppShortcutShelfItemController() override;
 
-  static std::unique_ptr<AppShortcutShelfItemController> Create(
-      const ash::ShelfID& shelf_id);
-
   // ash::ShelfItemDelegate overrides:
   void ItemSelected(std::unique_ptr<ui::Event> event,
                     int64_t display_id,

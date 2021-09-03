@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/shelf/arc_playstore_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -227,15 +226,6 @@ class AppMatcher {
 };
 
 }  // namespace
-
-// static
-std::unique_ptr<AppShortcutShelfItemController>
-AppShortcutShelfItemController::Create(const ash::ShelfID& shelf_id) {
-  if (shelf_id.app_id == arc::kPlayStoreAppId)
-    return std::make_unique<ArcPlaystoreShortcutShelfItemController>();
-  return base::WrapUnique<AppShortcutShelfItemController>(
-      new AppShortcutShelfItemController(shelf_id));
-}
 
 AppShortcutShelfItemController::AppShortcutShelfItemController(
     const ash::ShelfID& shelf_id)

@@ -386,8 +386,9 @@ void ChromeShelfController::SetAppStatus(const std::string& app_id,
   if (item) {
     SetItemStatusOrRemove(id, status);
   } else if (status != ash::STATUS_CLOSED && !app_id.empty()) {
-    InsertAppItem(AppShortcutShelfItemController::Create(ash::ShelfID(app_id)),
-                  status, model_->item_count(), ash::TYPE_APP);
+    InsertAppItem(
+        std::make_unique<AppShortcutShelfItemController>(ash::ShelfID(app_id)),
+        status, model_->item_count(), ash::TYPE_APP);
   }
 }
 
@@ -772,7 +773,8 @@ void ChromeShelfController::ReplacePinnedItem(const std::string& old_app_id,
 
   // Remove old_app at index and replace with new app.
   model_->RemoveItemAt(index);
-  model_->AddAt(index, item, AppShortcutShelfItemController::Create(item.id));
+  model_->AddAt(index, item,
+                std::make_unique<AppShortcutShelfItemController>(item.id));
 }
 
 void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
@@ -786,7 +788,7 @@ void ChromeShelfController::PinAppAtIndex(const std::string& app_id,
   item.id = new_shelf_id;
 
   model_->AddAt(target_index, item,
-                AppShortcutShelfItemController::Create(item.id));
+                std::make_unique<AppShortcutShelfItemController>(item.id));
 }
 
 int ChromeShelfController::PinnedItemIndexByAppID(const std::string& app_id) {
@@ -1017,20 +1019,6 @@ void ChromeShelfController::UpdateAppImage(const std::string& app_id,
 ///////////////////////////////////////////////////////////////////////////////
 // ChromeShelfController private:
 
-ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
-    const ash::ShelfID& shelf_id,
-    int index) {
-  return CreateAppShortcutItem(shelf_id, index, std::u16string());
-}
-
-ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
-    const ash::ShelfID& shelf_id,
-    int index,
-    const std::u16string& title) {
-  return InsertAppItem(AppShortcutShelfItemController::Create(shelf_id),
-                       ash::STATUS_CLOSED, index, ash::TYPE_PINNED_APP, title);
-}
-
 void ChromeShelfController::RememberUnpinnedRunningApplicationOrder() {
   RunningAppListIds list;
   for (int i = 0; i < model_->item_count(); i++) {
@@ -1200,8 +1188,15 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       // but Lacros becomes the primary browser so that the browser
       // shortcut is unpinned. Do nothing then.
       if (pref_shelf_id.app_id != kChromeAppId) {
-        // This is fresh pin. Create new one.
-        CreateAppShortcutItem(pref_shelf_id, index);
+        // We need to create a new pin for a synced app.
+        ash::ShelfItem item;
+        std::unique_ptr<ash::ShelfItemDelegate> item_delegate;
+        bool success = shelf_item_factory()->CreateShelfItemForAppId(
+            pref_shelf_id.app_id, &item, &item_delegate);
+        if (success) {
+          InsertAppItem(std::move(item_delegate), ash::STATUS_CLOSED, index,
+                        ash::TYPE_PINNED_APP, /*title=*/std::u16string());
+        }
       }
     }
     ++index;
