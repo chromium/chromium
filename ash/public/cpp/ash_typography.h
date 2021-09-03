@@ -37,6 +37,9 @@ enum AshTextContext {
   // text. Usually 13pt.
   CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
 
+  // A month label that appears in the Calendar view.
+  CONTEXT_CALENDAR_LABEL,
+
   ASH_TEXT_CONTEXT_END
 };
 

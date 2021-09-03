@@ -9,11 +9,18 @@
 
 namespace ash {
 
+namespace calendar_utils {
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time::Exploded& selected_date);
 
 // Gets the given `date`'s `Exploded` instance.
 base::Time::Exploded GetExploded(const base::Time& date);
+
+// Gets the given `date`'s month name in string in the current language.
+std::u16string GetMonthName(const base::Time date);
+
+}  // namespace calendar_utils
 
 }  // namespace ash
 

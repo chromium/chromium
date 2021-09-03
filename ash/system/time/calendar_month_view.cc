@@ -76,7 +76,7 @@ class CalendarDateCellView : public views::LabelButton {
 
   // Draws the background for 'today'.
   void OnPaintBackground(gfx::Canvas* canvas) override {
-    if (!IsToday(date_))
+    if (!calendar_utils::IsToday(date_))
       return;
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
@@ -122,17 +122,18 @@ CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
   }
 
   base::Time::Exploded first_day_of_month_exploded =
-      GetExploded(first_day_of_month);
+      calendar_utils::GetExploded(first_day_of_month);
 
   // Calculates the start date.
   const base::Time start_of_the_first_row =
       first_day_of_month -
       base::TimeDelta::FromDays(first_day_of_month_exploded.day_of_week);
   base::Time::Exploded start_of_row_exploded =
-      GetExploded(start_of_the_first_row);
+      calendar_utils::GetExploded(start_of_the_first_row);
 
   base::Time current_date = start_of_the_first_row;
-  base::Time::Exploded current_date_exploded = GetExploded(current_date);
+  base::Time::Exploded current_date_exploded =
+      calendar_utils::GetExploded(current_date);
 
   int column_set_id = 0;
   // Gray-out dates in the first row, which are from the previous month, and the
@@ -158,7 +159,8 @@ CalendarMonthView::CalendarMonthView(const base::Time first_day_of_month) {
   const base::Time end_of_the_last_row =
       current_date +
       base::TimeDelta::FromDays(6 - current_date_exploded.day_of_week);
-  base::Time::Exploded end_of_row_exploded = GetExploded(end_of_the_last_row);
+  base::Time::Exploded end_of_row_exploded =
+      calendar_utils::GetExploded(end_of_the_last_row);
 
   // Gray-out dates in the last row, which are from the next month.
   while (current_date_exploded.day_of_month <=

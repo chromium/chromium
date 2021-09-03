@@ -30,6 +30,10 @@ void ApplyAshFontStyles(int context,
     case CONTEXT_HEADLINE_OVERSIZED:
       details.size_delta = 15;
       break;
+    case CONTEXT_CALENDAR_LABEL:
+      details.typeface = "Google Sans";
+      details.size_delta = 6;
+      break;
   }
 
   switch (style) {
