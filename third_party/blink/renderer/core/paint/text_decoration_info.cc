@@ -78,13 +78,13 @@ static float ComputeDecorationThickness(
     return auto_underline_thickness;
 
   if (text_decoration_thickness.IsFromFont()) {
-    absl::optional<float> underline_thickness_font_metric =
-        font_data->GetFontMetrics().UnderlineThickness().value();
+    absl::optional<float> font_underline_thickness =
+        font_data->GetFontMetrics().UnderlineThickness();
 
-    if (!underline_thickness_font_metric)
+    if (!font_underline_thickness)
       return auto_underline_thickness;
 
-    return std::max(1.f, underline_thickness_font_metric.value());
+    return std::max(1.f, font_underline_thickness.value());
   }
 
   DCHECK(!text_decoration_thickness.IsFromFont());
