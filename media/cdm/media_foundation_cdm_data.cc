@@ -9,9 +9,12 @@ namespace media {
 MediaFoundationCdmData::MediaFoundationCdmData() = default;
 
 MediaFoundationCdmData::MediaFoundationCdmData(
-    base::UnguessableToken origin_id,
-    absl::optional<std::vector<uint8_t>> client_token)
-    : origin_id(origin_id), client_token(client_token) {}
+    const base::UnguessableToken& origin_id,
+    const absl::optional<std::vector<uint8_t>>& client_token,
+    const base::FilePath& cdm_store_path_root)
+    : origin_id(origin_id),
+      client_token(client_token),
+      cdm_store_path_root(cdm_store_path_root) {}
 
 MediaFoundationCdmData::~MediaFoundationCdmData() = default;
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -41,7 +40,17 @@
 #endif
 
 #if defined(OS_WIN)
+#include <windows.h>
+
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
+#include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
+#include "sandbox/policy/win/lpac_capability.h"
 #endif  // defined(OS_WIN)
 
 namespace {
@@ -62,7 +71,55 @@ std::vector<uint8_t> GetStorageIdSaltFromProfile(
 
 #endif  // BUILDFLAG(ENABLE_CDM_STORAGE_ID)
 
+#if defined(OS_WIN)
+const char kCdmStore[] = "MediaFoundationCdmStore";
+
+base::FilePath GetCdmStorePathRootForProfile(
+    const base::FilePath& profile_path) {
+  return profile_path.AppendASCII(kCdmStore).AppendASCII(
+      base::SysInfo::ProcessCPUArchitecture());
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace
+
+#if defined(OS_WIN)
+bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
+    const base::FilePath& cdm_store_path_root) {
+  // If the path exist, we can assume the right permission are already
+  // set on it.
+  if (base::PathExists(cdm_store_path_root))
+    return true;
+
+  base::File::Error file_error;
+  if (!base::CreateDirectoryAndGetError(cdm_store_path_root, &file_error)) {
+    DLOG(ERROR) << "Create CDM store path failed with " << file_error;
+    return false;
+  }
+
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmData});
+  return base::win::GrantAccessToPath(
+      cdm_store_path_root, *sids,
+      FILE_GENERIC_READ | FILE_GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+}
+
+std::unique_ptr<media::MediaFoundationCdmData>
+GetMediaFoundationCdmDataInternal(const base::FilePath profile_path,
+                                  std::unique_ptr<CdmPrefData> pref_data) {
+  DCHECK(pref_data);
+
+  auto cdm_store_path_root = GetCdmStorePathRootForProfile(profile_path);
+  if (!CreateCdmStorePathRootAndGrantAccessIfNeeded(cdm_store_path_root)) {
+    return nullptr;
+  }
+
+  std::unique_ptr<media::MediaFoundationCdmData> cdm_data;
+  return std::make_unique<media::MediaFoundationCdmData>(
+      pref_data->origin_id(), pref_data->client_token(), cdm_store_path_root);
+}
+#endif  // defined(OS_WIN)
 
 // static
 void CdmDocumentServiceImpl::Create(
@@ -263,18 +320,22 @@ void CdmDocumentServiceImpl::GetMediaFoundationCdmData(
     return;
   }
 
-  PrefService* user_prefs = user_prefs::UserPrefs::Get(
-      content::WebContents::FromRenderFrameHost(render_frame_host())
-          ->GetBrowserContext());
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext());
 
-  std::unique_ptr<media::MediaFoundationCdmData> cdm_data = nullptr;
+  PrefService* user_prefs = profile->GetPrefs();
   std::unique_ptr<CdmPrefData> pref_data =
       CdmPrefServiceHelper::GetCdmPrefData(user_prefs, cdm_origin);
-  if (pref_data) {
-    cdm_data = std::make_unique<media::MediaFoundationCdmData>(
-        pref_data->origin_id(), pref_data->client_token());
-  }
-  std::move(callback).Run(std::move(cdm_data));
+
+  if (!pref_data)
+    std::move(callback).Run(nullptr);
+
+  // PostTask because the task is doing IO operation that can block.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&GetMediaFoundationCdmDataInternal, profile->GetPath(),
+                     std::move(pref_data)),
+      std::move(callback));
 }
 
 void CdmDocumentServiceImpl::SetCdmClientToken(
@@ -285,9 +346,106 @@ void CdmDocumentServiceImpl::SetCdmClientToken(
     return;
   }
 
-  PrefService* user_prefs = user_prefs::UserPrefs::Get(
-      content::WebContents::FromRenderFrameHost(render_frame_host())
-          ->GetBrowserContext());
+  PrefService* user_prefs =
+      Profile::FromBrowserContext(render_frame_host()->GetBrowserContext())
+          ->GetPrefs();
   CdmPrefServiceHelper::SetCdmClientToken(user_prefs, cdm_origin, client_token);
+}
+
+// This function goes over each folder located under the MediaFoundationCdm
+// store root path and delete them as needed. A folder needs to be deleted for
+// the following reason:
+// - The origin id the folder is associated with is no longer present in the
+// PrefService
+// - The folder refers to an origin matched by `filter` AND the folder was last
+// modified between `start` and `end`
+void DeleteMediaFoundationCdmData(
+    const base::FilePath& profile_path,
+    const std::map<std::string, url::Origin> origin_id_mapping,
+    base::Time start,
+    base::Time end,
+    const base::RepeatingCallback<bool(const GURL&)>& filter) {
+  auto cdm_store_path_root = GetCdmStorePathRootForProfile(profile_path);
+
+  // Enumerate all folder under `cdm_store_path_root` which should give a list
+  // of folder whose names are origin ids. Each folder contains CDM data
+  // associated with that origin id.
+  //
+  base::FileEnumerator directory_enumerator(cdm_store_path_root,
+                                            /*recursive=*/false,
+                                            base::FileEnumerator::DIRECTORIES);
+
+  for (auto file_path = directory_enumerator.Next(); !file_path.value().empty();
+       file_path = directory_enumerator.Next()) {
+    // The folder name is a string representation of a base::UnguessableToken,
+    // using MaybeAsASCII() is fine.
+    std::string origin_id_string = file_path.BaseName().MaybeAsASCII();
+    if (origin_id_string.empty())
+      continue;
+
+    absl::optional<url::Origin> origin = absl::nullopt;
+    if (origin_id_mapping.count(origin_id_string) != 0)
+      origin = origin_id_mapping.at(origin_id_string);
+
+    // If we couldn't find the origin, this mean the origin was not present in
+    // the PrefService and we should also delete the folder.
+    if (!origin) {
+      base::DeletePathRecursively(file_path);
+      continue;
+    }
+
+    // Null filter indicates that we should delete everything.
+    if (filter && !filter.Run(GURL(origin->Serialize())))
+      continue;
+
+    // Now go over every files under the current folder and delete them if
+    // needed.
+    base::FileEnumerator file_enumerator(file_path, /*recursive=*/true,
+                                         base::FileEnumerator::FILES);
+
+    // If at least one files was modified between `start` and `end`, we should
+    // delete the whole folder.
+    bool should_delete = false;
+    for (auto cdm_data_file_path = file_enumerator.Next();
+         !cdm_data_file_path.value().empty();
+         cdm_data_file_path = file_enumerator.Next()) {
+      base::File::Info file_info;
+      if (!base::GetFileInfo(cdm_data_file_path, &file_info)) {
+        DVLOG(ERROR) << "Failed to get FileInfo";
+        should_delete = true;
+        break;
+      }
+
+      if (file_info.last_accessed >= start &&
+          (!end.is_null() || file_info.last_accessed <= end)) {
+        should_delete = true;
+        break;
+      }
+    }
+
+    if (should_delete)
+      base::DeletePathRecursively(file_path);
+  }
+}
+
+void CdmDocumentServiceImpl::ClearCdmData(
+    Profile* profile,
+    base::Time start,
+    base::Time end,
+    const base::RepeatingCallback<bool(const GURL&)>& filter,
+    base::OnceClosure complete_cb) {
+  PrefService* user_prefs = profile->GetPrefs();
+  CdmPrefServiceHelper::ClearCdmPreferenceData(user_prefs, start, end, filter);
+
+  // Get the origin_id mapping here because the PrefService needs to be accessed
+  // from the UI thread.
+  auto origin_id_mapping = CdmPrefServiceHelper::GetOriginIdMapping(user_prefs);
+
+  // PostTask because is doing IO operation that can block.
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&DeleteMediaFoundationCdmData, profile->GetPath(),
+                     std::move(origin_id_mapping), start, end, filter),
+      std::move(complete_cb));
 }
 #endif  // defined(OS_WIN)

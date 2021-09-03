@@ -58,7 +58,7 @@ void CdmAuxiliaryHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
 void CdmAuxiliaryHelper::GetMediaFoundationCdmData(
     GetMediaFoundationCdmDataCB callback) {
   std::move(callback).Run(std::make_unique<MediaFoundationCdmData>(
-      base::UnguessableToken::Null(), absl::nullopt));
+      base::UnguessableToken::Null(), absl::nullopt, base::FilePath()));
 }
 
 void CdmAuxiliaryHelper::SetCdmClientToken(

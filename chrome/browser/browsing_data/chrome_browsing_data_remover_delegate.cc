@@ -180,7 +180,7 @@
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
-#include "chrome/browser/media/cdm_pref_service_helper.h"
+#include "chrome/browser/media/cdm_document_service_impl.h"
 #endif  // defined(OS_WIN)
 
 using base::UserMetricsAction;
@@ -1130,8 +1130,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #endif  // defined(OS_ANDROID);
 
 #if defined(OS_WIN)
-    CdmPrefServiceHelper::ClearCdmPreferenceData(
-        prefs, delete_begin, delete_end, nullable_filter,
+    CdmDocumentServiceImpl::ClearCdmData(
+        profile_, delete_begin, delete_end, nullable_filter,
         CreateTaskCompletionClosure(TracingDataType::kCdmLicenses));
 #endif  // defined(OS_WIN)
   }
