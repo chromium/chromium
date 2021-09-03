@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "components/account_id/account_id.h"
 
 namespace proximity_auth {
@@ -17,6 +16,8 @@ class ProximityAuthPrefManager;
 }  // namespace proximity_auth
 
 namespace ash {
+
+enum class SmartLockState;
 
 // Profile specific class responsible for updating screenlock UI for the user
 // associated with the profile when their Easy Unlock state changes.
@@ -60,7 +61,7 @@ class SmartLockStateHandler
 
   // Changes internal state to `new_state` and updates the user's Smart Lock
   // state accordingly.
-  void ChangeState(proximity_auth::SmartLockState new_state);
+  void ChangeState(SmartLockState new_state);
 
   // Updates the hardlock state.
   void SetHardlockState(HardlockState new_state);
@@ -68,7 +69,7 @@ class SmartLockStateHandler
   // Shows the hardlock UI if the hardlock_state_ is not NO_HARDLOCK.
   void MaybeShowHardlockUI();
 
-  proximity_auth::SmartLockState state() const { return state_; }
+  SmartLockState state() const { return state_; }
 
  private:
   // proximity_auth::ScreenlockBridge::Observer:
@@ -95,7 +96,7 @@ class SmartLockStateHandler
   // Updates the screenlock auth type if it has to be changed.
   void UpdateScreenlockAuthType();
 
-  proximity_auth::SmartLockState state_;
+  SmartLockState state_;
   const AccountId account_id_;
   proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
   proximity_auth::ProximityAuthPrefManager* pref_manager_ = nullptr;

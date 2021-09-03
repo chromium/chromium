@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/proximity_auth/smartlock_state.h"
+#include "ash/public/cpp/smartlock_state.h"
 
-namespace proximity_auth {
+namespace ash {
 
 std::ostream& operator<<(std::ostream& stream, const SmartLockState& state) {
   switch (state) {
@@ -48,8 +48,7 @@ std::ostream& operator<<(std::ostream& stream, const SmartLockState& state) {
       stream << "[primary user absent]";
       break;
   }
-
   return stream;
 }
 
-}  // namespace proximity_auth
+}  // namespace ash

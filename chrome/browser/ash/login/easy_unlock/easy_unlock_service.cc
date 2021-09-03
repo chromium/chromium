@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -52,8 +53,6 @@
 
 namespace ash {
 namespace {
-
-using ::proximity_auth::SmartLockState;
 
 PrefService* GetLocalState() {
   return g_browser_process ? g_browser_process->local_state() : NULL;
@@ -462,7 +461,7 @@ void EasyUnlockService::SetHardlockStateForUser(
   // forced.
   if (GetSmartLockStateHandler() &&
       GetSmartLockStateHandler()->state() ==
-          proximity_auth::SmartLockState::kPasswordReentryRequired) {
+          SmartLockState::kPasswordReentryRequired) {
     return;
   }
 

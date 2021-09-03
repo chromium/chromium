@@ -39,8 +39,6 @@ static_library("proximity_auth") {
     "screenlock_bridge.h",
     "smart_lock_metrics_recorder.cc",
     "smart_lock_metrics_recorder.h",
-    "smartlock_state.cc",
-    "smartlock_state.h",
     "unlock_manager.h",
     "unlock_manager_impl.cc",
     "unlock_manager_impl.h",
@@ -48,6 +46,7 @@ static_library("proximity_auth") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
@@ -109,6 +108,7 @@ source_set("unit_tests") {
     ":proximity_auth",
     ":test_support",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",

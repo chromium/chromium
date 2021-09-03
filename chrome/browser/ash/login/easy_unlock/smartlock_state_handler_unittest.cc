@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -20,14 +21,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/components/proximity_auth/smartlock_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
-
-using ::proximity_auth::SmartLockState;
 
 // Icons used by SmartLockStateHandler. The icon id values are the
 // same as the ones set by proximity_auth::ScreenlockBridge.

@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/smartlock_state.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -42,7 +43,6 @@ namespace {
 
 // TODO(https://crbug.com/1164001): remove after moving to ash::
 using ::chromeos::TPMTokenLoader;
-using ::proximity_auth::SmartLockState;
 
 // The maximum allowed backoff interval when waiting for cryptohome to start.
 uint32_t kMaxCryptohomeBackoffIntervalMs = 10000u;

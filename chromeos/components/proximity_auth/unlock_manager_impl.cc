@@ -25,6 +25,8 @@
 namespace proximity_auth {
 namespace {
 
+using SmartLockState = ash::SmartLockState;
+
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
 // change one without changing the other). Entries should be never modified

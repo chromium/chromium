@@ -42,6 +42,8 @@ using testing::Return;
 namespace proximity_auth {
 namespace {
 
+using SmartLockState = ash::SmartLockState;
+
 // The sign-in challenge to send to the remote device.
 const char kChallenge[] = "sign-in challenge";
 const char kSignInSecret[] = "decrypted challenge";

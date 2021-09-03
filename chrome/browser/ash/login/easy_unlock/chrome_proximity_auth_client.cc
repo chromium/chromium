@@ -23,8 +23,6 @@
 
 namespace ash {
 
-using ::proximity_auth::SmartLockState;
-
 ChromeProximityAuthClient::ChromeProximityAuthClient(Profile* profile)
     : profile_(profile) {}
 

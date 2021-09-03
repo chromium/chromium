@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_PROXIMITY_AUTH_SMARTLOCK_STATE_H_
-#define CHROMEOS_COMPONENTS_PROXIMITY_AUTH_SMARTLOCK_STATE_H_
+#ifndef ASH_PUBLIC_CPP_SMARTLOCK_STATE_H_
+#define ASH_PUBLIC_CPP_SMARTLOCK_STATE_H_
 
 #include <ostream>
 
-namespace proximity_auth {
+#include "ash/public/cpp/ash_public_export.h"
+
+namespace ash {
 
 // Full set of states for the Smart Lock feature. Used to control which UI
 // elements are visible.
@@ -48,8 +50,9 @@ enum class SmartLockState {
   kPrimaryUserAbsent
 };
 
-std::ostream& operator<<(std::ostream& stream, const SmartLockState& state);
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                           const SmartLockState& state);
 
-}  // namespace proximity_auth
+}  // namespace ash
 
-#endif  // CHROMEOS_COMPONENTS_PROXIMITY_AUTH_SMARTLOCK_STATE_H_
+#endif  // ASH_PUBLIC_CPP_SMARTLOCK_STATE_H_
