@@ -371,8 +371,10 @@ std::string SanitizeFrontendQueryParam(
   // Convert boolean flags to true.
   if (key == "can_dock" || key == "debugFrontend" || key == "isSharedWorker" ||
       key == "v8only" || key == "remoteFrontend" || key == "nodeFrontend" ||
-      key == "hasOtherClients" || key == "uiDevTools")
+      key == "hasOtherClients" || key == "uiDevTools" ||
+      key == "browserConnection") {
     return "true";
+  }
 
   // Pass connection endpoints as is.
   if (key == "ws" || key == "service-backend")
@@ -1597,6 +1599,18 @@ void DevToolsUIBindings::AttachTo(
   InnerAttach();
 }
 
+void DevToolsUIBindings::AttachViaBrowserTarget(
+    const scoped_refptr<content::DevToolsAgentHost>& agent_host) {
+  DCHECK(!agent_host_ ||
+         agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
+  if (!agent_host_)
+    agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
+        nullptr /* tethering_task_runner */,
+        content::DevToolsAgentHost::CreateServerSocketCallback());
+  initial_target_id_ = agent_host->GetId();
+  InnerAttach();
+}
+
 void DevToolsUIBindings::Detach() {
   if (agent_host_.get())
     agent_host_->DetachClient(this);
@@ -1604,7 +1618,9 @@ void DevToolsUIBindings::Detach() {
 }
 
 bool DevToolsUIBindings::IsAttachedTo(content::DevToolsAgentHost* agent_host) {
-  return agent_host_.get() == agent_host;
+  // TODO(caseq): find better way to track attached targets.
+  return initial_target_id_.empty() ? agent_host_.get() == agent_host
+                                    : initial_target_id_ == agent_host->GetId();
 }
 
 void DevToolsUIBindings::CallClientMethod(
@@ -1699,6 +1715,9 @@ void DevToolsUIBindings::FrontendLoaded() {
   // Call delegate first - it seeds importants bit of information.
   delegate_->OnLoadCompleted();
 
+  if (!initial_target_id_.empty())
+    CallClientMethod("DevToolsAPI", "setInitialTargetId",
+                     base::Value(initial_target_id_));
   AddDevToolsExtensionsToClient();
 }
 
