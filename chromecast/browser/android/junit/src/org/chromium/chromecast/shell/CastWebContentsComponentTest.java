@@ -81,7 +81,6 @@ public class CastWebContentsComponentTest {
     @Test
     public void testStartStartsWebContentsService() {
         Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-        Assume.assumeFalse(BuildConfig.ENABLE_CAST_FRAGMENT);
 
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, false, true, true);
@@ -166,7 +165,6 @@ public class CastWebContentsComponentTest {
     @Test
     public void testEnableTouchInputBeforeStartedSendsEnableTouchToActivity() {
         Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-        Assume.assumeFalse(BuildConfig.ENABLE_CAST_FRAGMENT);
 
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, false, true, true);
@@ -182,7 +180,6 @@ public class CastWebContentsComponentTest {
     @Test
     public void testDisableTouchInputBeforeStartedSendsEnableTouchToActivity() {
         Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-        Assume.assumeFalse(BuildConfig.ENABLE_CAST_FRAGMENT);
 
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, false, true, true);

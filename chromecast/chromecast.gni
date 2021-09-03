@@ -52,11 +52,6 @@ declare_args() {
   # volume streams to a single one.
   is_single_volume = false
 
-  # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
-  # to run cast receiver app.
-  # TODO(thoren) merge this flag with display_web_contents_in_service
-  enable_cast_fragment = false
-
   if (is_android) {
     # Set to true to get logcat from a remote service
     # If false, will only get the logs of the app.

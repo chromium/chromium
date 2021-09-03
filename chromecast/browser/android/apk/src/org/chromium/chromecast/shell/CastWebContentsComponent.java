@@ -52,7 +52,7 @@ public class CastWebContentsComponent {
     }
 
     /**
-     * Params to start WebContents in activity, fragment or service.
+     * Params to start WebContents in activity or service.
      */
     static class StartParams {
         public final Context context;
@@ -108,26 +108,6 @@ public class CastWebContentsComponent {
         public void stop(Context context) {
             sendStopWebContentEvent();
             mStarted = false;
-        }
-    }
-
-    private class FragmentDelegate implements Delegate {
-        private static final String TAG = "CastWebContent_FD";
-
-        @Override
-        public void start(StartParams params) {
-            if (!sendIntent(CastWebContentsIntentUtils.requestStartCastFragment(params.webContents,
-                        params.appId, params.visibilityPriority, mEnableTouchInput, mSessionId,
-                        mIsRemoteControlMode, mTurnOnScreen))) {
-                // No intent receiver to handle SHOW_WEB_CONTENT in fragment
-                startCastActivity(params.context, params.webContents, mEnableTouchInput,
-                        mIsRemoteControlMode, mTurnOnScreen);
-            }
-        }
-
-        @Override
-        public void stop(Context context) {
-            sendStopWebContentEvent();
         }
     }
 
@@ -286,9 +266,6 @@ public class CastWebContentsComponent {
         if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
             if (DEBUG) Log.d(TAG, "Creating service delegate...");
             start(params, new ServiceDelegate());
-        } else if (BuildConfig.ENABLE_CAST_FRAGMENT) {
-            if (DEBUG) Log.d(TAG, "Creating fragment delegate...");
-            start(params, new FragmentDelegate());
         } else {
             if (DEBUG) Log.d(TAG, "Creating activity delegate...");
             start(params, new ActivityDelegate());
