@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
-    expires_after="2021-09-05">
+    expires_after="2022-09-01">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -155,7 +155,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.LoadingTimeoutCount" units="timeouts"
-    expires_after="2021-10-04">
+    expires_after="2022-09-01">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -393,7 +393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="QuickAnswers.ContextMenu.Close" enum="BooleanClicked"
     expires_after="2022-01-09">
-  <owner>updowndota@google.com</owner>
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     Records whether or not the user interacted (via clicking) with a context
@@ -460,7 +460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="QuickAnswers.NetworkError.IntentType"
     enum="QuickAnswersIntentType" expires_after="2022-01-02">
-  <owner>updowndota@google.com</owner>
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     Records the intent type when network error occurs during the quick answers
@@ -469,8 +469,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.RequestTextLength.{IntentType}"
-    units="characters" expires_after="2021-08-29">
-  <owner>updowndota@google.com</owner>
+    units="characters" expires_after="2022-09-01">
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answer request, records the length of the selected text that
@@ -519,7 +519,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="QuickAnswers.V2.Consent" units="impressions"
     expires_after="2022-09-01">
-  <owner>updowndota@google.com</owner>
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answers consent impression, records how many times the user
@@ -530,7 +530,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="QuickAnswers.V2.Consent.Duration{QuickAnswersV2ConsentResultType}"
     units="ms" expires_after="2022-09-01">
-  <owner>updowndota@google.com</owner>
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answers consent result event, records how long the user has
@@ -543,7 +543,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
     units="impressions" expires_after="2022-09-01">
-  <owner>updowndota@google.com</owner>
+  <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
     For every quick answers consent result event, records how many times the
