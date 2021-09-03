@@ -116,7 +116,7 @@
   {
     "name": "allow-scroll-settings",
     "owners": [ "khorimoto", "zentaro" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 100
   },
   {
     "name": "allow-sync-xhr-in-page-dismissal",
@@ -1197,7 +1197,7 @@
   {
     "name": "display-alignment-assistance",
     "owners": [ "baileyberro", "cros-peripherals@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 100
   },
   {
     "name": "display-identification",
@@ -3459,7 +3459,7 @@
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "impulse-scroll-animations",
