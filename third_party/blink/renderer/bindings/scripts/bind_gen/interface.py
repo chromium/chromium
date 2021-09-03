@@ -7119,8 +7119,7 @@ def generate_class_like(class_like):
                     "v8::Local<v8::Value>",
                     "const v8::FunctionCallbackInfo<v8::Value>&",
                 ])
-            if is_cross_origin and (not cross_origin_values
-                                    or "Setter" in cross_origin_values):
+            if is_cross_origin and "Setter" in cross_origin_values:
                 add_custom_callback_impl_decl(
                     attribute=attribute,
                     attribute_set=True,
