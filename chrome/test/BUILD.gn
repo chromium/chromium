@@ -1842,6 +1842,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/translate/translate_manager_browsertest.cc",
       "../browser/translate/translate_model_service_browsertest.cc",
       "../browser/ui/ask_google_for_suggestions_dialog_browsertest.cc",
+      "../browser/ui/autofill/edit_address_profile_dialog_controller_impl_browsertest.cc",
       "../browser/ui/autofill/payments/card_unmask_prompt_view_browsertest.cc",
       "../browser/ui/autofill/payments/card_unmask_prompt_view_tester.h",
       "../browser/ui/autofill/payments/save_card_bubble_controller_impl_browsertest.cc",
