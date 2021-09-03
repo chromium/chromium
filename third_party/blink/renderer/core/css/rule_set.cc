@@ -560,6 +560,7 @@ void RuleSet::CompactRules() {
   counter_style_rules_.ShrinkToFit();
   scroll_timeline_rules_.ShrinkToFit();
   slotted_pseudo_element_rules_.ShrinkToFit();
+  layer_intervals_.ShrinkToFit();
 
 #if EXPENSIVE_DCHECKS_ARE_ON()
   AssertRuleListsSorted();
