@@ -2236,7 +2236,7 @@
     },
     {
       name: "URLPattern",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "URLPatternCompareComponent",
