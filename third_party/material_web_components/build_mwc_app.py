@@ -54,8 +54,7 @@ def _request_list_path(out_path, host_url):
     host = host_url[host_url.find('://') + 3:-1]
     return os.path.join(out_path, host + '_requestlist.txt')
 
-# Given an import dependency from rollup, returns the path that should be
-# written into the depfile.
+
 def _get_dep_path(dep, host_url, in_path, out_path):
     DLOG('Input dep: ' + dep)
     dep = dep.replace('../', '', 1)
