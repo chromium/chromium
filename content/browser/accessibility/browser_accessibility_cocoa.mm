@@ -3842,15 +3842,23 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 }
 
 - (BOOL)isAccessibilityEnabled {
-  if (!_owner)
+  if (![self instanceActive])
     return NO;
 
   return _owner->GetData().GetRestriction() !=
          ax::mojom::Restriction::kDisabled;
 }
 
+- (NSRect)accessibilityFrame {
+  if (![self instanceActive])
+    return NSZeroRect;
+
+  return gfx::ScreenRectToNSRect(_owner->GetBoundsRect(
+      ui::AXCoordinateSystem::kScreenDIPs, ui::AXClippingBehavior::kClipped));
+}
+
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
-  if (!_owner)
+  if (![self instanceActive])
     return NO;
 
   // BrowserAccessibilityCocoa doesn't yet implement other methods. Remove
