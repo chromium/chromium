@@ -477,9 +477,12 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
 bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
   if (!back_forward_cache_loader_helper_)
     return false;
-  return body_buffer_->IsUnderPerRequestBytesLimit() &&
-         back_forward_cache_loader_helper_
-             ->CanContinueBufferingWhileInBackForwardCache();
+  if (!OnlyUsePerProcessBufferLimit() &&
+      !body_buffer_->IsUnderPerRequestBytesLimit())
+    return false;
+
+  return back_forward_cache_loader_helper_
+      ->CanContinueBufferingWhileInBackForwardCache();
 }
 
 void ResponseBodyLoader::Start() {
