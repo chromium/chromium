@@ -5672,7 +5672,8 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
     const GURL& url,
     const std::string& http_method,
     const std::string& mime_type,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool include_credentials) {
   OPTIONAL_TRACE_EVENT2("content",
                         "WebContentsImpl::DidLoadResourceFromMemoryCache",
                         "render_frame_host", source, "url", url);
@@ -5680,14 +5681,16 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
       &WebContentsObserver::DidLoadResourceFromMemoryCache, source, url,
       mime_type, request_destination);
 
-  if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
-    StoragePartition* partition = source->GetProcess()->GetStoragePartition();
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
+    return;
 
-    DCHECK(!blink::IsRequestDestinationFrame(request_destination));
-    partition->GetNetworkContext()->NotifyExternalCacheHit(
-        url, http_method, source->GetNetworkIsolationKey(),
-        false /* is_subframe_document_resource */);
-  }
+  StoragePartition* partition = source->GetProcess()->GetStoragePartition();
+
+  DCHECK(!blink::IsRequestDestinationFrame(request_destination));
+  partition->GetNetworkContext()->NotifyExternalCacheHit(
+      url, http_method, source->GetNetworkIsolationKey(),
+      /*is_subframe_document_resource=*/false,
+      /*include_credentials=*/include_credentials);
 }
 
 void WebContentsImpl::DocumentAvailableInMainFrame(

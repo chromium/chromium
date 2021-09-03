@@ -739,6 +739,12 @@ TransportInfo TestTransportInfo() {
   return result;
 }
 
+// Helper function, generating valid HTTP cache key from `url`.
+// See also: HttpCache::GenerateCacheKey(..)
+std::string GenerateCacheKey(const std::string& url) {
+  return "1/0/" + url;
+}
+
 }  // namespace
 
 using HttpCacheTest = TestWithTaskEnvironment;
@@ -753,30 +759,30 @@ class HttpCacheIOCallbackTest : public HttpCacheTest {
 
   // The below functions are forwarding calls to the HttpCache class.
   int OpenEntry(HttpCache* cache,
-                const std::string& key,
+                const std::string& url,
                 HttpCache::ActiveEntry** entry,
                 HttpCache::Transaction* trans) {
-    return cache->OpenEntry(key, entry, trans);
+    return cache->OpenEntry(GenerateCacheKey(url), entry, trans);
   }
 
   int OpenOrCreateEntry(HttpCache* cache,
-                        const std::string& key,
+                        const std::string& url,
                         HttpCache::ActiveEntry** entry,
                         HttpCache::Transaction* trans) {
-    return cache->OpenOrCreateEntry(key, entry, trans);
+    return cache->OpenOrCreateEntry(GenerateCacheKey(url), entry, trans);
   }
 
   int CreateEntry(HttpCache* cache,
-                  const std::string& key,
+                  const std::string& url,
                   HttpCache::ActiveEntry** entry,
                   HttpCache::Transaction* trans) {
-    return cache->CreateEntry(key, entry, trans);
+    return cache->CreateEntry(GenerateCacheKey(url), entry, trans);
   }
 
   int DoomEntry(HttpCache* cache,
-                const std::string& key,
+                const std::string& url,
                 HttpCache::Transaction* trans) {
-    return cache->DoomEntry(key, trans);
+    return cache->DoomEntry(GenerateCacheKey(url), trans);
   }
 
   void DeactivateEntry(HttpCache* cache, ActiveEntry* entry) {
@@ -9300,8 +9306,8 @@ TEST_F(HttpCacheTest, RangeGET_OK_LoadOnlyFromCache) {
 TEST_F(HttpCacheTest, WriteResponseInfo_Truncated) {
   MockHttpCache cache;
   disk_cache::Entry* entry;
-  ASSERT_TRUE(
-      cache.CreateBackendEntry("http://www.google.com", &entry, nullptr));
+  ASSERT_TRUE(cache.CreateBackendEntry(
+      GenerateCacheKey("http://www.google.com"), &entry, nullptr));
 
   HttpResponseInfo response;
   response.headers = base::MakeRefCounted<HttpResponseHeaders>(
@@ -12322,7 +12328,7 @@ TEST_F(HttpCacheTest, CacheEntryStatusCantConditionalize) {
             response_info.cache_entry_status);
 }
 
-TEST_F(HttpSplitCacheKeyTest, GetResourceURLFromKey) {
+TEST_F(HttpSplitCacheKeyTest, GetResourceURLFromHttpCacheKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       net::features::kSplitCacheByNetworkIsolationKey);
@@ -12332,8 +12338,34 @@ TEST_F(HttpSplitCacheKeyTest, GetResourceURLFromKey) {
 
   for (const std::string& url : urls) {
     std::string key = ComputeCacheKey(url);
-    EXPECT_EQ(GURL(url).spec(),
-              cache.http_cache()->GetResourceURLFromHttpCacheKey(key));
+    EXPECT_EQ(GURL(url).spec(), HttpCache::GetResourceURLFromHttpCacheKey(key));
+  }
+}
+
+TEST_F(HttpCacheTest, GetResourceURLFromHttpCacheKey) {
+  const struct {
+    std::string input;
+    std::string output;
+  } kTestCase[] = {
+      // Valid input:
+      {"0/0/https://a.com/", "https://a.com/"},
+      {"0/0/https://a.com/path", "https://a.com/path"},
+      {"0/0/https://a.com/?query", "https://a.com/?query"},
+      {"0/0/https://a.com/#fragment", "https://a.com/#fragment"},
+      {"0/0/_dk_s_ https://a.com/", "https://a.com/"},
+      {"0/0/_dk_https://a.com https://b.com https://c.com/", "https://c.com/"},
+      {"0/0/_dk_shttps://a.com https://b.com https://c.com/", "https://c.com/"},
+
+      // Invalid input, producing garbage, without crashing.
+      {"", ""},
+      {"0/a.com", "0/a.com"},
+      {"https://a.com/", "a.com/"},
+      {"0/https://a.com/", "/a.com/"},
+  };
+
+  for (const auto& test : kTestCase) {
+    EXPECT_EQ(test.output,
+              HttpCache::GetResourceURLFromHttpCacheKey(test.input));
   }
 }
 

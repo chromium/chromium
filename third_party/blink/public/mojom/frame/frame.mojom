@@ -493,7 +493,8 @@ interface LocalFrameHost {
   // Note: May only be sent once per URL per frame per committed load.
   DidLoadResourceFromMemoryCache(
       url.mojom.Url url, string http_method,
-      string mime_type, network.mojom.RequestDestination request_destination);
+      string mime_type, network.mojom.RequestDestination request_destination,
+      bool include_credentials);
 
   // Notifies the browser that frame owner properties have changed.
   //

@@ -38,30 +38,8 @@ const int kMaxMockCacheEntrySize = 100 * 1000 * 1000;
 int g_test_mode = 0;
 
 int GetTestModeForEntry(const std::string& key) {
-  std::string url = key;
-
-  // 'key' is prefixed with an identifier if it corresponds to a cached POST.
-  // Skip past that to locate the actual URL.
-  //
-  // TODO(darin): It breaks the abstraction a bit that we assume 'key' is an
-  // URL corresponding to a registered MockTransaction.  It would be good to
-  // have another way to access the test_mode.
-  if (isdigit(key[0])) {
-    size_t slash = key.find('/');
-    DCHECK(slash != std::string::npos);
-    url = url.substr(slash + 1);
-  }
-
-  // If we split the cache by top frame origin, then the origin is prepended to
-  // the key. Skip to the second url in the key.
-  if (base::StartsWith(url, "_dk_", base::CompareCase::SENSITIVE)) {
-    auto pos = url.find(" http");
-    url = url.substr(pos + 1);
-    pos = url.find(" http");
-    url = url.substr(pos + 1);
-  }
-
-  const MockTransaction* t = FindMockTransaction(GURL(url));
+  GURL url(HttpCache::GetResourceURLFromHttpCacheKey(key));
+  const MockTransaction* t = FindMockTransaction(url);
   DCHECK(t);
   return t->test_mode;
 }

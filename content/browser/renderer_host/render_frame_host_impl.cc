@@ -6172,9 +6172,11 @@ void RenderFrameHostImpl::DidLoadResourceFromMemoryCache(
     const GURL& url,
     const std::string& http_method,
     const std::string& mime_type,
-    network::mojom::RequestDestination request_destination) {
+    network::mojom::RequestDestination request_destination,
+    bool include_credentials) {
   delegate_->DidLoadResourceFromMemoryCache(this, url, http_method, mime_type,
-                                            request_destination);
+                                            request_destination,
+                                            include_credentials);
 }
 
 void RenderFrameHostImpl::DidChangeFrameOwnerProperties(

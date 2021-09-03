@@ -230,7 +230,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void OnExternalCacheHit(const GURL& url,
                           const std::string& http_method,
                           const NetworkIsolationKey& network_isolation_key,
-                          bool is_subframe_document_resource);
+                          bool is_subframe_document_resource,
+                          bool include_credentials);
 
   // Causes all transactions created after this point to simulate lock timeout
   // and effectively bypass the cache lock whenever there is lock contention.
@@ -270,8 +271,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
                        const std::string& parent_absolute_name) const;
 
-  // Get the URL from the entry's cache key. If double-keying is not enabled,
-  // this will be the key itself.
+  // Get the URL from the entry's cache key.
   static std::string GetResourceURLFromHttpCacheKey(const std::string& key);
 
   // Function to generate cache key for testing.

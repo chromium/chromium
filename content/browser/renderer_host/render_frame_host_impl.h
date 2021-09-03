@@ -2074,7 +2074,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const GURL& url,
       const std::string& http_method,
       const std::string& mime_type,
-      network::mojom::RequestDestination request_destination) override;
+      network::mojom::RequestDestination request_destination,
+      bool include_credentials) override;
   void DidChangeFrameOwnerProperties(
       const blink::FrameToken& child_frame_token,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties) override;

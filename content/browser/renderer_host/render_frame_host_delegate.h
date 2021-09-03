@@ -599,7 +599,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const GURL& url,
       const std::string& http_request,
       const std::string& mime_type,
-      network::mojom::RequestDestination request_destination) {}
+      network::mojom::RequestDestination request_destination,
+      bool include_credentials) {}
 
   // Called when the renderer sends a response via DomAutomationController.
   // For example, `window.domAutomationController.send(foo())` sends the result

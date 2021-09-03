@@ -616,7 +616,12 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
   // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
   // to avoid resetting the disk cache.
-  current_field_trial_status += " None";
+  current_field_trial_status += " None ";
+
+  field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kSplitCacheByIncludeCredentials);
+  current_field_trial_status +=
+      (field_trial ? field_trial->group_name() : "None");
 
   std::string previous_field_trial_status =
       local_state->GetString(kHttpCacheFinchExperimentGroups);

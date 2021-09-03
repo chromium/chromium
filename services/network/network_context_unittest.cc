@@ -1612,9 +1612,9 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
       mock_cache.http_cache());
 
   std::vector<std::string> entry_urls = {
-      "http://www.google.com",    "https://www.google.com",
-      "http://www.wikipedia.com", "https://www.wikipedia.com",
-      "http://localhost:1234",    "https://localhost:1234",
+      "http://www.google.com/",    "https://www.google.com/",
+      "http://www.wikipedia.com/", "https://www.wikipedia.com/",
+      "http://localhost:1234/",    "https://localhost:1234/",
   };
 
   // The disk cache is lazily instanitated, force it and ensure it's valid.
@@ -1627,11 +1627,13 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
     net::NetworkIsolationKey key;
     network_context->NotifyExternalCacheHit(
         test_url, test_url.scheme(), key,
-        false /* is_subframe_document_resource */);
+        /*is_subframe_document_resource=*/false,
+        /*include_credentials=*/true);
     EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
 
     // Note: if this breaks check HttpCache::GenerateCacheKey() for changes.
-    EXPECT_EQ(test_url, mock_cache.disk_cache()->GetExternalCacheHits().back());
+    EXPECT_EQ("1/0/" + entry_urls[i],
+              mock_cache.disk_cache()->GetExternalCacheHits().back());
   }
 }
 
@@ -1674,12 +1676,13 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit_Split) {
     }
 
     network_context->NotifyExternalCacheHit(test_url, test_url.scheme(), key,
-                                            is_subframe_document_resource);
+                                            is_subframe_document_resource,
+                                            /*include_credentials=*/true);
     EXPECT_EQ(i + 1, mock_cache.disk_cache()->GetExternalCacheHits().size());
 
     // Since this is splitting the cache, the key also includes the network
     // isolation key and optionally, the subframe prefix.
-    EXPECT_EQ(base::StrCat({"_dk_", subframe_prefix, key.ToString(), " ",
+    EXPECT_EQ(base::StrCat({"1/0/_dk_", subframe_prefix, key.ToString(), " ",
                             test_url.spec()}),
               mock_cache.disk_cache()->GetExternalCacheHits().back());
   }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +25,7 @@
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -1033,6 +1035,213 @@ IN_PROC_BROWSER_TEST_F(ScopeBlinkMemoryCachePerContext, CheckFeature) {
   histograms.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Script", 3);
   histograms.ExpectBucketCount("Blink.MemoryCache.RevalidationPolicy.Script",
                                0 /* RevalidationPolicy::kUse */, 3);
+}
+
+class SplitCacheByIncludeCredentialsTest : public ContentBrowserTest {
+ public:
+  SplitCacheByIncludeCredentialsTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitAndEnableFeature(
+        net::features::kSplitCacheByIncludeCredentials);
+  }
+
+  int cacheable_request_count() const { return cacheable_request_count_; }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+  GURL CacheableUrl() { return https_server()->GetURL("b.test", "/cacheable"); }
+
+  void RequestAnonymous(Shell* shell) {
+    EXPECT_TRUE(ExecJs(shell, JsReplace(R"(
+      new Promise(resolve => {
+        const image = new Image();
+        image.src = $1;
+        image.crossOrigin = "anonymous";
+        image.onload = resolve;
+        document.body.appendChild(image);
+      });
+    )",
+                                        CacheableUrl())));
+  }
+
+  void RequestUseCredentials(Shell* shell) {
+    EXPECT_TRUE(ExecJs(shell, JsReplace(R"(
+      new Promise(resolve => {
+        const image = new Image();
+        image.src = $1;
+        image.crossOrigin = "use-credentials";
+        image.onload = resolve;
+        document.body.appendChild(image);
+      });
+    )",
+                                        CacheableUrl())));
+  }
+
+ private:
+  void SetUpOnMainThread() final {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    cacheable_request_count_ = 0;
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->RegisterRequestHandler(
+        base::BindRepeating(&SplitCacheByIncludeCredentialsTest::RequestHandler,
+                            base::Unretained(this)));
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(https_server());
+    SetupCrossSiteRedirector(https_server());
+    CHECK(https_server()->Start());
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url == "/cacheable") {
+      cacheable_request_count_++;
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_content_type("image/svg+xml");
+      response->set_content("<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>");
+      response->AddCustomHeader("Cache-Control", "max-age=3600");
+      response->AddCustomHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
+      response->AddCustomHeader(
+          "Access-Control-Allow-Origin",
+          https_server()->GetOrigin("a.test").Serialize());
+      return response;
+    }
+    return nullptr;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_;
+  // Initialized and read from the UI thread. Written from the |https_server_|.
+  std::atomic<int> cacheable_request_count_;
+};
+
+// Note: Compared to .DifferentProcess and .DifferentProcessVariant, this test
+// emits requests from the same renderer process. This is useful for checking
+// the behavior of blink's memory cache instead of the HTTP cache.
+IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest, SameProcess) {
+  GURL page_url(https_server()->GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(0, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+  RequestAnonymous(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+  RequestUseCredentials(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+}
+
+IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest, SameProcessVariant) {
+  GURL page_url(https_server()->GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), page_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(0, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+  RequestUseCredentials(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+  RequestAnonymous(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+}
+
+// Note: Compared to .SameProcess and .SameProcessVariant, this test emits
+// requests from two different renderer process. This is useful for checking the
+// behavior of the HTTP cache instead of blink's memory cache.
+//
+// COOP+COEP are used to get two same-origin documents loaded from different
+// renderer process. This avoids interferences from
+// SplitCacheByNetworkIsolationKey.
+IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest, DifferentProcess) {
+  GURL page_1_url(https_server()->GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), page_1_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  GURL page_2_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1)", page_2_url)));
+  Shell* new_shell = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+
+  EXPECT_NE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                ->GetMainFrame()
+                ->GetProcess(),
+            static_cast<WebContentsImpl*>(new_shell->web_contents())
+                ->GetMainFrame()
+                ->GetProcess());
+
+  EXPECT_EQ(0, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+  RequestAnonymous(new_shell);
+  EXPECT_EQ(1, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+  RequestUseCredentials(new_shell);
+  EXPECT_EQ(2, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+}
+
+IN_PROC_BROWSER_TEST_F(SplitCacheByIncludeCredentialsTest,
+                       DifferentProcessVariant) {
+  GURL page_1_url(https_server()->GetURL("a.test", "/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), page_1_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  GURL page_2_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.open($1)", page_2_url)));
+  Shell* new_shell = shell_observer.GetShell();
+  EXPECT_TRUE(WaitForLoadStop(new_shell->web_contents()));
+
+  EXPECT_NE(static_cast<WebContentsImpl*>(shell()->web_contents())
+                ->GetMainFrame()
+                ->GetProcess(),
+            static_cast<WebContentsImpl*>(new_shell->web_contents())
+                ->GetMainFrame()
+                ->GetProcess());
+
+  EXPECT_EQ(0, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(1, cacheable_request_count());
+  RequestUseCredentials(new_shell);
+  EXPECT_EQ(1, cacheable_request_count());
+
+  RequestAnonymous(shell());
+  EXPECT_EQ(2, cacheable_request_count());
+  RequestAnonymous(new_shell);
+  EXPECT_EQ(2, cacheable_request_count());
+
+  RequestUseCredentials(shell());
+  EXPECT_EQ(2, cacheable_request_count());
 }
 
 }  // namespace content

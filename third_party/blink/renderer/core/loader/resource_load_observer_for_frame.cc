@@ -237,7 +237,8 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
           resource_request.Url(),
           String::FromUTF8(resource_request.HttpMethod().Utf8()),
           String::FromUTF8(response.MimeType().Utf8()),
-          resource_request.GetRequestDestination());
+          resource_request.GetRequestDestination(),
+          response.RequestIncludeCredentials());
     }
 
     // Note: probe::WillSendRequest needs to precede before this probe method.

@@ -152,6 +152,9 @@ NET_EXPORT extern const base::FeatureParam<int>
 // quality estimator (NQE).
 NET_EXPORT extern const base::Feature kNetworkQualityEstimator;
 
+// Splits cache entries by the request's includeCredentials.
+NET_EXPORT extern const base::Feature kSplitCacheByIncludeCredentials;
+
 // Splits cache entries by the request's NetworkIsolationKey if one is
 // available.
 NET_EXPORT extern const base::Feature kSplitCacheByNetworkIsolationKey;

@@ -193,7 +193,8 @@ void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     const KURL& url,
     const WTF::String& http_method,
     const WTF::String& mime_type,
-    network::mojom::blink::RequestDestination request_destination) {}
+    network::mojom::blink::RequestDestination request_destination,
+    bool include_credentials) {}
 
 void FakeLocalFrameHost::DidChangeFrameOwnerProperties(
     const blink::FrameToken& child_frame_token,

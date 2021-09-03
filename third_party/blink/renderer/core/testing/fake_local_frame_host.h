@@ -130,7 +130,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const KURL& url,
       const WTF::String& http_method,
       const WTF::String& mime_type,
-      network::mojom::blink::RequestDestination request_destination) override;
+      network::mojom::blink::RequestDestination request_destination,
+      bool include_credentials) override;
   void DidChangeFrameOwnerProperties(
       const blink::FrameToken& child_frame_token,
       mojom::blink::FrameOwnerPropertiesPtr frame_owner_properties) override;
