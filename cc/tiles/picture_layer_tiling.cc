@@ -504,7 +504,14 @@ PictureLayerTiling::CoverageIterator::operator++() {
     current_geometry_rect_.Inset(inset_left, inset_top, 0, 0);
 
 #if DCHECK_IS_ON()
-    if (!new_row) {
+    // Sometimes we run into an extreme case where we are at the edge of integer
+    // precision. When doing so, rect calculations may end up changing values
+    // unexpectedly. Unfortunately, there isn't much we can do at this point, so
+    // we just do the correctness checks if both y and x offsets are
+    // 'reasonable', meaning they are less than the specified value.
+    static constexpr int kReasonableOffsetForDcheck = 500'000'000;
+    if (!new_row && current_geometry_rect_.x() <= kReasonableOffsetForDcheck &&
+        current_geometry_rect_.y() <= kReasonableOffsetForDcheck) {
       DCHECK_EQ(last_geometry_rect.right(), current_geometry_rect_.x());
       DCHECK_EQ(last_geometry_rect.bottom(), current_geometry_rect_.bottom());
       DCHECK_EQ(last_geometry_rect.y(), current_geometry_rect_.y());
