@@ -170,8 +170,10 @@ class WebBundleURLLoaderFactoryTest : public ::testing::Test {
     handle_ = std::make_unique<TestWebBundleHandle>(
         handle.BindNewPipeAndPassReceiver());
     devtools_observer_ = std::make_unique<MockDevToolsObserver>();
+    const ResourceRequest::WebBundleTokenParams create_params(
+        GURL(kBundleUrl), {} /* token */, {} /* handle */);
     factory_ = std::make_unique<WebBundleURLLoaderFactory>(
-        GURL(kBundleUrl), std::move(handle),
+        GURL(kBundleUrl), create_params, std::move(handle),
         std::make_unique<MockMemoryQuotaConsumer>(), devtools_observer_->Bind(),
         kBundleRequestId);
     factory_->SetBundleStream(std::move(consumer));

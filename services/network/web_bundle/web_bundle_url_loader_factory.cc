@@ -99,7 +99,18 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override {
-    wrapped_->OnReceiveRedirect(redirect_info, std::move(response_head));
+    // TODO(crbug.com/1242281): Support redirection for WebBundle requests.
+    if (factory_) {
+      factory_->ReportErrorAndCancelPendingLoaders(
+          WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+              kWebBundleRedirected,
+          mojom::WebBundleErrorType::kWebBundleRedirected,
+          "URL redirection of Subresource Web Bundles is currently not "
+          "supported.");
+    }
+    wrapped_->OnComplete(
+        URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+    completed_ = true;
   }
 
   void OnUploadProgress(int64_t current_position,
@@ -475,6 +486,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
 
 WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
     const GURL& bundle_url,
+    const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
     mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
     std::unique_ptr<WebBundleMemoryQuotaConsumer>
         web_bundle_memory_quota_consumer,
@@ -485,7 +497,18 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
       web_bundle_memory_quota_consumer_(
           std::move(web_bundle_memory_quota_consumer)),
       devtools_observer_(std::move(devtools_observer)),
-      devtools_request_id_(std::move(devtools_request_id)) {}
+      devtools_request_id_(std::move(devtools_request_id)) {
+  if (bundle_url != web_bundle_token_params.bundle_url) {
+    // This happens when WebBundle request is redirected by WebRequest extension
+    // API.
+    // TODO(crbug.com/1242281): Support redirection for WebBundle requests.
+    ReportErrorAndCancelPendingLoaders(
+        SubresourceWebBundleLoadResult::kWebBundleRedirected,
+        mojom::WebBundleErrorType::kWebBundleRedirected,
+        "URL redirection of Subresource Web Bundles is currently not "
+        "supported.");
+  }
+}
 
 WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   for (auto loader : pending_loaders_) {
@@ -526,8 +549,13 @@ void WebBundleURLLoaderFactory::SetBundleStream(
 }
 
 mojo::PendingRemote<mojom::URLLoaderClient>
-WebBundleURLLoaderFactory::WrapURLLoaderClient(
+WebBundleURLLoaderFactory::MaybeWrapURLLoaderClient(
     mojo::PendingRemote<mojom::URLLoaderClient> wrapped) {
+  if (HasError()) {
+    mojo::Remote<mojom::URLLoaderClient>(std::move(wrapped))
+        ->OnComplete(URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
+    return {};
+  }
   mojo::PendingRemote<mojom::URLLoaderClient> client;
   auto client_impl = std::make_unique<WebBundleURLLoaderClient>(
       weak_ptr_factory_.GetWeakPtr(), std::move(wrapped));
@@ -548,6 +576,11 @@ void WebBundleURLLoaderFactory::StartSubresourceRequest(
       new URLLoader(std::move(receiver), url_request, std::move(client),
                     std::move(trusted_header_client), request_start_time,
                     request_start_time_ticks);
+
+  if (HasError()) {
+    loader->OnFail(net::ERR_INVALID_WEB_BUNDLE);
+    return;
+  }
 
   // Verify that WebBundle URL associated with the request is correct.
   DCHECK(url_request.web_bundle_token_params.has_value());

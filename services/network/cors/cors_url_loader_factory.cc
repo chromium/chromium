@@ -261,8 +261,10 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
             resource_request.url, *resource_request.web_bundle_token_params,
             process_id_, std::move(devtools_observer),
             resource_request.devtools_request_id);
-    client =
-        web_bundle_url_loader_factory->WrapURLLoaderClient(std::move(client));
+    client = web_bundle_url_loader_factory->MaybeWrapURLLoaderClient(
+        std::move(client));
+    if (!client)
+      return;
   }
 
   mojom::URLLoaderFactory* const inner_url_loader_factory =

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
@@ -29,11 +30,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
     kMemoryQuotaExceeded = 2,
     kServingConstraintsNotMet = 3,
     kWebBundleFetchFailed = 4,
-    kMaxValue = kWebBundleFetchFailed,
+    kWebBundleRedirected = 5,
+    kMaxValue = kWebBundleRedirected,
   };
 
   WebBundleURLLoaderFactory(
       const GURL& bundle_url,
+      const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
       mojo::Remote<mojom::WebBundleHandle> web_bundle_handle,
       std::unique_ptr<WebBundleMemoryQuotaConsumer>
           web_bundle_memory_quota_consumer,
@@ -50,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   void ReportErrorAndCancelPendingLoaders(SubresourceWebBundleLoadResult result,
                                           mojom::WebBundleErrorType error,
                                           const std::string& message);
-  mojo::PendingRemote<mojom::URLLoaderClient> WrapURLLoaderClient(
+  mojo::PendingRemote<mojom::URLLoaderClient> MaybeWrapURLLoaderClient(
       mojo::PendingRemote<mojom::URLLoaderClient> wrapped);
 
   void StartSubresourceRequest(

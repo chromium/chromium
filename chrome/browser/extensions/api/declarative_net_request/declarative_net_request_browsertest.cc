@@ -5236,6 +5236,31 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
     return success;
   }
 
+  bool TryLoadBundle(const std::string& href, const std::string& resources) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    bool success = false;
+    std::string script = base::StringPrintf(R"(
+          (() => {
+            const link = document.createElement('link');
+            link.rel = 'webbundle';
+            link.addEventListener('load', () => {
+              window.domAutomationController.send(true);
+            });
+            link.addEventListener('error', () => {
+              window.domAutomationController.send(false);
+            });
+            link.href = '%s';
+            link.resources = '%s';
+            document.body.appendChild(link);
+          })();
+        )",
+                                            href.c_str(), resources.c_str());
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+                                            script, &success));
+    return success;
+  }
+
   // Registers a request handler for static content.
   void RegisterRequestHandler(const std::string& relative_url,
                               const std::string& content_type,
@@ -5561,6 +5586,51 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   // In the current implementation, extensions can't redirect the request to
   // outside the web bundle.
   EXPECT_FALSE(TryLoadScript("redirect_to_server.js"));
+}
+
+// Ensure that request to Subresource WebBundle fails if it is redirected by
+// DeclarativeNetRequest API.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
+                       WebBundleRequestRedirected) {
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/redirect.wbn", &web_bundle);
+  RegisterWebBundleRequestHandler("/redirected.wbn", &web_bundle);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Create a web bundle.
+  std::string js_url_str = embedded_test_server()->GetURL("/script.js").spec();
+  web_package::test::WebBundleBuilder builder(js_url_str, "");
+  builder.AddExchange(
+      js_url_str,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'script loaded';");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  std::vector<TestRule> rules;
+  TestRule rule = CreateGenericRule();
+  rule.id = kMinValidID;
+  rule.priority = 1;
+  rule.condition->url_filter = "redirect.wbn|";
+  // TODO(crbug.com/1246214): Introduce a new resource type for web bundles.
+  rule.condition->resource_types = std::vector<std::string>({"other"});
+  rule.action->type = "redirect";
+  rule.action->redirect.emplace();
+  rule.action->redirect->url =
+      embedded_test_server()->GetURL("/redirected.wbn").spec();
+  rules.push_back(rule);
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      rules, "test_extension", {URLPattern::kAllUrlsPattern}));
+
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+
+  // In the current implementation, extensions can't redirect requests to
+  // Subresource WebBundles.
+  EXPECT_FALSE(TryLoadBundle("redirect.wbn", js_url_str));
+
+  // Without redirection, bundle load should succeed.
+  EXPECT_TRUE(TryLoadBundle("redirected.wbn", js_url_str));
 }
 
 class DeclarativeNetRequestGlobalRulesBrowserTest

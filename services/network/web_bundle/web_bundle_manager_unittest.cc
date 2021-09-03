@@ -282,6 +282,7 @@ TEST_F(WebBundleManagerTest,
   // Simulate that a webbundle request arrives, calling
   // WebBundleManager::CreateWebBundleURLLoaderFactory.
   ResourceRequest::WebBundleTokenParams token_params;
+  token_params.bundle_url = GURL(kBundleUrl);
   token_params.token = token;
   token_params.handle = mojo::PendingRemote<network::mojom::WebBundleHandle>();
   mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
@@ -632,6 +633,48 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
       "SubresourceWebBundles.MaxMemoryUsagePerProcess", bundle.size() * 2, 1);
   histogram_tester.ExpectBucketCount(
       "SubresourceWebBundles.MaxMemoryUsagePerProcess", bundle.size(), 1);
+}
+
+TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
+  base::HistogramTester histogram_tester;
+  WebBundleManager manager;
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mojo::PendingRemote<mojom::WebBundleHandle> remote_handle;
+  std::unique_ptr<TestWebBundleHandle> handle =
+      std::make_unique<TestWebBundleHandle>(
+          remote_handle.InitWithNewPipeAndPassReceiver());
+  ResourceRequest::WebBundleTokenParams create_params(GURL(kBundleUrl), token,
+                                                      std::move(remote_handle));
+
+  // Create a WebBundleURLLoaderFactory where bundle request URL is different
+  // from WebBundleTokenParams::bundle_url. This happens when WebBundle request
+  // is readirected by WebRequest extension API.
+  GURL redirected_bundle_url("https://redirected.example.com/bundle.wbn");
+  base::WeakPtr<WebBundleURLLoaderFactory> factory =
+      manager.CreateWebBundleURLLoaderFactory(
+          redirected_bundle_url, create_params, process_id1,
+          /*devtools_observer=*/{},
+          /*devtools_request_id=*/absl::nullopt);
+
+  // TestWebBundleHandle must receive an error.
+  handle->RunUntilBundleError();
+  ASSERT_TRUE(handle->last_bundle_error().has_value());
+  EXPECT_EQ(handle->last_bundle_error()->first,
+            mojom::WebBundleErrorType::kWebBundleRedirected);
+  histogram_tester.ExpectUniqueSample(
+      "SubresourceWebBundles.LoadResult",
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+          kWebBundleRedirected,
+      1);
+
+  // Subresource request must fail.
+  mojo::Remote<network::mojom::URLLoader> loader;
+  std::unique_ptr<network::TestURLLoaderClient> client;
+  std::tie(loader, client) = StartSubresourceLoad(*factory);
+  client->RunUntilComplete();
+  EXPECT_EQ(net::ERR_INVALID_WEB_BUNDLE,
+            client->completion_status().error_code);
 }
 
 }  // namespace network

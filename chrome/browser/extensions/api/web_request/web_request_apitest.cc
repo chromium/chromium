@@ -3391,6 +3391,31 @@ class SubresourceWebBundlesWebRequestApiTest
     return success;
   }
 
+  bool TryLoadBundle(const std::string& href, const std::string& resources) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    bool success = false;
+    std::string script = base::StringPrintf(R"(
+          (() => {
+            const link = document.createElement('link');
+            link.rel = 'webbundle';
+            link.addEventListener('load', () => {
+              window.domAutomationController.send(true);
+            });
+            link.addEventListener('error', () => {
+              window.domAutomationController.send(false);
+            });
+            link.href = '%s';
+            link.resources = '%s';
+            document.body.appendChild(link);
+          })();
+        )",
+                                            href.c_str(), resources.c_str());
+    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetMainFrame(),
+                                            script, &success));
+    return success;
+  }
+
   // Registers a request handler for static content.
   void RegisterRequestHandler(const std::string& relative_url,
                               const std::string& content_type,
@@ -4043,6 +4068,69 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   // In the current implementation, extensions can't redirect the request to
   // outside the web bundle.
   EXPECT_FALSE(TryLoadScript("redirect_to_server.js"));
+}
+
+// Ensure that request to Subresource WebBundle fails if it is redirected by web
+// request API.
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
+                       WebBundleRequestRedirected) {
+  // Create an extension that redirects "redirect.wbn" to "redirected.wbn".
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Subresource Web Bundles Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"] },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  std::string opt_extra_info_spec = "'blocking'";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders)
+    opt_extra_info_spec += ", 'extraHeaders'";
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
+        chrome.webRequest.onBeforeRequest.addListener(function(details) {
+          if (!details.url.includes('redirect.wbn'))
+            return;
+          const redirectUrl =
+              details.url.replace('redirect.wbn', 'redirected.wbn');
+          return {redirectUrl};
+        }, {urls: ['<all_urls>']}, [%s]);
+
+        chrome.test.sendMessage('ready');
+      )",
+                                        opt_extra_info_spec.c_str()));
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener listener("ready", false);
+    extension = LoadExtension(test_dir.UnpackedPath());
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/redirect.wbn", &web_bundle);
+  RegisterWebBundleRequestHandler("/redirected.wbn", &web_bundle);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Create a web bundle.
+  std::string js_url_str = embedded_test_server()->GetURL("/script.js").spec();
+  web_package::test::WebBundleBuilder builder(js_url_str, "");
+  builder.AddExchange(
+      js_url_str,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'script loaded';");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+
+  // In the current implementation, extensions can't redirect requests to
+  // Subresource WebBundles.
+  EXPECT_FALSE(TryLoadBundle("redirect.wbn", js_url_str));
+
+  // Without redirection, bundle load should succeed.
+  EXPECT_TRUE(TryLoadBundle("redirected.wbn", js_url_str));
 }
 
 // TODO(crbug.com/1082020) When we implement variant matching of subresource

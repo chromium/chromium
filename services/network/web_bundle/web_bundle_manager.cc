@@ -103,7 +103,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
       base::Unretained(this), web_bundle_token_params.token, process_id));
 
   auto factory = std::make_unique<WebBundleURLLoaderFactory>(
-      bundle_url, std::move(remote),
+      bundle_url, web_bundle_token_params, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
       std::move(devtools_observer), std::move(devtools_request_id));

@@ -131,7 +131,7 @@ class LinkWebBundleBrowserTest : public ContentBrowserTest {
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&LinkWebBundleBrowserTest::InvalidResponseHandler,
                             base::Unretained(this)));
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    https_server_.AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(https_server_.Start());
   }
 
@@ -325,6 +325,44 @@ IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleFetchError) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.BundleFetchErrorCode",
       -net::ERR_INVALID_HTTP_RESPONSE, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, BundleRedirectionIsForbidden) {
+  GURL url(https_server()->GetURL("/web_bundle/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "* URL redirection of Subresource Web Bundles is currently not "
+      "supported.");
+
+  DOMMessageQueue dom_message_queue(shell()->web_contents());
+
+  const std::pair<const char*, const char*> test_cases[] = {
+      {"/web_bundle/urn-uuid.wbn", "loaded"},
+      {"/server-redirect?/web_bundle/urn-uuid.wbn", "failed"}};
+
+  for (const auto& pair : test_cases) {
+    const char* href = pair.first;
+    std::string expected_message = pair.second;
+    ExecuteScriptAsync(shell(), base::StringPrintf(R"HTML(
+        {
+          const link = document.createElement('link');
+          link.rel = 'webbundle';
+          link.href = '%s';
+          link.onload = () => window.domAutomationController.send('loaded');
+          link.onerror = () => window.domAutomationController.send('failed');
+          document.body.appendChild(link);
+        }
+      )HTML",
+                                                   href));
+    std::string message;
+    EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
+    EXPECT_EQ("\"" + expected_message + "\"", message);
+
+    if (expected_message == "failed")
+      console_observer.Wait();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(LinkWebBundleBrowserTest, FollowLink) {
