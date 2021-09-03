@@ -383,8 +383,8 @@ scoped_refptr<X11Cursor> XCursorLoader::CreateCursor(
   auto* connection = x11::Connection::Get();
   x11::PutImageRequest put_image_request{
       .format = x11::ImageFormat::ZPixmap,
-      .drawable = static_cast<x11::Pixmap>(pixmap),
-      .gc = static_cast<x11::GraphicsContext>(gc),
+      .drawable = pixmap,
+      .gc = gc,
       .width = width,
       .height = height,
       .depth = 32,

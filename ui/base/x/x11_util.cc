@@ -459,9 +459,7 @@ void SetHideTitlebarWhenMaximizedProperty(x11::Window window,
 bool IsWindowVisible(x11::Window window) {
   TRACE_EVENT0("ui", "IsWindowVisible");
 
-  auto x11_window = static_cast<x11::Window>(window);
-  auto* connection = x11::Connection::Get();
-  auto response = connection->GetWindowAttributes({x11_window}).Sync();
+  auto response = x11::Connection::Get()->GetWindowAttributes({window}).Sync();
   if (!response || response->map_state != x11::MapState::Viewable)
     return false;
 
@@ -540,7 +538,7 @@ bool WindowContainsPoint(x11::Window window, gfx::Point screen_loc) {
 bool PropertyExists(x11::Window window, x11::Atom property) {
   auto response = x11::Connection::Get()
                       ->GetProperty(x11::GetPropertyRequest{
-                          .window = static_cast<x11::Window>(window),
+                          .window = window,
                           .property = property,
                           .long_length = 1,
                       })
@@ -553,7 +551,7 @@ bool GetRawBytesOfProperty(x11::Window window,
                            scoped_refptr<base::RefCountedMemory>* out_data,
                            x11::Atom* out_type) {
   auto future = x11::Connection::Get()->GetProperty(x11::GetPropertyRequest{
-      .window = static_cast<x11::Window>(window),
+      .window = window,
       .property = property,
       // Don't limit the amount of returned data.
       .long_length = std::numeric_limits<uint32_t>::max(),

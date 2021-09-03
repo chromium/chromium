@@ -209,7 +209,7 @@ void SelectionRequestor::ConvertSelectionForCurrentRequest() {
   Request* request = GetCurrentRequest();
   if (request) {
     x11::Connection::Get()->ConvertSelection({
-        .requestor = static_cast<x11::Window>(x_window_),
+        .requestor = x_window_,
         .selection = request->selection,
         .target = request->target,
         .property = x_property_,

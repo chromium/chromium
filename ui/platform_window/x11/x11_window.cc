@@ -720,9 +720,7 @@ void X11Window::Activate() {
     RaiseWindow(xwindow_);
     // Directly ask the X server to give focus to the window. Note that the call
     // would have raised an X error if the window is not mapped.
-    connection_
-        ->SetInputFocus({x11::InputFocus::Parent, xwindow_,
-                         static_cast<x11::Time>(timestamp)})
+    connection_->SetInputFocus({x11::InputFocus::Parent, xwindow_, timestamp})
         .IgnoreError();
     // At this point, we know we will receive focus, and some webdriver tests
     // depend on a window being IsActive() immediately after an Activate(), so
