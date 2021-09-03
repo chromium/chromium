@@ -3316,6 +3316,8 @@ enum WebFeature {
   kCanvasRenderingContext2DFontStretch = 4005,
   kCanvasRenderingContext2DTextRendering = 4006,
   kCSSCascadeLayers = 4007,
+  kCanvasRenderingContext2DConicGradient = 4008,
+  kCanvasRenderingContext2DCanvasFilter = 4009,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

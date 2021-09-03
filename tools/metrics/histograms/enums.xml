@@ -34433,6 +34433,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4005" label="CanvasRenderingContext2DFontStretch"/>
   <int value="4006" label="CanvasRenderingContext2DTextRendering"/>
   <int value="4007" label="CSSCascadeLayers"/>
+  <int value="4008" label="CanvasRenderingContext2DConicGradient"/>
+  <int value="4009" label="CanvasRenderingContext2DCanvasFilter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

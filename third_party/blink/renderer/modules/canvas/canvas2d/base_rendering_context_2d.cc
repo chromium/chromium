@@ -728,6 +728,9 @@ void BaseRenderingContext2D::setFilter(
       if (GetCanvasRenderingContextHost() &&
           RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
               GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
+        UseCounter::Count(
+            GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+            WebFeature::kCanvasRenderingContext2DCanvasFilter);
         GetState().SetCanvasFilter(input->GetAsCanvasFilter());
         SnapshotStateForFilter();
         // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -1988,6 +1991,8 @@ CanvasGradient* BaseRenderingContext2D::createRadialGradient(
 CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
                                                             double centerX,
                                                             double centerY) {
+  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DConicGradient);
   if (!std::isfinite(startAngle) || !std::isfinite(centerX) ||
       !std::isfinite(centerY))
     return nullptr;
