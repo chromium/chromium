@@ -219,17 +219,13 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Clean();
 }
 
-#if defined(OS_MAC)
-// TODO(crbug.com/1205924): Enable QualifyUpdater test on Win.
 TEST_F(IntegrationTest, QualifyUpdater) {
   ScopedServer test_server(test_commands_);
   Install();
   ExpectInstalled();
-  SleepFor(12);
+  WaitForServerExit();
   SetupFakeUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
-
-  constexpr char kUpdaterTestCRXName[] = "updater_qualification_app_dmg.crx";
 
   std::string request = R"(.*"appid":")";
   request += kQualificationAppId;
@@ -245,6 +241,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
   response_body += test_server.base_url().spec();
 
+#if defined(OS_MAC)
   response_body +=
       R"("}]},)"
       R"("manifest":{"version":"0.2",)"
@@ -253,14 +250,32 @@ TEST_F(IntegrationTest, QualifyUpdater) {
       R"("hash_sha256":)"
       R"("c9eeadf63732f3259e2ad1cead6298f90a3ef4b601b1ba1cbb0f37b6112a632c"})"
       R"(]}}}}]}})";
+#elif defined(OS_WIN)
+  response_body +=
+      R"("}]},)"
+      R"("manifest":{"version":"0.2",)"
+      R"("run":"qualification_app.exe","packages":{"package":)"
+      R"([{"name":"updater_qualification_app_exe.crx",)"
+      R"("hash_sha256":)"
+      R"("0705f7eedb0427810db76dfc072c8cbc302fbeb9b2c56fa0de3752ed8d6f9164"})"
+      R"(]}}}}]}})";
+#else
+  static_assert(false, "Unsupported platform for IntegrationTest.Qualify.");
+#endif
 
   test_server.ExpectOnce(request, response_body);
 
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
 
+#if defined(OS_MAC)
+  constexpr char kUpdaterTestCRXName[] = "updater_qualification_app_dmg.crx";
+#elif defined(OS_WIN)
+  constexpr char kUpdaterTestCRXName[] = "updater_qualification_app_exe.crx";
+#endif
+
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
-                                .Append(FILE_PATH_LITERAL(kUpdaterTestCRXName));
+                                .AppendASCII(kUpdaterTestCRXName);
 
   ASSERT_TRUE(base::PathExists(crx_path));
 
@@ -279,7 +294,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
 
   RunWake(0);
 
-  SleepFor(12);
+  WaitForServerExit();
   RunWake(0);
 
   ExpectVersionActive(kUpdaterVersion);
@@ -287,7 +302,6 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   Uninstall();
   Clean();
 }
-#endif  // defined(OS_MAC)
 
 TEST_F(IntegrationTest, ReportsActive) {
   // A longer than usual timeout is needed for this test because the macOS
