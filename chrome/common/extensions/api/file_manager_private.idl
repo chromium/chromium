@@ -898,6 +898,16 @@ dictionary HoldingSpaceState {
   DOMString[] itemUrls;
 };
 
+dictionary OpenWindowParams {
+  // The desired target directory when opening a new window. If omitted Files
+  // app displays the default directory: MyFiles.
+  DOMString? currentDirectoryURL;
+
+  // The URL for a file or directory to be selected once a new window is
+  // spawned.
+  DOMString? selectionURL;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1515,6 +1525,9 @@ interface Functions {
   // Notifies the browser of the result of a dialog displayed earlier as a
   // result of the onDriveConfirmDialog event.
   static void notifyDriveDialogResult(DriveDialogResult result);
+
+  // Creates a new Files app window in the directory provided in `params`.
+  static void openWindow(OpenWindowParams params, BooleanCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

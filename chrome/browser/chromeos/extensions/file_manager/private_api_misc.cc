@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/api/manifest_types.h"
@@ -77,6 +79,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -1244,6 +1247,38 @@ FileManagerPrivateIsTabletModeEnabledFunction::Run() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();
   return RespondNow(OneArgument(
       base::Value(tablet_mode ? tablet_mode->InTabletMode() : false)));
+}
+
+ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
+  using extensions::api::file_manager_private::OpenWindow::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const GURL destination_folder(params->params.current_directory_url
+                                    ? (*params->params.current_directory_url)
+                                    : "");
+  const GURL selection_url(
+      params->params.selection_url ? (*params->params.selection_url) : "");
+
+  GURL files_swa_url =
+      ::file_manager::util::GetFileManagerMainPageUrlWithParams(
+          ui::SelectFileDialog::SELECT_NONE, /*title=*/{}, destination_folder,
+          selection_url,
+          /*target_name=*/{},
+          /*file_types=*/nullptr,
+          /*file_type_index=*/0,
+          /*search_query=*/{},
+          /*show_android_picker_apps=*/false);
+
+  web_app::SystemAppLaunchParams launch_params;
+  launch_params.url = files_swa_url;
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  web_app::LaunchSystemWebAppAsync(
+      profile, web_app::SystemAppType::FILE_MANAGER, launch_params);
+
+  return RespondNow(OneArgument(base::Value(true)));
 }
 
 }  // namespace extensions

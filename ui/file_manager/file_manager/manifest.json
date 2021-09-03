@@ -148,6 +148,7 @@
   // enough that anything is passed to web_accessible_resources. If there is
   // at least any file, then all files are allowed. http://crbug.com/179127.
   "web_accessible_resources": [
+    "common/js/api.js",
     "common/js/app_util.js",
     "common/js/async_util.js",
     "common/js/dialog_type.js",
