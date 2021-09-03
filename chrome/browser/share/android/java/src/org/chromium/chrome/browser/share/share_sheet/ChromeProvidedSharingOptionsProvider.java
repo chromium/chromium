@@ -15,8 +15,6 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_creation.notes.NoteCreationCoordinator;
@@ -26,11 +24,11 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.SaveBitmapDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
-import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
@@ -79,6 +77,7 @@ public class ChromeProvidedSharingOptionsProvider {
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
     private final Tracker mFeatureEngagementTracker;
     private final @LinkGeneration int mLinkGenerationStatusForMetrics;
+    private final LinkToggleMetricsDetails mLinkToggleMetricsDetails;
     private ScreenshotCoordinator mScreenshotCoordinator;
 
     /**
@@ -99,6 +98,8 @@ public class ChromeProvidedSharingOptionsProvider {
      * @param url Url to share.
      * @param linkGenerationStatusForMetrics User action of sharing text from failed link-to-text
      * generation, sharing text from successful link-to-text generation, or sharing link-to-text.
+     * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} for recording the final
+     *         toggle state.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController,
@@ -106,7 +107,8 @@ public class ChromeProvidedSharingOptionsProvider {
             Callback<Tab> printTab, SettingsLauncher settingsLauncher, boolean isSyncEnabled,
             long shareStartTime, ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            String url, @LinkGeneration int linkGenerationStatusForMetrics) {
+            String url, @LinkGeneration int linkGenerationStatusForMetrics,
+            LinkToggleMetricsDetails linkToggleMetricsDetails) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mBottomSheetController = bottomSheetController;
@@ -123,6 +125,7 @@ public class ChromeProvidedSharingOptionsProvider {
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mUrl = url;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
+        mLinkToggleMetricsDetails = linkToggleMetricsDetails;
     }
 
     /**
@@ -196,13 +199,9 @@ public class ChromeProvidedSharingOptionsProvider {
             PropertyModel model = ShareSheetPropertyModelBuilder.createPropertyModel(
                     AppCompatResources.getDrawable(mActivity, mIcon),
                     mActivity.getResources().getString(mIconLabel), (view) -> {
-                        RecordUserAction.record(mFeatureNameForMetrics);
-                        if (ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                            LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
-                                    mLinkGenerationStatusForMetrics);
-                        }
-                        recordTimeToShare(mShareStartTime);
+                        ShareSheetCoordinator.recordShareMetrics(mFeatureNameForMetrics,
+                                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
+                                mShareStartTime);
                         mBottomSheetController.hideContent(mBottomSheetContent, true);
                         mOnClickCallback.onResult(view);
                         callTargetChosenCallback();
@@ -286,8 +285,9 @@ public class ChromeProvidedSharingOptionsProvider {
 
         PropertyModel propertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
                 icon, mActivity.getResources().getString(R.string.sharing_screenshot), (view) -> {
-                    RecordUserAction.record("SharingHubAndroid.ScreenshotSelected");
-                    recordTimeToShare(mShareStartTime);
+                    ShareSheetCoordinator.recordShareMetrics("SharingHubAndroid.ScreenshotSelected",
+                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
+                            mShareStartTime);
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
                     mScreenshotCoordinator = new ScreenshotCoordinator(mActivity,
                             mTabProvider.get(), mUrl, mChromeOptionShareCallback,
@@ -310,8 +310,10 @@ public class ChromeProvidedSharingOptionsProvider {
         PropertyModel propertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
                 AppCompatResources.getDrawable(mActivity, R.drawable.long_screenshot),
                 mActivity.getResources().getString(R.string.sharing_long_screenshot), (view) -> {
-                    RecordUserAction.record("SharingHubAndroid.LongScreenshotSelected");
-                    recordTimeToShare(mShareStartTime);
+                    ShareSheetCoordinator.recordShareMetrics(
+                            "SharingHubAndroid.LongScreenshotSelected",
+                            mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
+                            mShareStartTime);
                     mScreenshotCoordinator = LongScreenshotsCoordinator.create(mActivity,
                             mTabProvider.get(), mUrl, mChromeOptionShareCallback,
                             mBottomSheetController, mImageEditorModuleProvider);
@@ -468,8 +470,4 @@ public class ChromeProvidedSharingOptionsProvider {
         }
     }
 
-    static void recordTimeToShare(long shareStartTime) {
-        RecordHistogram.recordMediumTimesHistogram("Sharing.SharingHubAndroid.TimeToShare",
-                System.currentTimeMillis() - shareStartTime);
-    }
 }

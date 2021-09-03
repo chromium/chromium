@@ -17,11 +17,14 @@ import org.chromium.url.GURL;
  * Coordinates toggling link-sharing on and off on the share sheet.
  */
 public class ShareSheetLinkToggleCoordinator {
-    @IntDef({LinkToggleState.LINK, LinkToggleState.NO_LINK, LinkToggleState.MAX})
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({LinkToggleState.LINK, LinkToggleState.NO_LINK, LinkToggleState.COUNT})
     public @interface LinkToggleState {
         int LINK = 0;
         int NO_LINK = 1;
-        int MAX = 2;
+
+        int COUNT = 2;
     }
 
     // SHARING_HUB_LINK_TOGGLE params

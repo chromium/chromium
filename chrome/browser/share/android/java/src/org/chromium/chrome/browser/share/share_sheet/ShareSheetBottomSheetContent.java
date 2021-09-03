@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -337,7 +338,11 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             toastMessage = getExcludeLinkToast(detailedContentType);
         }
         showToast(toastMessage);
-        mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
+        LinkToggleMetricsDetails linkToggleMetricsDetails =
+                new LinkToggleMetricsDetails(mLinkToggleState, detailedContentType);
+        ShareSheetLinkToggleMetricsHelper.recordLinkToggleToggledMetric(linkToggleMetricsDetails);
+        mShareSheetCoordinator.updateShareSheetForLinkToggle(
+                linkToggleMetricsDetails, mLinkGenerationState);
     }
 
     private void updateLinkGenerationState() {
@@ -361,7 +366,10 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         showToast(toastMessage);
         RecordUserAction.record(userAction);
-        mShareSheetCoordinator.updateShareSheetForLinkToggle(mLinkToggleState);
+        mShareSheetCoordinator.updateShareSheetForLinkToggle(
+                new LinkToggleMetricsDetails(
+                        mLinkToggleState, DetailedContentType.HIGHLIGHTED_TEXT),
+                mLinkGenerationState);
     }
 
     private void setDefaultToggleStatus(boolean enableToggleByDefault) {

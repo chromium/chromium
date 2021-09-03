@@ -609,6 +609,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
+    enum="LinkToggleState" expires_after="M98">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    Records what the link toggle state is when a share of a
+    {DetailedContentType} is {ShareStatus}.
+  </summary>
+  <token key="DetailedContentType">
+    <variant name="Gif"/>
+    <variant name="HighlightedText"/>
+    <variant name="Image"/>
+    <variant name="NotSpecified"/>
+    <variant name="Screenshot"/>
+    <variant name="Webnotes"/>
+  </token>
+  <token key="ShareStatus">
+    <variant name="Completed"/>
+    <variant name="InProgress"/>
+  </token>
+</histogram>
+
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
     enum="SharingHubSharesheetResult" expires_after="M97">
   <owner>kristipark@chromium.org</owner>

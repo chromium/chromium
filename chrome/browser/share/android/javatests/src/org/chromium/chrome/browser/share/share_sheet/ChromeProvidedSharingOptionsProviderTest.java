@@ -40,7 +40,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
+import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -64,6 +67,7 @@ import java.util.List;
  * Tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.SHARING_HUB_LINK_TOGGLE})
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -362,7 +366,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*settingsLauncher=*/null,
                 /*syncState=*/false,
                 /*shareStartTime=*/0, mShareSheetCoordinator,
-                /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus);
+                /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
+                new LinkToggleMetricsDetails(
+                        LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED));
     }
 
     private void assertCorrectModelsAreInTheRightOrder(
