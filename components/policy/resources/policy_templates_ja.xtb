@@ -2088,19 +2088,6 @@
 
       このポリシーが true または未設定の場合、<ph name="PRODUCT_OS_NAME" /> から Quirks サーバーに自動接続が行われ、設定ファイルがある場合はダウンロードされてデバイスに保存されます。こうした設定ファイルは、接続しているモニターの画質向上などの目的で使用されます。</translation>
 <translation id="3524204464536655762">すべてのサイトに対して WebUSB API 経由での USB デバイスへのアクセスを許可しない</translation>
-<translation id="3526111349971346870">
-      WebAssembly モジュールを他のウィンドウやワーカーにクロスオリジンで送信できるかどうかを
-      指定します。クロスオリジンの WebAssembly モジュール共有は、
-      document.domain のサポート終了にともない、同じくサポート終了となります。詳しくは　
-      https://github.com/mikewest/deprecating-document-domain　をご覧ください。このポリシーにより、
-      クロスオリジンの WebAssembly モジュール共有を再度有効にし、
-      サポート終了プロセスにおける移行期間を延長することができます。
-
-      True に設定した場合、サイトでは WebAssembly モジュールをクロスオリジンでも
-      制限なく送信できます。
-
-      False に設定した場合、サイトでは WebAssembly モジュールを同じオリジンの
-      ウィンドウとワーカーにしか送信できません。</translation>
 <translation id="3526752951628474302">白黒印刷のみ</translation>
 <translation id="3528000905991875314">別のエラー ページを有効にする</translation>
 <translation id="3531084733660068324">保護者向け管理ツールの設定</translation>

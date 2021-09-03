@@ -116,6 +116,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2073572773299281212">Active <ph name="DAYS" /> days ago</translation>
 <translation id="2074131957428911366">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Undo</translation>
+<translation id="2080769225927880590">Sign in with a valid account</translation>
 <translation id="209018056901015185">Request desktop site</translation>
 <translation id="2103075008456228677">Open history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items moved</translation>
@@ -467,6 +468,8 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
 <translation id="5738887413654608789">This lets you discover relevant web pages based on your surroundings.</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
+<translation id="575902488528307720">Search for image</translation>
+<translation id="5781453543752460388">Add to Photos</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5812974770859303494">Add to…</translation>
@@ -629,7 +632,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Recent tabs</translation>
 <translation id="7006788746334555276">Content Settings</translation>
-<translation id="7015203776128479407">Initial sync setup was not finished. Sync is off.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7062545763355031412">Accept and switch accounts</translation>
@@ -652,7 +654,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
-<translation id="7293171162284876153">To start sync, turn on 'Sync your Chrome data'.</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
 <translation id="7319242366286515846">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
@@ -740,6 +741,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8205564605687841303">Cancel</translation>
 <translation id="8206354486702514201">This setting is enforced by your administrator.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
+<translation id="8228176677386827255">Your device is managed. You can only sign in with your organisation's account.</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8271720166617117963">Accept and sign in</translation>
 <translation id="8281781826761538115">Default - <ph name="DEFAULT_LOCALE" /></translation>

@@ -2126,19 +2126,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se questa norma è impostata su true o non è configurata, allora <ph name="PRODUCT_OS_NAME" /> contatterà automaticamente Quirks Server e scaricherà i file di configurazione, se disponibili, e li archivierà sul dispositivo.  Questi file potrebbero essere usati, ad esempio, per migliorare la qualità del display dei monitor collegati.</translation>
 <translation id="3524204464536655762">Non consentire ai siti di richiedere l'accesso ai dispositivi USB tramite l'API WebUSB</translation>
-<translation id="3526111349971346870">
-      Consente di specificare se i moduli WebAssembly possono essere inviati a un'altra finestra o
-      un altro worker tra origini. La condivisione di moduli WebAssembly tra origini sarà
-      deprecata come parte dell'impegno per il ritiro di document.domain, vedi
-      https://github.com/mikewest/deprecating-document-domain. Questo criterio
-      consente di riattivare la condivisione di moduli WebAssembly tra origini per offrire
-      un periodo di transizione più lungo nel contesto del processo di ritiro.
-
-      Se questo criterio viene impostato su Vero, i siti possono inviare i moduli WebAssembly anche tra origini
-      senza restrizioni.
-
-      Se questo criterio viene impostato su Falso, i siti possono inviare i moduli WebAssembly solo a finestre
-      e worker nella stessa origine.</translation>
 <translation id="3526752951628474302">Solo stampa monocromatica</translation>
 <translation id="3528000905991875314">Attiva pagine di errore sostitutive</translation>
 <translation id="3531084733660068324">Impostazioni della supervisione dei genitori</translation>

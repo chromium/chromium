@@ -109,6 +109,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="5750083143895808682">Signed in as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnect</translation>
 <translation id="5810269635982033450">Screen acts like a trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> has requested access to see your screen and control your keyboard and mouse. Press '<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />' if you are not expecting this request. Otherwise select '<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />' to allow the connection when ready.</translation>
 <translation id="5823658491130719298">On the computer that you want to access remotely, open Chrome and visit <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Display options</translation>
 <translation id="6033507038939587647">Keyboard options</translation>

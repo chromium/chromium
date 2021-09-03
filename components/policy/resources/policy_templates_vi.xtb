@@ -2145,19 +2145,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
 
       Nếu bạn đặt thành true hoặc không định cấu hình chính sách này thì <ph name="PRODUCT_OS_NAME" /> sẽ tự động liên hệ với Máy chủ Quirks và tải các tệp cấu hình xuống (nếu có) rồi lưu trữ các tệp này trên thiết bị.  Các tệp này có thể dùng để, chẳng hạn như, cải thiện chất lượng hiển thị của màn hình gắn vào.</translation>
 <translation id="3524204464536655762">Không cho phép bất kỳ trang web nào yêu cầu quyền truy cập vào thiết bị USB qua API WebUSB</translation>
-<translation id="3526111349971346870">
-      Chỉ định xem hệ thống có thể gửi các mô-đun WebAssembly đến một cửa sổ khác hay
-      trình chạy dịch vụ trên nhiều nguồn gốc hay không. Tính năng chia sẻ mô-đun WebAssembly trên nhiều nguồn gốc
-      sẽ không dùng nữa trong những nỗ lực nhằm ngưng sử dụng document.domain, vui lòng xem tại
-      https://github.com/mikewest/deprecating-document-domain. Chính sách này
-      cho phép bật lại tính năng chia sẻ mô-đun WebAssembly trên nhiều nguồn gốc để cung cấp
-      thời gian chuyển đổi dài hơn trong quá trình ngừng sử dụng.
-
-      Khi bạn bật chính sách này thì các trang web cũng có thể gửi mô-đun WebAssembly trên nhiều nguồn gốc
-      mà không hạn chế.
-
-      Khi bạn tắt chính sách này thì các trang web chỉ có thể gửi mô-đun WebAssembly đến các cửa sổ
-      và các trình chạy dịch vụ trên cùng một nguồn gốc.</translation>
 <translation id="3526752951628474302">Chỉ in đen trắng</translation>
 <translation id="3528000905991875314">Bật các trang lỗi thay thế</translation>
 <translation id="3531084733660068324">Cài đặt tính năng giám sát của cha mẹ</translation>

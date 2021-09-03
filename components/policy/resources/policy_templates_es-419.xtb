@@ -2136,19 +2136,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la política se configura como verdadera o no se configura, <ph name="PRODUCT_OS_NAME" /> se comunicará automáticamente con Quirks Server, descargará archivos de configuración, si están disponibles, y los guardará en el dispositivo.  Estos archivos pueden usarse, por ejemplo, para mejorar la calidad de visualización de los monitores conectados.</translation>
 <translation id="3524204464536655762">No permitir que ningún sitio solicite acceso a dispositivos USB a través de la API de WebUSB</translation>
-<translation id="3526111349971346870">
-      Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o 
-      trabajador de origen cruzado. El uso compartido de módulos de WebAssembly entre orígenes cruzados
-      dejará de estar disponible como parte de los esfuerzos para dar de baja document.domain; consulta
-      https://github.com/mikewest/deprecating-document-domain. Esta política
-      permite volver a habilitar el uso compartido de módulos de WebAssembly entre orígenes cruzados para ofrecer
-      un período de transición más largo en el proceso hasta lograr que se dé de baja.
-
-      Si estableces la política como verdadera, los sitios también podrán enviar módulos de WebAssembly entre orígenes cruzados
-      sin restricciones.
-
-      Si la estableces como falsa, los sitios solo podrán enviar módulos a ventanas
-      y trabajadores del mismo origen.</translation>
 <translation id="3526752951628474302">Solo impresión monocromática</translation>
 <translation id="3528000905991875314">Habilitar páginas de error alternativas</translation>
 <translation id="3531084733660068324">Configuración de la supervisión parental</translation>

@@ -2137,19 +2137,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> contactera automatiquement Quirks Server pour télécharger les fichiers de configuration, s'ils sont disponibles, et les enregistrer sur l'appareil  Ces fichiers pourront, par exemple, être utilisés pour améliorer la qualité d'affichage des moniteurs connectés.</translation>
 <translation id="3524204464536655762">Interdire à tous les sites de demander l'accès à des appareils USB via l'API WebUSB</translation>
-<translation id="3526111349971346870">
-      Indique si les modules WebAssembly peuvent être envoyés vers une autre fenêtre ou
-      un autre nœud de calcul en multi-origine. Le partage de modules WebAssembly en multi-origine deviendra
-      obsolète lors de l'abandon de document.domain. Consultez
-      https://github.com/mikewest/deprecating-document-domain. Cette règle
-      permet de réactiver le partage de modules WebAssembly en multi-origine
-      pour prolonger la période de transition du processus d'abandon.
-
-      Lorsque cette règle est définie sur "True", les sites peuvent aussi envoyer des modules WebAssembly en multi-origine
-      sans restrictions.
-
-      Lorsqu'elle est définie sur "False", les sites peuvent uniquement envoyer des modules WebAssembly vers des fenêtres
-      et des nœuds de calcul dans la même origine.</translation>
 <translation id="3526752951628474302">Impression monochrome seulement</translation>
 <translation id="3528000905991875314">Activer les pages d'erreur alternatives</translation>
 <translation id="3531084733660068324">Paramètres de supervision parentale</translation>

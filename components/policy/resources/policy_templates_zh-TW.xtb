@@ -2102,12 +2102,6 @@
 
       如果將這項政策設為 True 或不設定，<ph name="PRODUCT_OS_NAME" />會自動連線至 Quirks Server，並下載可用的設定檔，然後儲存到裝置上。這類檔案的用途可能包括改善外接螢幕的顯示品質。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
-<translation id="3526111349971346870">
-      指定是否可以跨來源傳送 WebAssembly 模組至其他視窗或工作站。跨來源 WebAssembly 模組分享功能將隨著 document.domain 一併淘汰，詳情請參閱 https://github.com/mikewest/deprecating-document-domain。這項政策可重新啟用跨來源 WebAssembly 模組分享功能，以便延長淘汰程序中的過渡期。
-
-      如果將這項政策設為 True，網站即可不受限制地跨來源傳送 WebAssembly 模組。
-
-      如果將這項政策設為 False，網站只能將 WebAssembly 模組傳送至來源相同的視窗和工作站。</translation>
 <translation id="3526752951628474302">僅限單色列印</translation>
 <translation id="3528000905991875314">啟用替代的錯誤網頁</translation>
 <translation id="3531084733660068324">家長監督設定</translation>
