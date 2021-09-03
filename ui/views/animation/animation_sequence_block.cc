@@ -324,7 +324,7 @@ void AnimationSequenceBlock::TerminateBlock() {
         NOTREACHED();
     }
     element->set_tween_type(pair.second.tween_type_);
-    owner_->AddLayerAnimationElement(PassKey(), pair.first, start_,
+    owner_->AddLayerAnimationElement(PassKey(), pair.first, start_, duration,
                                      std::move(element));
   }
 

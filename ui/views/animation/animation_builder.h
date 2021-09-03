@@ -54,6 +54,7 @@ class VIEWS_EXPORT AnimationBuilder {
       base::PassKey<AnimationSequenceBlock>,
       AnimationKey key,
       base::TimeDelta start,
+      base::TimeDelta original_duration,
       std::unique_ptr<ui::LayerAnimationElement> element);
 
   // Called when a block ends.  Ensures all animations in the sequence will run

@@ -12,6 +12,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/property_change_reason.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -131,6 +132,133 @@ TEST_F(AnimationBuilderTest, SimpleAnimation) {
   EXPECT_NE(second_delegate->GetOpacityForAnimation(), 0.9f);
   Step(kDelay);
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
+}
+
+// This test checks that after setting the animation duration scale to be larger
+// than 1, animations behave as expected of that scale.
+TEST_F(AnimationBuilderTest, ModifiedSlowAnimationDuration) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();
+  ui::LayerAnimationDelegate* second_delegate =
+      second_animating_view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.4f)
+        .SetRoundedCorners(first_animating_view, rounded_corners)
+        .Offset(base::TimeDelta())
+        .SetDuration(kDelay * 2)
+        .SetOpacity(second_animating_view, 0.9f)
+        .Then()
+        .SetDuration(kDelay)
+        .Then()
+        .SetDuration(kDelay)
+        .SetOpacity(second_animating_view, 0.4f);
+  }
+
+  Step(kDelay * ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  EXPECT_FLOAT_EQ(first_delegate->GetOpacityForAnimation(), 0.4f);
+  // Sanity check one of the corners.
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+  // This animation should not be finished yet.
+  EXPECT_NE(second_delegate->GetOpacityForAnimation(), 0.9f);
+
+  Step(kDelay * ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
+
+  Step(kDelay * 2 * ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.4f);
+}
+
+// This test checks that after setting the animation duration scale to be
+// between 0 and 1, animations behave as expected of that scale.
+TEST_F(AnimationBuilderTest, ModifiedFastAnimationDuration) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();
+  ui::LayerAnimationDelegate* second_delegate =
+      second_animating_view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.4f)
+        .SetRoundedCorners(first_animating_view, rounded_corners)
+        .Offset(base::TimeDelta())
+        .SetDuration(kDelay * 2)
+        .SetOpacity(second_animating_view, 0.9f)
+        .Then()
+        .SetDuration(kDelay)
+        .Then()
+        .SetDuration(kDelay)
+        .SetOpacity(second_animating_view, 0.4f);
+  }
+
+  Step(kDelay * ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  EXPECT_FLOAT_EQ(first_delegate->GetOpacityForAnimation(), 0.4f);
+  // Sanity check one of the corners.
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+  // This animation should not be finished yet.
+  EXPECT_NE(second_delegate->GetOpacityForAnimation(), 0.9f);
+
+  Step(kDelay * ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.9f);
+
+  Step(kDelay * 2 * ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.4f);
+}
+
+// This test checks that after setting the animation duration scale to be 0,
+// animations behave as expected of that scale.
+TEST_F(AnimationBuilderTest, ModifiedZeroAnimationDuration) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+  ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();
+  ui::LayerAnimationDelegate* second_delegate =
+      second_animating_view->delegate();
+
+  gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
+  constexpr auto kDelay = base::TimeDelta::FromSeconds(3);
+
+  {
+    AnimationBuilder()
+        .Once()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.4f)
+        .SetRoundedCorners(first_animating_view, rounded_corners)
+        .Offset(base::TimeDelta())
+        .SetDuration(kDelay * 2)
+        .SetOpacity(second_animating_view, 0.9f)
+        .Then()
+        .SetDuration(kDelay)
+        .Then()
+        .SetDuration(kDelay)
+        .SetOpacity(second_animating_view, 0.4f);
+  }
+
+  EXPECT_FLOAT_EQ(first_delegate->GetOpacityForAnimation(), 0.4f);
+  // Sanity check one of the corners.
+  EXPECT_FLOAT_EQ(first_delegate->GetRoundedCornersForAnimation().upper_left(),
+                  12.0f);
+  EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.4f);
 }
 
 TEST_F(AnimationBuilderTest, ZeroDurationBlock) {

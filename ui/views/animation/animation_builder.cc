@@ -175,6 +175,9 @@ bool AnimationBuilder::Observer::RequiresNotificationWhenAnimatorDestroyed()
 
 struct AnimationBuilder::Value {
   base::TimeDelta start;
+  // Save the original duration because the duration on the element can be a
+  // scaled version. The scale can potentially be zero.
+  base::TimeDelta original_duration;
   std::unique_ptr<ui::LayerAnimationElement> element;
 
   bool operator<(const Value& key) const {
@@ -182,10 +185,8 @@ struct AnimationBuilder::Value {
     // nonzero of the same start time to prevent the DCHECK from happening in
     // TerminateSequence(). These animations don't count as overlapping
     // properties.
-    base::TimeDelta time = element->duration();
-    base::TimeDelta key_time = key.element->duration();
-    return std::tie(start, time, element) <
-           std::tie(key.start, key_time, key.element);
+    return std::tie(start, original_duration, element) <
+           std::tie(key.start, key.original_duration, key.element);
   }
 };
 
@@ -256,9 +257,10 @@ void AnimationBuilder::AddLayerAnimationElement(
     base::PassKey<AnimationSequenceBlock>,
     AnimationKey key,
     base::TimeDelta start,
+    base::TimeDelta original_duration,
     std::unique_ptr<ui::LayerAnimationElement> element) {
   auto& values = values_[key];
-  Value value = {start, std::move(element)};
+  Value value = {start, original_duration, std::move(element)};
   auto it = base::ranges::upper_bound(values, value);
   values.insert(it, std::move(value));
 }
@@ -288,7 +290,7 @@ void AnimationBuilder::TerminateSequence(
             properties, value.start - start));
         start = value.start;
       }
-      start += value.element->duration();
+      start += value.original_duration;
       sequence->AddElement(std::move(value.element));
     }
 
