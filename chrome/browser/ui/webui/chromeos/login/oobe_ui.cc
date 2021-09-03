@@ -160,20 +160,10 @@ constexpr char kMultiStepBehaviorHTML[] = "components/behaviors/multi_step_behav
 constexpr char kMultiStepBehaviorJS[] = "components/behaviors/multi_step_behavior.js";
 constexpr char kOobeIconsHTML[] = "components/oobe_icons.html";
 
-constexpr char kOobeNextButtonHTML[] = "components/buttons/oobe_next_button.html";
-constexpr char kOobeNextButtonJS[] = "components/buttons/oobe_next_button.js";
-constexpr char kOobeBackButtonHTML[] = "components/buttons/oobe_back_button.html";
-constexpr char kOobeBackButtonJS[] = "components/buttons/oobe_back_button.js";
-constexpr char kOobeTextButtonHTML[] = "components/buttons/oobe_text_button.html";
-constexpr char kOobeTextButtonJS[] = "components/buttons/oobe_text_button.js";
-constexpr char kOobeIconButtonHTML[] = "components/buttons/oobe_icon_button.html";
-constexpr char kOobeIconButtonJS[] = "components/buttons/oobe_icon_button.js";
-
 // Stylesheets
 constexpr char kOobeCSSPath[] = "oobe.css";
 constexpr char kOobePopupOverlayCSSPath[] = "oobe_popup_overlay.css";
 constexpr char kOobeScreenCSSPath[] = "oobe_screen.css";
-
 
 // Components
 constexpr char kOobeSharedVarsCssHTML[] =
@@ -731,22 +721,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                           IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_HTML);
   source->AddResourcePath(kMultiStepBehaviorJS,
                           IDR_OOBE_COMPONENTS_MULTI_STEP_BEHAVIOR_JS);
-  source->AddResourcePath(kOobeNextButtonHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_NEXT_BUTTON_HTML);
-  source->AddResourcePath(kOobeNextButtonJS,
-                          IDR_OOBE_COMPONENTS_OOBE_NEXT_BUTTON_JS);
-  source->AddResourcePath(kOobeBackButtonHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_BACK_BUTTON_HTML);
-  source->AddResourcePath(kOobeBackButtonJS,
-                          IDR_OOBE_COMPONENTS_OOBE_BACK_BUTTON_JS);
-  source->AddResourcePath(kOobeTextButtonHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_TEXT_BUTTON_HTML);
-  source->AddResourcePath(kOobeTextButtonJS,
-                          IDR_OOBE_COMPONENTS_OOBE_TEXT_BUTTON_JS);
-  source->AddResourcePath(kOobeIconButtonHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_ICON_BUTTON_HTML);
-  source->AddResourcePath(kOobeIconButtonJS,
-                          IDR_OOBE_COMPONENTS_OOBE_ICON_BUTTON_JS);
 
   source->AddResourcePath(kOobeIconsHTML,
                           IDR_OOBE_COMPONENTS_OOBE_ICONS_HTML);
