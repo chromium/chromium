@@ -809,7 +809,7 @@ TEST_F('ChromeVoxBackgroundTest', 'BackwardForwardSync', function() {
         const listItem = root.find({role: RoleType.LIST_ITEM});
 
         mockFeedback.call(listItem.focus.bind(listItem))
-            .expectSpeech('List item')
+            .expectSpeech('ok', 'List item')
             .call(this.doCmd('nextObject'))
             .expectSpeech('\u2022 ')  // bullet
             .call(this.doCmd('nextObject'))
