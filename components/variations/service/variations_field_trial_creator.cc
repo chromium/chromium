@@ -179,17 +179,17 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     SafeSeedManager* safe_seed_manager,
     absl::optional<int> low_entropy_source_value,
     bool extend_variations_safe_mode) {
-#if !defined(OS_ANDROID)
-  if (extend_variations_safe_mode)
-    MaybeExtendVariationsSafeMode(metrics_state_manager);
-#endif
-
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
       command_line->HasSwitch(kEnableGpuBenchmarking)) {
     base::FieldTrial::EnableBenchmarking();
   }
+
+#if !defined(OS_ANDROID)
+  if (extend_variations_safe_mode)
+    MaybeExtendVariationsSafeMode(metrics_state_manager);
+#endif
 
   if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {
     bool result = AssociateParamsFromString(
@@ -594,7 +594,8 @@ Study::Platform VariationsFieldTrialCreator::GetPlatform() {
 void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) const {
   version_info::Channel channel = client_->GetChannelForVariations();
-  if (channel != version_info::Channel::CANARY &&
+  if (channel != version_info::Channel::UNKNOWN &&
+      channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV) {
     return;
   }
@@ -612,7 +613,6 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
   trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
   const int assigned_group = trial->group();
 
-  DCHECK_NE(assigned_group, default_group);
   if (assigned_group == control_group)
     return;
 

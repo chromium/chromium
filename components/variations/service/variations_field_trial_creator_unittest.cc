@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_field_trial_list_resetter.h"
@@ -216,7 +215,10 @@ class TestVariationsServiceClient : public VariationsServiceClient {
  private:
   // VariationsServiceClient:
   version_info::Channel GetChannel() override {
-    return version_info::Channel::UNKNOWN;
+    // Set to stable to skip logic related to the Extended Variations Safe Mode
+    // experiment.
+    // TODO(crbug/1241702): Clean this up once the experiment is done.
+    return version_info::Channel::STABLE;
   }
 
   std::string restrict_parameter_;
@@ -862,9 +864,8 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  std::vector<version_info::Channel> channels = {
-      version_info::Channel::BETA, version_info::Channel::STABLE,
-      version_info::Channel::UNKNOWN};
+  std::vector<version_info::Channel> channels = {version_info::Channel::BETA,
+                                                 version_info::Channel::STABLE};
   for (const version_info::Channel channel : channels) {
     NiceMock<MockVariationsServiceClient> variations_service_client;
     ON_CALL(variations_service_client, GetChannel())
@@ -889,28 +890,6 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
 
     base::FeatureList::ClearInstanceForTesting();
   }
-}
-
-TEST_F(FieldTrialCreatorSafeModeExperimentTest,
-       EnableExperimentOnCanary_DefaultGroup) {
-  std::unique_ptr<PrefService> pref_service(CreatePrefService());
-
-  NiceMock<MockVariationsServiceClient> variations_service_client;
-  ON_CALL(variations_service_client, GetChannel())
-      .WillByDefault(Return(version_info::Channel::CANARY));
-
-  // Ensure that variations safe mode is not triggered.
-  NiceMock<MockSafeSeedManager> safe_seed_manager(pref_service.get());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
-      .WillByDefault(Return(false));
-
-  TestVariationsFieldTrialCreator field_trial_creator(
-      pref_service.get(), &variations_service_client, &safe_seed_manager);
-
-  SetUpExtendedSafeModeExperiment(kDefaultGroup);
-  // The experiment has four experiment groups of equal weight. Verify that
-  // there's a DCHECK if a client is assigned to the default group.
-  EXPECT_DCHECK_DEATH(field_trial_creator.SetupFieldTrials());
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
