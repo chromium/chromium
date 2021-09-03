@@ -3933,11 +3933,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "mobile-identity-consistency-var",
-    "owners": [ "bsazonov", "aliceywang", "msarda", "triploblastic" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "mobile-pwa-install-use-bottom-sheet",
     "owners": [ "finnur", "hartmanng", "peter" ],
     "expiry_milestone": 94
