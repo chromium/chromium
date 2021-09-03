@@ -2554,7 +2554,8 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
                 Optional(expected_ua_header_value));
   }
 
-  void CheckUserAgentReduced(const bool expected_user_agent_reduced) {
+  void CheckUserAgentReduced(const std::string& user_agent_value,
+                             const bool expected_user_agent_reduced) {
     // A regular expression that matches Chrome/{major_version}.{minor_version}
     // in the User-Agent string, where the {minor_version} is captured.
     static constexpr char kChromeVersionRegex[] =
@@ -2562,17 +2563,22 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
     // The minor version in the reduced UA string is always "0.0.0".
     static constexpr char kReducedMinorVersion[] = "0.0.0";
 
-    const absl::optional<std::string>& user_agent_header_value =
-        GetLastUserAgentHeaderValue();
-    EXPECT_TRUE(user_agent_header_value.has_value());
     std::string minor_version;
-    EXPECT_TRUE(re2::RE2::PartialMatch(*user_agent_header_value,
-                                       kChromeVersionRegex, &minor_version));
+    EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
+                                       &minor_version));
     if (expected_user_agent_reduced) {
       EXPECT_EQ(minor_version, kReducedMinorVersion);
     } else {
       EXPECT_NE(minor_version, kReducedMinorVersion);
     }
+  }
+
+  void CheckUserAgentReduced(const bool expected_user_agent_reduced) {
+    const absl::optional<std::string>& user_agent_header_value =
+        GetLastUserAgentHeaderValue();
+    EXPECT_TRUE(user_agent_header_value.has_value());
+    CheckUserAgentReduced(*user_agent_header_value,
+                          expected_user_agent_reduced);
   }
 
   void NavigateAndCheckHeaders(const GURL& url,
@@ -2772,6 +2778,23 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   NavigateTwiceAndCheckHeader(ua_reduced_with_valid_origin_trial_token_url(),
                               /*ch_ua_reduced_expected=*/true,
                               /*critical_ch_ua_reduced_expected=*/false);
+
+  // The Origin Trial token is valid, so we expect the reduced UA values in the
+  // Javascript getters as well.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CheckUserAgentReduced(
+      content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
+      /*expected_user_agent_reduced=*/true);
+  CheckUserAgentReduced(
+      content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
+      /*expected_user_agent_reduced=*/true);
+  // Instead of checking all platform types, just check one that has a
+  // difference between the full and reduced versions.
+#if defined(OS_ANDROID)
+  EXPECT_EQ("Linux x86_64",
+            content::EvalJs(web_contents, "navigator.platform"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
@@ -2781,6 +2804,23 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   NavigateTwiceAndCheckHeader(ua_reduced_with_invalid_origin_trial_token_url(),
                               /*ch_ua_reduced_expected=*/false,
                               /*critical_ch_ua_reduced_expected=*/false);
+
+  // The Origin Trial token is invalid, so we expect the full UA values in the
+  // Javascript getters.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CheckUserAgentReduced(
+      content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
+      /*expected_user_agent_reduced=*/false);
+  CheckUserAgentReduced(
+      content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
+      /*expected_user_agent_reduced=*/false);
+  // Instead of checking all platform types, just check one that has a
+  // difference between the full and reduced versions.
+#if defined(OS_ANDROID)
+  EXPECT_NE("Linux x86_64",
+            content::EvalJs(web_contents, "navigator.platform"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,

@@ -38,44 +38,26 @@ namespace blink {
 // NavigatorBase is a helper for shared logic between Navigator and
 // WorkerNavigator. It is also a Supplementable, and can therefore be used for
 // classes that need to Supplement both Navigator and WorkerNavigator.
-class NavigatorBase : public ScriptWrappable,
-                      public NavigatorConcurrentHardware,
-                      public NavigatorDeviceMemory,
-                      public NavigatorID,
-                      public NavigatorLanguage,
-                      public NavigatorOnLine,
-                      public NavigatorUA,
-                      public ExecutionContextClient,
-                      public Supplementable<NavigatorBase> {
+class CORE_EXPORT NavigatorBase : public ScriptWrappable,
+                                  public NavigatorConcurrentHardware,
+                                  public NavigatorDeviceMemory,
+                                  public NavigatorID,
+                                  public NavigatorLanguage,
+                                  public NavigatorOnLine,
+                                  public NavigatorUA,
+                                  public ExecutionContextClient,
+                                  public Supplementable<NavigatorBase> {
  public:
-  explicit NavigatorBase(ExecutionContext* context)
-      : NavigatorLanguage(context), ExecutionContextClient(context) {}
+  explicit NavigatorBase(ExecutionContext* context);
 
   // NavigatorID override
-  String userAgent() const override {
-    if (!GetExecutionContext())
-      return String();
-
-    GetExecutionContext()->ReportNavigatorUserAgentAccess();
-    return GetExecutionContext()->UserAgent();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    ScriptWrappable::Trace(visitor);
-    NavigatorLanguage::Trace(visitor);
-    ExecutionContextClient::Trace(visitor);
-    Supplementable<NavigatorBase>::Trace(visitor);
-  }
+  String userAgent() const override;
+  String platform() const override;
+  void Trace(Visitor* visitor) const override;
 
  protected:
-  ExecutionContext* GetUAExecutionContext() const override {
-    return GetExecutionContext();
-  }
-
-  UserAgentMetadata GetUserAgentMetadata() const override {
-    return GetExecutionContext() ? GetExecutionContext()->GetUserAgentMetadata()
-                                 : blink::UserAgentMetadata();
-  }
+  ExecutionContext* GetUAExecutionContext() const override;
+  UserAgentMetadata GetUserAgentMetadata() const override;
 };
 
 }  // namespace blink
