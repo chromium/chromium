@@ -654,4 +654,35 @@ public class ChromeContextMenuPopulatorTest {
         assertEquals("Lens intent parameters has incorrect page URL.", PAGE_URL,
                 lensIntentParams.getPageUrl());
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testOpenFromHighlight() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+
+        // The setup requires only the openedFromHighlight param.
+        ContextMenuParams params = new ContextMenuParams(/*nativePtr=*/0, /*mediaType=*/0,
+                /*pageUrl=*/GURL.emptyGURL(),
+                /*linkUrl=*/GURL.emptyGURL(), /*linkText=*/"",
+                /*unfilteredLinkUrl=*/GURL.emptyGURL(), /*srcUrl=*/GURL.emptyGURL(),
+                /*titleText=*/"", /*referrer=*/null, /*canSaveMedia=*/false,
+                /*triggeringTouchXDp=*/0, /*triggeringTouchXDp=*/0,
+                MenuSourceType.MENU_SOURCE_TOUCH, /*openedFromHighlight=*/true);
+
+        // In normal mode, there should be three options: share, remove and learn more.
+        int[] normal_expected = {R.id.contextmenu_share_highlight,
+                R.id.contextmenu_remove_highlight, R.id.contextmenu_learn_more};
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        checkMenuOptions(normal_expected);
+
+        // In custom tab or web app mode, only the remove option should be present.
+        int[] custom_tab_expected = {R.id.contextmenu_remove_highlight};
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
+        checkMenuOptions(custom_tab_expected);
+        int[] web_app_expected = {
+                R.id.contextmenu_remove_highlight, R.id.contextmenu_open_in_chrome};
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.WEB_APP, params);
+        checkMenuOptions(web_app_expected);
+    }
 }

@@ -576,9 +576,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (mParams.getOpenedFromHighlight()) {
             ModelList sharedHighlightingGroup = new ModelList();
-            sharedHighlightingGroup.add(createListItem(Item.SHARE_HIGHLIGHT));
+            if (mMode == ContextMenuMode.NORMAL) {
+                sharedHighlightingGroup.add(createListItem(Item.SHARE_HIGHLIGHT));
+            }
             sharedHighlightingGroup.add(createListItem(Item.REMOVE_HIGHLIGHT));
-            sharedHighlightingGroup.add(createListItem(Item.LEARN_MORE));
+            if (mMode == ContextMenuMode.NORMAL) {
+                sharedHighlightingGroup.add(createListItem(Item.LEARN_MORE));
+            }
             groupedItems.add(new Pair<>(null, sharedHighlightingGroup));
         }
 
