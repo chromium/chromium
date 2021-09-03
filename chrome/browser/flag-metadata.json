@@ -904,11 +904,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "crostini-enable-dlc",
-    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "crostini-gpu-support",
     "owners": [ "nverne", "benwells" ],
     "expiry_milestone": 110
@@ -921,7 +916,7 @@
   {
     "name": "crostini-use-dlc",
     "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "cups-ipp-printing-backend",
