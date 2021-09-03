@@ -43,16 +43,15 @@ const char* const kGeolocationAuthorizationActionExistingUser =
 const char* const kGeolocationAuthorizationActionNewUser =
     "Geolocation.AuthorizationActionNewUser";
 
-// Returns the current authorization status for the given CLLocationManager.
-// TODO(crbug.com/1173902): Remove this helper once the min deployment target is
-// updated to iOS 14.
-CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0
-  return manager.authorizationStatus;
-#else
-  return CLLocationManager.authorizationStatus;
-#endif
-}
+enum class PermissionStatus {
+  // Status unknown, usually because the system is slow to respond.
+  kPermissionUnknown = 0,
+  // User has not made a permission choice.
+  kPermissionNotDetermined = 1,
+  // User has made a permission choice, be it allowed, denied, etc.
+  kPermissionDetermined = 2,
+  kMaxValue = kPermissionDetermined,
+};
 
 }  // anonymous namespace
 
@@ -68,7 +67,7 @@ CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
 
 // Whether the permission was undefined or not. Used to choose whether to log
 // the permission or not.
-@property(nonatomic, assign) BOOL permissionWasUndefined;
+@property(atomic, assign) PermissionStatus permissionStatus;
 
 @end
 
@@ -85,15 +84,22 @@ CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
   if (self) {
     _locationManager = [[CLLocationManager alloc] init];
     [_locationManager setDelegate:self];
-    _permissionWasUndefined = GetAuthorizationStatus(_locationManager) ==
-                              kCLAuthorizationStatusNotDetermined;
+    dispatch_queue_t priorityQueue =
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
+    _permissionStatus = PermissionStatus::kPermissionUnknown;
+    dispatch_async(priorityQueue, ^{
+      self.permissionStatus = self.locationManager.authorizationStatus ==
+                                      kCLAuthorizationStatusNotDetermined
+                                  ? PermissionStatus::kPermissionNotDetermined
+                                  : PermissionStatus::kPermissionDetermined;
+    });
   }
   return self;
 }
 
 - (void)triggerSystemPrompt {
   if (self.locationServicesEnabled &&
-      GetAuthorizationStatus(self.locationManager) ==
+      self.locationManager.authorizationStatus ==
           kCLAuthorizationStatusNotDetermined) {
     self.newUser = YES;
 
@@ -109,7 +115,7 @@ CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
 #pragma mark - Private
 
 - (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction {
-  self.permissionWasUndefined = NO;
+  self.permissionStatus = PermissionStatus::kPermissionDetermined;
   if (self.newUser) {
     self.newUser = NO;
 
@@ -132,8 +138,11 @@ CLAuthorizationStatus GetAuthorizationStatus(CLLocationManager* manager) {
 
 - (void)locationManagerDidChangeAuthorization:
     (CLLocationManager*)locationManager {
-  if (self.permissionWasUndefined) {
-    switch (GetAuthorizationStatus(locationManager)) {
+  if (self.permissionStatus == PermissionStatus::kPermissionUnknown)
+    return;
+ 
+  if (self.permissionStatus == PermissionStatus::kPermissionNotDetermined) {
+    switch (locationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
         // |kCLAuthorizationStatusNotDetermined| when we first start location
