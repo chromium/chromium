@@ -21,6 +21,7 @@ found in the LICENSE file.
       <tab>Audio</tab>
       <tab>Video Capture</tab>
       <tab>Audio Focus</tab>
+      <tab>CDMs</tab>
     </tabs>
     <tabpanels>
       <tabpanel id="players">
@@ -129,7 +130,7 @@ found in the LICENSE file.
           </table>
         </div>
       </tabpanel>
-      <tabpanel id="players">
+      <tabpanel id="audio-focus">
         <div id="list-wrapper">
           <h2>Active Sessions</h2>
           <ul id="audio-focus-session-list" class="show-none-if-empty"></ul>
@@ -140,6 +141,30 @@ found in the LICENSE file.
               <span class="player-name"></span><br />
               <span class="player-frame"></span><br />
               <span class="player-desc"></span>
+            </label>
+          </li>
+        </template>
+      </tabpanel>
+      <tabpanel id="cdms">
+        <div id="list-wrapper">
+          <h2>Registered Content Decryption Modules</h2>
+          <ul>
+            <li>Clear Key ("org.w3.clearkey") is always supported and not listed
+              here.</li>
+            <li>Empty video codec profile list means we are not differentiating
+              and assume all profiles are supported.</li>
+          </ul>
+          <ul id="cdm-list" class="show-none-if-empty"></ul>
+        </div>
+        <template id="cdm-row">
+          <li>
+            <label class="cdm">
+              <span class="key-system"></span><br />
+              <span class="robustness"></span><br />
+              <span class="name"></span><br />
+              <span class="version"></span><br />
+              <span class="path"></span><br />
+              <span class="capability"></span><br />
             </label>
           </li>
         </template>

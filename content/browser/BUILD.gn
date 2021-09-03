@@ -1175,6 +1175,8 @@ source_set("browser") {
     "media/media_internals.h",
     "media/media_internals_audio_focus_helper.cc",
     "media/media_internals_audio_focus_helper.h",
+    "media/media_internals_cdm_helper.cc",
+    "media/media_internals_cdm_helper.h",
     "media/media_internals_handler.cc",
     "media/media_internals_handler.h",
     "media/media_internals_proxy.cc",

@@ -49,6 +49,8 @@
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
+namespace content {
+
 namespace {
 
 std::u16string SerializeUpdate(const std::string& function,
@@ -112,8 +114,6 @@ const char kAudioLogStatusKey[] = "status";
 const char kAudioLogUpdateFunction[] = "media.updateAudioComponent";
 
 }  // namespace
-
-namespace content {
 
 // This class works as a receiver of logs of events occurring in the
 // media pipeline. Media logs send by the renderer process to the
@@ -533,6 +533,10 @@ void MediaInternals::SendVideoCaptureDeviceCapabilities() {
 
 void MediaInternals::SendAudioFocusState() {
   audio_focus_helper_.SendAudioFocusState();
+}
+
+void MediaInternals::GetRegisteredCdms() {
+  cdm_helper_.GetRegisteredCdms();
 }
 
 void MediaInternals::UpdateVideoCaptureDeviceCapabilities(

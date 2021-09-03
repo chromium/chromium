@@ -28,7 +28,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   void RegisterCdm(const CdmInfo& info) override;
 
   // Returns CdmInfo registered for `key_system` and `robustness`. Returns null
-  // if no CdmInfo is registered, or if the CdmInfo registered is invalid.
+  // if no CdmInfo is registered, or if the CdmInfo registered is invalid. There
+  // might be multiple CdmInfo registered for the same `key_system` and
+  // `robustness`, in which case the first registered one will be returned.
   std::unique_ptr<CdmInfo> GetCdmInfo(const std::string& key_system,
                                       CdmInfo::Robustness robustness);
 
@@ -43,7 +45,10 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
       CdmInfo::Robustness robustness,
       absl::optional<media::CdmCapability> cdm_capability);
 
-  const std::vector<CdmInfo>& GetAllRegisteredCdmsForTesting();
+  // Returns all registered CDMs. There might be multiple CdmInfo registered for
+  // the same `key_system` and `robustness`. Only the first registered one will
+  // be used in playback.
+  const std::vector<CdmInfo>& GetRegisteredCdms();
 
  private:
   friend class CdmRegistryImplTest;

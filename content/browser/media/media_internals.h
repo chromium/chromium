@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
+#include "content/browser/media/media_internals_cdm_helper.h"
 #include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
 #include "content/public/browser/notification_observer.h"
@@ -89,6 +90,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // Sends all audio focus information to each registered UpdateCallback.
   void SendAudioFocusState();
 
+  // Get information of registered CDMs and update the "CDMs" tab.
+  void GetRegisteredCdms();
+
   // Called to inform of the capabilities enumerated for video devices.
   void UpdateVideoCaptureDeviceCapabilities(
       const std::vector<std::tuple<media::VideoCaptureDeviceDescriptor,
@@ -123,6 +127,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
  private:
   // Needs access to SendUpdate.
   friend class MediaInternalsAudioFocusHelper;
+  friend class MediaInternalsCdmHelper;
 
   class AudioLogImpl;
   class MediaInternalLogRecordsImpl;
@@ -169,6 +174,8 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   NotificationRegistrar registrar_;
 
   MediaInternalsAudioFocusHelper audio_focus_helper_;
+
+  MediaInternalsCdmHelper cdm_helper_;
 
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;

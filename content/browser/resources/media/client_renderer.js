@@ -86,6 +86,7 @@ export class ClientRenderer {
     this.graphElement = $('graphs');
     this.audioPropertyName = $('audio-property-name');
     this.audioFocusSessionListElement_ = $('audio-focus-session-list');
+    this.cdmListElement_ =  $('cdm-list');
     var generalAudioInformationTableElement = $('general-audio-info-table');
     if (generalAudioInformationTableElement) {
       this.generalAudioInformationTable =
@@ -173,6 +174,18 @@ export class ClientRenderer {
     sessions.forEach(session => {
       this.audioFocusSessionListElement_.appendChild(
           this.createAudioFocusSessionRow_(session));
+    });
+  }
+
+  /**
+   * Called when the list of CDM info has changed.
+   * @param sessions A list of CDM info that contain the current state.
+   */
+  updateRegisteredCdms(cdms) {
+    removeChildren(this.cdmListElement_);
+
+    cdms.forEach(cdm => {
+      this.cdmListElement_.appendChild(this.createCdmRow_(cdm));
     });
   }
 
@@ -581,6 +594,18 @@ export class ClientRenderer {
     span[0].textContent = session.name;
     span[1].textContent = session.owner;
     span[2].textContent = session.state;
+    return document.importNode(template.content, true);
+  }
+
+  createCdmRow_(cdm) {
+    const template = $('cdm-row');
+    const span = template.content.querySelectorAll('span');
+    span[0].textContent = cdm.key_system;
+    span[1].textContent = cdm.robustness;
+    span[2].textContent = cdm.name;
+    span[3].textContent = cdm.version;
+    span[4].textContent = cdm.path;
+    span[5].textContent = JSON.stringify(cdm.capability);
     return document.importNode(template.content, true);
   }
 }
