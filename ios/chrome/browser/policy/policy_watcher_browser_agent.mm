@@ -30,15 +30,13 @@ NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
 BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
-    : browser_(browser),
-      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()),
-      browser_prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
+    : browser_(browser) {
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
-  prefs_change_observer_->Init(GetApplicationContext()->GetLocalState());
-  browser_prefs_change_observer_->Init(browser->GetBrowserState()->GetPrefs());
+  prefs_change_observer_.Init(GetApplicationContext()->GetLocalState());
+  browser_prefs_change_observer_.Init(browser->GetBrowserState()->GetPrefs());
 }
 
-PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() {}
+PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
@@ -61,7 +59,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // BrowserSignin policy: start observing the kSigninAllowed pref. When the
   // pref becomes false, send a UI command to sign the user out. This requires
   // the given command dispatcher to be fully configured.
-  prefs_change_observer_->Add(
+  prefs_change_observer_.Add(
       prefs::kBrowserSigninPolicy,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled,
@@ -71,7 +69,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
 
-  browser_prefs_change_observer_->Add(
+  browser_prefs_change_observer_.Add(
       syncer::prefs::kSyncManaged,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded,
