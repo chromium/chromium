@@ -77,7 +77,7 @@ std::unique_ptr<base::Value> DumpInfo::GetAsValue() const {
 
   std::unique_ptr<base::ListValue> attachments_list(new base::ListValue());
   for (const auto& attachment : attachments_) {
-    attachments_list->AppendString(attachment);
+    attachments_list->Append(attachment);
   }
   entry->SetList(kAttachmentsKey, std::move(attachments_list));
   entry->SetString(kSuffixKey, params_.suffix);

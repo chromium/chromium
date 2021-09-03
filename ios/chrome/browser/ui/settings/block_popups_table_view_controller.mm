@@ -365,10 +365,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       if (entries[i].source == "policy") {
         // Add the urls to |_allowPopupsByPolicy| if the allowed urls are set by
         // the policy.
-        _allowPopupsByPolicy.AppendString(
-            entries[i].primary_pattern.ToString());
+        _allowPopupsByPolicy.Append(entries[i].primary_pattern.ToString());
       } else {
-        _exceptions.AppendString(entries[i].primary_pattern.ToString());
+        _exceptions.Append(entries[i].primary_pattern.ToString());
       }
     } else {
       LOG(ERROR) << "Secondary content settings patterns are not "

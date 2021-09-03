@@ -128,7 +128,7 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   auto type_list = std::make_unique<base::ListValue>();
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list->AppendString(ModelTypeToString(type));
+    type_list->Append(ModelTypeToString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
   DispatchEvent(syncer::sync_ui_util::kOnReceivedListOfTypes, event_details);

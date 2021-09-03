@@ -1016,7 +1016,7 @@ User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
     } else {
       if ((*it)->HasGaiaAccount() || (*it)->IsActiveDirectoryUser()) {
         const std::string user_email = (*it)->GetAccountId().GetUserEmail();
-        prefs_users_update->AppendString(user_email);
+        prefs_users_update->Append(user_email);
       }
       ++it;
     }

@@ -324,7 +324,7 @@ bool Validator::ValidateRecommendedField(
       continue;
     }
 
-    repaired_recommended.AppendString(*field_name);
+    repaired_recommended.Append(*field_name);
   }
 
   result->SetKey(::onc::kRecommended, std::move(repaired_recommended));

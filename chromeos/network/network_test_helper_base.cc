@@ -71,8 +71,8 @@ void NetworkTestHelperBase::ResetDevicesAndServices() {
   // Set initial IPConfigs for the wifi device. The IPConfigs are set up in
   // FakeShillManagerClient::SetupDefaultEnvironment() and do not get cleared.
   base::ListValue ip_configs;
-  ip_configs.AppendString("ipconfig_v4_path");
-  ip_configs.AppendString("ipconfig_v6_path");
+  ip_configs.Append("ipconfig_v4_path");
+  ip_configs.Append("ipconfig_v6_path");
   device_test_->SetDeviceProperty(kDevicePath, shill::kIPConfigsProperty,
                                   ip_configs,
                                   /*notify_changed=*/false);

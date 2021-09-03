@@ -65,7 +65,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
     device_test->AddDevice(kDefaultWifiDevicePath, shill::kTypeWifi, "wifi1");
 
     base::ListValue test_ip_configs;
-    test_ip_configs.AppendString("ip_config1");
+    test_ip_configs.Append("ip_config1");
     device_test->SetDeviceProperty(kDefaultWifiDevicePath,
                                    shill::kIPConfigsProperty, test_ip_configs,
                                    /*notify_changed=*/true);

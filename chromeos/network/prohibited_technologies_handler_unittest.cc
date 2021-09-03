@@ -64,13 +64,13 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   void PreparePolicies() {
     {
       base::ListValue val;
-      val.AppendString("WiFi");
+      val.Append("WiFi");
       global_config_disable_wifi.SetKey("DisableNetworkTypes", std::move(val));
     }
     {
       base::ListValue val;
-      val.AppendString("WiFi");
-      val.AppendString("Cellular");
+      val.Append("WiFi");
+      val.Append("Cellular");
       global_config_disable_wifi_and_cell.SetKey("DisableNetworkTypes",
                                                  std::move(val));
     }

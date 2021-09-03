@@ -478,8 +478,8 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
   base::ListValue dns_servers;
-  dns_servers.AppendString("192.168.1.100");
-  dns_servers.AppendString("192.168.1.101");
+  dns_servers.Append("192.168.1.100");
+  dns_servers.Append("192.168.1.101");
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kNameServersProperty,
                                           dns_servers, base::DoNothing());

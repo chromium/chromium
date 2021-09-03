@@ -842,8 +842,8 @@ TEST_F(NetworkHealthProviderTest, IPConfig) {
   base::ListValue dns_servers;
   const std::string dns_server_1 = "192.168.1.100";
   const std::string dns_server_2 = "192.168.1.101";
-  dns_servers.AppendString(dns_server_1);
-  dns_servers.AppendString(dns_server_2);
+  dns_servers.Append(dns_server_1);
+  dns_servers.Append(dns_server_2);
   SetNameServersForIPConfig(dns_servers);
 
   AssociateWifiWithIPConfig();

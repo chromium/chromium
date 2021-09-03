@@ -842,7 +842,7 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
           std::string string_value;
           if (entry.GetAsString(&string_value))
             if (WriteAttribute(false, string_value, &line))
-              filtered_list->AppendString(string_value);
+              filtered_list->Append(string_value);
         }
         break;
       }

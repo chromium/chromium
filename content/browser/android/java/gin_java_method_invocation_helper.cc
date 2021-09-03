@@ -303,7 +303,7 @@ void GinJavaMethodInvocationHelper::InvokeMethod(jobject object,
         result_wrapper.Append(GinJavaBridgeValue::CreateUndefinedValue());
         break;
       }
-      result_wrapper.AppendString(
+      result_wrapper.Append(
           base::android::ConvertJavaStringToUTF8(scoped_java_string));
       break;
     }

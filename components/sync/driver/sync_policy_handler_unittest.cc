@@ -117,9 +117,9 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
   // Create a policy that disables the types.
   policy::PolicyMap policy;
   base::ListValue disabled_types;
-  disabled_types.AppendString("osApps");
-  disabled_types.AppendString("osPreferences");
-  disabled_types.AppendString("osWifiConfigurations");
+  disabled_types.Append("osApps");
+  disabled_types.Append("osPreferences");
+  disabled_types.Append("osWifiConfigurations");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
@@ -146,9 +146,9 @@ TEST_F(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // policy names from before the SplitSettingsSync launch.
   policy::PolicyMap policy;
   base::ListValue disabled_types;
-  disabled_types.AppendString("apps");
-  disabled_types.AppendString("wifiConfigurations");
-  disabled_types.AppendString("preferences");
+  disabled_types.Append("apps");
+  disabled_types.Append("wifiConfigurations");
+  disabled_types.Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD, disabled_types.Clone(), nullptr);
