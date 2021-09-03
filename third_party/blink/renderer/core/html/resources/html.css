@@ -931,6 +931,8 @@ select:-internal-list-box optgroup {
 }
 
 /* option selected, list-box focused */
+/* TODO(crbug.com/1244986): We should be able to remove !important here, but
+   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
 select:-internal-list-box:focus option:checked:hover {
     /* TODO(crbug.com/1129658): The dark mode color here should be handled
@@ -939,6 +941,8 @@ select:-internal-list-box:focus option:checked:hover {
     color: -internal-light-dark(-internal-active-list-box-selection-text, #3B3B3B) !important;
 }
 
+/* TODO(crbug.com/1244986): We should be able to remove !important here, but
+   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
     /* TODO(crbug.com/1129658): The dark mode color here should be handled
        within LayoutTheme::ActiveListBoxSelectionBackgroundColor(). */
@@ -948,14 +952,14 @@ select:-internal-list-box:focus option:checked:disabled {
 /* option selected, list-box not focused */
 select:-internal-list-box option:checked,
 select:-internal-list-box option:checked:hover {
-    background-color: -internal-light-dark(#cecece, #545454) !important;
-    color: -internal-light-dark(#101010, #FFFFFF) !important;
+    background-color: -internal-light-dark(#cecece, #545454);
+    color: -internal-light-dark(#101010, #FFFFFF);
 }
 
 select:-internal-list-box:disabled option:checked,
 select:-internal-list-box option:checked:disabled,
 select:-internal-list-box option:checked:disabled:hover {
-    color: -internal-light-dark(gray, #aaa) !important;
+    color: -internal-light-dark(gray, #aaa);
 }
 
 select:-internal-list-box hr {
