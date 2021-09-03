@@ -46,7 +46,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -63,7 +65,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.cause.overridable" enum="SSLErrorCauses"
-    expires_after="2021-11-07">
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -109,7 +113,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.did_user_revoke_decisions2"
-    enum="BooleanRevoked" expires_after="2022-01-02">
+    enum="BooleanRevoked" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>carlosil@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -129,7 +135,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
-    expires_after="M94">
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>meacer@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
@@ -152,7 +160,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
-    expires_after="2022-01-02">
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
@@ -224,7 +234,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
-    enum="SecurityInterstitialDecision" expires_after="M100">
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -247,7 +259,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="interstitial.{SecurityInterstitialLookalikeType}decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="M94">
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>carlosil@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -266,7 +280,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.{SecurityInterstitialLookalikeType}interaction"
-    enum="SecurityInterstitialInteraction" expires_after="M94">
+    enum="SecurityInterstitialInteraction" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
