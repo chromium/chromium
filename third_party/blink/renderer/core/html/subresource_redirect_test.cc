@@ -258,7 +258,9 @@ TEST_P(SubresourceRedirectSimTest,
   }
 }
 
-TEST_P(SubresourceRedirectSimTest, RestrictedByContentSecurityPolicyImgSrc) {
+// TODO(crbug/1223916): Disabled due to high flakiness and build failures.
+TEST_P(SubresourceRedirectSimTest,
+       DISABLED_RestrictedByContentSecurityPolicyImgSrc) {
   LoadMainResourceAndImage(R"HTML(
         <head>
           <meta http-equiv="Content-Security-Policy" content="img-src 'self'">
