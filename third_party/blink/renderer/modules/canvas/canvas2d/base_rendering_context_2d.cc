@@ -1715,7 +1715,12 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
 }
 
 void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
-  DCHECK(context_lost_mode_ != CanvasRenderingContext::kNotLostContext);
+  // Since canvas may trigger contextlost event by multiple different ways (ex:
+  // gpu crashes and frame eviction), it's possible to triggeer this
+  // function while the context is already restored. In this case, we
+  // abort it here.
+  if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext)
+    return;
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   if (GetCanvasRenderingContextHost() &&
