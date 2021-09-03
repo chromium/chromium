@@ -262,12 +262,6 @@ enum OptimizationTarget {
 }
 
 // The types of models that can be evaluated.
-//
-// Please only update these enums when a new major version of TFLite rolls.
-//
-// For example: v1.2.3
-//                 ^
-//                 Change when this number increments.
 enum ModelType {
   MODEL_TYPE_UNKNOWN = 0;
   // A decision tree.
@@ -280,8 +274,6 @@ enum ModelType {
   // TensorflowLite version 2.4.2, and a bit more up to internal rev number
   // 381280669.
   MODEL_TYPE_TFLITE_2_4 = 4;
-  // TensorflowLite version 2.7.*. This is where regular ~HEAD rolls started.
-  MODEL_TYPE_TFLITE_2_7 = 5;
 }
 
 // A set of model features and the host that it applies to.

@@ -545,7 +545,6 @@ void PredictionManager::FetchModels() {
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0);
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0_1);
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_4);
-    base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_7);
   }
 
   std::string debug_msg;

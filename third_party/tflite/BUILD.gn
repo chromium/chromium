@@ -91,7 +91,6 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/optional_debug_tools.h",
     "src/tensorflow/lite/schema/schema_generated.h",
     "src/tensorflow/lite/schema/schema_utils.h",
-    "src/tensorflow/lite/signature_runner.h",
     "src/tensorflow/lite/stderr_reporter.h",
     "src/tensorflow/lite/string_type.h",
     "src/tensorflow/lite/string_util.h",
@@ -112,6 +111,7 @@ source_set("tflite_kernel_common_headers") {
     "src/tensorflow/lite/kernels/internal/compatibility.h",
     "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
     "src/tensorflow/lite/kernels/op_macros.h",
+    "src/tensorflow/lite/tools/optimize/sparsity/format_converter.h",
   ]
 
   configs += [ ":tflite_flags" ]
@@ -229,8 +229,6 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/transpose_utils.cc",
     "src/tensorflow/lite/kernels/internal/transpose_utils.h",
     "src/tensorflow/lite/kernels/internal/types.h",
-    "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.cc",
-    "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.h",
   ]
 
   deps = [
@@ -438,7 +436,6 @@ static_library("tflite") {
     "src/tensorflow/lite/profiling/time.cc",
     "src/tensorflow/lite/profiling/time.h",
     "src/tensorflow/lite/schema/schema_utils.cc",
-    "src/tensorflow/lite/signature_runner.cc",
     "src/tensorflow/lite/simple_memory_arena.cc",
     "src/tensorflow/lite/simple_memory_arena.h",
     "src/tensorflow/lite/stderr_reporter.cc",
@@ -449,10 +446,10 @@ static_library("tflite") {
     "src/tensorflow/lite/tools/command_line_flags.h",
     "src/tensorflow/lite/tools/delegates/delegate_provider.h",
     "src/tensorflow/lite/tools/logging.h",
+    "src/tensorflow/lite/tools/optimize/sparsity/format_converter.cc",
     "src/tensorflow/lite/tools/tool_params.h",
     "src/tensorflow/lite/tools/verifier.cc",
-    "src/tensorflow/lite/tools/verifier_internal.cc",
-    "src/tensorflow/lite/tools/verifier_internal.h",
+    "src/tensorflow/lite/tools/verifier.h",
     "src/tensorflow/lite/type_to_tflitetype.h",
     "src/tensorflow/lite/util.cc",
     "src/tensorflow/lite/version.h",
