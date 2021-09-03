@@ -40,7 +40,12 @@ namespace WTF {
 //
 // Unlike ListHashSet, this container supports WeakMember<T>.
 //
-// LinkedHashSet iterators are invalidated by mutation of the collection.
+// LinkedHashSet iterators are not invalidated by mutation of the
+// collection, unless they point to removed items. This means, for example, that
+// you can safely modify the container while iterating over it generally, as
+// long as you don't remove the current item. Moving items does not invalidate
+// iterator, so that it may cause unexpected behavior (i.e. loop unexpectedly
+// ends when moving the current item to last).
 //
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,

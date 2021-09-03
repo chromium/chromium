@@ -238,8 +238,6 @@ TYPED_TEST(ListOrLinkedHashSetTest, Find) {
 
 TYPED_TEST(ListOrLinkedHashSetTest, InsertBefore) {
   using Set = TypeParam;
-  bool can_modify_while_iterating =
-      !std::is_same<Set, LinkedHashSet<int, CustomHashTraitsForInt>>::value;
   Set set;
   set.insert(-1);
   set.insert(0);
@@ -249,35 +247,31 @@ TYPED_TEST(ListOrLinkedHashSetTest, InsertBefore) {
   typename Set::iterator it = set.find(2);
   EXPECT_EQ(2, *it);
   set.InsertBefore(it, 1);
-  if (!can_modify_while_iterating)
-    it = set.find(2);
   ++it;
   EXPECT_EQ(3, *it);
   EXPECT_EQ(5u, set.size());
   --it;
   --it;
   EXPECT_EQ(1, *it);
-  if (can_modify_while_iterating) {
-    set.erase(-1);
-    set.erase(0);
-    set.erase(2);
-    set.erase(3);
-    EXPECT_EQ(1u, set.size());
-    EXPECT_EQ(1, *it);
-    ++it;
-    EXPECT_EQ(it, set.end());
-    --it;
-    EXPECT_EQ(1, *it);
-    set.InsertBefore(it, -1);
-    set.InsertBefore(it, 0);
-    set.insert(2);
-    set.insert(3);
-  }
+
+  set.erase(-1);
+  set.erase(0);
+  set.erase(2);
+  set.erase(3);
+  EXPECT_EQ(1u, set.size());
+  EXPECT_EQ(1, *it);
+  ++it;
+  EXPECT_EQ(it, set.end());
+  --it;
+  EXPECT_EQ(1, *it);
+  set.InsertBefore(it, -1);
+  set.InsertBefore(it, 0);
+  set.insert(2);
+  set.insert(3);
+
   set.InsertBefore(2, 42);
   set.InsertBefore(-1, 103);
   EXPECT_EQ(103, set.front());
-  if (!can_modify_while_iterating)
-    it = set.find(1);
   ++it;
   EXPECT_EQ(42, *it);
   EXPECT_EQ(7u, set.size());
