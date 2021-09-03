@@ -21,8 +21,7 @@ namespace web_app {
 
 class WebAppProvider;
 
-// Per-tab web app helper. Allows to associate a tab (web page) with a web app
-// (or legacy bookmark app).
+// Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
                         public content::WebContentsObserver,
                         public AppRegistrarObserver {

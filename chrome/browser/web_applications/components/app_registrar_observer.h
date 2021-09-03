@@ -31,8 +31,7 @@ class AppRegistrarObserver : public base::CheckedObserver {
 
   // Called before any field of a web app is updated from the sync server.
   // A call site may compare existing WebApp state from the registry against
-  // this new WebApp state with sync changes applied. Works only for the new
-  // Web Apps system, not supported by legacy Bookmark Apps.
+  // this new WebApp state with sync changes applied.
   virtual void OnWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state) {}
 

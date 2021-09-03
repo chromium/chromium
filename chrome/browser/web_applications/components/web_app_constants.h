@@ -102,6 +102,7 @@ enum class InstallResultCode {
   // service worker, etc.
   kNotInstallable = 18,
   // Bookmark App extension install or update fails.
+  // TODO(crbug.com/1065748): No bookmark apps, remove this error type.
   kBookmarkExtensionInstallError = 19,
   // Apk Web App install fails.
   kApkWebAppInstallFailed = 20,

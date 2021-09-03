@@ -110,9 +110,7 @@ WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
   // Exclude secondary off-the-record profiles.
   DCHECK(!profile_->IsOffTheRecord());
 
-  CreateCommonSubsystems(profile_);
-
-  CreateWebAppsSubsystems(profile_);
+  CreateSubsystems(profile_);
 }
 
 WebAppProvider::~WebAppProvider() = default;
@@ -215,7 +213,7 @@ void WebAppProvider::OnExtensionSystemReady() {
   StartSyncBridge();
 }
 
-void WebAppProvider::CreateCommonSubsystems(Profile* profile) {
+void WebAppProvider::CreateSubsystems(Profile* profile) {
   audio_focus_id_map_ = std::make_unique<WebAppAudioFocusIdMap>();
   ui_manager_ = WebAppUiManager::Create(profile);
   install_manager_ = std::make_unique<WebAppInstallManager>(profile);
@@ -226,9 +224,7 @@ void WebAppProvider::CreateCommonSubsystems(Profile* profile) {
       std::make_unique<PreinstalledWebAppManager>(profile);
   system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
-}
 
-void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
 
   std::unique_ptr<WebAppRegistrar> registrar;
@@ -278,7 +274,6 @@ void WebAppProvider::CreateWebAppsSubsystems(Profile* profile) {
       profile, registrar.get(), install_finalizer_.get(),
       install_manager_.get(), sync_bridge.get());
 
-  // Upcast to unified subsystem types:
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
   icon_manager_ = std::move(icon_manager);

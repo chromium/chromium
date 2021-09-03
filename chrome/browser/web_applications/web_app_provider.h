@@ -27,7 +27,8 @@ class PrefRegistrySyncable;
 
 namespace web_app {
 
-// Forward declarations of generalized interfaces.
+class WebAppDatabaseFactory;
+class WebAppMover;
 class WebAppSyncBridge;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
@@ -39,10 +40,6 @@ class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
-
-// Forward declarations for new extension-independent subsystems.
-class WebAppDatabaseFactory;
-class WebAppMover;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -149,10 +146,7 @@ class WebAppProvider : public KeyedService {
   void WaitForExtensionSystemReady();
   void OnExtensionSystemReady();
 
-  // Create subsystems that work with either BMO and Extension backends.
-  void CreateCommonSubsystems(Profile* profile);
-  // Create extension-independent subsystems.
-  void CreateWebAppsSubsystems(Profile* profile);
+  void CreateSubsystems(Profile* profile);
 
   // Wire together subsystems but do not start them (yet).
   void ConnectSubsystems();
@@ -163,11 +157,8 @@ class WebAppProvider : public KeyedService {
 
   void CheckIsConnected() const;
 
-  // New extension-independent subsystems:
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppMover> web_app_mover_;
-
-  // Generalized subsystems:
   std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;

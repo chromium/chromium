@@ -27,8 +27,6 @@ namespace web_app {
 
 enum class SystemAppType;
 
-// Clients should use SystemWebAppManagerBrowserTest, so test can be run with
-// both the new web apps provider and the legacy bookmark apps provider.
 class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
  public:
   // Performs common initialization for testing SystemWebAppManager features.

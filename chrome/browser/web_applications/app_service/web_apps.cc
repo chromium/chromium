@@ -120,8 +120,12 @@ void WebApps::Shutdown() {
 }
 
 const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
-  // GetRegistrar() might return nullptr if the legacy bookmark apps registry is
-  // enabled. This may happen in migration browser tests.
+  // TODO(crbug.com/1065748): GetRegistrar() must not return nullptr. We should
+  // always call GetRegistrar().GetAppById(app_id).
+  //
+  // GetRegistrar() could return nullptr if the legacy bookmark apps registry
+  // was enabled. This could happen in migration browser tests which were
+  // deleted.
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
