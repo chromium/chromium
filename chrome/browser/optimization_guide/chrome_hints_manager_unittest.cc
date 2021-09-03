@@ -155,7 +155,8 @@ class ChromeHintsManagerFetchingTest
       content::WebContents* web_contents) {
     auto* observer =
         OptimizationGuideWebContentsObserver::FromWebContents(web_contents);
-    observer->FetchHintsUsingManager(hints_manager());
+    observer->FetchHintsUsingManager(
+        hints_manager(), web_contents->GetPrimaryPage().GetWeakPtr());
   }
 
   ChromeHintsManager* hints_manager() const { return hints_manager_.get(); }

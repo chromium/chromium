@@ -83,6 +83,8 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // Write a description of this Page into the provided |context|.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
+  virtual base::WeakPtr<Page> GetWeakPtr() = 0;
+
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument() returning RenderFrameHostImpl.

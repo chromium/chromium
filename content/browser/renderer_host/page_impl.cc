@@ -69,6 +69,10 @@ void PageImpl::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("main_document", main_document_);
 }
 
+base::WeakPtr<Page> PageImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_.OnFirstVisuallyNonEmptyPaint(*this);

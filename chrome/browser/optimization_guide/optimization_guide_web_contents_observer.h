@@ -73,7 +73,8 @@ class OptimizationGuideWebContentsObserver
   // Ask |hints_manager| to fetch hints for navigations that were predicted for
   // the current page load.
   void FetchHintsUsingManager(
-      optimization_guide::ChromeHintsManager* hints_manager);
+      optimization_guide::ChromeHintsManager* hints_manager,
+      base::WeakPtr<content::Page> page);
 
   // Notifies |optimization_guide_keyed_service_| that the navigation has
   // finished.

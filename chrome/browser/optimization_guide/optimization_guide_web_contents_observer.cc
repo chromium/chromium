@@ -21,9 +21,6 @@ namespace {
 
 bool IsValidOptimizationGuideNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   return navigation_handle->IsInPrimaryMainFrame() &&
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
@@ -136,9 +133,8 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
     return;
   }
 
-  if (!optimization_guide_keyed_service_) {
+  if (!optimization_guide_keyed_service_)
     return;
-  }
 
   // Give the renderer some time to send us predictions that might have come
   // at onload.
@@ -147,16 +143,20 @@ void OptimizationGuideWebContentsObserver::DocumentOnLoadCompletedInMainFrame(
       base::BindOnce(
           &OptimizationGuideWebContentsObserver::FetchHintsUsingManager,
           weak_factory_.GetWeakPtr(),
-          optimization_guide_keyed_service_->GetHintsManager()),
+          optimization_guide_keyed_service_->GetHintsManager(),
+          web_contents()->GetPrimaryPage().GetWeakPtr()),
       optimization_guide::features::GetOnloadDelayForHintsFetching());
 }
 
 void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
-    optimization_guide::ChromeHintsManager* hints_manager) {
+    optimization_guide::ChromeHintsManager* hints_manager,
+    base::WeakPtr<content::Page> page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(hints_manager);
+  if (!page)
+    return;
 
-  PageData& page_data = GetPageData(web_contents()->GetPrimaryPage());
+  PageData& page_data = GetPageData(*page);
   page_data.set_sent_batched_hints_request();
 
   hints_manager->FetchHintsForURLs(page_data.GetHintsTargetUrls());
@@ -191,9 +191,8 @@ void OptimizationGuideWebContentsObserver::AddURLsToBatchFetchBasedOnPrediction(
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!this->web_contents()) {
+  if (!this->web_contents())
     return;
-  }
   DCHECK_EQ(this->web_contents(), web_contents);
 
   PageData& page_data = GetPageData(web_contents->GetPrimaryPage());

@@ -43,6 +43,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   void GetManifest(GetManifestCallback callback) override;
   bool IsPrimary() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
+  base::WeakPtr<Page> GetWeakPtr() override;
 
   void UpdateManifestUrl(const GURL& manifest_url);
 
