@@ -48,6 +48,7 @@ class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
 
   // LayoutBox override:
   bool CreatesNewFormattingContext() const override;
+  void UpdateFromStyle() override;
 
   // LayoutBlock override:
   void Paint(const PaintInfo&) const override;

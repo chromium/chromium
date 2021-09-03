@@ -57,6 +57,12 @@ bool LayoutNGSVGText::CreatesNewFormattingContext() const {
   return true;
 }
 
+void LayoutNGSVGText::UpdateFromStyle() {
+  NOT_DESTROYED();
+  LayoutNGBlockFlowMixin<LayoutSVGBlock>::UpdateFromStyle();
+  SetHasNonVisibleOverflow(false);
+}
+
 bool LayoutNGSVGText::IsChildAllowed(LayoutObject* child,
                                      const ComputedStyle&) const {
   NOT_DESTROYED();
