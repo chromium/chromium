@@ -49,7 +49,7 @@ export class InputPage extends Page {
   updateActiveInputDevice() {
     const handler = AudioBroker.getInstance().handler;
     handler.getActiveInputDeviceName().then(({deviceName}) => {
-      $('active-input').innerHTML = deviceName;
+      $('active-input').innerHTML = deviceName ?? 'No active input device';
     });
   }
 
