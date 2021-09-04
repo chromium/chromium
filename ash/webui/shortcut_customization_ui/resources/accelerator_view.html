@@ -16,7 +16,7 @@
 </style>
 
 <div id="container" class="flex-row" tabindex="0">
-  <template is="dom-if" if=[[!isEditable]]>
+  <template is="dom-if" if="[[!showEditView_(viewState)]]">
     <template is="dom-repeat" items=[[modifiers_]]>
       <input-key key=[[item]] key-state="modifier-selected"></input-key>
     </template>
@@ -24,7 +24,7 @@
         key-state="alpha-numeric-selected">
     </input-key>
   </template>
-  <template is="dom-if" if=[[isEditable]]>
+  <template is="dom-if" if="[[showEditView_(viewState)]]">
     <div id="editContainer" class="flex-row">
       <input-key id="ctrlKey" key="ctrl"
           key-state="[[getCtrlState_(pendingAcceleratorInfo_.accelerator.*)]]">

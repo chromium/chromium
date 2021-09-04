@@ -25,6 +25,12 @@ const KeyState = {
   ALPHANUMERIC: 'alpha-numeric-selected',
 }
 
+export const ViewState = {
+  VIEW: 0,
+  ADD: 1,
+  EDIT: 2,
+}
+
 /**
  * Returns the converted modifier flag as a readable string.
  * TODO(jimmyxgong): Localize, replace with icon, or update strings.
@@ -86,11 +92,11 @@ export class AcceleratorViewElement extends PolymerElement {
         value: () => {},
       },
 
-      isEditable: {
-        type: Boolean,
-        value: false,
+      viewState: {
+        type: Number,
+        value: ViewState.VIEW,
         notify: true,
-        observer: 'onIsEditableChanged_',
+        observer: 'onViewStateChanged_',
       },
 
       /**
@@ -146,8 +152,8 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
   /** @protected */
-  onIsEditableChanged_() {
-    if (this.isEditable) {
+  onViewStateChanged_() {
+    if (this.viewState !== ViewState.VIEW) {
       this.registerKeyEventListeners_();
       return;
     }
@@ -190,11 +196,11 @@ export class AcceleratorViewElement extends PolymerElement {
       return;
     }
 
+    this.viewState = ViewState.VIEW;
     this.statusMessage = '';
     this.hasError = false;
     this.isCapturing_ = false;
     this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
-    this.isEditable = false;
   }
 
   /**
@@ -385,6 +391,14 @@ export class AcceleratorViewElement extends PolymerElement {
     // Although Shift is a modifier, it cannot be a standalone modifier for a
     // shortcut.
     return e.ctrlKey || e.altKey || e.metaKey;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showEditView_() {
+    return this.viewState !== ViewState.VIEW;
   }
 }
 

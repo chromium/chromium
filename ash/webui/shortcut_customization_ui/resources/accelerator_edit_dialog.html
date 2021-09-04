@@ -22,13 +22,14 @@
         </accelerator-edit-view>
       </template>
     </div>
-    <template id="newAccelerator" is="dom-if" if="[[isAddingNewAccelerator_]]"
-        restamp>
+    <template id="newAccelerator" is="dom-if"
+        if="[[!showAddButton_(pendingNewAcceleratorState_)]]" restamp>
       <accelerator-edit-view id="pendingAccelerator"
-          is-edit-view="{{isAddingNewAccelerator_}}">
+          view-state="{{pendingNewAcceleratorState_}}">
       </accelerator-edit-view>
     </template>
-    <div id="addAcceleratorContainer" hidden="[[isAddingNewAccelerator_]]">
+    <div id="addAcceleratorContainer"
+        hidden="[[!showAddButton_(pendingNewAcceleratorState_)]]">
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>

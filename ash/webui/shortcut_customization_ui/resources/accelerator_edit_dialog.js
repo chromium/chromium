@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './accelerator_view.js';
 import './accelerator_edit_view.js';
 import './shortcut_customization_shared_css.js';
-
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
-import {html, PolymerElement, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ViewState} from './accelerator_view.js';
 import {AcceleratorInfo} from './shortcut_types.js';
 
 /**
@@ -43,9 +42,9 @@ export class AcceleratorEditDialogElement extends PolymerElement {
       },
 
       /** @private */
-      isAddingNewAccelerator_: {
-        type: Boolean,
-        value: false,
+      pendingNewAcceleratorState_: {
+        type: Number,
+        value: ViewState.VIEW,
       },
     }
   }
@@ -69,7 +68,7 @@ export class AcceleratorEditDialogElement extends PolymerElement {
 
   /** @protected */
   onAddAcceleratorClicked_() {
-    this.isAddingNewAccelerator_ = true;
+    this.pendingNewAcceleratorState_ = ViewState.ADD;
 
     // Flush the dom so that the AcceleratorEditView is ready to be focused.
     flush();
@@ -78,6 +77,14 @@ export class AcceleratorEditDialogElement extends PolymerElement {
     accelItem.shadowRoot.querySelector('#container').focus();
   }
 
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  showAddButton_() {
+    // If the state is VIEW, no new pending accelerators are being added.
+    return this.pendingNewAcceleratorState_ === ViewState.VIEW;
+  }
 }
 
 customElements.define(AcceleratorEditDialogElement.is,

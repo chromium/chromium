@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorViewElement} from 'chrome://shortcut-customization/accelerator_view.js';
+import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -57,7 +57,7 @@ export function acceleratorViewTest() {
     viewElement.acceleratorInfo = acceleratorInfo;
     await flush();
     // Enable the edit view.
-    viewElement.isEditable = true;
+    viewElement.viewState = ViewState.EDIT;
 
     await flush();
 
