@@ -1419,7 +1419,7 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
     deps = [
       "//chrome:chrome",
       "//content/shell:content_shell",
-      "//third_party/dawn/third_party/tint/samples:tint",
+      "//third_party/dawn/third_party/tint/fuzzers:tint_black_box_fuzz_target",
       "//v8:d8",
     ]
     if (!is_win) {
