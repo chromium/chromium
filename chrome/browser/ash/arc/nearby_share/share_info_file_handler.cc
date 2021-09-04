@@ -6,9 +6,9 @@
 
 #include <cinttypes>
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -152,7 +152,9 @@ void ShareInfoFileHandler::StartPreparingFiles(
   DCHECK(started_callback);
   DCHECK(completed_callback);
   DCHECK(update_callback);
+  DCHECK(task_runner_);
 
+  started_callback_ = std::move(started_callback);
   completed_callback_ = std::move(completed_callback);
   update_callback_ = std::move(update_callback);
   file_sharing_started_ = true;
@@ -178,37 +180,53 @@ void ShareInfoFileHandler::StartPreparingFiles(
     return;
   }
 
-  VLOG(1) << "Creating unique directory for share and converting URLs to files";
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&ShareInfoFileHandler::CreateDirectoryAndStreamFiles,
-                     this),
-      base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(started_callback)));
-}
-
-bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
   // Keep track of all scoped directories created so they can be cleaned up.
   scoped_temp_dirs_.emplace_front();
   auto it_temp_dir = scoped_temp_dirs_.begin();
 
+  VLOG(1) << "Creating unique directory for share and converting URLs to files";
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ShareInfoFileHandler::CreateShareDirectory, this,
+                     it_temp_dir),
+      base::BindOnce(&ShareInfoFileHandler::OnCreatedDirectoryAndStartStreaming,
+                     weak_ptr_factory_.GetWeakPtr(), it_temp_dir));
+}
+
+bool ShareInfoFileHandler::CreateShareDirectory(
+    std::list<base::ScopedTempDir>::iterator it_dir) {
   if (!base::PathExists(file_config_.directory)) {
     LOG(ERROR) << "Share directory does not exist: " << file_config_.directory;
     return false;
   }
 
-  // Prepare a temporary directory and the destination file.
-  if (!it_temp_dir->CreateUniqueTempDirUnderPath(file_config_.directory)) {
+  // Prepare a temporary directory for the session to store cached share files.
+  if (!it_dir->CreateUniqueTempDirUnderPath(file_config_.directory)) {
     LOG(ERROR) << "Failed to create unique temp directory for: "
                << file_config_.directory;
     return false;
+  }
+  return true;
+}
+
+void ShareInfoFileHandler::OnCreatedDirectoryAndStartStreaming(
+    std::list<base::ScopedTempDir>::iterator it,
+    bool result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(started_callback_);
+  DCHECK(task_runner_);
+
+  if (!result) {
+    LOG(ERROR) << "Failed to prepare temp directory.";
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_FAILED);
+    return;
   }
 
   auto urls_size = file_config_.external_urls.size();
   if (!urls_size) {
     LOG(ERROR) << "External urls are empty.";
-    return false;
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);
+    return;
   }
 
   for (auto i = 0; i < urls_size; i++) {
@@ -218,59 +236,28 @@ bool ShareInfoFileHandler::CreateDirectoryAndStreamFiles() {
 
     if (file_size < 0) {
       LOG(ERROR) << "Invalid size provided for file name: " << file_name;
-      return false;
-    }
-
-    contexts_.emplace_front();
-    auto it_context = contexts_.begin();
-    *it_context = GetScopedFileSystemContext(profile_, url);
-    DCHECK(it_context->get());
-
-    const file_manager::util::FileSystemURLAndHandle isolated_file_system =
-        GetFileSystemURLAndHandle(**it_context, url);
-
-    if (!isolated_file_system.url.is_valid()) {
-      LOG(ERROR) << "Invalid FileSystemURL from handle.";
-      return false;
-    }
-
-    // Check if the obtained path providing external file URL or not.
-    if (!chromeos::IsExternalFileURLType(isolated_file_system.url.type())) {
-      LOG(ERROR) << "FileSystemURL is not of external file type.";
-      return false;
+      NotifyFileSharingCompleted(base::File::FILE_ERROR_NOT_A_FILE);
+      return;
     }
 
     const base::FilePath dest_file_path =
-        it_temp_dir->GetPath().AppendASCII(StripPathComponents(file_name));
+        it->GetPath().AppendASCII(StripPathComponents(file_name));
 
-    auto dest_fd = CreateFileForWrite(dest_file_path);
-    if (!dest_fd.is_valid()) {
-      LOG(ERROR) << "Invalid destination file descriptor.";
-      return false;
-    }
-
-    file_stream_adapters_.emplace_front();
-    auto it_stream_adapter = file_stream_adapters_.begin();
-    *it_stream_adapter = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
-        *it_context, isolated_file_system.url, 0 /* offset */, file_size,
-        kStreamReaderBufSizeInBytes, std::move(dest_fd),
-        base::BindOnce(&ShareInfoFileHandler::OnFileStreamReadCompleted,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       isolated_file_system.url.DebugString(),
-                       it_stream_adapter, isolated_file_system.handle.id(),
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ShareInfoFileHandler::CreateFileForWrite, this,
+                       dest_file_path),
+        base::BindOnce(&ShareInfoFileHandler::OnFileDescriptorCreated,
+                       weak_ptr_factory_.GetWeakPtr(), url, dest_file_path,
                        file_size));
-    storage::IsolatedContext::GetInstance()->AddReference(
-        isolated_file_system.handle.id());
-
-    (*it_stream_adapter)->StartRunner();
-
-    file_config_.paths.push_back(dest_file_path);
   }
-  return true;
+  std::move(started_callback_).Run();
 }
 
 base::ScopedFD ShareInfoFileHandler::CreateFileForWrite(
     const base::FilePath& file_path) {
+  DCHECK(!file_path.empty());
+
   base::File dest_file(file_path,
                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!dest_file.IsValid() || !base::PathExists(file_path)) {
@@ -281,19 +268,60 @@ base::ScopedFD ShareInfoFileHandler::CreateFileForWrite(
   return base::ScopedFD(dest_file.TakePlatformFile());
 }
 
-void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(
-    StartedCallback callback,
-    bool result) {
+void ShareInfoFileHandler::OnFileDescriptorCreated(
+    const GURL& url,
+    const base::FilePath& dest_file_path,
+    const int64_t file_size,
+    base::ScopedFD dest_fd) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(url.is_valid());
+  DCHECK(!dest_file_path.empty());
+  DCHECK_GE(file_size, 0);
 
-  if (!result) {
-    LOG(ERROR) << "Failed to prepare temp directory and stream files.";
+  if (!dest_fd.is_valid()) {
+    LOG(ERROR) << "Invalid destination file descriptor.";
     NotifyFileSharingCompleted(base::File::FILE_ERROR_FAILED);
     return;
   }
 
-  // TODO(alanding): Add UMA metrics to measure how long file stream transfers
-  // can take. From local testing on caroline for 1.2GB takes around 1 minute.
+  contexts_.emplace_front();
+  auto it_context = contexts_.begin();
+  *it_context = GetScopedFileSystemContext(profile_, url);
+  DCHECK(it_context->get());
+
+  const file_manager::util::FileSystemURLAndHandle isolated_file_system =
+      GetFileSystemURLAndHandle(**it_context, url);
+
+  if (!isolated_file_system.url.is_valid()) {
+    LOG(ERROR) << "Invalid FileSystemURL from handle.";
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  }
+
+  // Check if the obtained path providing external file URL or not.
+  if (!chromeos::IsExternalFileURLType(isolated_file_system.url.type())) {
+    LOG(ERROR) << "FileSystemURL is not of external file type.";
+    NotifyFileSharingCompleted(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  }
+
+  file_stream_adapters_.emplace_front();
+  auto it_stream_adapter = file_stream_adapters_.begin();
+  *it_stream_adapter = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
+      *it_context, isolated_file_system.url, /* offset = */ 0, file_size,
+      kStreamReaderBufSizeInBytes, std::move(dest_fd),
+      base::BindOnce(&ShareInfoFileHandler::OnFileStreamReadCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     isolated_file_system.url.DebugString(), it_stream_adapter,
+                     isolated_file_system.handle.id(), file_size));
+  storage::IsolatedContext::GetInstance()->AddReference(
+      isolated_file_system.handle.id());
+
+  (*it_stream_adapter)->StartRunner();
+  file_config_.paths.push_back(dest_file_path);
+
+  // TODO(b/187358883): Add UMA metrics to measure time duration of file stream
+  // transfers. From local testing on caroline for 1.2GB takes around 1 minute.
   const int64_t timeout_seconds =
       GetTimeoutInSecondsFromBytes(GetTotalSizeOfFiles());
   const std::string timeout_message = base::StringPrintf(
@@ -305,20 +333,21 @@ void ShareInfoFileHandler::OnCreatedDirectoryAndStreamingFiles(
         base::BindOnce(&ShareInfoFileHandler::OnFileStreamingTimeout,
                        weak_ptr_factory_.GetWeakPtr(), timeout_message));
   }
-  std::move(callback).Run();
 }
 
 void ShareInfoFileHandler::OnFileStreamReadCompleted(
     const std::string& url_str,
-    std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it,
+    std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it_adapter,
     const std::string& file_system_id,
     const int64_t bytes_read,
     bool result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!url_str.empty());
+  DCHECK(!file_system_id.empty());
   DCHECK_GT(bytes_read, 0);
 
   storage::IsolatedContext::GetInstance()->RemoveReference(file_system_id);
-  file_stream_adapters_.erase(it);
+  file_stream_adapters_.erase(it_adapter);
 
   if (!result) {
     LOG(ERROR) << "Failed to stream file IO data using url: " << url_str;

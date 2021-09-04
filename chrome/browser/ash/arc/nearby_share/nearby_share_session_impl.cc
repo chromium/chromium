@@ -54,6 +54,12 @@ constexpr char kIntentExtraText[] = "android.intent.extra.TEXT";
 
 constexpr base::FilePath::CharType kArcNearbyShareDirname[] =
     FILE_PATH_LITERAL(".NearbyShare");
+
+void DeletePathAndFiles(const base::FilePath& file_path) {
+  if (!file_path.empty() && base::PathExists(file_path)) {
+    base::DeletePathRecursively(file_path);
+  }
+}
 }  // namespace
 
 NearbyShareSessionImpl::NearbyShareSessionImpl(
@@ -102,6 +108,7 @@ void NearbyShareSessionImpl::OnNearbyShareClosed(
   if (window_initialization_timer_.IsRunning()) {
     window_initialization_timer_.Stop();
   }
+  arc_window_observation_.Reset();
   if (reason != views::Widget::ClosedReason::kAcceptButtonClicked) {
     // If share is not continuing after sharesheet closes (e.g. cancel, esc key,
     // lost focus, etc.), we will clean up the current session including files.
@@ -207,7 +214,6 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
     share_intent->mime_type = share_info_->mime_type;
     return share_intent;
   }
-  VLOG(1) << "No Sharing info found";
   return nullptr;
 }
 
@@ -306,17 +312,32 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
   // Close any overlay views that may still be shown.
   NearbyShareOverlayView::CloseOverlayOn(arc_window);
 
-  sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
-  if (!sharesheet_service) {
-    LOG(ERROR) << "Cannot find sharesheet service.";
+  backend_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&NearbyShareSessionImpl::ConvertShareIntentInfoToIntent,
+                     base::Unretained(this)),
+      base::BindOnce(
+          &NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent,
+          weak_ptr_factory_.GetWeakPtr(), arc_window));
+}
+
+void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
+    aura::Window* const arc_window,
+    apps::mojom::IntentPtr intent) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(arc_window);
+
+  DVLOG(1) << __func__;
+  if (!intent) {
+    LOG(ERROR) << "No share info found.";
     OnCleanupSession();
     return;
   }
 
-  apps::mojom::IntentPtr intent = ConvertShareIntentInfoToIntent();
-  if (!intent) {
-    LOG(ERROR) << "No share info found.";
+  sharesheet::SharesheetService* sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
+  if (!sharesheet_service) {
+    LOG(ERROR) << "Cannot find sharesheet service.";
     OnCleanupSession();
     return;
   }
@@ -336,7 +357,7 @@ void NearbyShareSessionImpl::OnTimerFired() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(session_instance_);
 
-  // TODO(phshah): Handle error case and add UMA metric.
+  // TODO(b/191232397): Handle error case and add UMA metric.
   LOG(ERROR) << "ARC window didn't get initialized within "
              << kWindowInitializationTimeout.InSeconds() << " second(s)";
 
@@ -406,19 +427,16 @@ void NearbyShareSessionImpl::OnCleanupSession() {
     // Delete the temp directories created during the current session using
     // the |backend_task_runner_| passed to |file_handler|.
     file_handler_.reset();
-    if (!share_path.empty() && base::PathExists(share_path)) {
-      // Delete any other lingering directories / files and the top level share
-      // directory on the same |backend_task_runner_|.
-      backend_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(base::GetDeletePathRecursivelyCallback(), share_path));
-    }
+    // Delete any other lingering directories / files and the top level share
+    // directory on the same |backend_task_runner_|.
+    backend_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeletePathAndFiles, share_path));
   }
 
-  // All temp files and directories have been deleted. If the Nearby Share
-  // bubble is not visible, delete the session object if it's still valid.
+  // All temp files and directories have been deleted. Delete the session
+  // object if it's still valid.
   if (session_finished_callback_) {
-    VLOG(1) << "OnCleanupSession: Deleting session with task ID: " << task_id_;
+    VLOG(1) << "Deleting session with task ID: " << task_id_;
     std::move(session_finished_callback_).Run(task_id_);
   }
 }

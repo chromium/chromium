@@ -100,22 +100,30 @@ class ShareInfoFileHandler
 
   ~ShareInfoFileHandler();
 
-  // Start streaming virtual files into local path in scoped temp directory.
-  bool CreateDirectoryAndStreamFiles();
+  // Create local share path in scoped directory for cache files.
+  bool CreateShareDirectory(std::list<base::ScopedTempDir>::iterator it);
+
+  // Called when temp directory for Nearby Share cached files is created and
+  // started streaming files.
+  void OnCreatedDirectoryAndStartStreaming(
+      std::list<base::ScopedTempDir>::iterator it_dir,
+      bool result);
 
   // Create file with create and write flags and return scoped fd.
   base::ScopedFD CreateFileForWrite(const base::FilePath& file_path);
 
-  // Called when temp directory for Nearby Share cached files is created and
-  // started streaming files.
-  void OnCreatedDirectoryAndStreamingFiles(StartedCallback callback,
-                                           bool result);
+  // Called when destination file descriptor is created and ready for file
+  // contents to be streamed into it.
+  void OnFileDescriptorCreated(const GURL& url,
+                               const base::FilePath& dest_file_path,
+                               const int64_t file_size,
+                               base::ScopedFD dest_fd);
 
-  // Called when the raw bytes of files have completed streaming from ARC VFS
-  // to Chrome local path.
+  // Called when the raw bytes of files have completed streaming from ARC
+  // virtual filesystem to Chrome local path.
   void OnFileStreamReadCompleted(
       const std::string& url_str,
-      std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it,
+      std::list<scoped_refptr<ShareInfoFileStreamAdapter>>::iterator it_adapter,
       const std::string& file_system_id,
       const int64_t bytes_read,
       bool result);
@@ -155,6 +163,7 @@ class ShareInfoFileHandler
   std::list<scoped_refptr<storage::FileSystemContext>> contexts_;
   std::list<base::ScopedTempDir> scoped_temp_dirs_;
   FileShareConfig file_config_;
+  StartedCallback started_callback_;
   CompletedCallback completed_callback_;
   ProgressBarUpdateCallback update_callback_;
 
