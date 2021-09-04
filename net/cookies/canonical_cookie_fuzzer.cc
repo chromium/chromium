@@ -25,10 +25,14 @@ const base::Time getRandomTime(FuzzedDataProvider* data_provider) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider data_provider(data, size);
 
-  const std::string name = data_provider.ConsumeRandomLengthString(800);
-  const std::string value = data_provider.ConsumeRandomLengthString(800);
-  const std::string domain = data_provider.ConsumeRandomLengthString(800);
-  const std::string path = data_provider.ConsumeRandomLengthString(800);
+  const std::string name = data_provider.ConsumeRandomLengthString(
+      net::ParsedCookie::kMaxCookieNamePlusValueSize + 10);
+  const std::string value = data_provider.ConsumeRandomLengthString(
+      net::ParsedCookie::kMaxCookieNamePlusValueSize + 10);
+  const std::string domain = data_provider.ConsumeRandomLengthString(
+      net::ParsedCookie::kMaxCookieAttributeValueSize + 10);
+  const std::string path = data_provider.ConsumeRandomLengthString(
+      net::ParsedCookie::kMaxCookieAttributeValueSize + 10);
 
   const GURL url(data_provider.ConsumeRandomLengthString(800));
   if (!url.is_valid())

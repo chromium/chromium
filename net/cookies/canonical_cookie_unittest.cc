@@ -12,6 +12,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/parsed_cookie.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,7 +131,7 @@ TEST(CanonicalCookieTest, Constructor) {
   EXPECT_EQ(cookie6->SourcePort(), url::PORT_INVALID);
 }
 
-TEST(CanonicalCookie, CreationCornerCases) {
+TEST(CanonicalCookieTest, CreationCornerCases) {
   base::Time creation_time = base::Time::Now();
   std::unique_ptr<CanonicalCookie> cookie;
   absl::optional<base::Time> server_time = absl::nullopt;
@@ -2657,6 +2658,12 @@ TEST(CanonicalCookieTest, BuildCookieLine) {
       url, "D=E", now - base::TimeDelta::FromSeconds(2), server_time,
       absl::nullopt /* cookie_partition_key */));
   MatchCookieLineToVector("A=B; C; D=E; F=G; D=E", cookies);
+  // BuildCookieLine should match the spec in the case of an empty name with a
+  // value containing an equal sign (even if it currently produces "invalid"
+  // cookie lines).
+  cookies.push_back(CanonicalCookie::Create(
+      url, "=H=I", now, server_time, absl::nullopt /* cookie_partition_key */));
+  MatchCookieLineToVector("A=B; C; D=E; F=G; D=E; H=I", cookies);
 }
 
 // Confirm that input arguments are reflected in the output cookie.
@@ -3029,7 +3036,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
 
   // Path with unusual characters escaped.
   cc = CanonicalCookie::CreateSanitizedCookie(
-      GURL("http://www.foo.com"), "A", "B", std::string(), "/foo",
+      GURL("http://www.foo.com"), "A", "B", std::string(), "/foo\x7F",
       base::Time(), base::Time(), base::Time(), false /*secure*/,
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
@@ -3038,12 +3045,79 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
   EXPECT_EQ("/foo%7F", cc->Path());
   EXPECT_TRUE(status.IsInclude());
 
+  // Ensure that all characters get escaped the same on all platforms. This is
+  // also useful for visualizing which characters will actually be escaped.
+  std::stringstream ss;
+  ss << "/";
+  for (uint8_t character = 0; character < 0xFF; character++) {
+    // Skip any "terminating characters" that CreateSanitizedCookie does not
+    // allow to be in `path`.
+    if (character == '\0' || character == '\n' || character == '\r' ||
+        character == ';') {
+      continue;
+    }
+    ss << character;
+  }
+  ss << "\xFF";
+  std::string initial(ss.str());
+  std::string expected =
+      "/%01%02%03%04%05%06%07%08%09%0B%0C%0E%0F%10%11%12%13%14%15%16%17%18%19%"
+      "1A%1B%1C%1D%1E%1F%20!%22%23$%&'()*+,-./"
+      "0123456789:%3C=%3E%3F@ABCDEFGHIJKLMNOPQRSTUVWXYZ[/"
+      "]%5E_%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~%7F%80%81%82%83%84%85%86%87%"
+      "88%89%8A%8B%8C%8D%8E%8F%90%91%92%93%94%95%96%97%98%99%9A%9B%9C%9D%9E%9F%"
+      "A0%A1%A2%A3%A4%A5%A6%A7%A8%A9%AA%AB%AC%AD%AE%AF%B0%B1%B2%B3%B4%B5%B6%B7%"
+      "B8%B9%BA%BB%BC%BD%BE%BF%C0%C1%C2%C3%C4%C5%C6%C7%C8%C9%CA%CB%CC%CD%CE%CF%"
+      "D0%D1%D2%D3%D4%D5%D6%D7%D8%D9%DA%DB%DC%DD%DE%DF%E0%E1%E2%E3%E4%E5%E6%E7%"
+      "E8%E9%EA%EB%EC%ED%EE%EF%F0%F1%F2%F3%F4%F5%F6%F7%F8%F9%FA%FB%FC%FD%FE%FF";
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com"), "A", "B", std::string(), initial,
+      base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  ASSERT_TRUE(cc);
+  EXPECT_EQ(expected, cc->Path());
+  EXPECT_TRUE(status.IsInclude());
+
   // Empty name and value.
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com"), "", "", std::string(), "/", base::Time(),
       base::Time(), base::Time(), false /*secure*/, false /*httponly*/,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       false /*same_party*/, absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+
+  // Check that value can contain an equal sign, even when no name is present.
+  // Note that in newer drafts of RFC6265bis, it is specified that a cookie with
+  // an empty name and a value containing an equal sign should result in a
+  // corresponding cookie line that omits the preceding equal sign. This means
+  // that the cookie line won't be deserialized into the original cookie in this
+  // case. For now, we'll test for compliance with the spec here, but we aim to
+  // collect metrics and hopefully fix this in the spec (and then in
+  // CanonicalCookie) at some point.
+  // For reference, see: https://github.com/httpwg/http-extensions/pull/1592
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com"), "", "ambiguous=value", std::string(),
+      std::string(), base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc);
+  std::vector<std::unique_ptr<CanonicalCookie>> cookies;
+  cookies.push_back(std::move(cc));
+  MatchCookieLineToVector("ambiguous=value", cookies);
+
+  // Check that name can't contain an equal sign ("ambiguous=name=value" should
+  // correctly be parsed as name: "ambiguous" and value "name=value", so
+  // allowing this case would result in cookies that can't serialize correctly).
+  EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com"), "ambiguous=name", "value", std::string(),
+      std::string(), base::Time(), base::Time(), base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
 
@@ -3283,6 +3357,193 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE,
        CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN,
        CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}));
+
+  // Check that RFC6265bis name + value string length limits are enforced.
+  std::string max_name(ParsedCookie::kMaxCookieNamePlusValueSize, 'a');
+  std::string max_value(ParsedCookie::kMaxCookieNamePlusValueSize, 'b');
+  std::string almost_max_name = max_name.substr(1, std::string::npos);
+  std::string almost_max_value = max_value.substr(1, std::string::npos);
+
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), max_name, "", std::string(), "/foo",
+      one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), "", max_value, std::string(), "/foo",
+      one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), almost_max_name, "b", std::string(),
+      "/foo", one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com/foo"), "a", almost_max_value, std::string(),
+      "/foo", one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status));
+  EXPECT_TRUE(status.IsInclude());
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kExtraCookieValidityChecks, toggle);
+
+    cc = CanonicalCookie::CreateSanitizedCookie(
+        GURL("http://www.foo.com/foo"), max_name, "X", std::string(), "/foo",
+        one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+        false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+        absl::nullopt /*partition_key*/, &status);
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_FALSE(cc);
+      EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+    } else {
+      EXPECT_TRUE(cc);
+      EXPECT_TRUE(status.IsInclude());
+    }
+    cc = CanonicalCookie::CreateSanitizedCookie(
+        GURL("http://www.foo.com/foo"), "X", max_value, std::string(), "/foo",
+        one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+        false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+        absl::nullopt /*partition_key*/, &status);
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_FALSE(cc);
+      EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+    } else {
+      EXPECT_TRUE(cc);
+      EXPECT_TRUE(status.IsInclude());
+    }
+  }
+
+  // Check that the RFC6265bis attribute value size limits apply to the Path
+  // attribute value.
+  std::string almost_max_path(ParsedCookie::kMaxCookieAttributeValueSize - 1,
+                              'c');
+  std::string max_path = "/" + almost_max_path;
+  std::string too_long_path = "/X" + almost_max_path;
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com" + max_path), "name", "value", std::string(),
+      max_path, one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc);
+  EXPECT_EQ(max_path, cc->Path());
+  EXPECT_TRUE(status.IsInclude());
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kExtraCookieValidityChecks, toggle);
+    cc = CanonicalCookie::CreateSanitizedCookie(
+        GURL("http://www.foo.com/path-attr-from-url/"), "name", "value",
+        std::string(), too_long_path, one_hour_ago, one_hour_from_now,
+        base::Time(), false /*secure*/, false /*httponly*/,
+        CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+        false /*same_party*/, absl::nullopt /*partition_key*/, &status);
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_FALSE(cc);
+      EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+    } else {
+      EXPECT_TRUE(cc);
+      EXPECT_EQ(too_long_path, cc->Path());
+      EXPECT_TRUE(status.IsInclude());
+    }
+  }
+
+  // Check that length limits on the Path attribute value are not enforced in
+  // the case where no Path attribute is specified and the path value is
+  // implicitly set from the URL.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.foo.com" + too_long_path + "/"), "name", "value",
+      std::string(), std::string(), one_hour_ago, one_hour_from_now,
+      base::Time(), false /*secure*/, false /*httponly*/,
+      CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+      false /*same_party*/, absl::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc);
+  EXPECT_EQ(too_long_path, cc->Path());
+  EXPECT_TRUE(status.IsInclude());
+
+  // The Path attribute value gets URL-encoded, so ensure that the size limit is
+  // enforced after this (to avoid setting cookies where the Path attribute
+  // value would otherwise exceed the lengths specified in the RFC).
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        features::kExtraCookieValidityChecks, toggle);
+    std::string expanding_path(ParsedCookie::kMaxCookieAttributeValueSize / 2,
+                               '#');
+    expanding_path = "/" + expanding_path;
+
+    cc = CanonicalCookie::CreateSanitizedCookie(
+        GURL("http://www.foo.com/path-attr-from-url/"), "name", "value",
+        std::string(), expanding_path, one_hour_ago, one_hour_from_now,
+        base::Time(), false /*secure*/, false /*httponly*/,
+        CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+        false /*same_party*/, absl::nullopt /*partition_key*/, &status);
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      EXPECT_FALSE(cc);
+      EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+          {CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE}));
+    } else {
+      EXPECT_TRUE(cc);
+      // "#" expands into "%23"; -2 because '/' doesn't expand
+      EXPECT_EQ((expanding_path.size() * 3) - 2, cc->Path().size());
+      EXPECT_TRUE(status.IsInclude());
+    }
+  }
+
+  // Check that the RFC6265bis attribute value size limits apply to the Domain
+  // attribute value.
+  std::string max_domain(ParsedCookie::kMaxCookieAttributeValueSize, 'd');
+  max_domain.replace(ParsedCookie::kMaxCookieAttributeValueSize - 4, 4, ".com");
+  std::string too_long_domain = "x" + max_domain;
+
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://" + max_domain + "/"), "name", "value", max_domain, "/",
+      one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc);
+  EXPECT_EQ(max_domain, cc->DomainWithoutDot());
+  EXPECT_TRUE(status.IsInclude());
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://www.domain-from-url.com/"), "name", "value", too_long_domain,
+      "/", one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  EXPECT_FALSE(cc);
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN}));
+  // Check that length limits on the Domain attribute value are not enforced in
+  // the case where no Domain attribute is specified and the domain value is
+  // implicitly set from the URL.
+  cc = CanonicalCookie::CreateSanitizedCookie(
+      GURL("http://" + too_long_domain + "/"), "name", "value", std::string(),
+      "/", one_hour_ago, one_hour_from_now, base::Time(), false /*secure*/,
+      false /*httponly*/, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, false /*same_party*/,
+      absl::nullopt /*partition_key*/, &status);
+  EXPECT_TRUE(cc);
+  EXPECT_EQ(too_long_domain, cc->DomainWithoutDot());
+  EXPECT_TRUE(status.IsInclude());
 }
 
 TEST(CanonicalCookieTest, FromStorage) {

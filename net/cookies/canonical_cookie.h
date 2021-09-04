@@ -347,6 +347,9 @@ class NET_EXPORT CanonicalCookie {
 
   std::string DebugString() const;
 
+  // Returns the canonical path based on the specified url and path attribute
+  // value. Note that this method does not enforce character set or size
+  // checks on `path_string`.
   static std::string CanonPathWithString(const GURL& url,
                                          const std::string& path_string);
 
