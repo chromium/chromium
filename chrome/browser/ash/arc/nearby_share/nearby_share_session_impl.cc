@@ -76,9 +76,6 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       session_finished_callback_(std::move(session_finished_callback)) {
-  session_receiver_.set_disconnect_handler(
-      base::BindOnce(&NearbyShareSessionImpl::OnSessionDisconnected,
-                     weak_ptr_factory_.GetWeakPtr()));
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found";
@@ -367,6 +364,8 @@ void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   }
 }
 
+// TODO(b/198808858): This crashes immediately after share if bubble is not
+// visible and calls cleanup while share is still on-going.
 void NearbyShareSessionImpl::OnSessionDisconnected() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
