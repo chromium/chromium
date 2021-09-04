@@ -112,23 +112,6 @@ OrientationLockType ResolveOrientationLock(OrientationLockType app_requested,
 
 }  // namespace
 
-bool IsPrimaryOrientation(OrientationLockType type) {
-  return type == OrientationLockType::kLandscapePrimary ||
-         type == OrientationLockType::kPortraitPrimary;
-}
-
-bool IsLandscapeOrientation(OrientationLockType type) {
-  return type == OrientationLockType::kLandscape ||
-         type == OrientationLockType::kLandscapePrimary ||
-         type == OrientationLockType::kLandscapeSecondary;
-}
-
-bool IsPortraitOrientation(OrientationLockType type) {
-  return type == OrientationLockType::kPortrait ||
-         type == OrientationLockType::kPortraitPrimary ||
-         type == OrientationLockType::kPortraitSecondary;
-}
-
 OrientationLockType GetCurrentScreenOrientation() {
   // ScreenOrientationController might be nullptr during shutdown.
   // TODO(xdai|sammiequon): See if we can reorder so that users of the function

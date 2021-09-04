@@ -30,11 +30,6 @@ class Window;
 
 namespace ash {
 
-// Test if the orientation lock type is primary/landscape/portrait.
-bool IsPrimaryOrientation(OrientationLockType type);
-bool IsLandscapeOrientation(OrientationLockType type);
-bool IsPortraitOrientation(OrientationLockType type);
-
 ASH_EXPORT OrientationLockType GetCurrentScreenOrientation();
 ASH_EXPORT bool IsCurrentScreenOrientationLandscape();
 ASH_EXPORT bool IsCurrentScreenOrientationPrimary();

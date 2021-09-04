@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/display/display_configuration_controller.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/null_mouse_warp_controller.h"
 #include "ash/display/unified_mouse_warp_controller.h"
@@ -245,6 +246,32 @@ OrientationLockType RotationToOrientation(OrientationLockType natural,
   }
   NOTREACHED();
   return OrientationLockType::kAny;
+}
+
+bool IsPrimaryOrientation(OrientationLockType type) {
+  return type == OrientationLockType::kLandscapePrimary ||
+         type == OrientationLockType::kPortraitPrimary;
+}
+
+bool IsLandscapeOrientation(OrientationLockType type) {
+  return type == OrientationLockType::kLandscape ||
+         type == OrientationLockType::kLandscapePrimary ||
+         type == OrientationLockType::kLandscapeSecondary;
+}
+
+bool IsPortraitOrientation(OrientationLockType type) {
+  return type == OrientationLockType::kPortrait ||
+         type == OrientationLockType::kPortraitPrimary ||
+         type == OrientationLockType::kPortraitSecondary;
+}
+
+bool IsDisplayLayoutHorizontal(const display::Display& display) {
+  DCHECK(display.is_valid());
+  const display::Display::Rotation rotation =
+      Shell::Get()->display_configuration_controller()->GetTargetRotation(
+          display.id());
+  return IsLandscapeOrientation(
+      RotationToOrientation(GetDisplayNaturalOrientation(display), rotation));
 }
 
 }  // namespace ash

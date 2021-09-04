@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/check_op.h"
@@ -141,6 +142,13 @@ std::string GetHistogramNameWithDeviceUIMode(std::string prefix) {
                                                       : ".ClamshellMode");
 }
 
+SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
+    const display::Display& display) {
+  return IsDisplayLayoutHorizontal(display)
+             ? SplitViewMetricsController::DeviceOrientation::kLandscape
+             : SplitViewMetricsController::DeviceOrientation::kPortrait;
+}
+
 }  // namespace
 
 // static
@@ -171,9 +179,10 @@ SplitViewMetricsController::SplitViewMetricsController(
 
   aura::Env::GetInstance()->AddObserver(this);
 
-  orientation_ = SplitViewController::IsLayoutHorizontal()
-                     ? DeviceOrientation::kLandscape
-                     : DeviceOrientation::kPortrait;
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(
+          split_view_controller->root_window());
+  orientation_ = GetDeviceOrientation(display);
   ResetTimeAndCounter();
 }
 
@@ -267,9 +276,7 @@ void SplitViewMetricsController::OnDisplayMetricsChanged(
     return;
   }
 
-  DeviceOrientation orientation = SplitViewController::IsLayoutHorizontal()
-                                      ? DeviceOrientation::kLandscape
-                                      : DeviceOrientation::kPortrait;
+  const DeviceOrientation orientation = GetDeviceOrientation(display);
   if (orientation_ == orientation)
     return;
   orientation_ = orientation;
