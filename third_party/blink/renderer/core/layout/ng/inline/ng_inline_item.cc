@@ -131,6 +131,12 @@ void NGInlineItem::ComputeBoxProperties() {
     return;
   }
 
+  if (type_ == kBlockInInline) {
+    // |is_empty_item_| can't be determined until this item is laid out.
+    // |false| is a safer approximation.
+    return;
+  }
+
   if (type_ == kOutOfFlowPositioned || type_ == kFloating)
     is_block_level_ = true;
 

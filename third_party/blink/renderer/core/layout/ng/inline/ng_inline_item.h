@@ -85,6 +85,8 @@ class CORE_EXPORT NGInlineItem {
   const ShapeResult* TextShapeResult() const { return shape_result_.get(); }
 
   // If this item is "empty" for the purpose of empty block calculation.
+  // Note: for block-in-inlines, this can't be determined until this is laid
+  // out. This function always return |false| for the case.
   bool IsEmptyItem() const { return is_empty_item_; }
   void SetIsEmptyItem(bool value) { is_empty_item_ = value; }
 
