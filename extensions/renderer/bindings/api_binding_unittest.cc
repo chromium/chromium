@@ -1988,6 +1988,8 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
           this.methodName = name;
           this.response = response;
           this.resolveCallback = callback;
+          if (response == 'resolveNow')
+            callback('bar');
         });
       }))";
 
@@ -2001,20 +2003,12 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
 
   // A normal call into the promise-based API should return a promise.
   {
-    constexpr char kFunctionCall[] =
-        R"((function(api) {
-             this.apiResult = api.supportsPromises(3);
-             this.apiResult.then((strResult) => {
-               this.promiseResult = strResult;
-             });
-           }))";
-    v8::Local<v8::Function> promise_api_call =
-        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(1); });");
     v8::Local<v8::Value> args[] = {binding_object};
-    RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
-
     v8::Local<v8::Value> api_result =
-        GetPropertyFromObject(context->Global(), context, "apiResult");
+        RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
     ASSERT_FALSE(api_result.IsEmpty());
     ASSERT_TRUE(api_result->IsPromise());
     v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
@@ -2041,8 +2035,61 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
-    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
-                              context->Global(), context, "promiseResult"));
+  }
+
+  // Sending a response to the hook to make it resolve immediately should result
+  // in the promise being resolved right after CompleteRequest is called.
+  {
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(2); });");
+    v8::Local<v8::Value> args[] = {binding_object};
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
+    ASSERT_FALSE(api_result.IsEmpty());
+    ASSERT_TRUE(api_result->IsPromise());
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(
+        last_request()->request_id, *ListValueFromString(R"(["resolveNow"])"),
+        std::string());
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"("bar")", V8ToString(promise->Result(), context));
+  }
+
+  // Completing the request with an error should reject the promise with the
+  // error.
+  {
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3) });");
+    v8::Local<v8::Value> args[] = {binding_object};
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, base::size(args), args);
+
+    ASSERT_FALSE(api_result.IsEmpty());
+    ASSERT_TRUE(api_result->IsPromise());
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       *ListValueFromString(R"(["baz"])"),
+                                       "Error message");
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+    v8::Local<v8::Value> resolve_callback =
+        GetPropertyFromObject(context->Global(), context, "resolveCallback");
+    ASSERT_TRUE(resolve_callback->IsFunction());
+
+    RunFunctionOnGlobal(resolve_callback.As<v8::Function>(), context, 0,
+                        nullptr);
+
+    EXPECT_EQ(v8::Promise::kRejected, promise->State());
+    ASSERT_TRUE(promise->Result()->IsObject());
+    EXPECT_EQ(R"("Error message")",
+              GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                          context, "message"));
   }
 }
 
