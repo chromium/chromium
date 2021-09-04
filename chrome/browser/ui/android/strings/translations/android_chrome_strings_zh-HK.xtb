@@ -376,7 +376,7 @@
 <translation id="3295530008794733555">瀏覽速度更快。使用較少流動數據。</translation>
 <translation id="3297344142967351106">語音助手</translation>
 <translation id="3303414029551471755">繼續下載內容？</translation>
-<translation id="3332570638882314953">取得關聯性更高的資訊</translation>
+<translation id="3332570638882314953">取得更多相關資料</translation>
 <translation id="3334729583274622784">要變更副檔名嗎？</translation>
 <translation id="3341058695485821946">查看已節省的數據用量</translation>
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
@@ -454,7 +454,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
-<translation id="3819183753496523827">你已經離線，請檢查網際網路連線，然後再試一次。</translation>
+<translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="3845098929839618392">在無痕式分頁中開啟</translation>
 <translation id="3856096718352044181">請驗證供應商的有效性，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -808,7 +808,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5964805880140440652">如要將此頁面分享至另一部裝置，請在 Chrome 設定中開啟同步功能</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
 <translation id="5979084224081478209">檢查密碼</translation>
-<translation id="5995726099713306770">要再次下載網頁嗎？</translation>
+<translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
@@ -970,7 +970,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6882836635272038266">對已知的危險網站、下載檔案及擴充程式提供標準保護功能。</translation>
 <translation id="6883204995689174413">分享</translation>
 <translation id="688738109438487280">將現有資料新增至 <ph name="TO_ACCOUNT" />。</translation>
-<translation id="6889847736310813892">如果希望 Google 針對醒目顯示的字詞提供更相關的結果，你可以讓 Google 參考網頁上的其他文字。這項<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />隨時可以變更。</translation>
+<translation id="6889847736310813892">讓 Google 分析頁面上的部分文字，以查看突顯文字的更佳結果。您可以隨時變更這項<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
 <translation id="6891726759199484455">解鎖即可複製您的密碼</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
