@@ -1216,7 +1216,7 @@ void PictureLayerImpl::RemoveAllTilings() {
   ResetRasterScale();
 }
 
-bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
+bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
     const PictureLayerTiling& high_res) const {
   // This is for the sync tree only to avoid flickering.
   if (!layer_tree_impl()->IsSyncTree())
@@ -1232,8 +1232,10 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
   // Also avoid re-rasterization during pinch-zoom.
   if (layer_tree_impl()->PinchGestureActive())
     return false;
-  // Keep the current LCD text and raster translation if there is no text.
-  if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText)
+  // Keep the current LCD text and raster translation if there is no text and
+  // the raster scale is ideal.
+  if (lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNoText &&
+      high_res.raster_transform().scale() == raster_contents_scale_)
     return false;
   return true;
 }
@@ -1255,7 +1257,7 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
         high_res->can_use_lcd_text() != can_use_lcd_text();
     bool should_recreate_high_res =
         (raster_transform_is_not_ideal || can_use_lcd_text_changed) &&
-        CanRecreateHighResTilingForLCDTextAndRasterTranslation(*high_res);
+        CanRecreateHighResTilingForLCDTextAndRasterTransform(*high_res);
     if (should_recreate_high_res) {
       tilings_->Remove(high_res);
       high_res = nullptr;
