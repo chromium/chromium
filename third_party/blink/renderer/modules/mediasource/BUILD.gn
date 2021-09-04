@@ -37,6 +37,7 @@ blink_modules_sources("mediasource") {
     "video_playback_quality.h",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//media",
 
     # Ensure the generated webcodecs v8 config and chunk bindings are available.

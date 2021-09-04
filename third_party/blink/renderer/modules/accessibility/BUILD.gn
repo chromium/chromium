@@ -61,6 +61,7 @@ blink_modules_sources("accessibility") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/blink/renderer/modules/media_controls:media_controls",
     "//third_party/blink/renderer/modules/permissions:permissions",

@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"

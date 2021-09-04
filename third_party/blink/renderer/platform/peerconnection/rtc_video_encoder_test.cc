@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"

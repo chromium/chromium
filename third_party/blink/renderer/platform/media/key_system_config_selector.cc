@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/cdm_config.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"

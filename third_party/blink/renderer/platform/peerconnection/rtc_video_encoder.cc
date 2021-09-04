@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
