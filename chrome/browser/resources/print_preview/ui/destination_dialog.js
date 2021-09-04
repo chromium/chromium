@@ -19,6 +19,7 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 import './throbber_css.js';
+import './destination_list_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';

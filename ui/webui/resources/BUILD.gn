@@ -168,6 +168,11 @@ checked_in_dts_files = [
   "js/web_ui_listener_behavior.m.d.ts",
 ]
 
+if (is_chromeos) {
+  checked_in_dts_files +=
+      [ "cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.d.ts" ]
+}
+
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
 copy("copy_checked_in_dts_files") {

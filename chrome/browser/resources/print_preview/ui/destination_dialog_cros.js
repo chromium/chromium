@@ -21,6 +21,7 @@ import './print_preview_vars_css.js';
 import './provisional_destination_resolver.js';
 import '../strings.m.js';
 import './throbber_css.js';
+import './destination_list_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
