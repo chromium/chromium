@@ -49909,6 +49909,7 @@ from previous Chrome versions.
   <int value="123097915" label="FaviconsFromWebManifest:enabled"/>
   <int value="125581289" label="WebRtcHWVP8Encoding:disabled"/>
   <int value="125934378" label="enable-password-link"/>
+  <int value="127338155" label="NtpSafeBrowsingModule:disabled"/>
   <int value="127789400" label="PrivacyElevatedAndroid:enabled"/>
   <int value="128086566" label="D3D11VideoDecoder:enabled"/>
   <int value="128323385" label="WebUIOmniboxPopup:enabled"/>
@@ -50253,6 +50254,7 @@ from previous Chrome versions.
   <int value="403554154" label="SafetyCheckWeakPasswords:enabled"/>
   <int value="405329388"
       label="FramebustingNeedsSameOriginOrUserGesture:enabled"/>
+  <int value="406549604" label="NtpSafeBrowsingModule:enabled"/>
   <int value="407491045" label="ShowDateInTrayButton:enabled"/>
   <int value="408190863" label="OmniboxDisableInstantExtendedLimit:disabled"/>
   <int value="409566604" label="IntentPickerPWAPersistence:enabled"/>

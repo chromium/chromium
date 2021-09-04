@@ -1555,6 +1555,14 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
     {"- Managed Users Only", kNtpDriveModuleManagedUsersOnly,
      base::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
+
+const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
+    {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},
+    {ntp_features::kNtpSafeBrowsingModuleCountMaxParam, "1"}};
+const FeatureEntry::FeatureVariation kNtpSafeBrowsingModuleVariations[] = {
+    {"(Fast Cooldown)", kNtpSafeBrowsingModuleFastCooldown,
+     base::size(kNtpSafeBrowsingModuleFastCooldown), nullptr},
+};
 #endif  // !defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
@@ -4916,6 +4924,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpChromeCartModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpChromeCartModule,
                                     kNtpChromeCartModuleVariations,
+                                    "DesktopNtpModules")},
+
+    {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
+     flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
+                                    kNtpSafeBrowsingModuleVariations,
                                     "DesktopNtpModules")},
 
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,

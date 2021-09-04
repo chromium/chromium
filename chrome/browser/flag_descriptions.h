@@ -2110,6 +2110,9 @@ extern const char kNtpShoppingTasksModuleDescription[];
 extern const char kNtpChromeCartModuleName[];
 extern const char kNtpChromeCartModuleDescription[];
 
+extern const char kNtpSafeBrowsingModuleName[];
+extern const char kNtpSafeBrowsingModuleDescription[];
+
 extern const char kNtpModulesDragAndDropName[];
 extern const char kNtpModulesDragAndDropDescription[];
 

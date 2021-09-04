@@ -3686,6 +3686,10 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
+const char kNtpSafeBrowsingModuleName[] = "NTP Safe Browsing Module";
+const char kNtpSafeBrowsingModuleDescription[] =
+    "Shows the safe browsing module on the New Tab Page.";
+
 const char kNtpModulesDragAndDropName[] = "NTP Modules Drag and Drop";
 const char kNtpModulesDragAndDropDescription[] =
     "Enables modules to be reordered via dragging and dropping on the "

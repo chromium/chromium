@@ -36,6 +36,7 @@ extern const base::Feature kNtpChromeCartModule;
 extern const base::Feature kNtpModulesRedesigned;
 extern const base::Feature kNtpDriveModule;
 extern const base::Feature kNtpPhotosModule;
+extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
 extern const base::Feature kSearchSuggestChips;
 extern const base::Feature kDisableSearchSuggestChips;
@@ -74,6 +75,11 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 // Parameter for communicating the experiment group of the Drive module
 // experiment.
 extern const char kNtpDriveModuleExperimentGroupParam[];
+// Parameter determining the number of times a module is shown to a user
+// before cooldown starts.
+extern const char kNtpSafeBrowsingModuleCountMaxParam[];
+// Parameter determining the cooldown period (in days) for a target user.
+extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

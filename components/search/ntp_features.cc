@@ -107,6 +107,10 @@ const base::Feature kNtpDriveModule{"NtpDriveModule",
 const base::Feature kNtpPhotosModule{"NtpPhotosModule",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, SafeBrowsing module will be shown to a target user.
+const base::Feature kNtpSafeBrowsingModule{"NtpSafeBrowsingModule",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, modules will be able to be reordered via dragging and dropping
 const base::Feature kNtpModulesDragAndDrop{"NtpModulesDragAndDrop",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -135,6 +139,10 @@ const char kNtpDriveModuleCacheMaxAgeSParam[] =
     "NtpDriveModuleCacheMaxAgeSParam";
 const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
+const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[] =
+    "NtpSafeBrowsingModuleCooldownPeriodDaysParam";
+const char kNtpSafeBrowsingModuleCountMaxParam[] =
+    "NtpSafeBrowsingModuleCountMaxParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(
