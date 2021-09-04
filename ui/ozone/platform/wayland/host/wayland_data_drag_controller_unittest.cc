@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -790,45 +791,36 @@ TEST_P(WaylandDataDragControllerTest, DragToNonToplevelWindows) {
   origin_window->SetPointerFocus(restored_focus);
 }
 
-// TODO(crbug.com/1211689): Flaky on LaCrOS.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_PopupRequestCreatesAuxiliaryWindow \
-  DISABLED_PopupRequestCreatesAuxiliaryWindow
-#else
-#define MAYBE_PopupRequestCreatesAuxiliaryWindow \
-  PopupRequestCreatesAuxiliaryWindow
-#endif
 // Ensures that requests to create a |PlatformWindowType::kPopup| during drag
 // sessions return xdg_popup-backed windows.
-TEST_P(WaylandDataDragControllerTest,
-       MAYBE_PopupRequestCreatesAuxiliaryWindow) {
+TEST_P(WaylandDataDragControllerTest, PopupRequestCreatesPopupWindow) {
   auto* origin_window = window_.get();
   const bool restored_focus = origin_window->has_pointer_focus();
   FocusAndPressLeftPointerButton(origin_window, &delegate_);
 
-  auto test = [](WaylandDataDragControllerTest* self,
-                 gfx::AcceleratedWidget context) {
+  std::unique_ptr<WaylandWindow> popup_window;
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
     MockPlatformWindowDelegate delegate;
-    auto popup_window = self->CreateTestWindow(
-        PlatformWindowType::kPopup, gfx::Size(100, 40), &delegate, context);
+    popup_window =
+        CreateTestWindow(PlatformWindowType::kPopup, gfx::Size(100, 40),
+                         &delegate, origin_window->GetWidget());
     popup_window->Show(false);
-    self->Sync();
-
-    auto* surface =
-        self->GetMockSurface(popup_window->root_surface()->GetSurfaceId());
-    ASSERT_TRUE(surface);
-    EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
-  };
-
-  ScheduleTestTask(
-      base::BindOnce(test, base::Unretained(this), origin_window->GetWidget()));
+    Sync();
+  }));
 
   // Post a wl_data_source::cancelled notifying the client to tear down the drag
   // session.
   ScheduleDragCancel();
 
   // Request to start the drag session, which spins a nested run loop.
-  RunMouseDragWithSampleData(origin_window, DragDropTypes::DRAG_COPY);
+  RunMouseDragWithSampleData(origin_window, DragDropTypes::DRAG_MOVE);
+
+  Sync();
+  ASSERT_TRUE(popup_window.get());
+  auto* surface = GetMockSurface(popup_window->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  EXPECT_NE(nullptr, surface->xdg_surface()->xdg_popup());
 
   origin_window->SetPointerFocus(restored_focus);
 }
