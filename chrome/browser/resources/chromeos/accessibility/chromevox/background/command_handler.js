@@ -804,17 +804,33 @@ CommandHandler.onCommand = function(command) {
         return false;
       }
 
+      let firstWindow;
+      let rootViewWindow;
       if (target.root && target.root.role === RoleType.DESKTOP) {
         // Search for the first container with a name.
         while (target && (!target.name || !AutomationPredicate.root(target))) {
           target = target.parent;
         }
       } else {
-        // Search for a window with a title.
-        while (target && (!target.name || target.role !== RoleType.WINDOW)) {
+        // Search for a root window with a title.
+        while (target) {
+          const isNamedWindow =
+              !!target.name && target.role === RoleType.WINDOW;
+          const isRootView = target.className === 'RootView';
+          if (isNamedWindow && !firstWindow) {
+            firstWindow = target;
+          }
+
+          if (isNamedWindow && isRootView) {
+            rootViewWindow = target;
+            break;
+          }
           target = target.parent;
         }
       }
+
+      // Re-target with preference for the root.
+      target = rootViewWindow || firstWindow || target;
 
       if (!target) {
         output.format('@no_title');
