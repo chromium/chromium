@@ -435,6 +435,7 @@ source_set("unit_tests") {
     "credentialmanager/password_credential_test.cc",
     "csspaint/document_paint_definition_test.cc",
     "csspaint/nativepaint/background_color_paint_definition_test.cc",
+    "csspaint/nativepaint/clip_path_paint_definition_test.cc",
     "csspaint/paint_rendering_context_2d_test.cc",
     "csspaint/paint_worklet_global_scope_test.cc",
     "csspaint/paint_worklet_proxy_client_test.cc",

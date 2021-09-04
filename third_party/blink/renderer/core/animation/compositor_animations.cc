@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -367,7 +368,21 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           break;
         }
         case CSSPropertyID::kClipPath: {
-          if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
+          Animation* compositable_animation = nullptr;
+          if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
+            ClipPathPaintImageGenerator* generator =
+                target_element.GetDocument()
+                    .GetFrame()
+                    ->GetClipPathPaintImageGenerator();
+            // TODO(crbug.com/686074): The generator may be null in tests.
+            // Fix and remove this test-only branch.
+            if (generator) {
+              compositable_animation =
+                  generator->GetAnimationIfCompositable(&target_element);
+            }
+          }
+          if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
+              !compositable_animation) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }

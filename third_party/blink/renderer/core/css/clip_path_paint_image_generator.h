@@ -11,6 +11,8 @@
 
 namespace blink {
 
+class Animation;
+class Element;
 class Image;
 class LocalFrame;
 class Node;
@@ -30,6 +32,7 @@ class CORE_EXPORT ClipPathPaintImageGenerator
   virtual scoped_refptr<Image> Paint(float zoom,
                                      const FloatRect& reference_box,
                                      const Node&) = 0;
+  virtual Animation* GetAnimationIfCompositable(const Element* element) = 0;
 };
 
 }  // namespace blink

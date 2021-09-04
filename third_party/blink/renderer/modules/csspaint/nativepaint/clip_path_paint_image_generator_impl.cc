@@ -33,6 +33,11 @@ scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
   return clip_path_paint_definition_->Paint(zoom, reference_box, node);
 }
 
+Animation* ClipPathPaintImageGeneratorImpl::GetAnimationIfCompositable(
+    const Element* element) {
+  return ClipPathPaintDefinition::GetAnimationIfCompositable(element);
+}
+
 void ClipPathPaintImageGeneratorImpl::Shutdown() {
   clip_path_paint_definition_->UnregisterProxyClient();
 }

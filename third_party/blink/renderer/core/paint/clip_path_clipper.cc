@@ -58,11 +58,27 @@ static bool UsesZoomedReferenceBox(const LayoutObject& clip_path_owner) {
   return !clip_path_owner.IsSVGChild() || clip_path_owner.IsSVGForeignObject();
 }
 
+static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object) {
+  if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() ||
+      !layout_object.StyleRef().HasCurrentClipPathAnimation())
+    return false;
+
+  ClipPathPaintImageGenerator* generator =
+      layout_object.GetFrame()->GetClipPathPaintImageGenerator();
+  // TODO(crbug.com/686074): The generator may be null in tests.
+  // Fix and remove this test-only branch.
+  if (generator) {
+    const Element* element = To<Element>(layout_object.GetNode());
+    return generator->GetAnimationIfCompositable(element);
+  }
+  return false;
+}
+
 static void PaintWorkletBasedClip(GraphicsContext& context,
                                   const LayoutObject& clip_path_owner,
                                   const FloatRect& reference_box,
                                   bool uses_zoomed_reference_box) {
-  DCHECK(RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled());
+  DCHECK(HasCompositeClipPathAnimation(clip_path_owner));
   DCHECK_EQ(clip_path_owner.StyleRef().ClipPath()->GetType(),
             ClipPathOperation::SHAPE);
 
@@ -207,12 +223,8 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 
   bool uses_zoomed_reference_box = UsesZoomedReferenceBox(layout_object);
   FloatRect reference_box = LocalReferenceBox(layout_object);
-  // TODO(crbug.com/1223975): Currently for CompositeClipPathAnimation feature
-  // to be activated a node must have clip-path attribute.
-  if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      layout_object.StyleRef().HasCurrentClipPathAnimation() &&
-      layout_object.StyleRef().ClipPath()->GetType() ==
-          ClipPathOperation::SHAPE) {
+
+  if (HasCompositeClipPathAnimation(layout_object)) {
     if (!layout_object.GetFrame())
       return;
     PaintWorkletBasedClip(context, layout_object, reference_box,
@@ -265,11 +277,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
   if (object.IsText() || !object.StyleRef().HasClipPath())
     return false;
-  // TODO(crbug.com/1223975): Currently for CompositeClipPathAnimation feature
-  // to be activated a node must have clip-path attribute.
-  if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      object.StyleRef().ClipPath()->GetType() == ClipPathOperation::SHAPE &&
-      object.StyleRef().HasCurrentClipPathAnimation())
+  if (HasCompositeClipPathAnimation(object))
     return true;
   const auto* reference_clip =
       DynamicTo<ReferenceClipPathOperation>(object.StyleRef().ClipPath());
@@ -284,14 +292,13 @@ bool ClipPathClipper::ShouldUseMaskBasedClip(const LayoutObject& object) {
 
 absl::optional<Path> ClipPathClipper::PathBasedClip(
     const LayoutObject& clip_path_owner) {
-  // TODO(crbug.com/1223975): Currently for CompositeClipPathAnimation feature
-  // to be activated a node must have clip-path attribute.
-  if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      clip_path_owner.StyleRef().HasCurrentClipPathAnimation()) {
-    const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
-    if (clip_path.GetType() == ClipPathOperation::SHAPE)
-      return absl::nullopt;
-  }
+  // TODO(crbug.com/1223975): Currently HasCompositeClipPathAnimation is called
+  // multiple times, which is not efficient. Cache
+  // HasCompositeClipPathAnimation value as part of fragment_data, similarly to
+  // FragmentData::ClipPathPath().
+  if (HasCompositeClipPathAnimation(clip_path_owner))
+    return absl::nullopt;
+
   return PathBasedClipInternal(clip_path_owner,
                                UsesZoomedReferenceBox(clip_path_owner),
                                LocalReferenceBox(clip_path_owner));

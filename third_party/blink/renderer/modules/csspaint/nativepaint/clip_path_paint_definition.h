@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class Animation;
 class FloatRect;
 class Image;
 class LocalFrame;
@@ -34,7 +35,8 @@ class MODULES_EXPORT ClipPathPaintDefinition final
   scoped_refptr<Image> Paint(float zoom,
                              const FloatRect& reference_box,
                              const Node&);
-
+  // Shared code that is being called in multiple places.
+  static Animation* GetAnimationIfCompositable(const Element* element);
   void Trace(Visitor* visitor) const override;
 };
 

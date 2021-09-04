@@ -166,9 +166,25 @@ bool CanGetValueFromKeyframe(const PropertySpecificKeyframe* frame,
   return true;
 }
 
+}  // namespace
+
+template <>
+struct DowncastTraits<ClipPathPaintWorkletInput> {
+  static bool AllowFrom(const cc::PaintWorkletInput& worklet_input) {
+    auto* input = DynamicTo<PaintWorkletInput>(worklet_input);
+    return input && AllowFrom(*input);
+  }
+
+  static bool AllowFrom(const PaintWorkletInput& worklet_input) {
+    return worklet_input.GetType() ==
+           PaintWorkletInput::PaintWorkletInputType::kClipPath;
+  }
+};
+
 // TODO(crbug.com/686074): Introduce helper functions commonly used by
 // background-color and clip-path animations.
-Animation* GetAnimationIfCompositable(const Element* element) {
+Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
+    const Element* element) {
   if (!element->GetElementAnimations())
     return nullptr;
   Animation* compositable_animation = nullptr;
@@ -204,21 +220,6 @@ Animation* GetAnimationIfCompositable(const Element* element) {
   }
   return compositable_animation;
 }
-
-}  // namespace
-
-template <>
-struct DowncastTraits<ClipPathPaintWorkletInput> {
-  static bool AllowFrom(const cc::PaintWorkletInput& worklet_input) {
-    auto* input = DynamicTo<PaintWorkletInput>(worklet_input);
-    return input && AllowFrom(*input);
-  }
-
-  static bool AllowFrom(const PaintWorkletInput& worklet_input) {
-    return worklet_input.GetType() ==
-           PaintWorkletInput::PaintWorkletInputType::kClipPath;
-  }
-};
 
 // static
 ClipPathPaintDefinition* ClipPathPaintDefinition::Create(
@@ -330,9 +331,9 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   Vector<double> offsets;
   absl::optional<double> progress;
 
-  // TODO(crbug.com/1223975): implement main-thread fall back logic for
-  // animations that we cannot handle.
   Animation* animation = GetAnimationIfCompositable(element);
+  // If we are here the animation must be compositable.
+  DCHECK(animation);
 
   const AnimationEffect* effect = animation->effect();
   DCHECK(effect->IsKeyframeEffect());
