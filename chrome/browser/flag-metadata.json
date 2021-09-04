@@ -354,8 +354,8 @@
   },
   {
     "name": "autofill-always-return-cloud-tokenized-card",
-    "owners": [ "aneeshali@google.com", "annelim@google.com", "jsaul@google.com" ],
-    "expiry_milestone": 94
+    "owners": [ "aneeshali@google.com", "jsaul@google.com", "siyua" ],
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-auto-trigger-manual-fallback-for-cards",
@@ -404,8 +404,8 @@
   },
   {
     "name": "autofill-enable-virtual-card",
-    "owners": [ "siyua", "jsaul@google.com" ],
-    "expiry_milestone": 94
+    "owners": [ "siyua", "jsaul@google.com", "aneeshali@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "autofill-enable-virtual-cards-risk-based-authentication",
