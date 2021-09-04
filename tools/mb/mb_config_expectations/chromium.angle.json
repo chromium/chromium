@@ -83,18 +83,6 @@
       "use_goma": true
     }
   },
-  "mac-angle-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "mac-angle-chromium-builder": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,

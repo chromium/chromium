@@ -1289,50 +1289,6 @@ ci.angle_thin_tester(
 )
 
 ci.angle_mac_builder(
-    name = "mac-angle-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Builder|ANGLE",
-        short_name = "x64",
-    ),
-)
-
-ci.angle_thin_tester(
-    name = "mac-angle-amd",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|AMD|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["mac-angle-builder"],
-)
-
-ci.angle_thin_tester(
-    name = "mac-angle-amd-exp",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|AMD|ANGLE",
-        short_name = "exp",
-    ),
-    triggered_by = ["mac-angle-builder"],
-)
-
-ci.angle_thin_tester(
-    name = "mac-angle-intel",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["mac-angle-builder"],
-)
-
-ci.angle_thin_tester(
-    name = "mac-angle-nvidia",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|NVIDIA|ANGLE",
-        short_name = "x64",
-    ),
-    triggered_by = ["mac-angle-builder"],
-)
-
-ci.angle_mac_builder(
     name = "mac-angle-chromium-builder",
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Builder|Chromium",

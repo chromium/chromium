@@ -2000,21 +2000,6 @@
       },
     },
 
-    'gpu_angle_deqp_egl_metal_gtests': {
-      'angle_deqp_egl_metal_tests': {
-        'args': [
-          'angle_deqp_egl_tests',
-          '--use-angle=metal',
-          '--bot-mode',
-        ],
-        'merge': {
-          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
-        },
-        'test': 'angle_deqp_egl_tests',
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_angle_deqp_egl_vulkan_gtests': {
       'angle_deqp_egl_vulkan_tests': {
         'args': [
@@ -2085,23 +2070,6 @@
         'android_swarming': {
           'shards': 4,
         },
-        'desktop_args': [
-          '--bot-mode',
-        ],
-        'merge': {
-          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
-        },
-        'test': 'angle_deqp_gles2_tests',
-        'use_isolated_scripts_api': True,
-      },
-    },
-
-    'gpu_angle_deqp_gles2_metal_gtests': {
-      'angle_deqp_gles2_metal_tests': {
-        'args': [
-          'angle_deqp_gles2_tests',
-          '--use-angle=metal',
-        ],
         'desktop_args': [
           '--bot-mode',
         ],
@@ -2311,26 +2279,6 @@
         },
         'merge': {
           'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
-        },
-        'test': 'angle_deqp_gles3_tests',
-        'use_isolated_scripts_api': True,
-      },
-    },
-
-    'gpu_angle_deqp_gles3_metal_gtests': {
-      'angle_deqp_gles3_metal_tests': {
-        'args': [
-          'angle_deqp_gles3_tests',
-          '--use-angle=metal',
-        ],
-        'desktop_args': [
-          '--bot-mode',
-        ],
-        'merge': {
-          'script': '//third_party/angle/scripts/angle_deqp_test_merge.py',
-        },
-        'swarming': {
-          'shards': 4,
         },
         'test': 'angle_deqp_gles3_tests',
         'use_isolated_scripts_api': True,
@@ -6315,17 +6263,6 @@
       'gpu_common_and_optional_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-    ],
-
-    'gpu_angle_mac_amd_and_intel_gtests': [
-      'gpu_angle_deqp_egl_gl_gtests',
-      'gpu_angle_deqp_egl_metal_gtests',
-      'gpu_angle_deqp_gles2_gl_gtests',
-      'gpu_angle_deqp_gles2_metal_gtests',
-      'gpu_angle_deqp_gles3_gl_gtests',
-      'gpu_angle_deqp_gles3_metal_gtests',
-      'gpu_angle_end2end_gtests',
-      'gpu_angle_unit_gtests',
     ],
 
     'gpu_angle_mac_telemetry_tests': [

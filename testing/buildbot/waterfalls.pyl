@@ -1222,26 +1222,6 @@
           'gtest_tests': 'gpu_angle_linux_nvidia_gtests',
         },
       },
-      'mac-angle-amd': {
-        'os_type': 'mac',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
-        },
-      },
-      'mac-angle-amd-exp': {
-        'os_type': 'mac',
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_retina_amd_gpu_experimental',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
-        },
-      },
-      'mac-angle-builder': {},
       'mac-angle-chromium-amd': {
         'os_type': 'mac',
         'browser_config': 'release',
@@ -1263,25 +1243,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_common_gtests_passthrough',
           'gpu_telemetry_tests': 'gpu_angle_mac_telemetry_tests',
-        },
-      },
-      'mac-angle-intel': {
-        'os_type': 'mac',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_angle_mac_amd_and_intel_gtests',
-        },
-      },
-      'mac-angle-nvidia': {
-        'os_type': 'mac',
-        'mixins': [
-          'mac_retina_nvidia_gpu_stable',
-        ],
-        'test_suites': {
-          # Fewer tests enabled on this config because of limited capacity.
-          'gtest_tests': 'gpu_angle_gtests',
         },
       },
       'win-angle-chromium-x64-builder': {},
