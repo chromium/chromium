@@ -91,7 +91,7 @@
 <translation id="3295602654194328831">Skjul oplysninger</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="3333961966071413176">Alle kontakter</translation>
-<translation id="3386292677130313581">Spørg, om websites må få adgang til din placering (anbefales)</translation>
+<translation id="3386292677130313581">Spørg, om websites må få adgang til din lokation (anbefales)</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
 <translation id="3551268116566418498">Forlad inkognitotilstand?</translation>
 <translation id="3586500876634962664">Brug af kamera og mikrofon</translation>
@@ -113,7 +113,7 @@
 <translation id="4008040567710660924">Tillad cookies for et bestemt website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
-<translation id="4200726100658658164">Åbn placeringsindstillinger</translation>
+<translation id="4200726100658658164">Åbn lokationsindstillinger</translation>
 <translation id="4226663524361240545">Notifikationer kan få enheden til at vibrere</translation>
 <translation id="4259722352634471385">Navigationen er blokeret: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -284,7 +284,7 @@
 <translation id="8394832520002899662">Tryk for at vende tilbage til websitet</translation>
 <translation id="8425213833346101688">Skift</translation>
 <translation id="8441146129660941386">Spol tilbage</translation>
-<translation id="8444433999583714703">Aktivér også placering i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din placering.</translation>
+<translation id="8444433999583714703">Aktivér også placering i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie er i brug}one{# cookie er i brug}other{# cookies er i brug}}</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>

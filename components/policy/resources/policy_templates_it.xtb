@@ -4104,11 +4104,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       </translation>
 <translation id="6233173491898450179">Imposta directory di download</translation>
 <translation id="6234177445959386333">Configura l'elenco di URL di accesso aziendale in cui il servizio di protezione tramite password deve acquisire gli hash con salt delle password.</translation>
-<translation id="6242147107333796512">Segnala informazioni relative ai rapporti sugli arresti anomali, come ID remoto,
+<translation id="6242147107333796512">Segnala informazioni relative ai report sugli arresti anomali, come ID remoto,
       timestamp di acquisizione e causa.
 
-      Se il criterio è impostato su false o non viene configurato, le informazioni relative ai rapporti sugli arresti anomali
-      non verranno segnalate. Se viene impostato su true, le informazioni relative ai rapporti sugli arresti anomali verranno
+      Se il criterio è impostato su false o non viene configurato, le informazioni relative ai report sugli arresti anomali
+      non verranno segnalate. Se viene impostato su true, le informazioni relative ai report sugli arresti anomali verranno
       segnalate.</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>

@@ -16,7 +16,7 @@
 <translation id="2147651015520127414">Chrome bekræftede, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
 <translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
 <translation id="2313070403598893276">Google Chrome er brugervenligt, sikkert og hurtigere end nogensinde før</translation>
-<translation id="2342919707875585281">Chrome deler din placering med godkendte websites.</translation>
+<translation id="2342919707875585281">Chrome deler din lokation med godkendte websites.</translation>
 <translation id="2347208864470321755">Når denne funktion er aktiveret, vil Chrome tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Google Chrome har funktioner, der hjælper dig med at administrere internetdata og hastigheden, som websider indlæses med.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -61,7 +61,7 @@
 <translation id="571296537125272375">Offline – Chrome kan ikke søge efter opdateringer</translation>
 <translation id="5716154293141027663">Åbn Chrome, hver gang du trykker på links i andre apps</translation>
 <translation id="5854621639439811139">Chrome-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
-<translation id="5876773482963502140">Hvis du giver Chrome tilladelse til at kende din placering, sender Chrome den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din placering, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
+<translation id="5876773482963502140">Hvis du giver Chrome tilladelse til at kende din lokation, sender Chrome den til de websites, du giver tilladelse til. Websites kan anmode om adgang til din lokation, når de vil vise dig lokale oplysninger, f.eks. butikker i nærheden eller nyheder.</translation>
 <translation id="6054613632208573261">Brug Chrome som standard</translation>
 <translation id="6063091872902370735">Tillad login via Chrome</translation>
 <translation id="6181930887571472871">Skift til Chrome</translation>
