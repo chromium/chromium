@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_WEB_FEED_SUBSCRIPTIONS_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_WEB_FEED_SUBSCRIPTIONS_H_
 
+#include <ostream>
 #include <string>
+
 #include "base/callback.h"
 #include "components/feed/core/v2/public/types.h"
 
@@ -86,6 +88,9 @@ class WebFeedSubscriptions {
   // fails, returns the last-known state.
   virtual void SubscribedWebFeedCount(
       base::OnceCallback<void(int)> callback) = 0;
+
+  // Output debugging information for snippets-internals.
+  virtual void DumpStateForDebugging(std::ostream& ss) {}
 };
 
 }  // namespace feed

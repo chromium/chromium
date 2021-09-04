@@ -709,6 +709,8 @@ std::string FeedStream::DumpStateForDebugging() {
   print_refresh_schedule(RefreshTaskId::kRefreshForYouFeed);
   ss << "WebFeeds: ";
   print_refresh_schedule(RefreshTaskId::kRefreshWebFeed);
+  ss << "WebFeedSubscriptions:\n";
+  subscriptions().DumpStateForDebugging(ss);
   return ss.str();
 }
 

@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 
 #include <memory>
+#include <ostream>
 
 #include "base/feature_list.h"
 #include "base/task/post_task.h"
@@ -740,6 +741,15 @@ void WebFeedSubscriptionCoordinator::SubscribedWebFeedCount(
   FetchSubscribedWebFeedsIfStale(base::BindOnce(
       &WebFeedSubscriptionCoordinator::SubscribedWebFeedCountDone,
       base::Unretained(this), std::move(callback)));
+}
+
+void WebFeedSubscriptionCoordinator::DumpStateForDebugging(std::ostream& os) {
+  if (populated_) {
+    index_.DumpStateForDebugging(os);
+  } else {
+    os << "index not populated";
+  }
+  os << '\n';
 }
 
 void WebFeedSubscriptionCoordinator::IsWebFeedSubscriberDone(

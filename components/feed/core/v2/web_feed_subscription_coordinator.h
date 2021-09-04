@@ -63,6 +63,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       base::OnceCallback<void(RefreshResult)> callback) override;
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override;
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override;
+  void DumpStateForDebugging(std::ostream& ss) override;
 
   // Types / functions exposed for task implementations.
 
