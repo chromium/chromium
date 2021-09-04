@@ -147,19 +147,10 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::LensRegionSearchCaptureResult::FAILED_TO_OPEN_TAB);
     return;
   }
-  if (lens::features::kEnableSidePanelForLensRegionSearch.Get()) {
-    const content::OpenURLParams open_url_params =
-        core_tab_helper->GetSearchWithLensURLParams(
-            image, captured_image.Size(),
-            lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM);
-    lens::OpenLensSidePanel(
-        chrome::FindBrowserWithWebContents(source_web_contents_),
-        open_url_params);
-  } else {
-    core_tab_helper->SearchWithLensInNewTab(
-        image, captured_image.Size(),
-        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM);
-  }
+  core_tab_helper->SearchWithLensInNewTab(
+      image, captured_image.Size(),
+      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
+      lens::features::kEnableSidePanelForLensRegionSearch.Get());
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
 }
 

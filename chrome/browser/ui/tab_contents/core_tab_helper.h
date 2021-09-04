@@ -35,26 +35,22 @@ class CoreTabHelper : public content::WebContentsObserver,
   void UpdateContentRestrictions(int content_restrictions);
 
   // Open the Lens standalone experience for the image that triggered the
-  // context menu.
+  // context menu. If |use_side_panel| is true, the page will be opened in a
+  // side panel rather than a new tab.
   void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
                               const GURL& src_url,
-                              lens::EntryPoint entry_point);
-
-  // Returns the URL params for a Lens Search with the given image.
-  // TODO(crbug.com/1234592): Refactor to remove from core_tab_helper once Lens
-  // side panel implementation is complete and the new tab path is is no longer
-  // needed.
-  content::OpenURLParams GetSearchWithLensURLParams(
-      gfx::Image image,
-      const gfx::Size& image_original_size,
-      lens::EntryPoint entry_point);
+                              lens::EntryPoint entry_point,
+                              bool use_side_panel);
 
   // Open the Lens experience for an image. Used for sending the bitmap selected
   // via Lens Region Search. |image_original_size| is specified in case of
-  // resizing that happens prior to passing the image to CoreTabHelper.
+  // resizing that happens prior to passing the image to CoreTabHelper. If
+  // |use_side_panel| is true, the page will be opened in a side panel rather
+  // than a new tab.
   void SearchWithLensInNewTab(gfx::Image image,
                               const gfx::Size& image_original_size,
-                              lens::EntryPoint entry_point);
+                              lens::EntryPoint entry_point,
+                              bool use_side_panel);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch
@@ -93,13 +89,17 @@ class CoreTabHelper : public content::WebContentsObserver,
           chrome_render_frame,
       const GURL& src_url,
       const std::string& additional_query_params,
+      bool use_side_panel,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
       const std::string& image_extension);
 
-  content::OpenURLParams GetURLParamsForPostContent(
-      TemplateURLRef::PostContent post_content,
-      GURL url);
+  // Posts the bytes and content type to the specified URL If |use_side_panel|
+  // is true, the content will open in a side panel, otherwise it will open in
+  // a new tab.
+  void PostContentToURL(TemplateURLRef::PostContent post_content,
+                        GURL url,
+                        bool use_side_panel);
 
   // Create a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
@@ -111,7 +111,8 @@ class CoreTabHelper : public content::WebContentsObserver,
                                  int thumbnail_min_size,
                                  int thumbnail_max_width,
                                  int thumbnail_max_height,
-                                 std::string additional_query_params);
+                                 std::string additional_query_params,
+                                 bool use_side_panel);
 
   // The time when we started to create the new tab page.  This time is from
   // before we created this WebContents.

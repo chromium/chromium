@@ -3297,7 +3297,8 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 
   core_tab_helper->SearchWithLensInNewTab(
       render_frame_host, params().src_url,
-      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM);
+      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
+      lens::features::kEnableSidePanelForLensImageSearch.Get());
 }
 
 void RenderViewContextMenu::ExecLensRegionSearch() {
