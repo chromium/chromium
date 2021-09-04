@@ -138,6 +138,24 @@ class ServiceWorkerAutoAttacher
 
 }  // namespace
 
+// static
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForServiceWorker(
+    ServiceWorkerContext* context,
+    int64_t version_id) {
+  auto* context_wrapper = static_cast<ServiceWorkerContextWrapper*>(context);
+  ServiceWorkerDevToolsAgentHost::List hosts;
+  ServiceWorkerDevToolsManager::GetInstance()
+      ->AddAllAgentHostsForBrowserContext(context_wrapper->browser_context(),
+                                          &hosts);
+  for (auto& host : hosts) {
+    if (host->context_wrapper() == context_wrapper &&
+        host->version_id() == version_id) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
 ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
     int worker_process_id,
     int worker_route_id,

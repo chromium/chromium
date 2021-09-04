@@ -112,6 +112,11 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     EXPECT_CALL(delegate_, PostDeactivateExtension(_)).Times(0);
   }
 
+  void TearDown() override {
+    registrar_.reset();
+    ExtensionsTest::TearDown();
+  }
+
  protected:
   // Boilerplate to verify the mock's expected calls. With a SCOPED_TRACE at the
   // call site, this includes the caller's function in the Gtest trace on

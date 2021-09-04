@@ -14,12 +14,14 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/browser/notification_types.h"
@@ -43,6 +45,11 @@ ExtensionRegistrar::ExtensionRegistrar(content::BrowserContext* browser_context,
       registry_(ExtensionRegistry::Get(browser_context)),
       renderer_helper_(
           RendererStartupHelperFactory::GetForBrowserContext(browser_context)) {
+  // ExtensionRegistrar is created by ExtensionSystem via ExtensionService, and
+  // ExtensionSystemFactory depends on ProcessManager, so this should be safe.
+  auto* process_manager = ProcessManager::Get(browser_context_);
+  DCHECK(process_manager);
+  process_manager_observation_.Observe(process_manager);
 }
 
 ExtensionRegistrar::~ExtensionRegistrar() = default;
@@ -284,6 +291,36 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
   }
 }
 
+namespace {
+std::vector<scoped_refptr<DevToolsAgentHost>> GetDevToolsAgentHostsFor(
+    ProcessManager* process_manager,
+    const Extension* extension) {
+  std::vector<scoped_refptr<DevToolsAgentHost>> result;
+  if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
+    ExtensionHost* host =
+        process_manager->GetBackgroundHostForExtension(extension->id());
+    if (host && content::DevToolsAgentHost::HasFor(host->host_contents())) {
+      result.push_back(
+          content::DevToolsAgentHost::GetOrCreateFor(host->host_contents()));
+    }
+  } else {
+    content::ServiceWorkerContext* context =
+        util::GetStoragePartitionForExtensionId(
+            extension->id(), process_manager->browser_context())
+            ->GetServiceWorkerContext();
+    std::vector<WorkerId> service_worker_ids =
+        process_manager->GetServiceWorkersForExtension(extension->id());
+    for (const auto& worker_id : service_worker_ids) {
+      auto devtools_host =
+          DevToolsAgentHost::GetForServiceWorker(context, worker_id.version_id);
+      if (devtools_host)
+        result.push_back(std::move(devtools_host));
+    }
+  }
+  return result;
+}
+}  // namespace
+
 void ExtensionRegistrar::ReloadExtension(
     const ExtensionId extension_id,  // Passed by value because reloading can
                                      // invalidate a reference to the ID.
@@ -329,15 +366,19 @@ void ExtensionRegistrar::ReloadExtension(
     // later.
     // TODO(yoz): this is not incognito-safe!
     ProcessManager* manager = ProcessManager::Get(browser_context_);
-    ExtensionHost* host = manager->GetBackgroundHostForExtension(extension_id);
-    if (host && content::DevToolsAgentHost::HasFor(host->host_contents())) {
-      // Look for an open inspector for the background page.
-      scoped_refptr<content::DevToolsAgentHost> agent_host =
-          content::DevToolsAgentHost::GetOrCreateFor(host->host_contents());
-      agent_host->DisconnectWebContents();
-      orphaned_dev_tools_[extension_id] = agent_host;
+    auto agent_hosts = GetDevToolsAgentHostsFor(manager, enabled_extension);
+    if (!agent_hosts.empty()) {
+      for (auto& host : agent_hosts) {
+        // Let DevTools know we'll be back once extension is reloaded.
+        // TODO(caseq): this should rather be called Disconnect().
+        host->DisconnectWebContents();
+      }
+      // Retain DevToolsAgentHosts for the extension being reloaded to prevent
+      // client disconnecting. We will re-attach later, when the extension is
+      // loaded.
+      // TODO(crbug.com/1246530): clean up upon failure to reload.
+      orphaned_dev_tools_[extension_id] = std::move(agent_hosts);
     }
-
     path = enabled_extension->path();
     // BeingUpgraded is set back to false when the extension is added.
     extension_system_->runtime_data()->SetBeingUpgraded(enabled_extension->id(),
@@ -436,7 +477,10 @@ void ExtensionRegistrar::DidCreateMainFrameForBackgroundPage(
   ProcessManager::Get(browser_context_)
       ->IncrementLazyKeepaliveCount(host->extension(), Activity::DEV_TOOLS,
                                     std::string());
-  iter->second->ConnectWebContents(host->host_contents());
+  DCHECK_GE(1u, iter->second.size());
+  // TODO(caseq): do we need to handle the case when the extension changed
+  // from SW-based to WC-based during reload?
+  iter->second[0]->ConnectWebContents(host->host_contents());
   orphaned_dev_tools_.erase(iter);
 }
 
@@ -547,6 +591,14 @@ void ExtensionRegistrar::MaybeSpinUpLazyBackgroundPage(
   // Wake up the event page by posting a dummy task.
   const LazyContextId context_id(browser_context_, extension->id());
   context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
+}
+
+void ExtensionRegistrar::OnServiceWorkerRegistered(const WorkerId& worker_id) {
+  // Just release the host. We only get here when the new worker has been
+  // attached and resumed by the DevTools, and all we need in case of service
+  // worker-based extensions is to keep the host around for the target
+  // auto-attacher to do its job.
+  orphaned_dev_tools_.erase(worker_id.extension_id);
 }
 
 }  // namespace extensions

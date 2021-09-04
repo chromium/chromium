@@ -39,6 +39,7 @@ class DevToolsSocketFactory;
 class RenderFrameHost;
 class WebContents;
 class RenderProcessHost;
+class ServiceWorkerContext;
 
 // Describes interface for managing devtools agents from browser process.
 class CONTENT_EXPORT DevToolsAgentHost
@@ -71,6 +72,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   // exists. This is equivalent to if a DevToolsAgentHost has ever been
   // created for the |web_contents|.
   static bool HasFor(WebContents* web_contents);
+
+  // Return an instance of DevToolsAgentHost associated with the specified
+  // service worker version, if such instance exists.
+  static scoped_refptr<DevToolsAgentHost> GetForServiceWorker(
+      ServiceWorkerContext* context,
+      int64_t version_id);
 
   // Creates DevToolsAgentHost that communicates to the target by means of
   // provided |delegate|. |delegate| ownership is passed to the created agent

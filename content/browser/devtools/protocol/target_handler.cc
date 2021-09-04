@@ -728,10 +728,8 @@ bool TargetHandler::AutoAttach(TargetAutoAttacher* source,
 void TargetHandler::AutoDetach(TargetAutoAttacher* source,
                                DevToolsAgentHost* host) {
   auto it = auto_attached_sessions_.find(host);
-  if (it == auto_attached_sessions_.end() ||
-      it->second->auto_attacher_ != source) {
+  if (it == auto_attached_sessions_.end())
     return;
-  }
   it->second->Detach(false);
 }
 
