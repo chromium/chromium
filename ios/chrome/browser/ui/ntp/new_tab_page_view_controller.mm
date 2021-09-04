@@ -246,6 +246,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
     [weakSelf handleFakeOmniboxForScrollPosition:weakSelf.collectionView
                                                      .contentOffset.y
                                            force:YES];
+
+    // Redraw the ContentSuggestionsViewController to properly caclculate the
+    // new adjustedContentSuggestionsHeight value.
+    // TODO(crbug.com/1170995): Remove once the Feed supports a custom
+    // header.
+    [self.contentSuggestionsViewController.view setNeedsLayout];
+    [self.contentSuggestionsViewController.view layoutIfNeeded];
+
     // Rotating the device can change the content suggestions height. This
     // ensures that it is adjusted if necessary.
     // TODO(crbug.com/1170995): Remove once the Feed supports a custom
