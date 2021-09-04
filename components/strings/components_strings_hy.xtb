@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">Ձեր կապակցումը պաշտպանված չէ</translation>
 <translation id="3567778190852720481">Հնարավոր չէ գրանցվել կորպորատիվ հաշվով։</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Թույլատրել այս կայքի համար</translation>
 <translation id="3576616784287504635">Հաղորդագրություն <ph name="SITE" /> կայքում ներկառուցված էջից</translation>
 <translation id="3581089476000296252">Chrome-ը ձեզ կտեղեկացնի, երբ այս էջը պատրաստ լինի: &lt;a&gt;Չեղարկել&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ավելացրեք անուն</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">Google Play-ի ծառայություններ</translation>
 <translation id="8371889962595521444">Հատուկ արմատային հավաստագրեր</translation>
 <translation id="8374636051559112948">Տարբեր</translation>
+<translation id="8380167699614421159">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
 <translation id="8380941800586852976">Վտանգավոր</translation>
 <translation id="8381674639488873545">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան: <ph name="BEGIN_LINK" />Միևնույն է ցուցադրել<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Դուք չեք կարող <ph name="ORIGIN_NAME" /> կայքից բովանդակություն փոխանցել <ph name="VM_NAME" />, քանի որ ադմինիստրատորն արգելափակել է այդ հնարավորությունը։</translation>

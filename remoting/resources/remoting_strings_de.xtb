@@ -109,6 +109,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="5750083143895808682">Angemeldet als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Erneut verbinden</translation>
 <translation id="5810269635982033450">Bildschirm funktioniert wie ein Touchpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hat Zugriff angefordert, um Ihren Bildschirm zu sehen und Ihre Tastatur und Maus zu steuern. Falls Sie mit dieser Anfrage nicht gerechnet haben, drücken Sie auf „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Falls Sie den Zugriff zulassen möchten, wenn Sie bereit sind, wählen Sie „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ aus.</translation>
 <translation id="5823658491130719298">Öffnen Sie Chrome auf dem Computer, für den Sie den Remotezugriff einrichten möchten, und rufen Sie <ph name="INSTALLATION_LINK" /> auf</translation>
 <translation id="5841343754884244200">Anzeigeoptionen</translation>
 <translation id="6033507038939587647">Tastaturoptionen</translation>

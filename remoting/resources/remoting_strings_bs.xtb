@@ -109,7 +109,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="5750083143895808682">Prijavljeni ste s računom <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Poveži ponovo</translation>
 <translation id="5810269635982033450">Ekran služi kao dodirna tabla</translation>
-<translation id="5823554426827907568">Korisnik <ph name="CLIENT_USERNAME" /> zatražio je pristup za pregled vašeg zaslona i upravljanje vašom tipkovnicom i mišem. Pritisnite <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ako ne očekujete taj zahtjev. U suprotnom odaberite <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> da biste dopustili povezivanje kad budete spremni.</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> traži pristup da vidi vaš ekran i kontrolira tastaturu i miš. Pritisnite ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ako ne očekujete ovaj zahtjev. U suprotnom, odaberite ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' da omogućite povezivanje kada budete spremni.</translation>
 <translation id="5823658491130719298">Na računaru kojem želite daljinski pristupiti, otvorite Chrome i posjetite <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcije prikaza</translation>
 <translation id="6033507038939587647">Opcije tastature</translation>

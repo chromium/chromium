@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
+<translation id="1119447706177454957">Belső hiba</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
 Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
+<translation id="5212593641110061691">„Tabloid” méret</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6146993107019042706">A befejezéshez adja meg új jelszavát</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">További információ</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Az akkumulátor kapacitása egyre csökken a folyamatos használat során</translation>
 <translation id="6191293864534840972">Rosszul formázott névszerverek</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>

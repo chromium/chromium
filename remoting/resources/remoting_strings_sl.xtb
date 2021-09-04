@@ -101,6 +101,7 @@
 <translation id="5750083143895808682">Prijavljen kot <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova poveži</translation>
 <translation id="5810269635982033450">Zaslon deluje kot sledilna ploščica</translation>
+<translation id="5823554426827907568">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled vašega zaslona in nadziranje tipkovnice ter miške. Pritisnite »<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />«, če te zahteve ne pričakujete. Sicer izberite »<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />«, če želite dovoliti povezavo, ko bo pripravljena.</translation>
 <translation id="5823658491130719298">V računalniku, do katerega želite dostopati na daljavo, odprite Chrome in obiščite <ph name="INSTALLATION_LINK" /></translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6062854958530969723">Inicializacija gostitelja ni uspela.</translation>

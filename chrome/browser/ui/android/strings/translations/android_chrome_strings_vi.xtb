@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1810845389119482123">Chưa hoàn tất quá trình thiết lập đồng bộ hóa ban đầu</translation>
 <translation id="1829244130665387512">Tìm trong trang</translation>
-<translation id="1830550083491357902">Chưa đăng nhập</translation>
 <translation id="1843805151597803366">Để có bản dịch chính xác hơn, hãy cho phép Google Tìm kiếm sử dụng trang hiện tại</translation>
 <translation id="1856325424225101786">Đặt lại Chế độ thu gọn?</translation>
 <translation id="1868024384445905608">Giờ đây, Chrome tải tệp xuống còn nhanh hơn nữa</translation>
@@ -216,6 +215,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2369533728426058518">thẻ đang mở</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
 <translation id="2387895666653383613">Chia tỷ lệ văn bản</translation>
+<translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
 <translation id="2394602618534698961">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
 <translation id="2407481962792080328">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật</translation>
 <translation id="2410754283952462441">Chọn một tài khoản</translation>
@@ -376,6 +376,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
 <translation id="3303414029551471755">Tiếp tục tải xuống nội dung?</translation>
+<translation id="3332570638882314953">Nhận thêm thông tin liên quan</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341058695485821946">Xem lượng dữ liệu bạn đã tiết kiệm được</translation>
 <translation id="3341262203274374114">Không thể ngừng theo dõi. Đã xảy ra lỗi.</translation>
@@ -453,6 +454,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="3819178904835489326">Đã xóa <ph name="NUMBER_OF_DOWNLOADS" /> bản tải xuống</translation>
+<translation id="3819183753496523827">Bạn hiện không có kết nối mạng. Hãy kiểm tra kết nối Internet rồi thử lại.</translation>
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="3858860766373142691">Tên</translation>
@@ -483,7 +485,6 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3988213473815854515">Vị trí được cho phép</translation>
 <translation id="3988466920954086464">Xem kết quả tìm kiếm tức thì trong bảng điều khiển này</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
-<translation id="4001236013802615636">Bạn cũng có thể cho phép Google xem xét một số văn bản của trang</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>
 <translation id="4045764304651014138">Dữ liệu sử dụng</translation>
@@ -707,6 +708,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="543338862236136125">Chỉnh sửa mật khẩu</translation>
 <translation id="5433691172869980887">Đã sao chép tên người dùng</translation>
 <translation id="543509235395288790">Đang tải <ph name="COUNT" /> tệp (<ph name="MEGABYTES" />) xuống.</translation>
+<translation id="5438292632479953702">Tải xuống lần nữa</translation>
 <translation id="5441466871879044658">Dịch sang ngôn ngữ này</translation>
 <translation id="5441522332038954058">Chuyển đến thanh địa chỉ</translation>
 <translation id="544776284582297024">Để mở các thẻ và truy cập cùng lúc vào nhiều trang, hãy nhấn vào nút mở thẻ</translation>
@@ -806,6 +808,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5964805880140440652">Để chia sẻ trang này với một thiết bị khác, hãy bật tính năng đồng bộ hóa trong phần cài đặt Chrome</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5979084224081478209">Kiểm tra mật khẩu</translation>
+<translation id="5995726099713306770">Tải trang xuống lần nữa?</translation>
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6000203700195075278">Theo dõi lại</translation>
 <translation id="6005538289190791541">Mật khẩu đề xuất</translation>
@@ -942,6 +945,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="670498945988402717">Đã kiểm tra hôm qua</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="671481426037969117">Thời gian hẹn giờ của <ph name="FQDN" /> đã hết. Thời gian hẹn giờ sẽ bắt đầu lại vào ngày mai.</translation>
+<translation id="6715020873764921614">Bạn vẫn muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống?</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
@@ -966,6 +970,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6882836635272038266">Chế độ bảo vệ thông thường chống lại các trang web, tệp đã tải xuống và tiện ích được xác định là nguy hiểm.</translation>
 <translation id="6883204995689174413">Chia sẻ</translation>
 <translation id="688738109438487280">Thêm dữ liệu hiện có vào <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Xem kết quả phù hợp hơn cho các từ bạn đánh dấu bằng cách cho phép Google xem xét một số văn bản của trang. Bạn có thể thay đổi chế độ <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" /> bất cứ lúc nào.</translation>
 <translation id="6891726759199484455">Mở khóa để sao chép mật khẩu của bạn</translation>
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6900532703269623216">Chế độ bảo vệ nâng cao</translation>

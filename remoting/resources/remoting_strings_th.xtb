@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="579702532610384533">เชื่อมต่อใหม่</translation>
 <translation id="5810269635982033450">หน้าจอทำหน้าที่เหมือนแทร็กแพด</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ขอสิทธิ์เข้าถึงเพื่อดูหน้าจอ รวมถึงควบคุมแป้นพิมพ์และเมาส์ของคุณ กด "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" หากคุณไม่คาดว่าจะได้รับคำขอนี้ ไม่เช่นนั้นให้เลือก ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' เพื่ออนุญาตการเชื่อมต่อเมื่อพร้อม</translation>
 <translation id="5823658491130719298">ในคอมพิวเตอร์ที่ต้องการเข้าถึงจากระยะไกล ให้เปิด Chrome แล้วไปที่ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ตัวเลือกการแสดงผล</translation>
 <translation id="6033507038939587647">ตัวเลือกแป้นพิมพ์</translation>

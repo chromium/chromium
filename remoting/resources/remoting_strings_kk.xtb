@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> есептік жазбасымен кірдіңіз.</translation>
 <translation id="579702532610384533">Қайта қосылу</translation>
 <translation id="5810269635982033450">Экран сенсорлық тақта сияқты жұмыс істейді</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
 <translation id="5841343754884244200">Көрсету опциялары</translation>
 <translation id="6033507038939587647">Пернетақта опциялары</translation>

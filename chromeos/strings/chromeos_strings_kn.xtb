@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
+<translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">ಈ <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ಇಂದ ನಿರ್ವಹಿಸಲ್ಪಡುತ್ತದೆ.</translation>
@@ -147,6 +148,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="4003384961948020559">ವಿಫಲವಾಗಿದೆ - ಔಟ್‌ಪುಟ್ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="4034824040120875894">ಪ್ರಿಂಟರ್</translation>
+<translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
@@ -221,6 +223,7 @@
 <translation id="5168185087976003268">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆ:</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="5252456968953390977">ರೋಮಿಂಗ್</translation>
@@ -280,6 +283,7 @@
 <translation id="6146993107019042706">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>

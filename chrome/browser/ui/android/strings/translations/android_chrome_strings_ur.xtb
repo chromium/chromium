@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
-<translation id="1830550083491357902">سائن ان نہیں</translation>
 <translation id="1843805151597803366">‏بہتر ترجمے حاصل کرنے کے لیے، Google تلاش کو موجودہ صفحہ استعمال کرنے دیں</translation>
 <translation id="1856325424225101786">لائٹ موڈ ری سیٹ کریں؟</translation>
 <translation id="1868024384445905608">‏Chrome اب فائلز کو مزید تیزی سے ڈاؤن لوڈ کرتا ہے</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">کھلے ٹیبز</translation>
 <translation id="2386938421315164605">موضوعات کو پوشیدہ کریں اور پوشیدگی ختم کریں</translation>
 <translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
+<translation id="2390510615457643724">کیا آپ <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> کو دوبارہ ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="2394602618534698961">آپ کی ڈاؤن لوڈ کردہ فائلیں یہاں دکھائی دیتی ہیں</translation>
 <translation id="2407481962792080328">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے</translation>
 <translation id="2410754283952462441">اکاؤنٹ منتخب کریں</translation>
@@ -376,6 +376,7 @@
 <translation id="3295530008794733555">مزید تیزی سے براؤز کریں۔ کم ڈیٹا استعمال کریں۔</translation>
 <translation id="3297344142967351106">صوتی معاونت</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
+<translation id="3332570638882314953">مزید متعلقہ معلومات حاصل کریں</translation>
 <translation id="3334729583274622784">فائل ایکسٹینشن تبدیل کریں؟</translation>
 <translation id="3341058695485821946">اپنا محفوظ کردہ ڈیٹا دیکھیں</translation>
 <translation id="3341262203274374114">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
@@ -453,6 +454,7 @@
 <translation id="3810838688059735925">ویڈیو</translation>
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ڈاؤن لوڈز کو حذف کر دیا گیا</translation>
+<translation id="3819183753496523827">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3845098929839618392">پوشیدگی ٹیب میں کھولیں</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3858860766373142691">نام</translation>
@@ -483,7 +485,6 @@
 <translation id="3988213473815854515">مقام کی اجازت ہے</translation>
 <translation id="3988466920954086464">اس پینل میں فوری تلاش کے نتائج دیکھیں</translation>
 <translation id="4000212216660919741">آف لائن ہوم</translation>
-<translation id="4001236013802615636">‏Google کو صفحے کے کچھ ٹیکسٹ پر بھی غور کرنے دیں</translation>
 <translation id="4016425174436051808">پیروی نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
 <translation id="4045764304651014138">استعمال کا ڈیٹا</translation>
@@ -707,6 +708,7 @@
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> فائلیں (<ph name="MEGABYTES" />) ڈاؤن لوڈ ہو رہی ہیں۔</translation>
+<translation id="5438292632479953702">دوبارہ ڈاؤن لوڈ کریں</translation>
 <translation id="5441466871879044658">اس زبان میں ترجمہ کریں</translation>
 <translation id="5441522332038954058">پتہ بار پر جائیں</translation>
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
@@ -806,6 +808,7 @@
 <translation id="5964805880140440652">‏اس صفحہ کا کسی دوسرے آلہ پر اشتراک کرنے کے لیے Chrome کی ترتیبات میں 'سِنک کرنا' آن کریں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
+<translation id="5995726099713306770">صفحے کو دوبارہ لوڈ کریں؟</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
 <translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
@@ -942,6 +945,7 @@
 <translation id="670498945988402717">گزشتہ کل چیک کیا گیا</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="671481426037969117">آپ کا <ph name="FQDN" /> ٹائمر بند ہو گیا ہے۔ یہ کل دوبارہ شروع ہو جائے گا۔</translation>
+<translation id="6715020873764921614">کیا آپ بہر صورت <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) کو ڈاؤن لوڈ کرنا چاہتے ہیں؟</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6738867403308150051">ڈاؤن لوڈ ہو رہے ہیں…</translation>
 <translation id="6751521182688001123">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
@@ -966,6 +970,7 @@
 <translation id="6882836635272038266">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت۔</translation>
 <translation id="6883204995689174413">اشتراک کریں</translation>
 <translation id="688738109438487280"><ph name="TO_ACCOUNT" /> میں موجودہ ڈیٹا شامل کریں۔</translation>
+<translation id="6889847736310813892">‏Google کو صفحے کے کچھ ٹیکسٹ پر غور کرنے کی اجازت دے کر آپ نے جن الفاظ کو نمایاں کیا ہے ان کے بہتر نتائج دیکھیں۔ آپ ہمیشہ اپنی <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> کو تبدیل کر سکتے ہیں۔</translation>
 <translation id="6891726759199484455">اپنا پاس ورڈ کاپی کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>

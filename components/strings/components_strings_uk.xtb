@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">З’єднання не конфіденційне</translation>
 <translation id="3567778190852720481">Не вдається зареєструватися через корпоративний обліковий запис (такі облікові записи не підтримуються).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3576616784287504635">Повідомлення з вбудованої сторінки сайту <ph name="SITE" /></translation>
 <translation id="3581089476000296252">Chrome повідомить вас, коли сторінка буде готова. &lt;a&gt;Скасувати&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Додати ім’я</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">Сервіси Google Play</translation>
 <translation id="8371889962595521444">Власні кореневі сертифікати</translation>
 <translation id="8374636051559112948">Різні</translation>
+<translation id="8380167699614421159">Цей сайт показує нав’язливі чи оманливі оголошення</translation>
 <translation id="8380941800586852976">Небезпечна</translation>
 <translation id="8381674639488873545">Такі стягнення можуть бути одноразовими чи регулярними й неочевидними. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Адміністратор заблокував можливість надсилати контент із сайту <ph name="ORIGIN_NAME" /> віртуальній машині <ph name="VM_NAME" />.</translation>

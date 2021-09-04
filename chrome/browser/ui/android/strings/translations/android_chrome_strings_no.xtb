@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1829244130665387512">Finn på side</translation>
-<translation id="1830550083491357902">Ikke pålogget</translation>
 <translation id="1843805151597803366">For å få bedre oversettelser, la Google Søk bruke den nåværende siden</translation>
 <translation id="1856325424225101786">Vil du tilbakestille forenklet modus?</translation>
 <translation id="1868024384445905608">Chrome laster ned filer raskere nå</translation>
@@ -216,6 +215,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2369533728426058518">åpne faner</translation>
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2387895666653383613">Tekstskalering</translation>
+<translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
 <translation id="2394602618534698961">Filer du laster ned, vises her</translation>
 <translation id="2407481962792080328">Når du logger på Google-kontoen din, blir denne funksjonen slått på</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
@@ -376,6 +376,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3295530008794733555">Surf raskere. Bruk mindre data.</translation>
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
+<translation id="3332570638882314953">Få mer relevant informasjon</translation>
 <translation id="3334729583274622784">Vil du endre filetternavnet?</translation>
 <translation id="3341058695485821946">Se hvor mye data du har spart</translation>
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> nedlastinger er slettet</translation>
+<translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
 <translation id="3845098929839618392">Åpne i inkognitofane</translation>
 <translation id="3856096718352044181">Verifiser at dette er en gyldig leverandør, eller prøv på nytt senere</translation>
 <translation id="3858860766373142691">Navn</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="3988213473815854515">Posisjon er tillatt</translation>
 <translation id="3988466920954086464">Se umiddelbare søkeresultater i dette panelet</translation>
 <translation id="4000212216660919741">Hjem uten nett</translation>
-<translation id="4001236013802615636">La Google også vurdere noe av teksten på siden</translation>
 <translation id="4016425174436051808">Kan ikke følge. Noe gikk galt.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t}other{# t}}</translation>
 <translation id="4045764304651014138">Bruksdata</translation>
@@ -707,6 +708,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="543338862236136125">Endre passordet</translation>
 <translation id="5433691172869980887">Brukernavnet er kopiert</translation>
 <translation id="543509235395288790">Laster ned <ph name="COUNT" /> filer (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Last ned på nytt</translation>
 <translation id="5441466871879044658">Oversett til dette språket</translation>
 <translation id="5441522332038954058">Gå til adressefeltet</translation>
 <translation id="544776284582297024">For å åpne faner og besøke ulike sider samtidig, trykk på åpne faner-knappen</translation>
@@ -806,6 +808,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5964805880140440652">For å dele denne siden med andre enheter, slå på synkronisering i Chrome-innstillingene</translation>
 <translation id="5964869237734432770">Stopp bildebeskrivelser</translation>
 <translation id="5979084224081478209">Kontrollér passordene</translation>
+<translation id="5995726099713306770">Vil du laste ned siden på nytt?</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg på nytt</translation>
 <translation id="6005538289190791541">Foreslått passord</translation>
@@ -942,6 +945,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Tidtakeren for <ph name="FQDN" /> gikk ut. Den starter igjen i morgen.</translation>
+<translation id="6715020873764921614">Vil du laste ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) likevel?</translation>
 <translation id="6738516213925468394">Dataene dine ble kryptert med <ph name="BEGIN_LINK" />passordfrasen for synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Laster ned …</translation>
 <translation id="6751521182688001123">Åpner raskt en ny fane. Trykk og hold for å redigere denne snarveien.</translation>
@@ -966,6 +970,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
 <translation id="6883204995689174413">Del</translation>
 <translation id="688738109438487280">Legg til eksisterende data i <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Få bedre resultater for ordene du markerer, ved å la Google vurdere noe av teksten på siden. Du kan alltid endre dette i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Lås opp for å kopiere passordet ditt</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>

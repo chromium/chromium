@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">‏تأمين بروتوكول نقل الروابط النصية (HTTPS)</translation>
 <translation id="1059944192885972544">تم العثور على <ph name="NUM" /> علامات تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="1060292118287751956">تحدّد معدّل تحديثات الشاشة</translation>
+<translation id="1061130374843955397">مرحبًا بك في <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">سيتم قفل الجهاز بعد قليل</translation>
 <translation id="1066613507389053689">‏مطلوب تحديث نظام التشغيل Chrome</translation>
 <translation id="1067048845568873861">تم الإنشاء</translation>
@@ -2832,6 +2833,7 @@
 <translation id="3943582379552582368">&amp;إلى الوراء</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3945513714196326460">جرِّب استخدام اسم أقصر.</translation>
+<translation id="3948027458879361203">تغيير اسم المضيف</translation>
 <translation id="3948116654032448504">&amp;بحث على <ph name="SEARCH_ENGINE" /> عن صورة</translation>
 <translation id="3948507072814225786">بإمكان <ph name="ORIGIN" /> تعديل الملفات في المجلدات التالية:</translation>
 <translation id="394984172568887996">‏تمّ الاستيراد من IE</translation>
@@ -6795,6 +6797,7 @@
     <ph name="BEGIN_PARAGRAPH4" />في حال تفعيل إعداد "النشاط على الويب وفي التطبيقات" الإضافي في حساب طفلك على Google، قد يتم حفظ هذه البيانات في هذا الحساب. ويمكنك معرفة مزيد من المعلومات عن هذه الإعدادات وكيفية ضبطها على families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">شهادة العميل غير صالحة</translation>
 <translation id="827097179112817503">عرض زر الصفحة الرئيسية</translation>
+<translation id="8271268254812352141">يمكنك تعريف المصطلحات وترجمة النصوص وتحويل الوحدات من خلال النقر بزر الماوس الأيمن على نص أو النقر عليه مع الاستمرار، بالإضافة إلى تخصيص لغات الترجمة في <ph name="LINK_BEGIN" />لغات المواقع الإلكترونية<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">الخطوات التالية مخصَّصة للوالدَين. يمكنك إعادة جهاز <ph name="DEVICE_TYPE" /> للطفل بعد إعداد الحساب.</translation>
 <translation id="8272443605911821513">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "المزيد من الأدوات".</translation>
 <translation id="8274332263553132018">إرسال الملف</translation>

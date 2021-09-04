@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">ដំណើរការ <ph name="DAYS" /> ថ្ងៃ​មុន</translation>
 <translation id="2074131957428911366">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
+<translation id="2080769225927880590">ចូលដោយប្រើគណនីដែលត្រឹមត្រូវ</translation>
 <translation id="209018056901015185">ស្នើសុំគេហទំព័រដេស៍ថប</translation>
 <translation id="2103075008456228677">បើក history.google.com</translation>
 <translation id="2116625576999540962">ធាតុ <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ត្រូវបានផ្លាស់ទី។</translation>
@@ -467,6 +468,8 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5737974891429562743">ព័ត៌មានលម្អិតពីការចូលគណនីហួសសម័យហើយ។ សូមអាប់ដេតដើម្បីចាប់ផ្តើមសមកាលកម្ម។</translation>
 <translation id="5738887413654608789">វាអនុញ្ញាតឲ្យអ្នករកមើលគេហទំព័រដែលពាក់ព័ន្ធដោយផ្អែកលើរបស់ជុំវិញខ្លួនអ្នក។</translation>
 <translation id="5758631781033351321">អ្នក​នឹង​ឃើញ​បញ្ជីអាន​របស់អ្នក​នៅទីនេះ</translation>
+<translation id="575902488528307720">ស្វែងរករូបភាព</translation>
+<translation id="5781453543752460388">បញ្ចូលទៅក្នុងរូបថត</translation>
 <translation id="5782227691023083829">កំពុង​បកប្រែ...</translation>
 <translation id="5803566855766646066">តើអ្នក​ពិតជា​ចង់លុប​កាតថ្មីនេះ​មែនឬ?</translation>
 <translation id="5812974770859303494">បញ្ចូល​ទៅ...</translation>
@@ -738,6 +741,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8205564605687841303">បោះបង់</translation>
 <translation id="8206354486702514201">ការកំណត់នេះត្រូវបានអនុវត្តដោយអ្នកគ្រប់គ្រងរបស់អ្នក។</translation>
 <translation id="8225985093977202398">រូបភាព និងឯកសារដែលផ្ទុកក្នុងឃ្លាំងសម្ងាត់</translation>
+<translation id="8228176677386827255">ឧបករណ៍​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង​។ អ្នកអាចចូលដោយប្រើគណនីរបស់ស្ថាប័នអ្នកតែប៉ុណ្ណោះ។</translation>
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8271720166617117963">យល់ព្រម រួចចូលគណនី</translation>
 <translation id="8281781826761538115">លំនាំដើម៖ <ph name="DEFAULT_LOCALE" /></translation>

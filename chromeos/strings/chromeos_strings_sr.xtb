@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
+<translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5212543919916444558">Не могу да пронађем на екрану ништа око чега могу да помогнем.
 Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>
+<translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5234764350956374838">Одбаци</translation>
 <translation id="5252456968953390977">Роминг</translation>
@@ -282,6 +284,7 @@
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Капацитет батерије се смањује током коришћења</translation>
 <translation id="6191293864534840972">Сервери за имена су погрешног формата</translation>
 <translation id="6223752125779001553">Нису доступни скенери</translation>

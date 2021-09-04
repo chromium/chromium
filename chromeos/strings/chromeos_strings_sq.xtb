@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
+<translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />.</translation>
@@ -222,6 +223,7 @@
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5252456968953390977">Në roaming</translation>
@@ -281,6 +283,7 @@
 <translation id="6146993107019042706">Për të përfunduar, fut fjalëkalimin e ri</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapaciteti i baterisë bie me përdorimin e saj</translation>
 <translation id="6191293864534840972">Serverë DNS të keqformuar</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>

@@ -116,6 +116,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2073572773299281212">Aktywność <ph name="DAYS" /> dni temu</translation>
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
+<translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
 <translation id="209018056901015185">Wersja na komputer</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -465,6 +466,8 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
 <translation id="5738887413654608789">Pozwoli Ci to odkrywać strony internetowe dotyczące rzeczy z Twojego otoczenia.</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
+<translation id="575902488528307720">Wyszukaj grafikę</translation>
+<translation id="5781453543752460388">Dodaj do zdjęć</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5812974770859303494">Dodaj do...</translation>
@@ -736,6 +739,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8205564605687841303">Anuluj</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
 <translation id="8225985093977202398">Obrazy i pliki w pamięci podręcznej</translation>
+<translation id="8228176677386827255">Twoje urządzenie jest zarządzane. Możesz się zalogować tylko na konto organizacji.</translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8271720166617117963">Zaakceptuj i zaloguj się</translation>
 <translation id="8281781826761538115">Domyślny – <ph name="DEFAULT_LOCALE" /></translation>

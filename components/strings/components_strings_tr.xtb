@@ -761,6 +761,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3566021033012934673">Bağlantınız gizli değil</translation>
 <translation id="3567778190852720481">Kurumsal hesaba kaydedilemiyor (kurumsal hesap uygun değil).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> web sitesindeki yerleşik bir sayfanın mesajı</translation>
 <translation id="3581089476000296252">Bu sayfa hazır olduğunda Chrome tarafından bilgilendirileceksiniz. &lt;a&gt;İptal&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ad ekleyin</translation>
@@ -2182,6 +2183,7 @@ Ek ayrıntılar:
 <translation id="8368476060205742148">Google Play hizmetleri</translation>
 <translation id="8371889962595521444">Özel kök sertifikalar</translation>
 <translation id="8374636051559112948">Değişkenlik gösterir</translation>
+<translation id="8380167699614421159">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="8380941800586852976">Tehlikeli</translation>
 <translation id="8381674639488873545">Bu ödemeler bir defalık alınabileceği gibi yinelenen ödemeler de olabilir ve bu durum açıkça belli olmayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> sitesinden <ph name="VM_NAME" /> ile paylaşma işlevi, yönetici politikası tarafından engellendi</translation>

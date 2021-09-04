@@ -290,6 +290,7 @@
 
           Als je dit beleid niet instelt, kan de gebruiker elke extensie installeren in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Zakelijke apparaatprinters aangezet</translation>
+<translation id="1395505489889158859">Gebruikersnaam en bestandsnaam naar systeemeigen printers sturen aanzetten</translation>
 <translation id="1397855852561539316">Voorgestelde URL voor standaardzoekprovider</translation>
 <translation id="1413936351612032792">Informatie over gebruik van Linux-apps rapporteren</translation>
 <translation id="1417888712677507140">JavaScript-dialoogvensters blokkeren als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
@@ -1625,6 +1626,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2960013482187484833">De laatst gebruikte printer gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
 <translation id="2960128438010718932">De gefaseerde planning voor het toepassen van nieuwe updates</translation>
 <translation id="2960691910306063964">Verificatie zonder pincode aan- of uitzetten voor hosts voor externe toegang</translation>
+<translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" />-proxy uitzetten</translation>
 <translation id="2964056138564883247">Beheert de beschikbaarheid van <ph name="BOREALIS_NAME" /> voor deze gebruiker.
 
       Als je het beleid instelt op False, is <ph name="BOREALIS_NAME" /> niet beschikbaar. Als je het beleid niet instelt of instelt op True, is <ph name="BOREALIS_NAME" /> beschikbaar als deze functie niet uitstaat op basis van een andere beleidsregel of instelling.</translation>
@@ -2628,6 +2630,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> uitgezet.</translation>
 <translation id="4203879074082863035">Gebruikers zien alleen printers op de toelatingslijst</translation>
+<translation id="4205316772333487392">Het gebruik van SafeSearch op Google Zoeken afdwingen</translation>
 <translation id="4209297478239988291">Zet de toegankelijkheidsfunctie voor automatisch klikken aan.
 
           Met deze functie kun je klikken zonder fysiek op de muisknop of touchpad te drukken door de muisaanwijzer op het object te plaatsen waarop je wilt klikken.
@@ -2683,6 +2686,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
 <translation id="4329095223358818804">'Snelle antwoorden' toegang tot geselecteerde content geven</translation>
 <translation id="4330372709562934569">Hiermee kunnen de vermelde websites vanuit niet-beveiligde contexten verzoeken sturen naar meer-privé netwerkeindpunten.</translation>
+<translation id="4330908525441222205">Standaard AppCache-gedrag gebruiken</translation>
 <translation id="4331357743227845302">Met dit beleid kunnen beheerders bluetooth-services instellen waarmee <ph name="PRODUCT_OS_NAME" /> verbinding mag maken.
 
 Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alleen toe verbinding te maken met de opgegeven bluetooth-services, met een uitzondering wanneer de lijst leeg is, wat betekent dat elke service mag worden gebruikt. UUID's die zijn gereserveerd door de Bluetooth SIG kunnen worden weergegeven als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> of <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Aangepaste UUID's kunnen worden weergegeven als <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID's zijn hoofdlettergevoelig. Als je het beleid niet instelt, kunnen gebruikers verbinding maken met elke bluetooth-service.</translation>
@@ -2702,6 +2706,7 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
+<translation id="4370937370030117032">Gebruikersnaam en bestandsnaam naar systeemeigen printers sturen uitzetten</translation>
 <translation id="4372704773119750918">Zakelijke gebruikers niet toestaan deel uit te maken van multiprofielen (primair of secundair)</translation>
 <translation id="4377599627073874279">Alle sites toestaan afbeeldingen te tonen</translation>
 <translation id="437791893267799639">Beleid niet ingesteld, gegevensmigratie en ARC niet toestaan</translation>
@@ -2799,6 +2804,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="449423975179525290">Aan <ph name="PLUGIN_VM_NAME" /> gerelateerd beleid configureren.</translation>
 <translation id="449784980858429908">Automatisch rechten aan sites geven om verbinding te maken met alle seriële poorten.</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
+<translation id="4513691822411041977">Het gebruik van SafeSearch op Google Zoeken of de beperkte modus van YouTube niet afdwingen</translation>
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
 <translation id="4521193243799782295">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een wachtwoord in het cachegeheugen (offline).
@@ -3266,6 +3272,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
           Als je deze instelling aanzet, negeert <ph name="PRODUCT_NAME" /> alle proxygerelateerde opties die via de opdrachtregel zijn gespecificeerd.
 
           Als dit beleid niet is ingesteld, kunnen gebruikers zelf de proxyinstellingen kiezen.</translation>
+<translation id="5170018694841697392">Het gebruik van SafeSearch op Google Zoeken niet afdwingen</translation>
 <translation id="5172841243186654432">Als je <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies kunnen instellen voor 1 sessie, tenzij het beleid <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> is ingesteld op het permanent herstellen van URL's uit vorige sessies.
 
       Als je het beleid niet instelt, wordt <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> gebruikt voor alle sites als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker. Voor URL's die niet overeenkomen met de opgegeven patronen worden de standaardwaarden gebruikt.
@@ -4004,6 +4011,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
 <translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
+<translation id="6094314311474620462">Afdrukken uitzetten</translation>
 <translation id="6095048925836115505">Virtuele toetsenbord op het inlogscherm aanzetten</translation>
 <translation id="6097601282776163274">Aan URL's gekoppelde, geanonimiseerde gegevens verzamelen</translation>
 <translation id="6099853574908182288">Standaard kleurenmodus voor afdrukken</translation>
@@ -4925,6 +4933,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 
       Als dit beleid niet is ingesteld, kan de browser DNS-over-HTTPS-verzoeken versturen naar een resolver die is gekoppeld aan de geconfigureerde systeemresolver van de gebruiker.</translation>
 <translation id="7158358621906236999">Standaardinstelling voor sensoren</translation>
+<translation id="7161568070244869726">Afdwingen dat AppCache wordt aangezet</translation>
 <translation id="7165882688932913315">Dit beleid beheert de toegang tot bedienbare functies in de UI voor lokale vindbaarheid (<ph name="CHROME_DEVICES_LINK" />) waarin vindbare apparaten in de buurt van de gebruiker en door de gebruiker geregistreerde cloudapparaten worden getoond. Op alle besturingssystemen (met uitzondering van <ph name="PRODUCT_OS_NAME" />) kunnen gebruikers via de UI voor lokale vindbaarheid ook klassieke printers die aan hun computers zijn gekoppeld, toevoegen aan <ph name="CLOUD_PRINT_NAME" />.
 
       Als je het beleid toepast of niet instelt, zijn lokale apparaten vindbaar.
@@ -5584,13 +5593,6 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 <translation id="802147957407376460">Scherm 0 graden draaien</translation>
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
-<translation id="8033913082323846868">Dit beleid is beëindigd in M70. Gebruik in plaats hiervan AutofillAddressEnabled en AutofillCreditCardEnabled.
-
-      Hiermee wordt de functie 'Automatisch invullen' van <ph name="PRODUCT_NAME" /> aangezet en mogen gebruikers webformulieren automatisch invullen met eerder opgeslagen informatie zoals adres- of creditcardgegevens.
-
-      Als je deze instelling uitzet, kunnen gebruikers de functie 'Automatisch invullen' niet gebruiken.
-
-      Als je de instelling aanzet of geen waarde instelt, kunnen gebruikers de opties voor 'Automatisch invullen' zelf beheren. Zo kunnen ze profielen voor 'Automatisch invullen' configureren en de functie zelf aan- of uitzetten.</translation>
 <translation id="8036964468882248070">Als je dit beleid toepast, rapporteren ingeschreven apparaten hardwarestatistieken en ID's voor opslagapparaten.
 
       Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten geen opslagstatistieken.</translation>
@@ -5916,6 +5918,7 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463569949213141467">De camera, browserinstellingen, OS-instellingen, scannen, Web Store, canvas en Ontdekken instellen en bekijken welke functies moeten worden uitgezet</translation>
 <translation id="8465065632133292531">Parameters voor instant-URL die POST gebruikt</translation>
+<translation id="8470317291588703478">Beperkte modus van YouTube niet afdwingen</translation>
 <translation id="847472800012384958">Niet toestaan dat sites pop-ups tonen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC gebruikt alle beschikbare interfaces als naar het beste pad wordt gezocht.</translation>
@@ -5975,6 +5978,7 @@ Dit beleid wordt verwijderd in M75.</translation>
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staan de snelkoppelingen voor toegankelijkheidsfuncties standaard aan.</translation>
+<translation id="8520064498689833152">Het gebruik van SafeSearch afdwingen op Google Zoeken en afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8524334245528364388">URL naar een json-bestand met een lijst van afdrukservers.</translation>
 <translation id="8525526490824335042">Linux-container</translation>
 <translation id="8528951285051082869">Geen web-apps toestemming geven voor toegang tot bestandstypen via de File Handling API</translation>
@@ -6070,6 +6074,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8676959842615154675">Als je dit beleid toepast, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Als je het beleid niet toepast of niet instelt, kan de host voor externe toegang aan elke lokale gebruiker worden gekoppeld.</translation>
+<translation id="867708016260789630">Afdwingen dat de beperkte modus van YouTube minimaal is ingesteld op Gematigd</translation>
 <translation id="8685024486845674965">Waarschuwing voor wachtwoordbeveiliging wordt geactiveerd bij hergebruik van een wachtwoord</translation>
 <translation id="8685680544554917389">Als je het beleid instelt op True, wordt media automatisch afgespeeld door <ph name="PRODUCT_NAME" />. Als je het beleid instelt op False, wordt media niet automatisch afgespeeld door <ph name="PRODUCT_NAME" />.
 

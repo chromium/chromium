@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1810845389119482123">शुरुआती सिंक सेट अप पूरा नहीं हुआ</translation>
 <translation id="1829244130665387512">पेज में ढूंढें</translation>
-<translation id="1830550083491357902">प्रवेश नहीं है</translation>
 <translation id="1843805151597803366">बेहतर अनुवाद पाने के लिए, Google Search को मौजूदा पेज इस्तेमाल करने दें</translation>
 <translation id="1856325424225101786">लाइट मोड रीसेट करें?</translation>
 <translation id="1868024384445905608">Chrome अब ज़्यादा तेज़ी से फ़ाइलें डाउनलोड करता है</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">खुले टैब</translation>
 <translation id="2386938421315164605">विषयों को छिपाएं और दिखाएं</translation>
 <translation id="2387895666653383613">लेख स्‍केलिंग</translation>
+<translation id="2390510615457643724">क्या आप <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> को फिर से डाउनलोड करना चाहते हैं?</translation>
 <translation id="2394602618534698961">आप जिन फ़ाइलों को डाउनलोड करते हैं वे यहां दिखाई देंगी</translation>
 <translation id="2407481962792080328">जब आप अपने Google खाते में लॉग इन करते हैं, तो यह सुविधा चालू हो जाती है</translation>
 <translation id="2410754283952462441">कोई खाता चुनें</translation>
@@ -376,6 +376,7 @@
 <translation id="3295530008794733555">तेज़ी से ब्राउज़ करें. कम डेटा इस्तेमाल करें.</translation>
 <translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड करने के लिए आगे बढ़ें?</translation>
+<translation id="3332570638882314953">ज़्यादा काम की जानकारी पाएं</translation>
 <translation id="3334729583274622784">फ़ाइल एक्सटेंशन बदलना चाहते हैं?</translation>
 <translation id="3341058695485821946">देखें कि आपने कितना डेटा बचाया है</translation>
 <translation id="3341262203274374114">अनफ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
@@ -453,6 +454,7 @@
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटाए गए</translation>
+<translation id="3819183753496523827">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="3845098929839618392">गुप्त टैब में खोलें</translation>
 <translation id="3856096718352044181">कृपया पुष्टि करें कि यह एक मान्य डीएनएस सेवा है या थोड़ी देर बाद कोशिश करें</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -483,7 +485,6 @@
 <translation id="3988213473815854515">स्‍थान अनुमत है</translation>
 <translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
-<translation id="4001236013802615636">Google को कुछ पेजों के टेक्स्ट को ढूंढ़ने की भी अनुमति दें</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4045764304651014138">इस्तेमाल के बारे में डेटा</translation>
@@ -707,6 +708,7 @@
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>
 <translation id="5433691172869980887">उपयोगकर्ता नाम कॉपी किया गया</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> फ़ाइलें डाउनलोड हो रही हैं (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">फिर से डाउनलोड करें</translation>
 <translation id="5441466871879044658">इस भाषा में अनुवाद करें</translation>
 <translation id="5441522332038954058">सीधे पता बार पर जाएं</translation>
 <translation id="544776284582297024">टैब खोलने और एक ही समय में अलग-अलग पेजों पर जाने के लिए, 'टैब खोलें' बटन पर टैप करें</translation>
@@ -806,6 +808,7 @@
 <translation id="5964805880140440652">इस पेज को किसी और डिवाइस पर शेयर करने के लिए, Chrome सेटिंग में सिंक की सुविधा चालू करें</translation>
 <translation id="5964869237734432770">इमेज की जानकारी पाना बंद करें</translation>
 <translation id="5979084224081478209">पासवर्ड जांचें</translation>
+<translation id="5995726099713306770">क्या आप पेज को फिर से डाउनलोड करना चाहते हैं?</translation>
 <translation id="6000066717592683814">Google को डिफ़ॉल्ट बनाए रखें</translation>
 <translation id="6000203700195075278">फिर से फ़ॉलो करें</translation>
 <translation id="6005538289190791541">सुझाया गया पासवर्ड</translation>
@@ -942,6 +945,7 @@
 <translation id="670498945988402717">कल जांच की गई</translation>
 <translation id="6710213216561001401">पिछला</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> इस्तेमाल करने का समय खत्म हो गया. यह कल फिर से शुरू होगा.</translation>
+<translation id="6715020873764921614">क्या आप फिर भी <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) को डाउनलोड करना चाहते हैं?</translation>
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="6738867403308150051">डाउनलोड हो रहे हैं...</translation>
 <translation id="6751521182688001123">तेज़ी से एक नया टैब खोलें. इस शॉर्टकट में बदलाव करने के लिए, दबाकर रखें.</translation>
@@ -966,6 +970,7 @@
 <translation id="6882836635272038266">उन वेबसाइटों, डाउनलोड, और एक्सटेंशन से मानक सुरक्षा जो नुकसान पहुंचा सकते हैं.</translation>
 <translation id="6883204995689174413">शेयर करें</translation>
 <translation id="688738109438487280">मौजूदा डेटा <ph name="TO_ACCOUNT" /> में जोड़ें.</translation>
+<translation id="6889847736310813892">Google को पेज के टेक्स्ट को ढूंढ़ने की अनुमति देकर, आपने जो शब्द हाइलाइट किए हैं उनके लिए बेहतर नतीजे देखें. आप जब चाहें, <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> बदल सकते हैं.</translation>
 <translation id="6891726759199484455">अपना पासवर्ड कॉपी करने के लिए अनलॉक करें</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6900532703269623216">बेहतर सुरक्षा मोड</translation>

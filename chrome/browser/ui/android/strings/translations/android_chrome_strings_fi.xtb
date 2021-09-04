@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
-<translation id="1830550083491357902">Ei kirjautunut</translation>
 <translation id="1843805151597803366">Anna Google Haun käyttää nykyistä sivua, jotta saat parempia käännöksiä</translation>
 <translation id="1856325424225101786">Palautetaanko yksinkertaistettu tila?</translation>
 <translation id="1868024384445905608">Chrome lataa tiedostot nyt nopeammin</translation>
@@ -216,6 +215,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2369533728426058518">Avoimet välilehdet</translation>
 <translation id="2386938421315164605">Piilota ja näytä aiheita</translation>
 <translation id="2387895666653383613">Tekstin skaalaus</translation>
+<translation id="2390510615457643724">Haluatko, että <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ladataan uudelleen?</translation>
 <translation id="2394602618534698961">Lataamasi tiedostot näkyvät tässä</translation>
 <translation id="2407481962792080328">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi</translation>
 <translation id="2410754283952462441">Valitse tili</translation>
@@ -376,6 +376,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3295530008794733555">Selaa nettiä nopeammin. Käytä vähemmän dataa.</translation>
 <translation id="3297344142967351106">Ääniapu</translation>
 <translation id="3303414029551471755">Jatketaanko sisällön lataamiseen?</translation>
+<translation id="3332570638882314953">Näe osuvampia tietoja</translation>
 <translation id="3334729583274622784">Vaihdetaanko tiedostotunniste?</translation>
 <translation id="3341058695485821946">Katso paljonko dataa olet säästänyt</translation>
 <translation id="3341262203274374114">Ei voi seurata. Jotain meni pieleen.</translation>
@@ -453,6 +454,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> latausta poistettiin.</translation>
+<translation id="3819183753496523827">Olet offline-tilassa. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="3845098929839618392">Avaa incognito-välilehdellä</translation>
 <translation id="3856096718352044181">Varmista, että tämä on kelvollinen palveluntarjoaja, tai yritä myöhemmin uudelleen</translation>
 <translation id="3858860766373142691">Nimi</translation>
@@ -483,7 +485,6 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3988213473815854515">Sijainnin käyttö on sallittu.</translation>
 <translation id="3988466920954086464">Näytä Instant-hakutulokset tässä paneelissa</translation>
 <translation id="4000212216660919741">Offline-etusivu</translation>
-<translation id="4001236013802615636">Anna Googlen ottaa huomioon myös osa sivun tekstistä</translation>
 <translation id="4016425174436051808">Ei voi seurata. Jotain meni pieleen.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Käyttödata</translation>
@@ -707,6 +708,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
 <translation id="543509235395288790">Ladataan <ph name="COUNT" /> tiedostoa (<ph name="MEGABYTES" />)</translation>
+<translation id="5438292632479953702">Lataa uudelleen</translation>
 <translation id="5441466871879044658">Käännä tälle kielelle</translation>
 <translation id="5441522332038954058">Siirry osoitepalkkiin</translation>
 <translation id="544776284582297024">Välilehtipainikkeella voit avata välilehtiä ja selata useita sivuja yhtä aikaa.</translation>
@@ -806,6 +808,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5964805880140440652">Jos haluat jakaa tämän sivun toiselle laitteelle, ota synkronointi käyttöön Chromen asetuksista</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
 <translation id="5979084224081478209">Tarkista salasanat</translation>
+<translation id="5995726099713306770">Ladataanko sivu uudelleen?</translation>
 <translation id="6000066717592683814">Käytä Googlea</translation>
 <translation id="6000203700195075278">Seuraa uudelleen</translation>
 <translation id="6005538289190791541">Salasanaehdotus</translation>
@@ -942,6 +945,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="670498945988402717">Tarkistettu eilen</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="671481426037969117">Ajastimesta (<ph name="FQDN" />) loppui aika. Se alkaa alusta huomenna.</translation>
+<translation id="6715020873764921614">Ladataanko <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="6738516213925468394">Datasi salattiin <ph name="BEGIN_LINK" />synkronoinnin tunnuslauseella<ph name="END_LINK" /> <ph name="TIME" />. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="6738867403308150051">Ladataan…</translation>
 <translation id="6751521182688001123">Avaa uusi välilehti nopeasti. Kosketa pikakuvaketta pitkään, niin voit muokata sitä.</translation>
@@ -966,6 +970,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6882836635272038266">Perustason suojaus vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan.</translation>
 <translation id="6883204995689174413">Jaa</translation>
 <translation id="688738109438487280">Lisää olemassa olevat tiedot tilille <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Voit nähdä parempia tuloksia korostamistasi sanoista antamalla Googlen ottaa huomioon osan sivun tekstistä. Voit aina muuttaa <ph name="BEGIN_LINK" />asetuksia<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Avaa lukitus kopioidaksesi salasanan</translation>
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6900532703269623216">Parannettu suojaus</translation>

@@ -290,6 +290,7 @@
 
           Se questo criterio non viene configurato, l'utente può installare qualsiasi estensione in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Stampanti aziendali associate ai dispositivi attive</translation>
+<translation id="1395505489889158859">Viene attivato l'invio di nome utente e nome file alle stampanti native</translation>
 <translation id="1397855852561539316">URL di suggerimento del provider di ricerca predefinito</translation>
 <translation id="1413936351612032792">Segnala informazioni sull'utilizzo delle app Linux</translation>
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
@@ -1639,6 +1640,7 @@ Tuttavia, se questo criterio è Disattivato, questo requisito non viene applicat
 <translation id="2960013482187484833">Utilizza la stampante usata più di recente come scelta predefinita in Anteprima di stampa</translation>
 <translation id="2960128438010718932">Il programma di gestione temporanea per l'applicazione di nuovi aggiornamenti</translation>
 <translation id="2960691910306063964">Consente di attivare o disattivare l'autenticazione senza PIN per gli host di accesso remoto</translation>
+<translation id="2962972237615992440">Viene disattivato il proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2964056138564883247">Consente di gestire la disponibilità di <ph name="BOREALIS_NAME" /> per questo utente.
 
       Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
@@ -2646,6 +2648,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> verrà disattivato.</translation>
 <translation id="4203879074082863035">Agli utenti vengono mostrate soltanto le stampanti indicate nella whitelist</translation>
+<translation id="4205316772333487392">Viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
 <translation id="4209297478239988291">Consente di attivare la funzione di accessibilità di clic automatico.
 
           Questa funzione consente di fare clic senza premere fisicamente il mouse o il touchpad, basta passare il mouse sull'oggetto su cui si vuole fare clic.
@@ -2701,6 +2704,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4325690621216251241">Aggiungi un pulsante di uscita all'area di notifica</translation>
 <translation id="4329095223358818804">Consenti a Risposte rapide di accedere ai contenuti selezionati</translation>
 <translation id="4330372709562934569">Consente ai siti elencati di effettuare richieste agli endpoint di rete con un livello di protezione più alto da parte di contesti non sicuri.</translation>
+<translation id="4330908525441222205">Viene usato il comportamento AppCache predefinito</translation>
 <translation id="4331357743227845302">Questo criterio consente agli amministratori di configurare i servizi Bluetooth a cui <ph name="PRODUCT_OS_NAME" /> si può connettere.
 
 Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di connettersi esclusivamente ai servizi Bluetooth specificati, a meno che l'elenco non sia vuoto, nel qual caso è possibile utilizzare tutti i servizi. Gli ID univoci universali prenotati da Bluetooth SIG possono essere rappresentati come <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Gli ID univoci universali personalizzati possono essere rappresentati come <ph name="BLUETOOTH_CUSTOM_UUID" />. Gli ID univoci universali non distinguono tra maiuscole e minuscole. Se questo criterio non viene configurato, gli utenti possono connettersi a qualsiasi servizio Bluetooth.</translation>
@@ -2720,6 +2724,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questo criterio.</translation>
+<translation id="4370937370030117032">Viene disattivato l'invio di nome utente e nome file alle stampanti native</translation>
 <translation id="4372704773119750918">Non permettere all'utente aziendale di far parte del profilo multiplo (principale o secondario)</translation>
 <translation id="4377599627073874279">Consenti la visualizzazione di tutte le immagini in tutti i siti</translation>
 <translation id="437791893267799639">Norma non impostata. Non consentire migrazione dei dati e ARC</translation>
@@ -2818,6 +2823,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
+<translation id="4513691822411041977">Non viene forzato l'uso di SafeSearch nella Ricerca Google o nella Modalità con restrizioni di YouTube</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
 <translation id="4518251772179446575">Chiedi ogni volta che un sito desidera monitorare la posizione fisica degli utenti</translation>
 <translation id="4521193243799782295">Durante l'accesso, <ph name="PRODUCT_OS_NAME" /> può eseguire l'autenticazione con un server (online) o utilizzando una password memorizzata nella cache (offline).
@@ -3288,6 +3294,7 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
           Se attivi questa impostazione, <ph name="PRODUCT_NAME" /> ignora tutte le opzioni relative al proxy specificate dalla riga di comando.
 
           Se questa norma non è impostata, gli utenti potranno scegliere le impostazioni proxy autonomamente.</translation>
+<translation id="5170018694841697392">Non viene forzato l'uso di SafeSearch nella Ricerca Google</translation>
 <translation id="5172841243186654432">A meno che il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostato per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
       Se il criterio non viene configurato, viene usato <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
@@ -3896,7 +3903,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
           I client di accesso remoto non sono interessati da questa impostazione e utilizzeranno sempre "chromoting-client.talkgadget.google.com" per accedere a TalkGadget.</translation>
 <translation id="5888645257599699215">Segnala lo stato dell'audio dei dispositivi</translation>
 <translation id="5890063326284543943">Controlla l'utilizzo dell'API Serial</translation>
-<translation id="5893303508158298667">Se il criterio <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> viene impostato su Attivato e il criterio <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> viene impostato su Attivato o non viene configurato, viene consentito l'utilizzo di client remoti per usare relay server per collegarsi al computer quando non è disponibile una connessione diretta, ad esempio a causa di limitazioni del firewall.
+<translation id="5893303508158298667">Se il criterio <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> è impostato su Attivato e il criterio <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> viene impostato su Attivato o non viene configurato, viene consentito l'utilizzo di client remoti per usare relay server per collegarsi al computer quando non è disponibile una connessione diretta, ad esempio a causa di limitazioni del firewall.
 
       Se il criterio viene impostato su Disattivato, non viene disattivato l'accesso remoto, ma sono consentite soltanto connessioni dalla stessa rete (non da NAT Traversal o relay).</translation>
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
@@ -4028,6 +4035,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Obbliga gli utenti ad eseguire l'accesso per poter usare il browser</translation>
 <translation id="6093156968240188330">Consente agli utenti remoti di interagire con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
+<translation id="6094314311474620462">Viene disattivata la stampa</translation>
 <translation id="6095048925836115505">Attiva la tastiera virtuale nella schermata di accesso</translation>
 <translation id="6097601282776163274">Attiva la raccolta di dati anonimizzati con chiave URL</translation>
 <translation id="6099853574908182288">Modalità di stampa a colori predefinita</translation>
@@ -4099,11 +4107,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       </translation>
 <translation id="6233173491898450179">Imposta directory di download</translation>
 <translation id="6234177445959386333">Configura l'elenco di URL di accesso aziendale in cui il servizio di protezione tramite password deve acquisire gli hash con salt delle password.</translation>
-<translation id="6242147107333796512">Segnala informazioni relative ai rapporti sugli arresti anomali, come ID remoto,
+<translation id="6242147107333796512">Segnala informazioni relative ai report sugli arresti anomali, come ID remoto,
       timestamp di acquisizione e causa.
 
-      Se il criterio è impostato su false o non viene configurato, le informazioni relative ai rapporti sugli arresti anomali
-      non verranno segnalate. Se viene impostato su true, le informazioni relative ai rapporti sugli arresti anomali verranno
+      Se il criterio è impostato su false o non viene configurato, le informazioni relative ai report sugli arresti anomali
+      non verranno segnalate. Se viene impostato su true, le informazioni relative ai report sugli arresti anomali verranno
       segnalate.</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
@@ -4958,6 +4966,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Se questo criterio non viene impostato, il browser potrebbe inviare richieste DNS over HTTPS a un resolver associato al resolver di sistema configurato dall'utente.</translation>
 <translation id="7158358621906236999">Impostazione dei sensori predefinita</translation>
+<translation id="7161568070244869726">Viene forzata l'attivazione di AppCache</translation>
 <translation id="7165882688932913315">Questo criterio consente di gestire l'accesso alle funzionalità controllabili nell'UI di rilevamento dei dispositivi locali (<ph name="CHROME_DEVICES_LINK" />), in cui vengono mostrati i dispositivi rilevabili accanto all'utente, nonché i dispositivi cloud a cui è registrato. Su tutti i sistemi operativi tranne <ph name="PRODUCT_OS_NAME" />, l'UI di rilevamento dei dispositivi locali consente inoltre agli utenti di aggiungere a <ph name="CLOUD_PRINT_NAME" /> stampanti classiche collegate ai propri computer.
 
       Se il criterio viene impostato su Attivato o se non viene configurato, il rilevamento dei dispositivi locali è consentito.
@@ -5613,13 +5622,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="802147957407376460">Ruota lo schermo di 0°</translation>
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
-<translation id="8033913082323846868">Questa norma è stata ritirata in M70, utilizza le norme AutofillAddressEnabled e AutofillCreditCardEnabled.
-
-Consente di attivare la funzione Compilazione automatica di <ph name="PRODUCT_NAME" /> e permette agli utenti di eseguire il completamento automatico dei moduli web utilizzando informazioni memorizzate in precedenza, come l'indirizzo o i dati della carta di credito.
-
-Se disattivi questa impostazione, gli utenti non potranno utilizzare la funzione Compilazione automatica.
-
-Se attivi questa impostazione o non imposti un valore, la funzione Compilazione automatica potrà essere gestita dagli utenti, che potranno quindi configurare i profili di Compilazione automatica e attivare o disattivare a propria scelta questa funzione.</translation>
 <translation id="8036964468882248070">Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano statistiche hardware e identificatori per i dispositivi di archiviazione.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano statistiche relative all'archiviazione.</translation>
@@ -5945,6 +5947,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463569949213141467">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas ed Esplora da disattivare</translation>
 <translation id="8465065632133292531">Parametri per l'URL istantaneo che utilizza POST</translation>
+<translation id="8470317291588703478">Non viene forzata la Modalità con restrizioni di YouTube</translation>
 <translation id="847472800012384958">Non consentire la visualizzazione di popup nei siti</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">Quando cerca il percorso migliore, WebRTC utilizzerà tutte le interfacce disponibili.</translation>
@@ -6004,6 +6007,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Se imposti questo criterio, gli utenti non potranno modificarlo o eseguirne l'override.
 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita.</translation>
+<translation id="8520064498689833152">Viene forzato l'uso almeno del livello medio di SafeSearch nella Ricerca Google e nella Modalità con restrizioni di YouTube</translation>
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8528951285051082869">Non consentire ad alcuna app web di accedere a determinati tipi di file tramite l'API File Handling</translation>
@@ -6099,6 +6103,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8676959842615154675">Se il criterio viene impostato su Attivato, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa il criterio insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di accesso remoto può essere associato a qualsiasi utente locale.</translation>
+<translation id="867708016260789630">Viene forzato l'uso almeno del livello medio della Modalità con restrizioni di YouTube</translation>
 <translation id="8685024486845674965">L'avviso di protezione tramite password viene attivato se vengono riutilizzate password</translation>
 <translation id="8685680544554917389">Se il criterio viene configurato su true, <ph name="PRODUCT_NAME" /> può utilizzare la riproduzione automatica per i contenuti multimediali. Se il criterio viene configurato su false, <ph name="PRODUCT_NAME" /> non può più utilizzare la riproduzione automatica per i contenuti multimediali.
 

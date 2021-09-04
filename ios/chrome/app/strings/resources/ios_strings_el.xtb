@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="2074131957428911366">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
+<translation id="2080769225927880590">Συνδεθείτε με έναν έγκυρο λογαριασμό</translation>
 <translation id="209018056901015185">Αίτηση ιστότ. για υπολογ.</translation>
 <translation id="2103075008456228677">Ανοίξτε το history.google.com</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">Τα στοιχεία σύνδεσης λογαριασμού δεν είναι ενημερωμένα. Ενημερώστε τα για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="5738887413654608789">Αυτό σας επιτρέπει να ανακαλύψετε σχετικές ιστοσελίδες βάσει του περιβάλλοντός σας.</translation>
 <translation id="5758631781033351321">Εδώ θα βρείτε τη λίστα ανάγνωσής σας</translation>
+<translation id="575902488528307720">Αναζήτηση για εικόνα</translation>
+<translation id="5781453543752460388">Προσθήκη στις Φωτογραφίες</translation>
 <translation id="5782227691023083829">Μετάφραση...</translation>
 <translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
 <translation id="5812974770859303494">Προσθήκη σε…</translation>
@@ -739,6 +742,7 @@
 <translation id="8205564605687841303">Ακύρωση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
+<translation id="8228176677386827255">Η συσκευή σας βρίσκεται υπό διαχείριση. Μπορείτε να συνδεθείτε μόνο με τον λογαριασμό του οργανισμού σας.</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8271720166617117963">Αποδοχή και σύνδεση</translation>
 <translation id="8281781826761538115">Προεπιλογή - <ph name="DEFAULT_LOCALE" /></translation>

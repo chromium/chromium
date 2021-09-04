@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ৰূপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="579702532610384533">পুনৰ সংযোগ কৰক</translation>
 <translation id="5810269635982033450">স্ক্ৰীণে ট্ৰেকপেড হিচাপে কার্য কৰে</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />এ আপোনাৰ স্ক্ৰীনখন চাবলৈ আৰু আপোনাৰ কীব’ৰ্ড আৰু মাউছ নিয়ন্ত্ৰণ কৰিবলৈ এক্সেছৰ অনুৰোধ কৰিছে। যদি এই অনুৰোধটো আপোনাৰ বাবে অনাকাংক্ষিত, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''ত টিপক। অন্যথা, সাজু হ’লে সংযোগটোক অনুমতি দিবলৈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বাছনি কৰক।</translation>
 <translation id="5823658491130719298">আপুনি ৰিম'টৰ যোগে এক্সেছ কৰিব খোজা কম্পিউটাৰটোত Chrome খোলক আৰু <ph name="INSTALLATION_LINK" /> চাওক</translation>
 <translation id="5841343754884244200">প্ৰদৰ্শনৰ বিকল্পসমূহ</translation>
 <translation id="6033507038939587647">কীব’র্ড বিকল্পসমূহ</translation>

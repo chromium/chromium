@@ -109,6 +109,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="5750083143895808682">Jste přihlášeni pomocí účtu <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znovu připojit</translation>
 <translation id="5810269635982033450">Obrazovka se chová jako trackpad</translation>
+<translation id="5823554426827907568">Uživatel <ph name="CLIENT_USERNAME" /> požádal o přístup k zobrazení obrazovky a ovládání vaší klávesnice a myši. Pokud tento požadavek nečekáte, stiskněte „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Jinak připojení povolte výběrem možnosti „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, až budete připraveni.</translation>
 <translation id="5823658491130719298">Na počítači, ke kterému chcete vzdáleně přistupovat, otevřete Chrome a navštivte stránku <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Možnosti zobrazení</translation>
 <translation id="6033507038939587647">Možnosti klávesnice</translation>

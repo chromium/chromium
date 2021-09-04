@@ -116,6 +116,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Əvvəl Aktiv Olub</translation>
 <translation id="2074131957428911366">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> edə bilərsiniz.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
+<translation id="2080769225927880590">Etibarlı Hesabla daxil olun</translation>
 <translation id="209018056901015185">Masaüstü Versiyası Sorğusu</translation>
 <translation id="2103075008456228677">history.google.com linkində açın</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> element köçürüldü</translation>
@@ -467,6 +468,8 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5737974891429562743">Hesaba avtomatik giriş detallarının vaxtı keçib. Sinxronizasiyanı başlamaq üçün yeniləyin.</translation>
 <translation id="5738887413654608789">Ətrafınızda uyğun veb səhifələri kəşf etməyə imkan verir.</translation>
 <translation id="5758631781033351321">Oxu siyahısını burada tapa bilərsiniz</translation>
+<translation id="575902488528307720">Şəkil üzrə axtarın</translation>
+<translation id="5781453543752460388">Fotolara əlavə edin</translation>
 <translation id="5782227691023083829">Tərcümə edilir...</translation>
 <translation id="5803566855766646066">Bu yeni kartı silmək istədiyinizə əminsiniz?</translation>
 <translation id="5812974770859303494">Buraya əlavə edin:</translation>
@@ -738,6 +741,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8205564605687841303">Ləğv edin</translation>
 <translation id="8206354486702514201">Bu ayar administratorunuz tərəfindən icra olunur.</translation>
 <translation id="8225985093977202398">Keşlənmiş Şəkillər və Fayllar</translation>
+<translation id="8228176677386827255">Cihazınız idarə olunur. Yalnız təşkilatınızın hesabı ilə daxil ola bilərsiniz.</translation>
 <translation id="8261506727792406068">Silin</translation>
 <translation id="8271720166617117963">Qəbul edin və daxil olun</translation>
 <translation id="8281781826761538115">Defolt - <ph name="DEFAULT_LOCALE" /></translation>

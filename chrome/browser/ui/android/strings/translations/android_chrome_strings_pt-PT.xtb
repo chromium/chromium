@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">A configuração da sincronização inicial não está concluída</translation>
 <translation id="1829244130665387512">Localizar na página</translation>
-<translation id="1830550083491357902">Não tem sessão iniciada</translation>
 <translation id="1843805151597803366">Para obter melhores traduções, permita que a Pesquisa Google utilize a página atual.</translation>
 <translation id="1856325424225101786">Pretende repor o Modo Lite?</translation>
 <translation id="1868024384445905608">O Chrome agora transfere os ficheiros mais rapidamente.</translation>
@@ -216,6 +215,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 <translation id="2369533728426058518">abrir separadores</translation>
 <translation id="2386938421315164605">Oculte e mostre tópicos</translation>
 <translation id="2387895666653383613">Escala do texto</translation>
+<translation id="2390510615457643724">Pretende transferir <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> novamente?</translation>
 <translation id="2394602618534698961">Os ficheiros que transferir aparecem aqui.</translation>
 <translation id="2407481962792080328">Quando inicia sessão na sua Conta Google, esta funcionalidade está ativada.</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
@@ -376,6 +376,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3295530008794733555">Navegue mais depressa. Utilize menos dados.</translation>
 <translation id="3297344142967351106">Assistente de voz</translation>
 <translation id="3303414029551471755">Pretende transferir o conteúdo?</translation>
+<translation id="3332570638882314953">Obtenha informações mais relevantes</translation>
 <translation id="3334729583274622784">Pretende alterar a extensão de ficheiro?</translation>
 <translation id="3341058695485821946">Veja a quantidade de dados que poupou.</translation>
 <translation id="3341262203274374114">Não é possível deixar de seguir. Algo correu mal.</translation>
@@ -453,6 +454,7 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> transferências eliminadas</translation>
+<translation id="3819183753496523827">Está offline. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="3845098929839618392">Abrir no separad. nav. anónima</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -483,7 +485,6 @@ A Privacy Sandbox está em desenvolvimento e está disponível em regiões selec
 <translation id="3988213473815854515">A localização é permitida</translation>
 <translation id="3988466920954086464">Veja resultados da pesquisa instantâneos neste painel.</translation>
 <translation id="4000212216660919741">Em casa offline</translation>
-<translation id="4001236013802615636">Permitir que a Google também considere algum texto da página</translation>
 <translation id="4016425174436051808">Não é possível seguir. Algo correu mal.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Dados de utilização</translation>
@@ -707,6 +708,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="543338862236136125">Editar palavra-passe</translation>
 <translation id="5433691172869980887">Nome de utilizador copiado</translation>
 <translation id="543509235395288790">A transferir <ph name="COUNT" /> ficheiros (<ph name="MEGABYTES" />)…</translation>
+<translation id="5438292632479953702">Transferir novamente</translation>
 <translation id="5441466871879044658">Traduza para este idioma</translation>
 <translation id="5441522332038954058">Ir para a barra de endereço</translation>
 <translation id="544776284582297024">Para abrir separadores e visitar várias páginas em simultâneo, toque no botão Abrir separadores.</translation>
@@ -806,6 +808,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5964805880140440652">Para partilhar esta página com outro dispositivo, ative a sincronização nas definições do Chrome.</translation>
 <translation id="5964869237734432770">Parar descrições de imagens</translation>
 <translation id="5979084224081478209">Verificar palavras-passe</translation>
+<translation id="5995726099713306770">Pretende transferir a página novamente?</translation>
 <translation id="6000066717592683814">Manter o Google</translation>
 <translation id="6000203700195075278">Voltar a seguir</translation>
 <translation id="6005538289190791541">Palavra-passe sugerida</translation>
@@ -942,6 +945,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="670498945988402717">Última verificação ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">O temporizador da aplicação <ph name="FQDN" /> terminou. Recomeça amanhã.</translation>
+<translation id="6715020873764921614">Pretende transferir <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="6738516213925468394">Os seus dados foram encriptados com a sua <ph name="BEGIN_LINK" />frase de acesso de sincronização<ph name="END_LINK" /> à(s) <ph name="TIME" />. Introduza a mesma para iniciar a sincronização.</translation>
 <translation id="6738867403308150051">A transferir...</translation>
 <translation id="6751521182688001123">Abra um novo separador rapidamente. Para editar este atalho, toque sem soltar.</translation>
@@ -966,6 +970,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6882836635272038266">Proteção padrão contra Websites, transferências e extensões identificados como perigosos.</translation>
 <translation id="6883204995689174413">Partilhar</translation>
 <translation id="688738109438487280">Adicionar dados existentes a <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Veja melhores resultados para as palavras que realçar ao permitir que o Google considere algum do texto da página. Pode sempre alterar as suas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Desbloqueie para copiar a palavra-passe.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Proteção melhorada</translation>

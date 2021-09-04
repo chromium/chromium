@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">Апошнія дзеянні: <ph name="DAYS" /> сут таму</translation>
 <translation id="2074131957428911366">У <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" /> заўсёды можна выбраць, што трэба сінхранізаваць.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
+<translation id="2080769225927880590">Увайдзіце ў сапраўдны ўліковы запіс</translation>
 <translation id="209018056901015185">Запытаць версію для настольнага камп'ютара</translation>
 <translation id="2103075008456228677">Адкрыць history.google.com</translation>
 <translation id="2116625576999540962">Перамешчана элементаў: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">Даныя ўліковага запісу для ўваходу састарэлі. Каб запусціць сінхранізацыю, абнавіце іх.</translation>
 <translation id="5738887413654608789">Гэта дазваляе на аснове даных пра наваколле знаходзіць адпаведныя вэб-старонкі.</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
+<translation id="575902488528307720">Шукаць відарыс</translation>
+<translation id="5781453543752460388">Дадаць у Фота</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5803566855766646066">Сапраўды адхіліць гэту новую картку?</translation>
 <translation id="5812974770859303494">Дадаць у...</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">Скасаваць</translation>
 <translation id="8206354486702514201">Гэтай наладай кіруе адміністратар.</translation>
 <translation id="8225985093977202398">Відарысы і файлы ў кэшы</translation>
+<translation id="8228176677386827255">Ваша прылада знаходзіцца пад кіраваннем. Вы можаце ўвайсці толькі ва ўліковы запіс вашай арганізацыі.</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8271720166617117963">Прыняць і ўвайсці</translation>
 <translation id="8281781826761538115">Стандартная мова: <ph name="DEFAULT_LOCALE" /></translation>

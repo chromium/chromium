@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protokol HTTPS</translation>
 <translation id="1059944192885972544">Najdeno je bilo toliko zavihkov za »<ph name="SEARCH_TEXT" />«: <ph name="NUM" />.</translation>
 <translation id="1060292118287751956">Določi hitrost osveževanja zaslona</translation>
+<translation id="1061130374843955397">Pozdravljeni v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Skoraj je že čas za odmor</translation>
 <translation id="1066613507389053689">Potrebna je posodobitev sistema Chrome OS</translation>
 <translation id="1067048845568873861">Ustvarjeno</translation>
@@ -2847,6 +2848,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3943582379552582368">&amp;Nazaj</translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3945513714196326460">Uporabite krajše ime.</translation>
+<translation id="3948027458879361203">Spreminjanje imena gostitelja</translation>
 <translation id="3948116654032448504">&amp;Išči sliko tu: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteke v naslednjih mapah</translation>
 <translation id="394984172568887996">Uvoženo iz IE</translation>
@@ -6813,6 +6815,7 @@ Pritisnite dodeljeno stikalo, če želite odstraniti dodelitev.</translation>
     <ph name="BEGIN_PARAGRAPH4" />Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem Google Računu. Na spletnem mestu families.google.com si podatke lahko ogledate, jih izbrišete ter spremenite nastavitve računa.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Neveljavno potrdilo odjemalca</translation>
 <translation id="827097179112817503">Pokaži gumb za domačo stran</translation>
+<translation id="8271268254812352141">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite. Prilagodite jezike za prevajanje v razdelku z <ph name="LINK_BEGIN" />jeziki spletnih mest<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Starši, naslednji koraki so za vas. Po nastavitvi računa lahko napravo <ph name="DEVICE_TYPE" /> vrnete otroku.</translation>
 <translation id="8272443605911821513">Razširitve lahko upravljate tako, da v meniju »Več orodij« kliknete »Razširitve«.</translation>
 <translation id="8274332263553132018">Predvajanje datoteke</translation>

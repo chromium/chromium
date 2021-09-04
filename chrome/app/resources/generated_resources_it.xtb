@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">HyperText Transfer Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Sono state trovate <ph name="NUM" /> schede per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Consente di stabilire la frequenza di aggiornamento dello schermo</translation>
+<translation id="1061130374843955397">Ti diamo il benvenuto nel tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">È quasi ora di fare una pausa</translation>
 <translation id="1066613507389053689">Aggiornamento di Chrome OS richiesto</translation>
 <translation id="1067048845568873861">Data creazione</translation>
@@ -2829,6 +2830,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3943582379552582368">&amp;Indietro</translation>
 <translation id="3943857333388298514">Incolla</translation>
 <translation id="3945513714196326460">Prova con un nome più corto</translation>
+<translation id="3948027458879361203">Cambia nome host</translation>
 <translation id="3948116654032448504">&amp;Cerca l'immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> può modificare i file nelle seguenti cartelle</translation>
 <translation id="394984172568887996">Importati da IE</translation>
@@ -6792,6 +6794,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
     <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione aggiuntiva Attività web e app è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. Leggi ulteriori informazioni su queste impostazioni e su come configurarle alla pagina families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificato client non valido</translation>
 <translation id="827097179112817503">Mostra pulsante Home</translation>
+<translation id="8271268254812352141">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse. Personalizza le lingue di traduzione nella sezione <ph name="LINK_BEGIN" />Lingue dei siti web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">I prossimi passaggi devono essere eseguiti dai genitori. Il dispositivo <ph name="DEVICE_TYPE" /> può essere restituito al bambino dopo la creazione dell'account.</translation>
 <translation id="8272443605911821513">Gestisci le tue estensioni facendo clic su Estensioni nel menu "Altri strumenti".</translation>
 <translation id="8274332263553132018">Trasmetti file</translation>
@@ -6970,7 +6973,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="8492822722330266509">I siti possono inviare popup e usare reindirizzamenti</translation>
 <translation id="8492960370534528742">Feedback su Google Cast</translation>
 <translation id="8493236660459102203">Microfono:</translation>
-<translation id="84959976576210191">Nella barra degli indirizzi, inserisci la scorciatoia relativa al sito in cui vuoi eseguire la ricerca, come "@gmail". Successivamente, digita la scorciatoia da tastiera preferita e inserisci il termine di ricerca.</translation>
+<translation id="84959976576210191">Nella barra degli indirizzi, inserisci la scorciatoia relativa al sito in cui vuoi eseguire la ricerca, come "@gmail". Successivamente, digita la tua scorciatoia da tastiera preferita e inserisci il termine di ricerca.</translation>
 <translation id="8496717697661868878">Esegui questo plug-in</translation>
 <translation id="8497219075884839166">Utilità Windows</translation>
 <translation id="8498214519255567734">Potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata</translation>
@@ -7479,7 +7482,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione</translation>
 <translation id="9023909777842748145">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.</translation>
 <translation id="9024127637873500333">&amp;Apri in un'altra scheda</translation>
 <translation id="9024158959543687197">Errore durante il montaggio della condivisione. Verifica l'URL condivisione file e riprova.</translation>
-<translation id="9024692527554990034">Puoi usare le scorciatoie nella barra degli indirizzi per cercare rapidamente in un sito specifico o usare un diverso motore di ricerca</translation>
+<translation id="9024692527554990034">Puoi usare le scorciatoie nella barra degli indirizzi per cercare rapidamente in un sito specifico o usare un motore di ricerca diverso</translation>
 <translation id="9026731007018893674">download</translation>
 <translation id="9026852570893462412">Questa procedura potrebbe richiedere alcuni minuti. Download della macchina virtuale in corso.</translation>
 <translation id="9027459031423301635">Apri link in un'altra &amp;scheda</translation>

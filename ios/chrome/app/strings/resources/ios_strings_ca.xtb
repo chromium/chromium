@@ -116,6 +116,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2073572773299281212">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="2074131957428911366">Sempre pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> per decidir què vols sincronitzar.</translation>
 <translation id="2079545284768500474">Desfés</translation>
+<translation id="2080769225927880590">Inicia la sessió amb un compte vàlid</translation>
 <translation id="209018056901015185">Mostra com a ordinador</translation>
 <translation id="2103075008456228677">Obre history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elements desplaçats</translation>
@@ -467,6 +468,8 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5737974891429562743">Actualitza les dades d'inici de sessió del compte per iniciar la sincronització.</translation>
 <translation id="5738887413654608789">Això et permet detectar pàgines web rellevants del teu entorn.</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
+<translation id="575902488528307720">Cerca una imatge</translation>
+<translation id="5781453543752460388">Afegeix a les fotos</translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
 <translation id="5812974770859303494">Afegeix a...</translation>
@@ -738,6 +741,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8205564605687841303">Cancel·la</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
+<translation id="8228176677386827255">El teu dispositiu està gestionat. Només pots iniciar la sessió amb el compte de la teva organització.</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8271720166617117963">Accepta i inicia la sessió</translation>
 <translation id="8281781826761538115">Idioma predeterminat: <ph name="DEFAULT_LOCALE" /></translation>

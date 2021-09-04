@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">하이퍼텍스트 전송 프로토콜 보안(HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="1060292118287751956">화면 업데이트 빈도 결정</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> 기기를 구매해 주셔서 감사합니다</translation>
 <translation id="1061904396131502319">곧 휴식 시간입니다</translation>
 <translation id="1066613507389053689">Chrome OS 업데이트 필요</translation>
 <translation id="1067048845568873861">생성됨</translation>
@@ -2844,6 +2845,7 @@
 <translation id="3943582379552582368">뒤로(&amp;B)</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3945513714196326460">더 짧은 이름을 입력하세요.</translation>
+<translation id="3948027458879361203">호스트 이름 변경</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" />에서 이미지 검색(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" />에서 다음 폴더의 파일을 수정할 수 있습니다.</translation>
 <translation id="394984172568887996">IE에서 가져온 북마크</translation>
@@ -6805,6 +6807,7 @@
     <ph name="BEGIN_PARAGRAPH4" />자녀에게 추가 웹 및 앱 활동 설정이 사용 설정된 경우 이 데이터가 자녀의 Google 계정에 저장됩니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아볼 수 있습니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">잘못된 클라이언트 인증서</translation>
 <translation id="827097179112817503">홈 버튼 표시</translation>
+<translation id="8271268254812352141">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다. <ph name="LINK_BEGIN" />웹사이트 언어<ph name="LINK_END" />에서 번역 언어를 맞춤 설정하세요.</translation>
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
 <translation id="8272443605911821513">'추가 도구' 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="8274332263553132018">파일 전송</translation>

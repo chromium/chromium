@@ -109,6 +109,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="5750083143895808682">Prihlásený/-á ako <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova pripojiť</translation>
 <translation id="5810269635982033450">Obrazovka funguje ako trackpad</translation>
+<translation id="5823554426827907568">Používateľ <ph name="CLIENT_USERNAME" /> požiadal o prístup k vašej obrazovke a ovládaniu klávesnice a myši. Ak ste túto žiadosť neočakávali, stlačte <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. Inak povoľte pripojenie výberom možnosti <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> (keď budete chcieť).</translation>
 <translation id="5823658491130719298">V počítači, do ktorého chcete získať vzdialený prístup, spustite Chrome a prejdite na adresu <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Možnosti zobrazenia</translation>
 <translation id="6033507038939587647">Možnosti klávesnice</translation>

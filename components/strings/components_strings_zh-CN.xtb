@@ -757,6 +757,7 @@
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
 <translation id="3567778190852720481">无法通过企业帐号注册（企业帐号不符合条件）。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /><ph name="STATE" /><ph name="CITY" /></translation>
+<translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 上的嵌入式页面显示</translation>
 <translation id="3581089476000296252">当此页面准备就绪时，Chrome 会通知您。&lt;a&gt;取消&lt;/a&gt;</translation>
 <translation id="3582930987043644930">添加名称</translation>
@@ -2175,6 +2176,7 @@
 <translation id="8368476060205742148">Google Play 服务</translation>
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>
+<translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容分享给 <ph name="VM_NAME" /></translation>

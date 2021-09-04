@@ -760,6 +760,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3566021033012934673">Ulanishingiz himoyalanmagan</translation>
 <translation id="3567778190852720481">Korporativ hisob orqali yozilish imkonsiz (korporativ hisoblarda ishlamaydi).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Bu saytda chiqaversin</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> saytidagi amalni tasdiqlang</translation>
 <translation id="3581089476000296252">Sahifa tayyor boʻlganda Chrome buni xabar qiladi. &lt;a&gt;Bekor qilish&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Nom qo‘shish</translation>
@@ -2183,6 +2184,7 @@ Batafsil axborot:
 <translation id="8368476060205742148">Google Play xizmatlari</translation>
 <translation id="8371889962595521444">Foydalanuvchiga tegishli root sertifikatlari</translation>
 <translation id="8374636051559112948">Farq qiladi</translation>
+<translation id="8380167699614421159">Bu saytda yoqimsiz yoki befoyda reklamalar chiqadi</translation>
 <translation id="8380941800586852976">Xavfli</translation>
 <translation id="8381674639488873545">To‘lov bir martalik, davomiy yoki umuman bo‘lmasligi ham mumkin. <ph name="BEGIN_LINK" />Ogohlantirish baribir chiqaversin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> saytidan <ph name="VM_NAME" /> tizimiga ulashishni administrator taqiqlagan</translation>

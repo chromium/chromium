@@ -759,6 +759,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3566021033012934673">Koneksi Anda tidak pribadi</translation>
 <translation id="3567778190852720481">Tidak dapat mendaftar dengan akun perusahaan (akun perusahaan tidak memenuhi syarat).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3576616784287504635">Halaman tersemat di <ph name="SITE" /> menyatakan</translation>
 <translation id="3581089476000296252">Chrome akan memberi tahu Anda saat halaman ini sudah siap. &lt;a&gt;Batal&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Tambahkan nama</translation>
@@ -2177,6 +2178,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8368476060205742148">Layanan Google Play</translation>
 <translation id="8371889962595521444">Root certificate kustom</translation>
 <translation id="8374636051559112948">Bervariasi</translation>
+<translation id="8380167699614421159">Situs ini menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Tagihan ini dapat hanya satu kali atau berulang, dan mungkin tidak ditampilkan dengan jelas. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Berbagi dari <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME" /> telah diblokir oleh kebijakan administrator</translation>

@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1810845389119482123">Penyediaan penyegerakan permulaan belum selesai</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
-<translation id="1830550083491357902">Tidak dilog masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, benarkan Google Search menggunakan halaman semasa</translation>
 <translation id="1856325424225101786">Tetapkan semula mod Ringkas?</translation>
 <translation id="1868024384445905608">Chrome kini memuat turun fail dengan lebih pantas</translation>
@@ -216,6 +215,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2369533728426058518">tab terbuka</translation>
 <translation id="2386938421315164605">Sembunyikan dan nyahsembunyikan topik</translation>
 <translation id="2387895666653383613">Penskalaan teks</translation>
+<translation id="2390510615457643724">Adakah anda ingin memuat turun <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> sekali lagi?</translation>
 <translation id="2394602618534698961">Fail yang anda muat turun dipaparkan di sini</translation>
 <translation id="2407481962792080328">Apabila anda log masuk ke Akaun Google anda, ciri ini akan dihidupkan</translation>
 <translation id="2410754283952462441">Pilih akaun</translation>
@@ -376,6 +376,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3295530008794733555">Semak imbas lebih pantas. Gunakan kurang data.</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Teruskan memuat turun kandungan?</translation>
+<translation id="3332570638882314953">Dapatkan maklumat yang lebih berkaitan</translation>
 <translation id="3334729583274622784">Tukar sambungan fail?</translation>
 <translation id="3341058695485821946">Lihat jumlah data yang dapat dijimatkan</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Kesilapan telah berlaku.</translation>
@@ -453,6 +454,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipadamkan</translation>
+<translation id="3819183753496523827">Anda di luar talian. Periksa sambungan Internet anda dan cuba lagi.</translation>
 <translation id="3845098929839618392">Buka dalam tab Inkognito</translation>
 <translation id="3856096718352044181">Sila sahkan bahawa penyedia ini sah atau cuba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
@@ -483,7 +485,6 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="3988213473815854515">Lokasi dibenarkan</translation>
 <translation id="3988466920954086464">Lihat hasil carian segera dalam panel ini</translation>
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
-<translation id="4001236013802615636">Biarkan Google mempertimbangkan beberapa teks halaman juga</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Kesilapan telah berlaku.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
@@ -707,6 +708,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="543338862236136125">Edit kata laluan</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="543509235395288790">Memuat turun <ph name="COUNT" /> fail (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Muat turun sekali lagi</translation>
 <translation id="5441466871879044658">Terjemah kepada bahasa ini</translation>
 <translation id="5441522332038954058">Lompat ke bar alamat</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
@@ -806,6 +808,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5964805880140440652">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
 <translation id="5979084224081478209">Semak kata laluan</translation>
+<translation id="5995726099713306770">Muat turun halaman sekali lagi?</translation>
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6000203700195075278">Ikuti semula</translation>
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
@@ -942,6 +945,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="670498945988402717">Disemak semalam</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Pemasa <ph name="FQDN" /> anda sudah tamat. Pemasa akan bermula lagi esok.</translation>
+<translation id="6715020873764921614">Adakah anda mahu memuat turun <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) juga?</translation>
 <translation id="6738516213925468394">Data anda disulitkan dengan <ph name="BEGIN_LINK" />ungkapan laluan segerak<ph name="END_LINK" /> anda pada <ph name="TIME" />. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="6738867403308150051">Memuat turun…</translation>
 <translation id="6751521182688001123">Buka tab baharu dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
@@ -966,6 +970,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6882836635272038266">Perlindungan standard daripada tapak web, muat turun dan sambungan yang diketahui berbahaya.</translation>
 <translation id="6883204995689174413">Kongsi</translation>
 <translation id="688738109438487280">Tambahkan data sedia ada pada <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Lihat hasil carian yang lebih baik untuk perkataan yang anda serlahkan dengan membenarkan Google mempertimbangkan beberapa teks halaman. Anda boleh menukar <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /> anda pada bila-bila masa.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin kata laluan anda</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6900532703269623216">Perlindungan dipertingkat</translation>

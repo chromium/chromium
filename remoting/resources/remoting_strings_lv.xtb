@@ -109,6 +109,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="5750083143895808682">Pierakstījies kā <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Atkārtoti savienot</translation>
 <translation id="5810269635982033450">Ekrāns darbojas kā skārienpaliktnis</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> pieprasīja piekļuvi skatīt jūsu ekrānu un kontrolēt jūsu tastatūru un peli. Ja negaidījāt šādu pieprasījumu, nospiediet <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. Pretējā gadījumā, kad esat gatavs, nospiediet <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />, lai atļautu savienojumu.</translation>
 <translation id="5823658491130719298">Datorā, kuram vēlaties piekļūt attāli, atveriet pārlūku Chrome un apmeklējiet vietni <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Attēlojuma opcijas</translation>
 <translation id="6033507038939587647">Tastatūras opcijas</translation>

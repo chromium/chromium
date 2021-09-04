@@ -116,6 +116,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2073572773299281212"><ph name="DAYS" /> napja volt aktív</translation>
 <translation id="2074131957428911366">A <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
+<translation id="2080769225927880590">Bejelentkezés érvényes fiókkal</translation>
 <translation id="209018056901015185">Asztali webhely kérése</translation>
 <translation id="2103075008456228677">A history.google.com megnyitása</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elem áthelyezve</translation>
@@ -467,6 +468,8 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5737974891429562743">A fiók bejelentkezési adatai elavultak. Frissítsen a szinkronizálás megkezdéséhez.</translation>
 <translation id="5738887413654608789">Lehetővé teszi a felhasználó számára, hogy közvetlen környezete alapján fedezzen fel releváns weboldalakat.</translation>
 <translation id="5758631781033351321">Itt láthatja majd az olvasólistáját</translation>
+<translation id="575902488528307720">Képeket kereshet</translation>
+<translation id="5781453543752460388">Fotó hozzáadása</translation>
 <translation id="5782227691023083829">A fordítás folyamatban...</translation>
 <translation id="5803566855766646066">Biztosan elveti ezt az új kártyát?</translation>
 <translation id="5812974770859303494">Hozzáadás…</translation>
@@ -738,6 +741,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8205564605687841303">Mégse</translation>
 <translation id="8206354486702514201">Ezt a beállítást rendszergazdája lépteti életbe.</translation>
 <translation id="8225985093977202398">A gyorsítótárban lévő képek és fájlok</translation>
+<translation id="8228176677386827255">Eszköze szervezeti kezelésű. Csak a szervezet fiókjával jelentkezhet be.</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="8271720166617117963">Elfogadás és bejelentkezés</translation>
 <translation id="8281781826761538115">Alapértelmezett – <ph name="DEFAULT_LOCALE" /></translation>

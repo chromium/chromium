@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
+<translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von <ph name="MANAGER" /> verwaltet.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5212543919916444558">Ich finde nichts auf deinem Display, wobei ich dir helfen könnte.
 Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>

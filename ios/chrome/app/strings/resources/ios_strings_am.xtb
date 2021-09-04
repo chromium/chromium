@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="2074131957428911366">በማንኛውም ጊዜ ምን እንደሚያሳምሩ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
+<translation id="2080769225927880590">ልክ በሆነ መለያ ይግቡ</translation>
 <translation id="209018056901015185">የዴስክቶፕ ጣቢያን ጠይቅ</translation>
 <translation id="2103075008456228677">history.google.comን ክፈት</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ንጥሎች ተንቀሳቅሰዋል</translation>
@@ -467,6 +468,8 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5737974891429562743">የመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው። ስምረትን ለመጀመር ያዘምኑ።</translation>
 <translation id="5738887413654608789">ይህ በእርስዎ ያሉበት ስፍራ አካባቢ ላይ በመመርኮዝ ተዛማጅነት ያላቸው የድር ገጾችን እንዲያገኙ ያስችልዎታል።</translation>
 <translation id="5758631781033351321">የእርስዎን ንባብ ዝርዝር እዚህ ያገኛሉ</translation>
+<translation id="575902488528307720">ምስልን ፈልግ</translation>
+<translation id="5781453543752460388">ወደ ፎቶዎች ያክሉ</translation>
 <translation id="5782227691023083829">በመተረጎም ላይ...</translation>
 <translation id="5803566855766646066">እርግጠኛ ነዎት ይህን አዲስ ካርድ ማስወገድ ይፈልጋሉ?</translation>
 <translation id="5812974770859303494">አክል ወደ...</translation>
@@ -738,6 +741,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8205564605687841303">ተወው</translation>
 <translation id="8206354486702514201">ይህ ቅንብር በአስተዳዳሪዎ ነው በግዳጅ እንዲፈጸም የተደረገው።</translation>
 <translation id="8225985093977202398">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
+<translation id="8228176677386827255">የእርስዎ መሣሪያ የሚተዳደር ነው። በድርጅትዎ መለያ ብቻ ነው መግባት የሚችሉት።</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8271720166617117963">ተቀበል እና በመለያ ግባ</translation>
 <translation id="8281781826761538115">ነባሪ - <ph name="DEFAULT_LOCALE" /></translation>

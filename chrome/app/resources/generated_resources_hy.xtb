@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">«<ph name="SEARCH_TEXT" />» հարցումով որոնման համար գտնվել է <ph name="NUM" /> ներդիր</translation>
 <translation id="1060292118287751956">Սահմանում է էկրանի թարմացման հաճախականությունը</translation>
+<translation id="1061130374843955397">Բարի գալուստ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Շուտով ընդմիջման ժամն է</translation>
 <translation id="1066613507389053689">Թարմացրեք Chrome OS-ը</translation>
 <translation id="1067048845568873861">Ստեղծվել է</translation>
@@ -2830,6 +2831,7 @@
 <translation id="3943582379552582368">&amp;Հետ</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3945513714196326460">Մուտքագրեք ավելի կարճ անվանում</translation>
+<translation id="3948027458879361203">Փոխել խնամորդի անունը</translation>
 <translation id="3948116654032448504">Որոնել պատկեր <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> կայքը կարող է փոփոխել ֆայլեր հետևյալ պանակներում</translation>
 <translation id="394984172568887996">IE-ից ներմուծված</translation>
@@ -6793,6 +6795,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Եթե միացնեք Վեբ որոնման և հավելվածների պատմությունը, այս տվյալները կպահվեն ձեր երեխայի Google հաշվում։ Այս կարգավորումների մասին մանրամասն իմացեք account.google.com էջում:<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Սպասառուի սխալ վկայագիր</translation>
 <translation id="827097179112817503">Ցույց տալ Սկիզբ կոճակը</translation>
+<translation id="8271268254812352141">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։ Թարգմանության լեզուները կարող եք կարգավորել <ph name="LINK_BEGIN" />Կայքերի լեզուներ<ph name="LINK_END" /> էջում:</translation>
 <translation id="8271379370373330993">Հաջորդ մի քանի քայլերը ծնողների համար են։ Հաշիվը կարգավորելուց հետո կարող եք վերադարձնել <ph name="DEVICE_TYPE" /> սարքը երեխային։</translation>
 <translation id="8272443605911821513">Կառավարեք ձեր ընդլայնումները՝ «Լրացուցիչ գործիքներում» սեղմելով Ընդլայնումներ:</translation>
 <translation id="8274332263553132018">Հեռարձակել ֆայլը</translation>

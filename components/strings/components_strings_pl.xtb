@@ -760,6 +760,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3566021033012934673">Połączenie nie jest prywatne</translation>
 <translation id="3567778190852720481">Nie można zarejestrować się przy użyciu konta służbowego (konto służbowe nie spełnia warunków).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Zezwalaj tej stronie</translation>
 <translation id="3576616784287504635">Komunikat z elementu umieszczonego na stronie <ph name="SITE" /></translation>
 <translation id="3581089476000296252">Chrome powiadomi Cię, gdy strona będzie gotowa. &lt;a&gt;Anuluj&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Dodaj nazwę</translation>
@@ -2180,6 +2181,7 @@ Dodatkowe informacje:
 <translation id="8368476060205742148">Usługi Google Play</translation>
 <translation id="8371889962595521444">Niestandardowy certyfikat główny</translation>
 <translation id="8374636051559112948">Różne opcje</translation>
+<translation id="8380167699614421159">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
 <translation id="8380941800586852976">Niebezpieczna</translation>
 <translation id="8381674639488873545">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zasady administratora uniemożliwiają udostępnianie informacji z <ph name="ORIGIN_NAME" /> maszynie wirtualnej <ph name="VM_NAME" /></translation>

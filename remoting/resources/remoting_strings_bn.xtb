@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন।</translation>
 <translation id="579702532610384533">পুনরায সংযোগ করুন</translation>
 <translation id="5810269635982033450">স্ক্রিন একটি ট্র্যাকপ্যাডের মত কাজ করে</translation>
+<translation id="5823554426827907568">আপনার স্ক্রিন দেখার জন্য এবং আপনার কীবোর্ড ও মাউজে অ্যাক্সেস পাওয়ার জন্য, <ph name="CLIENT_USERNAME" /> আপনাকে অনুরোধ করেছেন। আপনি এই অনুরোধটি না চাইলে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' প্রেস করুন। অন্যথায় কানেকশন রেডি হয়ে গেলে তাতে অনুমতি দেওয়ার জন্য ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বেছে নিন।</translation>
 <translation id="5823658491130719298">যে কম্পিউটারটি আপনি রিমোটভাবে অ্যাক্সেস করতে চান সেটিতে Chrome খুলে <ph name="INSTALLATION_LINK" />-এ যান</translation>
 <translation id="5841343754884244200">দেখার বিকল্প</translation>
 <translation id="6033507038939587647">কীবোর্ড বিকল্পগুলি</translation>

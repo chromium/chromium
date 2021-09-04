@@ -116,6 +116,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
+<translation id="2080769225927880590">Prijavite se z veljavnim računom</translation>
 <translation id="209018056901015185">Zahtevaj spletno mesto za nam. računalnik</translation>
 <translation id="2103075008456228677">Odpri history.google.com</translation>
 <translation id="2116625576999540962">Št. premaknjenih elementov: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -467,6 +468,8 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
 <translation id="5738887413654608789">To vam omogoča odkrivanje pomembnih spletnih strani glede na vašo okolico.</translation>
 <translation id="5758631781033351321">Tukaj bo prikazan seznam za branje</translation>
+<translation id="575902488528307720">Išči sliko</translation>
+<translation id="5781453543752460388">Dodaj med fotografije</translation>
 <translation id="5782227691023083829">Prevajanje ...</translation>
 <translation id="5803566855766646066">Ali ste prepričani, da želite zavreči to novo kartico?</translation>
 <translation id="5812974770859303494">Dodaj v …</translation>
@@ -738,6 +741,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8205564605687841303">Prekliči</translation>
 <translation id="8206354486702514201">To nastavitev je uveljavil skrbnik.</translation>
 <translation id="8225985093977202398">Cached Images and Files</translation>
+<translation id="8228176677386827255">Vaša naprava je upravljana. Prijavite se lahko samo z računom organizacije.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8271720166617117963">Sprejem in prijava</translation>
 <translation id="8281781826761538115">Privzeto - <ph name="DEFAULT_LOCALE" /></translation>

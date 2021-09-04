@@ -760,6 +760,7 @@
 <translation id="3566021033012934673">你的連線不是私人連線</translation>
 <translation id="3567778190852720481">無法使用公司帳戶註冊 (公司帳戶不符合註冊資格)。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" />，<ph name="STATE" />，<ph name="CITY" /></translation>
+<translation id="3575121482199441727">允許這個網站的通知</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 的嵌入式網頁顯示</translation>
 <translation id="3581089476000296252">Chrome 會在網頁就緒後通知你。&lt;a&gt;取消&lt;/a&gt;</translation>
 <translation id="3582930987043644930">新增名稱</translation>
@@ -2180,6 +2181,7 @@
 <translation id="8368476060205742148">Google Play 服務</translation>
 <translation id="8371889962595521444">自訂根憑證</translation>
 <translation id="8374636051559112948">不一</translation>
+<translation id="8380167699614421159">這個網站會顯示干擾性或誤導性的廣告</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8381674639488873545">這些費用可能是一次性或週期性的費用，而且可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">系統管理員政策禁止將 <ph name="ORIGIN_NAME" /> 的內容分享到 <ph name="VM_NAME" /></translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Pro dotaz <ph name="SEARCH_TEXT" /> bylo nalezeno karet: <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Určuje frekvenci obnovování obrazovky</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> vás vítá</translation>
 <translation id="1061904396131502319">Brzy bude čas na přestávku</translation>
 <translation id="1066613507389053689">Je vyžadována aktualizace operačního systému Chrome</translation>
 <translation id="1067048845568873861">Vytvořeno</translation>
@@ -2829,6 +2830,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3943582379552582368">&amp;Zpět</translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="3945513714196326460">Zkuste kratší název</translation>
+<translation id="3948027458879361203">Změnit název hostitele</translation>
 <translation id="3948116654032448504">&amp;Vyhledat obrázek pomocí vyhledávače <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> může upravovat soubory v následujících složkách</translation>
 <translation id="394984172568887996">Importováno z aplikace IE</translation>
@@ -6791,6 +6793,7 @@ Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
     <ph name="BEGIN_PARAGRAPH4" />Pokud je pro dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. Další informace o těchto nastaveních a o tom, jak je upravit, najdete na stránce families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Neplatný certifikát klienta</translation>
 <translation id="827097179112817503">Zobrazit tlačítko Domovská stránka</translation>
+<translation id="8271268254812352141">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek. Jazyky překladu můžete upravit v sekci <ph name="LINK_BEGIN" />Jazyky webových stránek<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Rodiče, další kroky jsou pro vás. Až nastavení účtu dokončíte, budete zařízení <ph name="DEVICE_TYPE" /> moci vrátit dítěti.</translation>
 <translation id="8272443605911821513">Chcete-li spravovat rozšíření, klikněte v nabídce Nástroje na příkaz Rozšíření.</translation>
 <translation id="8274332263553132018">Odeslat soubor</translation>

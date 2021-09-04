@@ -765,6 +765,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3566021033012934673">Yhteytesi ei ole salattu</translation>
 <translation id="3567778190852720481">Liittyminen yritystilillä ei onnistu (yritystiliä ei tueta).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3576616784287504635">Viesti upotetulta sivulta osoitteessa <ph name="SITE" /></translation>
 <translation id="3581089476000296252">Chrome ilmoittaa, kun tämä sivu on valmis. &lt;a&gt;Peru&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Lisää nimi</translation>
@@ -2190,6 +2191,7 @@ Lisätietoja:
 <translation id="8368476060205742148">Google Play Palvelut</translation>
 <translation id="8371889962595521444">Yksilöidyt juurivarmenteet</translation>
 <translation id="8374636051559112948">Vaihtelee</translation>
+<translation id="8380167699614421159">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8380941800586852976">Vaarallinen</translation>
 <translation id="8381674639488873545">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi. <ph name="BEGIN_LINK" />Näytä silti<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Järjestelmänvalvojakäytäntö on estänyt jakamisen (lähde: <ph name="ORIGIN_NAME" />, kohde: <ph name="VM_NAME" />)</translation>

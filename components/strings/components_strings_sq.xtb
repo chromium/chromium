@@ -763,6 +763,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3566021033012934673">Lidhja jote nuk është private.</translation>
 <translation id="3567778190852720481">Nuk mund të regjistrohesh me llogarinë e ndërmarrjes (llogaria e ndërmarrjes nuk është e përshtatshme).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Lejo për këtë sajt</translation>
 <translation id="3576616784287504635">Një faqe e integruar në <ph name="SITE" /> thotë</translation>
 <translation id="3581089476000296252">Chrome do të të njoftojë kur kjo faqe të jetë gati. &lt;a&gt;Anuloje&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Shto emrin</translation>
@@ -2185,6 +2186,7 @@ Detaje shtesë:
 <translation id="8368476060205742148">Shërbimet e Google Play</translation>
 <translation id="8371889962595521444">Certifikatat rrënjë të personalizuara</translation>
 <translation id="8374636051559112948">Ndryshon</translation>
+<translation id="8380167699614421159">Ky sajt shfaq reklama ndërhyrëse ose mashtruese</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocolo seguro de transferencia de hipertexto (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> pestañas encontradas para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Determina la frecuencia con la que se actualiza la pantalla</translation>
+<translation id="1061130374843955397">Te damos la bienvenida a <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Ya casi es la hora de hacer un descanso</translation>
 <translation id="1066613507389053689">Hace falta actualizar Chrome OS</translation>
 <translation id="1067048845568873861">Creada</translation>
@@ -1810,7 +1811,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2875698561019555027">(Páginas de error de Chrome)</translation>
 <translation id="2876336351874743617">Dedo 2</translation>
 <translation id="2876369937070532032">Envía a Google las URL de algunas de las páginas que visitas cuando tu seguridad corre peligro</translation>
-<translation id="2876556152483133018">Búsqueda de sitios</translation>
+<translation id="2876556152483133018">Búsquedas en sitios</translation>
 <translation id="2877467134191447552">Puedes añadir cuentas adicionales para acceder a sitios web y aplicaciones.</translation>
 <translation id="2878782256107578644">Análisis en curso. ¿Quieres abrirlo ahora?</translation>
 <translation id="2878889940310164513">Añadir red móvil...</translation>
@@ -2828,6 +2829,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto</translation>
+<translation id="3948027458879361203">Cambiar nombre de host</translation>
 <translation id="3948116654032448504">&amp;Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos de las siguientes carpetas</translation>
 <translation id="394984172568887996">Importado desde Internet Explorer</translation>
@@ -3472,7 +3474,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4668721319092543482">Haz clic para habilitar <ph name="PLUGIN_NAME" /></translation>
 <translation id="46733273239502219">También se borrarán los datos offline de las aplicaciones instaladas</translation>
 <translation id="4673442866648850031">Abrir las herramientas del lápiz óptico al quitarlo</translation>
-<translation id="4675828034887792601">Crea accesos directos para buscar sitios y gestiona tu buscador</translation>
+<translation id="4675828034887792601">Crea accesos directos para buscar en sitios y gestionar tu buscador</translation>
 <translation id="4676595058027112862">Mi teléfono, Más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
 <translation id="467823995058589466">La cámara está desactivada</translation>
@@ -3552,7 +3554,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Cambiar nombre de la red móvil de eSIM</translation>
 <translation id="4780321648949301421">Guardar página como...</translation>
-<translation id="4784559565779618838">Para buscar un sitio específico o una parte de Chrome, puedes escribir el acceso directo en la barra de direcciones y, después, pulsar la tecla Tabulador o la barra espaciadora.</translation>
+<translation id="4784559565779618838">Para buscar en un sitio específico o una parte de Chrome, puedes escribir el acceso directo en la barra de direcciones y, después, pulsar la tecla Tabulador o la barra espaciadora.</translation>
 <translation id="4785719467058219317">Estás usando una llave de seguridad que no se ha registrado en este sitio web</translation>
 <translation id="4788092183367008521">Revisa tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -4482,7 +4484,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5817069030404929329">¿Transferir contraseñas de este dispositivo a tu cuenta de Google?</translation>
 <translation id="5817918615728894473">Emparejar</translation>
 <translation id="5821565227679781414">Crear acceso directo</translation>
-<translation id="5822865422567397338">Para buscar un sitio específico o parte de Chrome, puedes usar estos accesos directos. Por ejemplo, para buscar Gmail, escribe "@gmail" y, a continuación, pulsa la tecla Tabulador o la barra espaciadora.</translation>
+<translation id="5822865422567397338">Para buscar en un sitio específico o parte de Chrome, puedes usar estos accesos directos. Por ejemplo, para buscar en Gmail, escribe "@gmail" y, a continuación, pulsa la tecla Tabulador o la barra espaciadora.</translation>
 <translation id="5825412242012995131">Activado (recomendado)</translation>
 <translation id="5826395379250998812">Conecta tu <ph name="DEVICE_TYPE" /> al teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparente</translation>
@@ -6791,6 +6793,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si has activado la opción Actividad en la Web y en Aplicaciones, es posible que estos datos se guarden en la cuenta de Google de tu hijo. Consulta más información sobre estos ajustes y sobre cómo configurarlos en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificado de cliente no válido</translation>
 <translation id="827097179112817503">Mostrar el botón de página principal</translation>
+<translation id="8271268254812352141">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Los pasos siguientes son para los padres. Puedes devolverle el <ph name="DEVICE_TYPE" /> al niño/a después de configurar la cuenta.</translation>
 <translation id="8272443605911821513">Para gestionar tus extensiones, haz clic en la opción Extensiones del menú Más herramientas.</translation>
 <translation id="8274332263553132018">Enviar archivo</translation>
@@ -6936,7 +6939,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8457451314607652708">Importar marcadores</translation>
 <translation id="8458341576712814616">Acceso directo</translation>
 <translation id="8458627787104127436">Abrir todas (<ph name="URL_COUNT" />) en una ventana nueva</translation>
-<translation id="8460932807646981183">Gestionar buscadores y búsqueda de sitios</translation>
+<translation id="8460932807646981183">Gestionar buscadores y búsqueda en sitios</translation>
 <translation id="84613761564611563">Se ha solicitado la configuración de red de la UI. Por favor, espera...</translation>
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463215747450521436">Es posible que el administrador haya eliminado o inhabilitado este usuario supervisado. Ponte en contacto con el administrador si quieres seguir iniciando sesión como este usuario.</translation>
@@ -6969,7 +6972,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="8492822722330266509">Los sitios pueden enviar ventanas emergentes y utilizar redirecciones</translation>
 <translation id="8492960370534528742">Comentarios sobre Google Cast</translation>
 <translation id="8493236660459102203">Micrófono:</translation>
-<translation id="84959976576210191">En la barra de direcciones, escribe el acceso directo del sitio que quieres buscar, como "@gmail". A continuación, pulsa la combinación de teclas que quieras y escribe el término de búsqueda.</translation>
+<translation id="84959976576210191">En la barra de direcciones, escribe el acceso directo del sitio en el que quieres buscar, como "@gmail". A continuación, pulsa la combinación de teclas que quieras y escribe el término de búsqueda.</translation>
 <translation id="8496717697661868878">Ejecutar este complemento</translation>
 <translation id="8497219075884839166">Utilidades de Windows</translation>
 <translation id="8498214519255567734">Resulta más fácil ver la pantalla con poca luz</translation>
@@ -7478,7 +7481,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9023909777842748145">Aunque esta opción esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados, por ejemplo, con la seguridad y las actualizaciones del sistema.</translation>
 <translation id="9024127637873500333">&amp;Abrir en una pestaña nueva</translation>
 <translation id="9024158959543687197">No se ha podido activar el recurso compartido. Comprueba la URL del recurso compartido y vuelve a intentarlo.</translation>
-<translation id="9024692527554990034">Puedes usar un acceso directo en la barra de direcciones para buscar rápidamente un sitio específico o usar otro buscador</translation>
+<translation id="9024692527554990034">Puedes usar un acceso directo en la barra de direcciones para buscar rápidamente en un sitio específico o usar otro buscador</translation>
 <translation id="9026731007018893674">descarga</translation>
 <translation id="9026852570893462412">Descargando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
 <translation id="9027459031423301635">Abrir enlace en una &amp;pestaña nueva</translation>

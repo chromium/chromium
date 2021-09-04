@@ -116,6 +116,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2073572773299281212">Poslednja aktivnost: pre <ph name="DAYS" /> dan/a</translation>
 <translation id="2074131957428911366">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Opozovi</translation>
+<translation id="2080769225927880590">Prijavite se pomoću važećeg naloga</translation>
 <translation id="209018056901015185">Zahtevaj sajt za računar</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premeštenih stavki je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -467,6 +468,8 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5737974891429562743">Podaci za prijavljivanje na nalog su zastareli. Ažurirajte ih da biste započeli sinhronizaciju.</translation>
 <translation id="5738887413654608789">Ovo vam omogućava da otkrijete relevantne veb-stranice na osnovu okruženja.</translation>
 <translation id="5758631781033351321">Ovde ćete pronaći listu za čitanje</translation>
+<translation id="575902488528307720">Potražite sliku</translation>
+<translation id="5781453543752460388">Dodaj u slike</translation>
 <translation id="5782227691023083829">Prevođenje je u toku...</translation>
 <translation id="5803566855766646066">Želite li stvarno da odbacite ovu novu karticu?</translation>
 <translation id="5812974770859303494">Dodajte u…</translation>
@@ -738,6 +741,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8205564605687841303">Otkaži</translation>
 <translation id="8206354486702514201">Ovo podešavanje primenjuje administrator.</translation>
 <translation id="8225985093977202398">Keširane slike i datoteke</translation>
+<translation id="8228176677386827255">Uređajem se upravlja. Možete da se prijavite samo pomoću naloga organizacije.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8271720166617117963">Prihvati i prijavi me</translation>
 <translation id="8281781826761538115">Podrazumevano – <ph name="DEFAULT_LOCALE" /></translation>

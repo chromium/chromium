@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">हाइपरटेक्स्ट ट्रांसपोर्ट प्रोटोकॉल (एचटीटीपीएस)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' के लिए, <ph name="NUM" /> टैब मिले</translation>
 <translation id="1060292118287751956">स्क्रीन अपडेट होने की दर तय की जाती है</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> में आपका स्वागत है</translation>
 <translation id="1061904396131502319">ब्रेक लेने का समय होने वाला है</translation>
 <translation id="1066613507389053689">Chrome OS को अपडेट करना ज़रूरी है</translation>
 <translation id="1067048845568873861">निर्मित</translation>
@@ -2843,6 +2844,7 @@
 <translation id="3943582379552582368">&amp;वापस</translation>
 <translation id="3943857333388298514">चिपकाएं</translation>
 <translation id="3945513714196326460">इससे छोटा नाम डालें</translation>
+<translation id="3948027458879361203">होस्टनेम बदलें</translation>
 <translation id="3948116654032448504">इमेज को <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों में बदलाव कर सकती है</translation>
 <translation id="394984172568887996">IE से आयात किया गया</translation>
@@ -6806,6 +6808,7 @@
     <ph name="BEGIN_PARAGRAPH4" />अगर आपके बच्चे के लिए वेब और ऐप्लिकेशन की और भी गतिविधि सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव हो सकता है. families.google.com पर जाकर इन सेटिंग और इन्हें बदलने के तरीकों के बारे में ज़्यादा जानें.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">अमान्य क्लाइंट प्रमाणपत्र</translation>
 <translation id="827097179112817503">होम बटन दिखाएं</translation>
+<translation id="8271268254812352141">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर दायां क्लिक करें. अनुवाद करने के लिए, <ph name="LINK_BEGIN" />वेबसाइट की भाषाओं<ph name="LINK_END" /> में अपनी पसंदीदा भाषाएं सेट करें.</translation>
 <translation id="8271379370373330993">अगले कुछ कदम माता-पिता के लिए हैं. आप खाता सेट अप करने के बाद <ph name="DEVICE_TYPE" /> वापस बच्चे को दे सकते हैं.</translation>
 <translation id="8272443605911821513">मेन्यू में "ज़्यादा टूल" एक्सटेंशन पर क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
 <translation id="8274332263553132018">फ़ाइल कास्ट करें</translation>

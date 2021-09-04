@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">ডব্লিউইপি</translation>
 <translation id="1071587090247825784">ফায়াৰৱাল চিনাক্ত কৰা হৈছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠাৰ আকাৰ</translation>
+<translation id="1119447706177454957">আভ্যন্তৰীণ আসোঁৱাহ</translation>
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" />এ এই <ph name="DEVICE_TYPE" />টো পৰিচালনা কৰে।</translation>
@@ -147,6 +148,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
 <translation id="4034824040120875894">প্ৰিণ্টাৰ</translation>
+<translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4155551848414053977">নিশ্চিত কৰক যে স্কেনাৰটো অন কৰা আছে আৰু আপোনাৰ নেটৱৰ্ক অথবা এটা পোনপটীয়া সংযোগৰ জৰিয়তে উপলব্ধ হৈ আছে</translation>
@@ -222,6 +224,7 @@
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="5212543919916444558">আপোনাক সহায় কৰিব পৰাকৈ মই আপোনাৰ স্ক্ৰীণত একো বিচাৰি পোৱা নাই।
 মোক কিবা সুধিবলৈ মাইকটো টিপক।</translation>
+<translation id="5212593641110061691">টেব্‌লইড</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5252456968953390977">ৰ’মিং</translation>
@@ -281,6 +284,7 @@
 <translation id="6146993107019042706">সম্পূর্ণ কৰিবলৈ আপোনাৰ নতুন পাছৱর্ড দিয়ক</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">অধিক জানক</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ব্যৱহাৰৰ লগে লগে বেটাৰীৰ ক্ষমতা কমি আহে</translation>
 <translation id="6191293864534840972">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ বিকৃত</translation>
 <translation id="6223752125779001553">কোনো স্কেনাৰ নাই</translation>

@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1810845389119482123">A szinkronizálás kezdeti beállítása nem fejeződött be</translation>
 <translation id="1829244130665387512">Keresés ezen az oldalon</translation>
-<translation id="1830550083491357902">Nem jelentkezett be</translation>
 <translation id="1843805151597803366">A jobb fordítások érdekében engedélyezze a Google Keresőnek a jelenlegi oldal használatát</translation>
 <translation id="1856325424225101786">Visszaállítja az Egyszerűsített módot?</translation>
 <translation id="1868024384445905608">Mostantól a Chrome gyorsabban tölti le a fájlokat</translation>
@@ -216,6 +215,7 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2369533728426058518">megnyitott lapok</translation>
 <translation id="2386938421315164605">Témakörök elrejtése és felfedése</translation>
 <translation id="2387895666653383613">Szöveg nagyítása</translation>
+<translation id="2390510615457643724">Ismét letölti a következő fájlt: <ph name="FILE_NAME" /><ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Itt találhatja majd a letöltött fájlokat</translation>
 <translation id="2407481962792080328">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót</translation>
 <translation id="2410754283952462441">Válasszon fiókot</translation>
@@ -325,7 +325,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3006881078666935414">Nincsenek használati adatok</translation>
 <translation id="301080557829842765">Adatvédelmi útmutató</translation>
 <translation id="3016635187733453316">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez</translation>
-<translation id="3026955690410463085">Link felvétele</translation>
+<translation id="3026955690410463085">Link hozzáadása</translation>
 <translation id="3029704984691124060">Az összetett jelszavak nem egyeznek</translation>
 <translation id="3031225630520268969">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
@@ -376,6 +376,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3295530008794733555">Gyorsabb böngészés. Kevesebb adathasználat.</translation>
 <translation id="3297344142967351106">Hangalapú segítség</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
+<translation id="3332570638882314953">Még több releváns információ</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341058695485821946">Megnézheti, mennyi adatot takarított meg</translation>
 <translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
@@ -453,6 +454,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> letöltés törölve</translation>
+<translation id="3819183753496523827">Offline állapotban van. Ellenőrizze az internetkapcsolatot, és próbálkozzon újra.</translation>
 <translation id="3845098929839618392">Megnyitás inkognitó lapon</translation>
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="3858860766373142691">Név</translation>
@@ -483,7 +485,6 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3988213473815854515">Hely engedélyezve</translation>
 <translation id="3988466920954086464">Azonnali keresési találatok megtekintése ezen a panelen</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
-<translation id="4001236013802615636">A Google figyelembe veheti az oldalon szereplő szöveg egyes részeit is</translation>
 <translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="4045764304651014138">Használati adatok</translation>
@@ -707,6 +708,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5433691172869980887">Felhasználónév vágólapra másolva</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> fájl letöltése folyamatban (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Letöltés újra</translation>
 <translation id="5441466871879044658">Fordítás erre a nyelvre</translation>
 <translation id="5441522332038954058">Ugrás a címsávba</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
@@ -806,6 +808,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5964805880140440652">Úgy oszthatja meg az oldalt más eszközzel, hogy bekapcsolja rajta a szinkronizálást a Chrome beállításai között</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
+<translation id="5995726099713306770">Ismét letölti az oldalt?</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
 <translation id="6000203700195075278">Újrakövetés</translation>
 <translation id="6005538289190791541">Javasolt jelszó</translation>
@@ -942,6 +945,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
 <translation id="6710213216561001401">Előző</translation>
 <translation id="671481426037969117">A(z) <ph name="FQDN" /> alkalmazás időzítése lejárt. Holnap újraindul.</translation>
+<translation id="6715020873764921614">Mindenképpen le szeretné tölteni a következő fájlt: <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Adatai titkosítva lettek <ph name="BEGIN_LINK" />összetett szinkronizálási jelszavával<ph name="END_LINK" /> a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="6738867403308150051">Letöltés…</translation>
 <translation id="6751521182688001123">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez tartsa lenyomva.</translation>
@@ -966,6 +970,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6882836635272038266">Normál védelem azon webhelyekkel, letöltésekkel és bővítményekkel szemben, amelyekről ismert, hogy veszélyesek.</translation>
 <translation id="6883204995689174413">Megosztás</translation>
 <translation id="688738109438487280">Meglévő adatok hozzáadása a(z) <ph name="TO_ACCOUNT" /> fiókhoz.</translation>
+<translation id="6889847736310813892">Jobb találatokat kaphat a kiemelt szavakra, ha engedi, hogy a Google figyelembe vegye az oldal szövegének egy részét is. Ezt bármikor megváltoztathatja a <ph name="BEGIN_LINK" />Beállítások<ph name="END_LINK" /> között.</translation>
 <translation id="6891726759199484455">Oldja fel a képernyőzárat a jelszó másolásához</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6900532703269623216">Speciális védelem</translation>

@@ -764,6 +764,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3566021033012934673">Kết nối của bạn không phải là kết nối riêng tư</translation>
 <translation id="3567778190852720481">Không thể đăng ký bằng tài khoản doanh nghiệp (tài khoản doanh nghiệp không đủ điều kiện).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Cho phép đối với trang web này</translation>
 <translation id="3576616784287504635">Một trang được nhúng tại <ph name="SITE" /> cho biết</translation>
 <translation id="3581089476000296252">Chrome sẽ cho bạn biết thời điểm trang này sẵn sàng. &lt;a&gt;Hủy&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Thêm tên</translation>
@@ -2189,6 +2190,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8368476060205742148">Dịch vụ Google Play</translation>
 <translation id="8371889962595521444">Chứng chỉ gốc tùy chỉnh</translation>
 <translation id="8374636051559112948">Khác nhau</translation>
+<translation id="8380167699614421159">Trang web này hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="8380941800586852976">Nguy hiểm</translation>
 <translation id="8381674639488873545">Những khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Chính sách của quản trị viên đã chặn thao tác chia sẻ từ <ph name="ORIGIN_NAME" /> với <ph name="VM_NAME" /></translation>

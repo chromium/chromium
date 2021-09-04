@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocolo de Transferência de Hipertexto Seguro (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> separadores encontrados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Determina a frequência de atualização do ecrã</translation>
+<translation id="1061130374843955397">Damos-lhe as boas-vindas ao seu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Está quase na altura de fazer uma pausa</translation>
 <translation id="1066613507389053689">Atualização do Chrome OS necessária</translation>
 <translation id="1067048845568873861">Data da criação</translation>
@@ -2830,6 +2831,7 @@ Pretende pará-lo?</translation>
 <translation id="3943582379552582368">&amp;Anterior</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="3945513714196326460">Tente utilizar um nome mais curto</translation>
+<translation id="3948027458879361203">Alterar nome do anfitrião</translation>
 <translation id="3948116654032448504">Pe&amp;squisar Imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pode editar ficheiros nas seguintes pastas</translation>
 <translation id="394984172568887996">Importado do IE</translation>
@@ -6794,6 +6796,7 @@ Prima um comutador atribuído para remover a atribuição</translation>
     <ph name="BEGIN_PARAGRAPH4" />Se a Atividade da Web e de apps adicional estiver ativada para a criança, estes dados poderão ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as ajustar em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificado de cliente inválido.</translation>
 <translation id="827097179112817503">Mostrar botão Página inicial</translation>
+<translation id="8271268254812352141">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto. Personalize os idiomas de tradução em <ph name="LINK_BEGIN" />Idiomas de Websites<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Os passos seguintes são para os pais. Pode devolver o <ph name="DEVICE_TYPE" /> à criança após a configuração da conta.</translation>
 <translation id="8272443605911821513">Faça a gestão das suas extensões clicando em Extensões no menu "Mais ferramentas".</translation>
 <translation id="8274332263553132018">Transmitir ficheiro</translation>

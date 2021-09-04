@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="579702532610384533">ዳግም ያገናኙ</translation>
 <translation id="5810269635982033450">ማያ ገጽ እንደ የመከታተያ ፓድ ይሆናል</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ማያ ገጽዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። ይህን ጥያቄ እየጠበቁ ካልሆነ ከሆነ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ። አለበለዚያ ዝግጁ ሲሆኑ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>
 <translation id="5823658491130719298">በርቀት ሊደርሱበት በሚፈልጉት ኮምፒውተር ላይ Chromeን ይክፈቱና <ph name="INSTALLATION_LINK" />ን ይጎብኙ</translation>
 <translation id="5841343754884244200">የማሳያ አማራጮች</translation>
 <translation id="6033507038939587647">የቁልፍ ሰሌዳ አማራጮች</translation>

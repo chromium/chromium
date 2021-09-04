@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Абаронены пратакол перадачы гіпертэксту (HTTPS)</translation>
 <translation id="1059944192885972544">Знойдзена некалькі (<ph name="NUM" />) укладак па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Вызначае частату абнаўлення экрана</translation>
+<translation id="1061130374843955397">Вас вітае <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Набліжаецца час блакіроўкі</translation>
 <translation id="1066613507389053689">Неабходна абнавіць Chrome OS</translation>
 <translation id="1067048845568873861">Створаны</translation>
@@ -2831,6 +2832,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3945513714196326460">Паспрабуйце ўвесці карацейшую назву</translation>
+<translation id="3948027458879361203">Змяніць імя хоста</translation>
 <translation id="3948116654032448504">&amp;Пошук відарыса праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Сайт <ph name="ORIGIN" /> можа змяняць файлы ў наступных папках</translation>
 <translation id="394984172568887996">Імпартаваныя з IE</translation>
@@ -6790,6 +6792,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Калі для вашага дзіцяці ўключана налада дадатковай гісторыі дзеянняў у інтэрнэце і праграмах, то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google. Даведацца больш пра гэтыя налады і іх рэгуліроўку можна на сайце families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Несапраўдны кліенцкі сертыфікат</translation>
 <translation id="827097179112817503">Паказаць кнопку галоўнага экрана</translation>
+<translation id="8271268254812352141">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы. Наладзіць мовы перакладу можна ў раздзеле <ph name="LINK_BEGIN" />Мовы вэб-сайтаў<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Бацькі, наступныя некалькі крокаў павінны зрабіць вы. Вы зможаце вярнуць прыладу <ph name="DEVICE_TYPE" /> дзіцяці пасля наладжвання ўліковага запісу.</translation>
 <translation id="8272443605911821513">Каб кіраваць пашырэннямі, націсніце кнопку "Пашырэнні" ў меню "Іншыя інструменты".</translation>
 <translation id="8274332263553132018">Трансліраваць файл</translation>

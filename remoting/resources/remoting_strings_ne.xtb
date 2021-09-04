@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> का रूपमा साइन इन गरियो।</translation>
 <translation id="579702532610384533">पुन: कनेक्ट गर्नुहोस्</translation>
 <translation id="5810269635982033450">स्क्रिनले ट्र्याकप्याडको काम गर्छ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ले तपाईंको कम्प्युटरको स्क्रिन हेर्ने र तपाईंको किबोर्ड र माउस नियन्त्रण गर्ने अनुमति मागेका छन्। उहाँले तपाईंलाई अग्रिम रूपमा जानकारी नगराइकन यो अनुमति मागेका हुन् भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' थिच्नुहोस्। अथवा तपाईं उहाँलाई तपाईंको कम्प्युटरमा कनेक्ट गर्ने अनुमति दिन तयार हुनुहुन्छ भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' चयन गर्नुहोस्।</translation>
 <translation id="5823658491130719298">तपाईंले दूरवर्ती रूपमा पहुँच राख्न चाहनुभएको कम्प्युटरमा Chrome खोलेर <ph name="INSTALLATION_LINK" /> मा जानुहोस्‌</translation>
 <translation id="5841343754884244200">विकल्पहरू देखाउनुहोस्</translation>
 <translation id="6033507038939587647">किबोर्डका विकल्पहरू</translation>

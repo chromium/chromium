@@ -760,6 +760,7 @@
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
 <translation id="3567778190852720481">企業アカウントでは登録できません（企業アカウントは利用できません）。</translation>
 <translation id="3574305903863751447"><ph name="COUNTRY" /> <ph name="STATE" /> <ph name="CITY" /></translation>
+<translation id="3575121482199441727">このサイトの通知を許可</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> に埋め込まれているページの内容</translation>
 <translation id="3581089476000296252">このページの準備が整いましたらお知らせします。&lt;a&gt;キャンセル&lt;/a&gt;</translation>
 <translation id="3582930987043644930">名前を追加</translation>
@@ -2180,6 +2181,7 @@
 <translation id="8368476060205742148">Google Play 開発者サービス</translation>
 <translation id="8371889962595521444">カスタムルート証明書</translation>
 <translation id="8374636051559112948">各サイズに対応</translation>
+<translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8380941800586852976">危険</translation>
 <translation id="8381674639488873545">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。<ph name="BEGIN_LINK" />理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への貼り付けは管理者が設定したポリシーによってブロックされています</translation>

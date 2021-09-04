@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Jasny</translation>
 <translation id="1810845389119482123">Nie dokończono wstępnego konfigurowania synchronizacji</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
-<translation id="1830550083491357902">Niezalogowany</translation>
 <translation id="1843805151597803366">Aby poprawić jakość tłumaczeń, pozwól wyszukiwarce Google na używanie bieżącej strony</translation>
 <translation id="1856325424225101786">Zresetować wersję uproszczoną?</translation>
 <translation id="1868024384445905608">Chrome pobiera pliki jeszcze szybciej</translation>
@@ -216,6 +215,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2369533728426058518">otwarte karty</translation>
 <translation id="2386938421315164605">Ukrywaj i odkrywaj tematy</translation>
 <translation id="2387895666653383613">Skalowanie tekstu</translation>
+<translation id="2390510615457643724">Czy chcesz ponownie pobrać plik <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Tutaj pojawią się pobrane pliki</translation>
 <translation id="2407481962792080328">Ta funkcja zostanie włączona, gdy zalogujesz się na swoje konto Google</translation>
 <translation id="2410754283952462441">Wybierz konto</translation>
@@ -376,6 +376,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3295530008794733555">Szybsze przeglądanie. Mniejsze zużycie danych.</translation>
 <translation id="3297344142967351106">Pomoc głosowa</translation>
 <translation id="3303414029551471755">Przejść do pobrania treści?</translation>
+<translation id="3332570638882314953">Otrzymuj więcej powiązanych informacji</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
 <translation id="3341058695485821946">Sprawdź ilość zaoszczędzonych danych</translation>
 <translation id="3341262203274374114">Nie udało się przestać obserwować. Coś poszło nie tak.</translation>
@@ -453,6 +454,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3819178904835489326">Usunięte pobrane pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="3819183753496523827">Jesteś offline. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="3845098929839618392">Otwórz w karcie incognito</translation>
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
 <translation id="3858860766373142691">Nazwa</translation>
@@ -483,7 +485,6 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3988213473815854515">Lokalizacja jest dozwolona</translation>
 <translation id="3988466920954086464">Zobacz wyniki wyszukiwania dynamicznego w tym panelu</translation>
 <translation id="4000212216660919741">Ekran główny offline</translation>
-<translation id="4001236013802615636">Niech Google bierze też pod uwagę fragmenty tekstu na stronie</translation>
 <translation id="4016425174436051808">Nie udało się dodać do obserwowanych. Coś poszło nie tak.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# godzina}few{# godziny}many{# godzin}other{# godziny}}</translation>
 <translation id="4045764304651014138">Dane o korzystaniu</translation>
@@ -707,6 +708,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="543338862236136125">Edytuj hasło</translation>
 <translation id="5433691172869980887">Nazwa użytkownika została skopiowana</translation>
 <translation id="543509235395288790">Pobieram pliki: <ph name="COUNT" /> (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Pobierz ponownie</translation>
 <translation id="5441466871879044658">Tłumacz na ten język</translation>
 <translation id="5441522332038954058">Przejdź do paska adresu</translation>
 <translation id="544776284582297024">Aby otworzyć karty i jednocześnie wejść na kilka stron, kliknij przycisk otwierania kart</translation>
@@ -806,6 +808,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5964805880140440652">Aby udostępnić tę stronę na innym urządzeniu, włącz synchronizację w ustawieniach Chrome</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
+<translation id="5995726099713306770">Pobrać stronę ponownie?</translation>
 <translation id="6000066717592683814">Zachowaj Google</translation>
 <translation id="6000203700195075278">Ponownie dodaj do obserwowanych</translation>
 <translation id="6005538289190791541">Proponowane hasło</translation>
@@ -942,6 +945,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="670498945988402717">Sprawdzano wczoraj</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="671481426037969117">Licznik czasu w aplikacji <ph name="FQDN" /> dobiegł końca. Jutro zacznie działać od nowa.</translation>
+<translation id="6715020873764921614">Czy mimo wszystko chcesz pobrać plik <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Twoje dane zostały zaszyfrowane <ph name="BEGIN_LINK" />hasłem synchronizacji<ph name="END_LINK" /> w dniu <ph name="TIME" />. Wpisz to hasło, by rozpocząć synchronizację.</translation>
 <translation id="6738867403308150051">Pobieram…</translation>
 <translation id="6751521182688001123">Szybko otwórz nową kartę. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>
@@ -966,6 +970,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6882836635272038266">Standardowa ochrona przed stronami, pobieranymi plikami i rozszerzeniami, które są uznawane za niebezpieczne.</translation>
 <translation id="6883204995689174413">Udostępnij</translation>
 <translation id="688738109438487280">Dodaj istniejące dane do konta <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Aby otrzymywać dokładniejsze wyniki dotyczące podświetlonych słów, pozwól Google na sprawdzanie fragmentów tekstu na stronie. Zawsze możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Odblokuj, by skopiować hasło</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6900532703269623216">Silniejsza ochrona</translation>

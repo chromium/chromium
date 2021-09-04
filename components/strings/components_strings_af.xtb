@@ -764,6 +764,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3566021033012934673">Jou verbinding is nie privaat nie</translation>
 <translation id="3567778190852720481">Kan nie met werkrekening inskryf nie (werkrekening kwalifiseer nie).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3576616784287504635">'n Ingebedde bladsy by <ph name="SITE" /> sê</translation>
 <translation id="3581089476000296252">Chrome sal jou laat weet wanneer hierdie bladsy gereed is. &lt;a&gt;Kanselleer&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Voeg naam by</translation>
@@ -2189,6 +2190,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8368476060205742148">Google Play Dienste</translation>
 <translation id="8371889962595521444">Gepasmaakte kernsertifikate</translation>
 <translation id="8374636051559112948">Verskil</translation>
+<translation id="8380167699614421159">Hierdie werf wys indringerige of misleidende advertensies</translation>
 <translation id="8380941800586852976">Gevaarlik</translation>
 <translation id="8381674639488873545">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Administrateurbeleid blokkeer plak van <ph name="ORIGIN_NAME" /> af na <ph name="VM_NAME" /> toe</translation>

@@ -760,6 +760,7 @@
 <translation id="3566021033012934673">თქვენი კავშირი არ არის პირადი</translation>
 <translation id="3567778190852720481">კორპორაციული ანგარიშით რეგისტრაცია ვერ ხერხდება (კორპორაციული ანგარიში პირობებთან შეუსაბამოა).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">დაშვება ამ საიტისთვის</translation>
 <translation id="3576616784287504635"><ph name="SITE" />-ში ჩაშენებული გვერდი იუწყება:</translation>
 <translation id="3581089476000296252">Chrome შეგატყობინებთ, როცა ეს გვერდი მზად იქნება. &lt;a&gt;გაუქმება&lt;/a&gt;</translation>
 <translation id="3582930987043644930">სახელის დამატება</translation>
@@ -2180,6 +2181,7 @@
 <translation id="8368476060205742148">Google Play Services</translation>
 <translation id="8371889962595521444">მორგებული ძირეული სერტიფიკატები</translation>
 <translation id="8374636051559112948">ცვალებადი</translation>
+<translation id="8380167699614421159">ამ საიტზე ნაჩვენებია მომაბეზრებელი ან შეცდომაში შემყვანი რეკლამა</translation>
 <translation id="8380941800586852976">სახიფათო</translation>
 <translation id="8381674639488873545">აღნიშნული გადახდები შეიძლება განხორციელდეს ერთჯერადად ან პერიოდულად და არ იყოს ადვილად შესამჩნევი. <ph name="BEGIN_LINK" />მაინც ჩვენება<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" />-დან <ph name="VM_NAME" />-ში გაზიარება დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>

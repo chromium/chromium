@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tuvastati tulemüür</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
+<translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
 Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5252456968953390977">Rändlus</translation>
@@ -282,6 +284,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6146993107019042706">Toimingu lõpuleviimiseks sisestage oma uus parool</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisateave</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Aku maht väheneb kasutuse käigus</translation>
 <translation id="6191293864534840972">Vigased nimeserverid</translation>
 <translation id="6223752125779001553">Ühtegi skannerit pole saadaval</translation>

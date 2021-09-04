@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">បានចូលជា <ph name="EMAIL_ADDRESS" /> ។</translation>
 <translation id="579702532610384533">ភ្ជាប់ឡើងវិញ</translation>
 <translation id="5810269635982033450">អេក្រង់​ដំណើរការ​ដូចជា​ផ្ទាំងប៉ះ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> បានស្នើសុំចូលប្រើ ដើម្បីមើលអេក្រង់របស់អ្នក ព្រមទាំងគ្រប់គ្រងក្ដារចុច និងកណ្ដុររបស់អ្នក។ ចុច ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ប្រសិនបើអ្នកមិនយល់ព្រមលើសំណើនេះទេ។ បើមិនដូច្នោះទេ សូមជ្រើសរើស ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ដើម្បីអនុញ្ញាតការតភ្ជាប់ នៅពេលរួចរាល់។</translation>
 <translation id="5823658491130719298">បើក Chrome រួចចូល <ph name="INSTALLATION_LINK" /> នៅលើ​កុំព្យូទ័រ​ដែលអ្នក​ចង់ចូល​ប្រើពី​ចម្ងាយ</translation>
 <translation id="5841343754884244200">ជម្រើស​នៃ​ការបង្ហាញ</translation>
 <translation id="6033507038939587647">ជម្រើស​ក្ដារចុច</translation>

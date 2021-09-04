@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Znaleziono karty (<ph name="NUM" />) dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060292118287751956">Określa częstotliwość aktualizacji ekranu</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> – witamy!</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="1066613507389053689">Wymagana jest aktualizacja Chrome OS</translation>
 <translation id="1067048845568873861">Utworzono</translation>
@@ -2826,6 +2827,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3943582379552582368">&amp;Wstecz</translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="3945513714196326460">Podaj krótszą nazwę</translation>
+<translation id="3948027458879361203">Zmień nazwę hosta</translation>
 <translation id="3948116654032448504">&amp;Szukaj obrazu w <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Strona <ph name="ORIGIN" /> może edytować pliki w tych folderach</translation>
 <translation id="394984172568887996">Zaimportowane z IE</translation>
@@ -6789,6 +6791,7 @@ Naciśnij przypisany przełącznik, aby usunąć przypisanie</translation>
     <ph name="BEGIN_PARAGRAPH4" />Jeśli dodatkowo Twoje dziecko ma włączoną Aktywność w internecie i aplikacjach, dane mogą być zapisywane na jego koncie Google. Więcej informacji o tych ustawieniach i ich zmienianiu znajdziesz na families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nieprawidłowy certyfikat klienta</translation>
 <translation id="827097179112817503">Pokaż przycisk strony głównej</translation>
+<translation id="8271268254812352141">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek. Dostosuj języki tłumaczenia w sekcji <ph name="LINK_BEGIN" />Języki wyświetlania stron internetowych<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Rodzice, kilka kolejnych kroków jest przeznaczonych dla Was. Po skonfigurowaniu konta <ph name="DEVICE_TYPE" /> może wrócić w ręce dziecka.</translation>
 <translation id="8272443605911821513">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Więcej narzędzi.</translation>
 <translation id="8274332263553132018">Prześlij plik</translation>

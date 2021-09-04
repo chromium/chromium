@@ -734,7 +734,7 @@
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を有効にする。</translation>
 <translation id="1961091374249454164">このポリシーは、管理対象ゲスト セッションにのみ適用されます。
       このポリシーでは、制限付きの管理対象ゲスト セッションのクリーンアップ手順から除外する拡張機能 ID のリストを指定します（<ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" /> を参照）。
-このポリシーを未設定のままにした場合は、再設定の手順から拡張機能を除外しません。</translation>
+このポリシーを未設定のままにした場合は、再設定の手順から拡張機能は除外されません。</translation>
 <translation id="1962273523772270623">Google サービスからの WebRTC イベントログの収集を許可する</translation>
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
@@ -5477,13 +5477,6 @@
 <translation id="802147957407376460">画面を 0 度回転（回転なし）</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 画像の SHA-256 ハッシュです。</translation>
 <translation id="8029201909194194377">リモート アクセス接続で許可する最長セッション継続時間</translation>
-<translation id="8033913082323846868">このポリシーは M70 でサポート終了となりました。代わりに AutofillAddressEnabled と AutofillCreditCardEnabled を使用してください。
-
-      <ph name="PRODUCT_NAME" /> の自動入力機能を有効にし、ユーザーが以前に保存した情報（住所やクレジット カード情報など）を使用してウェブフォームに自動入力できるようにします。
-
-      この設定を無効にした場合、ユーザーは自動入力を利用できません。
-
-      この設定を有効にするか値を設定しない場合、ユーザーは自動入力を利用できます。ユーザーは自動入力プロフィールを設定して、自身の判断で自動入力をオンまたはオフにすることができます。</translation>
 <translation id="8036964468882248070">このポリシーを有効に設定すると、登録済みデバイスはストレージ デバイスに関するハードウェアの統計情報と識別子を報告します。
 
       このポリシーを無効にするか、未設定のままにすると、登録済みのデバイスはストレージに関する統計情報を報告しません。</translation>

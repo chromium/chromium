@@ -764,6 +764,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3566021033012934673">La conexión no es privada</translation>
 <translation id="3567778190852720481">No te puedes registrar con la cuenta de empresa (la cuenta de empresa no reúne los requisitos).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Permitir para este sitio web</translation>
 <translation id="3576616784287504635">Una página insertada en <ph name="SITE" /> dice</translation>
 <translation id="3581089476000296252">Chrome te avisará cuando la página esté lista. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Añade un nombre</translation>
@@ -2189,6 +2190,7 @@ Más información:
 <translation id="8368476060205742148">Servicios de Google Play</translation>
 <translation id="8371889962595521444">Certificados raíz personalizados</translation>
 <translation id="8374636051559112948">Varía</translation>
+<translation id="8380167699614421159">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="8380941800586852976">Peligroso</translation>
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La política del administrador no permite compartir entre <ph name="ORIGIN_NAME" /> y <ph name="VM_NAME" />.</translation>

@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">اتصال شما خصوصی نیست</translation>
 <translation id="3567778190852720481">نمی‌توان با حساب سازمانی ثبت‌نام کرد (حساب سازمانی واجد شرایط نیست).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">مجاز برای این سایت</translation>
 <translation id="3576616784287504635">صفحه جاسازی‌شده‌ای در <ph name="SITE" /> می‌گوید</translation>
 <translation id="3581089476000296252">‏وقتی این صفحه آماده شد، Chrome به شما اطلاع می‌دهد. &lt;a&gt;لغو&lt;/a&gt;</translation>
 <translation id="3582930987043644930">افزودن نام</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8371889962595521444">گواهی‌نامه ریشه سفارشی</translation>
 <translation id="8374636051559112948">متفاوت است</translation>
+<translation id="8380167699614421159">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">براساس خط‌مشی سرپرست، هم‌رسانی از <ph name="ORIGIN_NAME" /> به <ph name="VM_NAME" /> مسدود شده است</translation>

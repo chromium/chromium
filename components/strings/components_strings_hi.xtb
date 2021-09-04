@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">आपका कनेक्शन निजी नहीं है</translation>
 <translation id="3567778190852720481">एंटरप्राइज़ खाते के साथ नाम दर्ज नहीं किया जा सकता (एंटरप्राइज़ खाते से डिवाइस को जोड़ने की मंज़ूरी नहीं दी गई है).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">इस साइट के लिए सूचनाओं को अनुमति दें</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> पर एम्बेड किए गए पेज का कहना है कि</translation>
 <translation id="3581089476000296252">जब यह पेज तैयार होगा, तो Chrome आपको बता देगा. &lt;a&gt;रद्द करें&lt;/a&gt;</translation>
 <translation id="3582930987043644930">नाम जोड़ें</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">Google Play सेवाएं</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफ़िकेट</translation>
 <translation id="8374636051559112948">बदलता रहता है</translation>
+<translation id="8380167699614421159">इस साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में साफ़ तौर पर न बताया जाए. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर क्लिपबोर्ड डेटा शेयर करने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>

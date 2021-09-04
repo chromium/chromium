@@ -764,6 +764,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3566021033012934673">Tilkoblingen din er ikke privat</translation>
 <translation id="3567778190852720481">Kan ikke registrere med bedriftskontoen (bedriftskontoen er ikke kvalifisert).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" />, <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3576616784287504635">På en innebygd side på <ph name="SITE" /> står det</translation>
 <translation id="3581089476000296252">Chrome gir deg beskjed når denne siden er klar. &lt;a&gt;Avbryt&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Legg til navn</translation>
@@ -2188,6 +2189,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8371889962595521444">Tilpassede rotsertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
+<translation id="8380167699614421159">Dette nettstedet viser forstyrrende eller villedende annonser</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8381674639488873545">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare. <ph name="BEGIN_LINK" />Vis likevel<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Deling fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /> er blokkert av en administratorregel</translation>

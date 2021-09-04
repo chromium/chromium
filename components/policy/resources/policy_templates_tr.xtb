@@ -5624,13 +5624,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="802147957407376460">Ekranı 0 derece döndür</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
-<translation id="8033913082323846868">Bu politika M70 sürümünde kullanımdan kaldırılmıştır. Lütfen bunun yerine AutofillAddressEnabled ve AutofillCreditCardEnabled politikalarını kullanın.
-
-      <ph name="PRODUCT_NAME" /> içinde bulunan Otomatik Doldurma özelliğini etkinleştirir ve kullanıcıların adresler ve kredi kartı bilgileri gibi önceden saklanmış bilgileri kullanarak web formlarını otomatik bir şekilde doldurmalarına olanak sağlar.
-
-      Bu ayarı devre dışı bırakırsanız kullanıcılar Otomatik Doldurma özelliğine erişemezler.
-
-      Bu ayarı etkinleştirirseniz veya bir değer ayarlamazsanız, Otomatik Doldurma kullanıcının denetimi altında kalır. Böylece kullanıcılara, Otomatik Doldurma profillerini yapılandırma ve kendi istedikleri şekilde Otomatik Doldurma özelliğini açıp kapama olanağı verilir.</translation>
 <translation id="8036964468882248070">Politika Etkin değerine ayarlanırsa kayıtlı cihazlar depolama cihazlarına ait donanım istatistiklerini ve tanımlayıcıları bildirir.
 
       Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar depolama istatistiklerini bildirmez.</translation>

@@ -762,6 +762,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3566021033012934673">Az Ön kapcsolata nem privát</translation>
 <translation id="3567778190852720481">Vállalati fiókkal nem regisztrálhat (a vállalati fiók nem jogosult a műveletre).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Engedélyezés ezen a webhelyen</translation>
 <translation id="3576616784287504635">A(z) <ph name="SITE" /> egyik beágyazott oldalának közlendője</translation>
 <translation id="3581089476000296252">A Chrome értesíteni fogja, ha készen áll az oldal. &lt;a&gt;Megszakítás&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Név hozzáadása</translation>
@@ -2187,6 +2188,7 @@ További részletek:
 <translation id="8368476060205742148">Google Play-szolgáltatások</translation>
 <translation id="8371889962595521444">Egyéni gyökérszintű tanúsítványok</translation>
 <translation id="8374636051559112948">Változó</translation>
+<translation id="8380167699614421159">Ez a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="8380941800586852976">Veszélyes</translation>
 <translation id="8381674639488873545">Egyszeri és ismétlődő díjakról is szó lehet, amelyek nem feltétlenül nyilvánvalóak. <ph name="BEGIN_LINK" />Megjelenítés mégis<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Rendszergazdai házirend tiltja a tartalmak megosztását innen: <ph name="ORIGIN_NAME" />, ide: <ph name="VM_NAME" /></translation>

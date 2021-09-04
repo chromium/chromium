@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="1060292118287751956">Menentukan frekuensi pembaruan layar</translation>
+<translation id="1061130374843955397">Selamat datang di <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Hampir waktunya istirahat</translation>
 <translation id="1066613507389053689">Perlu update Chrome OS</translation>
 <translation id="1067048845568873861">Dibuat</translation>
@@ -2844,6 +2845,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3943582379552582368">&amp;Mundur</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3945513714196326460">Coba nama yang lebih singkat</translation>
+<translation id="3948027458879361203">Ubah nama host</translation>
 <translation id="3948116654032448504">&amp;Telusuri <ph name="SEARCH_ENGINE" /> untuk Gambar</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> dapat mengedit file dalam folder berikut ini</translation>
 <translation id="394984172568887996">Diimpor dari IE</translation>
@@ -3569,7 +3571,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4779766576531456629">Ganti nama jaringan Seluler eSIM</translation>
 <translation id="4780321648949301421">Simpan Halaman Sebagai...</translation>
-<translation id="4784559565779618838">Untuk menelusuri situs tertentu atau bagian dari Chrome, Anda dapat mengetik pintasan di sini ke dalam kolom URL, lalu tekan Tab atau Spasi.</translation>
+<translation id="4784559565779618838">Untuk menelusuri situs tertentu atau bagian dari Chrome, Anda dapat mengetik pintasan ini ke dalam kolom URL, lalu tekan Tab atau Spasi.</translation>
 <translation id="4785719467058219317">Anda menggunakan kunci keamanan yang tidak terdaftar di situs ini</translation>
 <translation id="4788092183367008521">Periksa koneksi jaringan Anda, lalu coba lagi.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -4499,7 +4501,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5817069030404929329">Pindahkan sandi dari perangkat ini ke Akun Google Anda?</translation>
 <translation id="5817918615728894473">Sandingkan</translation>
 <translation id="5821565227679781414">Buat Pintasan</translation>
-<translation id="5822865422567397338">Untuk menelusuri situs tertentu atau bagian dari Chrome, Anda dapat menggunakan pintasan di sini. Misalnya, untuk hanya menelusuri Gmail, ketik "@gmail", lalu tekan Tab atau Spasi.</translation>
+<translation id="5822865422567397338">Untuk menelusuri situs tertentu atau bagian dari Chrome, Anda dapat menggunakan pintasan yang dicantumkan di sini. Misalnya, untuk hanya menelusuri Gmail, ketik "@gmail", lalu tekan Tab atau Spasi.</translation>
 <translation id="5825412242012995131">Aktif (Direkomendasikan)</translation>
 <translation id="5826395379250998812">Hubungkan <ph name="DEVICE_TYPE" /> Anda dengan ponsel. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparan</translation>
@@ -6808,6 +6810,7 @@ Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
     <ph name="BEGIN_PARAGRAPH4" />Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini dapat disimpan ke Akun Google-nya. Pelajari lebih lanjut setelan ini dan cara menyesuaikannya di families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Sertifikat klien tidak valid</translation>
 <translation id="827097179112817503">Tampilkan tombol beranda</translation>
+<translation id="8271268254812352141">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks. Sesuaikan bahasa terjemahan di <ph name="LINK_BEGIN" />Bahasa situs<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Bapak/Ibu, beberapa langkah selanjutnya adalah untuk Anda. Anda dapat menyerahkan <ph name="DEVICE_TYPE" /> kembali ke anak setelah penyiapan akun selesai.</translation>
 <translation id="8272443605911821513">Kelola ekstensi Anda dengan mengeklik Ekstensi pada menu "Fitur lainnya".</translation>
 <translation id="8274332263553132018">Transmisikan file</translation>

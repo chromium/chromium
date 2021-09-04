@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ເຊື່ອມຕໍ່ໃໝ່</translation>
 <translation id="5810269635982033450">ໜ້າຈໍເຮັດໜ້າທີ່ເປັນແທຣັກແຜດ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ຮ້ອງຂໍການເຂົ້າເຖິງເພື່ອເບິ່ງໜ້າຈໍຂອງທ່ານ ແລະ ຄວບຄຸມແປ້ນພິມ ແລະ ເມົ້າຂອງທ່ານແລ້ວ. ກົດ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ຫາກທ່ານບໍ່ຄາດວ່າຈະມີຄຳຮ້ອງຂໍນີ້. ບໍ່ດັ່ງນັ້ນໃຫ້ເລືອກ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ເພື່ອອະນຸຍາດການເຊື່ອມຕໍ່ເມື່ອພ້ອມ.</translation>
 <translation id="5823658491130719298">ໃນຄອມພິວເຕີທີ່ທ່ານຕ້ອງການເຂົ້າເຖິງຈາກທາງໄກ, ເປີດ Chrome ແລະ ເຂົ້າຫາ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ຕົວເລືອກການສະແດງຜົນ</translation>
 <translation id="6033507038939587647">ຕົວເລືອກແປ້ນພິມ</translation>

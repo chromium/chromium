@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protokol Pengangkutan Hiperteks (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tab untuk '<ph name="SEARCH_TEXT" />' Ditemukan</translation>
 <translation id="1060292118287751956">Menentukan kekerapan skrin dikemas kini</translation>
+<translation id="1061130374843955397">Selamat datang ke <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1061904396131502319">Masa rehat hampir tiba</translation>
 <translation id="1066613507389053689">Kemaskinian OS Chrome diperlukan</translation>
 <translation id="1067048845568873861">Dibuat</translation>
@@ -2844,6 +2845,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3943582379552582368">&amp;Kembali</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3945513714196326460">Cuba nama yang lebih pendek</translation>
+<translation id="3948027458879361203">Tukar nama hos</translation>
 <translation id="3948116654032448504">&amp;Cari Imej di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> boleh mengedit fail dalam folder berikut</translation>
 <translation id="394984172568887996">Diimport Daripada IE</translation>
@@ -6808,6 +6810,7 @@ Tekan suis yang telah diuntukkan untuk mengalih keluar penguntukan</translation>
     <ph name="BEGIN_PARAGRAPH4" />Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Google mereka. Ketahui lebih lanjut tentang tetapan ini dan cara menyelaraskan tetapan ini pada families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Sijil pelanggan tidak sah</translation>
 <translation id="827097179112817503">Paparkan butang laman utama</translation>
+<translation id="8271268254812352141">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks. Sesuaikan bahasa terjemahan dalam <ph name="LINK_BEGIN" />Bahasa laman web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Ibu bapa, beberapa langkah yang seterusnya adalah untuk anda. Anda boleh menyerahkan <ph name="DEVICE_TYPE" /> ini semula kepada anak anda selepas persediaan akaun selesai.</translation>
 <translation id="8272443605911821513">Urus sambungan anda dengan mengklik Sambungan dalam menu "Lagi alat".</translation>
 <translation id="8274332263553132018">Hantar fail</translation>

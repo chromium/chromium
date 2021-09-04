@@ -760,6 +760,7 @@
 <translation id="3566021033012934673">உங்கள் இணைப்பு தனிப்பட்டது அல்ல</translation>
 <translation id="3567778190852720481">நிறுவனக் கணக்கில் பதிவுசெய்ய முடியாது (நிறுவனக் கணக்கு தகுதியானதல்ல).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">இந்தத் தளத்திற்கு அனுமதி</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> இல் உள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
 <translation id="3581089476000296252">இந்தப் பக்கம் தயாராக இருக்கும்போது Chrome உங்களுக்குத் தெரிவிக்கும். &lt;a&gt;ரத்துசெய்&lt;/a&gt;</translation>
 <translation id="3582930987043644930">பெயரைச் சேர்</translation>
@@ -2184,6 +2185,7 @@
 <translation id="8368476060205742148">Google Play சேவைகள்</translation>
 <translation id="8371889962595521444">பிரத்தியேகமான முதன்மை சான்றிதழ்கள்</translation>
 <translation id="8374636051559112948">மாறுபடும்</translation>
+<translation id="8380167699614421159">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களை இந்தத் தளம் காண்பிக்கிறது</translation>
 <translation id="8380941800586852976">ஆபத்தானது</translation>
 <translation id="8381674639488873545">இந்தக் கட்டணங்கள் ஒருமுறை அல்லது தொடர்ந்து வசூலிக்கப்படலாம், அவை வெளிப்படையாகத் தெரிவிக்கப்படாமல் இருக்கலாம். <ph name="BEGIN_LINK" />எனினும் காண்பி<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> என்ற தளத்திலிருந்து <ph name="VM_NAME" />க்குப் பகிர்வது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>

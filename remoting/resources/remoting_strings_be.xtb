@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">Вы ўвайшлі як <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Падключыцца зноў</translation>
 <translation id="5810269635982033450">Экран дзейнічае як сэнсарная панэль</translation>
+<translation id="5823554426827907568">Карыстальнік <ph name="CLIENT_USERNAME" /> запытвае доступ да вашага экрана, а таксама магчымасць кіраваць вашай клавіятурай і мышшу. Калі вы не чакалі гэтага запыту, націсніце ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''. Каб дазволіць гэта падключэнне, націсніце "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />", калі будзеце гатовыя.</translation>
 <translation id="5823658491130719298">На камп'ютары, да якога трэба атрымаць аддалены доступ, адкрыйце Chrome, а ў ім – старонку <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Параметры адлюстравання</translation>
 <translation id="6033507038939587647">Параметры клавіятуры</translation>

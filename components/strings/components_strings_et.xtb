@@ -763,6 +763,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3566021033012934673">Teie ühendus ei ole privaatne</translation>
 <translation id="3567778190852720481">Ettevõttekontoga ei saa registreeruda (ettevõttekonto pole sobilik).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Luba selle saidi puhul</translation>
 <translation id="3576616784287504635">Manustatud leht saidil <ph name="SITE" /> ütleb</translation>
 <translation id="3581089476000296252">Chrome annab teile teada, kui leht on valmis. &lt;a&gt;Tühista&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Lisage nimi</translation>
@@ -2188,6 +2189,7 @@ Lisateave:
 <translation id="8368476060205742148">Google Play teenused</translation>
 <translation id="8371889962595521444">Kohandatud juursertifikaadid</translation>
 <translation id="8374636051559112948">Varieerub</translation>
+<translation id="8380167699614421159">Sait kuvab sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="8380941800586852976">Ohtlik</translation>
 <translation id="8381674639488873545">Tasud võivad olla ühekordsed või korduvad ja need ei pruugi olla ilmselged. <ph name="BEGIN_LINK" />Kuva siiski<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Saidilt <ph name="ORIGIN_NAME" /> virtuaalmasinaga <ph name="VM_NAME" /> jagamine on administraatori reegliga blokeeritud</translation>

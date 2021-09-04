@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1810845389119482123">Penyiapan sinkronisasi awal belum selesai</translation>
 <translation id="1829244130665387512">Cari di halaman</translation>
-<translation id="1830550083491357902">Belum masuk</translation>
 <translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, izinkan Google Penelusuran menggunakan halaman saat ini</translation>
 <translation id="1856325424225101786">Reset Mode Ringan?</translation>
 <translation id="1868024384445905608">Chrome sekarang mendownload file lebih cepat</translation>
@@ -216,6 +215,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2369533728426058518">tab terbuka</translation>
 <translation id="2386938421315164605">Sembunyikan dan perlihatkan topik</translation>
 <translation id="2387895666653383613">Ukuran teks</translation>
+<translation id="2390510615457643724">Ingin mendownload <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> lagi?</translation>
 <translation id="2394602618534698961">File yang Anda download muncul di sini</translation>
 <translation id="2407481962792080328">Saat login ke Akun Google Anda, fitur ini akan diaktifkan</translation>
 <translation id="2410754283952462441">Pilih akun</translation>
@@ -376,6 +376,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3295530008794733555">Browsing lebih cepat. Gunakan lebih sedikit kuota.</translation>
 <translation id="3297344142967351106">Bantuan suara</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
+<translation id="3332570638882314953">Dapatkan info relevan lainnya</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341058695485821946">Lihat banyaknya kuota yang Anda hemat</translation>
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download dihapus</translation>
+<translation id="3819183753496523827">Anda sedang offline. Periksa koneksi internet Anda, lalu coba lagi.</translation>
 <translation id="3845098929839618392">Buka di tab Samaran</translation>
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3988213473815854515">Lokasi diaktifkan</translation>
 <translation id="3988466920954086464">Lihat hasil penelusuran instan di panel ini</translation>
 <translation id="4000212216660919741">Beranda Offline</translation>
-<translation id="4001236013802615636">Izinkan Google mempertimbangkan beberapa teks halaman juga</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
@@ -707,6 +708,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="543338862236136125">Edit sandi</translation>
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="543509235395288790">Mendownload <ph name="COUNT" /> file (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Download lagi</translation>
 <translation id="5441466871879044658">Terjemahkan ke bahasa ini</translation>
 <translation id="5441522332038954058">Beralih ke bilah alamat</translation>
 <translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
@@ -806,6 +808,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5964805880140440652">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi di setelan Chrome</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5979084224081478209">Periksa sandi</translation>
+<translation id="5995726099713306770">Download halaman lagi?</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
 <translation id="6000203700195075278">Ikuti kembali</translation>
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
@@ -942,6 +945,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="670498945988402717">Diperiksa kemarin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
+<translation id="6715020873764921614">Ingin tetap mendownload <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6738867403308150051">Mendownload…</translation>
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
@@ -966,6 +970,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6882836635272038266">Perlindungan standar terhadap situs, download, dan ekstensi yang bereputasi berbahaya.</translation>
 <translation id="6883204995689174413">Bagikan</translation>
 <translation id="688738109438487280">Menambahkan data yang sudah ada ke <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Lihat hasil yang lebih baik untuk kata yang Anda tandai dengan mengizinkan Google mempertimbangkan beberapa teks halaman. Anda dapat mengubah <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" /> kapan saja.</translation>
 <translation id="6891726759199484455">Buka kunci untuk menyalin sandi Anda</translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>

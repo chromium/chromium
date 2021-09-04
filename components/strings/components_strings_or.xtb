@@ -758,6 +758,7 @@
 <translation id="3566021033012934673">ଆପଣଙ୍କର ସଂଯୋଗ ବ୍ୟକ୍ତିଗତ ନୁହେଁ</translation>
 <translation id="3567778190852720481">ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ପଞ୍ଜିକରଣ କରାଯାଇପାରିବ ନାହିଁ (ଏଣ୍ଟରପ୍ରାଇଜ୍ ଆକାଉଣ୍ଟ ଯୋଗ୍ୟ ନୁହେଁ)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">ଏହି ସାଇଟ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3576616784287504635"><ph name="SITE" />ରେ ଏକ ଏମ୍ବେଡ୍‌ ହୋ‍ଇଥିବା ପୃଷ୍ଠା କହେ ଯେ</translation>
 <translation id="3581089476000296252">ଯେତେବେଳେ ଏହି ପୃଷ୍ଠା ପ୍ରସ୍ତୁତ ହୋଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କୁ ସୂଚିତ କରିଦେବ। &lt;a&gt;ବାତିଲ୍ କରନ୍ତୁ&lt;/a&gt;</translation>
 <translation id="3582930987043644930">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
@@ -2176,6 +2177,7 @@
 <translation id="8368476060205742148">Google Play ସେବା</translation>
 <translation id="8371889962595521444">କଷ୍ଟମ୍ ରୁଟ୍ ସାର୍ଟିଫିକେଟ୍</translation>
 <translation id="8374636051559112948">ଭିନ୍ନ ହୋଇଥାଏ</translation>
+<translation id="8380167699614421159">ଏହି ସାଇଟ୍, ଅନଧିକାର ପ୍ରବେଶ କରିଥିବା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ବିଜ୍ଞାପନ ଦେଖାଉଛି</translation>
 <translation id="8380941800586852976">ବିପଜ୍ଜନକ</translation>
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>

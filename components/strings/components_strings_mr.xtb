@@ -763,6 +763,7 @@
 <translation id="3566021033012934673">तुमचे कनेक्शन खाजगी नाही</translation>
 <translation id="3567778190852720481">एंटरप्राइझ खात्यासोबत नोंदणी करू शकत नाही (एंटरप्राइझ खाते पात्र नाही).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">या साइटला अनुमती द्या</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> वरील एंबेड केलेल्‍या पेजचे म्हणणे हे आहे की</translation>
 <translation id="3581089476000296252">हे पेज केव्हा तयार होईल हे Chrome तुम्हाला कळवेल. &lt;a&gt;रद्द करा&lt;/a&gt;</translation>
 <translation id="3582930987043644930">नाव जोडा</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">Google Play सेवा</translation>
 <translation id="8371889962595521444">कस्टम रूट सर्टिफिकेट</translation>
 <translation id="8374636051559112948">बदलते</translation>
+<translation id="8380167699614421159">ही साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="8380941800586852976">धोकादायक</translation>
 <translation id="8381674639488873545">हे शुल्क एका वेळचे किंवा आवर्ती असू शकते आणि ते उघड नसणे शक्य आहे. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME" /> वर शेअर करणे ब्लॉक केले आहे</translation>

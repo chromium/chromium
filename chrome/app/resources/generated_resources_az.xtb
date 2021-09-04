@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hipermətn Transport Protokolu (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' üçün <ph name="NUM" /> Tab tapılıb</translation>
 <translation id="1060292118287751956">Ekranın güncəllənmə tezliyini təyin edir</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> cihazına xoş gəlmisiniz</translation>
 <translation id="1061904396131502319">Fasilə vaxtıdır</translation>
 <translation id="1066613507389053689">Chrome OS güncəllənməsi tələb olunur</translation>
 <translation id="1067048845568873861">Yaradılıb</translation>
@@ -2827,6 +2828,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3943582379552582368">Geri</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3945513714196326460">Daha qısa ad seçin</translation>
+<translation id="3948027458879361203">Host adını dəyişdirin</translation>
 <translation id="3948116654032448504"><ph name="SEARCH_ENGINE" /> şəkil axtarır</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> aşağıdakı qovluqlarda olan faylları redaktə edə bilər</translation>
 <translation id="394984172568887996">İnternet Explorer'dən import edildi</translation>
@@ -6784,6 +6786,7 @@ Təyinatı silmək üçün təyin edilmiş keçiriciyə basın</translation>
     <ph name="BEGIN_PARAGRAPH4" />Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabında yadda saxlanılacaq. Families.google.com ünvanından bu ayarlar və onların tənzimlənməsi haqqında ətraflı məlumat əldə edin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Yanlış klient sertifikatı</translation>
 <translation id="827097179112817503">Əsas səhifə düyməsini göstərin</translation>
+<translation id="8271268254812352141">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin. <ph name="LINK_BEGIN" />Vebsayt dillərində<ph name="LINK_END" /> tərcümə dillərini fərdiləşdirin.</translation>
 <translation id="8271379370373330993">Valideynlər, növbəti bir neçə addım sizin üçündür. Hesab ayarlandıqdan sonra <ph name="DEVICE_TYPE" /> cihazını uşağa qaytara bilərsiniz.</translation>
 <translation id="8272443605911821513">"Digər alətlər" menyusunda Artırmalara klikləməklə artırmalarınızı idarə edin.</translation>
 <translation id="8274332263553132018">Faylı yayımlayın</translation>

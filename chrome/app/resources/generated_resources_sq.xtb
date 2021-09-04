@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protokolli i transportit Hypertext (HTTPS)</translation>
 <translation id="1059944192885972544">U gjetën <ph name="NUM" /> skeda për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Përcakton shpeshtësinë e përditësimit të ekranit</translation>
+<translation id="1061130374843955397">Mirë se erdhe në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Pothuajse koha për një pushim</translation>
 <translation id="1066613507389053689">Kërkohet përditësimi i Chrome OS</translation>
 <translation id="1067048845568873861">U krijua</translation>
@@ -2826,6 +2827,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3943582379552582368">&amp;Prapa</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="3945513714196326460">Provo një emër më të shkurtër</translation>
+<translation id="3948027458879361203">Ndrysho emrin e pritësit</translation>
 <translation id="3948116654032448504">&amp;Kërko në <ph name="SEARCH_ENGINE" /> për imazhin</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> mund t'i modifikojnë skedarët në dosjet e mëposhtme</translation>
 <translation id="394984172568887996">U importua nga IE</translation>
@@ -6786,6 +6788,7 @@ Shtyp një çelës të caktuar për të hequr caktimin</translation>
     <ph name="BEGIN_PARAGRAPH4" />Nëse aktivizon cilësimin shtesë "Aktiviteti i uebit dhe i aplikacioneve" për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të tij. Mëso më shumë rreth këtyre cilësimeve dhe si t'i rregullosh ato te families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certifikatë e pavlefshme e klientit</translation>
 <translation id="827097179112817503">Shfaq butonin "kreu"</translation>
+<translation id="8271268254812352141">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose troket dhe mban shtypur tekstin. Personalizo gjuhët e përkthimit te <ph name="LINK_BEGIN" />Gjuhët e sajteve të uebit<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Prindër, këto hapa në vijim janë për ju. Mund t'ia jepni pajisjen <ph name="DEVICE_TYPE" /> përsëri fëmijës pas konfigurimit të llogarisë.</translation>
 <translation id="8272443605911821513">Menaxho shtesat duke klikuar "Shtesat" në menynë "Më shumë vegla".</translation>
 <translation id="8274332263553132018">Transmeto skedarin</translation>

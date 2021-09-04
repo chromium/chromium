@@ -116,6 +116,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2073572773299281212">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="2074131957428911366">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Angre</translation>
+<translation id="2080769225927880590">Logg på med en gyldig konto</translation>
 <translation id="209018056901015185">Bruk skrivebordsversjon</translation>
 <translation id="2103075008456228677">Åpne history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementer er flyttet</translation>
@@ -467,6 +468,8 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5737974891429562743">Påloggingsdetaljene for kontoen er utdatert. Oppdater for å starte synkroniseringen.</translation>
 <translation id="5738887413654608789">Med denne kan du oppdage relevante nettsider basert på omgivelsene dine.</translation>
 <translation id="5758631781033351321">Her finner du leselisten din</translation>
+<translation id="575902488528307720">Søk etter bilde</translation>
+<translation id="5781453543752460388">Legg til i Foto</translation>
 <translation id="5782227691023083829">Oversetter</translation>
 <translation id="5803566855766646066">Er du sikker på at du vil forkaste dette nye kortet?</translation>
 <translation id="5812974770859303494">Legg til i …</translation>
@@ -738,6 +741,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8205564605687841303">Avbryt</translation>
 <translation id="8206354486702514201">Denne innstillingen håndheves av administratoren din.</translation>
 <translation id="8225985093977202398">Bufrede bilder og filer</translation>
+<translation id="8228176677386827255">Enheten din er administrert. Du kan bare logge på med kontoen til organisasjonen din.</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8271720166617117963">Godta og logg på</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

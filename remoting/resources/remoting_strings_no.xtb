@@ -109,6 +109,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="5750083143895808682">Logget på som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Koble til på nytt</translation>
 <translation id="5810269635982033450">Skjermen fungerer som en styreflate</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> har bedt om tilgang til å se skjermen din og styre tastaturet og musen. Trykk på «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» hvis du ikke forventet å få denne forespørselen. Ellers velger du «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» for å tillate tilkoblingen når du er klar.</translation>
 <translation id="5823658491130719298">Åpne Chrome på datamaskinen du vil ha ekstern tilgang til, og gå til <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Visningsalternativer</translation>
 <translation id="6033507038939587647">Tastaturalternativer</translation>

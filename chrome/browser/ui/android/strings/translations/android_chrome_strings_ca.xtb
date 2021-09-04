@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1810845389119482123">La configuració de la sincronització inicial no ha finalitzat</translation>
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
-<translation id="1830550083491357902">Sessió no iniciada</translation>
 <translation id="1843805151597803366">Per obtenir traduccions millors, deixa que la Cerca de Google utilitzi la pàgina actual</translation>
 <translation id="1856325424225101786">Vols restablir el mode bàsic?</translation>
 <translation id="1868024384445905608">Ara Chrome baixa els fitxers més ràpid</translation>
@@ -216,6 +215,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2369533728426058518">pestanyes obertes</translation>
 <translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
 <translation id="2387895666653383613">Canvia la mida del text</translation>
+<translation id="2390510615457643724">Vols tornar a baixar <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Els fitxers que baixes es mostren aquí</translation>
 <translation id="2407481962792080328">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada</translation>
 <translation id="2410754283952462441">Tria un compte</translation>
@@ -376,6 +376,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3295530008794733555">Navega més de pressa. Utilitza menys dades.</translation>
 <translation id="3297344142967351106">Assistència per veu</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
+<translation id="3332570638882314953">Obtén informació més rellevant</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341058695485821946">Consulta la quantitat de dades que has estalviat</translation>
 <translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> baixades suprimides</translation>
+<translation id="3819183753496523827">No tens connexió. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="3845098929839618392">Obre en una pestanya d'incògnit</translation>
 <translation id="3856096718352044181">Verifica que aquest és un proveïdor vàlid o torna-ho a provar més tard</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3988213473815854515">La ubicació es permet</translation>
 <translation id="3988466920954086464">Consulta els resultats de la cerca instantània en aquest tauler</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
-<translation id="4001236013802615636">Permet que Google també consideri part del text de la pàgina</translation>
 <translation id="4016425174436051808">No es pot seguir. S'ha produït un error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Dades d'ús</translation>
@@ -707,6 +708,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
 <translation id="543509235395288790">S'estan baixant <ph name="COUNT" /> fitxers (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Torna a baixar</translation>
 <translation id="5441466871879044658">Tradueix a aquest idioma</translation>
 <translation id="5441522332038954058">Ves a la barra d'adreces</translation>
 <translation id="544776284582297024">Per obrir pestanyes i visitar diverses pàgines al mateix temps, toca el botó de pestanyes obertes</translation>
@@ -806,6 +808,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5964805880140440652">Per compartir aquesta pàgina amb un altre dispositiu, activa la sincronització a la configuració de Chrome</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
+<translation id="5995726099713306770">Vols tornar a baixar la pàgina?</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6000203700195075278">Torna a seguir</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
@@ -942,6 +945,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="670498945988402717">Es va comprovar ahir</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">S'ha esgotat el temps definit al temporitzador per a <ph name="FQDN" />. Es tornarà a iniciar demà.</translation>
+<translation id="6715020873764921614">Vols baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) igualment?</translation>
 <translation id="6738516213925468394">Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Introdueix-la per començar la sincronització.</translation>
 <translation id="6738867403308150051">S'està baixant...</translation>
 <translation id="6751521182688001123">Obre ràpidament una pestanya nova. Mantingues premuda aquesta drecera per editar-la.</translation>
@@ -966,6 +970,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6883204995689174413">Comparteix</translation>
 <translation id="688738109438487280">Afegeix les dades existents a <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Permet que Google tingui en compte part del text de la pàgina per veure millors resultats per a les paraules que marquis. Pots canviar la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment.</translation>
 <translation id="6891726759199484455">Desbloqueja la pantalla per copiar la contrasenya</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protecció millorada</translation>

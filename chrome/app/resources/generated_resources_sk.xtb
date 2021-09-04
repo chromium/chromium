@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protokol HTTPS (Hypertext Transport Protocol)</translation>
 <translation id="1059944192885972544">Boli nájdené karty (<ph name="NUM" />) pre dopyt <ph name="SEARCH_TEXT" /></translation>
 <translation id="1060292118287751956">Určuje frekvenciu aktualizácie obrazovky</translation>
+<translation id="1061130374843955397">Víta vás <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Už je takmer čas na prestávku</translation>
 <translation id="1066613507389053689">Vyžaduje sa aktualizácia systému Chrome OS</translation>
 <translation id="1067048845568873861">Vytvorené</translation>
@@ -2831,6 +2832,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3943582379552582368">&amp;Naspäť</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3945513714196326460">Vyskúšajte kratší názov</translation>
+<translation id="3948027458879361203">Zmeniť názov hostiteľa</translation>
 <translation id="3948116654032448504">&amp;Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Web <ph name="ORIGIN" /> môže upravovať súbory v nasledujúcich priečinkoch</translation>
 <translation id="394984172568887996">Importované z Internet Explorera</translation>
@@ -6793,6 +6795,7 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
     <ph name="BEGIN_PARAGRAPH4" />Ak máte zapnutú dodatočnú aktivitu na internete a v aplikáciách, tieto údaje sa môžu ukladať do vášho účtu Google. Na families.google.com<ph name="END_PARAGRAPH4" /> môžete zobraziť alebo odstrániť údaje a zmeniť nastavenia účtu.</translation>
 <translation id="826905130698769948">Neplatný certifikát klienta</translation>
 <translation id="827097179112817503">Zobrazovať tlačidlo domovskej stránky</translation>
+<translation id="8271268254812352141">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu. Jazyky prekladu si prispôsobíte v sekcii <ph name="LINK_BEGIN" />Jazyky webu<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Nasledujúce kroky sú určené pre rodičov. Po založení účtu môžete zariadenie <ph name="DEVICE_TYPE" /> vrátiť dieťaťu.</translation>
 <translation id="8272443605911821513">Ak chcete spravovať rozšírenia, kliknite v ponuke Ďalšie nástroje na možnosť Rozšírenia.</translation>
 <translation id="8274332263553132018">Prenášať súbor</translation>

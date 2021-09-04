@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Pronađenih kartica za „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Određuje učestalost ažuriranja ekrana</translation>
+<translation id="1061130374843955397">Dobro došli na uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Skoro je vreme za pauzu</translation>
 <translation id="1066613507389053689">Potrebno je ažuriranje Chrome OS-a</translation>
 <translation id="1067048845568873861">Napravljeno</translation>
@@ -2828,6 +2829,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3943582379552582368">&amp;Nazad</translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="3945513714196326460">Probajte sa kraćim nazivom</translation>
+<translation id="3948027458879361203">Promenite ime hosta</translation>
 <translation id="3948116654032448504">&amp;Potraži sliku u pretraživaču <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> može da menja datoteke u direktorijumima u nastavku</translation>
 <translation id="394984172568887996">Uvezeno iz IE pregledača</translation>
@@ -6791,6 +6793,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu</translation>
     <ph name="BEGIN_PARAGRAPH4" />Ako za dete uključite dodatne Aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. Saznajte više o ovim podešavanjima i o tome kako da ih prilagodite na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nevažeći sertifikat klijenta</translation>
 <translation id="827097179112817503">Prikaži dugme za početnu stranicu</translation>
+<translation id="8271268254812352141">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite. Prilagodite jezike za prevod u <ph name="LINK_BEGIN" />Jezicima za veb-sajtove<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Roditelji, sledećih nekoliko koraka su za vas. Možete da vratite <ph name="DEVICE_TYPE" /> detetu posle otvaranja naloga.</translation>
 <translation id="8272443605911821513">Upravljajte dodacima klikom na Dodaci u meniju „Još alatki“.</translation>
 <translation id="8274332263553132018">Prebacite datoteku</translation>

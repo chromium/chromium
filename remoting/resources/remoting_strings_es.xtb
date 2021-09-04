@@ -109,6 +109,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="5750083143895808682">Has iniciado sesión como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectar</translation>
 <translation id="5810269635982033450">La pantalla hace de panel táctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha solicitado acceso para ver tu pantalla y controlar tu teclado y ratón. Si no esperabas esta solicitud, pulsa <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. De lo contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir la conexión cuanto todo esté listo.</translation>
 <translation id="5823658491130719298">Abre Chrome en el ordenador al que quieres acceder de forma remota y visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opciones de visualización</translation>
 <translation id="6033507038939587647">Opciones del teclado</translation>

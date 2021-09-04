@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
+<translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5212543919916444558">Na obrazovke nie je nič, s čím by som mohol pomôcť.
 Skúste klepnúť na mikrofón a niečo prikázať.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6146993107019042706">Ak chcete zmenu dokončiť, zadajte nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacita batérie používaním klesá</translation>
 <translation id="6191293864534840972">Nesprávny formát serverov DNS</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>

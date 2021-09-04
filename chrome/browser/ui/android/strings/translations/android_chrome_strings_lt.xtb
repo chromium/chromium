@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1810845389119482123">Pradinė sinchronizavimo sąranka nebaigta</translation>
 <translation id="1829244130665387512">Surasti puslapyje</translation>
-<translation id="1830550083491357902">Neprisijungta</translation>
 <translation id="1843805151597803366">Kad gautumėte geresnių vertimų, leiskite „Google“ paieškai naudoti dabartinį puslapį</translation>
 <translation id="1856325424225101786">Nustatyti supaprastintąjį režimą iš naujo?</translation>
 <translation id="1868024384445905608">Dabar „Chrome“ failus atsisiunčia greičiau</translation>
@@ -486,7 +485,6 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3988213473815854515">Vietovės informacija leidžiama</translation>
 <translation id="3988466920954086464">Žiūrėkite tiesioginius paieškos rezultatus šiame skydelyje</translation>
 <translation id="4000212216660919741">„Home“ neprisijungus</translation>
-<translation id="4001236013802615636">Leiskite „Google“ taip pat atsižvelgti į tam tikrą puslapio tekstą</translation>
 <translation id="4016425174436051808">Negalima stebėti. Kažkas ne taip.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}many{# val.}other{# val.}}</translation>
 <translation id="4045764304651014138">Naudojimo duomenys</translation>

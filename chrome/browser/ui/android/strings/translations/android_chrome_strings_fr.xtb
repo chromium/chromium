@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">Configuration de la synchronisation initiale non terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
-<translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir de meilleures traductions, autorisez la recherche Google à accéder au contenu de la page actuelle</translation>
 <translation id="1856325424225101786">Réinitialiser le mode simplifié ?</translation>
 <translation id="1868024384445905608">Chrome permet désormais de télécharger des fichiers plus vite</translation>
@@ -216,6 +215,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2369533728426058518">onglets ouverts</translation>
 <translation id="2386938421315164605">Masquer et afficher les thèmes</translation>
 <translation id="2387895666653383613">Mise à l'échelle du texte</translation>
+<translation id="2390510615457643724">Voulez-vous retélécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ?</translation>
 <translation id="2394602618534698961">Les fichiers que vous téléchargez sont affichés ici</translation>
 <translation id="2407481962792080328">Lorsque vous vous connectez à votre compte Google, cette fonctionnalité est activée</translation>
 <translation id="2410754283952462441">Sélectionner un compte</translation>
@@ -376,6 +376,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3295530008794733555">Naviguez plus rapidement en consommant moins de données</translation>
 <translation id="3297344142967351106">Assistance vocale</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
+<translation id="3332570638882314953">Obtenez des infos plus pertinentes</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
 <translation id="3341058695485821946">Découvrez la quantité de données économisées</translation>
 <translation id="3341262203274374114">Impossible de vous désabonner en raison d'une erreur.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>
+<translation id="3819183753496523827">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="3845098929839618392">Ouvrir en navigation privée</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="3988213473815854515">Position autorisée</translation>
 <translation id="3988466920954086464">Consultez les résultats de la recherche instantanée dans ce panneau</translation>
 <translation id="4000212216660919741">Mode hors connexion</translation>
-<translation id="4001236013802615636">Autoriser Google à également tenir compte d'une partie du texte de la page</translation>
 <translation id="4016425174436051808">Impossible de vous abonner en raison d'une erreur.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
@@ -707,6 +708,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="543338862236136125">Modifier le mot de passe</translation>
 <translation id="5433691172869980887">Nom d'utilisateur copié</translation>
 <translation id="543509235395288790">Téléchargement de <ph name="COUNT" /> fichiers (<ph name="MEGABYTES" />)…</translation>
+<translation id="5438292632479953702">Retélécharger</translation>
 <translation id="5441466871879044658">Traduire dans cette langue</translation>
 <translation id="5441522332038954058">Accéder à la barre d'adresse</translation>
 <translation id="544776284582297024">Pour ouvrir des onglets et consulter plusieurs pages en même temps, appuyez sur le bouton "Onglets ouverts"</translation>
@@ -806,6 +808,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
+<translation id="5995726099713306770">Retélécharger la page ?</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
 <translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
@@ -942,6 +945,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="670498945988402717">Vérification effectuée hier</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="671481426037969117">Votre minuteur <ph name="FQDN" /> a expiré. Il redémarrera demain.</translation>
+<translation id="6715020873764921614">Voulez-vous quand même télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ?</translation>
 <translation id="6738516213925468394">Vos données ont été chiffrées avec votre <ph name="BEGIN_LINK" />phrase secrète de synchronisation<ph name="END_LINK" /> le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="6738867403308150051">Téléchargement en cours…</translation>
 <translation id="6751521182688001123">Ouvre rapidement un nouvel onglet. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
@@ -966,6 +970,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6882836635272038266">Ce mode offre une protection standard contre les téléchargements, les extensions et les sites Web connus pour être dangereux.</translation>
 <translation id="6883204995689174413">Partager</translation>
 <translation id="688738109438487280">Ajoutez les données existantes au compte <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Obtenez de meilleurs résultats pour les mots mis en surbrillance en autorisant Google à prendre en compte une partie du texte de la page. Vous pourrez toujours modifier vos <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Déverrouillez pour copier votre mot de passe</translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>

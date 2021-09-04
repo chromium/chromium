@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">ใช้งานเมื่อ <ph name="DAYS" /> วันที่ผ่านมา</translation>
 <translation id="2074131957428911366">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
+<translation id="2080769225927880590">ลงชื่อเข้าใช้ด้วยบัญชีที่ถูกต้อง</translation>
 <translation id="209018056901015185">ขอไซต์สำหรับเดสก์ท็อป</translation>
 <translation id="2103075008456228677">เปิด history.google.com</translation>
 <translation id="2116625576999540962">ย้ายแล้ว <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> รายการ</translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">รายละเอียดการลงชื่อเข้าใช้บัญชีล้าสมัยแล้ว โปรดอัปเดตเพื่อเริ่มการซิงค์</translation>
 <translation id="5738887413654608789">วิธีนี้ช่วยให้คุณค้นพบหน้าเว็บที่เกี่ยวข้องโดยอิงตามสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="5758631781033351321">คุณจะเห็นเรื่องรออ่านที่นี่</translation>
+<translation id="575902488528307720">ค้นหารูปภาพ</translation>
+<translation id="5781453543752460388">เพิ่มในไฟล์รูปภาพ</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
 <translation id="5812974770859303494">เพิ่มใน…</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">ยกเลิก</translation>
 <translation id="8206354486702514201">ผู้ดูแลระบบของคุณกำหนดให้ใช้การตั้งค่านี้</translation>
 <translation id="8225985093977202398">รูปภาพและไฟล์ที่แคชไว้</translation>
+<translation id="8228176677386827255">อุปกรณ์ของคุณมีการจัดการ คุณจึงลงชื่อเข้าใช้ได้ด้วยบัญชีขององค์กรเท่านั้น</translation>
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8271720166617117963">ยอมรับและลงชื่อเข้าใช้</translation>
 <translation id="8281781826761538115">ค่าเริ่มต้น - <ph name="DEFAULT_LOCALE" /></translation>

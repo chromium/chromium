@@ -5575,13 +5575,6 @@
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
-<translation id="8033913082323846868">我们在 M70 中弃用了此政策，请改用 AutofillAddressEnabled 和 AutofillCreditCardEnabled。
-
-      可用于启用 <ph name="PRODUCT_NAME" /> 的“自动填充”功能，并允许用户使用先前存储的信息（例如地址或信用卡信息）自动填写网络表单。
-
-      如果您停用了此设置，用户就无法使用“自动填充”功能。
-
-      如果您启用了此设置或未设置相应值，那么“自动填充”功能仍由用户控制。这样，用户就能配置要自动填充的个人资料，并能自行决定是否要启用/停用“自动填充”功能。</translation>
 <translation id="8036964468882248070">如果此政策已启用，已注册的设备将会报告存储设备的硬件统计信息和标识符。
 
       如果此政策已停用或未设置，已注册的设备将不会报告存储统计信息。</translation>

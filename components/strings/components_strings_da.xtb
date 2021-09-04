@@ -3,7 +3,7 @@
 <translationbundle lang="da">
 <translation id="1003222766972176318">Påmindelse: Et gemt tilbud er tilgængeligt</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
-<translation id="100957008357583611">Vil du bruge din placering?</translation>
+<translation id="100957008357583611">Vil du bruge din lokation?</translation>
 <translation id="1010200102790553230">Indlæs side senere</translation>
 <translation id="1011206368273183593">Forbereder filer</translation>
 <translation id="1015730422737071372">Angiv yderligere oplysninger</translation>
@@ -602,7 +602,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3010559122411665027">Angiv posten "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="3013291976881901233">MIDI-enheder</translation>
 <translation id="301521992641321250">Automatisk blokering</translation>
-<translation id="3016780570757425217">Kende din placering</translation>
+<translation id="3016780570757425217">Kende din lokation</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tryk på Tab-tasten og derefter Enter for at fjerne forslaget.</translation>
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Forkert politiktype</translation>
@@ -764,6 +764,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3566021033012934673">Din forbindelse er ikke privat</translation>
 <translation id="3567778190852720481">Virksomhedskontoen kan ikke bruges til tilmelding, da den ikke er kvalificeret.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Tillad for dette website</translation>
 <translation id="3576616784287504635">En integreret side på <ph name="SITE" /> siger</translation>
 <translation id="3581089476000296252">Chrome giver dig besked, når denne side er klar. &lt;a&gt;Annuller&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Tilføj navn</translation>
@@ -1426,7 +1427,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5728056243719941842">C5 (Envelope)</translation>
 <translation id="5730040223043577876">Chrome anbefaler, at du nulstiller din adgangskode, hvis du har brugt den på andre websites.</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Gem kortet på din Google-konto}one{Gem kortet på din Google-konto}other{Gem kortene på din Google-konto}}</translation>
-<translation id="5745733273847572235">Websitet kan anmode om adgang til din placering</translation>
+<translation id="5745733273847572235">Websitet kan anmode om adgang til din lokation</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Brug et virtuelt nummer for dette kort}one{Vælg et kort}other{Vælg kort}}</translation>
 <translation id="5753081404403452307">Administrer Chrome-temaer</translation>
 <translation id="5759751709240058861">Brug eller flyt dit kamera</translation>
@@ -2189,6 +2190,7 @@ Yderligere oplysninger:
 <translation id="8368476060205742148">Google Play-tjenester</translation>
 <translation id="8371889962595521444">Tilpassede rodcertifikater</translation>
 <translation id="8374636051559112948">Varierer</translation>
+<translation id="8380167699614421159">Dette website viser påtrængende eller vildledende annoncer</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8381674639488873545">Disse debiteringer kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Administratorpolitikken tillader ikke, at du deler fra <ph name="ORIGIN_NAME" /> til <ph name="VM_NAME" /></translation>

@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">Веза није приватна</translation>
 <translation id="3567778190852720481">Не можете да се региструјете са налогом предузећа (налог предузећа не испуњава услове).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Дозволи за овај сајт</translation>
 <translation id="3576616784287504635">Уграђена страница на <ph name="SITE" /> наводи:</translation>
 <translation id="3581089476000296252">Chrome ће вас обавестити када ова страница буде спремна. &lt;a&gt;Откажи&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Додајте име</translation>
@@ -2188,6 +2189,7 @@
 <translation id="8368476060205742148">Google Play услуге</translation>
 <translation id="8371889962595521444">Прилагођени сертификати основног нивоа</translation>
 <translation id="8374636051559112948">Разликује се</translation>
+<translation id="8380167699614421159">Овај сајт приказује огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Ти трошкови могу да буду једнократни или периодични и можда нису одмах видљиви. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Смернице за администраторе блокирају дељење са <ph name="ORIGIN_NAME" /> на локацију <ph name="VM_NAME" /></translation>

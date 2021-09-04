@@ -109,6 +109,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="5750083143895808682">Has iniciat la sessió com a <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Torna a connectar</translation>
 <translation id="5810269635982033450">La pantalla fa de ratolí tàctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no esperaves aquesta sol·licitud. En cas contrari, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió quan estiguis a punt.</translation>
 <translation id="5823658491130719298">Obre Chrome a l'ordinador al qual vulguis accedir de manera remota i ves a la pàgina <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcions de visualització</translation>
 <translation id="6033507038939587647">Opcions del teclat</translation>

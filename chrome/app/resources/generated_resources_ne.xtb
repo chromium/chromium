@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">हाइपरटेक्स्ट ट्रान्स्पोर्ट प्रोटोकोल (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' खोज्दा <ph name="NUM" /> वटा ट्याब भेटिए</translation>
 <translation id="1060292118287751956">यसले स्क्रिन अपडेट हुने फ्रिक्वेन्सी निर्धारण गर्छ</translation>
+<translation id="1061130374843955397">तपाईंको <ph name="DEVICE_TYPE" /> मा स्वागत छ</translation>
 <translation id="1061904396131502319">विश्राम लिने समय हुनै लाग्यो</translation>
 <translation id="1066613507389053689">Chrome OS अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="1067048845568873861">सिर्जना गरियो</translation>
@@ -2826,6 +2827,7 @@
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
+<translation id="3948027458879361203">होस्टनाम परिवर्तन गर्नुहोस्</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="394984172568887996">IE बाट आयात गरिएको</translation>
@@ -6787,6 +6789,7 @@
     <ph name="BEGIN_PARAGRAPH4" />तपाईंका बालकको वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। families.google.com मा गई यी सेटिङहरूका साथै यिनको समायोजन गर्ने तरिकाबारे थप जान्नुहोस्।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">क्लाइन्टको अमान्य प्रमाणपत्र</translation>
 <translation id="827097179112817503">गृह बटन देखाउनुहोस्</translation>
+<translation id="8271268254812352141">तपाईंले कुनै पाठमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्। तपाईं <ph name="LINK_BEGIN" />वेबसाइटका भाषा<ph name="LINK_END" />मा गई अनुवाद सेवाका लागि आफूले चाहेअनुसारको भाषा चयन गर्न सक्नुहुन्छ।</translation>
 <translation id="8271379370373330993">अभिभावकहरूले पूरा गर्नु पर्ने आगामी केही चरणहरू यस प्रकार छन्। तपाईं खाता सेटअप गरेपछि बच्चालाई <ph name="DEVICE_TYPE" /> फिर्ता दिन सक्नुहुन्छ।</translation>
 <translation id="8272443605911821513">"थप उपकरण" मेनुमा एक्सटेन्सन क्लिक गरेर तपाईंको एक्सटेन्सनहरूको प्रबन्ध मिलाउनुहोस्।</translation>
 <translation id="8274332263553132018">फाइललाई Cast गर्नुहोस्</translation>

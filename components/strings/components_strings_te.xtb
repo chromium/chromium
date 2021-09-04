@@ -766,6 +766,7 @@
 <translation id="3566021033012934673">మీ కనెక్షన్ ప్రైవేట్ కాదు</translation>
 <translation id="3567778190852720481">ఎంటర్‌ప్రైజ్ ఖాతాతో ఎన్‌రోల్ చేయడం సాధ్యపడదు (ఎంటర్‌ప్రైజ్ ఖాతాకు అర్హత లేదు).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించు</translation>
 <translation id="3576616784287504635"><ph name="SITE" />లో పొందుపరిచిన పేజీ ఇలా చెబుతోంది</translation>
 <translation id="3581089476000296252">ఈ పేజీ సిద్ధమైనప్పుడు Chrome మీకు తెలియజేస్తుంది. &lt;a&gt;రద్దు చేయి&lt;/a&gt;</translation>
 <translation id="3582930987043644930">పేరు జోడించండి</translation>
@@ -2191,6 +2192,7 @@
 <translation id="8368476060205742148">Google Play సర్వీసులు</translation>
 <translation id="8371889962595521444">అనుకూల రూట్ సెట్టింగ్‌లు</translation>
 <translation id="8374636051559112948">మారుతుంది</translation>
+<translation id="8380167699614421159">ఈ సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపుతుంది</translation>
 <translation id="8380941800586852976">అపాయకరమైనది</translation>
 <translation id="8381674639488873545">ఈ ఛార్జ్‌లు ఒకసారి చెల్లించేవి లేదా పునరావృతంగా చెల్లించాల్సినవి కావచ్చు, అది స్పష్టంగా పేర్కొనబడకపోవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> నుండి <ph name="VM_NAME" />కు షేర్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా బ్లాక్ చేయబడింది</translation>

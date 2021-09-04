@@ -109,6 +109,7 @@ Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver selecionado, desselecione-o e
 <translation id="5750083143895808682">Com sessão iniciada como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Restabelecer ligação</translation>
 <translation id="5810269635982033450">O ecrã funciona como um trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> pediu acesso para ver o seu ecrã e controlar o teclado e o rato. Prima "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" se não estiver a contar com este pedido. Caso contrário, selecione ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para permitir a ligação quando tiver tudo pronto.</translation>
 <translation id="5823658491130719298">No computador ao qual pretende aceder remotamente, abra o Chrome e aceda a <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Opções de visualização</translation>
 <translation id="6033507038939587647">Opções do teclado</translation>

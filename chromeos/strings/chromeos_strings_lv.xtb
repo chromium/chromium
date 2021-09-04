@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
+<translation id="1119447706177454957">Iekšēja kļūda</translation>
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5212543919916444558">Ekrānā neredzu neko, ar ko varētu palīdzēt.
 Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
+<translation id="5212593641110061691">Neliela formāta laikraksts</translation>
 <translation id="5222676887888702881">Izrakstīties</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
 <translation id="5252456968953390977">Viesabonēšana</translation>
@@ -282,6 +284,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Lietošanas gaitā akumulatora kapacitāte samazinās</translation>
 <translation id="6191293864534840972">Nepareizi nosaukumu serveri</translation>
 <translation id="6223752125779001553">Nav pieejams neviens skeneris</translation>

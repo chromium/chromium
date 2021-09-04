@@ -764,6 +764,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3566021033012934673">Jūsu savienojums nav privāts</translation>
 <translation id="3567778190852720481">Nevar reģistrēt ierīci, izmantojot uzņēmuma kontu (uzņēmuma konts nav piemērots).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Atļaut šajā vietnē</translation>
 <translation id="3576616784287504635">Vietnē <ph name="SITE" /> iegultā lapā ir rakstīts</translation>
 <translation id="3581089476000296252">Chrome jūs informēs, kad šī lapa būs gatava. &lt;a&gt;Atcelt&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Pievienojiet vārdu.</translation>
@@ -2188,6 +2189,7 @@ Papildu informācija:
 <translation id="8368476060205742148">Google Play pakalpojumi</translation>
 <translation id="8371889962595521444">Pielāgoti saknes sertifikāti</translation>
 <translation id="8374636051559112948">Atšķiras</translation>
+<translation id="8380167699614421159">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="8380941800586852976">Bīstama</translation>
 <translation id="8381674639488873545">Maksa var tikt pieprasīta vienreiz vai atkārtoti; iespējams, pieprasījums nebūs skaidri pamanāms. <ph name="BEGIN_LINK" />Tik un tā rādīt<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Saskaņā ar administratora iestatīto politiku kopīgošana no <ph name="ORIGIN_NAME" /> uz <ph name="VM_NAME" /> ir bloķēta.</translation>

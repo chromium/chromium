@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1810845389119482123">Configurazione iniziale della sincronizzazione non terminata</translation>
 <translation id="1829244130665387512">Trova nella pagina</translation>
-<translation id="1830550083491357902">Accesso non eseguito</translation>
 <translation id="1843805151597803366">Consenti alla Ricerca Google di accedere alla pagina corrente per ricevere traduzioni migliori</translation>
 <translation id="1856325424225101786">Reimpostare la modalità Lite?</translation>
 <translation id="1868024384445905608">Ora Chrome scarica i file più velocemente</translation>
@@ -216,6 +215,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2369533728426058518">schede aperte</translation>
 <translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
 <translation id="2387895666653383613">Ridimensionamento testo</translation>
+<translation id="2390510615457643724">Vuoi scaricare di nuovo <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">I file scaricati vengono visualizzati qui</translation>
 <translation id="2407481962792080328">Questa funzionalità viene attivata quando accedi al tuo Account Google</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
@@ -376,6 +376,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3295530008794733555">Naviga più velocemente. Consuma meno dati.</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
 <translation id="3303414029551471755">Procedere al download dei contenuti?</translation>
+<translation id="3332570638882314953">Ricevi informazioni più pertinenti</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341058695485821946">Scopri la quantità di dati risparmiata</translation>
 <translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download eliminati</translation>
+<translation id="3819183753496523827">Sei offline. Controlla la connessione a Internet e riprova.</translation>
 <translation id="3845098929839618392">Apri in scheda incognito</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="3988213473815854515">La geolocalizzazione è consentita</translation>
 <translation id="3988466920954086464">Visualizza i risultati della ricerca immediata in questo riquadro</translation>
 <translation id="4000212216660919741">Home page offline</translation>
-<translation id="4001236013802615636">Chiedi a Google di considerare anche parte del testo della pagina</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
 <translation id="4045764304651014138">Dati sull'utilizzo</translation>
@@ -707,6 +708,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="543509235395288790">Download di <ph name="COUNT" /> file (<ph name="MEGABYTES" />) in corso.</translation>
+<translation id="5438292632479953702">Scarica di nuovo</translation>
 <translation id="5441466871879044658">Traduci in questa lingua</translation>
 <translation id="5441522332038954058">Vai alla barra degli indirizzi</translation>
 <translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Schede aperte</translation>
@@ -806,6 +808,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5964805880140440652">Per condividere questa pagina con un altro dispositivo, attiva la sincronizzazione nelle impostazioni di Chrome</translation>
 <translation id="5964869237734432770">Interrompi descr. immagini</translation>
 <translation id="5979084224081478209">Controlla password</translation>
+<translation id="5995726099713306770">Vuoi scaricare di nuovo la pagina?</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
 <translation id="6000203700195075278">Segui di nuovo</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
@@ -821,7 +824,7 @@ Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono dispon
 <translation id="604996488070107836">Download del file <ph name="FILE_NAME" /> non riuscito a causa di un errore sconosciuto.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controlla notizie e attività qui</translation>
-<translation id="6069177176307973611">Esamina le impostazioni Privacy e sicurezza</translation>
+<translation id="6069177176307973611">Rivedi le impostazioni Privacy e sicurezza</translation>
 <translation id="6085886413119427067">Consente di stabilire come connettersi ai siti web tramite una connessione sicura</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rimanenti</translation>
 <translation id="6108923351542677676">Configurazione in corso…</translation>
@@ -942,6 +945,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="670498945988402717">Eseguito ieri</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
+<translation id="6715020873764921614">Vuoi comunque scaricare <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
@@ -966,6 +970,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6882836635272038266">Sistemi di protezione standard da estensioni, siti web e download che sono noti per essere pericolosi.</translation>
 <translation id="6883204995689174413">Condividi</translation>
 <translation id="688738109438487280">Aggiungi i dati esistenti a <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Ricevi risultati migliori relativi alle parole che evidenzi consentendo a Google di prendere in considerazione parte del testo della pagina. Puoi cambiare in qualsiasi momento le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Sblocca per copiare la password</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">හයිපර්ටෙක්ස්ට් ප්‍රවාහන ප්‍රොටොකෝලය (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' සඳහා ටැබ <ph name="NUM" />ක් සොයා ගන්නා ලදි</translation>
 <translation id="1060292118287751956">තිරය යාවත්කාලීන වන සංඛ්‍යාතය තීරණ කරයි</translation>
+<translation id="1061130374843955397">ඔබගේ <ph name="DEVICE_TYPE" /> වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="1061904396131502319">විවේකයක් සඳහා වේලාවයි</translation>
 <translation id="1066613507389053689">Chrome OS යාවත්කාලීනය අවශ්‍යයි</translation>
 <translation id="1067048845568873861">සාදන ලදි</translation>
@@ -2833,6 +2834,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3943582379552582368">&amp;ආපසු</translation>
 <translation id="3943857333388298514">අලවන්න</translation>
 <translation id="3945513714196326460">වඩා කෙටි නමක් උත්සාහ කරන්න</translation>
+<translation id="3948027458879361203">සත්කාරක නම වෙනස් කරන්න</translation>
 <translation id="3948116654032448504">පින්තූරය සඳහා <ph name="SEARCH_ENGINE" /> හි සොයන්න</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> හට පහත ෆෝල්ඩර තුළ ඇති ගොනු සංස්කරණ කර හැක</translation>
 <translation id="394984172568887996">IE වෙතින් ආයාත කෙරිණි</translation>
@@ -6791,6 +6793,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BEGIN_PARAGRAPH4" />ඔබේ දරුවා සඳහා අතිරේක වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම ක්‍රියාත්මක නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකිය හැකිය. මෙම සැකසීම් සහ ඒවා families.google.com හිදී සීරුමාරු කරන ආකාරය ගැන තව දැන ගන්න.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">අවලංගු සේවාලාභී සහතිකය</translation>
 <translation id="827097179112817503">මුල්පිටු බොත්තම පෙන්වන්න</translation>
+<translation id="8271268254812352141">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තනය ලබා ගන්න. <ph name="LINK_BEGIN" />වෙබ් අඩවි භාෂා<ph name="LINK_END" /> තුළ පරිවර්තන භාෂා අභිරුචි කරන්න.</translation>
 <translation id="8271379370373330993">මාපියනි, ඊළඟ පියවර කිහිපය ඔබ සඳහාය. ඔබට ගිණුම පිහිටුවීමෙන් පසුව <ph name="DEVICE_TYPE" /> ආපසු ඔබගේ ළමයාට භාර දිය හැකිය.</translation>
 <translation id="8272443605911821513">"තවත් මෙවලම්" මෙනුව මත දිගු තුළ ක්ලික් කිරීමෙන් ඔබේ දිගු පාලනය කරන්න.</translation>
 <translation id="8274332263553132018">ගොනුව විකාශය කරන්න</translation>

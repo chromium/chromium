@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1810845389119482123">Erste Einrichtung der Synchronisierung nicht abgeschlossen</translation>
 <translation id="1829244130665387512">Auf Seite suchen</translation>
-<translation id="1830550083491357902">Nicht angemeldet</translation>
 <translation id="1843805151597803366">Lassen Sie die Google Suche auf die aktuelle Seite zugreifen, um bessere Übersetzungen zu bekommen</translation>
 <translation id="1856325424225101786">Lite-Modus zurücksetzen?</translation>
 <translation id="1868024384445905608">In Chrome sind Downloads jetzt noch schneller</translation>
@@ -216,6 +215,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2369533728426058518">Tabs öffnen</translation>
 <translation id="2386938421315164605">Themen ein- und ausblenden</translation>
 <translation id="2387895666653383613">Text-Skalierung</translation>
+<translation id="2390510615457643724">Möchten Sie <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) noch einmal herunterladen?</translation>
 <translation id="2394602618534698961">Dateien, die Sie herunterladen, werden hier angezeigt</translation>
 <translation id="2407481962792080328">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet</translation>
 <translation id="2410754283952462441">Konto auswählen</translation>
@@ -376,6 +376,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3295530008794733555">Schneller surfen. Weniger Daten verbrauchen.</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
+<translation id="3332570638882314953">Weitere relevante Informationen erhalten</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341058695485821946">Erfahren Sie, wie viel Datenvolumen Sie eingespart haben</translation>
 <translation id="3341262203274374114">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> Downloads gelöscht</translation>
+<translation id="3819183753496523827">Sie sind offline. Prüfen Sie die Internetverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="3845098929839618392">In Inkognitotab öffnen</translation>
 <translation id="3856096718352044181">Vergewissern Sie sich, dass dies ein gültiger Provider ist, oder versuchen Sie es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="3988213473815854515">Standort freigegeben</translation>
 <translation id="3988466920954086464">Instant-Suchergebnisse in diesem Feld ansehen</translation>
 <translation id="4000212216660919741">Offline-Startseite</translation>
-<translation id="4001236013802615636">Google erlauben, zusätzlich Text auf der Seite zu berücksichtigen</translation>
 <translation id="4016425174436051808">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Nutzungsdaten</translation>
@@ -707,6 +708,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> Dateien (<ph name="MEGABYTES" /> MB) werden heruntergeladen.</translation>
+<translation id="5438292632479953702">Noch einmal herunterladen</translation>
 <translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
@@ -806,6 +808,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5964805880140440652">Wenn Sie diese Seite mit einem anderen Gerät teilen möchten, aktivieren Sie in den Chrome-Einstellungen die Synchronisierung</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
+<translation id="5995726099713306770">Seite noch einmal herunterladen?</translation>
 <translation id="6000066717592683814">Google beibehalten</translation>
 <translation id="6000203700195075278">Wieder folgen</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
@@ -942,6 +945,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="670498945988402717">Gestern geprüft</translation>
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="671481426037969117">Ihr <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
+<translation id="6715020873764921614">Möchten Sie <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) trotzdem herunterladen?</translation>
 <translation id="6738516213925468394">Ihre Daten wurden am <ph name="TIME" /> mit Ihrer <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
 <translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>
@@ -966,6 +970,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind.</translation>
 <translation id="6883204995689174413">Teilen</translation>
 <translation id="688738109438487280">Vorhandene Daten werden zu <ph name="TO_ACCOUNT" /> hinzugefügt</translation>
+<translation id="6889847736310813892">Sie können bessere Ergebnisse für markierte Wörter erhalten. Lassen Sie Google dazu den Text der Seite berücksichtigen. Ihre <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> können Sie jederzeit ändern.</translation>
 <translation id="6891726759199484455">Entsperren, um Ihr Passwort zu kopieren</translation>
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>

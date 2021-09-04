@@ -116,6 +116,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2073572773299281212"><ph name="DAYS" /> kun oldin onlayn edi</translation>
 <translation id="2074131957428911366">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK" />sozlamalar<ph name="END_LINK" /> orqali tanlash mumkin.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
+<translation id="2080769225927880590">Yaroqli hisobdan kiring</translation>
 <translation id="209018056901015185">To‘liq versiya</translation>
 <translation id="2103075008456228677">history.google.com sahifasini ochish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
@@ -467,6 +468,8 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5737974891429562743">Hisob ma’lumotlaringiz eskirgan. Sinxronizatsiyani boshlash uchun ularni yangilang.</translation>
 <translation id="5738887413654608789">Yaqin-atrofingizdagi qurilmalar tarqatayotgan veb-sahifalarni aniqlash imkonini beradi.</translation>
 <translation id="5758631781033351321">Brauzer mutolaa roʻyxati shu yerda chiqadi</translation>
+<translation id="575902488528307720">Rasmni qidirish</translation>
+<translation id="5781453543752460388">Photos xizmatiga kiritish</translation>
 <translation id="5782227691023083829">Tarjima qilinmoqda...</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
 <translation id="5812974770859303494">Kiritish...</translation>
@@ -738,6 +741,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8205564605687841303">Bekor qilish</translation>
 <translation id="8206354486702514201">Bu parametr administrator tomonidan yoqilgan.</translation>
 <translation id="8225985093977202398">Keshdagi tasvir va fayllar</translation>
+<translation id="8228176677386827255">Qurilmangiz tashqaridan boshqariladi. Faqat tashkilot hisobidan kirish mumkin.</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8271720166617117963">Qabul qilish va kirish</translation>
 <translation id="8281781826761538115">Standart - <ph name="DEFAULT_LOCALE" /></translation>

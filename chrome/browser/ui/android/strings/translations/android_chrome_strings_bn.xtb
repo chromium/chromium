@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
-<translation id="1830550083491357902">প্রবেশ করেননি</translation>
 <translation id="1843805151597803366">আরও ভাল অনুবাদের জন্য, Google Search-কে বর্তমান পৃষ্ঠা ব্যবহার করতে দিন</translation>
 <translation id="1856325424225101786">লাইট মোড রিসেট করবেন?</translation>
 <translation id="1868024384445905608">Chrome এখন আরও দ্রুত ফাইল ডাউনলোড করে</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">খোলা ট্যাবগুলি</translation>
 <translation id="2386938421315164605">বিষয় লুকান বা দেখুন</translation>
 <translation id="2387895666653383613">পাঠ্য স্কেলিং</translation>
+<translation id="2390510615457643724">আপনি কি আবার <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> ডাউনলোড করতে চান?</translation>
 <translation id="2394602618534698961">আপনার ডাউনলোড করা ফাইল এখানে দেখানো হয়</translation>
 <translation id="2407481962792080328">আপনার Google অ্যাকাউন্টে সাইন-ইন করলে এই ফিচারটি চালু হয়ে যাবে</translation>
 <translation id="2410754283952462441">একটি অ্যাকাউন্ট বেছে নিন</translation>
@@ -323,7 +323,9 @@
 <translation id="2996291259634659425">পাসফ্রেজ তৈরি করুন</translation>
 <translation id="2996809686854298943">URL প্রয়োজন</translation>
 <translation id="3006881078666935414">কোনও ব্যবহারের ডেটা নেই</translation>
+<translation id="301080557829842765">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="3016635187733453316">এই ডিভাইসটি ইন্টারনেটে কানেক্ট করা আছে কিনা দেখে নিন</translation>
+<translation id="3026955690410463085">লিঙ্ক যোগ করুন</translation>
 <translation id="3029704984691124060">পাসফ্রেজসমূহ মেলে না</translation>
 <translation id="3031225630520268969">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায়তা পান<ph name="END_LINK" /></translation>
@@ -353,6 +355,7 @@
 <translation id="3220943972464248773">পাসওয়ার্ড সিঙ্ক করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="3227557059438308877">নিরাপত্তা কী হিসেবে Google Chrome ব্যবহার</translation>
 <translation id="3232754137068452469">ওয়েব অ্যাপ</translation>
+<translation id="3234978181857588512">ডিভাইসে সেভ করুন</translation>
 <translation id="3236059992281584593">১ মিনিট বাকি আছে</translation>
 <translation id="3244271242291266297">মিমি</translation>
 <translation id="3250563604907490871">আপনি ওয়াই-ফাইতে কানেক্ট করলে, ছবির বিবরণ আবার দেখা যাবে</translation>
@@ -373,6 +376,7 @@
 <translation id="3295530008794733555">চটপট ব্রাউজ করুন। আরও কম ডেটা ব্যবহার করুন।</translation>
 <translation id="3297344142967351106">ভয়েস সহায়তা</translation>
 <translation id="3303414029551471755">কন্টেন্ট ডাউনলোড করার জন্য এগোতে চান?</translation>
+<translation id="3332570638882314953">আরও প্রাসঙ্গিক তথ্য পান</translation>
 <translation id="3334729583274622784">ফাইলের এক্সটেনশন পরিবর্তন করতে চান?</translation>
 <translation id="3341058695485821946">দেখুন আপনি কত ডেটা সাশ্রয় করেছেন</translation>
 <translation id="3341262203274374114">ফলো করা থামানো যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
@@ -450,6 +454,7 @@
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড মোছা হয়েছে</translation>
+<translation id="3819183753496523827">আপনি অফলাইন আছেন। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
 <translation id="3845098929839618392">ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="3856096718352044181">এটি সঠিক প্রদানকারী কিনা যাচাই করুন অথবা পরে আবার চেষ্টা করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
@@ -528,6 +533,7 @@
 <translation id="4335835283689002019">'নিরাপদ ব্রাউজিং' বন্ধ আছে</translation>
 <translation id="4351244548802238354">ডায়ালগ বন্ধ করুন</translation>
 <translation id="4378154925671717803">ফোন</translation>
+<translation id="438319986296050901">শুধুমাত্র কার্ড শেয়ার করুন</translation>
 <translation id="4384468725000734951">সার্চের জন্য Sogou কে ব্যবহার করছে</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>
@@ -591,6 +597,7 @@
 <translation id="4738836084190194332">সর্বশেষ সিঙ্ক হয়েছে: <ph name="WHEN" /></translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4749960740855309258">একটি নতুন ট্যাব খুলুন</translation>
+<translation id="4758061975920522644">শুধুমাত্র ইমেজ শেয়ার করুন</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4763480195061959176">ভিডিও</translation>
 <translation id="4763829664323285145">{FILE_COUNT,plural, =1{১টি ডাউনলোড হয়ে গেছে।}one{#টি ডাউনলোড হয়ে গেছে।}other{#টি ডাউনলোড হয়ে গেছে।}}</translation>
@@ -703,6 +710,7 @@
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
 <translation id="543509235395288790"><ph name="COUNT" />টি ফাইল ডাউনলোড হচ্ছে (<ph name="MEGABYTES" />)।</translation>
+<translation id="5438292632479953702">আবার ডাউনলোড করুন</translation>
 <translation id="5441466871879044658">এই ভাষায় অনুবাদ করুন</translation>
 <translation id="5441522332038954058">অ্যাড্রেস বারে চলে যান</translation>
 <translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
@@ -754,6 +762,7 @@
 <translation id="5748802427693696783">স্ট্যান্ডার্ড ট্যাবে পাল্টানো হয়েছে</translation>
 <translation id="5749068826913805084">ফাইল ডাউনলোড করতে Chrome-এর জন্য স্টোরেজ অ্যাক্সেস প্রয়োজন।</translation>
 <translation id="5749237766298580851"><ph name="SEPARATOR" /> বন্ধ করার বিষয়টি সাজেস্ট করা হয়নি</translation>
+<translation id="5752232708629533680">শুধুমাত্র GIF শেয়ার করুন</translation>
 <translation id="5754350196967618083">Discover রিফ্রেশ করা যাচ্ছে না</translation>
 <translation id="5763382633136178763">ছদ্মবেশী ট্যাব</translation>
 <translation id="5763514718066511291">এই অ্যাপের ইউআরএল কপি করতে ট্যাপ করুন</translation>
@@ -801,6 +810,7 @@
 <translation id="5964805880140440652">এই পৃষ্ঠাটিকে অন্য ডিভাইসের সাথে শেয়ার করার জন্য, Chrome সেটিংস থেকে সিঙ্ক চালু করুন</translation>
 <translation id="5964869237734432770">ছবির বিবরণ বন্ধ করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
+<translation id="5995726099713306770">পৃষ্ঠাটি আবার ডাউনলোড করবেন?</translation>
 <translation id="6000066717592683814">Google কে রাখুন</translation>
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
 <translation id="6005538289190791541">প্রস্তাবিত পাসওয়ার্ড</translation>
@@ -816,6 +826,7 @@
 <translation id="604996488070107836">একটি অজানা ত্রুটির কারনে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
+<translation id="6069177176307973611">গোপনীয়তা এবং নিরাপত্তা সেটিংস পর্যালোচনা করুন</translation>
 <translation id="6085886413119427067">কোনও সুরক্ষিত কানেকশনের মাধ্যমে ওয়েবসাইটগুলিতে কীভাবে কানেক্ট করবেন তা নির্ধারণ করে</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6108923351542677676">সেটআপ চলছে...</translation>
@@ -936,6 +947,7 @@
 <translation id="670498945988402717">গতকাল চেক করা হয়েছে</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="671481426037969117">আপনার <ph name="FQDN" /> টাইমারের মেয়াদ পেরিয়ে গেছে। আগামীকাল আবার এটি শুরু হবে।</translation>
+<translation id="6715020873764921614">আপনি কি তবুও <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ডাউনলোড করতে চান?</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে সেটি লিখুন।</translation>
 <translation id="6738867403308150051">ডাউনলোড হচ্ছে...</translation>
 <translation id="6751521182688001123">দ্রুত একটি নতুন ট্যাব খুলুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে থাকুন।</translation>
@@ -960,10 +972,12 @@
 <translation id="6882836635272038266">ঝুঁকিপূর্ণ হিসেবে চিহ্নিত ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য স্ট্যান্ডার্ড নিরাপত্তা।</translation>
 <translation id="6883204995689174413">শেয়ার করুন</translation>
 <translation id="688738109438487280">বিদ্যমান ডেটা <ph name="TO_ACCOUNT" /> এ যোগ করুন।</translation>
+<translation id="6889847736310813892">Google-কে পৃষ্ঠার নির্দিষ্ট টেক্সট বিবেচনা করার অনুমতি দিন এবং আপনি যে শব্দগুলি হাইলাইট করেন তার জন্য আরও ভাল ফলাফল দেখুন। আপনি যেকোনও সময় আপনার <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> পরিবর্তন করতে পারেন।</translation>
 <translation id="6891726759199484455">আপনার পাসওয়ার্ড কপি করতে আনলক করুন</translation>
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
+<translation id="6924672435311694692">আরও ভাল ফলাফল দেখুন</translation>
 <translation id="6929699136511445623">Android সিস্টেম সিঙ্ক চালু করুন</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="694267552845942083">এখন আপনার সিঙ্ক সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা "কনফার্ম করুন" বোতামে ট্যাপ করে সিঙ্ক চালু করুন। উপরের দিকে নেভিগেট করুন</translation>
@@ -982,6 +996,7 @@
 <translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ফিরিয়ে আনা হয়েছে</translation>
 <translation id="7029390216614421513">এই ফ্রেমের মধ্যে QR কোড/বারকোড রাখুন।</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
+<translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ছবির বিবরণ পেতে চান?</translation>
 <translation id="7055152154916055070">রিডাইরেক্ট ব্লক করা হয়েছে:</translation>
 <translation id="7063006564040364415">সিঙ্ক সার্ভারে সংযোগ করতে পারেনি৷</translation>
@@ -1210,6 +1225,7 @@
 <translation id="8424781820952413435">পৃষ্ঠা পাঠানো হয়েছে। এটি দেখতে, আপনার <ph name="DEVICE_TYPE" />-এ Chrome খুলুন</translation>
 <translation id="8427875596167638501">প্রিভিউ ট্যাব অর্ধেক খোলা আছে</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
+<translation id="8430824733382774043">শুধুমাত্র স্ক্রিনশট শেয়ার করুন</translation>
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - ভাষা ডাউনলোড করা হয়েছে, <ph name="APP_NAME" /> রিস্টার্ট করুন।</translation>
 <translation id="8442258441309440798">কোনও খবর উপলভ্য নেই</translation>
@@ -1335,6 +1351,7 @@
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>
 <translation id="9155898266292537608">এছাড়াও কোনও শব্দের উপরে ট্যাপ করেও খুঁজতে পারেন</translation>
+<translation id="9158770349521403363">শুধুমাত্র কন্টেন্ট শেয়ার করুন</translation>
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204836675896933765">১টি ফাইল বাকি</translation>

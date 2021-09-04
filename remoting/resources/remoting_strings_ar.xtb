@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">تم تسجيل الدخول باسم <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">إعادة الاتصال</translation>
 <translation id="5810269635982033450">تعمل الشاشة كلوحة تتبع</translation>
+<translation id="5823554426827907568">طلب <ph name="CLIENT_USERNAME" /> إذنًا بالوصول إلى جهاز الكمبيوتر الخاص بك للاطّلاع على شاشة جهازك والتحكّم بلوحة المفاتيح والماوس. انقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" إذا لم تكن تتوقّع هذا الطلب. ويمكنك النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" للسماح بهذا الاتصال في حال كنت مستعدًا.</translation>
 <translation id="5823658491130719298">‏على جهاز الكمبيوتر الذي تريد الدخول إليه عن بُعد، افتح Chrome وانتقل إلى <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">خيارات العرض</translation>
 <translation id="6033507038939587647">خيارات لوحة المفاتيح</translation>

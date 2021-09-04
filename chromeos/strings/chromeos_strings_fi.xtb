@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
+<translation id="1119447706177454957">Sisäinen virhe</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Laitetta (<ph name="DEVICE_TYPE" />) ylläpitää <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5212543919916444558">En löydä näytöltä mitään, minkä kanssa voisin auttaa sinua.
 Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Kirjaudu ulos</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>

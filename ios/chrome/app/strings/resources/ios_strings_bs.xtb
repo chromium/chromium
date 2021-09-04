@@ -116,7 +116,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2073572773299281212">Aktivan prije <ph name="DAYS" /> dana</translation>
 <translation id="2074131957428911366">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati.</translation>
 <translation id="2079545284768500474">Vrati</translation>
-<translation id="2080769225927880590">Prijavite se važećim računom</translation>
+<translation id="2080769225927880590">Prijavite se pomoću važećeg računa</translation>
 <translation id="209018056901015185">Zatraži verziju web lokacije za računar</translation>
 <translation id="2103075008456228677">Otvori history.google.com</translation>
 <translation id="2116625576999540962">Broj premještenih stavki: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -468,8 +468,8 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5737974891429562743">Detalji o prijavi za račun su zastarjeli. Ažurirajte da pokrenete sinhronizaciju.</translation>
 <translation id="5738887413654608789">Ovako možete otkriti relevantne web lokacije na osnovu vašeg okruženja.</translation>
 <translation id="5758631781033351321">Listu za čitanje ćete pronaći ovdje</translation>
-<translation id="575902488528307720">Pretraži sliku</translation>
-<translation id="5781453543752460388">Dodaj u fotografije</translation>
+<translation id="575902488528307720">Pretražite sliku</translation>
+<translation id="5781453543752460388">Dodaj u Fotografije</translation>
 <translation id="5782227691023083829">Prevođenje...</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti novu karticu?</translation>
 <translation id="5812974770859303494">Dodaj u...</translation>
@@ -741,7 +741,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8205564605687841303">Otkaži</translation>
 <translation id="8206354486702514201">Ovu postavku je nametnuo vaš administrator.</translation>
 <translation id="8225985093977202398">Slike i fajlovi u keš memoriji</translation>
-<translation id="8228176677386827255">Vašim se uređajem upravlja. Možete se prijaviti samo računom organizacije.</translation>
+<translation id="8228176677386827255">Vašim uređajem se upravlja. Možete se prijaviti samo pomoću računa organizacije.</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8271720166617117963">Prihvati i prijavi me</translation>
 <translation id="8281781826761538115">Zadano – <ph name="DEFAULT_LOCALE" /></translation>

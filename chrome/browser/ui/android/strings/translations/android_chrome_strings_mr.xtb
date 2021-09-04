@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">फिकट</translation>
 <translation id="1810845389119482123">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
-<translation id="1830550083491357902">साइन इन केलेले नाही</translation>
 <translation id="1843805151597803366">आणखी चांगली भाषांतरे मिळवण्यासाठी, Google Search ला सध्याचे पेज वापरू द्या</translation>
 <translation id="1856325424225101786">लाइट मोड रीसेट करायचा?</translation>
 <translation id="1868024384445905608">Chrome आता फाइल वेगाने डाउनलोड करते</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">खुले टॅब</translation>
 <translation id="2386938421315164605">विषय लपवा आणि दाखवा</translation>
 <translation id="2387895666653383613">मजकूर स्केलिग</translation>
+<translation id="2390510615457643724">तुम्हाला <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> पुन्हा डाउनलोड करायची आहे का?</translation>
 <translation id="2394602618534698961">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
 <translation id="2407481962792080328">तुम्ही तुमच्या Google खात्यामध्ये साइन इन केल्यावर, हे वैशिष्ट्य सुरू केले जाते</translation>
 <translation id="2410754283952462441">एक खाते निवडा</translation>
@@ -376,6 +376,7 @@
 <translation id="3295530008794733555">आणखी जलद ब्राउझ करा. कमी डेटा वापरा.</translation>
 <translation id="3297344142967351106">व्हॉइस साहाय्य</translation>
 <translation id="3303414029551471755">आशय डाउनलोड करणे सुरू ठेवायचे?</translation>
+<translation id="3332570638882314953">आणखी उपयुक्त माहिती मिळवा</translation>
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="3341058695485821946">तुम्ही किती डेटा सेव्ह केला ते पहा</translation>
 <translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
@@ -453,6 +454,7 @@
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड हटविले</translation>
+<translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="3845098929839618392">गुप्त टॅबमध्ये उघडा</translation>
 <translation id="3856096718352044181">कृपया हा वैध पुरवठादार आहे याची पडताळणी करा किंवा नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3858860766373142691">नाव</translation>
@@ -483,7 +485,6 @@
 <translation id="3988213473815854515">स्थानास अनुमती आहे</translation>
 <translation id="3988466920954086464">या पॅनलमध्ये इंस्टंट शोध परिणाम पहा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
-<translation id="4001236013802615636">Google ला पेजवरील काही मजकूरदेखील विचारात घेऊ द्या</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
@@ -707,6 +708,7 @@
 <translation id="543338862236136125">पासवर्ड संपादित करा</translation>
 <translation id="5433691172869980887">वापरकर्ता नाव कॉपी केले</translation>
 <translation id="543509235395288790">(<ph name="MEGABYTES" />) च्या <ph name="COUNT" /> फाइल डाउनलोड करत आहे.</translation>
+<translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
 <translation id="5441522332038954058">अ‍ॅड्रेस बारवर जा</translation>
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
@@ -806,6 +808,7 @@
 <translation id="5964805880140440652">हे पेज दुसर्‍या डिव्हाइसवर शेअर करण्यासाठी, Chrome सेटिंग्जमध्ये सिंक सुरू करा</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
+<translation id="5995726099713306770">पेज पुन्हा डाउनलोड करायचे आहे का?</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
@@ -942,6 +945,7 @@
 <translation id="670498945988402717">काल तपासले</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="671481426037969117">तुमचा <ph name="FQDN" /> टायमर झाला आहे. तो उद्या पुन्हा सुरू होईल.</translation>
+<translation id="6715020873764921614">तुम्हाला तरीही <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) डाउनलोड करायची आहे का?</translation>
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="6738867403308150051">डाउनलोड करीत आहे…</translation>
 <translation id="6751521182688001123">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>
@@ -966,6 +970,7 @@
 <translation id="6882836635272038266">धोकादायक म्हणून ओळखल्या जाणार्‍या वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून साधारण संरक्षण.</translation>
 <translation id="6883204995689174413">शेअर करा</translation>
 <translation id="688738109438487280">विद्यमान डेटा <ph name="TO_ACCOUNT" /> मध्ये जोडा.</translation>
+<translation id="6889847736310813892">Google ला पेजवरील काही मजकूर विचारात घेऊ द्या आणि तुम्ही हायलाइट करता त्या शब्दांसाठी आणखी चांगले परिणाम पहा. तुम्ही तुमची <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> कधीही बदलू शकता.</translation>
 <translation id="6891726759199484455">तुमचा पासवर्ड कॉपी करण्यासाठी अनलॉक करा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>

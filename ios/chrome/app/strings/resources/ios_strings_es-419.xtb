@@ -116,6 +116,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2073572773299281212">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">En la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
+<translation id="2080769225927880590">Accede con una cuenta válida</translation>
 <translation id="209018056901015185">Versión para escritorio</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
@@ -467,6 +468,8 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>
 <translation id="5738887413654608789">Esta capacidad te permite descubrir páginas web relevantes en función de tu entorno.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
+<translation id="575902488528307720">Buscar imagen</translation>
+<translation id="5781453543752460388">Agregar a fotos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>
 <translation id="5812974770859303494">Agregar a…</translation>
@@ -738,6 +741,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">El administrador controla esta configuración.</translation>
 <translation id="8225985093977202398">Imágenes y archivos almacenados en caché</translation>
+<translation id="8228176677386827255">Tu dispositivo está administrado. Solo puedes acceder con la cuenta de tu organización.</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8271720166617117963">Aceptar y acceder</translation>
 <translation id="8281781826761538115">Predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

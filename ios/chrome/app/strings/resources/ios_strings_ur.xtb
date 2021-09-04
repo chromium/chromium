@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
+<translation id="2080769225927880590">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="209018056901015185">ڈیسک ٹاپ سائٹ کی درخواست کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> آئٹمز منتقل کر دیے گئے</translation>
@@ -467,6 +468,8 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5737974891429562743">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔ مطابقت پذیری شروع کرنے کیلئے اپ ڈیٹ کریں۔</translation>
 <translation id="5738887413654608789">یہ آپ کو آپ کے قرب و جوار کی بنیاد پر متعلقہ ویب صفحات کو دریافت کرنے کی اجازت دیتا ہے۔</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
+<translation id="575902488528307720">تصویر کیلئے تلاش کریں</translation>
+<translation id="5781453543752460388">تصاویر میں شامل کریں</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="5803566855766646066">کیا آپ واقعی اس نئے کارڈ کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="5812974770859303494">اس میں شامل کریں...</translation>
@@ -738,6 +741,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8205564605687841303">منسوخ کریں</translation>
 <translation id="8206354486702514201">اس ترتیب کو آپ کے منتظم نے نافذ کیا ہے۔</translation>
 <translation id="8225985093977202398">کیش کردہ تصاویر اور فائلیں</translation>
+<translation id="8228176677386827255">آپ کا آلہ زیر انتظام ہے۔ آپ صرف اپنی تنظیم کے اکاؤنٹ سے سائن ان کر سکتے ہیں۔</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8271720166617117963">قبول کریں اور سائن ان کریں</translation>
 <translation id="8281781826761538115">ڈیفالٹ - <ph name="DEFAULT_LOCALE" /></translation>

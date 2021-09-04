@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">HTTPS (Hypertext Transfer Protocol)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> flikar för <ph name="SEARCH_TEXT" /> hittades</translation>
 <translation id="1060292118287751956">Anger skärmens uppdateringsfrekvens</translation>
+<translation id="1061130374843955397">Välkommen till <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Snart dags för en paus</translation>
 <translation id="1066613507389053689">Uppdatering av Chrome OS krävs</translation>
 <translation id="1067048845568873861">Skapad</translation>
@@ -2844,6 +2845,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3943582379552582368">&amp;Bakåt</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3945513714196326460">Ange ett kortare namn</translation>
+<translation id="3948027458879361203">Ändra värdnamn</translation>
 <translation id="3948116654032448504">&amp;Sök på <ph name="SEARCH_ENGINE" /> efter bild</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> har redigeringsbehörighet till filer i följande mappar</translation>
 <translation id="394984172568887996">Importerat från IE</translation>
@@ -6808,6 +6810,7 @@ Tryck på en brytare som redan tilldelats en åtgärd om du vill ta bort tilldel
     <ph name="BEGIN_PARAGRAPH4" />Om tillvalsinställningen Webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i barnets Google-konto. Läs mer om de här inställningarna och hur du kan ändra dem på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ogiltigt klientcertifikat</translation>
 <translation id="827097179112817503">Visa hemknappen</translation>
+<translation id="8271268254812352141">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text. Anpassa språken för översättning via <ph name="LINK_BEGIN" />Språk på webbplatser<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Nästa steg är till för dig som är förälder. Du kan lämna tillbaka <ph name="DEVICE_TYPE" /> till barnet när konfigureringen av kontot är klar.</translation>
 <translation id="8272443605911821513">Hantera dina tillägg genom att klicka på Tillägg i menyn Fler verktyg.</translation>
 <translation id="8274332263553132018">Casta fil</translation>

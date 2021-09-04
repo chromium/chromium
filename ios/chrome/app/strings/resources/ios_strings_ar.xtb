@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> من الأيام</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
+<translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
 <translation id="209018056901015185">طلب موقع سطح المكتب</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">تفاصيل تسجيل الدخول إلى الحساب قديمة. يمكنك التحديث لبدء المزامنة.</translation>
 <translation id="5738887413654608789">يتيح لك هذا اكتشاف صفحات الويب ذات الصلة حسب الأشياء المحيطة بك.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
+<translation id="575902488528307720">البحث عن الصور</translation>
+<translation id="5781453543752460388">‏إضافة إلى "صور Google"</translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="5803566855766646066">هل تريد فعلاً تجاهل هذه البطاقة الجديدة؟</translation>
 <translation id="5812974770859303494">إضافة إلى...</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
+<translation id="8228176677386827255">تتم حاليًا إدارة جهازك. يمكنك تسجيل الدخول باستخدام حساب مؤسستك فقط.</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8271720166617117963">القبول وتسجيل الدخول</translation>
 <translation id="8281781826761538115">التلقائي - <ph name="DEFAULT_LOCALE" /></translation>

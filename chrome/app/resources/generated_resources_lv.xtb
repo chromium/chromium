@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hiperteksta transporta protokols (HTTPS)</translation>
 <translation id="1059944192885972544">Atrastas vairākas cilnes, kas atbilst vaicājumam “<ph name="SEARCH_TEXT" />” (kopā <ph name="NUM" />)</translation>
 <translation id="1060292118287751956">Nosaka frekvenci, kādā ekrāns veic atjauninājumus.</translation>
+<translation id="1061130374843955397">Laipni lūdzam ierīcē <ph name="DEVICE_TYPE" />!</translation>
 <translation id="1061904396131502319">Tūlīt būs pārtraukums</translation>
 <translation id="1066613507389053689">Nepieciešama Chrome OS atjaunināšana</translation>
 <translation id="1067048845568873861">Izveidots</translation>
@@ -2831,6 +2832,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="3943582379552582368">Atpakaļ</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3945513714196326460">Izmantojiet īsāku nosaukumu.</translation>
+<translation id="3948027458879361203">Saimniekdatora nosaukuma maiņa</translation>
 <translation id="3948116654032448504">Meklēt attēlu <ph name="SEARCH_ENGINE" /> tīklā</translation>
 <translation id="3948507072814225786">Vietne <ph name="ORIGIN" /> var rediģēt tālāk norādītajās mapēs esošos failus.</translation>
 <translation id="394984172568887996">Importēts no IE</translation>
@@ -6793,6 +6795,7 @@ Nospiediet piešķirtu slēdzi, lai noņemtu piešķiršanu.</translation>
     <ph name="BEGIN_PARAGRAPH4" />Ja jūsu bērnam ir ieslēgtas iestatījuma “Darbības tīmeklī un lietotnēs” papildu funkcijas, šī informācija tiks saglabāta bērna Google kontā. Plašāku informāciju par šiem iestatījumiem un to pielāgošanu skatiet vietnē families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Nederīgs klienta sertifikāts</translation>
 <translation id="827097179112817503">Rādīt pogu Sākums</translation>
+<translation id="8271268254812352141">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot. Varat pielāgot tulkošanas valodas sadaļā <ph name="LINK_BEGIN" />Vietņu valodas<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Vecāki, nākamās darbības ir jāveic jums. Kad būsiet iestatījis kontu, varēsiet <ph name="DEVICE_TYPE" /> ierīci atdot bērnam.</translation>
 <translation id="8272443605911821513">Pārvaldiet savus paplašinājumus, izvēlnē “Citi rīki” noklikšķinot uz Paplašinājumi.</translation>
 <translation id="8274332263553132018">Apraidīt failu</translation>

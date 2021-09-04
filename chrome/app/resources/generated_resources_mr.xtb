@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">हायपरटेक्स्ट ट्रान्सपोर्ट प्रोटोकॉल (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' साठी <ph name="NUM" /> टॅब आढळले</translation>
 <translation id="1060292118287751956">स्क्रीन अपडेट करत असलेली वारंवारता निर्धारित करतो</translation>
+<translation id="1061130374843955397">तुमच्या <ph name="DEVICE_TYPE" /> मध्ये स्वागत आहे</translation>
 <translation id="1061904396131502319">विश्रांतीची वेळ झाली आहे</translation>
 <translation id="1066613507389053689">Chrome OS अपडेट करणे आवश्यक आहे</translation>
 <translation id="1067048845568873861">तयार केले</translation>
@@ -2843,6 +2844,7 @@
 <translation id="3943582379552582368">&amp;मागील</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3945513714196326460">संक्षिप्त नाव वापरून पहा</translation>
+<translation id="3948027458879361203">होस्ट नाव बदला</translation>
 <translation id="3948116654032448504">इमेज <ph name="SEARCH_ENGINE" /> वर शोधा</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> खालील फोल्डरमधील फाइल संपादित करू शकते</translation>
 <translation id="394984172568887996">IE मधून आयातित</translation>
@@ -6804,6 +6806,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="BEGIN_PARAGRAPH4" />तुमची अतिरिक्त वेब आणि ॲप ॲक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, ही माहिती त्यांच्या Google खात्यावर सेव्ह केली जाऊ शकते. तुम्ही families.google.com वर या सेटिंग्ज कशा ॲडजस्ट करायच्या आणि त्याबद्दल अधिक जाणून घ्या.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">चुकीचे क्लायंट सर्टिफिकेट</translation>
 <translation id="827097179112817503">होम बटण दर्शवा</translation>
+<translation id="8271268254812352141">तुम्ही मजकुरावर राइट क्लिक करता किंवा त्यावर स्पर्श करून तो धरून ठेवता तेव्हा, व्याख्या, भाषांतरे अथवा युनिट रूपांतरे मिळवा. <ph name="LINK_BEGIN" />वेबसाइटच्या भाषा<ph name="LINK_END" /> मध्ये भाषांतराच्या भाषा कस्टमाइझ करा.</translation>
 <translation id="8271379370373330993">पालकांनो, पुढील काही पायऱ्या तुमच्यासाठी आहेत. खाते सेट करून झाल्यानंतर तुम्ही लहान मुलाकडे <ph name="DEVICE_TYPE" /> परत सोपवू शकता.</translation>
 <translation id="8272443605911821513">"अधिक साधने" मेनूमधील विस्तार क्लिक करून तुमचे विस्तार व्यवस्थापित करा.</translation>
 <translation id="8274332263553132018">फाइल कास्ट करा</translation>

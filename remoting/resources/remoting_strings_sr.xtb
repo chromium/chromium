@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">Пријављени сте као <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Поново се повежи</translation>
 <translation id="5810269635982033450">Екран служи као додирна табла</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> захтева приступ за преглед екрана и контролисање тастатуре и миша. Притисните <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ако не очекујете овај захтев. У супротном, изаберите <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> да бисте дозволили повезивање када будете спремни.</translation>
 <translation id="5823658491130719298">На рачунару ком желите даљински да приступате отворите Chrome и посетите <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опције приказа</translation>
 <translation id="6033507038939587647">Опције тастатуре</translation>

@@ -757,6 +757,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3566021033012934673">Je verbinding is niet privé</translation>
 <translation id="3567778190852720481">Kan niet inschrijven met werkaccount (werkaccount komt niet in aanmerking).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Toestaan voor deze site</translation>
 <translation id="3576616784287504635">Een ingesloten pagina op <ph name="SITE" /> meldt het volgende</translation>
 <translation id="3581089476000296252">Chrome laat je weten wanneer de pagina klaar is. &lt;a&gt;Annuleren&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Voeg naam toe</translation>
@@ -2180,6 +2181,7 @@ Aanvullende informatie:
 <translation id="8368476060205742148">Google Play-services</translation>
 <translation id="8371889962595521444">Custom rootcertificaten</translation>
 <translation id="8374636051559112948">Varieert</translation>
+<translation id="8380167699614421159">Deze site toont opdringerige of misleidende advertenties</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
 <translation id="8381674639488873545">Deze kosten kunnen eenmalig of terugkerend zijn en zijn mogelijk niet duidelijk aangegeven. <ph name="BEGIN_LINK" />Toch tonen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Delen van <ph name="ORIGIN_NAME" /> naar <ph name="VM_NAME" /> is geblokkeerd op basis van beheerdersbeleid</translation>

@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">ပြီးခဲ့သော <ph name="DAYS" /> ရက်က အသုံးပြုထားသည်</translation>
 <translation id="2074131957428911366">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" />တွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="2080769225927880590">‘မှန်ကန်သည့်အကောင့်’ ဖြင့်သာ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="209018056901015185">ဒက်စတော့ပ် ဆိုက် တောင်းဆိုမည်</translation>
 <translation id="2103075008456228677">history.google.com ကိုဖွင့်ပါ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ရွှေ့ပြောင်းပြီးပါပြီ</translation>
@@ -466,6 +467,8 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5737974891429562743">အကောင့် လက်မှတ်ထိုးဝင်ခြင်း အသေးစိတ်အချက်အလက်များသည် ဟောင်းနေပါပြီ။ စတင်၍ စင့်ခ်ပြုလုပ်နိုင်ရန် အပ်ဒိတ်လုပ်ပါ။</translation>
 <translation id="5738887413654608789">ဤနည်းဖြင့် သင့်ပတ်ဝန်းကျင်ကိုလိုက်၍ သက်ဆိုင်ရာအင်တာနက်စာမျက်နှာများကို ရှာဖွေနိုင်ပါသည်။</translation>
 <translation id="5758631781033351321">သင့်ဖတ်ရန်စာရင်းကို ဤနေရာတွင် ပြပါမည်</translation>
+<translation id="575902488528307720">‘ပုံ’ ရှာဖွေရန်</translation>
+<translation id="5781453543752460388">‘ဓာတ်ပုံများ’ သို့ထည့်ရန်</translation>
 <translation id="5782227691023083829">ဘာသာပြန်နေသည်...</translation>
 <translation id="5803566855766646066">ဤကတ်အသစ်ကို ဖယ်ပစ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="5812974770859303494">ထည့်မည့်နေရာ...</translation>
@@ -737,6 +740,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8205564605687841303">မလုပ်တော့</translation>
 <translation id="8206354486702514201">ဤဆက်တင်အား သင့်ကြီးကြပ်သူမှ တွန်းအားပေးထားခြင်း ဖြစ်သည်။</translation>
 <translation id="8225985093977202398">ကက်ရှ်ပြုလုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
+<translation id="8228176677386827255">သင့်စက်ကို စီမံထားသည်။ သင့်အဖွဲ့အစည်းအကောင့်ဖြင့်သာ လက်မှတ်ထိုးဝင်နိုင်သည်။</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8271720166617117963">လက်ခံပြီး လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="8281781826761538115">မူရင်း − <ph name="DEFAULT_LOCALE" /></translation>

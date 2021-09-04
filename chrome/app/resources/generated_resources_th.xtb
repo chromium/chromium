@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">พบ <ph name="NUM" /> แท็บสำหรับ "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">กำหนดความถี่ในการอัปเดตหน้าจอ</translation>
+<translation id="1061130374843955397">ยินดีต้อนรับสู่ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">เกือบถึงเวลาพักแล้ว</translation>
 <translation id="1066613507389053689">ต้องอัปเดต Chrome OS</translation>
 <translation id="1067048845568873861">สร้างแล้ว</translation>
@@ -257,7 +258,7 @@
 <translation id="126710816202626562">ภาษาที่แปล:</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">หยุด</translation>
-<translation id="1272508081857842302">กำลังเปิด<ph name="BEGIN_LINK" />ลิงก์ที่รองรับ<ph name="END_LINK" /></translation>
+<translation id="1272508081857842302">การเปิด<ph name="BEGIN_LINK" />ลิงก์ที่รองรับ<ph name="END_LINK" /></translation>
 <translation id="1272978324304772054">บัญชีผู้ใช้นี้ไม่ได้อยู่ในโดเมนที่ลงทะเบียนอุปกรณ์ ถ้าคุณต้องการลงทะเบียนไปยังโดเมนอื่น คุณจะต้องกู้คืนอุปกรณ์ก่อน</translation>
 <translation id="1273780413309681229">เรียกใช้คำแนะนำในการตั้งค่าอีกครั้ง</translation>
 <translation id="1274997165432133392">คุกกี้และข้อมูลอื่นของไซต์</translation>
@@ -2828,6 +2829,7 @@
 <translation id="3943582379552582368">&amp;กลับ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3945513714196326460">ลองใช้ชื่อที่สั้นกว่านี้</translation>
+<translation id="3948027458879361203">เปลี่ยนชื่อโฮสต์</translation>
 <translation id="3948116654032448504">ค้นหา&amp;รูปภาพด้วย <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> แก้ไขไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
 <translation id="394984172568887996">นำเข้าจาก IE</translation>
@@ -3552,7 +3554,7 @@
 <translation id="4779136857077979611">ข้าวปั้น</translation>
 <translation id="4779766576531456629">เปลี่ยนชื่อเครือข่ายมือถือของ eSIM</translation>
 <translation id="4780321648949301421">บันทึกหน้าเป็น...</translation>
-<translation id="4784559565779618838">หากต้องการค้นหาเว็บไซต์ที่เฉพาะเจาะจงหรือส่วนหนึ่งของ Chrome คุณก็พิมพ์ทางลัดลงในแถบที่อยู่ตรงนี้ได้ จากนั้นกด Tab หรือ Space</translation>
+<translation id="4784559565779618838">หากต้องการค้นหาเว็บไซต์ที่เฉพาะเจาะจงหรือส่วนหนึ่งของ Chrome คุณก็พิมพ์ทางลัดต่อไปนี้ลงในแถบที่อยู่ได้ จากนั้นกด Tab หรือ Space</translation>
 <translation id="4785719467058219317">คุณกำลังใช้คีย์ความปลอดภัยที่ไม่ได้ลงทะเบียนกับเว็บไซต์นี้</translation>
 <translation id="4788092183367008521">โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="4791000909649665275">รูปภาพ <ph name="NUMBER" /> รูป</translation>
@@ -4482,7 +4484,7 @@
 <translation id="5817069030404929329">ย้ายรหัสผ่านจากอุปกรณ์นี้ไปไว้ในบัญชี Google ไหม</translation>
 <translation id="5817918615728894473">จับคู่</translation>
 <translation id="5821565227679781414">สร้างทางลัด</translation>
-<translation id="5822865422567397338">หากต้องการค้นหาเว็บไซต์ที่เฉพาะเจาะจงหรือส่วนหนึ่งของ Chrome คุณก็ใช้ทางลัดตรงนี้ได้ เช่น หากต้องการค้นหาเฉพาะ Gmail ให้พิมพ์ "@gmail" จากนั้นกด Tab หรือ Space</translation>
+<translation id="5822865422567397338">หากต้องการค้นหาเว็บไซต์ที่เฉพาะเจาะจงหรือส่วนหนึ่งของ Chrome คุณก็ใช้ทางลัดต่อไปนี้ได้ เช่น หากต้องการค้นหาเฉพาะ Gmail ให้พิมพ์ "@gmail" จากนั้นกด Tab หรือ Space</translation>
 <translation id="5825412242012995131">เปิด (แนะนำ)</translation>
 <translation id="5826395379250998812">เชื่อมต่อ <ph name="DEVICE_TYPE" /> กับโทรศัพท์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">เปิดเผยบางส่วน</translation>
@@ -6789,6 +6791,7 @@
     <ph name="BEGIN_PARAGRAPH4" />หากการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปเปิดอยู่สำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน ดูข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าเหล่านี้และวิธีปรับการตั้งค่าได้ที่ families.google.com<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ใบรับรองไคลเอ็นต์ไม่ถูกต้อง</translation>
 <translation id="827097179112817503">แสดงปุ่มหน้าแรก</translation>
+<translation id="8271268254812352141">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้ เปลี่ยนภาษาของคำแปลใน<ph name="LINK_BEGIN" />ภาษาของเว็บไซต์<ph name="LINK_END" /></translation>
 <translation id="8271379370373330993">ขั้นตอนต่อๆ ไปมีไว้สำหรับผู้ปกครอง คุณคืน <ph name="DEVICE_TYPE" /> ให้บุตรหลานได้หลังจากที่สร้างบัญชีแล้ว</translation>
 <translation id="8272443605911821513">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "เครื่องมือเพิ่มเติม"</translation>
 <translation id="8274332263553132018">แคสต์ไฟล์</translation>

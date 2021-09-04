@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
+<translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
+<translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5252456968953390977">Itinerancia:</translation>
@@ -282,6 +284,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6146993107019042706">Para finalizar, ingresa tu nueva contraseña</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacidad de la batería se reduce con el uso</translation>
 <translation id="6191293864534840972">el formato de los servidores de nombres es incorrecto</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>

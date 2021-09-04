@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">明</translation>
 <translation id="1810845389119482123">最初の同期設定が終了していません</translation>
 <translation id="1829244130665387512">ページ内検索</translation>
-<translation id="1830550083491357902">ログインしていません</translation>
 <translation id="1843805151597803366">翻訳を改善するには、Google 検索に現在のページへのアクセスを許可してください</translation>
 <translation id="1856325424225101786">ライトモードをリセットしますか？</translation>
 <translation id="1868024384445905608">Chrome でのファイルのダウンロードがさらに速くなりました</translation>
@@ -486,7 +485,6 @@
 <translation id="3988213473815854515">位置情報は許可</translation>
 <translation id="3988466920954086464">このパネルにインスタント検索の結果が表示されます</translation>
 <translation id="4000212216660919741">オフライン ホーム</translation>
-<translation id="4001236013802615636">ページの一部のテキストも検索で考慮されます</translation>
 <translation id="4016425174436051808">フォローできません。エラーが発生しました。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
 <translation id="4045764304651014138">使用状況データ</translation>

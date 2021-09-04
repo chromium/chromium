@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocolo de transferencia de hipertexto (HTTPS)</translation>
 <translation id="1059944192885972544">Se encontraron <ph name="NUM" /> pestañas para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Determina la frecuencia con la que se actualiza la pantalla</translation>
+<translation id="1061130374843955397">Te damos la bienvenida a tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Casi es hora de un descanso</translation>
 <translation id="1066613507389053689">Debes actualizar Chrome OS</translation>
 <translation id="1067048845568873861">Creada</translation>
@@ -1353,7 +1354,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
-<translation id="2410079346590497630">Detalles de compilación</translation>
+<translation id="2410079346590497630">Detalles de la versión</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
@@ -1704,7 +1705,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores heredados</translation>
 <translation id="2773802008104670137">Este tipo de archivo puede dañar tu computadora.</translation>
 <translation id="2775104091073479743">Editar huellas digitales</translation>
-<translation id="2776560192867872731">Cambiar el nombre del dispositivo para <ph name="DEVICE_NAME" /></translation>
+<translation id="2776560192867872731">Cambiar el nombre de dispositivo de <ph name="DEVICE_NAME" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -2826,6 +2827,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3943582379552582368">&amp;Atrás</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945513714196326460">Prueba un nombre más corto.</translation>
+<translation id="3948027458879361203">Cambiar el nombre de host</translation>
 <translation id="3948116654032448504">Buscar imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> puede editar archivos en las siguientes carpetas</translation>
 <translation id="394984172568887996">Importado de Internet Explorer</translation>
@@ -4398,7 +4400,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5711010025974903573">Registros de servicio</translation>
 <translation id="5711983031544731014">No se puede desbloquear. Ingresa la contraseña.</translation>
 <translation id="5712153969432126546">A veces, los sitios publican archivos PDF, como documentos, contratos y formularios</translation>
-<translation id="5713158217420111469">Se estableció la conexión con <ph name="DEVICE" /></translation>
+<translation id="5713158217420111469">Conectado con <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Agente del complemento: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motores de búsqueda predeterminados</translation>
 <translation id="5719854774000914513">Permitir que los sitios soliciten permiso para conectarse a dispositivos HID</translation>
@@ -6789,6 +6791,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si activaste la Actividad web y de aplicaciones adicional para tu hijo, es posible que se guarden estos datos en tu Cuenta de Google. Obtén más información acerca de estas opciones de configuración y cómo ajustarlas en families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">El Certificado de cliente no es válido</translation>
 <translation id="827097179112817503">Mostrar el botón de la Página principal</translation>
+<translation id="8271268254812352141">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho o mantienes presionado texto. Personaliza los idiomas de traducción en <ph name="LINK_BEGIN" />Idiomas de sitios web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Los siguientes pasos son para los padres. Después de configurar la cuenta, puedes devolverle el dispositivo <ph name="DEVICE_TYPE" /> a tu hijo.</translation>
 <translation id="8272443605911821513">Para administrar tus extensiones, haz clic en Extensiones en el menú "Más herramientas".</translation>
 <translation id="8274332263553132018">Transmitir archivo</translation>

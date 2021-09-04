@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">"<ph name="SEARCH_TEXT" />" үшін <ph name="NUM" /> қойынды табылды.</translation>
 <translation id="1060292118287751956">Экранның жаңару жиілігін анықтайды.</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> құрылғысына қош келдіңіз!</translation>
 <translation id="1061904396131502319">Үзіліс уақыты келіп қалды</translation>
 <translation id="1066613507389053689">Chrome OS жаңартуы қажет</translation>
 <translation id="1067048845568873861">Жасалған</translation>
@@ -2825,6 +2826,7 @@
 <translation id="3943582379552582368">&amp;Артқа</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3945513714196326460">Атты қысқартыңыз.</translation>
+<translation id="3948027458879361203">Хост атауын өзгерту</translation>
 <translation id="3948116654032448504">Кескінді <ph name="SEARCH_ENGINE" /> арқылы &amp;іздеу</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> мына қалталардағы файлдарды өңдей алады.</translation>
 <translation id="394984172568887996">IE браузерінен импортталған</translation>
@@ -6786,6 +6788,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Балаңыз үшін қосымша "Интернет пен қолданбаларды пайдалану тарихы" параметрі қосулы болса, бұл деректер оның Google есептік жазбасына сақталуы мүмкін. Бұл параметрлер және оларды қалай реттеу керектігі туралы ақпаратты families.google.com сайтынан біле аласыз.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Клиент сертификаты дұрыс емес.</translation>
 <translation id="827097179112817503">Басты түймесін көрсету</translation>
+<translation id="8271268254812352141">Тінтуірдің оң жақ түймесін басып немесе мәтінді басып тұрып, мәтіннің анықтамасын, аудармасын көруге немесе өлшем бірліктерін ауыстыруға болады. Аударма тілдерін <ph name="LINK_BEGIN" />веб-сайт тілдері<ph name="LINK_END" /> бөлімінде реттейсіз.</translation>
 <translation id="8271379370373330993">Ата-ана, келесі қадамдарды сіз орындауыңыз керек. Есептік жазбаны реттеп болғасын, <ph name="DEVICE_TYPE" /> құрылғысын балаға қайтара аласыз.</translation>
 <translation id="8272443605911821513">"Қосымша құралдар" мәзіріндегі кеңейтімдерді басу арқылы кеңейтімдерді басқарыңыз.</translation>
 <translation id="8274332263553132018">Файлды трансляциялау</translation>

@@ -764,6 +764,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3566021033012934673">Sambungan anda tidak diperibadikan</translation>
 <translation id="3567778190852720481">Tidak dapat membuat pendaftaran dengan akaun perusahaan (akaun perusahaan tidak layak).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Benarkan untuk tapak ini</translation>
 <translation id="3576616784287504635">Halaman terbenam di <ph name="SITE" /> menyatakan</translation>
 <translation id="3581089476000296252">Chrome akan memberitahu anda apabila halaman ini sudah sedia. &lt;a&gt;Batalkan&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Tambah nama</translation>
@@ -2190,6 +2191,7 @@ Butiran tambahan:
 <translation id="8368476060205742148">Perkhidmatan Google Play</translation>
 <translation id="8371889962595521444">Sijil akar tersuai</translation>
 <translation id="8374636051559112948">Berbeza-beza</translation>
+<translation id="8380167699614421159">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8381674639488873545">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara. <ph name="BEGIN_LINK" />Tunjukkan juga<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Perkongsian daripada <ph name="ORIGIN_NAME" /> kepada <ph name="VM_NAME" /> telah disekat oleh dasar pentadbir</translation>

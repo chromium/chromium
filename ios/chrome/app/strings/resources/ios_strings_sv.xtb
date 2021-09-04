@@ -116,6 +116,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2073572773299281212">Aktiv för <ph name="DAYS" /> dagar sedan</translation>
 <translation id="2074131957428911366">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Ångra</translation>
+<translation id="2080769225927880590">Logga in med ett giltigt konto</translation>
 <translation id="209018056901015185">Använd skrivbordsversion</translation>
 <translation id="2103075008456228677">Öppna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt flyttades</translation>
@@ -467,6 +468,8 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5737974891429562743">Inloggningsuppgifterna för kontot är inte aktuella. Starta synkroniseringen genom att uppdatera.</translation>
 <translation id="5738887413654608789">Detta gör det möjligt att upptäcka relevanta webbsidor utifrån din omgivning.</translation>
 <translation id="5758631781033351321">Du hittar läslistan här</translation>
+<translation id="575902488528307720">Sökresultat för bild</translation>
+<translation id="5781453543752460388">Lägg till foton</translation>
 <translation id="5782227691023083829">Översätter...</translation>
 <translation id="5803566855766646066">Vill du slänga det här nya kortet?</translation>
 <translation id="5812974770859303494">Lägg till i …</translation>
@@ -738,6 +741,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8205564605687841303">Avbryt</translation>
 <translation id="8206354486702514201">Administratören har gjort den här inställningen obligatorisk.</translation>
 <translation id="8225985093977202398">Cachelagrade bilder och filer</translation>
+<translation id="8228176677386827255">Enheten hanteras. Du kan bara logga in med organisationens konto.</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8271720166617117963">Godkänn och logga in</translation>
 <translation id="8281781826761538115">Standard – <ph name="DEFAULT_LOCALE" /></translation>

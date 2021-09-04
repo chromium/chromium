@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Βρέθηκαν <ph name="NUM" /> καρτέλες για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Καθορίζει τη συχνότητα ενημέρωσης της οθόνης</translation>
+<translation id="1061130374843955397">Καλώς ορίσατε στο <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Πλησιάζει η ώρα για διάλειμμα</translation>
 <translation id="1066613507389053689">Απαιτείται ενημέρωση του Chrome OS</translation>
 <translation id="1067048845568873861">Δημιουργήθηκε</translation>
@@ -2844,6 +2845,7 @@
 <translation id="3943582379552582368">&amp;Πίσω</translation>
 <translation id="3943857333388298514">Επικόλληση</translation>
 <translation id="3945513714196326460">Δοκιμάστε ένα πιο σύντομο όνομα</translation>
+<translation id="3948027458879361203">Αλλαγή ονόματος κεντρικού υπολογιστή</translation>
 <translation id="3948116654032448504">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για εικόνα</translation>
 <translation id="3948507072814225786">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί τα αρχεία στους παρακάτω φακέλους</translation>
 <translation id="394984172568887996">Εισαγωγή από το IE</translation>
@@ -6809,6 +6811,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Εάν είναι ενεργή η ρύθμιση της πρόσθετης Δραστηριότητας ιστού και εφαρμογών για το παιδί σας, αυτά τα δεδομένα μπορεί να αποθηκευτούν στον Λογαριασμό του Google. Μάθετε περισσότερα σχετικά με αυτές τις ρυθμίσεις και τον τρόπο προσαρμογής τους στη διεύθυνση families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Μη έγκυρο πιστοποιητικό πελάτη</translation>
 <translation id="827097179112817503">Εμφάνιση κουμπιού Αρχικής σελίδας</translation>
+<translation id="8271268254812352141">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο. Προσαρμόστε τις γλώσσες μετάφρασης στην ενότητα <ph name="LINK_BEGIN" />γλώσσες ιστοτόπου<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Τα επόμενα βήματα αφορούν εσάς, τους γονείς. Μπορείτε να επιστρέψετε τη συσκευή <ph name="DEVICE_TYPE" /> στο παιδί μετά τη ρύθμιση του λογαριασμού.</translation>
 <translation id="8272443605911821513">Διαχειριστείτε τις επεκτάσεις σας κάνοντας κλικ στο στοιχείο "Επεκτάσεις" στο μενού "Περισσότερα εργαλεία".</translation>
 <translation id="8274332263553132018">Μετάδοση αρχείου</translation>

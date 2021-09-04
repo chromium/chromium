@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tabs für "<ph name="SEARCH_TEXT" />" gefunden</translation>
 <translation id="1060292118287751956">Bestimmt, wie oft das sichtbare Bild auf dem Bildschirm neu aufgebaut wird</translation>
+<translation id="1061130374843955397">Willkommen bei Ihrem <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Bald ist es Zeit für eine Pause</translation>
 <translation id="1066613507389053689">Chrome OS-Update erforderlich</translation>
 <translation id="1067048845568873861">Erstellt</translation>
@@ -2826,6 +2827,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3943582379552582368">&amp;Zurück</translation>
 <translation id="3943857333388298514">Einfügen</translation>
 <translation id="3945513714196326460">Bitte kürzeren Namen verwenden</translation>
+<translation id="3948027458879361203">Hostnamen ändern</translation>
 <translation id="3948116654032448504">Mit <ph name="SEARCH_ENGINE" /> nach Bild &amp;suchen</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern bearbeiten</translation>
 <translation id="394984172568887996">Aus Internet Explorer importiert</translation>
@@ -4478,7 +4480,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5817069030404929329">Passwörter von diesem Gerät in Ihr Google-Konto verschieben?</translation>
 <translation id="5817918615728894473">Koppeln</translation>
 <translation id="5821565227679781414">Verknüpfung erstellen</translation>
-<translation id="5822865422567397338">Wenn Sie auf einer bestimmten Website oder in einem bestimmten Bereich von Chrome suchen möchten, können Sie die Kürzel hier verwenden. Möchten Sie z. B. nur auf Gmail suchen, geben Sie „@gmail“ ein und drücken Sie die Tabulator- oder Leertaste.</translation>
+<translation id="5822865422567397338">Wenn Sie auf einer bestimmten Website oder in einem bestimmten Bereich von Chrome suchen möchten, können Sie die Kürzel hier verwenden. Möchten Sie z. B. nur in Gmail suchen, geben Sie „@gmail“ ein und drücken Sie die Tabulator- oder Leertaste.</translation>
 <translation id="5825412242012995131">An (empfohlen)</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> mit Smartphone verbinden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Halbtransparent</translation>
@@ -6786,6 +6788,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter</tr
     <ph name="BEGIN_PARAGRAPH4" />Wenn für Ihr Kind zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. Weitere Informationen zu diesen Einstellungen und den möglichen Anpassungen finden Sie unter families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ungültiges Clientzertifikat</translation>
 <translation id="827097179112817503">Schaltfläche "Startseite" anzeigen</translation>
+<translation id="8271268254812352141">Sie können Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem Sie Text gedrückt halten oder mit der rechten Maustaste darauf klicken. Unter <ph name="LINK_BEGIN" />Websitesprachen<ph name="LINK_END" /> können Sie die Sprachen für die Übersetzung anpassen.</translation>
 <translation id="8271379370373330993">Liebe Eltern, die nächsten Schritte müsst ihr ausführen. Du kannst das Gerät (<ph name="DEVICE_TYPE" />) nach der Kontoeinrichtung wieder deinem Kind geben.</translation>
 <translation id="8272443605911821513">Zum Verwalten Ihrer Erweiterungen klicken Sie im Menü "Mehr Tools" auf "Erweiterungen".</translation>
 <translation id="8274332263553132018">Datei streamen</translation>

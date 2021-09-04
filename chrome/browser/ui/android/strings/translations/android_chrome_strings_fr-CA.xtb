@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
-<translation id="1830550083491357902">Non connecté</translation>
 <translation id="1843805151597803366">Pour obtenir des traductions de meilleure qualité, autorisez la recherche Google à utiliser la page actuelle</translation>
 <translation id="1856325424225101786">Réinitialiser le mode simplifié?</translation>
 <translation id="1868024384445905608">Chrome télécharge maintenant les fichiers plus rapidement</translation>
@@ -483,7 +482,6 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3988213473815854515">L'emplacement est autorisé</translation>
 <translation id="3988466920954086464">Affichez les résultats de recherche instantanée dans ce volet</translation>
 <translation id="4000212216660919741">Accueil hors ligne</translation>
-<translation id="4001236013802615636">Autorisez Google à également tenir compte d'une partie du texte de la page</translation>
 <translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>

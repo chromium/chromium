@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1810845389119482123">إعداد المزامنة الأولية لم يكتمل</translation>
 <translation id="1829244130665387512">البحث في الصفحة</translation>
-<translation id="1830550083491357902">لم يتم تسجيل الدخول</translation>
 <translation id="1843805151597803366">‏للحصول على ترجمات أفضل، يُرجى السماح لمحرك "بحث Google" باستخدام الصفحة الحالية.</translation>
 <translation id="1856325424225101786">هل ترغب في إعادة ضبط الوضع البسيط؟</translation>
 <translation id="1868024384445905608">‏يُنزِّل Chrome الآن الملفات بشكلٍ أسرع.</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">علامات التبويب المفتوحة</translation>
 <translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
 <translation id="2387895666653383613">تغيير حجم النص</translation>
+<translation id="2390510615457643724">هل تريد تنزيل <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> مرة أخرى؟</translation>
 <translation id="2394602618534698961">تظهر الملفات التي نزَّلتها هنا.</translation>
 <translation id="2407481962792080328">‏عند تسجيل الدخول إلى حسابك على Google، يتم تفعيل هذه الميزة.</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
@@ -376,6 +376,7 @@
 <translation id="3295530008794733555">تصفُّح أسرع. واستخدام بيانات أقل.</translation>
 <translation id="3297344142967351106">المساعَدة الصوتية</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
+<translation id="3332570638882314953">الحصول على معلومات أكثر صلة</translation>
 <translation id="3334729583274622784">هل تريد تغيير امتداد الملف؟</translation>
 <translation id="3341058695485821946">الاطّلاع على مقدار البيانات التي وفّرتها</translation>
 <translation id="3341262203274374114">يتعذّر إلغاء متابعة الخلاصة. حدث خطأ.</translation>
@@ -453,6 +454,7 @@
 <translation id="3810838688059735925">الفيديوهات</translation>
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
+<translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3845098929839618392">فتح في علامة تبويب تصفّح متخفي</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
 <translation id="3858860766373142691">الاسم</translation>
@@ -483,7 +485,6 @@
 <translation id="3988213473815854515">الموقع مسموح به</translation>
 <translation id="3988466920954086464">الاطلاع على نتائج البحث الفورية في هذه اللوحة</translation>
 <translation id="4000212216660919741">الصفحة الرئيسية بلا اتصال بالإنترنت</translation>
-<translation id="4001236013802615636">‏السماح لـ Google أيضًا بالاطّلاع على بعض محتوى الصفحات</translation>
 <translation id="4016425174436051808">تتعذّر متابعة الخلاصة. حدث خطأ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
 <translation id="4045764304651014138">بيانات الاستخدام</translation>
@@ -707,6 +708,7 @@
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
 <translation id="543509235395288790">جارٍ تنزيل <ph name="COUNT" /> من الملفات (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">تنزيل الملف مرة أخرى</translation>
 <translation id="5441466871879044658">ترجمة لهذه اللغة</translation>
 <translation id="5441522332038954058">الانتقال السريع إلى شريط العناوين</translation>
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
@@ -806,6 +808,7 @@
 <translation id="5964805880140440652">‏لمشاركة هذه الصفحة مع جهاز آخر، يُرجى تفعيل المزامنة في إعدادات Chrome.</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
+<translation id="5995726099713306770">هل تريد تنزيل الصفحة مرة أخرى؟</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
@@ -942,6 +945,7 @@
 <translation id="670498945988402717">تمّ إجراء عملية التحقُّق أمس.</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="671481426037969117">انقضى وقت موقّت <ph name="FQDN" />، وسيبدأ عمله مرّةً أخرى غدًا.</translation>
+<translation id="6715020873764921614">هل تريد تنزيل <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) على أي حال؟</translation>
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
 <translation id="6738867403308150051">جارٍ التنزيل…</translation>
 <translation id="6751521182688001123">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
@@ -966,6 +970,7 @@
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
 <translation id="6883204995689174413">مشاركة</translation>
 <translation id="688738109438487280">يمكنك إضافة البيانات الحالية إلى <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">‏يمكنك الحصول على نتائج أفضل للكلمات التي تحدِّدها من خلال السماح لمحرّك بحث Google بالاطّلاع على جزء من النص في الصفحة. يمكنك متى شئت تغيير <ph name="BEGIN_LINK" />إعداداتك<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">فتح القفل لنسخ كلمة المرور</translation>
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6900532703269623216">حماية مُحسّنة</translation>

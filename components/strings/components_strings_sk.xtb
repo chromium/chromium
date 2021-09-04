@@ -757,6 +757,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3566021033012934673">Vaše pripojenie nie je súkromné</translation>
 <translation id="3567778190852720481">Nemôžete sa registrovať pracovným účtom (ten totiž nie je vhodný).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Povoliť pre tento web</translation>
 <translation id="3576616784287504635">Vložená stránka na webe <ph name="SITE" /> hovorí</translation>
 <translation id="3581089476000296252">Chrome vám oznámi, keď bude táto stránka k dispozícii. &lt;a&gt;Zrušiť&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Pridajte meno</translation>
@@ -2175,6 +2176,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8368476060205742148">Služby Google Play</translation>
 <translation id="8371889962595521444">Vlastné koreňové certifikáty</translation>
 <translation id="8374636051559112948">Rôzna</translation>
+<translation id="8380167699614421159">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="8380941800586852976">Nebezpečná</translation>
 <translation id="8381674639488873545">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zdieľanie zo zdroja <ph name="ORIGIN_NAME" /> na miesto <ph name="VM_NAME" /> je blokované pravidlami správcu</translation>

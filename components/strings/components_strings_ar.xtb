@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">الاتصال بهذا الموقع الإلكتروني ليس خاصًا</translation>
 <translation id="3567778190852720481">يتعذّر التسجيل باستخدام حساب العمل (حساب العمل غير مؤهَّل).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">سماح لهذا الموقع الإلكتروني</translation>
 <translation id="3576616784287504635">تعرض صفحة مُضمنة في موقع <ph name="SITE" /></translation>
 <translation id="3581089476000296252">‏سيخبرك Chrome عندما تكون هذه الصفحة جاهزة. &lt;a&gt;إلغاء&lt;/a&gt;</translation>
 <translation id="3582930987043644930">إضافة اسم</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8371889962595521444">شهادات الجذر المُخصَّصة</translation>
 <translation id="8374636051559112948">يختلف من جهاز إلى آخر</translation>
+<translation id="8380167699614421159">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="8380941800586852976">ضارة</translation>
 <translation id="8381674639488873545">قد يتم تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرِّر، وقد تكون غير واضحة. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">تحظر سياسة المشرف إمكانية المشاركة من <ph name="ORIGIN_NAME" /> إلى <ph name="VM_NAME" />.</translation>

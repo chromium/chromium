@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocol segur de transferència d'hipertext (HTTPS)</translation>
 <translation id="1059944192885972544">S'han trobat <ph name="NUM" /> pestanyes per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Determina la freqüència d'actualització de la pantalla</translation>
+<translation id="1061130374843955397">Et donem la benvinguda al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Ja gairebé és l'hora de fer una pausa</translation>
 <translation id="1066613507389053689">Cal actualitzar Chrome OS</translation>
 <translation id="1067048845568873861">Creada</translation>
@@ -1706,7 +1707,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2773288106548584039">Compatibilitat amb el navegador heretat</translation>
 <translation id="2773802008104670137">Aquest tipus de fitxer pot malmetre l'ordinador.</translation>
 <translation id="2775104091073479743">Edita les empremtes digitals</translation>
-<translation id="2776560192867872731">Canvia el nom del dispositiu a <ph name="DEVICE_NAME" /></translation>
+<translation id="2776560192867872731">Canvia el nom del dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">S'ha produït un error en instal·lar l'aplicació per a Linux</translation>
 <translation id="2783298271312924866">Baixat</translation>
@@ -2827,6 +2828,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3943582379552582368">&amp;Enrere</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3945513714196326460">Prova un nom més curt</translation>
+<translation id="3948027458879361203">Canvia el nom d'amfitrió</translation>
 <translation id="3948116654032448504">&amp;Cerca la imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> pot editar els fitxers de les carpetes següents</translation>
 <translation id="394984172568887996">Importat d'IE</translation>
@@ -4483,7 +4485,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5817069030404929329">Vols moure les contrasenyes d'aquest dispositiu al teu Compte de Google?</translation>
 <translation id="5817918615728894473">Vincula</translation>
 <translation id="5821565227679781414">Crea una drecera</translation>
-<translation id="5822865422567397338">Per cercar a un lloc web específic o a part de Chrome, pots utilitzar les dreceres d'aquí. Per exemple, per cercar només Gmail, escriu "@gmail" i, a continuació, prem Tab o Espai.</translation>
+<translation id="5822865422567397338">Per cercar en un lloc web específic o en una part de Chrome, pots utilitzar aquestes dreceres. Per exemple, per cercar només Gmail, escriu "@gmail" i, a continuació, prem Tab o Espai.</translation>
 <translation id="5825412242012995131">Activat (opció recomanada)</translation>
 <translation id="5826395379250998812">Connecta el dispositiu <ph name="DEVICE_TYPE" /> al telèfon. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5826993284769733527">Semitransparent</translation>
@@ -5035,7 +5037,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6418160186546245112">S'està tornant a la versió de <ph name="IDS_SHORT_PRODUCT_NAME" /> instal·lada anteriorment.</translation>
 <translation id="6418481728190846787">Retira l'accés a totes les aplicacions permanentment</translation>
 <translation id="6418511932144861495">Instal·la una actualització molt important</translation>
-<translation id="6419524191360800346">Hi ha una actualització disponible per a Debian 11 (Bullseye)</translation>
+<translation id="6419524191360800346">Hi ha una actualització a Debian 11 (Bullseye) disponible</translation>
 <translation id="6419546358665792306">Carrega una extensió desempaquetada</translation>
 <translation id="6419843101460769608">No permetis que cap lloc web accedeixi a dispositius Bluetooth</translation>
 <translation id="642469772702851743">El propietari ha bloquejat aquest dispositiu (NS: <ph name="SERIAL_NUMBER" />).</translation>
@@ -6792,6 +6794,7 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si el teu fill té activada l'opció addicional Activitat al web i en aplicacions, és possible que aquestes dades es desin al seu Compte de Google. Obtén més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat de client no vàlid</translation>
 <translation id="827097179112817503">Mostra el botó Pàgina d'inici</translation>
+<translation id="8271268254812352141">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret. Personalitza els idiomes de traducció a <ph name="LINK_BEGIN" />Idiomes del lloc web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Els passos següents estan destinats als pares. Poden tornar el dispositiu <ph name="DEVICE_TYPE" /> al nen quan s'acabi de configurar el compte.</translation>
 <translation id="8272443605911821513">Per gestionar les extensions, feu clic a Extensions al menú Més eines.</translation>
 <translation id="8274332263553132018">Emet el fitxer</translation>
@@ -6938,7 +6941,7 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8457451314607652708">Importa les adreces d'interès</translation>
 <translation id="8458341576712814616">Drecera</translation>
 <translation id="8458627787104127436">Obre'ls tots (<ph name="URL_COUNT" />) en una finestra nova</translation>
-<translation id="8460932807646981183">Gestiona els motors de cerca i Site Search</translation>
+<translation id="8460932807646981183">Gestiona els motors de cerca i cerca de llocs</translation>
 <translation id="84613761564611563">La interfície d'usuari per configurar la xarxa s'ha sol·licitat. Espera…</translation>
 <translation id="8461914792118322307">Servidor intermediari</translation>
 <translation id="8463215747450521436">Pot ser que l'administrador hagi suprimit o desactivat aquest usuari supervisat. Poseu-vos en contacte amb l'administrador si voleu continuar amb la sessió iniciada amb aquest usuari.</translation>
@@ -6971,7 +6974,7 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8492822722330266509">Els llocs web poden enviar finestres emergents i utilitzar redireccions</translation>
 <translation id="8492960370534528742">Comentaris sobre Google Cast</translation>
 <translation id="8493236660459102203">Micròfon:</translation>
-<translation id="84959976576210191">A la barra d'adreces, introdueix la drecera del lloc web que vulguis cercar, com ara "@gmail". A continuació, prem la teva tecla de drecera preferida i introdueix el terme de cerca.</translation>
+<translation id="84959976576210191">A la barra d'adreces, introdueix la drecera del lloc web que vulguis cercar, com ara "@gmail". A continuació, prem la tecla de drecera que prefereixis i introdueix el terme de cerca.</translation>
 <translation id="8496717697661868878">Executa aquest connector</translation>
 <translation id="8497219075884839166">Utilitats per a Windows</translation>
 <translation id="8498214519255567734">Facilita mirar la pantalla o llegir-hi amb poca llum</translation>

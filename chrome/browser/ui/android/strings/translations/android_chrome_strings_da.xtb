@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
 <translation id="1829244130665387512">Find på siden</translation>
-<translation id="1830550083491357902">Ikke logget ind</translation>
 <translation id="1843805151597803366">Du kan få bedre oversættelser ved at lade Google Søgning bruge den aktuelle side</translation>
 <translation id="1856325424225101786">Vil du nulstille Lite-tilstand?</translation>
 <translation id="1868024384445905608">Chrome downloader nu filer endnu hurtigere</translation>
@@ -486,7 +485,6 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="3988213473815854515">Placeringen er tilladt</translation>
 <translation id="3988466920954086464">Se direkte søgeresultater i dette panel</translation>
 <translation id="4000212216660919741">Hjemmet er offline</translation>
-<translation id="4001236013802615636">Lad også Google vurdere noget af teksten på siden</translation>
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
 <translation id="4045764304651014138">Brugsdata</translation>
@@ -640,7 +638,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4957722034734105353">Flere oplysninger...</translation>
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
-<translation id="4970824347203572753">Ikke tilgængelig på din placering</translation>
+<translation id="4970824347203572753">Ikke tilgængelig på din lokation</translation>
 <translation id="4971735654804503942">Hurtigere proaktiv beskyttelse mod skadelige websites, downloads og udvidelser. Advarer dig om læk af adgangskoder. Kræver, at browserdata sendes til Google.</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4988210275050210843">Downloader fil (<ph name="MEGABYTES" />).</translation>
@@ -723,7 +721,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5483197086164197190">Find rundt i Chrome</translation>
 <translation id="5487521232677179737">Ryd data</translation>
 <translation id="549025011754480756">Sådan søger du med stemmen</translation>
-<translation id="5500777121964041360">Funktionen er muligvis ikke tilgængelig på din placering</translation>
+<translation id="5500777121964041360">Funktionen er muligvis ikke tilgængelig på din lokation</translation>
 <translation id="5512137114520586844">Denne konto administreres af <ph name="PARENT_NAME" />.</translation>
 <translation id="5514904542973294328">Deaktiveret af administratoren af denne enhed</translation>
 <translation id="5515439363601853141">Lås op for at se din adgangskode</translation>

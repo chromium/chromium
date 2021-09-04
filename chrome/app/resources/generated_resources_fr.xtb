@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocole de transfert hypertexte sécurisé (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Indique la fréquence à laquelle l'écran est actualisé</translation>
+<translation id="1061130374843955397">Bienvenue sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Il est presque temps de faire une pause</translation>
 <translation id="1066613507389053689">Mise à jour Chrome OS requise</translation>
 <translation id="1067048845568873861">Date de création</translation>
@@ -1984,7 +1985,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3053013834507634016">Utilisation de la clé du certificat</translation>
 <translation id="3053273573829329829">Activer le code de l'utilisateur</translation>
 <translation id="3054766768827382232">Vous pourrez améliorer les performances de vos périphériques, mais vos données à caractère personnel risquent d'être divulguées via une utilisation non autorisée.</translation>
-<translation id="3055087258198109191">Pour utiliser un autre moteur de recherche que celui qui est défini par défaut, saisissez son raccourci, puis appuyez sur le raccourci clavier de votre choix. Vous pouvez également modifier votre moteur de recherche par défaut ici.</translation>
+<translation id="3055087258198109191">Pour utiliser un autre moteur de recherche que celui qui est défini par défaut, saisissez son raccourci suivi du raccourci clavier de votre choix. Vous pouvez également modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="3055590424724986000">Avec un fournisseur de votre choix</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3058517085907878899">Nommer l'appareil</translation>
@@ -2830,6 +2831,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3943582379552582368">R&amp;etour</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3945513714196326460">Saisissez un nom plus court</translation>
+<translation id="3948027458879361203">Modifier le nom d'hôte</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786">Le site <ph name="ORIGIN" /> peut modifier les fichiers des dossiers suivants</translation>
 <translation id="394984172568887996">Importés depuis IE</translation>
@@ -6794,6 +6796,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si vous activez l'enregistrement de l'activité additionnelle de votre enfant sur le Web et les applications, ces données peuvent être enregistrées dans son compte Google. Découvrez plus en détail ces paramètres et comment les régler sur le site families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat client non valide</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
+<translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte. Personnalisez les langues de traduction dans <ph name="LINK_BEGIN" />Langues des sites Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Les étapes suivantes sont réservées aux parents. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à votre enfant après la configuration du compte.</translation>
 <translation id="8272443605911821513">Cliquer sur "Extensions" dans le menu "Autres outils" pour gérer les extensions</translation>
 <translation id="8274332263553132018">Caster le fichier</translation>
@@ -6972,7 +6975,7 @@ Appuyez sur un contacteur attribué pour supprimer l'association</translation>
 <translation id="8492822722330266509">Les sites peuvent afficher des pop-ups et utiliser des redirections</translation>
 <translation id="8492960370534528742">Commentaires à propos de Google Cast</translation>
 <translation id="8493236660459102203">Micro :</translation>
-<translation id="84959976576210191">Dans la barre d'adresse, saisissez le raccourci associé au site Web où vous souhaitez effectuer une recherche, par exemple "@gmail". Ensuite, utilisez le raccourci clavier de votre choix, puis saisissez le terme de recherche souhaité.</translation>
+<translation id="84959976576210191">Dans la barre d'adresse, saisissez le raccourci associé au site Web où vous souhaitez effectuer une recherche, par exemple "@gmail". Ensuite, utilisez le raccourci clavier de votre choix, puis saisissez votre terme de recherche.</translation>
 <translation id="8496717697661868878">Exécuter ce plug-in</translation>
 <translation id="8497219075884839166">Utilitaires Windows</translation>
 <translation id="8498214519255567734">Facilite la lecture à l'écran lorsque l'éclairage est faible</translation>

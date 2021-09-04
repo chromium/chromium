@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="2074131957428911366">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
+<translation id="2080769225927880590">योग्य खाते वापरून साइन इन करा</translation>
 <translation id="209018056901015185">डेस्कटॉप साइटची विनंती करा</translation>
 <translation id="2103075008456228677">history.google.com उघडा</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> आयटम हलविले</translation>
@@ -468,6 +469,8 @@
 <translation id="5737974891429562743">खाते साइन-इन तपशील कालबाह्य झाले आहेत. सिंक सुरू करण्यासाठी अपडेट करा.</translation>
 <translation id="5738887413654608789">हे तुम्हाला आपल्या सभोवतालच्या गोष्टींवर आधारित संबंधित वेब पेज शोधू देते.</translation>
 <translation id="5758631781033351321">तुमची वाचन सूची तुम्हाला येथे सापडेल</translation>
+<translation id="575902488528307720">इमेज शोधा</translation>
+<translation id="5781453543752460388">Photos मध्ये जोडा</translation>
 <translation id="5782227691023083829">भाषांतर करीत आहे...</translation>
 <translation id="5803566855766646066">तुम्हाला हे नवीन कार्ड नक्की काढून टाकायचे आहे का?</translation>
 <translation id="5812974770859303494">यामध्ये जोडा...</translation>
@@ -740,6 +743,7 @@
 <translation id="8205564605687841303">रद्द करा</translation>
 <translation id="8206354486702514201">या सेटिंगची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते.</translation>
 <translation id="8225985093977202398">कॅशे   इमेज आणि फाइल</translation>
+<translation id="8228176677386827255">तुमचे डिव्हाइस व्यवस्थापित केलेले आहे. तुम्ही फक्त तुमच्या संस्थेचे खाते वापरून साइन इन करू शकता.</translation>
 <translation id="8261506727792406068">हटवा</translation>
 <translation id="8271720166617117963">स्वीकार करा आणि साइन इन करा</translation>
 <translation id="8281781826761538115">डीफॉल्ट - <ph name="DEFAULT_LOCALE" /></translation>

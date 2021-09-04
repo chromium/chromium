@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">החיבור שלך אינו פרטי</translation>
 <translation id="3567778190852720481">לא ניתן להירשם באמצעות חשבון ארגוני (חשבון ארגוני לא עומד בקריטריונים).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">אישור לאתר הזה</translation>
 <translation id="3576616784287504635">דף מוטמע באתר <ph name="SITE" /> אומר</translation>
 <translation id="3581089476000296252">‏כשהדף יהיה מוכן, מערכת Chrome תודיע לך על כך. &lt;a&gt;ביטול&lt;/a&gt;</translation>
 <translation id="3582930987043644930">הוספת שם</translation>
@@ -2192,6 +2193,7 @@ Del</translation>
 <translation id="8368476060205742148">‏שירותי Google Play</translation>
 <translation id="8371889962595521444">אישורי בסיס בהתאמה אישית</translation>
 <translation id="8374636051559112948">משתנה</translation>
+<translation id="8380167699614421159">באתר הזה מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="8380941800586852976">מסוכן</translation>
 <translation id="8381674639488873545">החיובים האלה יכולים להיות חד פעמיים או חוזרים, והם לא תמיד מוצגים בצורה בולטת. <ph name="BEGIN_LINK" />אני רוצה להמשיך בכל זאת<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">השיתוף מ-<ph name="ORIGIN_NAME" /> אל <ph name="VM_NAME" /> חסום בהתאם למדיניות של מנהל המערכת</translation>

@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">Вашето поврзување не е приватно</translation>
 <translation id="3567778190852720481">Не може да се регистрирате со работна сметка (работната сметка не ги исполнува условите).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Дозволи за овој сајт</translation>
 <translation id="3576616784287504635">Вметнатата страница на <ph name="SITE" /> вели</translation>
 <translation id="3581089476000296252">Chrome ќе ве извести кога страницава ќе биде готова. &lt;a&gt;Откажи&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Додај име</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">Услуги на Google Play</translation>
 <translation id="8371889962595521444">Приспособен сертификат за администраторски права</translation>
 <translation id="8374636051559112948">варира</translation>
+<translation id="8380167699614421159">Сајтов прикажува нападни или лажни реклами</translation>
 <translation id="8380941800586852976">Опасно</translation>
 <translation id="8381674639488873545">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Споделувањето од <ph name="ORIGIN_NAME" /> на <ph name="VM_NAME" /> е блокирано со правило на администраторот</translation>

@@ -764,6 +764,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3566021033012934673">Votre connexion n'est pas privée</translation>
 <translation id="3567778190852720481">Impossible d'enregistrer votre appareil avec ce compte d'entreprise (le compte en question n'est pas éligible).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3576616784287504635">Une page intégrée à l'adresse <ph name="SITE" /> indique</translation>
 <translation id="3581089476000296252">Vous serez averti lorsque cette page sera prête. &lt;a&gt;Annuler&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ajouter un nom</translation>
@@ -2190,6 +2191,7 @@ Informations supplémentaires :
 <translation id="8368476060205742148">Services Google Play</translation>
 <translation id="8371889962595521444">Certificats racines personnalisés</translation>
 <translation id="8374636051559112948">Variable</translation>
+<translation id="8380167699614421159">Ce site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8381674639488873545">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés. <ph name="BEGIN_LINK" />Je souhaite accéder malgré tout à ce site<ph name="END_LINK" />.</translation>
 <translation id="8390725133630534698">Le règlement de l'administrateur bloque le partage de <ph name="ORIGIN_NAME" /> vers <ph name="VM_NAME" /></translation>

@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall rilevato</translation>
 <translation id="1075811647922107217">Dimensioni pagina</translation>
+<translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
 Prova a toccare il microfono per chiedermi qualcosa.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
 <translation id="6223752125779001553">Nessuno scanner disponibile</translation>

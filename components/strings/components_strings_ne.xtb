@@ -761,6 +761,7 @@
 <translation id="3566021033012934673">तपाईंको जडान निजी होइन</translation>
 <translation id="3567778190852720481">संस्थागत खातामार्फत सहभागी हुन सकिँदैन (संस्थागत खाता प्रयोग गर्न मिल्दैन)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" /> , <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">यो साइटलाई अनुमति दिनुहोस्</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> मा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
 <translation id="3581089476000296252">यो पृष्ठ तयार भएपछि Chrome ले तपाईंलाई यसबारे सूचित गर्ने छ। &lt;a&gt;रद्द गर्नुहोस्&lt;/a&gt;</translation>
 <translation id="3582930987043644930">नाम थप्नुहोस्</translation>
@@ -2185,6 +2186,7 @@
 <translation id="8368476060205742148">Google Play सम्बन्धी सेवाहरू</translation>
 <translation id="8371889962595521444">आफू अनुकूल मूल प्रमाणपत्रहरू</translation>
 <translation id="8374636051559112948">पेजअनुसार फरक छ</translation>
+<translation id="8380167699614421159">यो साइटले हस्तक्षेपकारी वा भ्रामक विज्ञापनहरू देखाउँछ</translation>
 <translation id="8380941800586852976">खतरनाक</translation>
 <translation id="8381674639488873545">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यससम्बन्धी विवरणहरू स्पष्ट रूपमा उल्लेख नगरिएको हुन सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्न रोक लगाउनुभएको छ</translation>

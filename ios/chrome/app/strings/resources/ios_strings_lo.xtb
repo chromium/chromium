@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">ນຳໃຊ້ເມື່ອ <ph name="DAYS" /> ກ່ອນ</translation>
 <translation id="2074131957428911366">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
+<translation id="2080769225927880590">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຕ້ອງ</translation>
 <translation id="209018056901015185">ຂໍ​ເວັບ​ໄຊ​ທ໌​ເດັ​ສ​ທັອບ</translation>
 <translation id="2103075008456228677">ເປີດ history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ລາຍ​ການ​ຖືກ​ຍ້າຍ​ໄປ​ແລ້ວ</translation>
@@ -467,6 +468,8 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5737974891429562743">ລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີເກົ່າແລ້ວ. ອັບເດດເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="5738887413654608789">ນີ້ໃຫ້ທ່ານຄົ້ນພົບໜ້າເວັບທີ່ກ່ຽວຂ້ອງອີງຕາມສິ່ງທີ່ຢູ່ອ້ອມຮອບຕົວທ່ານ.</translation>
 <translation id="5758631781033351321">ທ່ານຈະເຫັນລາຍການອື່ນຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
+<translation id="575902488528307720">ຊອກຫາຮູບ</translation>
+<translation id="5781453543752460388">ເພີ່ມໃສ່ຮູບພາບ</translation>
 <translation id="5782227691023083829">ກໍາລັງແປ...</translation>
 <translation id="5803566855766646066">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປະຖິ້ມບັດໃໝ່ນີ້?</translation>
 <translation id="5812974770859303494">ເພີ່ມໃສ່...</translation>
@@ -738,6 +741,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8205564605687841303">ຍົກເລີກ</translation>
 <translation id="8206354486702514201">ການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ.</translation>
 <translation id="8225985093977202398">ຮູບ ແລະ ໄຟລ໌ທີ່ຖືກແຄດຊ໌</translation>
+<translation id="8228176677386827255">ອຸປະກອນຂອງທ່ານມີການຈັດການ. ທ່ານສາມາດເຂົ້າສູ່ລະບົບໄດ້ດ້ວຍບັນຊີຂອງອົງການທ່ານເທົ່ານັ້ນ.</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8271720166617117963">ຍອມຮັບ ແລະ ເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8281781826761538115">ຄ່າເລີ່ມຕົ້ນ - <ph name="DEFAULT_LOCALE" /></translation>

@@ -764,6 +764,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3566021033012934673">Hindi pribado ang iyong koneksyon</translation>
 <translation id="3567778190852720481">Hindi makapag-enroll gamit ang enterprise account (hindi kwalipikado ang enterprise account).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3576616784287504635">Isinasaad ng naka-embed na page sa <ph name="SITE" /> na</translation>
 <translation id="3581089476000296252">Aabisuhan ka ng Chrome kapag handa na ang page na ito. &lt;a&gt;Kanselahin&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Magdagdag ng pangalan</translation>
@@ -2189,6 +2190,7 @@ Mga karagdagang detalye:
 <translation id="8368476060205742148">Mga serbisyo ng Google Play</translation>
 <translation id="8371889962595521444">Mga custom na root certificate</translation>
 <translation id="8374636051559112948">Iba't iba</translation>
+<translation id="8380167699614421159">Nagpapakita ang site na ito ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="8380941800586852976">Mapanganib</translation>
 <translation id="8381674639488873545">Ang mga singil na ito ay maaaring isang beses o umuulit, at maaaring hindi mapansin. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Na-block ng patakaran ng administrator ang pagbabahagi sa <ph name="VM_NAME" /> mula sa <ph name="ORIGIN_NAME" /></translation>

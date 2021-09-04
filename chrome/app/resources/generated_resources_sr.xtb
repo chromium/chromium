@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Пронађених картица за „<ph name="SEARCH_TEXT" />“: <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Одређује учесталост ажурирања екрана</translation>
+<translation id="1061130374843955397">Добро дошли на уређај <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Скоро је време за паузу</translation>
 <translation id="1066613507389053689">Потребно је ажурирање Chrome ОС-а</translation>
 <translation id="1067048845568873861">Направљено</translation>
@@ -2828,6 +2829,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3945513714196326460">Пробајте са краћим називом</translation>
+<translation id="3948027458879361203">Промените име хоста</translation>
 <translation id="3948116654032448504">&amp;Потражи слику у претраживачу <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> може да мења датотеке у директоријумима у наставку</translation>
 <translation id="394984172568887996">Увезено из IE прегледача</translation>
@@ -6791,6 +6793,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Ако за дете укључите додатне Активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. Сазнајте више о овим подешавањима и о томе како да их прилагодите на families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Неважећи сертификат клијента</translation>
 <translation id="827097179112817503">Прикажи дугме за почетну страницу</translation>
+<translation id="8271268254812352141">Добијајте дефиниције, преводе или конверзије јединица када кликнете десним тастером на текст или га додирнете и задржите. Прилагодите језике за превод у <ph name="LINK_BEGIN" />Језицима за веб-сајтове<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Родитељи, следећих неколико корака су за вас. Можете да вратите <ph name="DEVICE_TYPE" /> детету после отварања налога.</translation>
 <translation id="8272443605911821513">Управљајте додацима кликом на Додаци у менију „Још алатки“.</translation>
 <translation id="8274332263553132018">Пребаците датотеку</translation>

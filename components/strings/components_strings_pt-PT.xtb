@@ -764,6 +764,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3566021033012934673">A sua ligação não é privada</translation>
 <translation id="3567778190852720481">Não é possível inscrever-se com conta empresarial (a conta empresarial não é elegível).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Permitir neste site</translation>
 <translation id="3576616784287504635">Uma página incorporada em <ph name="SITE" /> diz</translation>
 <translation id="3581089476000296252">O Chrome irá informá-lo quando esta página estiver pronta. &lt;a&gt;Cancelar&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Adicionar nome</translation>
@@ -2188,6 +2189,7 @@ Detalhes adicionais:
 <translation id="8368476060205742148">Serviços do Google Play</translation>
 <translation id="8371889962595521444">Certificados de raiz personalizados</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8380167699614421159">Este site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="8380941800586852976">Perigosa</translation>
 <translation id="8381674639488873545">Estas cobranças podem ser únicas ou recorrentes e podem não ser óbvias. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">A partilha a partir de <ph name="ORIGIN_NAME" /> para <ph name="VM_NAME" /> foi bloqueada por uma política do administrador.</translation>

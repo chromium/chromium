@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
-<translation id="1830550083491357902">I pa identifikuar</translation>
 <translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
 <translation id="1856325424225101786">Të rivendoset "Modaliteti i lehtë"?</translation>
 <translation id="1868024384445905608">Chrome tani i shkarkon skedarët më shpejt</translation>
@@ -216,6 +215,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2369533728426058518">hap skedat</translation>
 <translation id="2386938421315164605">Fshih dhe shfaq temat</translation>
 <translation id="2387895666653383613">Shkallëzimi i tekstit</translation>
+<translation id="2390510615457643724">Do ta shkarkosh <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) sërish?</translation>
 <translation id="2394602618534698961">Skedarët që shkarkon shfaqen këtu</translation>
 <translation id="2407481962792080328">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar</translation>
 <translation id="2410754283952462441">Zgjidh një llogari</translation>
@@ -376,6 +376,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3295530008794733555">Shfleto më shpejt. Përdor më pak të dhëna.</translation>
 <translation id="3297344142967351106">Ndihma zanore</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
+<translation id="3332570638882314953">Merr informacion më të përshtatshëm</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
 <translation id="3341058695485821946">Shiko se sa të dhëna kurseve</translation>
 <translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3819178904835489326">U fshinë <ph name="NUMBER_OF_DOWNLOADS" /> shkarkime</translation>
+<translation id="3819183753496523827">Je jashtë linje. Kontrollo lidhjen e internetit dhe provo sërish.</translation>
 <translation id="3845098929839618392">Hape në skedë "të fshehtë"</translation>
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3858860766373142691">Emri</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3988213473815854515">Vendndodhja nuk lejohet</translation>
 <translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
-<translation id="4001236013802615636">Lejo që Google të marrë parasysh edhe disa tekste të faqes</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
 <translation id="4045764304651014138">Të dhënat e përdorimit</translation>
@@ -707,6 +708,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
 <translation id="543509235395288790">Po shkarkohen <ph name="COUNT" /> skedarë (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Shkarko sërish</translation>
 <translation id="5441466871879044658">Përkthe në këtë gjuhë</translation>
 <translation id="5441522332038954058">Kalo te shiriti i adresës</translation>
 <translation id="544776284582297024">Për të hapur skedat dhe për të vizituar faqe të ndryshme njëkohësisht, trokit butonin e skedave të hapura</translation>
@@ -806,6 +808,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5964805880140440652">Për ta ndarë këtë faqe në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
+<translation id="5995726099713306770">Të shkarkohet faqja sërish?</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>
 <translation id="6000203700195075278">Ndiqe përsëri</translation>
 <translation id="6005538289190791541">Fjalëkalimi i sugjeruar</translation>
@@ -942,6 +945,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="670498945988402717">Kontrolluar dje</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="671481426037969117">Kohëmatësi <ph name="FQDN" /> përfundoi. Do të fillojë përsëri nesër.</translation>
+<translation id="6715020873764921614">Do ta shkarkosh <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) gjithsesi?</translation>
 <translation id="6738516213925468394">Të dhënat e tua u enkriptuan me <ph name="BEGIN_LINK" />frazën e kalimit për sinkronizimin<ph name="END_LINK" /> më <ph name="TIME" />. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="6738867403308150051">Po shkarkon...</translation>
 <translation id="6751521182688001123">Hap me shpejtësi një skedë të re. Për ta modifikuar këtë shkurtore, preke dhe mbaje të prekur.</translation>
@@ -966,6 +970,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="6882836635272038266">Mbrojtje standarde kundër faqeve të internetit, shkarkimeve dhe shtesave që njihen si të rrezikshme.</translation>
 <translation id="6883204995689174413">Ndaj</translation>
 <translation id="688738109438487280">Shto të dhënat ekzistuese te <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Shiko rezultate më të mira për fjalët që thekson duke i lejuar Google të vlerësojë një pjesë të tekstit të faqes. Mund ta ndryshosh këtë gjithnjë te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> e tua.</translation>
 <translation id="6891726759199484455">Shkyçe për të kopjuar fjalëkalimin</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>

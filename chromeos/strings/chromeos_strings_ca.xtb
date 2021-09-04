@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
 <translation id="1075811647922107217">Mida de la pàgina</translation>
+<translation id="1119447706177454957">Error intern</translation>
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5212543919916444558">No he trobat res a la pantalla amb què et pugui ajudar.
 Toca el micròfon per demanar-me qualsevol cosa.</translation>
+<translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5252456968953390977">Itinerància</translation>
@@ -282,6 +284,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Més informació</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>

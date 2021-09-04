@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">የHypertext ትራንስፖርት ፕሮቶኮል (ኤችቲቲፒኤስ)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> ትሮች ለ«<ph name="SEARCH_TEXT" />» ተገኝቷል።</translation>
 <translation id="1060292118287751956">ማያ ገጹ የሚዘመንበት ተደጋጋሚነትን ይወስናል</translation>
+<translation id="1061130374843955397">እንኳን ወደ የእርስዎ <ph name="DEVICE_TYPE" /> በደህና መጡ</translation>
 <translation id="1061904396131502319">የእረፍት ጊዜ ሊደርስ ነው</translation>
 <translation id="1066613507389053689">የChrome OS ዝመና ያስፈልጋል</translation>
 <translation id="1067048845568873861">ተፈጥሯል</translation>
@@ -2838,6 +2839,7 @@
 <translation id="3943582379552582368">&amp;ተመለስ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3945513714196326460">አጠር ያለ ስም ይሞክሩ</translation>
+<translation id="3948027458879361203">አስተናጋጅ ስም ቀይር</translation>
 <translation id="3948116654032448504">ለምስል <ph name="SEARCH_ENGINE" />ን ይ&amp;ፈልጉ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> በሚከተሉት አቃፊዎች ውስጥ ያሉ ፋይሎችን ማርትዕ ይችላል</translation>
 <translation id="394984172568887996">ከIE የመጣ</translation>
@@ -6804,6 +6806,7 @@ nil</translation>
     <ph name="BEGIN_PARAGRAPH4" />የእርስዎ ልጅ ተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ ወደ የእነርሱ Google መለያ ሊቀመጥ ይችላል። families.google.com ላይ ስለእነዚህ ቅንብሮች እና እንዴት እነሱን ማስተካከል እንደሚችሉ የበለጠ ይረዱ።<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ልክ ያልኾነ የደንበኛ ምስክርነት</translation>
 <translation id="827097179112817503">መነሻ አዝራር አሳይ</translation>
+<translation id="8271268254812352141">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ። በ<ph name="LINK_BEGIN" />ድር ጣቢያ ቋንቋዎች<ph name="LINK_END" /> ውስጥ የትርጉም ቋንቋዎችን ያብጁ።</translation>
 <translation id="8271379370373330993">ወላጆች፣ የሚቀጥሉት ጥቂት እርምጃዎች ለእርስዎ ናቸው። ከመለያ ማዋቀር በኋላ <ph name="DEVICE_TYPE" /> ለልጁ መስጠት ይችላሉ።</translation>
 <translation id="8272443605911821513">በ«ተጨማሪ መሣሪያዎች» ምናሌው ውስጥ ቅጥያዎች የሚለውን ጠቅ በማድረግ ቅጥያዎችዎን ያቀናብሩ።</translation>
 <translation id="8274332263553132018">ፋይል Cast ያድርጉ</translation>

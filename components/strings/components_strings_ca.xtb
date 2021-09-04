@@ -760,6 +760,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3566021033012934673">La connexió no és privada</translation>
 <translation id="3567778190852720481">El dispositiu no es pot inscriure amb el compte d'empresa (aquest compte no és apte).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Permet per a aquest lloc web</translation>
 <translation id="3576616784287504635">Una pàgina inserida a <ph name="SITE" /> diu</translation>
 <translation id="3581089476000296252">Chrome t'avisarà quan aquesta pàgina estigui preparada. &lt;a&gt;Cancel·la&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Afegeix el nom</translation>
@@ -2180,6 +2181,7 @@ Detalls addicionals:
 <translation id="8368476060205742148">Serveis de Google Play</translation>
 <translation id="8371889962595521444">Certificats arrel personalitzats</translation>
 <translation id="8374636051559112948">Varia</translation>
+<translation id="8380167699614421159">Aquest lloc web mostra anuncis intrusius o enganyosos</translation>
 <translation id="8380941800586852976">Perillós</translation>
 <translation id="8381674639488873545">Aquests càrrecs poden ser únics o recurrents i és possible que no s'indiquin d'una manera evident. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La política de l'administrador no permet compartir contingut de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>

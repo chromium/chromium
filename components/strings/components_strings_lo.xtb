@@ -764,6 +764,7 @@
 <translation id="3566021033012934673">ການເຊື່ອມຕໍ່ຂອງທ່ານບໍ່ເປັນສ່ວນຕົວ</translation>
 <translation id="3567778190852720481">ບໍ່ສາມາດລົງທະບຽນດ້ວຍບັນຊີວິສາຫະກິດໄດ້ (ບັນຊີວິສາຫະກິດບໍ່ມີສິດ).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">ອະນຸຍາດສຳລັບເວັບໄຊນີ້</translation>
 <translation id="3576616784287504635">ໜ້າຝັງຕິດຢູ່ທີ່ <ph name="SITE" /> ບອກວ່າ</translation>
 <translation id="3581089476000296252">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ເມື່ອໜ້ານີ້ພ້ອມແລ້ວ. &lt;a&gt;ຍົກເລີກ&lt;/a&gt;</translation>
 <translation id="3582930987043644930">ເພີ່ມ​ຊື່</translation>
@@ -2189,6 +2190,7 @@
 <translation id="8368476060205742148">ບໍລິການ Google Play</translation>
 <translation id="8371889962595521444">ໃບຮັບຮອງຮາກຖານທີ່ກຳນົດເອງ</translation>
 <translation id="8374636051559112948">ຫຼາກຫຼາຍ</translation>
+<translation id="8380167699614421159">ເວັບໄຊນີ້ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ</translation>
 <translation id="8380941800586852976">ອັນຕະລາຍ</translation>
 <translation id="8381674639488873545">ການຮຽກເກັບເງິນເຫຼົ່ານີ້ອາດຈະເກັບຄັ້ງດຽວ ຫຼື ເປັນປະຈຳຫຼາຍຄັ້ງ ແລະ ອາດຈະບໍ່ເຫັນໄດ້ຈະແຈ້ງ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບໄດ້ບລັອກການແບ່ງປັນຈາກ <ph name="ORIGIN_NAME" /> ກັບ <ph name="VM_NAME" /> ໄວ້ແລ້ວ</translation>

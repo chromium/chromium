@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
+<translation id="1119447706177454957">Intern feil</translation>
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Denne <ph name="DEVICE_TYPE" />-enheten administreres av <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5252456968953390977">Datastreifing</translation>
@@ -282,6 +284,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapasiteten avtar med bruken</translation>
 <translation id="6191293864534840972">Navnetjenerne inneholder feil</translation>
 <translation id="6223752125779001553">Ingen skannere er tilgjengelige</translation>

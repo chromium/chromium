@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">შესული ხართ, როგორც <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ხელახლა დაკავშირება</translation>
 <translation id="5810269635982033450">ეკრანი მუშაობს ტრეკპედის სახით</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ითხოვს ნებართვას, რომ ნახოს თქვენი ეკრანი, ასევე, თქვენი კლავიატურა და მაუსი გააკონტროლოს. თუ ეს მოთხოვნა მოულოდნელია, დააჭირეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“-ს. სხვა შემთხვევაში არჩიეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ და დაუშვით დაკავშირება, როცა მზად იქნებით.</translation>
 <translation id="5823658491130719298">იმ კომპიუტერიდან, რომელზეც გსურთ, გქონდეთ დისტანციური წვდომა, გახსენით Chrome და მოინახულეთ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ჩვენების ვარიანტები</translation>
 <translation id="6033507038939587647">კლავიატურის ვარიანტები</translation>

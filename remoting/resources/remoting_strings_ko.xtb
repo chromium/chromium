@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> 계정으로 로그인했습니다.</translation>
 <translation id="579702532610384533">다시 연결</translation>
 <translation id="5810269635982033450">화면이 트랙패드처럼 작동합니다</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />님이 화면을 보고 키보드와 마우스를 제어하기 위한 액세스 권한을 요청했습니다. 이런 요청을 받을 일이 없다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''를 누르세요. 아니면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''를 선택해 준비가 되었을 때 연결을 허용합니다.</translation>
 <translation id="5823658491130719298">원격으로 액세스하려는 컴퓨터에서 Chrome을 열고 <ph name="INSTALLATION_LINK" /> 페이지를 방문합니다.</translation>
 <translation id="5841343754884244200">표시 옵션</translation>
 <translation id="6033507038939587647">키보드 옵션</translation>

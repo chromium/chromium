@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">ພົບ <ph name="NUM" /> ແຖບສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="1060292118287751956">ກຳນົດຄວາມຖີ່ທີ່ໜ້າຈໍອັບເດດ</translation>
+<translation id="1061130374843955397">ຍິນດີຕ້ອນຮັບສູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1061904396131502319">ໃກ້ຮອດເວລາພັກແລ້ວ</translation>
 <translation id="1066613507389053689">ຕ້ອງອັບເດດ Chrome OS</translation>
 <translation id="1067048845568873861">ສ້າງຂຶ້ນແລ້ວ</translation>
@@ -2841,6 +2842,7 @@
 <translation id="3943582379552582368">ກັບ​ຄືນ​</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="3945513714196326460">ກະລຸນາລອງໃຊ້ຊື່ທີ່ສັ້ນລົງ</translation>
+<translation id="3948027458879361203">ປ່ຽນຊື່ໂຮສ</translation>
 <translation id="3948116654032448504">&amp;ຊອກຫາ <ph name="SEARCH_ENGINE" /> ຮູບ</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນໂຟນເດີຕໍ່ໄປນີ້ໄດ້</translation>
 <translation id="394984172568887996">ນໍາ​ເຂົ້າ​ຈາກ IE ແລ້ວ</translation>
@@ -6803,6 +6805,7 @@
     <ph name="BEGIN_PARAGRAPH4" />ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມສຳລັບບູກຂອງທ່ານ, ຂໍ້ມູນນີ້ອາດຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງເຂົາເຈົ້າ. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕັ້ງຄ່າເຫຼົ່ານີ້ ແລະ ວິທີປັບພວກມັນໄດ້ທີ່ families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">ໃບຮັບຮອງລູກຂ່າຍບໍ່ຖືກຕ້ອງ</translation>
 <translation id="827097179112817503">ສະແດງປຸ່ມໜ້າ​ຫຼັກ</translation>
+<translation id="8271268254812352141">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້. ປັບແຕ່ງພາສາສຳລັບການແປໃນ <ph name="LINK_BEGIN" />ພາສາເວັບໄຊ<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">ຮຽນພໍ່ແມ່, ຂັ້ນຕອນສອງສາມຢ່າງຕໍ່ໄປແມ່ນສຳລັບທ່ານ. ທ່ານສາມາດສົ່ງ <ph name="DEVICE_TYPE" /> ຄືນໃຫ້ເດັກໄດ້ຫຼັງຈາກຕັ້ງຄ່າບັນຊີແລ້ວ.</translation>
 <translation id="8272443605911821513">ຈັດການສ່ວນຂະຫຍາຍຂອງທ່ານໂດຍການຄລິກສ່ວນຂະຫຍາຍຢູ່ໃນເມນູ "ເຄື່ອງມືເພີ່ມເຕີມ".</translation>
 <translation id="8274332263553132018">ສົ່ງສັນຍານໄຟລ໌</translation>

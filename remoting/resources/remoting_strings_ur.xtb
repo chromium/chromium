@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
 <translation id="579702532610384533">دوبارہ منسلک ہوں</translation>
 <translation id="5810269635982033450">اسکرین ایک ٹریک پیڈ کی طرح کام کرتی ہے</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> نے آپ کی اسکرین کو دیکھنے اور آپ کے کی بورڈ اور ماؤس کو کنٹرول کے لیے رسائی کی درخواست کی ہے۔ اگر آپ اس درخواست کی توقع نہیں کر رہے ہیں تو "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" کو دبائیں۔ بصورت دیگر تیار ہونے پر کنکشن کی اجازت کے لیے "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" کو منتخب کریں۔</translation>
 <translation id="5823658491130719298">‏جس کمپیوٹر پر آپ کسی اور جگہ سے رسائی حاصل کرنا چاہتے ہیں اس پر Chrome کھول کر <ph name="INSTALLATION_LINK" /> ملاحظہ کریں</translation>
 <translation id="5841343754884244200">ڈسپلے کے اختیارات</translation>
 <translation id="6033507038939587647">کی بورڈ کے اختیارات</translation>

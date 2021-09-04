@@ -109,6 +109,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="5750083143895808682">Prijavljeni ste kao <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Ponovo se poveži</translation>
 <translation id="5810269635982033450">Ekran služi kao dodirna tabla</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> zahteva pristup za pregled ekrana i kontrolisanje tastature i miša. Pritisnite <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ako ne očekujete ovaj zahtev. U suprotnom, izaberite <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> da biste dozvolili povezivanje kada budete spremni.</translation>
 <translation id="5823658491130719298">Na računaru kom želite daljinski da pristupate otvorite Chrome i posetite <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcije prikaza</translation>
 <translation id="6033507038939587647">Opcije tastature</translation>

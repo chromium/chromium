@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1810845389119482123">Синхронизация не настроена</translation>
 <translation id="1829244130665387512">Найти на странице</translation>
-<translation id="1830550083491357902">Вход не выполнен</translation>
 <translation id="1843805151597803366">Чтобы обеспечить более высокое качество переводов, предоставьте Google Поиску доступ к содержанию этой страницы.</translation>
 <translation id="1856325424225101786">Сбросить упрощенный режим?</translation>
 <translation id="1868024384445905608">Теперь файлы в Chrome будут скачиваться ещё быстрее</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">открыть вкладки</translation>
 <translation id="2386938421315164605">Скрывайте и показывайте темы</translation>
 <translation id="2387895666653383613">Масштабирование текста</translation>
+<translation id="2390510615457643724">Снова скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Здесь появляются скачанные файлы.</translation>
 <translation id="2407481962792080328">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
@@ -376,6 +376,7 @@
 <translation id="3295530008794733555">Быстрый просмотр сайтов и экономия трафика</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
 <translation id="3303414029551471755">Скачать?</translation>
+<translation id="3332570638882314953">Получайте более точную информацию</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341058695485821946">Узнайте, сколько трафика вы сэкономили.</translation>
 <translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
@@ -453,6 +454,7 @@
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Перейти</translation>
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3858860766373142691">Название</translation>
@@ -483,7 +485,6 @@
 <translation id="3988213473815854515">Доступ к геоданным разрешен</translation>
 <translation id="3988466920954086464">Результаты поиска появятся на этой панели.</translation>
 <translation id="4000212216660919741">Офлайн</translation>
-<translation id="4001236013802615636">Google будет учитывать текст на странице</translation>
 <translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
@@ -707,6 +708,7 @@
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
 <translation id="543509235395288790">Скачивание файлов: <ph name="COUNT" /> (<ph name="MEGABYTES" /> МБ).</translation>
+<translation id="5438292632479953702">Да</translation>
 <translation id="5441466871879044658">Перевести на этот язык</translation>
 <translation id="5441522332038954058">Перейти к адресной строке</translation>
 <translation id="544776284582297024">Нажмите эту кнопку, чтобы открыть новую вкладку или переключиться на другую.</translation>
@@ -806,6 +808,7 @@
 <translation id="5964805880140440652">Чтобы открыть доступ к этой странице другому устройству, откройте настройки Chrome и включите синхронизацию.</translation>
 <translation id="5964869237734432770">Не генерировать описания</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
+<translation id="5995726099713306770">Снова скачать страницу?</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6000203700195075278">Снова подписаться</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
@@ -942,6 +945,7 @@
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="671481426037969117">Время на таймере <ph name="FQDN" /> истекло. Завтра сайт снова станет доступен.</translation>
+<translation id="6715020873764921614">Все равно скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Данные были зашифрованы <ph name="TIME" /> с помощью <ph name="BEGIN_LINK" />кодовой фразы<ph name="END_LINK" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6738867403308150051">Скачивание…</translation>
 <translation id="6751521182688001123">Открыть новую вкладку. Чтобы изменить функцию кнопки, нажмите и удерживайте ее.</translation>
@@ -966,6 +970,7 @@
 <translation id="6882836635272038266">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
 <translation id="6883204995689174413">Отправка</translation>
 <translation id="688738109438487280">Объединить сохраненные данные с данными пользователя <ph name="TO_ACCOUNT" /></translation>
+<translation id="6889847736310813892">Если вы разрешите Google учитывать текст на странице, то сможете получать более точные результаты поиска для выделенных вами слов. Эту возможность всегда можно отключить в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Чтобы скопировать пароль, разблокируйте экран</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>

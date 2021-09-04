@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">Последние действия: <ph name="DAYS" /> дн. назад</translation>
 <translation id="2074131957428911366">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмена</translation>
+<translation id="2080769225927880590">Войдите с действительным аккаунтом</translation>
 <translation id="209018056901015185">Версия для ПК</translation>
 <translation id="2103075008456228677">Открыть history.google.com</translation>
 <translation id="2116625576999540962">Перемещено закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">Данные для входа в аккаунт устарели. Чтобы начать синхронизацию, обновите их.</translation>
 <translation id="5738887413654608789">Вы сможете узнавать о сайтах, связанных с объектами вокруг вас.</translation>
 <translation id="5758631781033351321">Здесь вы найдете свой список для чтения</translation>
+<translation id="575902488528307720">Найти изображение</translation>
+<translation id="5781453543752460388">Добавить в Фото</translation>
 <translation id="5782227691023083829">Перевод...</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5812974770859303494">Добавить…</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">Отмена</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
 <translation id="8225985093977202398">Файлы, сохраненные в кеше</translation>
+<translation id="8228176677386827255">Этим устройством управляет организация, поэтому вы можете выполнить вход только с корпоративным аккаунтом.</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8271720166617117963">Принять и войти</translation>
 <translation id="8281781826761538115">Язык по умолчанию: <ph name="DEFAULT_LOCALE" /></translation>

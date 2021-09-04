@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1810845389119482123">Fyrstu uppsetningu samstillingar ekki lokið</translation>
 <translation id="1829244130665387512">Finna á síðu</translation>
-<translation id="1830550083491357902">Ekki innskráð(ur)</translation>
 <translation id="1843805151597803366">Til að fá betri þýðingar skaltu leyfa Google leit að nota núverandi síðu</translation>
 <translation id="1856325424225101786">Viltu endurstilla léttútgáfu?</translation>
 <translation id="1868024384445905608">Chrome er nú fljótara að sækja skrár</translation>
@@ -216,6 +215,7 @@
 <translation id="2369533728426058518">opnir flipar</translation>
 <translation id="2386938421315164605">Fela og sýna umfjöllunarefni</translation>
 <translation id="2387895666653383613">Textastærð</translation>
+<translation id="2390510615457643724">Viltu sækja <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> aftur?</translation>
 <translation id="2394602618534698961">Skrár sem þú sækir birtast hér</translation>
 <translation id="2407481962792080328">Kveikt er á þessum eiginleika þegar þú skráir þig inn á Google reikninginn þinn</translation>
 <translation id="2410754283952462441">Veldu reikning</translation>
@@ -376,6 +376,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3295530008794733555">Vafraðu hraðar. Með minna gagnamagni.</translation>
 <translation id="3297344142967351106">Raddaðstoð</translation>
 <translation id="3303414029551471755">Viltu halda áfram og sækja efnið?</translation>
+<translation id="3332570638882314953">Fáðu gagnlegri upplýsingar</translation>
 <translation id="3334729583274622784">Breyta skráarendingu?</translation>
 <translation id="3341058695485821946">Skoða hversu mikið af gagnamagni þú hefur sparað</translation>
 <translation id="3341262203274374114">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> niðurhölum eytt</translation>
+<translation id="3819183753496523827">Þú ert ekki á netinu. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="3845098929839618392">Opna á huliðsflipa</translation>
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
 <translation id="3858860766373142691">Heiti</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er
 <translation id="3988213473815854515">Staðsetning er leyfð</translation>
 <translation id="3988466920954086464">Sjá niðurstöður flýtileitar á þessu svæði</translation>
 <translation id="4000212216660919741">Ónettengt</translation>
-<translation id="4001236013802615636">Leyfðu Google einnig að nota hluta af texta síðunnar til hliðsjónar</translation>
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# klst.}one{# klst.}other{# klst.}}</translation>
 <translation id="4045764304651014138">Notkunargögn</translation>
@@ -707,6 +708,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5433691172869980887">Notandanafn afritað</translation>
 <translation id="543509235395288790">Sækir <ph name="COUNT" /> skrár (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Sækja aftur</translation>
 <translation id="5441466871879044658">Þýða yfir á þetta tungumál</translation>
 <translation id="5441522332038954058">Stökkva í veffangastikuna</translation>
 <translation id="544776284582297024">Ýttu á hnappinn „Opna flipa“ til að opna flipa og skoða mismunandi síður samtímis</translation>
@@ -806,6 +808,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5964805880140440652">Til að deila þessari síðu í öðru tæki skaltu kveikja á samstillingu í stillingum Chrome</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
+<translation id="5995726099713306770">Sækja síðu aftur?</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
 <translation id="6000203700195075278">Fylgja aftur</translation>
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
@@ -942,6 +945,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
+<translation id="6715020873764921614">Viltu samt sem áður sækja <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="6738867403308150051">Sækir…</translation>
 <translation id="6751521182688001123">Opna nýjan flipa hratt. Haltu fingri á þessari flýtileið til að breyta henni.</translation>
@@ -966,6 +970,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6882836635272038266">Hefðbundin vörn gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg.</translation>
 <translation id="6883204995689174413">Deila</translation>
 <translation id="688738109438487280">Bæta fyrirliggjandi gögnum við <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Fáðu gagnlegri niðurstöður fyrir orðin sem þú yfirstrikar með því að leyfa Google að hafa tiltekinn hluta textans á síðunni til hliðsjónar. Þú getur alltaf breytt <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Opnaðu til að afrita aðgangsorðið þitt</translation>
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>

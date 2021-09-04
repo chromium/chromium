@@ -10,7 +10,7 @@
       Jika kebijakan ini disetel ke string yang mewakili nama domain, <ph name="PRODUCT_OS_NAME" /> akan menampilkan opsi pelengkapan otomatis selama proses login pengguna, sehingga pengguna dapat mengetikkan nama penggunanya saja tanpa ekstensi nama domain.  Pengguna dapat mengganti ekstensi nama domain ini.
       Jika nilai kebijakan bukan domain yang valid, kebijakan tidak akan diterapkan.</translation>
 <translation id="1004590217607585595">Setelan pengelolaan Aplikasi Web</translation>
-<translation id="1006218396155867129">Larang pengguna akses jarak jauh mentransfer file ke dan dari host jarak jauh</translation>
+<translation id="1006218396155867129">Cegah pengguna akses jarak jauh mentransfer file ke dan dari host jarak jauh</translation>
 <translation id="1010151305531217567">Mengalihkan tombol mouse utama ke tombol kanan</translation>
 <translation id="1011266755572744012">Menentukan jumlah lembar maksimal yang boleh dicetak pengguna untuk satu pekerjaan cetak.
 
@@ -289,6 +289,7 @@
 
           Jika kebijakan ini tidak disetel, pengguna dapat menginstal ekstensi apa pun di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1393485621820363363">Mengaktifkan printer perangkat perusahaan</translation>
+<translation id="1395505489889158859">Aktifkan pengiriman nama pengguna dan nama file ke printer native</translation>
 <translation id="1397855852561539316">URL saran penyedia penelusuran default</translation>
 <translation id="1413936351612032792">Informasi laporan tentang penggunaan aplikasi Linux</translation>
 <translation id="1417888712677507140">Blokir dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
@@ -1655,6 +1656,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2960013482187484833">Gunakan printer yang terakhir kali digunakan sebagai pilihan default dalam Pratinjau Cetak</translation>
 <translation id="2960128438010718932">Jadwal persiapan untuk menerapkan update baru</translation>
 <translation id="2960691910306063964">Mengaktifkan atau menonaktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
+<translation id="2962972237615992440">Nonaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2964056138564883247">Mengontrol ketersediaan <ph name="BOREALIS_NAME" /> untuk pengguna ini.
 
       Jika kebijakan disetel ke salah (false), <ph name="BOREALIS_NAME" /> tidak akan tersedia. Sebaliknya (jika kebijakan tidak disetel atau disetel ke benar (true)), <ph name="BOREALIS_NAME" /> akan tersedia jika dan hanya jika tidak ada kebijakan atau setelan lain yang menonaktifkannya.</translation>
@@ -2671,6 +2673,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan dinonaktifkan.</translation>
 <translation id="4203879074082863035">Hanya printer yang diizinkan yang ditampilkan kepada pengguna</translation>
+<translation id="4205316772333487392">Paksa penggunaan SafeSearch di Google Penelusuran</translation>
 <translation id="4209297478239988291">Mengaktifkan fitur aksesibilitas klik otomatis.
 
           Fitur ini berfungsi untuk mengklik tanpa perlu menekan mouse atau touchpad secara langsung, cukup arahkan kursor ke objek yang ingin Anda klik.
@@ -2726,6 +2729,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4325690621216251241">Tambahkan tombol keluar di baki sistem</translation>
 <translation id="4329095223358818804">Mengizinkan Jawaban Cepat untuk mengakses konten yang dipilih</translation>
 <translation id="4330372709562934569">Mengizinkan situs yang terdaftar untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dari konteks yang tidak aman.</translation>
+<translation id="4330908525441222205">Gunakan perilaku AppCache default</translation>
 <translation id="4331357743227845302">Kebijakan ini memungkinkan admin mengonfigurasi layanan Bluetooth yang diizinkan untuk terhubung ke <ph name="PRODUCT_OS_NAME" />.
 
 Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan pengguna untuk terhubung ke layanan Bluetooth yang ditetapkan dengan pengecualian saat daftar kosong yang berarti layanan apa pun diizinkan untuk digunakan. UUID yang digunakan oleh Bluetooth SIG dapat ditampilkan sebagai <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> atau <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUID kustom dapat ditampilkan sebagai <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID tidak peka huruf besar/kecil. Jika kebijakan ini tidak disetel, pengguna dapat terhubung ke layanan Bluetooth mana pun.</translation>
@@ -2745,6 +2749,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Namun, mulai M85, pola dengan karakter pengganti '*' dan '[*.]' di host tidak lagi didukung untuk kebijakan ini.</translation>
+<translation id="4370937370030117032">Nonaktifkan pengiriman nama pengguna dan nama file ke printer native</translation>
 <translation id="4372704773119750918">Jangan izinkan pengguna perusahaan untuk menjadi bagian dari multiprofil (primer atau sekunder)</translation>
 <translation id="4377599627073874279">Izinkan semua situs menampilkan semua gambar</translation>
 <translation id="437791893267799639">Kebijakan tidak disetel, jangan izinkan migrasi data dan ARC</translation>
@@ -2843,6 +2848,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
+<translation id="4513691822411041977">Jangan terapkan penggunaan SafeSearch di Google Penelusuran atau Mode Terbatas YouTube</translation>
 <translation id="4515404363392014383">Aktifkan Safe Browsing untuk sumber tepercaya</translation>
 <translation id="4518251772179446575">Tanyakan setiap kali situs ingin melacak lokasi fisik pengguna</translation>
 <translation id="4521193243799782295">Selama proses login, <ph name="PRODUCT_OS_NAME" /> dapat melakukan autentikasi terhadap server (online) atau menggunakan sandi yang tersimpan di cache (offline).
@@ -3313,6 +3319,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
           Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan mengabaikan semua opsi terkait proxy yang ditentukan dari command line.
 
           Jika kebijakan ini tidak ditetapkan, pengguna dapat memilih sendiri setelan proxy.</translation>
+<translation id="5170018694841697392">Jangan terapkan penggunaan SafeSearch di Google Penelusuran</translation>
 <translation id="5172841243186654432">Menyetel <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> memungkinkan Anda membuat daftar pola URL yang menentukan situs yang dapat dan tidak dapat menyetel cookie untuk satu sesi, kecuali jika kebijakan <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> disetel untuk memulihkan URL dari sesi sebelumnya secara permanen.
 
       Jika kebijakan tidak disetel berarti <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> akan digunakan untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan. Jika URL tidak dicakup oleh pola yang ditentukan, setelan default juga akan digunakan.
@@ -4078,6 +4085,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
 <translation id="6093156968240188330">Memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di sesi bantuan jarak jauh</translation>
+<translation id="6094314311474620462">Nonaktifkan pencetakan</translation>
 <translation id="6095048925836115505">Mengaktifkan keyboard virtual di layar login</translation>
 <translation id="6097601282776163274">Mengaktifkan pengumpulan data anonim yang menyertakan URL</translation>
 <translation id="6099853574908182288">Mode warna pencetakan default</translation>
@@ -4911,7 +4919,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="7063895219334505671">Izinkan pop-up di situs ini</translation>
-<translation id="7066292150801784098">Larang interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
+<translation id="7066292150801784098">Cegah interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="706669471845501145">Izinkan situs menampilkan pemberitahuan desktop</translation>
 <translation id="7070525176564511548">Sandi harus dimasukkan setiap minggu (168 jam)</translation>
 <translation id="7072208053150563108">Tingkat perubahan sandi mesin</translation>
@@ -5008,6 +5016,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak ditetapkan, browser mungkin akan mengirim permintaan DNS-over-HTTPS kepada resolver yang terkait dengan resolver sistem terkonfigurasi milik pengguna.</translation>
 <translation id="7158358621906236999">Setelan default sensor</translation>
+<translation id="7161568070244869726">Paksa pengaktifan AppCache</translation>
 <translation id="7165882688932913315">Kebijakan ini mengontrol akses ke fitur yang dapat dikontrol di UI penemuan lokal (<ph name="CHROME_DEVICES_LINK" />) yang menampilkan perangkat yang dapat ditemukan di dekat pengguna serta perangkat cloud yang terdaftar atas nama mereka. Pada semua sistem operasi kecuali <ph name="PRODUCT_OS_NAME" />, UI penemuan lokal juga mengizinkan pengguna menambahkan printer klasik yang terhubung dengan komputer mereka ke <ph name="CLOUD_PRINT_NAME" />.
 
       Jika kebijakan disetel ke Aktif atau tidak disetel, penemuan perangkat lokal akan diizinkan.
@@ -5661,13 +5670,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="802147957407376460">Putar layar sebesar 0 derajat</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
-<translation id="8033913082323846868">Kebijakan ini tidak digunakan lagi di M70. Sebagai gantinya, gunakan AutofillAddressEnabled dan AutofillCreditCardEnabled.
-
-      Mengaktifkan fitur IsiOtomatis <ph name="PRODUCT_NAME" /> dan mengizinkan pengguna untuk melengkapi formulir web secara otomatis menggunakan informasi yang tersimpan sebelumnya, seperti alamat atau informasi kartu kredit.
-
-      Jika setelan ini dinonaktifkan, IsiOtomatis tidak akan dapat diakses oleh pengguna.
-
-      Jika setelan ini diaktifkan atau nilainya tidak ditetapkan, IsiOtomatis akan dapat dikontrol oleh pengguna. Penetapan ini akan memungkinkan pengguna untuk mengonfigurasi profil IsiOtomatis dan mengaktifkan atau menonaktifkan IsiOtomatis sesuai keinginan.</translation>
 <translation id="8036964468882248070">Jika kebijakan disetel ke Aktif, perangkat yang terdaftar akan melaporkan statistik dan ID hardware untuk perangkat penyimpanan.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan statistik penyimpanan.</translation>
@@ -5998,6 +6000,7 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
 <translation id="8461914792118322307">Proxy</translation>
 <translation id="8463569949213141467">Mengonfigurasi kamera, setelan browser, setelan OS, pemindaian, Web Store, Canvas, dan fitur-fitur Jelajahi untuk dinonaktifkan</translation>
 <translation id="8465065632133292531">Parameter untuk URL instan yang menggunakan POST</translation>
+<translation id="8470317291588703478">Jangan terapkan Mode Terbatas YouTube</translation>
 <translation id="847472800012384958">Jangan izinkan situs mana pun menampilkan pop-up</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC akan menggunakan antarmuka yang tersedia saat menelusuri jalur terbaik.</translation>
@@ -6057,6 +6060,7 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, pintasan fitur aksesibilitas akan diaktifkan secara default.</translation>
+<translation id="8520064498689833152">Paksa penggunaan SafeSearch di Google Penelusuran dan paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8524334245528364388">URL ke file JSON dengan daftar server cetak.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8528951285051082869">Jangan izinkan aplikasi web apa pun mengakses berbagai jenis file melalui File Handling API</translation>
@@ -6152,6 +6156,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host akses jarak jauh akan dapat dikaitkan dengan pengguna lokal mana pun.</translation>
+<translation id="867708016260789630">Paksa Mode Terbatas YouTube menjadi minimal Menengah</translation>
 <translation id="8685024486845674965">Peringatan perlindungan sandi dipicu oleh penggunaan ulang sandi</translation>
 <translation id="8685680544554917389">Jika kebijakan disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan dapat memutar otomatis media. Jika kebijakan disetel ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memutar otomatis media.
 

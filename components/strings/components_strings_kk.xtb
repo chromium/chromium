@@ -763,6 +763,7 @@
 <translation id="3566021033012934673">Жеке қосылған жоқсыз</translation>
 <translation id="3567778190852720481">Корпоративтік есептік жазбамен тіркелу мүмкін емес (корпоративтік есептік жазба сәйкес келмейді).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> сайтына ендірілген беттегі сұрау</translation>
 <translation id="3581089476000296252">Бұл бет дайын болған кезде, Chrome сізге хабарлайды. &lt;a&gt;Бас тарту&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ат қосу</translation>
@@ -2188,6 +2189,7 @@
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8371889962595521444">Арнаулы түбірлік сертификаттар</translation>
 <translation id="8374636051559112948">Әртүрлі</translation>
+<translation id="8380167699614421159">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="8380941800586852976">Қауіпті</translation>
 <translation id="8381674639488873545">Бұл ақылар сізге білдіртпей бір рет не бірнеше қайтара алынуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> жүйесімен бөлісуге әкімші саясатымен тыйым салынған.</translation>

@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
+<translation id="1119447706177454957">Ներքին սխալ</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>
@@ -282,6 +284,7 @@
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> ta varaqda “<ph name="SEARCH_TEXT" />” topildi</translation>
 <translation id="1060292118287751956">Ekranlardagi yangilanish chastotasini aniqlaydi</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> qurilmasiga xush kelibsiz!</translation>
 <translation id="1061904396131502319">Tanaffus qilish vaqti keldi</translation>
 <translation id="1066613507389053689">Chrome OS tizimini yangilash zarur</translation>
 <translation id="1067048845568873861">Yaratilgan sanasi</translation>
@@ -2831,6 +2832,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3943582379552582368">&amp;Orqaga</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="3945513714196326460">Qisqaroq nom bering</translation>
+<translation id="3948027458879361203">Host nomini oʻzgartirish</translation>
 <translation id="3948116654032448504">Tasvirni qidirish (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> quyidagi jildlardagi fayllarni tahrirlay oladi</translation>
 <translation id="394984172568887996">IE brauzeridan import qilinganlar</translation>
@@ -6794,6 +6796,7 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
     <ph name="BEGIN_PARAGRAPH4" />Bundan tashqari farzandingiz uchun Veb va ilovalar faoliyati sozlamasi yoniq boʻlsa, bu maʼlumotlar Google hisobingizda saqlanishi mumkin. Bularni families.google.com sahifasidan boshqarish mumkin.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Yaroqsiz mijoz sertifikati</translation>
 <translation id="827097179112817503">“Boshi” tugmasini ko‘rsatish</translation>
+<translation id="8271268254812352141">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing. Tillarni <ph name="LINK_BEGIN" />Sayt tillari<ph name="LINK_END" /> orqali moslash mumkin.</translation>
 <translation id="8271379370373330993">Ota-onalar, keyingi bosqichlar siz uchun. Hisobni sozlaganingizdan keyin <ph name="DEVICE_TYPE" /> qurilmasini farzandingizga berishingiz mumkin.</translation>
 <translation id="8272443605911821513">Kengaytmalarni “Qo‘shimcha asboblar” menyusidagi “Kengaytmalar” bo‘limidan boshqarish mumkin.</translation>
 <translation id="8274332263553132018">Faylni translatsiya qilish</translation>

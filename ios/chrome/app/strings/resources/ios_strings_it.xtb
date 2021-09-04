@@ -116,6 +116,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
+<translation id="2080769225927880590">Accedi con un account valido</translation>
 <translation id="209018056901015185">Richiedi sito desktop</translation>
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi spostati</translation>
@@ -467,6 +468,8 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5737974891429562743">I dati di accesso dell'account sono obsoleti. Aggiorna per avviare la sincronizzazione.</translation>
 <translation id="5738887413654608789">Puoi trovare pagine web pertinenti basate sui dintorni.</translation>
 <translation id="5758631781033351321">Qui troverai il tuo elenco di lettura</translation>
+<translation id="575902488528307720">Cerca immagine</translation>
+<translation id="5781453543752460388">Aggiungi a Foto</translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5812974770859303494">Aggiungi a…</translation>
@@ -599,7 +602,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
 <translation id="6762812039470893796">Deseleziona tutto</translation>
 <translation id="6780034285637185932">Codice postale</translation>
-<translation id="6785453220513215166">Invio rapporto sugli arresti anomali...</translation>
+<translation id="6785453220513215166">Invio report sugli arresti anomali...</translation>
 <translation id="6797885426782475225">Ricerca vocale</translation>
 <translation id="6801927553864092214">Per navigare in privato, apri una scheda di navigazione in incognito</translation>
 <translation id="6807889908376551050">Mostra tutte...</translation>
@@ -738,6 +741,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8205564605687841303">Annulla</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
 <translation id="8225985093977202398">Immagini e file memorizzati nella cache</translation>
+<translation id="8228176677386827255">Il dispositivo è gestito. Puoi accedere soltanto con l'account dell'organizzazione.</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8271720166617117963">Accetta e accedi</translation>
 <translation id="8281781826761538115">Predefinita - <ph name="DEFAULT_LOCALE" /></translation>

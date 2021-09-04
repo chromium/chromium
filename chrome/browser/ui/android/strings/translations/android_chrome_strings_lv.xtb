@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1810845389119482123">Sākotnējā sinhronizācijas iestatīšana nav pabeigta</translation>
 <translation id="1829244130665387512">Atrast lapā</translation>
-<translation id="1830550083491357902">Nav pierakstījies</translation>
 <translation id="1843805151597803366">Lai iegūtu labākus tulkojumus, ļaujiet pakalpojumam “Google meklēšana” izmantot pašreizējo lapu</translation>
 <translation id="1856325424225101786">Vai atiestatīt vienkāršoto režīmu?</translation>
 <translation id="1868024384445905608">Tagad pārlūkā Chrome faili tiek lejupielādēti ātrāk.</translation>
@@ -216,6 +215,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2369533728426058518">atvērt cilnes</translation>
 <translation id="2386938421315164605">Tēmu slēpšana un rādīšana</translation>
 <translation id="2387895666653383613">Teksta mērogošana</translation>
+<translation id="2390510615457643724">Vai vēlaties vēlreiz lejupielādēt failu “<ph name="FILE_NAME" />” <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Šeit tiek rādīti jūsu lejupielādētie faili</translation>
 <translation id="2407481962792080328">Kad pierakstāties savā Google kontā, šī funkcija ir ieslēgta.</translation>
 <translation id="2410754283952462441">Konta izvēle</translation>
@@ -376,6 +376,7 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="3295530008794733555">Ietaupiet laiku. Samaziniet datu lietojumu.</translation>
 <translation id="3297344142967351106">Balss palīgs</translation>
 <translation id="3303414029551471755">Vai turpināt ar satura lejupielādi?</translation>
+<translation id="3332570638882314953">Iegūstiet atbilstošāku informāciju</translation>
 <translation id="3334729583274622784">Vai mainīt faila paplašinājumu?</translation>
 <translation id="3341058695485821946">Uzziniet ietaupīto datu apjomu</translation>
 <translation id="3341262203274374114">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="3819178904835489326">Izdzēsti <ph name="NUMBER_OF_DOWNLOADS" /> lejupielādētie vienumi</translation>
+<translation id="3819183753496523827">Esat bezsaistē. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="3845098929839618392">Atvērt inkognito cilnē</translation>
 <translation id="3856096718352044181">Pārbaudiet, vai pakalpojumu sniedzējs ir derīgs, vai arī vēlāk mēģiniet vēlreiz</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="3988213473815854515">Atļauta piekļuve atrašanās vietas informācijai</translation>
 <translation id="3988466920954086464">Skatīt tūlītējus meklēšanas rezultātus šajā panelī</translation>
 <translation id="4000212216660919741">Bezsaistes sākums</translation>
-<translation id="4001236013802615636">Ļaut Google sistēmām izmantot arī lapas tekstu</translation>
 <translation id="4016425174436051808">Nevar sekot. Radās kļūda.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}zero{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Lietojuma dati</translation>
@@ -707,6 +708,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="543338862236136125">Rediģēt paroli</translation>
 <translation id="5433691172869980887">Lietotājvārds ir nokopēts.</translation>
 <translation id="543509235395288790">Notiek <ph name="COUNT" /> faila(-u) lejupielāde (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Lejupielādēt vēlreiz</translation>
 <translation id="5441466871879044658">Tulkot šajā valodā</translation>
 <translation id="5441522332038954058">Pāriet uz adreses joslu</translation>
 <translation id="544776284582297024">Lai atvērtu cilnes un vienlaikus apmeklētu vairākas lapas, pieskarieties pogai “atvērt cilnes”</translation>
@@ -806,6 +808,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5964805880140440652">Lai kopīgotu šo lapu citā ierīcē, Chrome iestatījumos ieslēdziet sinhronizāciju.</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5979084224081478209">Pārbaudīt paroles</translation>
+<translation id="5995726099713306770">Vai vēlaties vēlreiz lejupielādēt lapu?</translation>
 <translation id="6000066717592683814">Arī turpmāk izmantot Google</translation>
 <translation id="6000203700195075278">Atsākt sekošanu</translation>
 <translation id="6005538289190791541">Ieteiktā parole</translation>
@@ -942,6 +945,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="670498945988402717">Pārbaudīts: vakar</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="671481426037969117">Jūsu lietotnes <ph name="FQDN" /> taimera laiks ir beidzies. Tas atkal sāksies rīt.</translation>
+<translation id="6715020873764921614">Vai tomēr vēlaties lejupielādēt failu “<ph name="FILE_NAME" />” (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6738516213925468394">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="6738867403308150051">Notiek lejupielāde…</translation>
 <translation id="6751521182688001123">Ātra jaunas cilnes atvēršana. Lai rediģētu šo īsinājumtaustiņu, pieskarieties un turiet.</translation>
@@ -966,6 +970,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6882836635272038266">Standarta aizsardzība pret zināmām bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="6883204995689174413">Kopīgot</translation>
 <translation id="688738109438487280">Pievienot esošos datus kontam <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Lai uzlabotu rezultātus, kas tiek rādīti par jūsu atzīmētajiem vārdiem, atļaujiet Google sistēmām ņemt vērā daļu no lapas teksta. Jebkurā laikā varat mainīt <ph name="BEGIN_LINK" />iestatījumus<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Atbloķējiet, lai kopētu paroli</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6900532703269623216">Uzlabota aizsardzība</translation>

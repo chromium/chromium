@@ -763,6 +763,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3566021033012934673">Your connection is not private</translation>
 <translation id="3567778190852720481">Can't enrol with enterprise account (enterprise account is not eligible).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3576616784287504635">An embedded page at <ph name="SITE" /> says</translation>
 <translation id="3581089476000296252">Chrome will let you know when this page is ready. &lt;a&gt;Cancel&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Add name</translation>
@@ -2188,6 +2189,7 @@ Additional details:
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8371889962595521444">Custom root certificates</translation>
 <translation id="8374636051559112948">Varies</translation>
+<translation id="8380167699614421159">This site shows intrusive or misleading ads</translation>
 <translation id="8380941800586852976">Dangerous</translation>
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /> has been blocked by administrator policy</translation>

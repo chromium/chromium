@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Light</translation>
 <translation id="1810845389119482123">Initial sync setup not finished</translation>
 <translation id="1829244130665387512">Find in page</translation>
-<translation id="1830550083491357902">Not signed in</translation>
 <translation id="1843805151597803366">To get better translations, let Google Search use the current page</translation>
 <translation id="1856325424225101786">Reset Lite mode?</translation>
 <translation id="1868024384445905608">Chrome now downloads files faster</translation>
@@ -486,7 +485,6 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3988213473815854515">Location is allowed</translation>
 <translation id="3988466920954086464">See instant search results in this panel</translation>
 <translation id="4000212216660919741">Offline Home</translation>
-<translation id="4001236013802615636">Let Google also consider some of the page’s text</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4045764304651014138">Usage data</translation>

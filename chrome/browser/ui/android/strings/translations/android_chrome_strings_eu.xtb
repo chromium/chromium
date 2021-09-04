@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Argia</translation>
 <translation id="1810845389119482123">Ez da amaitu hasierako sinkronizazioa konfiguratzen</translation>
 <translation id="1829244130665387512">Bilatu orrian</translation>
-<translation id="1830550083491357902">Saioa hasi gabe</translation>
 <translation id="1843805151597803366">Itzulpen hobeak lortzeko, eman oraingo orria erabiltzeko baimena Google Bilaketa zerbitzuari</translation>
 <translation id="1856325424225101786">Oinarrizko modua berrezarri nahi duzu?</translation>
 <translation id="1868024384445905608">Chrome-k orain bizkorrago deskargatzen ditu fitxategiak</translation>
@@ -216,6 +215,7 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2369533728426058518">fitxa irekiak</translation>
 <translation id="2386938421315164605">Ezkutatu eta erakutsi gaiak</translation>
 <translation id="2387895666653383613">Testua doitzea</translation>
+<translation id="2390510615457643724">Berriro deskargatu nahi duzu <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Deskargatutako fitxategiak hemen agertuko dira</translation>
 <translation id="2407481962792080328">Google-ko kontuan saioa hastean, aktibatu egiten da eginbide hau</translation>
 <translation id="2410754283952462441">Aukeratu kontu bat</translation>
@@ -376,6 +376,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3295530008794733555">Arakatu bizkorrago. Erabili datu gutxiago.</translation>
 <translation id="3297344142967351106">Ahozko laguntza</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
+<translation id="3332570638882314953">Lortu informazio egoki gehiago</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
 <translation id="3341058695485821946">Ikusi zenbat datu aurreztu dituzun</translation>
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga ezabatu dira</translation>
+<translation id="3819183753496523827">Ez dago Interneteko konexiorik. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="3845098929839618392">Ireki ezkutuko fitxa batean</translation>
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3858860766373142691">Izena</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3988213473815854515">Kokapena baimenduta dago</translation>
 <translation id="3988466920954086464">Ikusi istanteko bilaketaren emaitzak panel honetan</translation>
 <translation id="4000212216660919741">Etxea konexiorik gabeko moduan dago</translation>
-<translation id="4001236013802615636">Onartu Google-k orriko testuaren zati bat ere erabiltzea</translation>
 <translation id="4016425174436051808">Ezin zaio jarraitu. Arazoren bat izan da.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ordu}other{# ordu}}</translation>
 <translation id="4045764304651014138">Erabilera-datuak</translation>
@@ -707,6 +708,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5433691172869980887">Kopiatu da erabiltzaile-izena</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> fitxategi deskargatzen (<ph name="MEGABYTES" />).</translation>
+<translation id="5438292632479953702">Deskargatu berriro</translation>
 <translation id="5441466871879044658">Itzuli hizkuntza honetara</translation>
 <translation id="5441522332038954058">Saltatu helbide-barrara</translation>
 <translation id="544776284582297024">Fitxak ireki eta aldi berean webgune bat baino gehiago ikusteko, sakatu irekitako fitxen botoia</translation>
@@ -806,6 +808,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5964805880140440652">Orri hau beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa</translation>
 <translation id="5964869237734432770">Gelditu irudi-deskribapenak</translation>
 <translation id="5979084224081478209">Egiaztatu pasahitzak</translation>
+<translation id="5995726099713306770">Berriro deskargatu nahi duzu orria?</translation>
 <translation id="6000066717592683814">Jarraitu Google erabiltzen</translation>
 <translation id="6000203700195075278">Jarraitu berriro</translation>
 <translation id="6005538289190791541">Iradokitako pasahitza</translation>
@@ -942,6 +945,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="670498945988402717">Atzo egiaztatu zuen</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="671481426037969117">Agortu da <ph name="FQDN" /> tenporizadorearen denbora. Bihar hasiko da berriro.</translation>
+<translation id="6715020873764921614"><ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) deskargatu nahi duzu halere?</translation>
 <translation id="6738516213925468394">Data honetan hasi ziren enkriptatzen zure datuak <ph name="BEGIN_LINK" />Sinkronizatzeko pasaesaldiaren<ph name="END_LINK" /> bidez: <ph name="TIME" />. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="6738867403308150051">Deskargatzen…</translation>
 <translation id="6751521182688001123">Ireki fitxa bat bizkor. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
@@ -966,6 +970,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6882836635272038266">Kaltegarriak direla dakigun webgune, deskarga eta luzapenen aurkako babes estandarra.</translation>
 <translation id="6883204995689174413">Partekatu</translation>
 <translation id="688738109438487280">Gehitu lehendik dituzun datuak <ph name="TO_ACCOUNT" /> kontuan.</translation>
+<translation id="6889847736310813892">Ikusi nabarmentzen dituzun hitzetarako emaitza hobeak. Horretarako, utzi Google-ri orriko testu zati batzuk irakurtzen. Edonoiz alda ditzakezu <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" />.</translation>
 <translation id="6891726759199484455">Desblokeatu pasahitza kopiatzeko</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6900532703269623216">Babes hobetua</translation>

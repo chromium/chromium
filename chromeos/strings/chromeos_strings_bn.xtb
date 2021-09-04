@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ফায়ারওয়াল শনাক্ত করা হয়েছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
+<translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> এই <ph name="DEVICE_TYPE" /> ম্যানেজ করে।</translation>
@@ -147,6 +148,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
 <translation id="4034824040120875894">প্রিন্টার</translation>
+<translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="4145784616224233563">HTTP ফায়ারওয়াল</translation>
 <translation id="4155551848414053977">আপনার স্ক্যানার চালু এবং নেটওয়ার্ক বা সরাসরি কানেকশনের মাধ্যমে উপলভ্য রয়েছে তা দেখে নিন</translation>
@@ -221,6 +223,7 @@
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5252456968953390977">রোমিং</translation>
@@ -280,6 +283,7 @@
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ব্যবহার করতে করতে ব্যাটারির ক্ষমতা কমে আসতে থাকে</translation>
 <translation id="6191293864534840972">ডোমেন নেম সার্ভারের ফর্ম্যাট ঠিক নেই</translation>
 <translation id="6223752125779001553">কোনও স্ক্যানার উপলভ্য নেই</translation>

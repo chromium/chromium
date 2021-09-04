@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
 <translation id="1075811647922107217">የገጽ መጠን</translation>
+<translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው።</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
 ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
+<translation id="5212593641110061691">ታብሎይድ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5252456968953390977">ውሂብን በማዛወር ላይ</translation>
@@ -282,6 +284,7 @@
 <translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
+<translation id="6184793017104303157">ቢ4</translation>
 <translation id="6189418609903030344">የባትሪ አቅም ከአጠቃቀም ጋር እየቀነሰ ይሄዳል</translation>
 <translation id="6191293864534840972">የተበላሹ የስም አገልጋዮች</translation>
 <translation id="6223752125779001553">ምንም ቃኚዎች የሉም</translation>

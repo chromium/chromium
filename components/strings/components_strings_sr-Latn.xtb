@@ -764,6 +764,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3566021033012934673">Veza nije privatna</translation>
 <translation id="3567778190852720481">Ne možete da se registrujete sa nalogom preduzeća (nalog preduzeća ne ispunjava uslove).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Dozvoli za ovaj sajt</translation>
 <translation id="3576616784287504635">Ugrađena stranica na <ph name="SITE" /> navodi:</translation>
 <translation id="3581089476000296252">Chrome će vas obavestiti kada ova stranica bude spremna. &lt;a&gt;Otkaži&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Dodajte ime</translation>
@@ -2188,6 +2189,7 @@ Dodatni detalji:
 <translation id="8368476060205742148">Google Play usluge</translation>
 <translation id="8371889962595521444">Prilagođeni sertifikati osnovnog nivoa</translation>
 <translation id="8374636051559112948">Razlikuje se</translation>
+<translation id="8380167699614421159">Ovaj sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ti troškovi mogu da budu jednokratni ili periodični i možda nisu odmah vidljivi. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Smernice za administratore blokiraju deljenje sa <ph name="ORIGIN_NAME" /> na lokaciju <ph name="VM_NAME" /></translation>

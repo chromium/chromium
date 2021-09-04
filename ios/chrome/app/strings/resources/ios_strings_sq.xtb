@@ -116,6 +116,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2073572773299281212">Aktiv <ph name="DAYS" /> ditë më parë</translation>
 <translation id="2074131957428911366">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK" />cilësimet<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
+<translation id="2080769225927880590">Identifikohu me një llogari të vlefshme</translation>
 <translation id="209018056901015185">Kërko sajtin për desktop</translation>
 <translation id="2103075008456228677">Hap history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementë u lëvizën</translation>
@@ -467,6 +468,8 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5737974891429562743">Detajet e identifikimit të llogarisë nuk janë të përditësuara. Përditësoji për të filluar sinkronizimin.</translation>
 <translation id="5738887413654608789">Kjo të lejon të zbulosh faqe uebi që kanë lidhje bazuar në ambientin rrethues.</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
+<translation id="575902488528307720">Kërko për imazhin</translation>
+<translation id="5781453543752460388">Shtoje te "Fotografitë"</translation>
 <translation id="5782227691023083829">Po përkthen...</translation>
 <translation id="5803566855766646066">Je i sigurt që dëshiron ta heqësh këtë kartë të re?</translation>
 <translation id="5812974770859303494">Shto te...</translation>
@@ -738,6 +741,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8205564605687841303">Anulo</translation>
 <translation id="8206354486702514201">Ky cilësim zbatohet nga administratori yt.</translation>
 <translation id="8225985093977202398">Imazhet dhe skedarët në memorien specifike</translation>
+<translation id="8228176677386827255">Pajisja jote menaxhohet. Mund të identifikohesh vetëm me llogarinë e organizatës sate.</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8271720166617117963">Pranoje dhe identifikohu</translation>
 <translation id="8281781826761538115">Parazgjedhja - <ph name="DEFAULT_LOCALE" /></translation>

@@ -758,6 +758,7 @@
 <translation id="3566021033012934673">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਨਿੱਜੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="3567778190852720481">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਖਾਤੇ ਨਾਲ ਦਰਜ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ (ਐਂਟਰਪ੍ਰਾਈਜ਼ ਖਾਤਾ ਯੋਗ ਨਹੀਂ ਹੈ)।</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 'ਤੇ ਇੱਕ ਪਰੋਏ ਗਏ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
 <translation id="3581089476000296252">ਇਹ ਪੰਨਾ ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰੇਗਾ। &lt;a&gt;ਰੱਦ ਕਰੋ&lt;/a&gt;</translation>
 <translation id="3582930987043644930">ਨਾਮ ਜੋੜੋ</translation>
@@ -2176,6 +2177,7 @@
 <translation id="8368476060205742148">Google Play ਸੇਵਾਵਾਂ</translation>
 <translation id="8371889962595521444">ਵਿਉਂਤੇ ਰੂਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
 <translation id="8374636051559112948">ਬਦਲਦਾ ਰਹਿੰਦਾ ਹੈ</translation>
+<translation id="8380167699614421159">ਇਹ ਸਾਈਟ ਦਖਲਅੰਦਾਜ਼ੀ ਜਾਂ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀ ਹੈ</translation>
 <translation id="8380941800586852976">ਖਤਰਨਾਕ</translation>
 <translation id="8381674639488873545">ਇਹ ਖਰਚੇ ਇੱਕ ਵਾਰ ਜਾਂ ਵਾਰ-ਵਾਰ ਲਏ ਜਾ ਸਕਦੇ ਹਨ ਅਤੇ ਸ਼ਾਇਦ ਇਨ੍ਹਾਂ ਬਾਰੇ ਕੋਈ ਸਪੱਸ਼ਟ ਜਾਣਕਾਰੀ ਨਾ ਦਿੱਤੀ ਜਾਵੇ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ <ph name="ORIGIN_NAME" /> ਤੋਂ <ph name="VM_NAME" /> ਵਿੱਚ ਸਾਂਝਾਕਰਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>

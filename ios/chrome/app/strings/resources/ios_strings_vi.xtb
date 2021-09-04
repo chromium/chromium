@@ -116,6 +116,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="2073572773299281212">Hoạt động <ph name="DAYS" /> ngày trước</translation>
 <translation id="2074131957428911366">Bạn luôn có thể chọn nội dung muốn đồng bộ hóa trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
+<translation id="2080769225927880590">Đăng nhập bằng Tài khoản hợp lệ</translation>
 <translation id="209018056901015185">Yêu cầu trang web cho máy tính</translation>
 <translation id="2103075008456228677">Mở history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dấu trang đã được di chuyển</translation>
@@ -467,6 +468,8 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5737974891429562743">Thông tin chi tiết để đăng nhập tài khoản đã lỗi thời. Hãy cập nhật để bắt đầu đồng bộ hóa.</translation>
 <translation id="5738887413654608789">Tính năng này cho phép bạn khám phá các trang web có liên quan dựa trên những thứ xung quanh bạn.</translation>
 <translation id="5758631781033351321">Bạn sẽ thấy danh sách đọc ở đây</translation>
+<translation id="575902488528307720">Tìm kiếm Hình ảnh</translation>
+<translation id="5781453543752460388">Thêm vào Photos</translation>
 <translation id="5782227691023083829">Đang dịch...</translation>
 <translation id="5803566855766646066">Bạn có chắc chắn muốn hủy thẻ mới này không?</translation>
 <translation id="5812974770859303494">Thêm vào...</translation>
@@ -738,6 +741,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8205564605687841303">Hủy</translation>
 <translation id="8206354486702514201">Cài đặt này được quản trị viên của bạn thực thi.</translation>
 <translation id="8225985093977202398">Tệp và hình ảnh được lưu vào bộ nhớ đệm</translation>
+<translation id="8228176677386827255">Thiết bị của bạn được quản lý. Bạn chỉ có thể đăng nhập bằng tài khoản của tổ chức bạn.</translation>
 <translation id="8261506727792406068">Xóa</translation>
 <translation id="8271720166617117963">Chấp nhận và Đăng nhập</translation>
 <translation id="8281781826761538115">Mặc định - <ph name="DEFAULT_LOCALE" /></translation>

@@ -765,6 +765,7 @@
 <translation id="3566021033012934673">آپ کا کنکشن نجی نہیں ہے</translation>
 <translation id="3567778190852720481">انٹرپرائز اکاؤنٹ کے ساتھ اندراج نہیں ہوسکتا (انٹرپرائز اکاؤنٹ اہل نہیں ہے)۔</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> پر انضمام کردہ ایک صفحے کے مطابق</translation>
 <translation id="3581089476000296252">‏جب یہ صفحہ تیار ہو جائے گا تو Chrome آپ کو مطلع کر دے گا۔ &lt;a&gt;منسوخ کریں&lt;/a&gt;</translation>
 <translation id="3582930987043644930">نام شامل کریں</translation>
@@ -2191,6 +2192,7 @@
 <translation id="8368476060205742148">‏Google Play سروسز</translation>
 <translation id="8371889962595521444">حسب ضرورت روٹ سرٹیفکیٹس</translation>
 <translation id="8374636051559112948">تبدیل ہوتا رہتا ہے</translation>
+<translation id="8380167699614421159">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
 <translation id="8380941800586852976">خطرناک</translation>
 <translation id="8381674639488873545">یہ چارجز ایک بار یا بار بار عائد ہو سکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">منتظم کی پالیسی کے ذریعے <ph name="ORIGIN_NAME" /> سے <ph name="VM_NAME" /> پر اشتراک کرنے کو مسدود کر دیا گیا ہے</translation>

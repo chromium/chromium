@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Açık</translation>
 <translation id="1810845389119482123">İlk senkronizasyon kurulumu tamamlanmadı</translation>
 <translation id="1829244130665387512">Sayfada bul</translation>
-<translation id="1830550083491357902">Oturum açılmadı</translation>
 <translation id="1843805151597803366">Daha iyi çeviriler için Google Arama'nın geçerli sayfayı kullanmasına izin verin</translation>
 <translation id="1856325424225101786">Basit mod sıfırlansın mı?</translation>
 <translation id="1868024384445905608">Chrome artık dosyaları daha hızlı indiriyor</translation>
@@ -486,7 +485,6 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="3988213473815854515">Konuma izin veriliyor</translation>
 <translation id="3988466920954086464">Anında arama sonuçlarını bu panelde görün</translation>
 <translation id="4000212216660919741">Çevrimdışı Ana Sayfa</translation>
-<translation id="4001236013802615636">Google'ın sayfadaki metni de değerlendirmesine izin verin</translation>
 <translation id="4016425174436051808">Takip edilemiyor. Bir sorun oldu.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# sa.}other{# sa.}}</translation>
 <translation id="4045764304651014138">Kullanım verileri</translation>

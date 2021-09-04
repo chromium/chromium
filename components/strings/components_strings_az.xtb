@@ -761,6 +761,7 @@
 <translation id="3566021033012934673">Bağlantınız məxfi deyil</translation>
 <translation id="3567778190852720481">Müəssisə hesabı ilə qeydiyyatdan keçmək olmur (müəssisə hesabı uyğun deyil).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Bu sayt üçün icazə verin</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> daxilində yerləşdirilmiş səhifə deyir:</translation>
 <translation id="3581089476000296252">Chrome bu səhifə hazır olduqda bildiriş göndərəcək. &lt;a&gt;Ləğv edin&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ad əlavə edin</translation>
@@ -2184,6 +2185,7 @@
 <translation id="8368476060205742148">Google Play xidmətləri</translation>
 <translation id="8371889962595521444">Əsas fərdi sertifikatlar</translation>
 <translation id="8374636051559112948">Fərqlənir</translation>
+<translation id="8380167699614421159">Bu sayt inadçı və ya aldadıcı reklamlar göstərir</translation>
 <translation id="8380941800586852976">Təhlükəli</translation>
 <translation id="8381674639488873545">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Eyni zamanda görünməyə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME" /> məkanına paylaşım etmək administrator siyasətinə əsasən bloklanıb</translation>

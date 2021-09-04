@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
+<translation id="1119447706177454957">Błąd wewnętrzny</translation>
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5212543919916444558">Na Twoim ekranie nie ma nic, w czym mogę pomóc.
 Kliknij mikrofon i zadaj pytanie.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="5234764350956374838">Zamknij</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>

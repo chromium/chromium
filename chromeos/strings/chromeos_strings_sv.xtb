@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
 <translation id="1075811647922107217">Sidstorlek</translation>
+<translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5252456968953390977">Roaming</translation>
@@ -282,6 +284,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Läs mer</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
 <translation id="6223752125779001553">Ingen skanner är tillgänglig</translation>

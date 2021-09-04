@@ -764,6 +764,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3566021033012934673">Vaša veza nije privatna</translation>
 <translation id="3567778190852720481">Ne možete se prijaviti poslovnim računom (poslovni račun ne ispunjava uvjete).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Dopusti za ovu web-lokaciju</translation>
 <translation id="3576616784287504635">Na ugrađenoj stranici na web-lokaciji <ph name="SITE" /> navodi se sljedeće</translation>
 <translation id="3581089476000296252">Chrome će vas obavijestiti kada je stranica spremna. &lt;a&gt;Otkaži&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Dodajte ime</translation>
@@ -2189,6 +2190,7 @@ Dodatne pojedinosti:
 <translation id="8368476060205742148">Google Play usluge</translation>
 <translation id="8371889962595521444">Prilagođeni korijenski certifikati</translation>
 <translation id="8374636051559112948">razlikuje se</translation>
+<translation id="8380167699614421159">Ova web-lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8381674639488873545">Ta terećenja mogu biti jednokratna ili ponavljajuća i možda nisu vidljiva odmah. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Dijeljenje s <ph name="ORIGIN_NAME" /> na <ph name="VM_NAME" /> blokirano je pravilima administratora</translation>

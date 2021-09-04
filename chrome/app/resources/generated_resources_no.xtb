@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protokoll for sikker hypertekstoverføring (HTTPS)</translation>
 <translation id="1059944192885972544">Fant <ph name="NUM" /> faner for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="1060292118287751956">Bestemmer frekvensen for skjermoppdateringer</translation>
+<translation id="1061130374843955397">Velkommen til <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Snart tid for en pause</translation>
 <translation id="1066613507389053689">En Chrome OS-oppdatering kreves</translation>
 <translation id="1067048845568873861">Opprettet</translation>
@@ -2836,6 +2837,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3943582379552582368">Til&amp;bake</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3945513714196326460">Prøv et kortere navn</translation>
+<translation id="3948027458879361203">Endre vertsnavn</translation>
 <translation id="3948116654032448504">&amp;Søk etter bilder i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> kan redigere filer i disse mappene</translation>
 <translation id="394984172568887996">Importert fra Internet Explorer</translation>
@@ -6798,6 +6800,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
     <ph name="BEGIN_PARAGRAPH4" />Hvis ytterligere nett- og appaktivitet er slått på for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. Finn ut mer om disse innstillingene og hvordan du justerer dem, på families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Ugyldig klientsertifikat</translation>
 <translation id="827097179112817503">Vis startsideknapp</translation>
+<translation id="8271268254812352141">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder på tekst. Tilpass språk for oversettelse i <ph name="LINK_BEGIN" />Nettstedsspråk<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldre, dere må utføre de neste trinnene. Dere kan gi <ph name="DEVICE_TYPE" /> tilbake til barnet etter kontokonfigureringen.</translation>
 <translation id="8272443605911821513">Administrer utvidelsene dine ved å klikke på Utvidelser i Flere verktøy-menyen.</translation>
 <translation id="8274332263553132018">Cast en fil</translation>

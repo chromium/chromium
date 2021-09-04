@@ -109,6 +109,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="5750083143895808682">Sisse logitud kasutajana <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Ühenda uuesti</translation>
 <translation id="5810269635982033450">Ekraan toimib puuteplaadina</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> taotles juurdepääsu teie ekraanikuva vaatamiseks ning klaviatuuri ja hiire juhtimiseks. Kui see taotlus on teie jaoks ootamatu, klõpsake nupul „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Muul juhul tehke ühenduse lubamiseks valik „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, kui olete selleks valmis.</translation>
 <translation id="5823658491130719298">Avage Chrome arvutis, millele soovite kaugjuurdepääsu, ja külastage saiti <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Kuvavalikud</translation>
 <translation id="6033507038939587647">Klaviatuurivalikud</translation>

@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار ناري.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
+<translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5252456968953390977">تجوال</translation>
@@ -282,6 +284,7 @@
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>

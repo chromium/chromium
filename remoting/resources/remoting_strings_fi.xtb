@@ -109,6 +109,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="5750083143895808682">Kirjautunut osoitteella <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="579702532610384533">Yhdistä uudelleen</translation>
 <translation id="5810269635982033450">Näyttö toimii ohjauslevynä</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> on pyytänyt lupaa nähdä näyttösi ja ohjata näppäimistöäsi ja hiirtäsi. Paina ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', jos et odottanut tätä pyyntöä. Muussa tapauksessa voit sallia yhteyden valitsemalla ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'', kun olet valmis.</translation>
 <translation id="5823658491130719298">Kun olet tietokoneella, jota haluat käyttää etänä, avaa Chrome ja siirry osoitteeseen <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Näyttöasetukset</translation>
 <translation id="6033507038939587647">Näppäimistöasetukset</translation>

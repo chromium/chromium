@@ -765,6 +765,7 @@
 <translation id="3566021033012934673">သင်၏ ချိတ်ဆက်မှုမှာ ကိုယ်ပိုင် မဟုတ်ပါ</translation>
 <translation id="3567778190852720481">လုပ်ငန်းသုံး အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (လုပ်ငန်းသုံး အကောင့်က အကျုံးမဝင်ပါ)။</translation>
 <translation id="3574305903863751447"><ph name="CITY" />၊ <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုရန်</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> ပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
 <translation id="3581089476000296252">ဤစာမျက်နှာ အဆင်သင့်ဖြစ်သည့်အခါ Chrome သည် သင့်အားအသိပေးပါမည်။ &lt;a&gt;မလုပ်တော့&lt;/a&gt;</translation>
 <translation id="3582930987043644930">အမည်ပေါင်းထည့်</translation>
@@ -2191,6 +2192,7 @@
 <translation id="8368476060205742148">Google Play ဝန်ဆောင်မှုများ</translation>
 <translation id="8371889962595521444">စိတ်ကြိုက် ပင်မအသိအမှတ်ပြုလက်မှတ်များ</translation>
 <translation id="8374636051559112948">ကွဲပြားသည်</translation>
+<translation id="8380167699614421159">ဤဝဘ်ဆိုက်က စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများကို ပြသည်</translation>
 <translation id="8380941800586852976">အန္တရာယ်ရှိသော</translation>
 <translation id="8381674639488873545">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။ <ph name="BEGIN_LINK" />မည်သို့ပင်ဖြစ်စေ ပြရန်<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> မှ <ph name="VM_NAME" /> သို့ မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>

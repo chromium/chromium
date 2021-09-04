@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Giao thức truyền tải siêu văn bản (HTTPS)</translation>
 <translation id="1059944192885972544">Đã tìm thấy <ph name="NUM" /> thẻ cho "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Xác định tần suất cập nhật màn hình</translation>
+<translation id="1061130374843955397">Chào mừng bạn đến với <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Sắp đến giờ nghỉ giải lao</translation>
 <translation id="1066613507389053689">Cần có bản cập nhật Chrome OS</translation>
 <translation id="1067048845568873861">Đã tạo</translation>
@@ -2844,6 +2845,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3943582379552582368">&amp;Quay lại</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3945513714196326460">Hãy thử nhập một tên ngắn hơn</translation>
+<translation id="3948027458879361203">Thay đổi tên máy chủ</translation>
 <translation id="3948116654032448504">&amp;Tìm kiếm hình ảnh trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> có thể chỉnh sửa tệp trong các thư mục sau đây</translation>
 <translation id="394984172568887996">Đã nhập từ IE</translation>
@@ -6808,6 +6810,7 @@ Nhấn một công tắc đã gán để xóa</translation>
     <ph name="BEGIN_PARAGRAPH4" />Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung cho con bạn, thì dữ liệu này có thể được lưu vào Tài khoản Google của con. Bạn có thể tìm hiểu thêm về các tùy chọn cài đặt này cùng cách điều chỉnh tại families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Chứng chỉ ứng dụng khách không hợp lệ</translation>
 <translation id="827097179112817503">Hiển thị nút trang chủ</translation>
+<translation id="8271268254812352141">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản. Tùy chỉnh ngôn ngữ dịch trong <ph name="LINK_BEGIN" />Ngôn ngữ cho trang web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Cha mẹ chỉ cần thực hiện một vài bước nữa là xong. Bạn có thể đưa <ph name="DEVICE_TYPE" /> lại cho trẻ sau khi thiết lập tài khoản.</translation>
 <translation id="8272443605911821513">Quản lý tiện ích của bạn bằng cách nhấp vào Tiện ích trong menu "Công cụ khác".</translation>
 <translation id="8274332263553132018">Truyền tệp</translation>

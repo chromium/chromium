@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">Вкладок, найденных по запросу "<ph name="SEARCH_TEXT" />": <ph name="NUM" /></translation>
 <translation id="1060292118287751956">Определяет частоту, с которой обновляется экран</translation>
+<translation id="1061130374843955397">Добро пожаловать в мир <ph name="DEVICE_TYPE" />!</translation>
 <translation id="1061904396131502319">Скоро перерыв</translation>
 <translation id="1066613507389053689">Обновите Chrome OS</translation>
 <translation id="1067048845568873861">Создано</translation>
@@ -2830,6 +2831,7 @@
 <translation id="3943582379552582368">&amp;Назад</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="3945513714196326460">Сократите название.</translation>
+<translation id="3948027458879361203">Изменить имя хоста</translation>
 <translation id="3948116654032448504">&amp;Найти картинку (<ph name="SEARCH_ENGINE" />)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> может изменять файлы в указанных ниже папках.</translation>
 <translation id="394984172568887996">Импортированные из IE</translation>
@@ -6792,6 +6794,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Если включена запись дополнительной истории приложений и веб-поиска, информация будет сохраняться в аккаунте вашего ребенка. Узнать больше об этих настройках можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Недействительный сертификат клиента.</translation>
 <translation id="827097179112817503">Показывать кнопку "Главная страница"</translation>
+<translation id="8271268254812352141">Получайте определения слов, перевод или значение в других единицах измерения: просто нажмите на текст правой кнопкой мыши или коснитесь его и удерживайте. Вы можете настроить языки перевода на <ph name="LINK_BEGIN" />этой странице<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Следующие действия должны выполнить родители. После настройки вы можете передать устройство <ph name="DEVICE_TYPE" /> обратно ребенку.</translation>
 <translation id="8272443605911821513">Управляйте расширениями в соответствующем разделе в меню дополнительных инструментов.</translation>
 <translation id="8274332263553132018">Файл для трансляции</translation>

@@ -109,6 +109,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="5750083143895808682">Bejelentkezve mint <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Újrakapcsolódás</translation>
 <translation id="5810269635982033450">A képernyő érintőpadként viselkedik</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hozzáférési engedélyt kért az Ön képernyője megtekintésére illetve az egér és a billentyűzet vezérlésére. Nyomja meg a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” gombot, ha nem várta ezt a kérelmet. A „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” megnyomásával engedélyezheti a kapcsolatot, ha erre készen áll.</translation>
 <translation id="5823658491130719298">Nyissa meg a Chrome böngészőt azon a számítógépen, amelyhez távolról hozzá szeretne férni, majd látogasson el a következő oldalra: <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Megjelenítési beállítások</translation>
 <translation id="6033507038939587647">A billentyűzet beállításai</translation>

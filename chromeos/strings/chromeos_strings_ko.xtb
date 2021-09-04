@@ -7,6 +7,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
+<translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">이 <ph name="DEVICE_TYPE" /> 기기는 <ph name="MANAGER" />에서 관리합니다.</translation>
@@ -223,6 +224,7 @@
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
 마이크를 탭하여 무엇이든지 물어보세요.</translation>
+<translation id="5212593641110061691">타블로이드</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5252456968953390977">로밍</translation>
@@ -282,6 +284,7 @@
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">배터리 용량은 사용함에 따라 감소함</translation>
 <translation id="6191293864534840972">네임서버 형식이 잘못되었습니다.</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>

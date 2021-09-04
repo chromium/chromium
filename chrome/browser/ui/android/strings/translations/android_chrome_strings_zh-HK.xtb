@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1810845389119482123">未完成初始同步處理設定</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
-<translation id="1830550083491357902">未登入</translation>
 <translation id="1843805151597803366">如要獲得更佳的翻譯，請允許「Google 搜尋」使用目前的網頁</translation>
 <translation id="1856325424225101786">要重設精簡模式嗎？</translation>
 <translation id="1868024384445905608">Chrome 現在的檔案下載速度更快了</translation>
@@ -486,7 +485,6 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3988213473815854515">位置已獲允許</translation>
 <translation id="3988466920954086464">您可以在此面板查看即時搜尋結果</translation>
 <translation id="4000212216660919741">離線首頁</translation>
-<translation id="4001236013802615636">讓 Google 同時考慮部分網頁的文字</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4045764304651014138">使用情況資料</translation>

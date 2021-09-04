@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Hüperteksti edastusprotokoll (HTTPS)</translation>
 <translation id="1059944192885972544">Päringule „<ph name="SEARCH_TEXT" />” leiti <ph name="NUM" /> vahelehte</translation>
 <translation id="1060292118287751956">Määrab ekraanikuva värskendamissageduse</translation>
+<translation id="1061130374843955397">Tere tulemast seadmesse <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">Pausiaeg on peagi käes</translation>
 <translation id="1066613507389053689">Chrome OS-i värskendus on nõutav</translation>
 <translation id="1067048845568873861">Loodud</translation>
@@ -2835,6 +2836,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3943582379552582368">&amp;Tagasi</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3945513714196326460">Proovige lühemat nime</translation>
+<translation id="3948027458879361203">Hosti nime muutmine</translation>
 <translation id="3948116654032448504">&amp;Otsi teenusest <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> saab muuta järgmistes kaustades olevaid faile</translation>
 <translation id="394984172568887996">Imporditud IE'st</translation>
@@ -6798,6 +6800,7 @@ Määratud lüliti eemaldamiseks vajutage seda lülitit</translation>
     <ph name="BEGIN_PARAGRAPH4" />Kui täiendavad veebi- ja rakendustegevused on teie lapse puhul sisse lülitatud, võidakse see teave salvestada tema Google'i kontole. Aadressilt families.google.com leiate seadete ja nende kohandamise kohta lisateavet.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Kliendi kehtetu sertifikaat</translation>
 <translation id="827097179112817503">Kuva nupp Avaleht</translation>
+<translation id="8271268254812352141">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi. Kohandage tõlgitavaid keeli jaotises <ph name="LINK_BEGIN" />Veebisaidi keeled<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Vanemad, järgmised toimingud on mõeldud teile. Pärast konto seadistamist saate seadme <ph name="DEVICE_TYPE" /> lapsele tagasi anda.</translation>
 <translation id="8272443605911821513">Hallake oma laiendusi, klõpsates menüüs „Rohkem tööriistu” valikul Laiendused.</translation>
 <translation id="8274332263553132018">Faili ülekandmine</translation>

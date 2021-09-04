@@ -120,7 +120,6 @@
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1810845389119482123">No se completó la configuración de la sincronización inicial</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
-<translation id="1830550083491357902">No has accedido.</translation>
 <translation id="1843805151597803366">Para obtener mejores traducciones, permite que la Búsqueda de Google use la página actual</translation>
 <translation id="1856325424225101786">¿Quieres restablecer el modo lite?</translation>
 <translation id="1868024384445905608">Ahora Chrome descarga los archivos más rápido</translation>
@@ -216,6 +215,7 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2369533728426058518">pestañas abiertas</translation>
 <translation id="2386938421315164605">Oculta y muestra temas.</translation>
 <translation id="2387895666653383613">Ajuste de texto</translation>
+<translation id="2390510615457643724">¿Quieres descargar <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> de nuevo?</translation>
 <translation id="2394602618534698961">Los archivos que descargues aparecerán aquí</translation>
 <translation id="2407481962792080328">Esta función se activa cuando accedes a tu Cuenta de Google</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
@@ -376,6 +376,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3295530008794733555">Navega más rápido; usa menos datos</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
 <translation id="3303414029551471755">¿Deseas descargar el contenido?</translation>
+<translation id="3332570638882314953">Obtén información más relevante</translation>
 <translation id="3334729583274622784">¿Quieres cambiar la extensión del archivo?</translation>
 <translation id="3341058695485821946">Consulta cuántos datos redujiste</translation>
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
@@ -453,6 +454,7 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas borradas</translation>
+<translation id="3819183753496523827">No tienes conexión. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="3845098929839618392">Abrir en pestaña de incógnito</translation>
 <translation id="3856096718352044181">Verifica que sea un proveedor válido o vuelve a intentarlo más tarde</translation>
 <translation id="3858860766373142691">Nombre</translation>
@@ -483,7 +485,6 @@ Privacy Sandbox sigue en desarrollo y está disponible en ciertas regiones. Por
 <translation id="3988213473815854515">Se admite la ubicación.</translation>
 <translation id="3988466920954086464">Los resultados de la búsqueda instantánea se muestran en este panel</translation>
 <translation id="4000212216660919741">Página principal sin conexión</translation>
-<translation id="4001236013802615636">Permite que Google también considere parte del texto de la página.</translation>
 <translation id="4016425174436051808">No se puede seguir. Se produjo un error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Datos de uso</translation>
@@ -707,6 +708,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="543338862236136125">Editar la contraseña</translation>
 <translation id="5433691172869980887">Se copió el nombre de usuario</translation>
 <translation id="543509235395288790">Descargando <ph name="COUNT" /> archivos (<ph name="MEGABYTES" />)</translation>
+<translation id="5438292632479953702">Volver a descargar</translation>
 <translation id="5441466871879044658">Traducir a este idioma</translation>
 <translation id="5441522332038954058">Ir a la barra de direcciones</translation>
 <translation id="544776284582297024">Para abrir pestañas y visitar diferentes páginas al mismo tiempo, presiona el botón de pestañas abiertas</translation>
@@ -806,6 +808,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5964805880140440652">Para compartir esta página con otro dispositivo, activa la sincronización en la configuración de Chrome</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
+<translation id="5995726099713306770">¿Quieres descargar la página de nuevo?</translation>
 <translation id="6000066717592683814">Seguir usando Google</translation>
 <translation id="6000203700195075278">Volver a seguir</translation>
 <translation id="6005538289190791541">Contraseña sugerida</translation>
@@ -942,6 +945,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">Se agotó el temporizador de <ph name="FQDN" />. Volverá a empezar mañana.</translation>
+<translation id="6715020873764921614">¿Quieres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todos modos?</translation>
 <translation id="6738516213925468394">Tus datos se encriptaron con la <ph name="BEGIN_LINK" />frase de contraseña de sincronización<ph name="END_LINK" /> el <ph name="TIME" />. Ingresa la frase para iniciar la sincronización.</translation>
 <translation id="6738867403308150051">Descargando…</translation>
 <translation id="6751521182688001123">Abre rápidamente una nueva pestaña. Para editar este atajo, mantenlo presionado.</translation>
@@ -966,6 +970,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6882836635272038266">Protección estándar contra descargas, extensiones y sitios web identificados como peligrosos.</translation>
 <translation id="6883204995689174413">Compartir</translation>
 <translation id="688738109438487280">Agrega los datos existentes a <ph name="TO_ACCOUNT" />.</translation>
+<translation id="6889847736310813892">Si quieres obtener más resultados para las palabras que destacas, permite que Google tenga en cuenta parte del texto de la página. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> cuando quieras.</translation>
 <translation id="6891726759199484455">Desbloquea la pantalla para copiar tu contraseña</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>

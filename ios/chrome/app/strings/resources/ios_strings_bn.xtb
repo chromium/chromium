@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন।</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
+<translation id="2080769225927880590">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="209018056901015185">ডেস্কটপ সাইট অনুরোধ করুন</translation>
 <translation id="2103075008456228677">history.google.com খুলুন</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি আইটেম সরানো হয়েছে</translation>
@@ -468,6 +469,8 @@
 <translation id="5737974891429562743">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণ পুরনো হয়ে গেছে। সিঙ্ক শুরু করার জন্য আপডেট করুন।</translation>
 <translation id="5738887413654608789">এই আদেশটি আপনার পারিপার্শ্বিক পরিবেশের উপর নির্ভর করে ওয়েব পৃষ্ঠার খোঁজ করতে দেয়।</translation>
 <translation id="5758631781033351321">আপনি নিজের পড়ার তালিকা এখানে খুঁজে পাবেন</translation>
+<translation id="575902488528307720">ছবি সার্চ করুন</translation>
+<translation id="5781453543752460388">Photos-এ যোগ করুন</translation>
 <translation id="5782227691023083829">অনুবাদ হচ্ছে...</translation>
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5812974770859303494">এতে যোগ করুন...</translation>
@@ -505,6 +508,7 @@
 <translation id="6042308850641462728">আরও</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপনার খবর ও গতিবিধি এখানে নিয়ন্ত্রণ করুন</translation>
+<translation id="6064824697233747382">আপনার সংস্থার প্রয়োজনে আপনার সিঙ্ক প্রসেস বন্ধ করা হয়েছে।</translation>
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
 <translation id="60829778314739003">সম্মতি দিন এবং কাজ চালিয়ে যান</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
@@ -738,6 +742,7 @@
 <translation id="8205564605687841303">বাতিল করুন</translation>
 <translation id="8206354486702514201">এই সেটিংটি আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে৷</translation>
 <translation id="8225985093977202398">ক্যাশ করা ছবি এবং ফাইল</translation>
+<translation id="8228176677386827255">আপনার ডিভাইস ম্যানেজ করা আছে। শুধুমাত্র আপনার সংস্থার অ্যাকাউন্ট ব্যবহার করে আপনি সাইন-ইন করতে পারবেন।</translation>
 <translation id="8261506727792406068">মুছুন</translation>
 <translation id="8271720166617117963">অ্যাক্সেপ্ট করে সাইন-ইন করুন</translation>
 <translation id="8281781826761538115">ডিফল্ট - <ph name="DEFAULT_LOCALE" /></translation>
