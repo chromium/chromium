@@ -1461,7 +1461,7 @@ void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) {
 
 // TODO(nektar): Turn off kHTMLAccessibilityMode for automation and Mac
 // and remove ifdef.
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   if (node_data->role == ax::mojom::blink::Role::kMath &&
       element->innerHTML().length()) {
     TruncateAndAddStringAttribute(node_data,
