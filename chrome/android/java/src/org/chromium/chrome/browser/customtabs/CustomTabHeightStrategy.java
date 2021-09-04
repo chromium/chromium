@@ -29,4 +29,11 @@ public class CustomTabHeightStrategy {
                 multiWindowModeStateDispatcher,
                 size -> connection.onResized(session, size), lifecycleDispatcher);
     }
+
+    /**
+     * Returns false if we didn't change the Window background color, true otherwise.
+     */
+    public boolean changeBackgroundColorForResizing() {
+        return false;
+    }
 }
