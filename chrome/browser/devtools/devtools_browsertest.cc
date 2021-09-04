@@ -102,6 +102,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -647,6 +648,78 @@ class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
         extensions::switches::kEnableExperimentalExtensionApis);
   }
 };
+
+class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    Profile* profile = browser()->profile();
+    extension_service_ =
+        extensions::ExtensionSystem::Get(profile)->extension_service();
+    extension_registry_ = extensions::ExtensionRegistry::Get(profile);
+  }
+
+  const extensions::Extension* LoadExtension(base::FilePath extension_path) {
+    extensions::TestExtensionRegistryObserver observer(extension_registry_);
+    ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED", false);
+    extensions::UnpackedInstaller::Create(extension_service_)
+        ->Load(extension_path);
+    observer.WaitForExtensionLoaded();
+    const extensions::Extension* extension = nullptr;
+    for (const auto& enabled_extension :
+         extension_registry_->enabled_extensions()) {
+      if (enabled_extension->path() == extension_path) {
+        extension = enabled_extension.get();
+        break;
+      }
+    }
+    CHECK(extension) << "Failed to find loaded extension " << extension_path;
+    EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
+    return extension;
+  }
+
+  scoped_refptr<DevToolsAgentHost> FindExtensionHost(const std::string& id) {
+    for (auto& host : DevToolsAgentHost::GetOrCreateAll()) {
+      if (host->GetType() == DevToolsAgentHost::kTypeServiceWorker &&
+          host->GetURL().host() == id) {
+        return host;
+      }
+    }
+    return nullptr;
+  }
+
+  void OpenDevToolsWindow(scoped_refptr<DevToolsAgentHost> host) {
+    Profile* profile = browser()->profile();
+    window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(profile, host);
+  }
+
+  void CloseDevToolsWindow() {
+    DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
+  }
+
+  DevToolsWindow* window_ = nullptr;
+  extensions::ExtensionService* extension_service_ = nullptr;
+  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsServiceWorkerExtensionTest, AttachOnReload) {
+  base::FilePath extension_path =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions")
+          .AppendASCII("service_worker");
+  std::string extension_id;
+  {
+    const extensions::Extension* extension = LoadExtension(extension_path);
+    extension_id = extension->id();
+  }
+  scoped_refptr<DevToolsAgentHost> host = FindExtensionHost(extension_id);
+  ASSERT_TRUE(host);
+  OpenDevToolsWindow(host);
+  extension_service_->ReloadExtension(extension_id);
+  RunTestFunction(window_, "waitForTestResultsInConsole");
+  CloseDevToolsWindow();
+}
 
 class WorkerDevToolsTest : public InProcessBrowserTest {
  public:
