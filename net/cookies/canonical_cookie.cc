@@ -617,8 +617,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     // invalid, it will add an ExclusionReason to `status`.
     ParsedCookie::IsValidCookieNameValuePair(name, value, status);
 
-  } else if (!ParsedCookie::IsValidCookieAttributeValue(name) ||
-             !ParsedCookie::IsValidCookieAttributeValue(value) ||
+  } else if (!ParsedCookie::IsValidCookieAttributeValueLegacy(name) ||
+             !ParsedCookie::IsValidCookieAttributeValueLegacy(value) ||
              (name.empty() && value.empty())) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
@@ -1335,8 +1335,8 @@ bool CanonicalCookie::IsCanonical() const {
       return false;
     }
   } else {
-    if (!ParsedCookie::IsValidCookieAttributeValue(name_) ||
-        !ParsedCookie::IsValidCookieAttributeValue(value_)) {
+    if (!ParsedCookie::IsValidCookieAttributeValueLegacy(name_) ||
+        !ParsedCookie::IsValidCookieAttributeValueLegacy(value_)) {
       return false;
     }
   }

@@ -217,12 +217,19 @@ CookiePriority ParsedCookie::Priority() const {
 }
 
 bool ParsedCookie::SetName(const std::string& name) {
-  if (!name.empty() && !HttpUtil::IsToken(name))
-    return false;
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    const std::string& value = pairs_.empty() ? "" : pairs_[0].second;
+    if (!IsValidCookieNameValuePair(name, value)) {
+      return false;
+    }
+  } else {
+    if (!name.empty() && !HttpUtil::IsToken(name))
+      return false;
 
-  // Fail if we'd be creating a cookie with an empty name and value.
-  if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
-    return false;
+    // Fail if we'd be creating a cookie with an empty name and value.
+    if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
+      return false;
+  }
 
   if (pairs_.empty())
     pairs_.push_back(std::make_pair("", ""));
@@ -231,12 +238,19 @@ bool ParsedCookie::SetName(const std::string& name) {
 }
 
 bool ParsedCookie::SetValue(const std::string& value) {
-  if (!IsValidCookieValueLegacy(value))
-    return false;
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    const std::string& name = pairs_.empty() ? "" : pairs_[0].first;
+    if (!IsValidCookieNameValuePair(name, value)) {
+      return false;
+    }
+  } else {
+    if (!IsValidCookieValueLegacy(value))
+      return false;
 
-  // Fail if we'd be creating a cookie with an empty name and value.
-  if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
-    return false;
+    // Fail if we'd be creating a cookie with an empty name and value.
+    if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
+      return false;
+  }
 
   if (pairs_.empty())
     pairs_.push_back(std::make_pair("", ""));
@@ -459,7 +473,7 @@ bool ParsedCookie::IsValidCookieValue(const std::string& value) {
 }
 
 // static
-bool ParsedCookie::IsValidCookieAttributeValue(const std::string& value) {
+bool ParsedCookie::IsValidCookieAttributeValueLegacy(const std::string& value) {
   // This legacy method only checks the character set, so use
   // CookieAttributeValueHasValidCharSet()
   return CookieAttributeValueHasValidCharSet(value);
@@ -521,6 +535,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
   }
   return true;
 }
+
 // Parse all token/value pairs and populate pairs_.
 void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
                                         CookieInclusionStatus& status_out) {
@@ -646,8 +661,8 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 
       // Ignore Set-Cookie directives containing control characters. See
       // http://crbug.com/238041.
-      if (!IsValidCookieAttributeValue(pair.first) ||
-          !IsValidCookieAttributeValue(pair.second)) {
+      if (!IsValidCookieAttributeValueLegacy(pair.first) ||
+          !IsValidCookieAttributeValueLegacy(pair.second)) {
         // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
         status_out.AddExclusionReason(
             CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
@@ -724,12 +739,26 @@ bool ParsedCookie::SetString(size_t* index,
   // produce a cookie with "path" attribute equal to "baz" (no spaces). We
   // should not produce cookie lines that parse to different key/value pairs!
 
-  // Inputs containing invalid characters should be ignored.
-  if (!IsValidCookieAttributeValue(untrusted_value))
-    return false;
+  // Inputs containing invalid characters or attribute value strings that are
+  // too large should be ignored. Note that we check the attribute value size
+  // after removing leading and trailing whitespace.
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    if (!CookieAttributeValueHasValidCharSet(untrusted_value))
+      return false;
+
+  } else {
+    if (!IsValidCookieAttributeValueLegacy(untrusted_value))
+      return false;
+  }
 
   // Use the same whitespace trimming code as the constructor.
   const std::string parsed_value = ParseValueString(untrusted_value);
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    if (!CookieAttributeValueHasValidSize(parsed_value))
+      return false;
+  }
+
   if (parsed_value.empty()) {
     ClearAttributePair(*index);
     return true;
