@@ -21,6 +21,9 @@ class DefinitionResultParser : public ResultParser {
   bool Parse(const base::Value* result, QuickAnswer* quick_answer) override;
 
  private:
+  const base::Value* ExtractFirstSenseFamily(
+      const base::Value* definition_entry);
+  const base::Value* ExtractFirstPhonetics(const base::Value* definition_entry);
   const std::string* ExtractDefinition(const base::Value* definition_entry);
   const std::string* ExtractPhoneticsText(const base::Value* definition_entry);
   GURL ExtractPhoneticsAudio(const base::Value* definition_entry);
