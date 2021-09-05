@@ -65,10 +65,12 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
 bool DesktopBrowserFrameAuraLinux::UseCustomFrame() const {
 #if defined(USE_OZONE) && \
     !(BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  // If the platform suggests using the custom frame, likely it lacks native
-  // decorations.  In such an event, return true and ignore the user preference.
+  // If the platform does not support server side decorations, ignore the user
+  // preference and return true.
   if (features::IsUsingOzonePlatform() &&
-      ui::OzonePlatform::GetInstance()->ShouldUseCustomFrame()) {
+      !ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_server_side_window_decorations) {
     return true;
   }
 #endif

@@ -300,10 +300,19 @@ class OzonePlatformWayland : public OzonePlatform {
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    using SupportsSsdForTest =
+        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+    const auto& override_supports_ssd_for_test = OzonePlatform::
+        PlatformRuntimeProperties::override_supports_ssd_for_test;
+
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
       properties.supports_server_side_window_decorations =
-          (connection_->xdg_decoration_manager_v1() != nullptr);
+          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet
+              ? (connection_->xdg_decoration_manager_v1() != nullptr)
+              : (override_supports_ssd_for_test == SupportsSsdForTest::kNo
+                     ? false
+                     : true);
       properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
     }

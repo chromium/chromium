@@ -158,12 +158,26 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
   // Groups platform properties that can only be known at run time.
   struct PlatformRuntimeProperties {
+    // Values to override the value of the
+    // supports_server_side_window_decorations property in tests.
+    enum class SupportsSsdForTest {
+      kNotSet,  // The property is not overridden.
+      kYes,     // The platform should return true.
+      kNo,      // The plafrorm should return false.
+    };
+
     // Whether the underlying platform supports deferring compositing of buffers
     // via overlays. If overlays are not supported the promotion and validation
     // logic can be skipped.
     bool supports_overlays = false;
     // Indicates whether the platform supports server-side window decorations.
     bool supports_server_side_window_decorations = true;
+
+    // For platforms that have optional support for server-side decorations,
+    // this parameter allows setting the desired state in tests.  The platform
+    // must have the appropriate logic in its GetPlatformRuntimeProperties()
+    // method.
+    static SupportsSsdForTest override_supports_ssd_for_test;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

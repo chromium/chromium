@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura.h"
 
+#include "base/gtest_prod_util.h"
 #include "components/prefs/pref_member.h"
 
 class BrowserDesktopWindowTreeHostLinux;
@@ -34,6 +35,8 @@ class DesktopBrowserFrameAuraLinux : public DesktopBrowserFrameAura {
   void TabDraggingKindChanged(TabDragKind tab_drag_kind) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame);
+
   // Called when the preference changes.
   void OnUseCustomChromeFrameChanged();
 

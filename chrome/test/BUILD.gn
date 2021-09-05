@@ -2145,6 +2145,10 @@ if (!is_android && !is_fuchsia) {
       ]
     }
 
+    if (is_linux) {
+      sources += [ "../browser/ui/views/frame/desktop_browser_frame_aura_linux_browsertest.cc" ]
+    }
+
     if (is_linux || is_chromeos) {
       sources += [
         "../browser/error_reporting/webui_js_error_reporting_browsertest.cc",

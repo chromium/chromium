@@ -40,6 +40,10 @@ void EnsureInstance() {
 
 }  // namespace
 
+OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest
+    OzonePlatform::PlatformRuntimeProperties::override_supports_ssd_for_test =
+        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest::kNotSet;
+
 OzonePlatform::PlatformProperties::PlatformProperties() = default;
 OzonePlatform::PlatformProperties::~PlatformProperties() = default;
 
