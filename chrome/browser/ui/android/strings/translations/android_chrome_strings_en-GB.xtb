@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1910950723001426294">List of sharing options is closed.</translation>
 <translation id="1918175104945982129">Assistant voice search consent UI opened at half height</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1922362554271624559">Suggested languages</translation>
@@ -193,6 +194,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
+<translation id="228704530595896923">List of sharing options.</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="230155349749732438">To use this setting <ph name="BEGIN_LINK" />Make searches and browsing better<ph name="END_LINK" /> must be turned on</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="4141536112466364990">Learn Chrome</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
+<translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> used</translation>
@@ -846,6 +849,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
+<translation id="6212786426849242805">Let Google also consider some of the page’s text</translation>
 <translation id="6221633008163990886">Unlock to export your passwords</translation>
 <translation id="6232535412751077445">Enabling ‘Do Not Track’ means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request and how the request is interpreted.
 
@@ -895,6 +899,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6459045781120991510">Surveys</translation>
 <translation id="6461962085415701688">Can’t open file</translation>
 <translation id="6464977750820128603">You can see sites that you visit in Chrome and set timers for them.\n\nGoogle gets info about the sites for which you set timers and how long you visit them. This info is used to make Digital Wellbeing better.</translation>
+<translation id="6473086018775716761">List of sharing options opened at half height.</translation>
 <translation id="6475951671322991020">Download video</translation>
 <translation id="6477928892249167417">These sites seem important to you:</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> download failed due to lack of storage space.</translation>
@@ -1131,6 +1136,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7857691613771368249">Ask when to save files</translation>
 <translation id="7859988229622350291">Never translate</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> needs Nearby devices permission in order to connect to your device</translation>
 <translation id="7875915731392087153">Create email</translation>
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> unread page}other{You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> unread pages}}</translation>
@@ -1192,6 +1198,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 day left</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8209050860603202033">Open image</translation>
 <translation id="8216351761227087153">Watch</translation>
@@ -1210,6 +1217,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="829672787777123339">Connecting to your device…</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
+<translation id="8319544457245040955">Learn about a topic without leaving the page. Select one or more words on the page to search for them. To edit your search, look at the results and open them in a new tab.</translation>
 <translation id="8327155640814342956">For the best browsing experience, open to update Chrome</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8349013245300336738">Sort by amount of data used</translation>
