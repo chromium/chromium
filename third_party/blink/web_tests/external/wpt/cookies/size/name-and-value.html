@@ -65,6 +65,11 @@
         expected: "",
         name: "Ignore name-less cookie (without leading =) with value larger than 4096 bytes",
       },
+      {
+        cookie: cookieStringWithNameAndValueLengths(2048, 2048) + '; Max-Age:43110;',
+        expected: cookieStringWithNameAndValueLengths(2048, 2048),
+        name: "Set max-size cookie that also has an attribute",
+      },
     ];
 
     for (const test of nameAndValueSizeTests) {
