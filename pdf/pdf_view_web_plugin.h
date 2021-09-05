@@ -234,6 +234,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
 
   // PdfAccessibilityActionHandler:
+  void EnableAccessibility() override;
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
 
@@ -300,6 +301,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // TODO(crbug.com/1217012): Re-evaluate the need for a callback when parts of
   // the plugin are moved off the main thread.
   void OnInvokePrintDialog(int32_t /*result*/);
+
+  // Callback to set the viewport information in accessibility tree
+  // asynchronously.
+  void OnSetAccessibilityViewportInfo(
+      const AccessibilityViewportInfo& viewport_info);
 
   // May be null in unit tests.
   pdf::mojom::PdfService* GetPdfService();

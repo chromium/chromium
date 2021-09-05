@@ -89,6 +89,7 @@ class TestPdfAccessibilityActionHandler
   ~TestPdfAccessibilityActionHandler() override = default;
 
   // chrome_pdf::PdfAccessibilityActionHandler:
+  void EnableAccessibility() override {}
   void HandleAccessibilityAction(
       const chrome_pdf::AccessibilityActionData& action_data) override {
     received_action_data_ = action_data;

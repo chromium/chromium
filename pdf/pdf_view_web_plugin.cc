@@ -716,6 +716,10 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
     InvalidatePluginContainer();
 }
 
+void PdfViewWebPlugin::EnableAccessibility() {
+  PdfViewPluginBase::EnableAccessibility();
+}
+
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {
   PdfViewPluginBase::HandleAccessibilityAction(action_data);
@@ -785,9 +789,12 @@ void PdfViewWebPlugin::SetAccessibilityPageInfo(
 
 void PdfViewWebPlugin::SetAccessibilityViewportInfo(
     const AccessibilityViewportInfo& viewport_info) {
-  if (!pdf_accessibility_data_handler_)
-    return;
-  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
+  // The accessibility tree cannot be updated within the scope of
+  // `UpdateGeometry`.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PdfViewWebPlugin::OnSetAccessibilityViewportInfo,
+                     weak_factory_.GetWeakPtr(), viewport_info));
 }
 
 void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
@@ -930,6 +937,13 @@ bool PdfViewWebPlugin::Redo() {
 
 void PdfViewWebPlugin::OnInvokePrintDialog(int32_t /*result*/) {
   client_->Print(Container()->GetElement());
+}
+
+void PdfViewWebPlugin::OnSetAccessibilityViewportInfo(
+    const AccessibilityViewportInfo& viewport_info) {
+  if (!pdf_accessibility_data_handler_)
+    return;
+  pdf_accessibility_data_handler_->SetAccessibilityViewportInfo(viewport_info);
 }
 
 pdf::mojom::PdfService* PdfViewWebPlugin::GetPdfService() {

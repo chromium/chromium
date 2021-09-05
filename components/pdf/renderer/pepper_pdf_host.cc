@@ -498,6 +498,10 @@ void PepperPDFHost::SetSelectionBounds(const gfx::PointF& base,
     instance->SetSelectionBounds(base, extent);
 }
 
+void PepperPDFHost::EnableAccessibility() {
+  // `PepperPluginInstanceImpl` notifies the PDF plugin of accessibility change.
+}
+
 namespace {
 
 PP_PdfPageCharacterIndex ToPdfPageCharacterIndex(

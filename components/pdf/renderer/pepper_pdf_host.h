@@ -92,6 +92,7 @@ class PepperPDFHost : public ppapi::host::ResourceHost,
                           const gfx::PointF& extent) override;
 
   // chrome_pdf::PdfAccessibilityActionHandler:
+  void EnableAccessibility() override;
   void HandleAccessibilityAction(
       const chrome_pdf::AccessibilityActionData& action_data) override;
 

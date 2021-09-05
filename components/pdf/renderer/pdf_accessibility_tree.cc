@@ -1135,6 +1135,7 @@ PdfAccessibilityTree::PdfAccessibilityTree(
     : content::RenderFrameObserver(render_frame),
       action_handler_(action_handler) {
   DCHECK(action_handler_);
+  MaybeHandleAccessibilityChange();
 }
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
@@ -1601,6 +1602,11 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
   return std::make_unique<PdfAXActionTarget>(target_node, this);
 }
 
+void PdfAccessibilityTree::AccessibilityModeChanged(
+    const ui::AXMode& /*mode*/) {
+  MaybeHandleAccessibilityChange();
+}
+
 void PdfAccessibilityTree::OnDestruct() {}
 
 bool PdfAccessibilityTree::ShowContextMenu() {
@@ -1625,6 +1631,11 @@ PdfAccessibilityTree::GetPdfAnnotationInfoFromAXNode(int32_t ax_node_id) const {
     return absl::nullopt;
 
   return AnnotationInfo(iter->second.page_index, iter->second.annotation_index);
+}
+
+void PdfAccessibilityTree::MaybeHandleAccessibilityChange() {
+  if (GetRenderAccessibility())
+    action_handler_->EnableAccessibility();
 }
 
 }  // namespace pdf
