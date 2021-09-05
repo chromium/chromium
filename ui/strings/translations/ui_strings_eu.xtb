@@ -248,7 +248,7 @@
 <translation id="8458811141851741261">{YEARS,plural, =1{1 urte}other{# urte}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> fitxategia (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8649597172973390955">Apala beti dago ikusgai</translation>
-<translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
+<translation id="8677655579646609597"><ph name="QUANTITY" /> kB/s</translation>
 <translation id="8685326675965865247">Bilatu gailuan, aplikazioetan, ezarpenetan eta sarean. Aplikazio batetik bestera pasatzeko, erabili gezi-teklak.</translation>
 <translation id="8725488761726303204">eta beste <ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">Eginda</translation>
@@ -259,7 +259,7 @@
 <translation id="8841375032071747811">Atzera botoia</translation>
 <translation id="8867568208303837180">Bidaltzen…</translation>
 <translation id="8876215549894133151">Formatua:</translation>
-<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
 <translation id="8926951137623668982">Apala beti dago ezkutatuta</translation>
 <translation id="8996630695507351249">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailua Internetera konektatuta dagoela.</translation>
 <translation id="9002566407876343676">ireki</translation>
