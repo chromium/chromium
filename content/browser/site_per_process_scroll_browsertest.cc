@@ -455,8 +455,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessProgrammaticScrollTest,
       final_visual_viewport_oopif.Intersects(input_bounds_after_scroll_oopif));
 }
 
+// Failing on Android, see crbug.com/1246843
 // Flaky on Mac, see crbug.com/1156657
-#if defined(OS_MAC)
+#if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_ScrollClippedFocusedEditableElementIntoView \
   DISABLED_ScrollClippedFocusedEditableElementIntoView
 #else
