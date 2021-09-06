@@ -318,8 +318,9 @@ Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
 }
 
 // static
-bool HTMLScriptElement::supports(ExecutionContext* execution_context,
+bool HTMLScriptElement::supports(ScriptState* script_state,
                                  const AtomicString& type) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (type == script_type_names::kClassic)
     return true;
   if (type == script_type_names::kModule)
