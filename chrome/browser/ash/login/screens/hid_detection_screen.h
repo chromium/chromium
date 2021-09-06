@@ -116,21 +116,6 @@ class HIDDetectionScreen : public BaseScreen,
 
   bool ShouldEnableContinueButton();
 
-  // Types of dialog leaving scenarios for UMA metric.
-  enum ContinueScenarioType {
-    // Only pointing device detected, user pressed 'Continue'.
-    POINTING_DEVICE_ONLY_DETECTED,
-
-    // Only keyboard detected, user pressed 'Continue'.
-    KEYBOARD_DEVICE_ONLY_DETECTED,
-
-    // All devices detected.
-    All_DEVICES_DETECTED,
-
-    // Must be last enum element.
-    CONTINUE_SCENARIO_TYPE_SIZE
-  };
-
   void InitializeAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   void StartBTDiscoverySession();

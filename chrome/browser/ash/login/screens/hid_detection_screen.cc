@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_tick_clock.h"
@@ -111,17 +110,6 @@ void HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
 }
 
 void HIDDetectionScreen::OnContinueButtonClicked() {
-  ContinueScenarioType scenario_type;
-  if (!pointing_device_id_.empty() && !keyboard_device_id_.empty())
-    scenario_type = All_DEVICES_DETECTED;
-  else if (pointing_device_id_.empty())
-    scenario_type = KEYBOARD_DEVICE_ONLY_DETECTED;
-  else
-    scenario_type = POINTING_DEVICE_ONLY_DETECTED;
-
-  UMA_HISTOGRAM_ENUMERATION("HIDDetection.OOBEDevicesDetectedOnContinuePressed",
-                            scenario_type, CONTINUE_SCENARIO_TYPE_SIZE);
-
   CleanupOnExit();
   Exit(Result::NEXT);
 }
@@ -585,8 +573,6 @@ void HIDDetectionScreen::OnGetInputDevicesListForCheck(
   // Screen is not required if both devices are present.
   const bool all_devices_autodetected =
       !pointing_device_id.empty() && !keyboard_device_id.empty();
-  UMA_HISTOGRAM_BOOLEAN("HIDDetection.OOBEDialogShown",
-                        !all_devices_autodetected);
 
   std::move(on_check_done).Run(!all_devices_autodetected);
 }

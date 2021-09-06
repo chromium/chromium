@@ -7665,6 +7665,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="HIDDetection.OOBEDevicesDetectedOnContinuePressed"
     enum="HIDContinueScenarioType" expires_after="M94">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -7675,6 +7678,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="HIDDetection.OOBEDialogShown" units="units"
     expires_after="M94">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
