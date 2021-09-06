@@ -849,6 +849,10 @@ bool IsAXSetter(SEL selector) {
   return [self getName];
 }
 
+- (NSString*)AXDescription {
+  return [self AXTitle];
+}
+
 // Misc attributes.
 
 - (NSNumber*)AXSelected {
@@ -1026,7 +1030,7 @@ bool IsAXSetter(SEL selector) {
   // and accessibilityTitle is "the title of the accessibility element"; at
   // least in Chromium, the title usually is a short description of the element,
   // so it also functions as a label.
-  return [self AXTitle];
+  return [self AXDescription];
 }
 
 - (NSString*)accessibilityTitle {

@@ -1202,6 +1202,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return table;
 }
 
+- (NSString*)AXDescription {
+  return [self descriptionForAccessibility];
+}
+
 - (NSString*)descriptionForAccessibility {
   if (![self instanceActive])
     return nil;
