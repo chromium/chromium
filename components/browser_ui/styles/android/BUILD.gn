@@ -172,6 +172,8 @@ android_resources("java_resources") {
     "java/res/drawable/ic_videocam_24dp.xml",
     "java/res/drawable/ic_visibility_black.xml",
     "java/res/drawable/ic_visibility_off_black.xml",
+    "java/res/drawable/ic_volume_off_white_24dp.xml",
+    "java/res/drawable/ic_volume_on_white_24dp.xml",
     "java/res/drawable/ic_vpn_key_grey.xml",
     "java/res/drawable/ic_warning_red_16dp.xml",
     "java/res/drawable/ic_warning_red_24dp.xml",
