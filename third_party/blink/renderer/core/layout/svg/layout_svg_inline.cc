@@ -45,6 +45,12 @@ bool LayoutSVGInline::IsChildAllowed(LayoutObject* child,
     // Disallow direct descendant 'a'.
     if (child_node && IsA<SVGAElement>(*child_node))
       return false;
+    // https://svgwg.org/svg2-draft/linking.html#AElement
+    // any element or text allowed by its parent's content model, ...
+    if (Parent()) {
+      if (!Parent()->IsChildAllowed(child, style))
+        return false;
+    }
   }
 
   if (!child->IsSVGInline() && !child->IsSVGInlineText())
