@@ -2,23 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
-#define CHROME_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+#ifndef CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+#define CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
 
 #include <memory>
 #include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "url/gurl.h"
+
+namespace content {
 
 // A single tuple of (protocol, url, last_modified) that indicates how URLs
 // of the given protocol should be rewritten to be handled.
 // The |last_modified| field is used to correctly perform deletion
 // of protocol handlers based on time ranges.
-class ProtocolHandler {
+class CONTENT_EXPORT ProtocolHandler {
  public:
   static ProtocolHandler CreateProtocolHandler(
       const std::string& protocol,
@@ -83,7 +86,7 @@ class ProtocolHandler {
   std::u16string GetProtocolDisplayName() const;
 
   const std::string& protocol() const { return protocol_; }
-  const GURL& url() const { return url_;}
+  const GURL& url() const { return url_; }
   const absl::optional<std::string>& web_app_id() const { return web_app_id_; }
   const base::Time& last_modified() const { return last_modified_; }
 
@@ -95,7 +98,6 @@ class ProtocolHandler {
   // Returns a string representation suitable for use in debugging.
   std::string ToString() const;
 #endif
-
 
   bool operator==(const ProtocolHandler& other) const;
   bool operator<(const ProtocolHandler& other) const;
@@ -110,4 +112,6 @@ class ProtocolHandler {
   blink::ProtocolHandlerSecurityLevel security_level_;
 };
 
-#endif  // CHROME_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_
+}  // namespace content
+
+#endif  // CONTENT_PUBLIC_COMMON_CUSTOM_HANDLERS_PROTOCOL_HANDLER_H_

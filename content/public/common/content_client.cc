@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/common/origin_util.h"
@@ -125,5 +126,10 @@ media::MediaDrmBridgeClient* ContentClient::GetMediaDrmBridgeClient() {
 void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     mojo::BinderMap* binders) {}
+
+std::u16string ContentClient::GetLocalizedProtocolName(
+    const std::string& protocol) {
+  return base::UTF8ToUTF16(protocol);
+}
 
 }  // namespace content

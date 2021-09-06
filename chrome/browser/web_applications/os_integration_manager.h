@@ -45,6 +45,8 @@ using OsHooksErrors = std::bitset<OsHookType::kMaxValue + 1>;
 // deployments.
 using OsHooksOptions = std::bitset<OsHookType::kMaxValue + 1>;
 
+using content::ProtocolHandler;
+
 // Used to pass install options configured from upstream caller.
 // All options are disabled by default.
 struct InstallOsHooksOptions {

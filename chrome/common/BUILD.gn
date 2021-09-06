@@ -112,8 +112,6 @@ static_library("common") {
     "content_restriction.h",
     "crash_keys.cc",
     "crash_keys.h",
-    "custom_handlers/protocol_handler.cc",
-    "custom_handlers/protocol_handler.h",
     "google_url_loader_throttle.cc",
     "google_url_loader_throttle.h",
     "logging_chrome.cc",

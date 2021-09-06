@@ -7,8 +7,10 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "net/base/escape.h"
+
+using content::ProtocolHandler;
 
 namespace web_app {
 

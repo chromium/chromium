@@ -89,6 +89,7 @@ class ChromeContentClient : public content::ContentClient {
   std::u16string GetLocalizedString(int message_id) override;
   std::u16string GetLocalizedString(int message_id,
                                     const std::u16string& replacement) override;
+  std::u16string GetLocalizedProtocolName(const std::string& protocol) override;
   base::StringPiece GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;

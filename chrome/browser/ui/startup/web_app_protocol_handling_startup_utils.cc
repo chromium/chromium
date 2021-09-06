@@ -39,6 +39,8 @@
 
 namespace {
 
+using content::ProtocolHandler;
+
 // Tries to launch the web app when the `provider` is ready. `startup_callback`
 // will run if there is no web app registered for `profile` that can handle
 // `protocol_url`. If os_integration_manager finds a web app, then check if the

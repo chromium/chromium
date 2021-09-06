@@ -17,13 +17,15 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+using content::ProtocolHandler;
 
 // This is where handlers for protocols registered with
 // navigator.registerProtocolHandler() are registered. Each Profile owns an

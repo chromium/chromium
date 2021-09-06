@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/custom_handlers/protocol_handler.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 
 #include "base/json/values_util.h"
-#include "base/macros.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/grit/generated_resources.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/escape.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
-#include "ui/base/l10n/l10n_util.h"
+
+namespace content {
 
 ProtocolHandler::ProtocolHandler(
     const std::string& protocol,
@@ -152,11 +150,7 @@ std::unique_ptr<base::DictionaryValue> ProtocolHandler::Encode() const {
 
 std::u16string ProtocolHandler::GetProtocolDisplayName(
     const std::string& protocol) {
-  if (protocol == "mailto")
-    return l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
-  if (protocol == "webcal")
-    return l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME);
-  return base::UTF8ToUTF16(protocol);
+  return content::GetContentClient()->GetLocalizedProtocolName(protocol);
 }
 
 std::u16string ProtocolHandler::GetProtocolDisplayName() const {
@@ -182,3 +176,5 @@ bool ProtocolHandler::IsEquivalent(const ProtocolHandler& other) const {
 bool ProtocolHandler::operator<(const ProtocolHandler& other) const {
   return url_ < other.url_;
 }
+
+}  // namespace content

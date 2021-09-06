@@ -121,6 +121,8 @@ source_set("common_sources") {
     "content_switch_dependent_feature_overrides.h",
     "content_switches.cc",
     "content_switches.h",
+    "custom_handlers/protocol_handler.cc",
+    "custom_handlers/protocol_handler.h",
     "drop_data.cc",
     "drop_data.h",
     "input_event_ack_state.h",

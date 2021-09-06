@@ -36,6 +36,7 @@
 #include "chrome/common/media/cdm_registration.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/common_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
@@ -411,4 +412,13 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
+}
+
+std::u16string ChromeContentClient::GetLocalizedProtocolName(
+    const std::string& protocol) {
+  if (protocol == "mailto")
+    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_MAILTO_NAME);
+  if (protocol == "webcal")
+    return GetLocalizedString(IDS_REGISTER_PROTOCOL_HANDLER_WEBCAL_NAME);
+  return ContentClient::GetLocalizedProtocolName(protocol);
 }

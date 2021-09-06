@@ -7,8 +7,8 @@
 
 #include "base/bind.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
@@ -18,6 +18,8 @@ class Profile;
 namespace web_app {
 
 class WebAppRegistrar;
+
+using content::ProtocolHandler;
 
 class WebAppProtocolHandlerManager {
  public:
