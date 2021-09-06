@@ -459,14 +459,10 @@ class WebAppInstallManagerTest
   TestFileUtils* file_utils_ = nullptr;
 };
 
-using WebAppInstallManagerUninstallTest = WebAppInstallManagerTest;
+using WebAppInstallManagerTest_SyncOnly = WebAppInstallManagerTest;
 
-TEST_P(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest_SyncOnly,
        InstallWebAppsAfterSync_TwoConcurrentInstallsAreRunInOrder) {
-  if (GetParam() == SyncParam::kWithoutSync) {
-    return;
-  }
-
   url_loader().AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded,
                                          WebAppUrlLoader::Result::kUrlLoaded});
 
@@ -614,12 +610,8 @@ TEST_P(WebAppInstallManagerTest,
   EXPECT_EQ(expected_event_order, event_order);
 }
 
-TEST_P(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest_SyncOnly,
        InstallWebAppsAfterSync_InstallManagerDestroyed) {
-  if (GetParam() == SyncParam::kWithoutSync) {
-    return;
-  }
-
   const GURL start_url{"https://example.com/path"};
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
@@ -678,11 +670,7 @@ TEST_P(WebAppInstallManagerTest,
   EXPECT_FALSE(callback_called);
 }
 
-TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
-  if (GetParam() == SyncParam::kWithoutSync) {
-    return;
-  }
-
+TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Success) {
   const std::string url_path{"https://example.com/path"};
   const GURL url{url_path};
 
@@ -756,11 +744,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
-  if (GetParam() == SyncParam::kWithoutSync) {
-    return;
-  }
-
+TEST_P(WebAppInstallManagerTest_SyncOnly, InstallWebAppsAfterSync_Fallback) {
   const GURL url{"https://example.com/path"};
 
   bool expect_locally_installed = AreAppsLocallyInstalledBySync();
@@ -841,7 +825,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   EXPECT_EQ(*expected_app, *app);
 }
 
-TEST_P(WebAppInstallManagerUninstallTest,
+TEST_P(WebAppInstallManagerTest_SyncOnly,
        UninstallFromSyncAfterRegistryUpdate) {
   std::unique_ptr<WebApp> app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
@@ -910,7 +894,7 @@ TEST_P(WebAppInstallManagerUninstallTest,
   EXPECT_EQ(expected_event_order, event_order);
 }
 
-TEST_P(WebAppInstallManagerUninstallTest,
+TEST_P(WebAppInstallManagerTest_SyncOnly,
        PolicyAndUser_UninstallExternalWebApp) {
   std::unique_ptr<WebApp> policy_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
@@ -947,7 +931,7 @@ TEST_P(WebAppInstallManagerUninstallTest,
   EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
-TEST_P(WebAppInstallManagerUninstallTest, DefaultAndUser_UninstallWebApp) {
+TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -1052,12 +1036,8 @@ TEST_P(WebAppInstallManagerTest, TaskQueueWebContentsReadyRace) {
   EXPECT_FALSE(task_c_started);
 }
 
-TEST_P(WebAppInstallManagerTest,
+TEST_P(WebAppInstallManagerTest_SyncOnly,
        InstallWebAppFromManifestWithFallback_OverwriteIsLocallyInstalled) {
-  if (GetParam() == SyncParam::kWithoutSync) {
-    return;
-  }
-
   const GURL start_url{"https://example.com/path"};
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
@@ -1102,7 +1082,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WebAppInstallManagerTest::ParamInfoToString);
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         WebAppInstallManagerUninstallTest,
+                         WebAppInstallManagerTest_SyncOnly,
                          ::testing::Values(SyncParam::kWithSync),
                          WebAppInstallManagerTest::ParamInfoToString);
 
