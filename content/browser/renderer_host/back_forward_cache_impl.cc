@@ -168,9 +168,12 @@ WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
                         base::SPLIT_WANT_NONEMPTY);
   for (const std::string& token : tokens) {
     auto feature = blink::scheduler::StringToFeature(token);
-    DCHECK(feature.has_value()) << "invalid feature string: " << token;
     if (feature.has_value()) {
       features.Put(feature.value());
+    } else {
+      // |feature| might not have its value when the user is in an experimental
+      // group with the feature, and the feature is already removed.
+      DLOG(WARNING) << "Invalid feature string: " << token;
     }
   }
   return features;
