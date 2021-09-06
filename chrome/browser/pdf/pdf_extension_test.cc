@@ -1507,23 +1507,23 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 }
 
 static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
-  // Create a string representation of the tree starting with the embedded
+  // Create a string representation of the tree starting with the kPdfRoot
   // object.
   std::string ax_tree_dump;
   std::map<int32_t, int> id_to_indentation;
-  bool found_embedded_object = false;
+  bool found_pdf_root = false;
   for (auto& node : ax_tree.nodes) {
-    if (node.role == ax::mojom::Role::kEmbeddedObject)
-      found_embedded_object = true;
-    if (!found_embedded_object)
+    if (node.role == ax::mojom::Role::kPdfRoot)
+      found_pdf_root = true;
+    if (!found_pdf_root)
       continue;
 
     auto indent_found = id_to_indentation.find(node.id);
     int indent = 0;
     if (indent_found != id_to_indentation.end()) {
       indent = indent_found->second;
-    } else if (node.role != ax::mojom::Role::kEmbeddedObject) {
-      // If this node has no indent and isn't the embedded object, return, as
+    } else if (node.role != ax::mojom::Role::kPdfRoot) {
+      // If this node has no indent and isn't the kPdfRoot object, return, as
       // this indicates the end of the PDF.
       return ax_tree_dump;
     }
@@ -1549,38 +1549,37 @@ static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
 // http://crbug.com/701427
 
 static const char kExpectedPDFAXTreePattern[] =
-    "embeddedObject\n"
-    "  pdfRoot 'PDF document containing 3 pages'\n"
-    "    region 'Page 1'\n"
-    "      paragraph\n"
-    "        staticText '1 First Section'\n"
-    "          inlineTextBox '1 '\n"
-    "          inlineTextBox 'First Section'\n"
-    "      paragraph\n"
-    "        staticText 'This is the *rst section.'\n"
-    "          inlineTextBox 'This is the *rst section.'\n"
-    "      paragraph\n"
-    "        staticText '1'\n"
-    "          inlineTextBox '1'\n"
-    "    region 'Page 2'\n"
-    "      paragraph\n"
-    "        staticText '1.1 First Subsection'\n"
-    "          inlineTextBox '1.1 '\n"
-    "          inlineTextBox 'First Subsection'\n"
-    "      paragraph\n"
-    "        staticText 'This is the *rst subsection.'\n"
-    "          inlineTextBox 'This is the *rst subsection.'\n"
-    "      paragraph\n"
-    "        staticText '2'\n"
-    "          inlineTextBox '2'\n"
-    "    region 'Page 3'\n"
-    "      paragraph\n"
-    "        staticText '2 Second Section'\n"
-    "          inlineTextBox '2 '\n"
-    "          inlineTextBox 'Second Section'\n"
-    "      paragraph\n"
-    "        staticText '3'\n"
-    "          inlineTextBox '3'\n";
+    "pdfRoot 'PDF document containing 3 pages'\n"
+    "  region 'Page 1'\n"
+    "    paragraph\n"
+    "      staticText '1 First Section'\n"
+    "        inlineTextBox '1 '\n"
+    "        inlineTextBox 'First Section'\n"
+    "    paragraph\n"
+    "      staticText 'This is the *rst section.'\n"
+    "        inlineTextBox 'This is the *rst section.'\n"
+    "    paragraph\n"
+    "      staticText '1'\n"
+    "        inlineTextBox '1'\n"
+    "  region 'Page 2'\n"
+    "    paragraph\n"
+    "      staticText '1.1 First Subsection'\n"
+    "        inlineTextBox '1.1 '\n"
+    "        inlineTextBox 'First Subsection'\n"
+    "    paragraph\n"
+    "      staticText 'This is the *rst subsection.'\n"
+    "        inlineTextBox 'This is the *rst subsection.'\n"
+    "    paragraph\n"
+    "      staticText '2'\n"
+    "        inlineTextBox '2'\n"
+    "  region 'Page 3'\n"
+    "    paragraph\n"
+    "      staticText '2 Second Section'\n"
+    "        inlineTextBox '2 '\n"
+    "        inlineTextBox 'Second Section'\n"
+    "    paragraph\n"
+    "      staticText '3'\n"
+    "        inlineTextBox '3'\n";
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
                        PdfAccessibility) {
@@ -1698,7 +1697,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_contents);
 
-  CHECK(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),
       "document.getElementsByTagName('embed')[0].postMessage("
       "{type: 'selectAll'});"));
@@ -1757,7 +1756,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_contents);
 
-  CHECK(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecuteScript(
       GetActiveWebContents(),
       "document.getElementsByTagName('embed')[0].postMessage("
       "{type: 'selectAll'});"));
@@ -1768,25 +1767,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 
   // Find pdfRoot node in the accessibility tree.
   content::FindAccessibilityNodeCriteria find_criteria;
-  find_criteria.role = ax::mojom::Role::kEmbeddedObject;
+  find_criteria.role = ax::mojom::Role::kPdfRoot;
   ui::AXPlatformNodeDelegate* pdf_root =
       content::FindAccessibilityNode(guest_contents, find_criteria);
   ASSERT_TRUE(pdf_root);
-
-  find_criteria.role = ax::mojom::Role::kPdfRoot;
-  ui::AXPlatformNodeDelegate* pdf_doc_node =
-      FindAccessibilityNodeInSubtree(pdf_root, find_criteria);
-  ASSERT_TRUE(pdf_doc_node);
 
   auto context_menu_interceptor =
       std::make_unique<content::ContextMenuInterceptor>(
           guest_contents->GetMainFrame());
 
   ContextMenuWaiter menu_waiter;
-  // Invoke kShowContextMenu accessibility action on PDF document node.
+  // Invoke kShowContextMenu accessibility action on the node with the kPdfRoot
+  // role.
   ui::AXActionData data;
   data.action = ax::mojom::Action::kShowContextMenu;
-  pdf_doc_node->AccessibilityPerformAction(data);
+  pdf_root->AccessibilityPerformAction(data);
   menu_waiter.WaitForMenuOpenAndClose();
 
   context_menu_interceptor->Wait();
@@ -3053,6 +3048,10 @@ class PDFExtensionAccessibilityTextExtractionTest
     ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
     auto actual_lines = CollectLines(ax_tree);
 
+    // Aborts if CollectLines() had a failure.
+    if (HasFailure())
+      return;
+
     // Validate the dump against the expectation file.
     EXPECT_TRUE(test_helper.ValidateAgainstExpectation(
         test_file_path, *expected_file_path, actual_lines, *expected_lines));
@@ -3064,12 +3063,15 @@ class PDFExtensionAccessibilityTextExtractionTest
     std::vector<std::string> lines;
 
     ui::AXTree tree(ax_tree_update);
-    std::vector<ui::AXNode*> embedded_objs;
-    FindAXNodes(tree.root(), {ax::mojom::Role::kEmbeddedObject},
-                &embedded_objs);
+    std::vector<ui::AXNode*> pdf_root_objs;
+    FindAXNodes(tree.root(), {ax::mojom::Role::kPdfRoot}, &pdf_root_objs);
     // Can't use ASSERT_EQ because CollectLines doesn't return void.
-    CHECK_EQ(1U, embedded_objs.size());
-    ui::AXNode* pdf_doc_root = embedded_objs[0];
+    if (pdf_root_objs.size() != 1u) {
+      // Add a non-fatal failure here to make the test fail.
+      ADD_FAILURE() << "Multiple PDF root nodes in the tree.";
+      return {};
+    }
+    ui::AXNode* pdf_doc_root = pdf_root_objs[0];
 
     std::vector<ui::AXNode*> text_nodes;
     FindAXNodes(pdf_doc_root,
@@ -3314,10 +3316,10 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Find the embedded PDF and dump the accessibility tree.
     content::FindAccessibilityNodeCriteria find_criteria;
-    find_criteria.role = ax::mojom::Role::kEmbeddedObject;
+    find_criteria.role = ax::mojom::Role::kPdfRoot;
     ui::AXPlatformNodeDelegate* pdf_root =
         content::FindAccessibilityNode(guest_contents, find_criteria);
-    CHECK(pdf_root);
+    ASSERT_TRUE(pdf_root);
 
     std::string actual_contents = formatter->Format(pdf_root);
 

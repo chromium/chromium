@@ -1,7 +1,6 @@
-embeddedObject
-++pdfRoot name='PDF document containing 1 page' restriction=readOnly
-++++region name='Page 1' restriction=readOnly isPageBreakingObject=true
-++++++paragraph restriction=readOnly
-++++++++image name='Image 1' restriction=readOnly
-++++++++image name='Image 2' restriction=readOnly
-++++++++image name='Image 3' restriction=readOnly
+pdfRoot name='PDF document containing 1 page' restriction=readOnly
+++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++paragraph restriction=readOnly
+++++++image name='Image 1' restriction=readOnly
+++++++image name='Image 2' restriction=readOnly
+++++++image name='Image 3' restriction=readOnly
