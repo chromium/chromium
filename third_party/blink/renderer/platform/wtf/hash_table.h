@@ -343,8 +343,9 @@ class HashTableConstIterator final {
 #if DCHECK_IS_ON()
     // HashTable and collections that build on it do not support
     // modifications while there is an iterator in use. The exception is
-    // ListHashSet, which has its own iterators that tolerate modification
+    // LinkedHashSet, which has its own iterators that tolerate modification
     // of the underlying set.
+
     DCHECK_EQ(container_modifications_, container_->Modifications());
     DCHECK(!container_->AccessForbidden());
 #endif
@@ -862,8 +863,9 @@ class HashTable final
   int64_t Modifications() const { return modifications_; }
   void RegisterModification() { modifications_++; }
   // HashTable and collections that build on it do not support modifications
-  // while there is an iterator in use. The exception is ListHashSet, which
-  // has its own iterators that tolerate modification of the underlying set.
+  // while there is an iterator in use. The exception is
+  // LinkedHashSet, which has its own iterators that tolerate modification
+  // of the underlying set.
   void CheckModifications(int64_t mods) const {
     DCHECK_EQ(mods, modifications_);
   }
@@ -1015,8 +1017,6 @@ class HashTable final
             typename Y,
             typename Z>
   friend struct WeakProcessingHashTableHelper;
-  template <typename T, size_t, typename U, typename V>
-  friend class ListHashSet;
 };
 
 template <typename Key,

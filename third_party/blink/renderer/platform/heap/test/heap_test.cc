@@ -1614,8 +1614,6 @@ void OrderedSetHelper(bool strong) {
 
 TEST_F(HeapTest, HeapWeakLinkedHashSet) {
   ClearOutOldGarbage();
-  OrderedSetHelper<HeapListHashSet<Member<IntWrapper>>>(true);
-  ClearOutOldGarbage();
   OrderedSetHelper<HeapLinkedHashSet<Member<IntWrapper>>>(true);
   ClearOutOldGarbage();
   OrderedSetHelper<HeapLinkedHashSet<WeakMember<IntWrapper>>>(false);

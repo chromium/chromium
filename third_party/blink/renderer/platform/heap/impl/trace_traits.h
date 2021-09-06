@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/list_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {

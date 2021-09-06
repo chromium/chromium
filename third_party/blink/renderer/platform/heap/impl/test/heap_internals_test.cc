@@ -2069,9 +2069,6 @@ TEST_F(HeapInternalsTest, IsGarbageCollected) {
   static_assert(
       WTF::IsGarbageCollectedType<HeapLinkedHashSet<Member<IntWrapper>>>::value,
       "HeapLinkedHashSet");
-  static_assert(
-      WTF::IsGarbageCollectedType<HeapListHashSet<Member<IntWrapper>>>::value,
-      "HeapListHashSet");
   static_assert(WTF::IsGarbageCollectedType<
                     HeapHashCountedSet<Member<IntWrapper>>>::value,
                 "HeapHashCountedSet");

@@ -38,7 +38,7 @@ namespace WTF {
 // The linked list is implementing in a vector (with links being indexes instead
 // of pointers), to simplify the move of backing during GC compaction.
 //
-// Unlike ListHashSet, this container supports WeakMember<T>.
+// This container supports WeakMember<T>.
 //
 // LinkedHashSet iterators are not invalidated by mutation of the
 // collection, unless they point to removed items. This means, for example, that
