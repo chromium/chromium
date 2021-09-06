@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
 using apps::IconEffects;
