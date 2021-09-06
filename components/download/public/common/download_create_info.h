@@ -22,6 +22,7 @@
 #include "net/http/http_response_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -173,6 +174,8 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
 
   // Whether download is initated by the content on the page.
   bool is_content_initiated;
+
+  ::network::mojom::CredentialsMode credentials_mode;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DownloadCreateInfo);

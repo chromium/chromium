@@ -19,6 +19,7 @@ DownloadUrlParameters::DownloadUrlParameters(
     : content_initiated_(false),
       use_if_range_(true),
       method_("GET"),
+      credentials_mode_(::network::mojom::CredentialsMode::kInclude),
       post_id_(-1),
       prefer_cache_(false),
       referrer_policy_(
