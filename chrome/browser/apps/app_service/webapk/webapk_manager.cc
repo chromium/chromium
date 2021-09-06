@@ -18,25 +18,36 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/connection_holder.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kGeneratedWebApkPackagePrefix[] = "org.chromium.webapk.";
+
+bool HasShareIntentFilter(const apps::AppUpdate& app) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = apps_util::kIntentActionSend;
+  for (const auto& filter : app.IntentFilters()) {
+    for (const auto& condition : filter->conditions) {
+      if (apps_util::IntentMatchesCondition(intent, condition)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      web_app_registrar_(
-          web_app::WebAppProvider::GetDeprecated(profile_)->registrar()),
       initialized_(false),
       install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
@@ -257,8 +268,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
     return false;
   }
 
-  if (!(web_app_registrar_.IsInstalled(app.AppId()) &&
-        web_app_registrar_.GetAppShareTarget(app.AppId()))) {
+  if (!HasShareIntentFilter(app)) {
     return false;
   }
 

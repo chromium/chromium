@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
@@ -68,7 +67,6 @@ class WebApkManager : public AppRegistryCache::Observer,
   AppServiceProxyBase* proxy_;
   ash::ApkWebAppService* apk_service_;
   ArcAppListPrefs* app_list_prefs_;
-  web_app::WebAppRegistrar& web_app_registrar_;
 
   bool initialized_;
 
