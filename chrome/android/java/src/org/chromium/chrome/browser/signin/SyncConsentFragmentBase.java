@@ -100,10 +100,9 @@ public abstract class SyncConsentFragmentBase
 
     private SigninView mView;
     private ConsentTextTracker mConsentTextTracker;
-    private @Nullable String mRequestedAccountName;
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
-    private String mSelectedAccountName;
+    private @Nullable String mSelectedAccountName;
     private boolean mIsDefaultAccountSelected;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
@@ -202,7 +201,7 @@ public abstract class SyncConsentFragmentBase
         Bundle arguments = getArguments();
         mSigninAccessPoint = arguments.getInt(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert mSigninAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
-        mRequestedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
+        mSelectedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
         mChildAccountStatus =
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
         @SigninFlowType
@@ -525,7 +524,7 @@ public abstract class SyncConsentFragmentBase
                 mAccountPickerDialogCoordinator.dismissDialog();
             }
 
-            mRequestedAccountName = addedAccountName;
+            mSelectedAccountName = addedAccountName;
         }
     }
 
@@ -568,13 +567,10 @@ public abstract class SyncConsentFragmentBase
             mIsDefaultAccountSelected = defaultAccount.equals(mSelectedAccountName);
             return;
         }
-        if (mRequestedAccountName != null) {
-            selectAccount(mRequestedAccountName, mRequestedAccountName.equals(defaultAccount));
-            mRequestedAccountName = null;
-        }
 
         if (mSelectedAccountName != null
                 && AccountUtils.findAccountByName(accounts, mSelectedAccountName) != null) {
+            selectAccount(mSelectedAccountName, mSelectedAccountName.equals(defaultAccount));
             return;
         }
 
