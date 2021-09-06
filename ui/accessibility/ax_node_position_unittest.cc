@@ -4899,6 +4899,8 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithNullPosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), button_.id, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
@@ -4956,6 +4958,8 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), button_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -4966,8 +4970,15 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
       AXBoundaryBehavior::CrossBoundary);
   EXPECT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
+  EXPECT_EQ(1, test_position->text_offset());
+
+  test_position = test_position->CreateNextFormatEndPosition(
+      AXBoundaryBehavior::CrossBoundary);
+  EXPECT_NE(nullptr, test_position);
+  EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(check_box_.id, test_position->anchor_id());
-  EXPECT_EQ(0, test_position->text_offset());
+  EXPECT_EQ(1, test_position->text_offset());
 
   test_position = test_position->CreateNextFormatEndPosition(
       AXBoundaryBehavior::StopAtLastAnchorBoundary);
@@ -12095,8 +12106,8 @@ INSTANTIATE_TEST_SUITE_P(
             ax::mojom::TextBoundary::kFormat, AXRangeExpandBehavior::kLeftFirst,
             "TextPosition anchor_id=4 text_offset=0 affinity=downstream "
             "annotated_text=<L>ine 1\nLine 2",
-            "TextPosition anchor_id=4 text_offset=13 affinity=downstream "
-            "annotated_text=Line 1\nLine 2<>"},
+            "TextPosition anchor_id=4 text_offset=6 affinity=downstream "
+            "annotated_text=Line 1<\n>Line 2"},
         ExpandToEnclosingTextBoundaryTestParam{
             ax::mojom::TextBoundary::kFormat,
             AXRangeExpandBehavior::kRightFirst,

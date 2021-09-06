@@ -2752,74 +2752,10 @@ class AXPosition {
 
   AXPositionInstance CreateNextFormatEndPosition(
       AXBoundaryBehavior boundary_behavior) const {
-    if (IsNullPosition())
-      return CreateNullPosition();
-
-    AXBoundaryType boundary_type = GetFormatEndBoundaryType();
-    if (boundary_type != AXBoundaryType::kNone) {
-      if (boundary_behavior == AXBoundaryBehavior::StopIfAlreadyAtBoundary ||
-          (boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary &&
-           boundary_type == AXBoundaryType::kContentEnd)) {
-        // In order to make equality checks simpler, affinity should be reset so
-        // that we would get consistent output from this function regardless of
-        // input affinity.
-        if (IsTextPosition())
-          return CloneWithDownstreamAffinity();
-        return Clone();
-      } else if (boundary_behavior == AXBoundaryBehavior::CrossBoundary &&
-                 boundary_type == AXBoundaryType::kContentEnd) {
-        // If we're at a format boundary and there are no more text positions
-        // to traverse, return a null position for cross-boundary moves.
-        return CreateNullPosition();
-      }
-    }
-
-    AXPositionInstance tree_position =
-        AsTreePosition()->CreatePositionAtEndOfAnchor();
-    AXPositionInstance next_tree_position =
-        tree_position
-            ->CreateNextLeafTreePosition(
-                base::BindRepeating(&AbortMoveAtRootBoundary))
-            ->CreatePositionAtEndOfAnchor();
-
-    // If moving to the end of the current anchor hasn't changed our original
-    // position, we need to test the next leaf tree position.
-    if (AtEndOfAnchor() &&
-        boundary_behavior != AXBoundaryBehavior::StopIfAlreadyAtBoundary) {
-      tree_position = std::move(next_tree_position);
-      next_tree_position = tree_position
-                               ->CreateNextLeafTreePosition(base::BindRepeating(
-                                   &AbortMoveAtRootBoundary))
-                               ->CreatePositionAtEndOfAnchor();
-    }
-
-    // The last position in the whole content is also a format end boundary, so
-    // we should not return NullPosition unless we started from that location.
-    while (boundary_type != AXBoundaryType::kContentEnd &&
-           !next_tree_position->IsNullPosition() &&
-           !tree_position->AtEndOfFormat()) {
-      tree_position = std::move(next_tree_position);
-      next_tree_position = tree_position
-                               ->CreateNextLeafTreePosition(base::BindRepeating(
-                                   &AbortMoveAtRootBoundary))
-                               ->CreatePositionAtEndOfAnchor();
-    }
-
-    // If the format boundary is in the same subtree, return a position
-    // rooted at the current position.
-    // This is necessary because we don't want to return any position that might
-    // be in the shadow DOM if the original position was not.
-    const AXNode* common_anchor = tree_position->LowestCommonAnchor(*this);
-    if (GetAnchor() == common_anchor) {
-      tree_position = tree_position->CreateAncestorPosition(
-          common_anchor, ax::mojom::MoveDirection::kForward);
-    } else if (boundary_behavior == AXBoundaryBehavior::StopAtAnchorBoundary) {
-      return CreatePositionAtEndOfAnchor();
-    }
-
-    if (IsTextPosition())
-      return tree_position->AsTextPosition();
-    return tree_position;
+    return CreateBoundaryEndPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kForward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreateNextParagraphStartPosition(
@@ -4523,6 +4459,14 @@ class AXPosition {
     // design decision to expose such boundaries to assistive software. Their
     // associated ignored nodes are still not exposed.
     return position->AtEndOfLine();
+  }
+
+  static bool AtStartOfFormatPredicate(const AXPositionInstance& position) {
+    return position->AtStartOfFormat();
+  }
+
+  static bool AtEndOfFormatPredicate(const AXPositionInstance& position) {
+    return position->AtEndOfFormat();
   }
 
   static bool AtStartOfWordPredicate(const AXPositionInstance& position) {
