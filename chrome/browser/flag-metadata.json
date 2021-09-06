@@ -2295,8 +2295,8 @@
   },
   {
     "name": "enable-new-mac-notification-api",
-    "owners": [ "knollr", "peter", "adelm@google.com"],
-    "expiry_milestone": 94
+    "owners": [ "knollr", "peter" ],
+    "expiry_milestone": 98
   },
   {
     "name": "enable-noscript-previews",
@@ -4035,11 +4035,6 @@
   {
     "name": "notification-scheduler-debug-options",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 94
-  },
-  {
-    "name": "notifications-via-helper-app",
-    "owners": [ "knollr", "peter" ],
     "expiry_milestone": 94
   },
   {
