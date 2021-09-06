@@ -214,6 +214,10 @@
                            browser:incognitoBrowser
                           delegate:self];
     [self.incognitoSnackbarCoordinator start];
+
+    [incognitoBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:[self bookmarkInteractionController]
+                     forProtocol:@protocol(BookmarksCommands)];
   }
 
   if ([self isThumbStripEnabled]) {
