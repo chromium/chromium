@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -203,11 +204,13 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // Show the dialog to confirm name and/or icon update.
         ModalDialogManager dialogManager =
                 mTabProvider.get().getWindowAndroid().getModalDialogManager();
+        Context context = mTabProvider.get().getContext();
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
-        dialog.show(dialogManager, mInfo.webApkPackageName(), iconChanging, shortNameChanging,
-                nameChanging, mInfo.shortName(), mFetchedInfo.shortName(), mInfo.name(),
-                mFetchedInfo.name(), mInfo.icon().bitmap(), mFetchedInfo.icon().bitmap(),
-                mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(), this::onUserApprovedUpdate);
+        dialog.show(context, dialogManager, mInfo.webApkPackageName(), iconChanging,
+                shortNameChanging, nameChanging, mInfo.shortName(), mFetchedInfo.shortName(),
+                mInfo.name(), mFetchedInfo.name(), mInfo.icon().bitmap(),
+                mFetchedInfo.icon().bitmap(), mInfo.isIconAdaptive(), mFetchedInfo.isIconAdaptive(),
+                this::onUserApprovedUpdate);
     }
 
     protected void onUserApprovedUpdate(int dismissalCause) {

@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -145,8 +148,12 @@ public class WebApkIconNameUpdateDialogTest {
         int callCount = mOnActionCallback.getCallCount();
 
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
+        // Applying a theme overlay because the context is used to show the dialog, which needs some
+        // color attributes to inflate the views.
+        Context context = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
 
-        dialog.show(mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
+        dialog.show(context, mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
                 dialogParams.shortNameChanged, dialogParams.nameChanged,
                 dialogParams.shortNameBefore, dialogParams.shortNameAfter, dialogParams.nameBefore,
                 dialogParams.nameAfter, dialogParams.bitmapBefore, dialogParams.bitmapAfter, false,
