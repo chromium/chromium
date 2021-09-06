@@ -63,7 +63,13 @@ static_assert(sizeof(void*) != 8, "");
 
 // SpinningMutex uses either futex(2) on Linux, or a fast userspace "try"
 // operation, which is available on Windows.
-#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
+//
+// On macOS, pthread_mutex_trylock() is fast by default starting with macOS
+// 10.14. Chromium targets an earlier version, so it cannot be known at
+// compile-time. However, ARM64 macOS devices shipped *after* this release, so
+// they necessarily have a fast implementation.
+#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || \
+    (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
 #define PA_HAS_SPINNING_MUTEX
 #endif
 

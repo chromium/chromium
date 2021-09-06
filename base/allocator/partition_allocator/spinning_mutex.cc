@@ -11,6 +11,10 @@
 #include <windows.h>
 #endif
 
+#if defined(OS_POSIX)
+#include <pthread.h>
+#endif
+
 #if defined(PA_HAS_SPINNING_MUTEX)
 
 #if defined(PA_HAS_LINUX_KERNEL)
@@ -74,10 +78,17 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#else
+#elif defined(OS_WIN)
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
+}
+
+#elif defined(OS_POSIX)
+
+void SpinningMutex::LockSlow() {
+  int retval = pthread_mutex_lock(&lock_);
+  PA_DCHECK(retval == 0);
 }
 
 #endif
