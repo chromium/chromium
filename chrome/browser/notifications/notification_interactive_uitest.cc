@@ -460,17 +460,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseTabWithPermissionRequestUI) {
   destroyed_watcher.Wait();
 }
 
-// See crbug.com/248470
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_TestCrashRendererNotificationRemain \
-    DISABLED_TestCrashRendererNotificationRemain
-#else
-#define MAYBE_TestCrashRendererNotificationRemain \
-    TestCrashRendererNotificationRemain
-#endif
-
-IN_PROC_BROWSER_TEST_F(NotificationsTest,
-                       MAYBE_TestCrashRendererNotificationRemain) {
+IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCrashRendererNotificationRemain) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test crashing renderer does not close or crash notification.
