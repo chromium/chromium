@@ -620,6 +620,7 @@ void PluginVmInstallerView::StartInstallation() {
   state_ = State::kInstalling;
   installing_state_ = InstallingState::kCheckingLicense;
   progress_bar_->SetValue(0);
+  download_progress_message_label_->SetText(std::u16string());
   OnStateUpdated();
 
   plugin_vm_installer_->SetObserver(this);
