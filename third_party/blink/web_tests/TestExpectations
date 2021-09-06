@@ -2757,16 +2757,8 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/resize-observer/iframe-same-origin.ht
 crbug.com/626703 [ Win10.1909 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/resize-observer/iframe-same-origin.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 external/wpt/geolocation-API/non-fully-active.https.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
-crbug.com/626703 [ Mac11.0 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Failure ]
-crbug.com/626703 [ Mac10.12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure ]
-crbug.com/626703 [ Mac10.13 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure ]
-crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/cross-origin-opener-policy/coop-navigate-same-origin-csp-sandbox.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/coop-navigate-same-origin-csp-sandbox.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/selection/textcontrols/selectionchange-bubble.html [ Timeout ]
@@ -3236,7 +3228,6 @@ crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collap
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-non-collapsed-selection.tentative.html?target=ContentEditable [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/editing/other/typing-around-link-element-at-collapsed-selection.tentative.html?target=ContentEditable&parent=b&child=i [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/html/interaction/focus/document-level-focus-apis/document-has-system-focus.html [ Timeout ]
-crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection-no-sink.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-peerconnection.https.html [ Skip Timeout ]
 crbug.com/626703 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck.https.html [ Skip Timeout ]
@@ -3264,7 +3255,6 @@ crbug.com/626703 external/wpt/paint-timing/with-first-paint/first-contentful-pai
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/child-painting-first-image.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/sibling-painting-first-image.html [ Timeout ]
 crbug.com/626703 external/wpt/paint-timing/with-first-paint/border-image.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Failure ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/iframe.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/infrastructure/testdriver/actions/crossOrigin.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-during-and-after-dispatch.tentative.html [ Failure Timeout ]
@@ -3274,7 +3264,6 @@ crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-co
 crbug.com/626703 external/wpt/input-events/input-events-get-target-ranges-non-collapsed-selection.tentative.html?Delete [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/screen-capture/feature-policy.https.html [ Timeout ]
 crbug.com/626703 [ Fuchsia ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure ]
-crbug.com/626703 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Failure Pass ]
 crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Win10.1909 ] virtual/plz-dedicated-worker/external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Pass Skip Timeout ]
@@ -6771,12 +6760,6 @@ crbug.com/1231907 [ Win7 ] virtual/oopr-canvas2d/fast/canvas/quadraticCurveTo.xm
 crbug.com/1233557 [ Mac10.12 ] fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Failure Pass ]
 
 # Sheriff 2021-07-28
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-timing.https.html [ Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-display-none.https.html [ Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Crash Failure Pass ]
-crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
 crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
 crbug.com/1233792 virtual/synchronous_html_parser/http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Failure Pass ]
 crbug.com/1234057 [ Mac ] external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
@@ -6786,14 +6769,11 @@ crbug.com/1234302 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/inactive-timeline.https.html [ Timeout ]
 crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/scroll-timeline-writing-modes.https.html [ Failure ]
 crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Timeout ]
-crbug.com/1238130 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline.https.html [ Failure ]
 crbug.com/1238130 virtual/threaded-no-composited-antialiasing/animations/animationworklet/playback-rate-scroll-timeline-accelerated-property.html [ Timeout ]
 
 # Sheriff 2021-07-29
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
-crbug.com/626703 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Failure Pass ]
 crbug.com/626703 virtual/threaded/external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Failure Pass ]
-crbug.com/626703 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Failure Pass ]
 crbug.com/626703 virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
 
 # Sheriff 2021-07-30
@@ -6878,3 +6858,36 @@ crbug.com/webrtc/12951 external/wpt/webrtc-stats/supported-stats.html [ Pass Fai
 crbug.com/1246238 http/tests/devtools/security/mixed-content-sidebar.js [ Pass Failure ]
 crbug.com/1246238 http/tests/devtools/security/interstitial-sidebar.js [ Pass Failure ]
 crbug.com/1246351 http/tests/misc/scroll-cross-origin-iframes-scrollbar.html [ Pass Failure ]
+
+# Sheriff 2021-09-06
+# All of these suffer from the same problem of of a
+# DCHECK(!snapshot.drawsNothing()) failing on Macs:
+# Also reported as failing via crbug.com/1233766
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-and-display-none.https.html [ Crash Pass Failure ]
+# Previously reported as failing on all platforms via crbug.com/1238130:
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline.https.html [ Crash Pass Failure ]
+# Previously reported as failing via crbug.com/626703:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-keyframes.https.html [ Crash Pass Failure ]
+# Previously reported as fialing via crbug.com/626703:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-immediately.https.html [ Crash Pass Failure ]
+# Also reported as failing via crbug.com/1233766:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-set-timing.https.html [ Crash Pass Failure ]
+crbug.com/1233826 [ Mac ] external/wpt/animation-worklet/worklet-animation-start-delay.https.html [ Crash Pass ]
+crbug.com/1233826 [ Mac ] external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Pass ]
+# Previously reported as failing on all platforms via crbug.com/626703:
+crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-non-ascii-name.https.html [ Crash Pass Failure ]
+# Previously reported as failing via crbug.com/1233766 on Mac11.0:
+# Previously reported as failing via crbug.com/626703 on Mac10.15:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-null-2.https.html [ Crash Pass Failure ]
+# Also reported as failing via crbug.com/1233766:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-cancel.https.html [ Crash Pass Failure ]
+# Also reported as failing via crbug.com/1233766:
+crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-after-duration.https.html [ Crash Pass Failure ]
+# Previously reported as failing on all platforms via crbug.com/626703:
+crbug.com/1236558 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/overdraw.https.html [ Crash Pass Failure ]
+# Previously reported as failing via crbug.com/626703:
+crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Crash Pass Failure ]
+# Previously reported as failing via crbug.com/626703:
+crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Crash Pass Failure ]
+crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Crash Failure Pass ]
+crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
