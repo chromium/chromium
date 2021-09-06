@@ -1617,6 +1617,22 @@ TEST_F(LayoutObjectTest,
             target->LocalToAncestorRect(rect, nullptr, 0));
 }
 
+// crbug.com/1246619
+TEST_F(LayoutObjectTest, SetNeedsCollectInlines) {
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">
+    <text id="text">Internet</text>
+    </svg></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* text = GetLayoutObjectByElementId("text");
+  if (text->IsNGSVGText()) {
+    text->SetNeedsCollectInlines();
+    EXPECT_TRUE(GetLayoutObjectByElementId("ancestor")->NeedsCollectInlines());
+  }
+}
+
 static const char* const kTransformsWith3D[] = {"transform: rotateX(20deg)",
                                                 "transform: translateZ(30px)"};
 static const char kTransformWithout3D[] =
