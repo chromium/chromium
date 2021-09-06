@@ -78,34 +78,27 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void CommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update,
                     CommitCallback callback);
 
-  // All methods below are |virtual| for testing.
+  void Init(base::OnceClosure callback);
 
-  virtual void Init(base::OnceClosure callback);
+  void SetAppUserDisplayMode(const AppId& app_id,
+                             DisplayMode user_display_mode,
+                             bool is_user_action);
 
-  virtual void SetAppUserDisplayMode(const AppId& app_id,
-                                     DisplayMode user_display_mode,
-                                     bool is_user_action);
+  void SetAppIsDisabled(const AppId& app_id, bool is_disabled);
 
-  virtual void SetAppIsDisabled(const AppId& app_id, bool is_disabled);
+  void UpdateAppsDisableMode();
 
-  virtual void UpdateAppsDisableMode();
+  void SetAppIsLocallyInstalled(const AppId& app_id, bool is_locally_installed);
 
-  virtual void SetAppIsLocallyInstalled(const AppId& app_id,
-                                        bool is_locally_installed);
+  void SetAppLastBadgingTime(const AppId& app_id, const base::Time& time);
 
-  virtual void SetAppLastBadgingTime(const AppId& app_id,
-                                     const base::Time& time);
+  void SetAppLastLaunchTime(const AppId& app_id, const base::Time& time);
 
-  virtual void SetAppLastLaunchTime(const AppId& app_id,
-                                    const base::Time& time);
+  void SetAppInstallTime(const AppId& app_id, const base::Time& time);
 
-  virtual void SetAppInstallTime(const AppId& app_id, const base::Time& time);
+  void SetAppRunOnOsLoginMode(const AppId& app_id, RunOnOsLoginMode mode);
 
-  virtual void SetAppRunOnOsLoginMode(const AppId& app_id,
-                                      RunOnOsLoginMode mode);
-
-  virtual void SetAppWindowControlsOverlayEnabled(const AppId& app_id,
-                                                  bool enabled);
+  void SetAppWindowControlsOverlayEnabled(const AppId& app_id, bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
