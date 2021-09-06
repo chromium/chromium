@@ -189,8 +189,7 @@ class AutoEnrollmentClientImplTest
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              power_initial, power_limit,
-              psm_rlwe_test_client_factory_.get());
+              power_initial, power_limit, psm_rlwe_test_client_factory_.get());
     }
   }
 
@@ -353,7 +352,6 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse response =
         GetAutoEnrollmentResponse(modulus, with_hashes, with_id_hash);
-
     service_->SendJobOKNow(job, response);
   }
 
@@ -1776,14 +1774,12 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
   void ServerReplyForPsmAsyncJobWithOprfResponse(
       DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse response = GetPsmOprfResponse();
-
     service_->SendJobOKNow(job, response);
   }
 
   void ServerReplyForPsmAsyncJobWithQueryResponse(
       DeviceManagementService::JobForTesting* job) {
     em::DeviceManagementResponse response = GetPsmQueryResponse();
-
     service_->SendJobOKNow(job, response);
   }
 
