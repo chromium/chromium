@@ -55,11 +55,15 @@ const char kProfileForm[] = "/autofill_smoke_test.html";
   GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
                   @"There should be no saved profile.");
 
+  // Shortcut explicit save prompts and automatically accept.
+  [AutofillAppInterface setAutoAcceptAddressImports:YES];
   [self fillAndSubmitForm];
 
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
+
+  [AutofillAppInterface setAutoAcceptAddressImports:NO];
 }
 
 @end

@@ -975,6 +975,28 @@
             ]
         }
     ],
+    "AutofillAddressProfileSavePromptWithIOSFixes": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "AutofillAddressProfileSavePromptEnabled",
+                    "enable_features": [
+                        "AutofillAddressProfileSavePrompt",
+                        "CreatePendingItemForPostFormSubmission"
+                    ]
+                },
+                {
+                    "name": "CreatePendingItemForPostFormSubmissionEnabled",
+                    "enable_features": [
+                        "CreatePendingItemForPostFormSubmission"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAssistantInCCTTriggering": [
         {
             "platforms": [

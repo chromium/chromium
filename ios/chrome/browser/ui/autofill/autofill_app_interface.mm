@@ -355,6 +355,13 @@ class SaveCardInfobarEGTestHelper
   return personalDataManager->GetProfiles().size();
 }
 
++ (void)setAutoAcceptAddressImports:(BOOL)autoAccept {
+  autofill::PersonalDataManager* personalDataManager =
+      [self personalDataManager];
+  return personalDataManager->set_auto_accept_address_imports_for_testing(
+      autoAccept);
+}
+
 + (void)clearProfilesStore {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
