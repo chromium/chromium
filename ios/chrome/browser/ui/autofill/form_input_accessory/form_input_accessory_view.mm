@@ -164,13 +164,14 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
     defaultHeightConstraint,
     [leadingViewContainer.topAnchor constraintEqualToAnchor:self.topAnchor],
     [leadingViewContainer.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
     [leadingViewContainer.leadingAnchor
         constraintEqualToAnchor:layoutGuide.leadingAnchor],
     [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor],
     [trailingView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [trailingView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+    [trailingView.bottomAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
   ]];
 
   self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
