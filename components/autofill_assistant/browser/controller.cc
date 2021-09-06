@@ -164,6 +164,9 @@ void Controller::SetStatusMessage(const std::string& message) {
   for (ControllerObserver& observer : observers_) {
     observer.OnStatusMessageChanged(message);
   }
+
+  // Override tts_message every time status_message changes.
+  tts_message_ = message;
 }
 
 std::string Controller::GetStatusMessage() const {
@@ -179,6 +182,21 @@ void Controller::SetBubbleMessage(const std::string& message) {
 
 std::string Controller::GetBubbleMessage() const {
   return bubble_message_;
+}
+
+void Controller::SetTtsMessage(const std::string& message) {
+  tts_message_ = message;
+}
+
+std::string Controller::GetTtsMessage() const {
+  return tts_message_;
+}
+
+void Controller::MaybePlayTtsMessage() {
+  // TODO(jainshashank): Add Play enable/disable state management
+  if (tts_enabled_) {
+    tts_controller_->Speak(tts_message_, GetLocale());
+  }
 }
 
 void Controller::SetDetails(std::unique_ptr<Details> details,
@@ -1417,7 +1435,7 @@ void Controller::OnFormActionLinkClicked(int link) {
 
 void Controller::OnTtsButtonClicked() {
   // TODO(jainshashank): Add button enable/disable state management
-  tts_controller_->Speak(status_message_, GetLocale());
+  MaybePlayTtsMessage();
 }
 
 void Controller::SetDateTimeRangeStartDate(

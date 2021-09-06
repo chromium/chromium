@@ -42,6 +42,9 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::string GetStatusMessage() const override;
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
+  void SetTtsMessage(const std::string& message) override;
+  std::string GetTtsMessage() const override;
+  void MaybePlayTtsMessage() override;
   void SetDetails(std::unique_ptr<Details> details,
                   base::TimeDelta delay) override;
   void AppendDetails(std::unique_ptr<Details> details,
@@ -167,6 +170,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::string status_message_;
+  std::string tts_message_;
   std::string bubble_message_;
   std::vector<Details> details_;
   std::unique_ptr<InfoBox> info_box_;

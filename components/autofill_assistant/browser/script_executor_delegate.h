@@ -80,6 +80,9 @@ class ScriptExecutorDelegate {
   virtual std::string GetStatusMessage() const = 0;
   virtual void SetBubbleMessage(const std::string& message) = 0;
   virtual std::string GetBubbleMessage() const = 0;
+  virtual void SetTtsMessage(const std::string& message) = 0;
+  virtual std::string GetTtsMessage() const = 0;
+  virtual void MaybePlayTtsMessage() = 0;
   virtual void SetDetails(std::unique_ptr<Details> details,
                           base::TimeDelta delay) = 0;
   virtual void AppendDetails(std::unique_ptr<Details> details,

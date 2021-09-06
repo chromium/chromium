@@ -315,6 +315,14 @@ std::string ScriptExecutor::GetBubbleMessage() const {
   return delegate_->GetBubbleMessage();
 }
 
+void ScriptExecutor::SetTtsMessage(const std::string& message) {
+  delegate_->SetTtsMessage(message);
+}
+
+void ScriptExecutor::MaybePlayTtsMessage() {
+  delegate_->MaybePlayTtsMessage();
+}
+
 void ScriptExecutor::FindElement(const Selector& selector,
                                  ElementFinder::Callback callback) const {
   VLOG(3) << __func__ << " " << selector;

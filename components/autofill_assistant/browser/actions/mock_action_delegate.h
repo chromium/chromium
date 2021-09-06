@@ -75,6 +75,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetStatusMessage, std::string());
   MOCK_METHOD1(SetBubbleMessage, void(const std::string& message));
   MOCK_CONST_METHOD0(GetBubbleMessage, std::string());
+  MOCK_METHOD1(SetTtsMessage, void(const std::string& message));
+  MOCK_METHOD0(MaybePlayTtsMessage, void());
   MOCK_CONST_METHOD2(FindElement,
                      void(const Selector& selector, ElementFinder::Callback));
   MOCK_CONST_METHOD2(FindAllElements,

@@ -85,5 +85,32 @@ TEST_F(TellActionTest, RequireUI) {
   Run();
 }
 
+TEST_F(TellActionTest, SetTtsMessage) {
+  proto_.set_message("status_message");
+  proto_.mutable_text_to_speech()->set_tts_message("tts_message");
+
+  EXPECT_CALL(mock_action_delegate_, SetStatusMessage(StrEq("status_message")));
+  EXPECT_CALL(mock_action_delegate_, SetTtsMessage(StrEq("tts_message")));
+  EXPECT_CALL(mock_action_delegate_, MaybePlayTtsMessage()).Times(0);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(TellActionTest, MaybePlayTtsMessage) {
+  proto_.set_message("status_message");
+  proto_.mutable_text_to_speech()->set_play_now(true);
+
+  EXPECT_CALL(mock_action_delegate_, SetStatusMessage(StrEq("status_message")));
+  EXPECT_CALL(mock_action_delegate_, MaybePlayTtsMessage());
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
 }  // namespace
 }  // namespace autofill_assistant

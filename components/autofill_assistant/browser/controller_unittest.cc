@@ -2282,12 +2282,44 @@ TEST_F(ControllerTest, EnableTts) {
   EXPECT_TRUE(controller_->GetTtsButtonVisible());
 }
 
+TEST_F(ControllerTest, TtsMessage) {
+  // Status_message overrides tts_message.
+  controller_->SetStatusMessage("message");
+  EXPECT_EQ(controller_->GetTtsMessage(), "message");
+
+  // Tts_message is set correctly.
+  controller_->SetTtsMessage("tts_message");
+  EXPECT_EQ(controller_->GetTtsMessage(), "tts_message");
+}
+
 TEST_F(ControllerTest, PlayTtsOnButtonClick) {
+  // Enable TTS
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options()));
+
   controller_->SetStatusMessage("message");
 
   EXPECT_CALL(*mock_tts_controller_, Speak("message", kClientLocale));
 
   controller_->OnTtsButtonClicked();
+}
+
+TEST_F(ControllerTest, MaybePlayTtsMessage) {
+  // Enable TTS
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options()));
+
+  controller_->SetTtsMessage("tts_message");
+  EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale));
+  controller_->MaybePlayTtsMessage();
 }
 
 TEST_F(ControllerTest, AddParametersToUserData) {

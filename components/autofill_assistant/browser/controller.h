@@ -120,6 +120,9 @@ class Controller : public ScriptExecutorDelegate,
   std::string GetStatusMessage() const override;
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
+  void SetTtsMessage(const std::string& message) override;
+  std::string GetTtsMessage() const override;
+  void MaybePlayTtsMessage() override;
   void SetDetails(std::unique_ptr<Details>, base::TimeDelta delay) override;
   void AppendDetails(std::unique_ptr<Details> details,
                      base::TimeDelta delay) override;
@@ -460,6 +463,9 @@ class Controller : public ScriptExecutorDelegate,
 
   // Current status message, may be empty.
   std::string status_message_;
+
+  // Current TTS message to be played, may be empty.
+  std::string tts_message_;
 
   // Current bubble / tooltip message, may be empty.
   std::string bubble_message_;

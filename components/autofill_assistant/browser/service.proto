@@ -1427,6 +1427,17 @@ message SelectOptionProto {
 
 // Contain a localized text message from the server.
 message TellProto {
+  message TextToSpeech {
+    // Optional field to override the text to synthesize and play using
+    // TTS ('message' is used as the default text to play).
+    optional string tts_message = 1;
+
+    // Whether the current TTS message should be played immediately or not. If
+    // this is false, the message will instead only play when the user taps the
+    // TTS icon.
+    optional bool play_now = 2;
+  }
+
   // The message to show in the status bar. The behavior is now the following
   //
   //  * If the field is set, the status bar is updated (explicitly setting an
@@ -1437,6 +1448,9 @@ message TellProto {
   // Show the UI if it's not shown yet, such as when a script has been started
   // by a direct action.
   optional bool needs_ui = 2 [default = true];
+
+  // Config for TextToSpeech (TTS) functionality.
+  optional TextToSpeech text_to_speech = 3;
 }
 
 // Contain all arguments to show cast on an element.
