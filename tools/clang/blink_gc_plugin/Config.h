@@ -152,15 +152,13 @@ class Config {
       return false;
     // The list hash set iterators refer to the set, not the
     // backing store and are consequently safe.
-    if (name == "HeapListHashSet" || name == "PersistentHeapListHashSet")
+    if (name == "HeapListHashSet")
       return false;
     return true;
   }
 
   static bool IsHashMap(llvm::StringRef name) {
-    return name == "HashMap" ||
-           name == "HeapHashMap" ||
-           name == "PersistentHeapHashMap";
+    return name == "HashMap" || name == "HeapHashMap";
   }
 
   // Assumes name is a valid collection name.
