@@ -12,6 +12,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -29,6 +31,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -852,6 +857,20 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 
   AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
+
+  // Wait for app service to see the newly installed app.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  apps::mojom::InstallSource install_source =
+      apps::mojom::InstallSource::kUnknown;
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
+        install_source = update.InstallSource();
+      });
+
+  EXPECT_EQ(install_source, apps::mojom::InstallSource::kOem);
 }
 
 namespace {

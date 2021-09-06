@@ -73,6 +73,17 @@ const ContentSettingsType kSupportedPermissionTypes[] = {
 
 apps::mojom::InstallSource GetHighestPriorityInstallSource(
     const WebApp* web_app) {
+  // TODO(crbug.com/1189949): Introduce kOem as a new Source::Type value
+  // immediately below web_app::Source::kSystem, so that this custom behavior
+  // isn't needed.
+  if (web_app->chromeos_data().has_value()) {
+    auto& chromeos_data = web_app->chromeos_data().value();
+    if (chromeos_data.oem_installed) {
+      DCHECK(!web_app->IsSystemApp());
+      return apps::mojom::InstallSource::kOem;
+    }
+  }
+
   switch (web_app->GetHighestPrioritySource()) {
     case Source::kSystem:
       return apps::mojom::InstallSource::kSystem;
