@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace autofill {
 namespace features {
 

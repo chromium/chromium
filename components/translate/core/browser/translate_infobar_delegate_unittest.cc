@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/language/core/browser/language_model.h"

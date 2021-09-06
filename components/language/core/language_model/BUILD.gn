@@ -32,6 +32,7 @@ source_set("unit_tests") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/language/core/browser",
     "//components/language/core/browser:test_support",
     "//components/language/core/language_model",

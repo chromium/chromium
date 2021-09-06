@@ -79,6 +79,7 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/prefs",
     "//google_apis:test_support",
   ]

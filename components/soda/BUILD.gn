@@ -17,6 +17,7 @@ component("soda") {
   deps = [
     ":constants",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/live_caption:constants",
     "//components/prefs",
     "//media",

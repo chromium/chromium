@@ -86,7 +86,10 @@ component("features") {
     "autofill_features.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 source_set("unit_tests") {

@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace performance_manager {
 namespace features {

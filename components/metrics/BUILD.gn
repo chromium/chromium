@@ -285,6 +285,7 @@ static_library("net") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/encrypted_messages:encrypted_message_proto",
     "//components/encrypted_messages:encrypted_messages",
     "//components/variations",

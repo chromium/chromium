@@ -5,6 +5,7 @@
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
