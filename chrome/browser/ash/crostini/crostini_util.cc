@@ -60,7 +60,7 @@ const char kCrostiniDeletedTerminalId[] = "oajcgpnkmhaalajejhlfpacbiokdnnfe";
 const char kCrostiniTerminalSystemAppId[] = "fhicihalidkgcimdmhpohldehjmcabcf";
 
 const char kCrostiniImageAliasPattern[] = "debian/%s";
-const char kCrostiniContainerDefaultVersion[] = "buster";
+const char kCrostiniContainerDefaultVersion[] = "bullseye";
 const char kCrostiniContainerFlag[] = "crostini-container-install-version";
 
 const char kCrostiniDefaultVmName[] = "termina";
