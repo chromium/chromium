@@ -23,6 +23,10 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
@@ -121,10 +125,6 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
   std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
       persistent_storage_;
 };
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 // Ensures that logged events are persisted.
 TEST_F(BreadcrumbPersistentStorageManagerTest, PersistEvents) {
