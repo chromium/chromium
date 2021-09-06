@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -187,7 +187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Address.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -196,7 +196,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.AddressesDeletedForDisuse" units="addresses"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.AddressesSuppressedForDisuse" units="addresses"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.AddressProfileImportCountrySpecificFieldRequirements"
     enum="AutofillAddressProfileImportCountrySpecificFieldRequirement"
-    expires_after="2022-01-09">
+    expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -232,7 +232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.AddressProfileImportRequirements"
-    enum="AutofillAddressProfileImportRequirement" expires_after="2022-01-09">
+    enum="AutofillAddressProfileImportRequirement" expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.AddressProfileImportStatus"
-    enum="AutofillAddressProfileImportStatus" expires_after="2022-01-09">
+    enum="AutofillAddressProfileImportStatus" expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -251,7 +251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.AddressSuggestionsCount" units="units"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -740,7 +740,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"
-    enum="AutofillCreditCardInfoBar" expires_after="M95">
+    enum="AutofillCreditCardInfoBar" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -750,7 +750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCardInfoBar{AutofillCreditCardInfoBarSaveType}"
-    enum="AutofillCreditCardInfoBar" expires_after="2021-12-12">
+    enum="AutofillCreditCardInfoBar" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -797,7 +797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -808,7 +808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.CreditCardsSuppressedForDisuse" units="units"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -831,7 +831,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -841,7 +841,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.Profile" units="days"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -852,7 +852,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.StoredCreditCard" units="days"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
@@ -865,7 +865,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile" units="days"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -877,7 +877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.DeveloperEngagement"
-    enum="AutofillDeveloperEngagement" expires_after="M95">
+    enum="AutofillDeveloperEngagement" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.Aggregate"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2022-01-09">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -899,7 +899,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission.ByFieldType"
     enum="AutofilledFieldUserEditingStatusByFieldType"
-    expires_after="2022-01-09">
+    expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -939,7 +939,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Autofill.FieldCount" units="form fields" expires_after="M95">
+<histogram name="Autofill.FieldCount" units="form fields"
+    expires_after="2022-12-12">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -948,7 +949,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.FieldPredictionQuality.Aggregate{AutofillFieldPredictionSource}"
-    enum="AutofillFieldPredictionQuality" expires_after="2021-12-12">
+    enum="AutofillFieldPredictionQuality" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -964,7 +965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.FieldPredictionQuality.ByFieldType{AutofillFieldPredictionSource}"
-    enum="AutofillFieldPredictionQualityByFieldType" expires_after="2021-12-12">
+    enum="AutofillFieldPredictionQualityByFieldType" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -979,7 +980,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FieldPrediction{AutofillFieldPredictionSource}"
-    units="units" expires_after="2021-12-12">
+    units="units" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -996,7 +997,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.FillDuration.FromInteraction.WithAutofill{AutofillFormType}"
-    units="units" expires_after="2021-12-12">
+    units="units" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1012,7 +1013,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.FillDuration.FromInteraction.WithoutAutofill{AutofillFormType}"
-    units="units" expires_after="2021-12-12">
+    units="units" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1027,7 +1028,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FillDuration.FromLoad.WithAutofill" units="units"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1036,7 +1037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FillDuration.FromLoad.WithoutAutofill" units="units"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1058,7 +1059,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FormEvents.Address{AutofillDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2021-12-12">
+    enum="AutofillFormEvent" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1174,7 +1175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FormFillSuccessIOS"
-    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2022-01-02">
+    enum="BooleanAutofillFormFillSuccessIOS" expires_after="2022-12-12">
   <owner>kazinova@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1193,14 +1194,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FormSubmittedState" enum="AutofillFormSubmittedState"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The autofill state related to a submitted form.</summary>
 </histogram>
 
 <histogram name="Autofill.Funnel.FillAfterSuggestion{AutofillFormType}"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2022-01-09">
+    enum="BooleanAutofillFillAfterSuggestion" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1226,7 +1227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Autofill.Funnel.InteractionAfterParsedAsType{AutofillFormType}"
     enum="BooleanAutofillInteractionAfterParsedAsType"
-    expires_after="2022-01-09">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1255,7 +1256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Funnel.ParsedAsType{AutofillFormType}"
-    enum="BooleanAutofillParsedAsType" expires_after="2022-01-09">
+    enum="BooleanAutofillParsedAsType" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1277,7 +1278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Funnel.SubmissionAfterFill{AutofillFormType}"
-    enum="BooleanAutofillSubmissionAfterFill" expires_after="2022-01-09">
+    enum="BooleanAutofillSubmissionAfterFill" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1297,7 +1298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Funnel.SuggestionAfterInteraction{AutofillFormType}"
-    enum="BooleanAutofillSuggestionAfterInteraction" expires_after="2022-01-09">
+    enum="BooleanAutofillSuggestionAfterInteraction" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1346,7 +1347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.HiddenOrPresentationalSelectFieldsFilled"
-    enum="BooleanHiddenPresentationalAutofilled" expires_after="M95">
+    enum="BooleanHiddenPresentationalAutofilled" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1368,6 +1369,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.InvalidProfileData.UsedForMetrics" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Obsolete after M95 because the invalid profile experiment is stopped.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1380,6 +1384,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.InvalidProfileData.UsedForSuggestion" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Obsolete after M95 because the invalid profile experiment is stopped.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1391,7 +1398,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2022-08-01">
+    expires_after="2022-12-12">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1405,7 +1412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.IsEnabled.Startup" enum="BooleanEnabled"
-    expires_after="2022-08-01">
+    expires_after="2022-12-12">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1419,7 +1426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FillingAcceptance{AutofillFormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2022-01-09">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1439,7 +1446,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FillingAssistance{AutofillFormType}"
-    enum="BooleanAutofillFillingAssistance" expires_after="2022-01-09">
+    enum="BooleanAutofillFillingAssistance" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1462,7 +1469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FillingCorrectness{AutofillFormType}"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2022-01-09">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1480,7 +1487,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.KeyMetrics.FillingReadiness{AutofillFormType}"
-    enum="BooleanAutofillFillingReadiness" expires_after="2022-01-09">
+    enum="BooleanAutofillFillingReadiness" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1503,7 +1510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.KeyMetrics.FormSubmission.Autofilled{AutofillFormType}"
-    enum="BooleanAutofillSubmission" expires_after="2022-01-09">
+    enum="BooleanAutofillSubmission" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1527,7 +1534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.KeyMetrics.FormSubmission.NotAutofilled{AutofillFormType}"
-    enum="BooleanAutofillSubmission" expires_after="2022-01-09">
+    enum="BooleanAutofillSubmission" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
   <owner>nepper@chromium.org</owner>
@@ -1731,7 +1738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.NumberOfEditedAutofilledFieldsAtSubmission"
-    units="fields" expires_after="M95">
+    units="fields" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1741,7 +1748,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.NumberOfProfilesConsideredForDedupe" units="profiles"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1750,7 +1757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.NumberOfProfilesRemovedDuringDedupe" units="profiles"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1759,7 +1766,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.NumElementsMatchesNumFields" enum="Boolean"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1895,9 +1902,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"
-    expires_after="2021-10-25">
-  <owner>marsin@google.com</owner>
+    expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
   <summary>
     Tracks whether the visible page language was translated or not upon form
     submission.
@@ -1925,7 +1932,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ProfileActionOnFormSubmitted"
-    enum="AutofillProfileAction" expires_after="M95">
+    enum="AutofillProfileAction" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2059,7 +2066,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2069,7 +2076,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Query.BackoffDelay" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2078,7 +2085,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Query.FailingPayloadSize" units="bytes"
-    expires_after="2022-02-20">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2090,7 +2097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Query.HttpResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-20">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2099,20 +2106,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Query.Method" enum="AutofillQueryMethod"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The HTTP method used to query the autofill server.</summary>
 </histogram>
 
-<histogram name="Autofill.Query.RequestDuration" units="ms" expires_after="M95">
+<histogram name="Autofill.Query.RequestDuration" units="ms"
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The duration of a network request for a query.</summary>
 </histogram>
 
 <histogram name="Autofill.Query.WasInCache" enum="BooleanCacheHit"
-    expires_after="2022-02-20">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2121,7 +2129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.RationalizationQuality.PhoneNumber"
-    enum="AutofillRationalizationQualityMetric" expires_after="M95">
+    enum="AutofillRationalizationQualityMetric" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2210,14 +2218,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Completed" enum="BooleanCompleted"
-    expires_after="2022-02-13">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Whether a credit card scan was completed or cancelled.</summary>
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Duration{CreditCardScanSuccess}"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2231,7 +2239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ScanCreditCardPrompt"
-    enum="AutofillScanCreditCardPrompt" expires_after="2022-02-13">
+    enum="AutofillScanCreditCardPrompt" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2239,7 +2247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
-    expires_after="2022-06-01">
+    expires_after="2022-12-12">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2250,14 +2258,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The usefulness of Autofill server information.</summary>
 </histogram>
 
 <histogram name="Autofill.ServerResponseHasDataForForm"
-    enum="BooleanHadPredictions" expires_after="M95">
+    enum="BooleanHadPredictions" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2289,7 +2297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount" units="cards"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
@@ -2321,7 +2329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardDisusedCount" units="cards"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
@@ -2334,7 +2342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StoredProfileCount" units="units"
-    expires_after="2022-02-20">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2343,7 +2351,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StoredProfileCountAtAutofillableFormSubmission"
-    units="units" expires_after="2021-12-12">
+    units="units" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2353,7 +2361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StoredProfileDisusedCount" units="units"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2481,7 +2489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.SubmittedValuePatterns" enum="AutofillValuePatterns"
-    expires_after="2022-01-23">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>koerber@google.com</owner>
@@ -2504,7 +2512,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.SuggestionAcceptedIndex.Autocomplete"
-    units="position" expires_after="2022-02-20">
+    units="position" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2515,7 +2523,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Autofill.SuggestionAcceptedIndex{AutofillSuggestionAcceptedIndexSuggestionType}"
-    units="position" expires_after="2021-12-12">
+    units="position" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2543,7 +2551,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Timing.DetermineHeuristicTypes" units="ms"
-    expires_after="M95">
+    expires_after="2022-12-12">
   <owner>kenjitoyama@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2553,7 +2561,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Autofill.Timing.ParseForm" units="ms" expires_after="M95">
+<histogram name="Autofill.Timing.ParseForm" units="ms"
+    expires_after="2022-12-12">
   <owner>kenjitoyama@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -2564,9 +2573,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.TranslatedPageLanguage" enum="LanguageName"
-    expires_after="2021-10-25">
-  <owner>marsin@google.com</owner>
+    expires_after="2022-12-12">
   <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-team@google.com</owner>
   <summary>
     The visible page language (best guess of the original or the translated
     language, if translation was used) upon form submission. This is a sparse
@@ -2729,7 +2738,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Upload.FailingPayloadSize" units="bytes"
-    expires_after="M77">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2798,7 +2807,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UploadEvent{AutofillUploadEvents}" enum="BooleanSent"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2856,7 +2865,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.UserHappiness{AutofillFormType}"
-    enum="AutofillUserHappiness" expires_after="2021-12-12">
+    enum="AutofillUserHappiness" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2920,7 +2929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WalletAddressConversionType"
-    enum="AutofillWalletAddressConversionType" expires_after="M95">
+    enum="AutofillWalletAddressConversionType" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -2930,7 +2939,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"
-    units="ms" expires_after="2021-11-07">
+    units="ms" expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2944,7 +2953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromLoad" units="ms"
-    expires_after="2021-11-07">
+    expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2956,7 +2965,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FromAutocomplete" units="Boolean"
-    expires_after="2022-01-09">
+    expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2968,7 +2977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhoneNumberCollection.ParseResult"
-    units="Boolean" expires_after="2021-11-07">
+    units="Boolean" expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>
@@ -2985,7 +2994,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhonePlusWebOTPPlusOTC"
-    enum="PhoneCollectionState" expires_after="2021-11-07">
+    enum="PhoneCollectionState" expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>madjivp@chromium.org</owner>
   <owner>web-identity@google.com</owner>
