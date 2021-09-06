@@ -162,6 +162,8 @@ unsigned NGSvgTextQuery::NumberOfCharacters() const {
 
 float NGSvgTextQuery::SubStringLength(unsigned start_index,
                                       unsigned length) const {
+  if (length <= 0)
+    return 0.0f;
   Vector<const NGFragmentItem*> item_list;
   const NGFragmentItems* items;
   std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root_);
