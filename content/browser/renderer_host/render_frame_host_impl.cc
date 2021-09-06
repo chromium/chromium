@@ -1662,7 +1662,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // being deleted, since it must have already been unset.
   if (was_created && render_view_host_->GetMainFrame() != this) {
     CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
-          lifecycle_state() == LifecycleStateImpl::kPrerendering);
+          lifecycle_state() == LifecycleStateImpl::kPrerendering ||
+          lifecycle_state() == LifecycleStateImpl::kSpeculative);
   }
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
@@ -2856,9 +2857,9 @@ void RenderFrameHostImpl::RenderProcessExited(
     // This happens when this RenderFrameHost is pending deletion and is
     // waiting on one of its children to run its unload handler. While running
     // it, it can request its parent to detach itself.
-    if (lifecycle_state() != LifecycleStateImpl::kReadyToBeDeleted) {
+    if (lifecycle_state() != LifecycleStateImpl::kReadyToBeDeleted)
       SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
-    }
+
     DCHECK(children_.empty());
     PendingDeletionCheckCompleted();
     // |this| is deleted. Don't add any more code at this point in the function.
@@ -3102,6 +3103,14 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       subframe_unload_timer_.Start(FROM_HERE, subframe_unload_timeout_, this,
                                    &RenderFrameHostImpl::OnUnloadTimeout);
     }
+  }
+
+  // In case of speculative RenderFrameHosts deletion, we don't run any unload
+  // handlers and RenderFrameHost is deleted directly without any lifecycle
+  // state transitions.
+  if (lifecycle_state() == LifecycleStateImpl::kSpeculative) {
+    DCHECK(!has_unload_handlers());
+    return;
   }
 
   // In case of BackForwardCache, page is evicted directly from the cache and
@@ -4305,7 +4314,7 @@ void RenderFrameHostImpl::UndoCommitNavigation(RenderFrameProxyHost& proxy,
         proxy.GetFrameToken(), proxy.CreateAndBindRemoteMainFrameInterfaces());
   }
 
-  SetLifecycleStateToReadyToBeDeleted();
+  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
 }
 
 void RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation() {
@@ -12045,8 +12054,8 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
           // transitions happen to this state during its lifetime.
           StateTransitions<LifecycleStateImpl>({
               {LifecycleStateImpl::kSpeculative,
-               {LifecycleStateImpl::kActive, LifecycleStateImpl::kPendingCommit,
-                LifecycleStateImpl::kReadyToBeDeleted}},
+               {LifecycleStateImpl::kActive,
+                LifecycleStateImpl::kPendingCommit}},
 
               {LifecycleStateImpl::kPendingCommit,
                {LifecycleStateImpl::kPrerendering, LifecycleStateImpl::kActive,

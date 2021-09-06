@@ -545,8 +545,9 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
                   kBackForwardCacheDisabledForDelegate);
   }
 
-  const bool is_prerendering = rfh->GetLifecycleState() ==
-                               RenderFrameHost::LifecycleState::kPrerendering;
+  const bool is_prerendering =
+      rfh->lifecycle_state() ==
+      RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
   if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
       is_prerendering) {
     result.No(

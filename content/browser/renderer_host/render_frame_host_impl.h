@@ -934,7 +934,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // instead of following the full navigation path (known as "early commit").
     // This happens when current RenderFrameHost is not live. The work to
     // remove this transition is tracked in crbug.com/1072817.
-    // - kReadyToBeDeleted -- The navigation redirects or gets cancelled.
+    //
+    // Speculative RenderFrameHost deletion happens without running any unload
+    // handlers and with LifecycleStateImpl remaining in kSpeculative state.
     //
     // Note that the term speculative is used, because the navigation might be
     // canceled or redirected and the RenderFrameHost might get deleted before
@@ -1058,8 +1060,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // This state corresponds to when RenderFrameHost has completed running the
     // unload handlers. Once all the descendant frames in other processes are
     // gone, this RenderFrameHost will delete itself. Transition to this state
-    // may happen from one of kSpeculative, kPrerendering, kActive,
-    // kInBackForwardCache or kRunningUnloadHandlers states.
+    // may happen from one of kPrerendering, kActive, kInBackForwardCache or
+    // kRunningUnloadHandlers states.
     kReadyToBeDeleted,
   };
   LifecycleStateImpl lifecycle_state() const { return lifecycle_state_; }

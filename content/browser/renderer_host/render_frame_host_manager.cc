@@ -1291,7 +1291,14 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
   // RenderFrameProxy is detached, it also detaches any associated provisional
   // RenderFrame, whether this due to a child frame being removed from the
   // frame tree or the entire RenderView being torn down.
-  speculative_render_frame_host_->SetLifecycleStateToReadyToBeDeleted();
+  //
+  // When the LifecycleStateImpl is kSpeculative, there is no need to transition
+  // to kReadyToBeDeleted as speculative RenderFrameHosts don't run any unload
+  // handlers but gets deleted by reset directly in kSpeculative state.
+  if (speculative_render_frame_host_->lifecycle_state() ==
+      LifecycleStateImpl::kPendingCommit) {
+    speculative_render_frame_host_->SetLifecycleStateToReadyToBeDeleted();
+  }
   // TODO(dcheng): Figure out why `RenderFrameDeleted()` doesn't seem to be
   // called on child `RenderFrameHost`s at shutdown. This is currently limited
   // to main frame-only because that is how it has worked for some time:
