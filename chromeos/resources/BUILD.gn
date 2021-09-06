@@ -211,7 +211,7 @@ grit("print_management_resources") {
 # Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
 grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.
-  if (enable_cros_media_app) {
+  if (enable_cros_eche_app) {
     # Obtained via an internal CIPD package in src/DEPS.
     source =
         "../components/eche_app_ui/resources/prod/eche_bundle_resources.grd"
