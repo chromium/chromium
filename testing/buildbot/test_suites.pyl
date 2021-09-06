@@ -506,6 +506,26 @@
       },
     },
 
+    'chrome_isolated_script_tests': {
+      'chrome_sizes': {
+        'merge': {
+          'script': '//tools/perf/process_perf_results.py',
+        },
+        'resultdb': {
+          'enable': False,
+        },
+      },
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_smoke_tests',
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+        # TODO(crbug.com/1233603): Remove once the test is not flaky anymore.
+        'experiment_percentage': 100,
+      },
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
