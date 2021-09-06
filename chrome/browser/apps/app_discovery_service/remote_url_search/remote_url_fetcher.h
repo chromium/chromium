@@ -7,19 +7,29 @@
 
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
+#include "chrome/browser/apps/app_discovery_service/remote_url_search/remote_url_index.h"
+
+class Profile;
 
 namespace apps {
 
-// Adds
+// A fetcher for app recommendations coming from a hardcoded URL. This manages
+// the querying the URL, and indexing and searching the results.
 class RemoteUrlFetcher : public AppFetcher {
  public:
   explicit RemoteUrlFetcher(Profile* profile);
-  ~RemoteUrlFetcher() override = default;
+  ~RemoteUrlFetcher() override;
+
   RemoteUrlFetcher(const RemoteUrlFetcher&) = delete;
   RemoteUrlFetcher& operator=(const RemoteUrlFetcher&) = delete;
 
   // AppFetcher:
   void GetApps(ResultCallback callback) override;
+
+ private:
+  std::unique_ptr<RemoteUrlIndex> index_;
+
+  bool enabled_ = false;
 };
 
 }  // namespace apps
