@@ -42,6 +42,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static bool supports(ExecutionContext*, const AtomicString&);
+
   HTMLScriptElement(Document&, const CreateElementFlags);
 
   // Returns attributes that should be checked against Trusted Types

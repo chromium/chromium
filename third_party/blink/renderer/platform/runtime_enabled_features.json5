@@ -1943,6 +1943,10 @@
       status: "stable",
     },
     {
+      name: "ScriptElementSupports",
+      status: "experimental",
+    },
+    {
       name: "ScrollbarGutter",
       status: "stable",
     },

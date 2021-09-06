@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
+#include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -314,6 +315,24 @@ Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
       CreateElementFlags::ByCloneNode().SetAlreadyStarted(
           loader_->AlreadyStarted());
   return *factory.CreateElement(TagQName(), flags, IsValue());
+}
+
+// static
+bool HTMLScriptElement::supports(ExecutionContext* execution_context,
+                                 const AtomicString& type) {
+  if (type == script_type_names::kClassic)
+    return true;
+  if (type == script_type_names::kModule)
+    return true;
+  if (type == script_type_names::kImportmap)
+    return true;
+
+  if ((type == script_type_names::kSpeculationrules) &&
+      RuntimeEnabledFeatures::SpeculationRulesEnabled(execution_context)) {
+    return true;
+  }
+
+  return false;
 }
 
 void HTMLScriptElement::Trace(Visitor* visitor) const {
