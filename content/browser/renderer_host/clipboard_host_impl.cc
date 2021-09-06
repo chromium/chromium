@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -145,13 +144,20 @@ void ClipboardHostImpl::ReadAvailableTypes(
     ui::ClipboardBuffer clipboard_buffer,
     ReadAvailableTypesCallback callback) {
   std::vector<std::u16string> types;
-  ui::Clipboard::GetForCurrentThread()->ReadAvailableTypes(
-      clipboard_buffer, CreateDataEndpoint().get(), &types);
-  // If files are available, do not include other types such as text/plain
-  // which contain the full path on some platforms (http://crbug.com/1214108).
-  std::u16string filenames_type = base::UTF8ToUTF16(ui::kMimeTypeURIList);
-  if (base::Contains(types, filenames_type)) {
-    types = {filenames_type};
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  auto data_endpoint = CreateDataEndpoint();
+
+  // ReadAvailableTypes() returns 'text/uri-list' if either files are provided,
+  // or if it was set as a custom web type. If it is set because files are
+  // available, do not include other types such as text/plain which contain the
+  // full path on some platforms (http://crbug.com/1214108). But do not exclude
+  // other types when it is set as a custom web type (http://crbug.com/1241671).
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
+                                   clipboard_buffer, data_endpoint.get())) {
+    types = {base::UTF8ToUTF16(ui::kMimeTypeURIList)};
+  } else {
+    clipboard->ReadAvailableTypes(clipboard_buffer, data_endpoint.get(),
+                                  &types);
   }
   std::move(callback).Run(types);
 }

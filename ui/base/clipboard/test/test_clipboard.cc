@@ -21,6 +21,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -99,7 +100,8 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
-  if (!IsReadAllowed(GetStore(buffer).data_src.get(), data_dst))
+  const DataStore& store = GetStore(buffer);
+  if (!IsReadAllowed(store.data_src.get(), data_dst))
     return types;
 
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
@@ -128,6 +130,11 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
     types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer, data_dst))
     types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+
+  auto it = store.data.find(ClipboardFormatType::WebCustomDataType());
+  if (it != store.data.end())
+    ReadCustomDataTypes(it->second.c_str(), it->second.size(), &types);
+
   return types;
 }
 
@@ -442,6 +449,7 @@ void TestClipboard::DataStore::Clear() {
   url_title.clear();
   html_src_url.clear();
   png.clear();
+  filenames.clear();
   data_src.reset();
 }
 
