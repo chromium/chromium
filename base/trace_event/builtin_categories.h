@@ -332,6 +332,7 @@
   X("startup,rail")                                                           \
   X("ui,input")                                                               \
   X("ui,latency")                                                             \
+  X("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"))                            \
   X("v8,devtools.timeline")                                                   \
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
