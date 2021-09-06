@@ -1307,22 +1307,23 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
 
 apps::mojom::InstallSource GetInstallSource(
     const ArcAppListPrefs* prefs,
-    const ArcAppListPrefs::AppInfo* app_info) {
+    const std::string& app_id,
+    const ArcAppListPrefs::AppInfo& app_info) {
   // Sticky represents apps that cannot be uninstalled and are installed by the
   // system.
-  if (app_info->sticky) {
+  if (app_info.sticky) {
     return apps::mojom::InstallSource::kSystem;
   }
 
-  if (prefs->IsDefault(app_info->package_name)) {
-    return apps::mojom::InstallSource::kDefault;
-  }
-
-  if (prefs->IsOem(app_info->package_name)) {
+  if (prefs->IsOem(app_id)) {
     return apps::mojom::InstallSource::kOem;
   }
 
-  if (prefs->IsControlledByPolicy(app_info->package_name)) {
+  if (prefs->IsDefault(app_id)) {
+    return apps::mojom::InstallSource::kDefault;
+  }
+
+  if (prefs->IsControlledByPolicy(app_info.package_name)) {
     return apps::mojom::InstallSource::kPolicy;
   }
 
@@ -1337,7 +1338,7 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
       apps::mojom::AppType::kArc, app_id,
       app_info.suspended ? apps::mojom::Readiness::kDisabledByPolicy
                          : apps::mojom::Readiness::kReady,
-      app_info.name, GetInstallSource(prefs, &app_info));
+      app_info.name, GetInstallSource(prefs, app_id, app_info));
 
   app->publisher_id = app_info.package_name;
 

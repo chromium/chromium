@@ -3613,6 +3613,27 @@ TEST_P(ArcDefaultAppTest, DefaultAppsInstallation) {
   ValidateHaveApps(available_apps);
 }
 
+TEST_P(ArcDefaultAppTest, DefaultAppInstallMetrics) {
+  const std::string install_histogram = "Arc.AppInstalledReason";
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
+  ASSERT_NE(nullptr, prefs);
+  base::HistogramTester histogram_tester;
+
+  // Test app 1 is an OEM app.
+  const std::string package_name = fake_default_apps()[0].package_name;
+  app_instance()->SendInstallationStarted(package_name);
+  app_instance()->SendInstallationFinished(package_name, true /* success */);
+  histogram_tester.ExpectBucketCount(
+      install_histogram, /* InstallationCounterReasonEnum::OEM */ 2, 1);
+
+  // Test app 2 is a non-OEM default app.
+  const std::string package_name2 = fake_default_apps()[1].package_name;
+  app_instance()->SendInstallationStarted(package_name2);
+  app_instance()->SendInstallationFinished(package_name2, true /* success */);
+  histogram_tester.ExpectBucketCount(
+      install_histogram, /* InstallationCounterReasonEnum::DEFAULT */ 1, 1);
+}
+
 TEST_P(ArcDefaultAppForManagedUserTest, DefaultAppsForManagedUser) {
   const ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);

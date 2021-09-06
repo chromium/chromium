@@ -2073,10 +2073,11 @@ void ArcAppListPrefs::OnInstallationFinished(
     if (result->success) {
       InstallationCounterReasonEnum reason =
           InstallationCounterReasonEnum::USER;
-      if (IsDefault(result->package_name)) {
-        reason = InstallationCounterReasonEnum::DEFAULT;
-      } else if (IsOem(result->package_name)) {
+      std::string app_id = GetAppIdByPackageName(result->package_name);
+      if (IsOem(app_id)) {
         reason = InstallationCounterReasonEnum::OEM;
+      } else if (IsDefault(app_id)) {
+        reason = InstallationCounterReasonEnum::DEFAULT;
       } else if (IsControlledByPolicy(result->package_name)) {
         reason = InstallationCounterReasonEnum::POLICY;
       }
