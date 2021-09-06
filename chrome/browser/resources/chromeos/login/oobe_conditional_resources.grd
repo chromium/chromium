@@ -35,13 +35,6 @@
       <part file="oobe_components_resources.grdp" />
 
       <!-- Resources that are dynamically chosen to be served in runtime -->
-
-      <!-- New layout (oobe_adaptive_dialog and oobe_content_dialog) corresponds OOBE redesign which has happened in November 2020 -->
-      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML" file="components/dialogs/oobe_adaptive_dialog.html" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS" file="components/dialogs/oobe_adaptive_dialog.js" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML" file="components/dialogs/oobe_content_dialog.html" type="chrome_html" />
-      <include name="IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS" file="components/dialogs/oobe_content_dialog.js" type="chrome_html" />
-
       <!-- OOBE Custom CSS Variables -->
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_css.html" type="chrome_html" />
       <include name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_REMORA_CSS_HTML" file="components/oobe_vars/oobe_custom_vars_remora_css.html" type="chrome_html" />

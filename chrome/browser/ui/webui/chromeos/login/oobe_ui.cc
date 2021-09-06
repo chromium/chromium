@@ -159,15 +159,6 @@ constexpr char kOobeCustomVarsCssHTML[] =
     "components/oobe_vars/oobe_custom_vars_css.html";
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
-constexpr char kOobeAdaptiveDialogHTML[] =
-    "components/dialogs/oobe_adaptive_dialog.html";
-constexpr char kOobeAdaptvieDialogJS[] = "components/dialogs/oobe_adaptive_dialog.js";
-constexpr char kOobeContentDialogHTML[] = "components/dialogs/oobe_content_dialog.html";
-constexpr char kOobeContentDialogJS[] = "components/dialogs/oobe_content_dialog.js";
-constexpr char kOobeLoadingDialogHTML[] = "components/dialogs/oobe_loading_dialog.html";
-constexpr char kOobeLoadingDialogJS[] = "components/dialogs/oobe_loading_dialog.js";
-constexpr char kOobeModalDialogHTML[] = "components/dialogs/oobe_modal_dialog.html";
-constexpr char kOobeModalDialogJS[] = "components/dialogs/oobe_modal_dialog.js";
 constexpr char kOobeCarouselHTML[] = "components/oobe_carousel/oobe_carousel.html";
 constexpr char kOobeCarouselJS[] = "components/oobe_carousel/oobe_carousel.js";
 constexpr char kOobeSlideHTML[] = "components/oobe_slide/oobe_slide.html";
@@ -678,15 +669,6 @@ OobeUI::~OobeUI() {
 
 void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
                                const base::DictionaryValue& localized_strings) {
-  source->AddResourcePath(kOobeLoadingDialogHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_HTML);
-  source->AddResourcePath(kOobeLoadingDialogJS,
-                          IDR_OOBE_COMPONENTS_OOBE_LOADING_DIALOG_JS);
-  source->AddResourcePath(kOobeModalDialogHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_HTML);
-  source->AddResourcePath(kOobeModalDialogJS,
-                          IDR_OOBE_COMPONENTS_OOBE_MODAL_DIALOG_JS);
-
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     source->AddResourcePath(
         kOobeCustomVarsCssHTML,
@@ -700,15 +682,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
     source->AddResourcePath(kOobeCustomVarsCssJsM,
                             IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_CSS_M_JS);
   }
-
-  source->AddResourcePath(kOobeAdaptiveDialogHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_HTML);
-  source->AddResourcePath(kOobeAdaptvieDialogJS,
-                          IDR_OOBE_COMPONENTS_OOBE_ADAPTIVE_DIALOG_JS);
-  source->AddResourcePath(kOobeContentDialogHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_HTML);
-  source->AddResourcePath(kOobeContentDialogJS,
-                          IDR_OOBE_COMPONENTS_OOBE_CONTENT_DIALOG_JS);
 
   source->AddResourcePath("welcome_screen_animation.json",
                           IDR_LOGIN_WELCOME_SCREEN_ANIMATION);
