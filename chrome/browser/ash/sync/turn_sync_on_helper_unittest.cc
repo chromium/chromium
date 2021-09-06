@@ -49,7 +49,7 @@ std::unique_ptr<KeyedService> BuildTestSyncService(
 class TurnSyncOnHelperTest : public BrowserWithTestWindowTest {
  public:
   TurnSyncOnHelperTest() {
-    feature_list_.InitWithFeatures({chromeos::features::kSplitSettingsSync,
+    feature_list_.InitWithFeatures({chromeos::features::kSyncConsentOptional,
                                     chromeos::features::kUseBrowserSyncConsent},
                                    {});
   }

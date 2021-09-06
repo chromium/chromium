@@ -1081,8 +1081,10 @@ const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
 
 // Uses the same browser sync consent dialog as Windows/Mac/Linux. Allows the
 // user to fully opt-out of browser sync, including marking the IdentityManager
-// primary account as unconsented. Requires SplitSettingsSync.
+// primary account as unconsented. Requires SyncConsentOptional.
 // NOTE: Call UseBrowserSyncConsent() to test the flag, see implementation.
+// TODO(https://crbug.com/1246824) Maybe deprecate the flag in favor of
+// SyncConsentOptional.
 const base::Feature kUseBrowserSyncConsent{"UseBrowserSyncConsent",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -1672,8 +1674,8 @@ bool ShouldUseAttachApn() {
 }
 
 bool ShouldUseBrowserSyncConsent() {
-  // UseBrowserSyncConsent requires SplitSettingsSync.
-  return base::FeatureList::IsEnabled(kSplitSettingsSync) &&
+  // UseBrowserSyncConsent requires SyncConsentOptional.
+  return base::FeatureList::IsEnabled(kSyncConsentOptional) &&
          base::FeatureList::IsEnabled(kUseBrowserSyncConsent);
 }
 
