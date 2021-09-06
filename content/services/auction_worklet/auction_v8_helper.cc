@@ -4,7 +4,9 @@
 
 #include "content/services/auction_worklet/auction_v8_helper.h"
 
+#include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -26,6 +28,7 @@
 #include "gin/gin_features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
+#include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
 namespace auction_worklet {
@@ -147,10 +150,54 @@ class ScriptTimeoutHelper {
   std::unique_ptr<OffThreadTimer> off_thread_timer_;
 };
 
+// Helper class to notify debugger of context creation/destruction.
+// Does nothing if passed in `inspector` is nullptr or `context_group_id` is
+// kNoDebugContextGroupId.
+class DebugContextScope {
+ public:
+  DebugContextScope(v8_inspector::V8Inspector* inspector,
+                    v8::Local<v8::Context> context,
+                    int context_group_id,
+                    const std::string& name)
+      : inspector_(inspector),
+        context_(context),
+        context_group_id_(context_group_id) {
+    if (!inspector_ ||
+        context_group_id_ == AuctionV8Helper::kNoDebugContextGroupId) {
+      return;
+    }
+
+    v8_inspector::V8ContextInfo context_info(
+        context_, context_group_id_,
+        v8_inspector::StringView(reinterpret_cast<const uint8_t*>(name.data()),
+                                 name.size()));
+    inspector_->contextCreated(context_info);
+  }
+
+  ~DebugContextScope() {
+    if (!inspector_ ||
+        context_group_id_ == AuctionV8Helper::kNoDebugContextGroupId) {
+      return;
+    }
+
+    inspector_->contextDestroyed(context_);
+  }
+
+  DebugContextScope(const DebugContextScope&) = delete;
+  DebugContextScope& operator=(const DebugContextScope&) = delete;
+
+ private:
+  v8_inspector::V8Inspector* const inspector_;
+  const v8::Local<v8::Context> context_;
+  const int context_group_id_;
+};
+
 }  // namespace
 
 constexpr base::TimeDelta AuctionV8Helper::kScriptTimeout =
     base::TimeDelta::FromMilliseconds(50);
+
+const int AuctionV8Helper::kNoDebugContextGroupId;
 
 AuctionV8Helper::FullIsolateScope::FullIsolateScope(AuctionV8Helper* v8_helper)
     : locker_(v8_helper->isolate()),
@@ -304,9 +351,13 @@ bool AuctionV8Helper::ExtractJson(v8::Local<v8::Context> context,
 v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
     const std::string& src,
     const GURL& src_url,
+    int context_group_id,
     absl::optional<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Isolate* v8_isolate = isolate();
+
+  DebugContextScope maybe_debug(inspector(), v8_isolate->GetCurrentContext(),
+                                context_group_id, src_url.spec());
 
   v8::MaybeLocal<v8::String> src_string = CreateUtf8String(src);
   v8::MaybeLocal<v8::String> origin_string = CreateUtf8String(src_url.spec());
@@ -331,14 +382,17 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
 v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
     v8::Local<v8::Context> context,
     v8::Local<v8::UnboundScript> script,
+    int context_group_id,
     base::StringPiece function_name,
     base::span<v8::Local<v8::Value>> args,
     std::vector<std::string>& error_out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(isolate(), context->GetIsolate());
 
-  ScopedConsoleTarget direct_console(
-      this, FormatValue(isolate(), script->GetScriptName()), &error_out);
+  std::string script_name = FormatScriptName(script);
+  DebugContextScope maybe_debug(inspector(), context, context_group_id,
+                                script_name);
+  ScopedConsoleTarget direct_console(this, script_name, &error_out);
 
   v8::Local<v8::String> v8_function_name;
   if (!CreateUtf8String(function_name).ToLocal(&v8_function_name))
@@ -353,8 +407,7 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
 
   if (try_catch.HasTerminated()) {
     error_out.push_back(
-        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                      " top-level execution timed out."}));
+        base::StrCat({script_name, " top-level execution timed out."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
@@ -368,25 +421,22 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
 
   v8::Local<v8::Value> function;
   if (!context->Global()->Get(context, v8_function_name).ToLocal(&function)) {
-    error_out.push_back(
-        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                      " function `", function_name, "` not found."}));
+    error_out.push_back(base::StrCat(
+        {script_name, " function `", function_name, "` not found."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   if (!function->IsFunction()) {
-    error_out.push_back(
-        base::StrCat({FormatValue(isolate(), script->GetScriptName()), " `",
-                      function_name, "` is not a function."}));
+    error_out.push_back(base::StrCat(
+        {script_name, " `", function_name, "` is not a function."}));
     return v8::MaybeLocal<v8::Value>();
   }
 
   v8::MaybeLocal<v8::Value> func_result = v8::Function::Cast(*function)->Call(
       context, context->Global(), args.size(), args.data());
   if (try_catch.HasTerminated()) {
-    error_out.push_back(
-        base::StrCat({FormatValue(isolate(), script->GetScriptName()),
-                      " execution of `", function_name, "` timed out."}));
+    error_out.push_back(base::StrCat(
+        {script_name, " execution of `", function_name, "` timed out."}));
     return v8::MaybeLocal<v8::Value>();
   }
   if (try_catch.HasCaught()) {
@@ -400,6 +450,64 @@ void AuctionV8Helper::set_script_timeout_for_testing(
     base::TimeDelta script_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   script_timeout_ = script_timeout;
+}
+
+int AuctionV8Helper::AllocContextGroupIdAndSetResumeCallback(
+    base::OnceClosure resume_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (true) {
+    if (last_context_group_id_ == std::numeric_limits<int>::max())
+      last_context_group_id_ = 0;
+    int candidate = ++last_context_group_id_;
+    DCHECK_GT(candidate, 0);
+
+    if (resume_callbacks_.find(candidate) == resume_callbacks_.end()) {
+      resume_callbacks_.emplace(candidate, std::move(resume_callback));
+      return candidate;
+    }
+  }
+}
+
+void AuctionV8Helper::FreeContextGroupId(int context_group_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  size_t removed = resume_callbacks_.erase(context_group_id);
+  DCHECK_EQ(1u, removed);
+}
+
+void AuctionV8Helper::Resume(int context_group_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = resume_callbacks_.find(context_group_id);
+  if (it == resume_callbacks_.end())
+    return;
+
+  if (it->second)
+    std::move(it->second).Run();
+}
+
+void AuctionV8Helper::ResumeAllForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<int> live_ids;
+  for (const auto& kv : resume_callbacks_)
+    live_ids.push_back(kv.first);
+
+  for (int id : live_ids)
+    Resume(id);
+}
+
+v8_inspector::V8Inspector* AuctionV8Helper::inspector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return v8_inspector_.get();
+}
+
+void AuctionV8Helper::SetV8InspectorForTesting(
+    std::unique_ptr<v8_inspector::V8Inspector> v8_inspector) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8_inspector_ = std::move(v8_inspector);
+}
+
+std::string AuctionV8Helper::FormatScriptName(
+    v8::Local<v8::UnboundScript> script) {
+  return FormatValue(isolate(), script->GetScriptName());
 }
 
 AuctionV8Helper::ScopedConsoleTarget::ScopedConsoleTarget(
@@ -435,6 +543,7 @@ AuctionV8Helper::AuctionV8Helper(
 
 AuctionV8Helper::~AuctionV8Helper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(resume_callbacks_.empty());
 }
 
 void AuctionV8Helper::CreateIsolate() {

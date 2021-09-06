@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -522,6 +523,7 @@ class MockAuctionProcessManager
   void LoadBidderWorkletAndGenerateBid(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
+      bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       auction_worklet::mojom::BiddingInterestGroupPtr bidding_interest_group,
@@ -555,6 +557,7 @@ class MockAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet_receiver,
+      bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       const GURL& script_source_url,
@@ -648,6 +651,19 @@ class SameThreadAuctionProcessManager : public AuctionProcessManager {
   SameThreadAuctionProcessManager& operator=(
       const SameThreadAuctionProcessManager&) = delete;
   ~SameThreadAuctionProcessManager() override = default;
+
+  // Resume all worklets paused waiting for debugger on startup.
+  void ResumeAllPaused() {
+    for (const auto& svc : auction_worklet_services_) {
+      svc->AuctionV8HelperForTesting()->v8_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](scoped_refptr<auction_worklet::AuctionV8Helper> v8_helper) {
+                v8_helper->ResumeAllForTesting();
+              },
+              svc->AuctionV8HelperForTesting()));
+    }
+  }
 
  private:
   void LaunchProcess(
@@ -945,7 +961,7 @@ class AuctionRunnerTest : public testing::Test,
   // DebuggableAuctionWorkletTracker::Observer implementation
   void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,
                              bool& should_pause_on_start) override {
-    should_pause_on_start = false;  // Should be a no-op.
+    should_pause_on_start = (worklet->url() == pause_worklet_url_);
     observer_log_.push_back(base::StrCat({"Create ", worklet->url().spec()}));
   }
 
@@ -1041,6 +1057,9 @@ class AuctionRunnerTest : public testing::Test,
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   std::vector<std::string> observer_log_;
+
+  // Which worklet to pause, if any.
+  GURL pause_worklet_url_;
 };
 
 // Runs the standard auction, but without adding any interest groups to the
@@ -1153,6 +1172,95 @@ TEST_F(AuctionRunnerTest, Basic) {
                   "Destroy https://adplatform.com/offers.js",
                   "Destroy https://anotheradthing.com/bids.js",
                   "Destroy https://adstuff.publisher1.com/auction.js"));
+}
+
+TEST_F(AuctionRunnerTest, PauseBidder) {
+  pause_worklet_url_ = kBidder2Url;
+
+  // Save a pointer to SameThreadAuctionProcessManager since we'll need its help
+  // to resume things.
+  auto process_manager = std::make_unique<SameThreadAuctionProcessManager>();
+  SameThreadAuctionProcessManager* process_manager_impl = process_manager.get();
+  auction_process_manager_ = std::move(process_manager);
+
+  // Have a 404 for script 2 until ready to resume.
+  url_loader_factory_.AddResponse(kBidder2Url.spec(), "", net::HTTP_NOT_FOUND);
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  StartStandardAuction();
+  // Run all threads as far as they can get.
+  task_environment_.RunUntilIdle();
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b"));
+
+  process_manager_impl->ResumeAllPaused();
+
+  auction_run_loop_->Run();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            result_.bidder_report_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+TEST_F(AuctionRunnerTest, PauseSeller) {
+  pause_worklet_url_ = kSellerUrl;
+
+  // Save a pointer to SameThreadAuctionProcessManager since we'll need its help
+  // to resume things.
+  auto process_manager = std::make_unique<SameThreadAuctionProcessManager>();
+  SameThreadAuctionProcessManager* process_manager_impl = process_manager.get();
+  auction_process_manager_ = std::move(process_manager);
+
+  // Have a 404 for seller until ready to resume.
+  url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", kBidder1, kBidder1Name,
+                    true /* has_signals */, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", kBidder2, kBidder2Name,
+                    true /* has_signals */, "l2", "b"));
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  StartStandardAuction();
+  // Run all threads as far as they can get.
+  task_environment_.RunUntilIdle();
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  process_manager_impl->ResumeAllPaused();
+
+  auction_run_loop_->Run();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            result_.bidder_report_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
 }
 
 // An auction where one bid is successful, another's script 404s.

@@ -57,6 +57,8 @@ source_set("tests") {
     "worklet_loader_unittest.cc",
     "worklet_test_util.cc",
     "worklet_test_util.h",
+    "worklet_v8_debug_test_util.cc",
+    "worklet_v8_debug_test_util.h",
   ]
 
   deps = [

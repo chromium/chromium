@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/seller_worklet.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
+#include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -118,13 +120,11 @@ class SellerWorkletTest : public testing::Test {
   }
 
   // Loads and runs a scode_ad() script, expecting the supplied result.
-  void RunScoreAdExpectingResult(
+  void RunScoreAdExpectingResultOnWorklet(
+      mojom::SellerWorklet* seller_worklet,
       double expected_score,
       const std::vector<std::string>& expected_errors =
           std::vector<std::string>()) {
-    auto seller_worklet = CreateWorklet();
-    ASSERT_TRUE(seller_worklet);
-
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, auction_config_.Clone(),
@@ -139,6 +139,17 @@ class SellerWorkletTest : public testing::Test {
               run_loop.Quit();
             }));
     run_loop.Run();
+  }
+
+  // Loads and runs a scode_ad() script, expecting the supplied result.
+  void RunScoreAdExpectingResult(
+      double expected_score,
+      const std::vector<std::string>& expected_errors =
+          std::vector<std::string>()) {
+    auto seller_worklet = CreateWorklet();
+    ASSERT_TRUE(seller_worklet);
+    RunScoreAdExpectingResultOnWorklet(seller_worklet.get(), expected_score,
+                                       expected_errors);
   }
 
   // Configures `url_loader_factory_` to return a report_result() script created
@@ -200,23 +211,38 @@ class SellerWorkletTest : public testing::Test {
     run_loop.Run();
   }
 
+  // Create a seller worklet, not waiting for completion. If
+  // out_seller_worklet_impl is non-null, will also the stash the actual
+  // implementation point there.
+  mojo::Remote<mojom::SellerWorklet> CreateWorkletImpl(
+      const GURL& url,
+      bool pause_for_debugger_on_start,
+      SellerWorklet** out_seller_worklet_impl = nullptr) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+    url_loader_factory_.Clone(
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
+
+    mojo::Remote<mojom::SellerWorklet> seller_worklet;
+    auto seller_worklet_impl = std::make_unique<SellerWorklet>(
+        v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
+        url,
+        base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
+                       base::Unretained(this)));
+    if (out_seller_worklet_impl)
+      *out_seller_worklet_impl = seller_worklet_impl.get();
+    mojo::MakeSelfOwnedReceiver(std::move(seller_worklet_impl),
+                                seller_worklet.BindNewPipeAndPassReceiver());
+    return seller_worklet;
+  }
+
   // Create a SellerWorklet, waiting for the URLLoader to complete. Returns
   // a null Remote on failure.
   mojo::Remote<mojom::SellerWorklet> CreateWorklet() {
     CHECK(!load_script_run_loop_);
 
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-    url_loader_factory_.Clone(
-        url_loader_factory.InitWithNewPipeAndPassReceiver());
-
     create_worklet_succeeded_ = false;
-    mojo::Remote<mojom::SellerWorklet> seller_worklet;
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<SellerWorklet>(
-            v8_helper_, std::move(url_loader_factory), url_,
-            base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
-                           base::Unretained(this))),
-        seller_worklet.BindNewPipeAndPassReceiver());
+    mojo::Remote<mojom::SellerWorklet> seller_worklet =
+        CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/false);
     load_script_run_loop_ = std::make_unique<base::RunLoop>();
     load_script_run_loop_->Run();
     load_script_run_loop_.reset();
@@ -232,6 +258,13 @@ class SellerWorkletTest : public testing::Test {
     if (success)
       EXPECT_TRUE(last_errors_.empty());
     load_script_run_loop_->Quit();
+  }
+
+  int LookUpContextGroupId(SellerWorklet* worklet_impl) {
+    task_environment_.RunUntilIdle();
+    int id = worklet_impl->context_group_id_for_testing();
+    CHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, id);
+    return id;
   }
 
  protected:
@@ -275,7 +308,7 @@ TEST_F(SellerWorkletTest, PipeClosed) {
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SellerWorklet>(
-          v8_helper_,
+          v8_helper_, /*pause_for_debugger_on_start=*/false,
           url_loader_factory_receiver.InitWithNewPipeAndPassRemote(), url_,
           base::BindOnce(&SellerWorkletTest::CreateWorkletCallback,
                          base::Unretained(this))),
@@ -780,6 +813,200 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
   base::RunLoop().RunUntilIdle();
   seller_worklet.reset();
   event_handle->Signal();
+}
+
+TEST_F(SellerWorkletTest, PauseOnStart) {
+  // If pause isn't working, this will be used and not the right script.
+  url_loader_factory_.AddResponse(url_.spec(), "", net::HTTP_NOT_FOUND);
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet = CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/true,
+                                   &worklet_impl);
+  // Grab the context ID to be able to resume.
+  int id = LookUpContextGroupId(worklet_impl);
+
+  // Give it a chance to fetch.
+  task_environment_.RunUntilIdle();
+
+  AddJavascriptResponse(&url_loader_factory_, url_, CreateScoreAdScript("10"));
+
+  // Set up the event loop for the standard callback.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  // Let this run.
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce([](scoped_refptr<AuctionV8Helper> v8_helper,
+                                   int id) { v8_helper->Resume(id); },
+                                v8_helper_, id));
+
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_TRUE(create_worklet_succeeded_);
+}
+
+TEST_F(SellerWorkletTest, PauseOnStartDelete) {
+  AddJavascriptResponse(&url_loader_factory_, url_, CreateScoreAdScript("10"));
+
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet = CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/true,
+                                   &worklet_impl);
+
+  // Give it a chance to fetch.
+  task_environment_.RunUntilIdle();
+
+  // Grab the context ID.
+  int id = LookUpContextGroupId(worklet_impl);
+
+  // Delete the worklet. is should issue an error callback, so in turn it
+  // needs the event loop the callback in the fixture uses.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  worklet.reset();
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_FALSE(create_worklet_succeeded_);
+
+  // Try to resume post-delete. Should not crash
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce([](scoped_refptr<AuctionV8Helper> v8_helper,
+                                   int id) { v8_helper->Resume(id); },
+                                v8_helper_, id));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SellerWorkletTest, BasicV8Debug) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  // Helper for looking for scriptParsed events.
+  auto is_script_parsed = [](const TestChannel::Event& event) -> bool {
+    if (event.type != TestChannel::Event::Type::Notification)
+      return false;
+
+    const std::string* candidate_method = event.value.FindStringKey("method");
+    return (candidate_method && *candidate_method == "Debugger.scriptParsed");
+  };
+
+  const char kUrl1[] = "http://example.com/first.js";
+  const char kUrl2[] = "http://example.org/second.js";
+
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl1),
+                        CreateScoreAdScript("1"));
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl2),
+                        CreateScoreAdScript("2"));
+
+  SellerWorklet* worklet_impl1 = nullptr;
+  auto worklet1 = CreateWorkletImpl(
+      GURL(kUrl1), /*pause_for_debugger_on_start=*/true, &worklet_impl1);
+
+  SellerWorklet* worklet_impl2 = nullptr;
+  auto worklet2 = CreateWorkletImpl(
+      GURL(kUrl2), /*pause_for_debugger_on_start=*/true, &worklet_impl2);
+
+  int id1 = LookUpContextGroupId(worklet_impl1);
+  int id2 = LookUpContextGroupId(worklet_impl2);
+
+  TestChannel* channel1 = inspector_support.ConnectDebuggerSession(id1);
+  TestChannel* channel2 = inspector_support.ConnectDebuggerSession(id2);
+
+  channel1->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel1->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  channel2->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel2->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Should not see scriptParsed before resume.
+  std::list<TestChannel::Event> events1 = channel1->TakeAllEvents();
+  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
+
+  // Unpause execution for #1.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  channel1->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_TRUE(create_worklet_succeeded_);
+  create_worklet_succeeded_ = false;
+
+  // Run the script to get parsing events.
+  RunScoreAdExpectingResultOnWorklet(worklet1.get(), 1.0);
+
+  // channel1 should have had a parsed notification for kUrl1.
+  TestChannel::Event script_parsed1 =
+      channel1->WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url1 = script_parsed1.value.FindStringPath("params.url");
+  ASSERT_TRUE(url1);
+  EXPECT_EQ(kUrl1, *url1);
+
+  // There shouldn't be a parsed notification on channel 2, however.
+  std::list<TestChannel::Event> events2 = channel2->TakeAllEvents();
+  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+
+  // Unpause execution for #2.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  channel2->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_TRUE(create_worklet_succeeded_);
+
+  // Run the script to get parsing events.
+  RunScoreAdExpectingResultOnWorklet(worklet2.get(), 2.0);
+
+  // channel2 should have had a parsed notification for kUrl2.
+  TestChannel::Event script_parsed2 =
+      channel2->WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* url2 = script_parsed2.value.FindStringPath("params.url");
+  ASSERT_TRUE(url2);
+  EXPECT_EQ(kUrl2, *url2);
+
+  worklet1.reset();
+  worklet2.reset();
+  task_environment_.RunUntilIdle();
+
+  // No other scriptParsed events should be on either channel.
+  events1 = channel1->TakeAllEvents();
+  events2 = channel2->TakeAllEvents();
+  EXPECT_TRUE(std::none_of(events1.begin(), events1.end(), is_script_parsed));
+  EXPECT_TRUE(std::none_of(events2.begin(), events2.end(), is_script_parsed));
+}
+
+TEST_F(SellerWorkletTest, ParseErrorV8Debug) {
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+  AddJavascriptResponse(&url_loader_factory_, url_, "Invalid Javascript");
+  SellerWorklet* worklet_impl = nullptr;
+  auto worklet = CreateWorkletImpl(url_, /*pause_for_debugger_on_start=*/true,
+                                   &worklet_impl);
+  int id = LookUpContextGroupId(worklet_impl);
+  TestChannel* channel = inspector_support.ConnectDebuggerSession(id);
+
+  channel->RunCommandAndWaitForResult(
+      1, "Runtime.enable", R"({"id":1,"method":"Runtime.enable","params":{}})");
+  channel->RunCommandAndWaitForResult(
+      2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Unpause execution.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  channel->RunCommandAndWaitForResult(
+      3, "Runtime.runIfWaitingForDebugger",
+      R"({"id":3,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  load_script_run_loop_.reset();
+  EXPECT_FALSE(create_worklet_succeeded_);
+
+  // Should have gotten a parse error notification.
+  TestChannel::Event parse_error =
+      channel->WaitForMethodNotification("Debugger.scriptFailedToParse");
+  const std::string* error_url = parse_error.value.FindStringPath("params.url");
+  ASSERT_TRUE(error_url);
+  EXPECT_EQ(url_.spec(), *error_url);
 }
 
 }  // namespace

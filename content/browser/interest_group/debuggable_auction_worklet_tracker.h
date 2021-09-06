@@ -27,9 +27,6 @@ class CONTENT_EXPORT DebuggableAuctionWorkletTracker {
     // Called when a worklet is about to be launched. An implementation can
     // set `should_pause_on_start` to ask the worklet to not do anything yet
     // until resumed via devtools protocol).
-    //
-    // TODO(morlovich): The pausing isn't implemented yet, as there is no way of
-    // resuming at this point.
     virtual void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,
                                        bool& should_pause_on_start) {}
 

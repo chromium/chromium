@@ -34,6 +34,10 @@ interface AuctionWorkletService {
   //  since it's on the AuctionWorkletService pipe instead of the BidderWorklet
   //  pipe.
   //
+  // `pause_for_debugger_on_start` If this is true, the worklet should not
+  //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
+  //  command.
+  //
   // `url_loader_factory` The URLLoaderFactory used to load the worklet script
   //  and trusted bidding signals. It's recommended that the implementation be
   //  restricted to exactly those URLs (keeping in mind query parameter usage
@@ -77,6 +81,7 @@ interface AuctionWorkletService {
   // least within an auction.
   LoadBidderWorkletAndGenerateBid(
       pending_receiver<BidderWorklet> bidder_worklet,
+      bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       BiddingInterestGroup bidding_interest_group,
       string? auction_signals_json,
@@ -97,6 +102,10 @@ interface AuctionWorkletService {
   //  already, since it's on the AuctionWorkletService pipe instead of the
   //  SellerWorklet pipe.
   //
+  // `pause_for_debugger_on_start` If this is true, the worklet should not
+  //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
+  //  command.
+  //
   // `url_loader_factory` The UrlLoaderFactory used to load the worklet script.
   //  It's recommended that the implementation be restricted to only load the
   //  script URL.
@@ -112,6 +121,7 @@ interface AuctionWorkletService {
   //  fails.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
+      bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       url.mojom.Url script_source_url) => (
           bool success,

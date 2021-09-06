@@ -28,6 +28,7 @@ AuctionWorkletServiceImpl::~AuctionWorkletServiceImpl() = default;
 
 void AuctionWorkletServiceImpl::LoadBidderWorkletAndGenerateBid(
     mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
+    bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     mojom::BiddingInterestGroupPtr bidding_interest_group,
@@ -40,7 +41,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorkletAndGenerateBid(
         load_bidder_worklet_and_generate_bid_callback) {
   bidder_worklets_.Add(
       std::make_unique<BidderWorklet>(
-          auction_v8_helper_, std::move(pending_url_loader_factory),
+          auction_v8_helper_, pause_for_debugger_on_start,
+          std::move(pending_url_loader_factory),
           std::move(bidding_interest_group), auction_signals_json,
           per_buyer_signals_json, top_window_origin, seller_origin,
           auction_start_time,
@@ -50,14 +52,16 @@ void AuctionWorkletServiceImpl::LoadBidderWorkletAndGenerateBid(
 
 void AuctionWorkletServiceImpl::LoadSellerWorklet(
     mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
+    bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
     LoadSellerWorkletCallback load_seller_worklet_callback) {
   seller_worklets_.Add(
       std::make_unique<SellerWorklet>(
-          auction_v8_helper_, std::move(pending_url_loader_factory),
-          script_source_url, std::move(load_seller_worklet_callback)),
+          auction_v8_helper_, pause_for_debugger_on_start,
+          std::move(pending_url_loader_factory), script_source_url,
+          std::move(load_seller_worklet_callback)),
       std::move(seller_worklet_receiver));
 }
 

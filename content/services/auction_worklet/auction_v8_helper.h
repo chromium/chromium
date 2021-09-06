@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_V8_HELPER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_V8_HELPER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,6 +23,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
+
+namespace v8_inspector {
+class V8Inspector;
+}  // namespace v8_inspector
 
 namespace auction_worklet {
 
@@ -41,6 +46,9 @@ class AuctionV8Helper
  public:
   // Timeout for script execution.
   static const base::TimeDelta kScriptTimeout;
+
+  // Debugger context group ID asking for no debugging.
+  static const int kNoDebugContextGroupId = 0;
 
   // Helper class to set up v8 scopes to use Isolate. All methods expect a
   // FullIsolateScope to be have been created on the current thread, and a
@@ -135,12 +143,16 @@ class AuctionV8Helper
   v8::MaybeLocal<v8::UnboundScript> Compile(
       const std::string& src,
       const GURL& src_url,
+      int context_group_id,
       absl::optional<std::string>& error_out);
 
   // Binds a script and runs it in the passed in context, returning the result.
   // Note that the returned value could include references to objects or
   // functions contained within the context, so is likely not safe to use in
   // other contexts without sanitization.
+  //
+  // If `context_group_id` is not kNoDebugContextGroupId (0), and a debugger
+  // connection has been instantiated, will notify debugger of `context`.
   //
   // Assumes passed in context is the active context. Passed in context must be
   // using the Helper's isolate.
@@ -151,6 +163,7 @@ class AuctionV8Helper
   // In case of an error or console output sets `error_out`.
   v8::MaybeLocal<v8::Value> RunScript(v8::Local<v8::Context> context,
                                       v8::Local<v8::UnboundScript> script,
+                                      int context_group_id,
                                       base::StringPiece function_name,
                                       base::span<v8::Local<v8::Value>> args,
                                       std::vector<std::string>& error_out);
@@ -172,6 +185,45 @@ class AuctionV8Helper
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return console_script_name_;
   }
+
+  // V8 Debug functionality identifies what to operate on via numeric
+  // "context group IDs".
+
+  // Grabs an ID for a particular consumer, and sets the callback to use to
+  // resume its execution if it was paused on start.  Since Resume() can be
+  // called over Mojo pipes that are unordered with respect to main worklet Mojo
+  // pipes, the callback should probably be bound to a WeakPtr.
+  //
+  // Returned ID will be a positive integer.
+  int AllocContextGroupIdAndSetResumeCallback(
+      base::OnceClosure resume_callback);
+
+  // Frees up an ID that'll no longer be in use.
+  void FreeContextGroupId(int context_group_id);
+
+  // Invokes the registered resume callback for given ID. Does nothing if it
+  // was already invoked.
+  void Resume(int context_group_id);
+
+  // Overrides what ID will be remembered as last returned to help check the
+  // allocation algorithm.
+  void SetLastContextGroupIdForTesting(int new_last_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    last_context_group_id_ = new_last_id;
+  }
+
+  // Calls Resume on all registered context group IDs.
+  void ResumeAllForTesting();
+
+  // Returns the v8 inspector if one has been set. For now, null if
+  // SetV8InspectorForTesting hasn't been called.
+  v8_inspector::V8Inspector* inspector();
+
+  void SetV8InspectorForTesting(
+      std::unique_ptr<v8_inspector::V8Inspector> v8_inspector);
+
+  // Helper for formatting script name for debug messages.
+  std::string FormatScriptName(v8::Local<v8::UnboundScript> script);
 
  private:
   friend class base::RefCountedDeleteOnSequence<AuctionV8Helper>;
@@ -217,6 +269,15 @@ class AuctionV8Helper
   std::vector<std::string>* console_buffer_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   std::string console_script_name_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  int last_context_group_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  // This is keyed by group IDs, and is used to keep track of what's valid.
+  std::map<int, base::OnceClosure> resume_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<v8_inspector::V8Inspector> v8_inspector_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

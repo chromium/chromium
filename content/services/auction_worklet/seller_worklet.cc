@@ -114,12 +114,17 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
 
 SellerWorklet::SellerWorklet(
     scoped_refptr<AuctionV8Helper> v8_helper,
+    bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
     mojom::AuctionWorkletService::LoadSellerWorkletCallback
         load_worklet_callback)
     : v8_runner_(v8_helper->v8_runner()),
+      v8_helper_(v8_helper),
+      pending_url_loader_factory_(std::move(pending_url_loader_factory)),
+      script_source_url_(script_source_url),
+      context_group_id_(AuctionV8Helper::kNoDebugContextGroupId),
       v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
       load_worklet_callback_(std::move(load_worklet_callback)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -129,16 +134,8 @@ SellerWorklet::SellerWorklet(
       new V8State(v8_helper, script_source_url, weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
-  // Bind URLLoaderFactory. Remote is not needed after this method completes,
-  // since requests will continue after the URLLoaderFactory pipe has been
-  // closed, so no need to keep it around after requests have been issued.
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
-      std::move(pending_url_loader_factory));
-
-  worklet_loader_ = std::make_unique<WorkletLoader>(
-      url_loader_factory.get(), script_source_url, v8_helper,
-      base::BindOnce(&SellerWorklet::OnDownloadComplete,
-                     base::Unretained(this)));
+  paused_ = pause_for_debugger_on_start;
+  // DeliverContextGroupIdOnUserThread will call StartIfReady().
 }
 
 SellerWorklet::~SellerWorklet() {
@@ -198,6 +195,8 @@ SellerWorklet::V8State::V8State(scoped_refptr<AuctionV8Helper> v8_helper,
       user_thread_(base::SequencedTaskRunnerHandle::Get()),
       script_source_url_(std::move(script_source_url)) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this)));
 }
 
 void SellerWorklet::V8State::SetWorkletScript(
@@ -263,8 +262,8 @@ void SellerWorklet::V8State::ScoreAd(
   double score;
   std::vector<std::string> errors_out;
   if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), "scoreAd", args,
-                       errors_out)
+           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+                       "scoreAd", args, errors_out)
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(std::move(callback), 0 /* score */,
                                     std::move(errors_out));
@@ -347,8 +346,8 @@ void SellerWorklet::V8State::ReportResult(
   v8::Local<v8::Value> signals_for_winner_value;
   std::vector<std::string> errors_out;
   if (!v8_helper_
-           ->RunScript(context, worklet_script_.Get(isolate), "reportResult",
-                       args, errors_out)
+           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
+                       "reportResult", args, errors_out)
            .ToLocal(&signals_for_winner_value)) {
     PostReportResultCallbackToUserThread(
         std::move(callback), absl::nullopt /* signals_for_winner */,
@@ -371,6 +370,29 @@ void SellerWorklet::V8State::ReportResult(
 
 SellerWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  v8_helper_->FreeContextGroupId(context_group_id_);
+}
+
+void SellerWorklet::V8State::FinishInit() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  context_group_id_ = v8_helper_->AllocContextGroupIdAndSetResumeCallback(
+      base::BindOnce(&SellerWorklet::V8State::PostResumeToUserThread, parent_,
+                     user_thread_));
+  user_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SellerWorklet::DeliverContextGroupIdOnUserThread, parent_,
+                     context_group_id_));
+}
+
+// static
+void SellerWorklet::V8State::PostResumeToUserThread(
+    base::WeakPtr<SellerWorklet> parent,
+    scoped_refptr<base::SequencedTaskRunner> user_thread) {
+  // This is static since it's called from debugging, not SellerWorklet,
+  // so the usual guarantee that SellerWorklet posts things before posting
+  // V8State destruction is irrelevant.
+  user_thread->PostTask(FROM_HERE,
+                        base::BindOnce(&SellerWorklet::ResumeIfPaused, parent));
 }
 
 void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
@@ -402,6 +424,34 @@ void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
                      std::move(errors)));
 }
 
+void SellerWorklet::ResumeIfPaused() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  if (!paused_)
+    return;
+
+  paused_ = false;
+  StartIfReady();
+}
+
+void SellerWorklet::StartIfReady() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  if (paused_ || context_group_id_ == AuctionV8Helper::kNoDebugContextGroupId) {
+    return;
+  }
+
+  // Bind URLLoaderFactory. Remote is not needed after this method completes,
+  // since requests will continue after the URLLoaderFactory pipe has been
+  // closed, so no need to keep it around after requests have been issued.
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
+      std::move(pending_url_loader_factory_));
+
+  worklet_loader_ = std::make_unique<WorkletLoader>(
+      url_loader_factory.get(), script_source_url_, std::move(v8_helper_),
+      context_group_id_,
+      base::BindOnce(&SellerWorklet::OnDownloadComplete,
+                     base::Unretained(this)));
+}
+
 void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
                                        absl::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -420,6 +470,13 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   if (error_msg)
     errors.emplace_back(std::move(error_msg).value());
   std::move(load_worklet_callback_).Run(success, errors);
+}
+
+void SellerWorklet::DeliverContextGroupIdOnUserThread(int context_group_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  context_group_id_ = context_group_id;
+  DCHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, context_group_id_);
+  StartIfReady();
 }
 
 void SellerWorklet::DeliverScoreAdCallbackOnUserThread(

@@ -50,6 +50,7 @@ class TestAuctionProcessManager
   void LoadBidderWorkletAndGenerateBid(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet,
+      bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       auction_worklet::mojom::BiddingInterestGroupPtr bidding_interest_group,
       const absl::optional<std::string>& auction_signals_json,
@@ -64,6 +65,7 @@ class TestAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet,
+      bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       const GURL& script_source_url,
       LoadSellerWorkletCallback callback) override {
