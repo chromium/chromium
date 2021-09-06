@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
@@ -161,10 +162,10 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<DevicePermissionsPrompt>
   CreateDevicePermissionsPrompt(content::WebContents* web_contents) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   // Returns true if device policy allows detaching a given USB device.
   virtual bool ShouldAllowDetachingUsb(int vid, int pid) const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
   // Returns a delegate for some of VirtualKeyboardAPI's behavior.
   virtual std::unique_ptr<VirtualKeyboardDelegate>
@@ -206,7 +207,7 @@ class ExtensionsAPIClient {
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       const std::vector<char>& image_data,
@@ -214,7 +215,7 @@ class ExtensionsAPIClient {
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS)
 
   virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
 
