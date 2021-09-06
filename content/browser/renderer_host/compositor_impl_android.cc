@@ -484,6 +484,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // before it can be reset.
   display_private_.reset();
   GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  display_client_.reset();
 }
 
 void CompositorImpl::RegisterRootFrameSink() {
