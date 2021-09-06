@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/state.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
@@ -52,7 +53,7 @@ class ActionDelegate {
   virtual ~ActionDelegate() = default;
 
   // Show status message on the bottom bar. Additionally, it overrides the TTS
-  // message.
+  // message and stops any ongoing TTS.
   virtual void SetStatusMessage(const std::string& message) = 0;
 
   // Returns the current status message. Usually used to restore a message after
@@ -69,8 +70,11 @@ class ActionDelegate {
 
   // Overrides the TTS message to be played when requested. The TTS message
   // defaults to the current status message but can be overridden (until the
-  // next status message change) with this method.
+  // next status message change) with this method. Stops any ongoing TTS.
   virtual void SetTtsMessage(const std::string& message) = 0;
+
+  // Returns the current TTS button state.
+  virtual TtsButtonState GetTtsButtonState() const = 0;
 
   // Play TTS message if TextToSpeech is enabled (via "ENABLE_TTS"
   // script param). Will also stop any ongoing TTS message.

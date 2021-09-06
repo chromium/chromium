@@ -33,9 +33,15 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
   // Speaks the message in the given locale. Stops any ongoing TTS.
   //
   // Locale string must be in BCP 47 format, eg: "en-US", "hi-IN".
+  //
+  // Note: Will trigger a TTS_START event once the engine starts playing the
+  // TTS, which will be forwarded to the TtsEventDelegate.
   virtual void Speak(const std::string& message, const std::string& locale);
 
   // Stops any ongoing TTS.
+  //
+  // Note: Explicitly stopping a TTS message via this function does not
+  // generate any TTS event.
   virtual void Stop();
 
   void SetTtsEventDelegate(TtsEventDelegate* tts_event_delegate);

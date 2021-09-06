@@ -451,6 +451,7 @@ android_resources("java_resources") {
   deps = [
     ":java_strings_grd",
     "//chrome/android:chrome_app_java_resources",
+    "//components/browser_ui/styles/android:java_resources",
   ]
 }
 

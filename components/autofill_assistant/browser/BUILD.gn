@@ -229,6 +229,7 @@ static_library("browser") {
     "trigger_scripts/trigger_script.h",
     "trigger_scripts/trigger_script_coordinator.cc",
     "trigger_scripts/trigger_script_coordinator.h",
+    "tts_button_state.h",
     "ui_delegate.h",
     "url_utils.cc",
     "url_utils.h",
@@ -516,6 +517,7 @@ if (is_android) {
       "onboarding_result.h",
       "overlay_state.h",
       "trigger_scripts/trigger_script_action.h",
+      "tts_button_state.h",
       "user_data.h",
       "viewport_mode.h",
     ]

@@ -97,6 +97,10 @@ std::string FakeScriptExecutorDelegate::GetTtsMessage() const {
   return tts_message_;
 }
 
+TtsButtonState FakeScriptExecutorDelegate::GetTtsButtonState() const {
+  return TtsButtonState::DEFAULT;
+}
+
 void FakeScriptExecutorDelegate::MaybePlayTtsMessage() {}
 
 void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details,

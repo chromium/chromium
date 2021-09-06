@@ -92,6 +92,11 @@ void AssistantHeaderModel::SetTtsButtonVisible(bool visible) {
                                                 visible);
 }
 
+void AssistantHeaderModel::SetTtsButtonState(TtsButtonState state) {
+  Java_AssistantHeaderModel_setTtsButtonState(AttachCurrentThread(), jmodel_,
+                                              state);
+}
+
 void AssistantHeaderModel::SetDisableAnimations(bool disable_animations) {
   Java_AssistantHeaderModel_setDisableAnimations(AttachCurrentThread(), jmodel_,
                                                  disable_animations);

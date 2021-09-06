@@ -163,6 +163,7 @@ class ScriptExecutor : public ActionDelegate,
   void SetBubbleMessage(const std::string& message) override;
   std::string GetBubbleMessage() const override;
   void SetTtsMessage(const std::string& message) override;
+  TtsButtonState GetTtsButtonState() const override;
   void MaybePlayTtsMessage() override;
   void FindElement(const Selector& selector,
                    ElementFinder::Callback callback) const override;

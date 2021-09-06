@@ -167,7 +167,7 @@ void Controller::SetStatusMessage(const std::string& message) {
   }
 
   // Override tts_message every time status_message changes.
-  tts_message_ = message;
+  SetTtsMessage(message);
 }
 
 std::string Controller::GetStatusMessage() const {
@@ -187,6 +187,13 @@ std::string Controller::GetBubbleMessage() const {
 
 void Controller::SetTtsMessage(const std::string& message) {
   tts_message_ = message;
+
+  // Stop any ongoing TTS and reset button state.
+  if (tts_button_state_ == TtsButtonState::PLAYING) {
+    // Will not cause any TTS event.
+    tts_controller_->Stop();
+    SetTtsButtonState(TtsButtonState::DEFAULT);
+  }
 }
 
 std::string Controller::GetTtsMessage() const {
@@ -194,10 +201,12 @@ std::string Controller::GetTtsMessage() const {
 }
 
 void Controller::MaybePlayTtsMessage() {
-  // TODO(jainshashank): Add Play enable/disable state management
-  if (tts_enabled_) {
-    tts_controller_->Speak(tts_message_, GetLocale());
+  if (!tts_enabled_) {
+    return;
   }
+
+  // Will fire a TTS_START event.
+  tts_controller_->Speak(tts_message_, GetLocale());
 }
 
 void Controller::SetDetails(std::unique_ptr<Details> details,
@@ -373,6 +382,10 @@ bool Controller::GetProgressVisible() const {
 
 bool Controller::GetTtsButtonVisible() const {
   return tts_enabled_;
+}
+
+TtsButtonState Controller::GetTtsButtonState() const {
+  return tts_button_state_;
 }
 
 void Controller::SetStepProgressBarConfiguration(
@@ -1435,8 +1448,42 @@ void Controller::OnFormActionLinkClicked(int link) {
 }
 
 void Controller::OnTtsButtonClicked() {
-  // TODO(jainshashank): Add button enable/disable state management
-  MaybePlayTtsMessage();
+  switch (tts_button_state_) {
+    case TtsButtonState::DEFAULT:
+      // Will fire a TTS_START event.
+      tts_controller_->Speak(tts_message_, GetLocale());
+      break;
+    case TtsButtonState::PLAYING:
+      // Will not cause any TTS event.
+      tts_controller_->Stop();
+      SetTtsButtonState(TtsButtonState::DISABLED);
+      break;
+    case TtsButtonState::DISABLED:
+      SetTtsButtonState(TtsButtonState::DEFAULT);
+      // Will fire a TTS_START event.
+      tts_controller_->Speak(tts_message_, GetLocale());
+      break;
+  }
+}
+
+void Controller::OnTtsEvent(
+    AutofillAssistantTtsController::TtsEventType event) {
+  switch (event) {
+    case AutofillAssistantTtsController::TTS_START:
+      SetTtsButtonState(TtsButtonState::PLAYING);
+      break;
+    case AutofillAssistantTtsController::TTS_END:
+    case AutofillAssistantTtsController::TTS_ERROR:
+      SetTtsButtonState(TtsButtonState::DEFAULT);
+      break;
+  }
+}
+
+void Controller::SetTtsButtonState(TtsButtonState state) {
+  tts_button_state_ = state;
+  for (ControllerObserver& observer : observers_) {
+    observer.OnTtsButtonStateChanged(tts_button_state_);
+  }
 }
 
 void Controller::SetDateTimeRangeStartDate(
@@ -2170,11 +2217,6 @@ void Controller::OnInputTextFocusChanged(bool is_text_focused) {
   if (ShouldUpdateChipVisibility()) {
     SetVisibilityAndUpdateUserActions();
   }
-}
-
-void Controller::OnTtsEvent(
-    AutofillAssistantTtsController::TtsEventType tts_event) {
-  // TODO(jainshashank): Implement TTS button state management
 }
 
 ElementArea* Controller::touchable_element_area() {

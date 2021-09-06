@@ -205,6 +205,7 @@ class Controller : public ScriptExecutorDelegate,
   absl::optional<int> GetProgressActiveStep() const override;
   bool GetProgressVisible() const override;
   bool GetTtsButtonVisible() const override;
+  TtsButtonState GetTtsButtonState() const override;
   bool GetProgressBarErrorState() const override;
   absl::optional<ShowProgressBarProto::StepProgressBarConfiguration>
   GetStepProgressBarConfiguration() const override;
@@ -275,8 +276,7 @@ class Controller : public ScriptExecutorDelegate,
   void OnInputTextFocusChanged(bool is_text_focused) override;
 
   // Overrides AutofillAssistantTtsController::TtsEventDelegate
-  void OnTtsEvent(
-      AutofillAssistantTtsController::TtsEventType tts_event_type) override;
+  void OnTtsEvent(AutofillAssistantTtsController::TtsEventType event) override;
 
  private:
   friend ControllerTest;
@@ -419,6 +419,8 @@ class Controller : public ScriptExecutorDelegate,
 
   void MakeDetailsVisible(size_t details_index);
   void NotifyDetailsChanged();
+
+  void SetTtsButtonState(TtsButtonState state);
 
   ClientSettings settings_;
   Client* const client_;
@@ -596,8 +598,8 @@ class Controller : public ScriptExecutorDelegate,
   bool are_chips_visible_ = true;
 
   bool tts_enabled_ = false;
-
   std::unique_ptr<AutofillAssistantTtsController> tts_controller_;
+  TtsButtonState tts_button_state_ = TtsButtonState::DEFAULT;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

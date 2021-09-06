@@ -31,7 +31,8 @@ void TellAction::InternalProcessAction(ProcessActionCallback callback) {
       delegate_->SetTtsMessage(proto_.tell().text_to_speech().tts_message());
     }
 
-    if (proto_.tell().text_to_speech().play_now()) {
+    if (proto_.tell().text_to_speech().play_now() &&
+        delegate_->GetTtsButtonState() != TtsButtonState::DISABLED) {
       delegate_->MaybePlayTtsMessage();
     }
   }

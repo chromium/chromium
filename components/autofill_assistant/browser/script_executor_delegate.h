@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
 #include "components/autofill_assistant/browser/state.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
@@ -82,6 +83,7 @@ class ScriptExecutorDelegate {
   virtual std::string GetBubbleMessage() const = 0;
   virtual void SetTtsMessage(const std::string& message) = 0;
   virtual std::string GetTtsMessage() const = 0;
+  virtual TtsButtonState GetTtsButtonState() const = 0;
   virtual void MaybePlayTtsMessage() = 0;
   virtual void SetDetails(std::unique_ptr<Details> details,
                           base::TimeDelta delay) = 0;

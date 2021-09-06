@@ -248,6 +248,12 @@ class ControllerTest : public testing::Test {
     return required_data_piece;
   }
 
+  void EnableTtsForTest() { controller_->tts_enabled_ = true; }
+
+  void SetTtsButtonStateForTest(TtsButtonState state) {
+    controller_->tts_button_state_ = state;
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -2282,44 +2288,94 @@ TEST_F(ControllerTest, EnableTts) {
   EXPECT_TRUE(controller_->GetTtsButtonVisible());
 }
 
-TEST_F(ControllerTest, TtsMessage) {
-  // Status_message overrides tts_message.
+TEST_F(ControllerTest, TtsMessageIsSetCorrectlyAtStartup) {
+  Start();
+  EXPECT_EQ(controller_->GetTtsMessage(), controller_->GetStatusMessage());
+  EXPECT_FALSE(controller_->GetTtsMessage().empty());
+}
+
+TEST_F(ControllerTest, TtsMessageIsSetCorrectly) {
+  // SetStatusMessage should override tts_message
   controller_->SetStatusMessage("message");
   EXPECT_EQ(controller_->GetTtsMessage(), "message");
 
-  // Tts_message is set correctly.
   controller_->SetTtsMessage("tts_message");
   EXPECT_EQ(controller_->GetTtsMessage(), "tts_message");
+  EXPECT_EQ(controller_->GetStatusMessage(), "message");
 }
 
-TEST_F(ControllerTest, PlayTtsOnButtonClick) {
-  // Enable TTS
-  GURL url("http://a.example.com/path");
-  controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options()));
+TEST_F(ControllerTest, SetTtsMessageStopsAnyOngoingTts) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::PLAYING);
 
-  controller_->SetStatusMessage("message");
+  EXPECT_CALL(*mock_tts_controller_, Stop());
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  controller_->SetTtsMessage("tts_message");
+}
 
-  EXPECT_CALL(*mock_tts_controller_, Speak("message", kClientLocale));
+TEST_F(ControllerTest, TappingTtsButtonInDefaultStateStartsPlayingTts) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::DEFAULT);
+  controller_->SetTtsMessage("tts_message");
 
+  EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale));
   controller_->OnTtsButtonClicked();
 }
 
-TEST_F(ControllerTest, MaybePlayTtsMessage) {
-  // Enable TTS
-  GURL url("http://a.example.com/path");
-  controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options()));
+TEST_F(ControllerTest, TappingTtsButtonWhilePlayingDisablesTtsButton) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::PLAYING);
 
+  EXPECT_CALL(mock_observer_,
+              OnTtsButtonStateChanged(TtsButtonState::DISABLED));
+  EXPECT_CALL(*mock_tts_controller_, Stop());
+  controller_->OnTtsButtonClicked();
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DISABLED);
+}
+
+TEST_F(ControllerTest, TappingDisabledTtsButtonReEnablesItAndStartsTts) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::DISABLED);
   controller_->SetTtsMessage("tts_message");
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale));
+  controller_->OnTtsButtonClicked();
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
+TEST_F(ControllerTest, MaybePlayTtsMessageDoesNotStartTtsIfTtsNotEnabled) {
+  // tts_enabled_ is false by default
+  controller_->SetTtsMessage("tts_message");
+
+  EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale))
+      .Times(0);
+  controller_->MaybePlayTtsMessage();
+}
+
+TEST_F(ControllerTest, MaybePlayTtsMessageStartsPlayingCorrectTtsMessage) {
+  EnableTtsForTest();
+  controller_->SetStatusMessage("message");
+  controller_->SetTtsMessage("tts_message");
+
   EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale));
   controller_->MaybePlayTtsMessage();
+}
+
+TEST_F(ControllerTest, OnTtsEventChangesTtsButtonStateCorrectly) {
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::PLAYING));
+  controller_->OnTtsEvent(AutofillAssistantTtsController::TTS_START);
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::PLAYING);
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  controller_->OnTtsEvent(AutofillAssistantTtsController::TTS_END);
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  controller_->OnTtsEvent(AutofillAssistantTtsController::TTS_ERROR);
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
 }
 
 TEST_F(ControllerTest, AddParametersToUserData) {

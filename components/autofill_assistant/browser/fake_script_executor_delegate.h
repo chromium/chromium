@@ -44,6 +44,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::string GetBubbleMessage() const override;
   void SetTtsMessage(const std::string& message) override;
   std::string GetTtsMessage() const override;
+  TtsButtonState GetTtsButtonState() const override;
   void MaybePlayTtsMessage() override;
   void SetDetails(std::unique_ptr<Details> details,
                   base::TimeDelta delay) override;

@@ -319,6 +319,10 @@ void ScriptExecutor::SetTtsMessage(const std::string& message) {
   delegate_->SetTtsMessage(message);
 }
 
+TtsButtonState ScriptExecutor::GetTtsButtonState() const {
+  return delegate_->GetTtsButtonState();
+}
+
 void ScriptExecutor::MaybePlayTtsMessage() {
   delegate_->MaybePlayTtsMessage();
 }

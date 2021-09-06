@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
@@ -133,6 +134,8 @@ class AssistantHeaderViewBinder
             showOrDismissBubble(model, view);
         } else if (AssistantHeaderModel.TTS_BUTTON_VISIBLE == propertyKey) {
             showOrHideTtsButton(model, view);
+        } else if (AssistantHeaderModel.TTS_BUTTON_STATE == propertyKey) {
+            setTtsButtonState(view, model.get(AssistantHeaderModel.TTS_BUTTON_STATE));
         } else if (AssistantHeaderModel.TTS_BUTTON_CALLBACK == propertyKey) {
             setTtsButtonClickListener(view, model.get(AssistantHeaderModel.TTS_BUTTON_CALLBACK));
         } else if (AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING == propertyKey) {
@@ -218,5 +221,18 @@ class AssistantHeaderViewBinder
                 ttsButtonCallback.run();
             }
         });
+    }
+
+    private void setTtsButtonState(ViewHolder view, @AssistantTtsButtonState int state) {
+        switch (state) {
+            case AssistantTtsButtonState.DEFAULT:
+            case AssistantTtsButtonState.PLAYING:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_ENABLED_ICON_TAG);
+                break;
+            case AssistantTtsButtonState.DISABLED:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_DISABLED_ICON_TAG);
+        }
     }
 }

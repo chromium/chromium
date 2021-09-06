@@ -28,4 +28,6 @@ public class AssistantTagsForTesting {
     public static final String PROGRESSBAR_ICON_TAG = "progress_icon_%d";
     public static final String PROGRESSBAR_LINE_TAG = "progress_line_%d";
     public static final String PROGRESSBAR_LINE_FOREGROUND_TAG = "progress_line_foreground";
+    public static final String TTS_ENABLED_ICON_TAG = "tts_enabled_icon";
+    public static final String TTS_DISABLED_ICON_TAG = "tts_disabled_icon";
 }

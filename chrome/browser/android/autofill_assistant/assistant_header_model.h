@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 
 namespace autofill_assistant {
 
@@ -36,6 +37,7 @@ class AssistantHeaderModel {
   void SetSpinPoodle(bool enabled);
   void SetChips(const base::android::ScopedJavaLocalRef<jobject>& jchips);
   void SetTtsButtonVisible(bool visible);
+  void SetTtsButtonState(TtsButtonState state);
   void SetDisableAnimations(bool disable_animations);
 
  private:
