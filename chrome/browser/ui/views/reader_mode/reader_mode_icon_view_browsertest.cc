@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/button_test_api.h"
@@ -92,6 +93,7 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewBrowserTest,
   const bool is_visible_on_non_distillable_page =
       reader_mode_icon_->GetVisible();
   EXPECT_FALSE(is_visible_on_non_distillable_page);
+  EXPECT_FALSE(observer.IsDistillabilityDriverTimerRunning());
 
   // The icon should appear after navigating to a distillable article.
   ui_test_utils::NavigateToURL(
@@ -100,6 +102,7 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewBrowserTest,
   observer.WaitForResult(expected_result);
   const bool is_visible_on_article = reader_mode_icon_->GetVisible();
   EXPECT_TRUE(is_visible_on_article);
+  EXPECT_TRUE(observer.IsDistillabilityDriverTimerRunning());
 
   // Navigating back to a non-distillable page hides the icon again.
   ui_test_utils::NavigateToURL(browser(),
@@ -109,6 +112,61 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewBrowserTest,
   const bool is_visible_after_navigation_back_to_non_distillable_page =
       reader_mode_icon_->GetVisible();
   EXPECT_FALSE(is_visible_after_navigation_back_to_non_distillable_page);
+}
+
+class ReaderModeIconViewPrerenderBrowserTest
+    : public ReaderModeIconViewBrowserTest {
+ public:
+  ReaderModeIconViewPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ReaderModeIconViewPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~ReaderModeIconViewPrerenderBrowserTest() override = default;
+
+ protected:
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReaderModeIconViewPrerenderBrowserTest,
+                       IconVisibilityNotAffectedByPrerendering) {
+  dom_distiller::TestDistillabilityObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  dom_distiller::DistillabilityResult expected_result;
+  expected_result.is_distillable = false;
+  expected_result.is_last = false;
+  expected_result.is_mobile_friendly = false;
+
+  // The icon should not be visible by default, before navigation to any page
+  // has occurred.
+  const bool is_visible_before_navigation = reader_mode_icon_->GetVisible();
+  EXPECT_FALSE(is_visible_before_navigation);
+
+  // The icon should be hidden on pages that aren't distillable.
+  ui_test_utils::NavigateToURL(browser(),
+                               https_server_secure()->GetURL(kNonArticlePath));
+  observer.WaitForResult(expected_result);
+  const bool is_visible_on_non_distillable_page =
+      reader_mode_icon_->GetVisible();
+  EXPECT_FALSE(is_visible_on_non_distillable_page);
+
+  // The icon should not yet appear after prerendering a distillable article.
+  prerender_helper_.AddPrerender(
+      https_server_secure()->GetURL(kSimpleArticlePath));
+  EXPECT_FALSE(observer.IsDistillabilityDriverTimerRunning());
+
+  // Make the prerendering page primary (i.e. the user clicked on a link to
+  // the prerendered URL). The icon should become visible at this point.
+  prerender_helper_.NavigatePrimaryPage(
+      https_server_secure()->GetURL(kSimpleArticlePath));
+  expected_result.is_distillable = true;
+  observer.WaitForResult(expected_result);
+  const bool is_visible_on_article = reader_mode_icon_->GetVisible();
+  EXPECT_TRUE(is_visible_on_article);
+  EXPECT_TRUE(observer.IsDistillabilityDriverTimerRunning());
 }
 
 class ReaderModeIconViewBrowserTestWithSettings

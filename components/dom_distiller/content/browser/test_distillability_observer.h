@@ -27,6 +27,10 @@ class TestDistillabilityObserver : public DistillabilityObserver {
   // blocks and waits until that result is observed.
   void WaitForResult(const DistillabilityResult& result);
 
+  // Returns true if the timer is currently running for the associated
+  // WebContents, and false otherwise.
+  bool IsDistillabilityDriverTimerRunning();
+
  private:
   void OnResult(const DistillabilityResult& result) override;
 
