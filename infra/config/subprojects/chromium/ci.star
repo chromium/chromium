@@ -5376,6 +5376,19 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
+    name = "Cast Linux ARM64",
+    branch_selector = branches.MAIN,
+    console_view_entry = consoles.console_view_entry(
+        category = "cast",
+        short_name = "arm64",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+    os = os.LINUX_BIONIC,
+    tree_closing = False,
+)
+
+ci.linux_builder(
     name = "Deterministic Fuchsia (dbg)",
     console_view_entry = [
         consoles.console_view_entry(

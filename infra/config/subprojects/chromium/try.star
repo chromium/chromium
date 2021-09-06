@@ -1045,6 +1045,18 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "cast_shell_linux_arm64",
+    branch_selector = branches.MAIN,
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chromecast/.+",
+        ],
+    ),
+    os = os.LINUX_BIONIC,
+)
+
+try_.chromium_linux_builder(
     name = "cast-binary-size",
     builderless = True,
     executable = "recipe:binary_size_cast_trybot",
