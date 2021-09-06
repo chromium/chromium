@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/buildflag.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -274,7 +275,13 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-IN_PROC_BROWSER_TEST_F(SyncAuthTest, TokenExpiry) {
+// TODO(crbug.com/1245180): Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TokenExpiry DISABLED_TokenExpiry
+#else
+#define MAYBE_TokenExpiry TokenExpiry
+#endif
+IN_PROC_BROWSER_TEST_F(SyncAuthTest, MAYBE_TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();
