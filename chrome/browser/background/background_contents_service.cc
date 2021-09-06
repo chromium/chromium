@@ -113,8 +113,6 @@ class CrashNotificationDelegate : public message_center::NotificationDelegate {
     // indirectly destroys the CrashNotificationDelegate, invalidating all its
     // member variables. Make sure to pass arguments by value when adding new
     // ones to this method.
-    // TODO(knollr): Write a test for the flow of clicking on an extension
-    // crashed notification.
     if (is_hosted_app) {
       // There can be a race here: user clicks the balloon, and simultaneously
       // reloads the sad tab for the app. So we check here to be safe before

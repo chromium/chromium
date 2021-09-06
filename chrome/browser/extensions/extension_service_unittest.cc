@@ -40,6 +40,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/blocklist.h"
@@ -74,6 +75,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -7893,6 +7895,32 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   EXPECT_TRUE(prefs->IsExternalExtensionAcknowledged(extension->id()));
   EXPECT_EQ(disable_reason::DISABLE_NONE, prefs->GetDisableReasons(good_crx));
   EXPECT_FALSE(prefs->IsExtensionDisabled(good_crx));
+}
+
+// Regression test for crbug.com/979010.
+TEST_F(ExtensionServiceTest, ReloadingExtensionFromNotification) {
+  // Initialize a new extension.
+  InitializeEmptyExtensionService();
+  base::FilePath path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(path, INSTALL_NEW);
+  ASSERT_EQ(good_crx, extension->id());
+
+  // Show the "Extension crashed" notification.
+  base::RunLoop run_loop;
+  NotificationDisplayServiceTester display_service(profile());
+  display_service.SetNotificationAddedClosure(run_loop.QuitClosure());
+  std::string notification_id = BackgroundContentsService::
+      GetNotificationDelegateIdForExtensionForTesting(extension->id());
+  BackgroundContentsService::ShowBalloonForTesting(extension, profile());
+  run_loop.Run();
+
+  // Click on the "Extension crashed" notification and expect the extension to
+  // be reloaded without a crash.
+  TestExtensionRegistryObserver registry_observer(
+      ExtensionRegistry::Get(profile()), extension->id());
+  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                notification_id, absl::nullopt, absl::nullopt);
+  ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
