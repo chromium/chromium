@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1883903952484604915">Миний файл</translation>
 <translation id="189358972401248634">Бусад хэлнүүд</translation>
+<translation id="1910950723001426294">Хуваалцах сонголтын жагсаалтыг хаасан.</translation>
 <translation id="1918175104945982129">Туслахын дуут хайлтын зөвшөөрлийн ui-г хагас өндрөөр нээсэн</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="1922362554271624559">Санал болгосон хэлнүүд</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
 <translation id="2286841657746966508">Тооцооны хаяг</translation>
+<translation id="228704530595896923">Хуваалцах сонголтын жагсаалт.</translation>
 <translation id="230115972905494466">Тохирох төхөөрөмж олдсонгүй</translation>
 <translation id="230155349749732438">Энэ тохиргоог ашиглахын тулд <ph name="BEGIN_LINK" />Хайлт болон үзэх явцыг сайжруулах<ph name="END_LINK" /> онцлогийг асаасан байх ёстой</translation>
 <translation id="2318045970523081853">Дуудлага хийхийн тулд товшино уу</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="4137746084635924146">Төхөөрөмжийн одоогийн хэл</translation>
 <translation id="4141536112466364990">Chrome-г судлах</translation>
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
+<translation id="4162867837470729563">Бүтэн хэмжээтэйгээр хуваалцах сонголтын жагсаалт.</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4170011742729630528">Энэ үйлчилгээг авах боломжгүй байна; Та дараа дахин оролдоно уу.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" />-г ашигласан</translation>
@@ -845,6 +848,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6203593061661911168">Таталтыг Wi-Fi-р эхлүүлнэ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
 <translation id="6211386937064921208">Энэ хуудсыг урьдчилан үзэж байна</translation>
+<translation id="6212786426849242805">Google-д мөн хуудасны зарим текстийг бодолцож үзэхийг зөвшөөрнө үү</translation>
 <translation id="6221633008163990886">Нууц үгээ экспортлох бол түгжээг тайлна уу</translation>
 <translation id="6232535412751077445">"Бүү дага" тохиргоог идэвхжүүлснээр тухайн хүсэлтийг таны хайлтын хэсэгт хадгална. Гарах үр дүн нь веб хуудаснаас тухайн хүсэлтэд хариу өгч байгаа эсэх, тухайн хүсэлтийг хэрхэн тайлбарлаж байна гэдгээс хамаарна.
 
@@ -894,6 +898,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6459045781120991510">Судалгаа</translation>
 <translation id="6461962085415701688">Файлыг нээх боломжгүй байна</translation>
 <translation id="6464977750820128603">Та Chrome-д зочилдог сайтуудаа харах болон тэдгээрт цаг хэмжигч тохируулах боломжтой.\n\nGoogle таны цаг хэмжигч тохируулсан сайтууд болон тэдгээрт хэр удаан зочилдог талаарх мэдээллийг авдаг. Энэ мэдээллийг Дижитал хэрэглээг сайжруулах зорилгоор ашигладаг.</translation>
+<translation id="6473086018775716761">Тал хэмжээтэйгээр нээсэн хуваалцах сонголтын жагсаалт.</translation>
 <translation id="6475951671322991020">Видео татах</translation>
 <translation id="6477928892249167417">Эдгээр сайт танд чухал бололтой:</translation>
 <translation id="6482749332252372425">Санах ойн багтаамж хүрэлцээгүйн улмаас <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
@@ -1130,6 +1135,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7857691613771368249">Файлуудыг хэзээ хадгалахыг асуух</translation>
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
+<translation id="78707286264420418">Таны төхөөрөмжтэй холбогдохын тулд <ph name="PRODUCT_NAME" />-д Ойролцоох төхөөрөмжүүдийн зөвшөөрөл шаардлагатай</translation>
 <translation id="7875915731392087153">Имэйл үүсгэх</translation>
 <translation id="7876243839304621966">Бүгдийг устгах</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Танд уншаагүй <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> хуудас байна}other{Танд уншаагүй <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> хуудас байна}}</translation>
@@ -1191,6 +1197,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8186512483418048923"><ph name="FILES" /> файл үлдсэн</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 өдөр үлдсэн</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8209050860603202033">Зургийг нээх</translation>
 <translation id="8216351761227087153">Үзэх</translation>
@@ -1209,6 +1216,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="829672787777123339">Таны төхөөрөмжид холбогдож байна…</translation>
 <translation id="8310344678080805313">Стандарт цонхууд</translation>
 <translation id="831192587911042850">Одоогийн веб сайтыг таны дагаж буй веб сайтуудын жагсаалтад нэмнэ.</translation>
+<translation id="8319544457245040955">Хуудаснаас гаралгүйгээр сэдвийн талаар мэдэж аваарай. Хуудсан дээрээс нэг эсвэл түүнээс олон үгийг хайхын тулд сонгоно уу. Хайлтаа засахын тулд илэрцүүдийг харж, тэдгээрийг шинэ табд нээнэ үү.</translation>
 <translation id="8327155640814342956">Хамгийн сайн хайлт хийхийн тулд Chrome-г шинэчлэхээр нээнэ үү</translation>
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8349013245300336738">Ашигласан өгөгдлийг хэмжээгээр нь эрэмбэлэх</translation>

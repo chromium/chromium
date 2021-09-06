@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">My lêers</translation>
 <translation id="189358972401248634">Ander tale</translation>
+<translation id="1910950723001426294">Lys deelopsies is gesluit.</translation>
 <translation id="1918175104945982129">Assistent-stemsoektog se instemming-UI is teen halwe hoogte oopgemaak</translation>
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1922362554271624559">Voorgestelde tale</translation>
@@ -193,6 +194,7 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2276696007612801991">Meld by jou Google-rekening aan om jou wagwoorde na te gaan</translation>
 <translation id="2278052315791335171">Jou rekening op <ph name="SITE" /> sal nie uitgevee word as hierdie wagwoord uitgevee word nie</translation>
 <translation id="2286841657746966508">Faktureringadres</translation>
+<translation id="228704530595896923">Lys deelopsies.</translation>
 <translation id="230115972905494466">Geen versoenbare toestelle gekry nie</translation>
 <translation id="230155349749732438">Om hierdie instelling te gebruik, moet <ph name="BEGIN_LINK" />Maak soektogte en blaai beter<ph name="END_LINK" /> aangeskakel wees</translation>
 <translation id="2318045970523081853">Tik om 'n oproep te maak</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir
 <translation id="4137746084635924146">Huidige toesteltaal</translation>
 <translation id="4141536112466364990">Leer Chrome</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
+<translation id="4162867837470729563">Lys deelopsies teen volle hoogte.</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> gebruik</translation>
@@ -846,6 +849,7 @@ Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte strek
 <translation id="6203593061661911168">Aflaai sal begin wanneer jy op wi-fi is</translation>
 <translation id="6210748933810148297">Nie <ph name="EMAIL" /> nie?</translation>
 <translation id="6211386937064921208">Voorbeskou tans hierdie bladsy</translation>
+<translation id="6212786426849242805">Laat Google ook van die teks op die bladsy oorweeg</translation>
 <translation id="6221633008163990886">Ontsluit om jou wagwoorde uit te voer</translation>
 <translation id="6232535412751077445">As “Moenie naspoor nie” geaktiveer word, beteken dit dat 'n versoek by jou blaaiverkeer ingesluit sal word. Enige uitwerking sal afhang van of 'n webwerf op die versoek reageer en hoe die versoek geïnterpreteer word.
 
@@ -895,6 +899,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6459045781120991510">Opnames</translation>
 <translation id="6461962085415701688">Kan nie lêer oopmaak nie</translation>
 <translation id="6464977750820128603">Jy kan werwe sien wat jy in Chrome besoek en tydtellers vir hulle stel.\n\nGoogle kry inligting oor die werwe waarvoor jy tydtellers stel en hoe lank jy hulle besoek. Hierdie inligting word gebruik om Digitale Welstand te verbeter.</translation>
+<translation id="6473086018775716761">Lys deelopsies wat teen halwe hoogte oopgemaak is.</translation>
 <translation id="6475951671322991020">Laai video af</translation>
 <translation id="6477928892249167417">Dit lyk of hierdie werwe vir jou belangrik is:</translation>
 <translation id="6482749332252372425">Kon <ph name="FILE_NAME" /> weens 'n gebrek aan bergingspasie nie aflaai nie.</translation>
@@ -1131,6 +1136,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7853202427316060426">Aktiwiteit</translation>
 <translation id="7857691613771368249">Vra wanneer om lêers te stoor</translation>
 <translation id="7859988229622350291">Moet nooit vertaal nie</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> het toestelle in die omtrek se toestemming nodig om aan jou toestel te koppel</translation>
 <translation id="7875915731392087153">Skep e-pos</translation>
 <translation id="7876243839304621966">Verwyder alles</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Jy het <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ongelese bladsy}other{Jy het <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ongelese bladsye}}</translation>
@@ -1192,6 +1198,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8186512483418048923"><ph name="FILES" /> lêers oor</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 dag oor</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8209050860603202033">Maak prent oop</translation>
 <translation id="8216351761227087153">Kyk</translation>
@@ -1210,6 +1217,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="829672787777123339">Koppel tans aan jou toestel …</translation>
 <translation id="8310344678080805313">Standaardoortjies</translation>
 <translation id="831192587911042850">Voeg die huidige webwerf by die lys webwerwe wat jy tans volg.</translation>
+<translation id="8319544457245040955">Kom meer te wete oor 'n onderwerp sonder om die bladsy te verlaat. Kies een of meer woorde op die bladsy om vir hulle te soek. As jy jou soektog wil wysig, kan jy na die resultate daarvan kyk en hulle in 'n nuwe oortjie oopmaak.</translation>
 <translation id="8327155640814342956">Maak oop om Chrome op te dateer vir die beste blaai-ervaring</translation>
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>
 <translation id="8349013245300336738">Rangskik volgens hoeveelheid data gebruik</translation>

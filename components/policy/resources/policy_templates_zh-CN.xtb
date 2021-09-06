@@ -288,6 +288,7 @@
 
           如果此政策未设置，用户便能在 <ph name="PRODUCT_NAME" /> 中安装任一款扩展程序。</translation>
 <translation id="1393485621820363363">已启用企业设备打印机</translation>
+<translation id="1395505489889158859">允许向原生打印机发送用户名和文件名</translation>
 <translation id="1397855852561539316">默认搜索服务提供商建议网址</translation>
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
 <translation id="1417888712677507140">屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
@@ -1622,6 +1623,7 @@
 <translation id="2960013482187484833">在打印预览中将上次使用的打印机设为默认选项</translation>
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
 <translation id="2960691910306063964">针对远程访问主机启用或停用无 PIN 码身份验证</translation>
+<translation id="2962972237615992440">停用 <ph name="CLOUD_PRINT_NAME" />代理</translation>
 <translation id="2964056138564883247">控制该用户能否使用 <ph name="BOREALIS_NAME" />。
 
       如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
@@ -2622,6 +2624,7 @@
 
       如果此政策已停用，系统会关闭 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="4203879074082863035">系统仅会向用户显示白名单中的打印机</translation>
+<translation id="4205316772333487392">强制在 Google 搜索中使用安全搜索功能</translation>
 <translation id="4209297478239988291">启用“自动点击”无障碍功能。
 
           此功能让用户无需实际点按鼠标或触控板，只需将指针悬停在想点击的对象上即可进行点击。
@@ -2677,6 +2680,7 @@
 <translation id="4325690621216251241">向系统任务栏添加退出按钮</translation>
 <translation id="4329095223358818804">允许“快速解答”功能访问所选内容</translation>
 <translation id="4330372709562934569">允许所列网站从不安全情境向更专用网络上的端点发送请求。</translation>
+<translation id="4330908525441222205">使用默认 AppCache 行为</translation>
 <translation id="4331357743227845302">此政策让管理员能够配置允许 <ph name="PRODUCT_OS_NAME" />连接到的蓝牙服务。
 
 如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会仅允许用户连接到指定蓝牙服务，但列表为空（这意味着允许使用任何服务）时例外。蓝牙 SIG 预留的 UUID 可以表示为<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" />或<ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />。自定义 UUID 可以表示为<ph name="BLUETOOTH_CUSTOM_UUID" />。UUID 不区分大小写。如果您未设置此政策，用户便可连接到任何蓝牙服务。</translation>
@@ -2696,6 +2700,7 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。不过，从 M85 开始，此政策已不再支持主机名中含有“*”或“[*.]”通配符的格式。</translation>
+<translation id="4370937370030117032">禁止向原生打印机发送用户名和文件名</translation>
 <translation id="4372704773119750918">不允许企业用户成为多用户配置的用户（一级或二级）</translation>
 <translation id="4377599627073874279">允许所有网站显示所有图片</translation>
 <translation id="437791893267799639">政策未设置，禁止数据迁移和 ARC</translation>
@@ -2794,6 +2799,7 @@
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
+<translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
 <translation id="4518251772179446575">每次网站尝试跟踪用户的地理位置时都询问我</translation>
 <translation id="4521193243799782295">在用户登录期间，<ph name="PRODUCT_OS_NAME" />可通过服务器（在线）或使用缓存的密码（离线）来验证用户的身份。
@@ -3260,6 +3266,7 @@
           如果您启用此设置，则 <ph name="PRODUCT_NAME" /> 将会忽略通过命令行指定的所有代理相关选项。
 
           如果您未设置此政策，用户将可以自行选择代理设置。</translation>
+<translation id="5170018694841697392">不强制在 Google 搜索中使用安全搜索功能</translation>
 <translation id="5172841243186654432">您可以通过设置 <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> 创建一个网址格式列表，从而指定哪些网站可以/无法为单个会话设置 Cookie，除非 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 政策设为一律恢复先前会话中的网址。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。指定的格式未涵盖的网址也会导致系统使用默认设置。
@@ -3997,6 +4004,7 @@
 <translation id="6089679180657323464">控制 Wilco 诊断和遥测控制器设置。</translation>
 <translation id="6091233616732024397">强制要求用户登录才能使用浏览器</translation>
 <translation id="6093156968240188330">允许远程用户在远程协助会话中操控提权后的窗口</translation>
+<translation id="6094314311474620462">停用打印功能</translation>
 <translation id="6095048925836115505">在登录屏幕上启用虚拟键盘</translation>
 <translation id="6097601282776163274">启用以网址为键的匿名化数据收集功能</translation>
 <translation id="6099853574908182288">默认打印颜色模式</translation>
@@ -4923,6 +4931,7 @@
 
       如果未设置此政策，浏览器可能会向与用户配置的系统解析器关联的解析器发送 DNS-over-HTTPS 请求。</translation>
 <translation id="7158358621906236999">默认传感器设置</translation>
+<translation id="7161568070244869726">强制启用 AppCache</translation>
 <translation id="7165882688932913315">此政策用于控制对本地设备发现界面 (<ph name="CHROME_DEVICES_LINK" />) 中的可控制功能的访问权限，该界面会显示可在用户附近发现的设备以及已注册到这些设备的云端设备。在除 <ph name="PRODUCT_OS_NAME" />之外的所有其他操作系统中，本地设备发现界面还允许用户将与其计算机相连的传统打印机添加到 <ph name="CLOUD_PRINT_NAME" />。
 
       如果此政策已启用或未设置，系统会允许使用“本地设备发现”功能。
@@ -5896,6 +5905,7 @@
 <translation id="8461914792118322307">代理</translation>
 <translation id="8463569949213141467">配置要停用的摄像头、浏览器设置、操作系统设置、扫描功能、网上应用店、画布和探索功能</translation>
 <translation id="8465065632133292531">在使用 POST 的即搜即得网址中所需的参数</translation>
+<translation id="8470317291588703478">不强制使用 YouTube 受限模式</translation>
 <translation id="847472800012384958">不允许任何网站显示弹出式窗口</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC 会在搜索最佳路径时使用所有可用接口。</translation>
@@ -5955,6 +5965,7 @@
           如果您设置了此政策，用户便无法更改或覆盖它。
 
           如果未设置此政策，默认情况下，无障碍功能快捷方式会处于启用状态。</translation>
+<translation id="8520064498689833152">强制在 Google 搜索中使用级别至少为“中等”的安全搜索功能，也强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8524334245528364388">包含一系列打印服务器的 JSON 文件的网址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8528951285051082869">不允许任何 Web 应用通过 File Handling API 访问各类文件</translation>
@@ -6050,6 +6061,7 @@
 <translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
 
       如果此政策已停用或未设置，远程访问主机便能与任何本地用户关联。</translation>
+<translation id="867708016260789630">强制使用级别至少为“中等”的 YouTube 受限模式</translation>
 <translation id="8685024486845674965">重复使用密码可触发密码保护服务警告功能</translation>
 <translation id="8685680544554917389">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 将会自动播放媒体。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 不会自动播放媒体。
 

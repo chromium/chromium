@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4563926062592110512">次のクライアントが切断しました: <ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> が正しく設定されていません。別の既定のウェブブラウザを選択してから、もう一度 URL 転送を有効にしてください。</translation>
 <translation id="4635770493235256822">リモートのデバイス</translation>
 <translation id="4660011489602794167">キーボードを表示</translation>
 <translation id="4703799847237267011">Chromoting セッションが終了しました。</translation>

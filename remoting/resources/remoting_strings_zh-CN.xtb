@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">以 <ph name="EMAIL_ADDRESS" /> 的身份登录。</translation>
 <translation id="579702532610384533">重新连接</translation>
 <translation id="5810269635982033450">屏幕充当触控板</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。如果您不愿批准这项请求，请按“<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”。否则，请在准备就绪后选择“<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”以允许建立这项关联。</translation>
 <translation id="5823658491130719298">在您要远程访问的计算机上，打开 Chrome 并访问 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">显示选项</translation>
 <translation id="6033507038939587647">键盘选项</translation>

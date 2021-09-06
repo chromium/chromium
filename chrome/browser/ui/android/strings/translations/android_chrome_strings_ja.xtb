@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1883903952484604915">マイファイル</translation>
 <translation id="189358972401248634">その他の言語</translation>
+<translation id="1910950723001426294">共有オプションのリストが閉じられました。</translation>
 <translation id="1918175104945982129">アシスタントの音声検索の同意ダイアログが画面の下半分に表示されています</translation>
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1922362554271624559">言語の候補</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
 <translation id="2286841657746966508">請求先住所</translation>
+<translation id="228704530595896923">共有オプションのリストです。</translation>
 <translation id="230115972905494466">対応デバイスが見つかりませんでした</translation>
 <translation id="230155349749732438">この設定を使用するには、[<ph name="BEGIN_LINK" />検索とブラウジングを改善する<ph name="END_LINK" />] をオンにする必要があります</translation>
 <translation id="2318045970523081853">タップして電話をかける</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="4141536112466364990">Chrome について学ぶ</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
+<translation id="4162867837470729563">共有オプションのリストが画面全体に表示されています。</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4170011742729630528">このサービスはご利用になれません。しばらくしてからもう一度お試しください。</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> 使用</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">Wi-Fi 接続時にダウンロードを開始します</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
+<translation id="6212786426849242805">ページの一部のテキストも検索で考慮されます</translation>
 <translation id="6221633008163990886">ロックを解除してパスワードをエクスポート</translation>
 <translation id="6232535412751077445">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">アンケート</translation>
 <translation id="6461962085415701688">ファイルを開けません</translation>
 <translation id="6464977750820128603">Chrome でアクセスしたサイトを表示し、タイマーを設定できます。\n\nタイマーを設定したサイトの情報と、サイトでの滞在時間に関する情報が Google に送信されます。送信した情報は Digital Wellbeing の改善に役立てられます。</translation>
+<translation id="6473086018775716761">共有オプションのリストが画面の下半分に表示されています。</translation>
 <translation id="6475951671322991020">動画をダウンロード</translation>
 <translation id="6477928892249167417">以下のサイトは重要な可能性があります。</translation>
 <translation id="6482749332252372425">ストレージの空き容量が不足しているため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">アクティビティ</translation>
 <translation id="7857691613771368249">ファイルをいつ保存するか確認する</translation>
 <translation id="7859988229622350291">翻訳しない</translation>
+<translation id="78707286264420418">デバイスに接続するには、<ph name="PRODUCT_NAME" /> に付近のデバイスへのアクセスを許可する必要があります</translation>
 <translation id="7875915731392087153">メールを作成</translation>
 <translation id="7876243839304621966">すべて削除</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{未読ページが <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 件あります}other{未読ページが <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 件あります}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923">残り <ph name="FILES" /> ファイル</translation>
 <translation id="8189750580333936930">プライバシー サンドボックス</translation>
 <translation id="8190358571722158785">残り 1 日</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />あなたのデバイス<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">再開</translation>
 <translation id="8209050860603202033">画像を開く</translation>
 <translation id="8216351761227087153">見る</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">デバイスに接続しています…</translation>
 <translation id="8310344678080805313">標準のタブ</translation>
 <translation id="831192587911042850">現在のウェブサイトを、フォローしているウェブサイトのリストに追加します。</translation>
+<translation id="8319544457245040955">ページを移動せずに、トピックについて調べることができます。検索するには、ページ上の単語や語句を選択します。検索内容を編集するには、検索結果を新しいタブで開きます。</translation>
 <translation id="8327155640814342956">快適にご利用いただけるよう、Chrome を開いて更新することをおすすめします</translation>
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8349013245300336738">データ使用量で並べ替え</translation>

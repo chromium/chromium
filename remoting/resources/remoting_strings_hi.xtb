@@ -109,7 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> के रूप में साइन इन किया है.</translation>
 <translation id="579702532610384533">फिर से कनेक्‍ट करें</translation>
 <translation id="5810269635982033450">स्क्रीन किसी ट्रैकपैड की तरह काम करती है</translation>
-<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने आपका कंप्यूटर देखने, कीबोर्ड और माउस कंट्रोल करने के लिए ऐक्सेस मांगा है. अगर आप इस अनुरोध का इंतज़ार नहीं कर रहे हैं, तो ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' को दबाएं. अन्य मामलों में, कनेक्शन तैयार होने पर उसकी अनुमति देने के लिए, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' को चुनें.</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने आपकी कंप्यूटर स्क्रीन के साथ-साथ कीबोर्ड और माउस का ऐक्सेस मांगा है. अगर आप ऐक्सेस नहीं देना चाहते हैं, तो ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' को दबाएं. अगर आप ऐक्सेस देना चाहते हैं, तो कनेक्ट करने के लिए ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' को दबाएं.</translation>
 <translation id="5823658491130719298">आप जिस कंप्‍यूटर को रिमोट (दूर से) एक्‍सेस करना चाहते हैं, उस पर Chrome खोलें और <ph name="INSTALLATION_LINK" /> पर जाएं</translation>
 <translation id="5841343754884244200">डिसप्ले विकल्प</translation>
 <translation id="6033507038939587647">कीबोर्ड विकल्प</translation>

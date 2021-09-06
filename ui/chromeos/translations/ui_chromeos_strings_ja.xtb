@@ -931,6 +931,7 @@
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
+<translation id="965477715979482472">英語（南アフリカ）</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>
 <translation id="992401651319295351">入力できるのはあと <ph name="RETRIES" /> 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>

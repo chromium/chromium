@@ -230,6 +230,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р түгжээ тайлах</translation>
 <translation id="3207960819495026254">Хавчуурга хадгалагдсан</translation>
 <translation id="3224641773458703735">Та нууц үгийг экспорт хийхийн тулд эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
+<translation id="3230318355092723906">Синк хийх унтраалттай үед та энэ төхөөрөмж дээрх бүх хавчуурга, түүх, нууц үг болон бусад тохиргоогоо харах боломжтой хэвээр байна. Хэрэв та өөрчлөлтүүд хийвэл тэдгээрийг таны бүртгэлд синк хийхгүй.</translation>
 <translation id="3240426699337459095">Холбоосыг хуулсан</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />-н <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
@@ -499,6 +500,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5984222099446776634">Саяхан хандсан</translation>
 <translation id="5988851877894965432">URL-г Chrome-д нээх</translation>
 <translation id="6012140227487808125">Шифрлэж байна...</translation>
+<translation id="6020800238007543967">Урьдчилан үзэх холбоосыг харуулах</translation>
 <translation id="6021332621416007159">-д нээх...</translation>
 <translation id="6036514205982097558">Таны бүх таб нэг хөтчид</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -606,6 +608,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6801927553864092214">Нууцлалтайгаар үзэхийн тулд Нууцлалтай табыг нээнэ үү</translation>
 <translation id="6807889908376551050">Бүгдийг үзүүл...</translation>
 <translation id="681368974849482173">Үүссэн зүйл</translation>
+<translation id="681450999322335505">Танай байгууллага синк хийхийг унтраасан.</translation>
 <translation id="6830804042318138535">Цааш унших</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
 <translation id="6842136130964845393">Та хадгалсан нууц үгнүүддээ үргэлж хандах боломжтой эсэхээ баталгаажуулахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>

@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">超文本传输协议 (HTTPS)</translation>
 <translation id="1059944192885972544">找到了 <ph name="NUM" /> 个与“<ph name="SEARCH_TEXT" />”相符的标签页</translation>
 <translation id="1060292118287751956">确定屏幕更新的频率</translation>
+<translation id="1061130374843955397">欢迎使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">快到休息时间了</translation>
 <translation id="1066613507389053689">需要更新 Chrome 操作系统</translation>
 <translation id="1067048845568873861">创建时间</translation>
@@ -2824,6 +2825,7 @@
 <translation id="3943582379552582368">返回(&amp;B)</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3945513714196326460">请尝试缩短名称</translation>
+<translation id="3948027458879361203">更改主机名</translation>
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
@@ -6786,6 +6788,7 @@
     <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子开启了“其他网络与应用活动记录”设置，这些数据可能会保存在您孩子的 Google 帐号中。您可以前往 families.google.com 详细了解这些设置以及对应的调整方式。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">客户端证书无效</translation>
 <translation id="827097179112817503">显示“主页”按钮</translation>
+<translation id="8271268254812352141">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果。您可在<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />部分中自定义翻译语言。</translation>
 <translation id="8271379370373330993">接下来的几个步骤需由家长完成。家长可在设置好帐号后将 <ph name="DEVICE_TYPE" /> 交还给孩子。</translation>
 <translation id="8272443605911821513">点击“更多工具”菜单中的“扩展程序”，可以管理您的扩展程序。</translation>
 <translation id="8274332263553132018">投射文件</translation>
