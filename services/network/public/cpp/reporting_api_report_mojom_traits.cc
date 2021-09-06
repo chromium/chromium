@@ -47,6 +47,8 @@ bool StructTraits<
     network::mojom::ReportingApiReportDataView,
     net::ReportingReport>::Read(network::mojom::ReportingApiReportDataView data,
                                 net::ReportingReport* out) {
+  if (!data.ReadId(&out->id))
+    return false;
   if (!data.ReadUrl(&out->url))
     return false;
   if (!data.ReadGroup(&out->group))

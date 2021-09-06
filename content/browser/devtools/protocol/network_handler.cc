@@ -1283,6 +1283,7 @@ void NetworkHandler::OnReportAdded(const net::ReportingReport& report) {
   if (iter != reporting_filter_urls.end()) {
     auto protocol_report =
         protocol::Network::ReportingApiReport::Create()
+            .SetId(report.id.ToString())
             .SetInitiatorUrl(report.url.spec())
             .SetDestination(report.group)
             .SetType(report.type)

@@ -86,6 +86,10 @@ struct NET_EXPORT ReportingReport {
   // delivered report.)
   NetworkIsolationKey network_isolation_key;
 
+  // The id of the report, used by DevTools to identify and tell apart
+  // individual reports.
+  base::UnguessableToken id;
+
   // The URL of the document that triggered the report. (Included in the
   // delivered report.)
   GURL url;

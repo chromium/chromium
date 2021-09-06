@@ -15,6 +15,7 @@ Tests ReportingApiReportAdded event.
     }
     depth : 0
     destination : csp
+    id : <string>
     initiatorUrl : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
     timestamp : <number>
     type : csp-violation

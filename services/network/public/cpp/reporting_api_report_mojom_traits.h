@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/reporting/reporting_report.h"
@@ -27,6 +28,10 @@ struct EnumTraits<network::mojom::ReportingApiReportStatus,
 template <>
 struct StructTraits<network::mojom::ReportingApiReportDataView,
                     net::ReportingReport> {
+  static base::UnguessableToken id(const net::ReportingReport& report) {
+    return report.id;
+  }
+
   static const GURL& url(const net::ReportingReport& report) {
     return report.url;
   }

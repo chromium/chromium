@@ -27,6 +27,7 @@ ReportingReport::ReportingReport(
     int attempts)
     : reporting_source(reporting_source),
       network_isolation_key(network_isolation_key),
+      id(base::UnguessableToken::Create()),
       url(url),
       user_agent(user_agent),
       group(group),
