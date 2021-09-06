@@ -1437,7 +1437,7 @@ void LayoutGrid::LayoutPositionedObjects(bool relayout_children,
   column_of_positioned_item_.clear();
   row_of_positioned_item_.clear();
 
-  TrackedLayoutBoxListHashSet* positioned_descendants = PositionedObjects();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   if (!positioned_descendants)
     return;
 

@@ -231,7 +231,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
       DynamicTo<LayoutBlock>(container_builder_->GetLayoutObject());
   if (!container_block)
     return false;
-  TrackedLayoutBoxListHashSet* legacy_objects =
+  TrackedLayoutBoxLinkedHashSet* legacy_objects =
       container_block->PositionedObjects();
   if (!legacy_objects || legacy_objects->size() == placed_objects->size())
     return false;

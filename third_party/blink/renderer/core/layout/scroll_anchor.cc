@@ -434,7 +434,7 @@ bool ScrollAnchor::FindAnchorRecursive(LayoutObject* candidate) {
   // Make a separate pass to catch positioned descendants with a static DOM
   // parent that we skipped over (crbug.com/692701).
   if (auto* layouy_block = DynamicTo<LayoutBlock>(candidate)) {
-    if (TrackedLayoutBoxListHashSet* positioned_descendants =
+    if (TrackedLayoutBoxLinkedHashSet* positioned_descendants =
             layouy_block->PositionedObjects()) {
       for (LayoutBox* descendant : *positioned_descendants) {
         if (descendant->Parent() != candidate) {
