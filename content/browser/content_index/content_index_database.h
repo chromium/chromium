@@ -52,6 +52,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
 
   void GetDescriptions(
       int64_t service_worker_registration_id,
+      const url::Origin& origin,
       blink::mojom::ContentIndexService::GetDescriptionsCallback callback);
 
   // Gets the icon for |description_id| and invokes |callback| on the UI
@@ -96,6 +97,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
       blink::mojom::ContentIndexService::DeleteCallback callback);
   void GetDescriptionsOnCoreThread(
       int64_t service_worker_registration_id,
+      const url::Origin& origin,
       blink::mojom::ContentIndexService::GetDescriptionsCallback callback);
   void GetIconsOnCoreThread(int64_t service_worker_registration_id,
                             const std::string& description_id,
