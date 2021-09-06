@@ -1761,11 +1761,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-desktop-pwas-app-icon-shortcuts-menu",
-    "owners": [ "johnjan@microsoft.com", "cmp@google.com" ],
-    "expiry_milestone": 93
-  },
-  {
     "name": "enable-desktop-pwas-app-icon-shortcuts-menu-ui",
     "owners": [ "ericwilligers@google.com", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 98
