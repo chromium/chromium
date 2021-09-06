@@ -1420,8 +1420,9 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
 };
 
 // Test the not restored ARC window is not added to the hidden container.
+// TODO(crbug.com/1243616): disabled due to flakes.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
-                       NotHideArcWindow) {
+                       DISABLED_NotHideArcWindow) {
   SetProfile();
   InstallTestApps(kTestAppPackage, false);
 
