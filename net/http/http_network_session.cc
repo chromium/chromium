@@ -385,12 +385,6 @@ void HttpNetworkSession::DumpMemoryStats(
     http_network_session_dump = pmd->CreateAllocatorDump(name);
     spdy_session_pool_.DumpMemoryStats(
         pmd, http_network_session_dump->absolute_name());
-    if (http_stream_factory_) {
-      http_stream_factory_->DumpMemoryStats(
-          pmd, http_network_session_dump->absolute_name());
-    }
-    quic_stream_factory_.DumpMemoryStats(
-        pmd, http_network_session_dump->absolute_name());
   }
 
   // Create an empty row under parent's dump so size can be attributed correctly
