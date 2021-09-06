@@ -59,6 +59,12 @@ void StatsCollector::ReportTracesAndHistsImpl(
     PA_DCHECK(accumulated_events.size() == events.size());
     for (size_t id = 0; id < events.size(); ++id) {
       const auto& event = events[id];
+      if (event.start_time.is_null()) {
+        // If start_time is null, the event was never triggered, e.g. safepoint
+        // bailed out if started at the end of scanning.
+        PA_DCHECK(event.end_time.is_null());
+        continue;
+      }
       TRACE_EVENT_BEGIN(kTraceCategory,
                         perfetto::StaticString(
                             ToTracingString(static_cast<IdType<context>>(id))),
