@@ -144,6 +144,9 @@ class UiDelegate {
   // Called when the user clicks a link in the form action.
   virtual void OnFormActionLinkClicked(int link) = 0;
 
+  // Called when the user clicks the TTS button.
+  virtual void OnTtsButtonClicked() = 0;
+
   // Sets the start date of the date/time range.
   virtual void SetDateTimeRangeStartDate(
       const absl::optional<DateProto>& date) = 0;

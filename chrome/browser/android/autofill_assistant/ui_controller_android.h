@@ -137,6 +137,7 @@ class UiControllerAndroid : public ControllerObserver {
 
   // Called by AssistantHeaderDelegate:
   void OnHeaderFeedbackButtonClicked();
+  void OnTtsButtonClicked();
 
   // Called by AssistantGenericUiDelegate:
   void OnViewEvent(const EventHandler::EventKey& key);

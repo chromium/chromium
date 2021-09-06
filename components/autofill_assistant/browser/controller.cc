@@ -50,11 +50,13 @@ const char kProgressBarExperiment[] = "4400697";
 
 }  // namespace
 
-Controller::Controller(content::WebContents* web_contents,
-                       Client* client,
-                       const base::TickClock* tick_clock,
-                       base::WeakPtr<RuntimeManagerImpl> runtime_manager,
-                       std::unique_ptr<Service> service)
+Controller::Controller(
+    content::WebContents* web_contents,
+    Client* client,
+    const base::TickClock* tick_clock,
+    base::WeakPtr<RuntimeManagerImpl> runtime_manager,
+    std::unique_ptr<Service> service,
+    std::unique_ptr<AutofillAssistantTtsController> tts_controller)
     : content::WebContentsObserver(web_contents),
       client_(client),
       tick_clock_(tick_clock),
@@ -63,7 +65,8 @@ Controller::Controller(content::WebContents* web_contents,
                        : ServiceImpl::Create(web_contents->GetBrowserContext(),
                                              client_)),
       user_data_(std::make_unique<UserData>()),
-      navigating_to_new_document_(web_contents->IsWaitingForResponse()) {
+      navigating_to_new_document_(web_contents->IsWaitingForResponse()),
+      tts_controller_(std::move(tts_controller)) {
   user_model_.AddObserver(this);
 }
 
@@ -1410,6 +1413,11 @@ void Controller::OnFormActionLinkClicked(int link) {
     form_changed_callback_.Run(form_result_.get());
     std::move(form_cancel_callback_).Run(ClientStatus(ACTION_APPLIED));
   }
+}
+
+void Controller::OnTtsButtonClicked() {
+  // TODO(jainshashank): Add button enable/disable state management
+  tts_controller_->Speak(status_message_, GetLocale());
 }
 
 void Controller::SetDateTimeRangeStartDate(

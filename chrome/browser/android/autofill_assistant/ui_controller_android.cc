@@ -890,6 +890,10 @@ void UiControllerAndroid::OnFeedbackButtonClicked(
   OnUserActionSelected(env, jcaller, index);
 }
 
+void UiControllerAndroid::OnTtsButtonClicked() {
+  ui_delegate_->OnTtsButtonClicked();
+}
+
 void UiControllerAndroid::OnKeyboardVisibilityChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

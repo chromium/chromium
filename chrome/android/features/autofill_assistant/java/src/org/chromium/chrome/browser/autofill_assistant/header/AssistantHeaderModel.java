@@ -55,6 +55,9 @@ public class AssistantHeaderModel extends PropertyModel {
     public static final WritableBooleanPropertyKey TTS_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<Runnable> TTS_BUTTON_CALLBACK =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey DISABLE_ANIMATIONS_FOR_TESTING =
             new WritableBooleanPropertyKey();
 
@@ -62,7 +65,7 @@ public class AssistantHeaderModel extends PropertyModel {
         super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROGRESS, PROGRESS_ACTIVE_STEP, PROGRESS_BAR_ERROR,
                 PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE,
                 FEEDBACK_BUTTON_CALLBACK, CHIPS, CHIPS_VISIBLE, TTS_BUTTON_VISIBLE,
-                DISABLE_ANIMATIONS_FOR_TESTING);
+                TTS_BUTTON_CALLBACK, DISABLE_ANIMATIONS_FOR_TESTING);
         set(CHIPS, new ArrayList<>());
         set(PROGRESS_VISIBLE, true);
     }
@@ -128,7 +131,9 @@ public class AssistantHeaderModel extends PropertyModel {
 
     @CalledByNative
     private void setDelegate(AssistantHeaderDelegate delegate) {
+        // TODO(b/196945756): Replace callbacks with a single delegate field.
         set(FEEDBACK_BUTTON_CALLBACK, delegate::onFeedbackButtonClicked);
+        set(TTS_BUTTON_CALLBACK, delegate::onTtsButtonClicked);
     }
 
     @CalledByNative

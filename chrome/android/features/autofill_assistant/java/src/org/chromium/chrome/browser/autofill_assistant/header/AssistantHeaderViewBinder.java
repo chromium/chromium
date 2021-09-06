@@ -133,6 +133,8 @@ class AssistantHeaderViewBinder
             showOrDismissBubble(model, view);
         } else if (AssistantHeaderModel.TTS_BUTTON_VISIBLE == propertyKey) {
             showOrHideTtsButton(model, view);
+        } else if (AssistantHeaderModel.TTS_BUTTON_CALLBACK == propertyKey) {
+            setTtsButtonClickListener(view, model.get(AssistantHeaderModel.TTS_BUTTON_CALLBACK));
         } else if (AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING == propertyKey) {
             view.disableAnimations(model.get(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING));
         } else {
@@ -208,5 +210,13 @@ class AssistantHeaderViewBinder
         } else {
             view.mTtsButton.setVisibility(View.GONE);
         }
+    }
+
+    private void setTtsButtonClickListener(ViewHolder view, @Nullable Runnable ttsButtonCallback) {
+        view.mTtsButton.setOnClickListener(unusedView -> {
+            if (ttsButtonCallback != null) {
+                ttsButtonCallback.run();
+            }
+        });
     }
 }

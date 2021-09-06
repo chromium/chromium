@@ -278,6 +278,25 @@ public class AutofillAssistantHeaderUiTest {
         onView(is(viewHolder.mTtsButton)).check(matches(not(isDisplayed())));
     }
 
+    @Test
+    @MediumTest
+    public void testTtsButtonClick() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        // Make button visible so that it can be clicked.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_VISIBLE, true));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(AssistantHeaderModel.TTS_BUTTON_CALLBACK, mRunnableMock));
+
+        onView(is(viewHolder.mTtsButton)).perform(click());
+
+        verify(mRunnableMock).run();
+    }
+
     private static Matcher<View> hasProgress(int expectedProgress) {
         return new BaseMatcher<View>() {
             @Override

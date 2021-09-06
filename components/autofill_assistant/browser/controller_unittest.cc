@@ -21,6 +21,7 @@
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/mock_autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/mock_client.h"
 #include "components/autofill_assistant/browser/mock_controller_observer.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
@@ -72,6 +73,8 @@ using ::testing::WithArgs;
 
 namespace {
 
+constexpr char kClientLocale[] = "en-US";
+
 // Same as non-mock, but provides default mock callbacks.
 struct MockCollectUserDataOptions : public CollectUserDataOptions {
   MockCollectUserDataOptions() {
@@ -103,14 +106,19 @@ class ControllerTest : public testing::Test {
     mock_web_controller_ = web_controller.get();
     auto service = std::make_unique<NiceMock<MockService>>();
     mock_service_ = service.get();
+    auto tts_controller =
+        std::make_unique<NiceMock<MockAutofillAssistantTtsController>>();
+    mock_tts_controller_ = tts_controller.get();
 
     ON_CALL(mock_client_, GetWebContents).WillByDefault(Return(web_contents()));
     ON_CALL(mock_client_, HasHadUI()).WillByDefault(Return(true));
+    ON_CALL(mock_client_, GetLocale()).WillByDefault(Return(kClientLocale));
 
     mock_runtime_manager_ = std::make_unique<MockRuntimeManager>();
     controller_ = std::make_unique<Controller>(
         web_contents(), &mock_client_, task_environment()->GetMockTickClock(),
-        mock_runtime_manager_->GetWeakPtr(), std::move(service));
+        mock_runtime_manager_->GetWeakPtr(), std::move(service),
+        std::move(tts_controller));
     controller_->SetWebControllerForTest(std::move(web_controller));
 
     ON_CALL(mock_client_, AttachUI()).WillByDefault(Invoke([this]() {
@@ -250,6 +258,7 @@ class ControllerTest : public testing::Test {
   std::vector<AutofillAssistantState> states_;
   MockService* mock_service_;
   MockWebController* mock_web_controller_;
+  MockAutofillAssistantTtsController* mock_tts_controller_;
   NiceMock<MockClient> mock_client_;
   std::unique_ptr<MockRuntimeManager> mock_runtime_manager_;
   NiceMock<MockControllerObserver> mock_observer_;
@@ -2271,6 +2280,14 @@ TEST_F(ControllerTest, EnableTts) {
                TriggerContext::Options()));
 
   EXPECT_TRUE(controller_->GetTtsButtonVisible());
+}
+
+TEST_F(ControllerTest, PlayTtsOnButtonClick) {
+  controller_->SetStatusMessage("message");
+
+  EXPECT_CALL(*mock_tts_controller_, Speak("message", kClientLocale));
+
+  controller_->OnTtsButtonClicked();
 }
 
 TEST_F(ControllerTest, AddParametersToUserData) {

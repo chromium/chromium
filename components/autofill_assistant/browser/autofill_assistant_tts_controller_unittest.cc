@@ -1,0 +1,82 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
+
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill_assistant {
+namespace {
+
+class MockTtsController : public content::TtsController {
+ public:
+  MockTtsController() = default;
+  ~MockTtsController() override = default;
+
+  MOCK_METHOD1(SpeakOrEnqueue,
+               void(std::unique_ptr<content::TtsUtterance> utterance));
+  MOCK_METHOD0(Stop, void());
+
+  // Unused functions.
+  bool IsSpeaking() override { return false; }
+  void Stop(const GURL& source_url) override {}
+  void Pause() override {}
+  void Resume() override {}
+  void OnTtsEvent(int utterance_id,
+                  content::TtsEventType event_type,
+                  int char_index,
+                  int length,
+                  const std::string& error_message) override {}
+  void GetVoices(content::BrowserContext* browser_context,
+                 const GURL& source_url,
+                 std::vector<content::VoiceData>* out_voices) override {}
+  void VoicesChanged() override {}
+  void AddVoicesChangedDelegate(
+      content::VoicesChangedDelegate* delegate) override {}
+  void RemoveVoicesChangedDelegate(
+      content::VoicesChangedDelegate* delegate) override {}
+  void RemoveUtteranceEventDelegate(
+      content::UtteranceEventDelegate* delegate) override {}
+  void SetTtsEngineDelegate(content::TtsEngineDelegate* delegate) override {}
+  content::TtsEngineDelegate* GetTtsEngineDelegate() override {
+    return nullptr;
+  }
+  void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
+  int QueueSize() override { return 0; }
+  void StripSSML(
+      const std::string& utterance,
+      base::OnceCallback<void(const std::string&)> callback) override {}
+};
+
+class AutofillAssistantTtsControllerTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    autofill_assistant_tts_controller_ =
+        std::make_unique<AutofillAssistantTtsController>(&mock_tts_controller_);
+  }
+
+  std::unique_ptr<AutofillAssistantTtsController>
+      autofill_assistant_tts_controller_;
+  testing::NiceMock<MockTtsController> mock_tts_controller_;
+};
+
+TEST_F(AutofillAssistantTtsControllerTest, SpeakMessage) {
+  EXPECT_CALL(mock_tts_controller_, SpeakOrEnqueue(testing::_))
+      .WillOnce([](std::unique_ptr<content::TtsUtterance> utterance) {
+        ASSERT_EQ(utterance->GetText(), "message");
+        ASSERT_EQ(utterance->GetLang(), "locale");
+      });
+
+  autofill_assistant_tts_controller_->Speak("message", "locale");
+}
+
+TEST_F(AutofillAssistantTtsControllerTest, Stop) {
+  EXPECT_CALL(mock_tts_controller_, Stop());
+
+  autofill_assistant_tts_controller_->Stop();
+}
+
+}  // namespace
+}  // namespace autofill_assistant

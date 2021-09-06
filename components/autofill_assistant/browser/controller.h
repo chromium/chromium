@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/client.h"
@@ -64,7 +65,8 @@ class Controller : public ScriptExecutorDelegate,
              Client* client,
              const base::TickClock* tick_clock,
              base::WeakPtr<RuntimeManagerImpl> runtime_manager,
-             std::unique_ptr<Service> service);
+             std::unique_ptr<Service> service,
+             std::unique_ptr<AutofillAssistantTtsController> tts_controller);
   ~Controller() override;
 
   // Let the controller know it should keep tracking script availability for the
@@ -221,6 +223,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetLoginOption(std::string identifier) override;
   void OnTextLinkClicked(int link) override;
   void OnFormActionLinkClicked(int link) override;
+  void OnTtsButtonClicked() override;
   void SetDateTimeRangeStartDate(
       const absl::optional<DateProto>& date) override;
   void SetDateTimeRangeStartTimeSlot(
@@ -582,6 +585,8 @@ class Controller : public ScriptExecutorDelegate,
   bool are_chips_visible_ = true;
 
   bool tts_enabled_ = false;
+
+  std::unique_ptr<AutofillAssistantTtsController> tts_controller_;
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;

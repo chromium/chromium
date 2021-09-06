@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
+#include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
@@ -39,6 +40,7 @@
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -601,7 +603,9 @@ void ClientAndroid::CreateController(
   controller_ = std::make_unique<Controller>(
       web_contents_, /* client= */ this, base::DefaultTickClock::GetInstance(),
       RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
-      std::move(service));
+      std::move(service),
+      std::make_unique<AutofillAssistantTtsController>(
+          content::TtsController::GetInstance()));
   controller_->SetStatusMessage(status_message);
   if (progress_bar_config) {
     controller_->SetStepProgressBarConfiguration(*progress_bar_config);
