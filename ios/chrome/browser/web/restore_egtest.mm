@@ -155,7 +155,13 @@ bool WaitForOmniboxContaining(std::string text) {
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored.
-- (void)testRestoreHistory {
+// TODO(crbug.com/1247051): Fix flakiness.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreHistory testRestoreHistory
+#else
+#define MAYBE_testRestoreHistory FLAKY_testRestoreHistory
+#endif
+- (void)MAYBE_testRestoreHistory {
   [self setUpRestoreServers];
   [self loadTestPages];
   [self verifyRestoredTestPages:YES];
@@ -163,7 +169,13 @@ bool WaitForOmniboxContaining(std::string text) {
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored in airplane mode.
-- (void)testRestoreNoNetwork {
+// TODO(crbug.com/1247051): Fix flakiness.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
+#else
+#define MAYBE_testRestoreNoNetwork FLAKY_testRestoreNoNetwork
+#endif
+- (void)MAYBE_testRestoreNoNetwork {
   [self setUpRestoreServers];
   [self loadTestPages];
   self.serverRespondsWithContent = false;
@@ -171,7 +183,13 @@ bool WaitForOmniboxContaining(std::string text) {
 }
 
 // Tests that only the selected web state is loaded on a session restore.
-- (void)testRestoreOneWebstateOnly {
+// TODO(crbug.com/1247051): Fix flakiness.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreOneWebstateOnly testRestoreOneWebstateOnly
+#else
+#define MAYBE_testRestoreOneWebstateOnly FLAKY_testRestoreOneWebstateOnly
+#endif
+- (void)MAYBE_testRestoreOneWebstateOnly {
   // Visit the background page.
   int visitCounter = 0;
   self.testServer->RegisterRequestHandler(
