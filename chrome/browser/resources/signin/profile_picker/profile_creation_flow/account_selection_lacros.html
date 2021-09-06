@@ -1,8 +1,33 @@
-<style include="profile-creation-shared">
-  .title-container {
-    margin: 104px auto;
-    margin-bottom: 48px;
+<style include="profile-creation-shared cr-shared-style">
+  #accountsContainer {
+    background-color: white;
+    border: var(--cr-hairline);
+    border-radius: 8px;
+    inset: 10% 20%;
+    position: absolute;
     text-align: center;
+  }
+
+  #textContainer {
+    margin: 40px
+  }
+
+  #buttonsContainer {
+    margin: 20px
+  }
+
+  .account-button {
+    width: 100%;
+  }
+
+  .divider {
+    border-top: var(--cr-separator-line);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #accountsContainer {
+      background-color: var(--md-background-color);
+    }
   }
 </style>
 
@@ -14,7 +39,21 @@
   </cr-icon-button>
   <div id="signinPromoBanner" class="banner"></div>
 </div>
-<div class="title-container">
-  <h2>$i18n{accountSelectionLacrosTitle}</h2>
-  <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
+<div id="accountsContainer">
+  <div id="textContainer">
+    <h2>$i18n{accountSelectionLacrosTitle}</h2>
+    <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
+  </div>
+  <div id="buttonsContainer">
+    <template is="dom-repeat" items="[[unassignedAccounts_]]">
+      <button class="account-button" on-click="onAccountClick_">
+        <div>[[item.name]]</div>
+        <div>[[item.email]]</div>
+        <div class="divider"></div>
+      </button>
+    </template>
+    <button class="account-button" on-click="onOtherAccountClick_">
+      $i18n{accountSelectionLacrosOtherAccountButtonLabel}
+    </button>
+  </div>
 </div>

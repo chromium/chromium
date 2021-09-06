@@ -90,6 +90,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         'unassigned-accounts-changed',
         (accounts: Array<UnassignedAccount>) =>
             this.handleUnassignedAccountsChanged_(accounts));
+    this.manageProfilesBrowserProxy_.getUnassignedAccounts();
   }
   // </if>
 

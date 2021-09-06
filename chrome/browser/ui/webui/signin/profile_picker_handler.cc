@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -953,7 +954,7 @@ void ProfilePickerHandler::HandleGetUnassignedAccounts(
   base::Value accounts_list(base::Value::Type::LIST);
   // TODO(https://crbug/1226050): Add actual account info to the list, and
   // listen for account changes.
-  FireWebUIListener("unassigned-accounts-changed", accounts_list);
+  FireWebUIListener("unassigned-accounts-changed", std::move(accounts_list));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

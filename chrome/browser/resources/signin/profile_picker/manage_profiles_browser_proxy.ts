@@ -152,6 +152,11 @@ export interface ManageProfilesBrowserProxy {
    * flow.
    */
   cancelProfileSwitch(): void;
+
+  // <if expr="lacros">
+  /** Gets the unassigned accounts, through WebUIListener. */
+  getUnassignedAccounts(): void;
+  // </if>
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -227,6 +232,12 @@ export class ManageProfilesBrowserProxyImpl {
   cancelProfileSwitch() {
     chrome.send('cancelProfileSwitch');
   }
+
+  // <if expr="lacros">
+  getUnassignedAccounts() {
+    chrome.send('getUnassignedAccounts');
+  }
+  // </if>
 
   static getInstance(): ManageProfilesBrowserProxy {
     return instance || (instance = new ManageProfilesBrowserProxyImpl());

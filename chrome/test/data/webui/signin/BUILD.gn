@@ -10,5 +10,6 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "profile_card_menu_test.js",
     "profile_picker_app_test.js",
+    "test_manage_profiles_browser_proxy.js",
   ]
 }
