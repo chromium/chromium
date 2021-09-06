@@ -1216,7 +1216,7 @@ body.files-ng .dialog-footer .select {
   background: -webkit-image-set(
      url(../images/common/disclosure_arrow_dk_grey_down.png) 1x,
      url(../images/common/2x/disclosure_arrow_dk_grey_down.png) 2x) no-repeat
-     right transparent;
+     calc(100% - 10px) transparent;
   background-color: var(--google-grey-100);
   border: 0;
   border-radius: 4px;
@@ -1226,7 +1226,7 @@ body.files-ng .dialog-footer .select {
   min-height: 32px;
   min-width: 104px;
   outline: none;
-  padding: 0 12px 0 16px;
+  padding: 0 36px 0 16px;
   position: relative;
 }
 
