@@ -2166,5 +2166,127 @@ INSTANTIATE_TEST_SUITE_P(
                          AutoEnrollmentProtocol::kInitialEnrollment,
                          PsmState::kEnabled)),
                      ::testing::Range(0, kNumberOfPsmTestCases)));
+
+using PsmHelperInitialEnrollmentTest = PsmHelperTest;
+
+TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
+  InSequence sequence;
+
+  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
+  // Succeed for both PSM RLWE requests.
+  ServerWillReplyWithPsmOprfResponse();
+  ServerWillReplyWithPsmQueryResponse();
+
+  // Succeed for DeviceInitialEnrollmentStateRequest if the device has a
+  // server-backed state.
+  if (kExpectedMembershipResult) {
+    ServerWillSendState(
+        "example.com",
+        em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
+        kDisabledMessage, kWithLicense,
+        em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
+  }
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify PSM result.
+  EXPECT_EQ(GetStateDiscoveryResult(),
+            GetExpectedMembershipResult()
+                ? StateDiscoveryResult::kSuccessHasServerSideState
+                : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
+  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
+                      /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
+  VerifyPsmRlweQueryRequest();
+  VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  if (kExpectedMembershipResult) {
+    EXPECT_EQ(state_retrieval_job_type_, GetExpectedStateRetrievalJobType());
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT);
+    VerifyServerBackedState(
+        "example.com", kDeviceStateRestoreModeReEnrollmentEnforced,
+        kDisabledMessage, kWithLicense, kDeviceStateLicenseTypeEnterprise);
+  } else {
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  }
+}
+
+TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
+  InSequence sequence;
+
+  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  const base::TimeDelta kOneSecondTimeDelta = base::TimeDelta::FromSeconds(1);
+  const base::Time kExpectedPsmDeterminationTimestamp =
+      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
+
+  // Advance the time forward one second.
+  task_environment_.FastForwardBy(kOneSecondTimeDelta);
+
+  // Succeed for both PSM RLWE requests.
+  ServerWillReplyWithPsmOprfResponse();
+  ServerWillReplyWithPsmQueryResponse();
+
+  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
+  // server-backed state.
+  if (kExpectedMembershipResult)
+    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify PSM result.
+  EXPECT_EQ(GetStateDiscoveryResult(),
+            GetExpectedMembershipResult()
+                ? StateDiscoveryResult::kSuccessHasServerSideState
+                : StateDiscoveryResult::kSuccessNoServerSideState);
+  EXPECT_EQ(
+      GetPsmExecutionResult(),
+      GetExpectedMembershipResult()
+          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
+          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
+  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
+                      /*success_time_recorded=*/true);
+  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
+                                  /*dm_status_count=*/2);
+  VerifyPsmRlweQueryRequest();
+  VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  if (kExpectedMembershipResult) {
+    EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  } else {
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  }
+}
+
+// PSM is enabled to test initial enrollment case extensively only.
+// Note that: PSM is running only for initial enrollment, and Hash dance for FRE
+// use case.
+INSTANTIATE_TEST_SUITE_P(
+    PsmForInitialEnrollment,
+    PsmHelperInitialEnrollmentTest,
+    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
+                         AutoEnrollmentProtocol::kInitialEnrollment,
+                         PsmState::kEnabled)),
+                     ::testing::Range(0, kNumberOfPsmTestCases)));
+
 }  // namespace
 }  // namespace policy
