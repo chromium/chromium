@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_PAINTER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -32,6 +33,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
    public:
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
+                      NGStyleVariant style_variant,
                       bool is_rendering_clip_path_as_mask_image);
     SvgTextPaintState(const LayoutSVGInlineText&,
                       const ComputedStyle&,
@@ -54,6 +56,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
     const ComputedStyle& style_;
     absl::optional<AffineTransform> shader_transform_;
     absl::optional<Color> text_match_color_;
+    NGStyleVariant style_variant_ = NGStyleVariant::kStandard;
     bool is_painting_selection_ = false;
     bool is_rendering_clip_path_as_mask_image_ = false;
     friend class NGTextPainter;
@@ -110,6 +113,7 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText&,
                                  const ComputedStyle&,
+                                 NGStyleVariant style_variant,
                                  bool is_rendering_clip_path_as_mask_image);
   SvgTextPaintState& SetSvgState(const LayoutSVGInlineText& svg_inline_text,
                                  const ComputedStyle& style,

@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
@@ -518,8 +519,9 @@ void NGTextPainter::PaintSvgDecorationsOnlyLineThrough(
 NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
     const LayoutSVGInlineText& svg_inline_text,
     const ComputedStyle& style,
+    NGStyleVariant style_variant,
     bool is_rendering_clip_path_as_mask_image) {
-  return svg_text_paint_state_.emplace(svg_inline_text, style,
+  return svg_text_paint_state_.emplace(svg_inline_text, style, style_variant,
                                        is_rendering_clip_path_as_mask_image);
 }
 
@@ -538,9 +540,11 @@ NGTextPainter::SvgTextPaintState* NGTextPainter::GetSvgState() {
 NGTextPainter::SvgTextPaintState::SvgTextPaintState(
     const LayoutSVGInlineText& layout_svg_inline_text,
     const ComputedStyle& style,
+    NGStyleVariant style_variant,
     bool is_rendering_clip_path_as_mask_image)
     : layout_svg_inline_text_(layout_svg_inline_text),
       style_(style),
+      style_variant_(style_variant),
       is_rendering_clip_path_as_mask_image_(
           is_rendering_clip_path_as_mask_image) {}
 
@@ -563,7 +567,8 @@ const LayoutObject& NGTextPainter::SvgTextPaintState::TextDecorationObject()
   // set.
   const LayoutObject* result = InlineText().Parent();
   while (result) {
-    if (const ComputedStyle* style = result->Style()) {
+    if (const ComputedStyle* style =
+            result->Style(style_variant_ == NGStyleVariant::kFirstLine)) {
       if (style->GetTextDecoration() != TextDecoration::kNone)
         break;
     }

@@ -73,4 +73,19 @@ TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
   // due to letter spacing and this test passes if that does not cause a crash.
 }
 
+TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
+  SetBodyInnerHTML(R"HTML(
+<!DOCTYPE html>
+<style>
+*::first-line {
+  text-decoration: underline dashed;
+}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <text y="30">vX7 Image 2</text>
+</svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
+}
+
 }  // namespace blink
