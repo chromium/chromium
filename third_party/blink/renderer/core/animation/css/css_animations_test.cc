@@ -76,6 +76,13 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
         ->Amount();
   }
 
+  void InvalidateCompositorKeyframesSnapshot(Animation* animation) {
+    auto* keyframe_effect = DynamicTo<KeyframeEffect>(animation->effect());
+    DCHECK(keyframe_effect);
+    DCHECK(keyframe_effect->Model());
+    keyframe_effect->Model()->InvalidateCompositorKeyframesSnapshot();
+  }
+
  private:
   void SetUpAnimationClockForTesting() {
     GetPage().Animator().Clock().ResetTimeForTesting();
@@ -151,6 +158,44 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   EXPECT_TRUE(element->GetComputedStyle()->Filter().IsEmpty());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(0.2, GetContrastFilterAmount(element));
+}
+
+TEST_P(CSSAnimationsTest, CompositedBackgroundColorSnapshot) {
+  ScopedCompositeBGColorAnimationForTest scoped_feature(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { background-color: red; }
+        to { background-color: green; }
+      }
+      #test {
+        animation: anim 10s linear;
+      }
+    </style>
+    <div id='test'></div>
+  )HTML");
+  Element* element = GetDocument().getElementById("test");
+  ASSERT_TRUE(element);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(element->GetComputedStyle());
+  ASSERT_TRUE(element->parentNode());
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentCompositableAnimation());
+
+  ElementAnimations* animations = element->GetElementAnimations();
+  ASSERT_TRUE(animations);
+  ASSERT_EQ(1u, animations->Animations().size());
+  Animation* animation = (*animations->Animations().begin()).key;
+
+  InvalidateCompositorKeyframesSnapshot(animation);
+  CSSAnimationUpdate update;
+  CSSAnimations::CalculateCompositorAnimationUpdate(
+      update, *element, *element, element->ComputedStyleRef(),
+      element->parentNode()->GetComputedStyle(),
+      /* was_window_resized */ false);
+
+  ASSERT_EQ(1u, update.UpdatedCompositorKeyframes().size());
+  EXPECT_EQ(animation, update.UpdatedCompositorKeyframes()[0].Get());
 }
 
 // The following group of tests verify that composited CSS animations are

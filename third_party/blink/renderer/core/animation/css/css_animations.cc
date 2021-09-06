@@ -526,7 +526,7 @@ void CSSAnimations::CalculateCompositorAnimationUpdate(
 
   const ComputedStyle* old_style = animating_element.GetComputedStyle();
   if (!old_style || old_style->IsEnsuredInDisplayNone() ||
-      !old_style->ShouldCompositeForCurrentAnimations()) {
+      !old_style->HasCurrentCompositableAnimation()) {
     return;
   }
 
