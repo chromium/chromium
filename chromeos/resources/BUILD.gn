@@ -119,14 +119,6 @@ grit("projector_app_bundle_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-if (!is_official_build) {
-  # Resources used by chrome://demo-mode-app
-  chromeos_generated_grit("demo_mode_app_resources") {
-    source = "$root_gen_dir/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd"
-    deps = [ "//chromeos/components/demo_mode_app_ui:build_grd" ]
-  }
-}
-
 # Resources used by chrome://connectivity-diagnostics
 grit("connectivity_diagnostics_resources") {
   # These arguments are needed since the grd is generated at build time.

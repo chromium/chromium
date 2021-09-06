@@ -246,14 +246,14 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+#include "ash/webui/demo_mode_app_ui/demo_mode_app_ui.h"
+#include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/telemetry_extension_ui.h"
-#include "chromeos/components/demo_mode_app_ui/demo_mode_app_ui.h"
-#include "chromeos/components/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

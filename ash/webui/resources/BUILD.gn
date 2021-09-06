@@ -54,6 +54,12 @@ ash_generated_grit("shimless_rma_resources") {
 }
 
 if (!is_official_build) {
+  # Resources used by chrome://demo-mode-app
+  ash_generated_grit("demo_mode_app_resources") {
+    source = "$root_gen_dir/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd"
+    deps = [ "//ash/webui/demo_mode_app_ui:build_grd" ]
+  }
+
   # Resources used by chrome://sample-system-web-app
   ash_generated_grit("sample_system_web_app_resources") {
     source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_resources.grd"

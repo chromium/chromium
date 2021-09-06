@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageHandlerFactory, PageHandlerRemote} from '/chromeos/components/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js';
+import {PageHandlerFactory, PageHandlerRemote} from '/ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom-webui.js';
 
 /**
  * Provides interfaces for sending and receiving messages to/from the browser

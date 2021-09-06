@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/demo_mode_app_ui/demo_mode_page_handler.h"
+#include "ash/webui/demo_mode_app_ui/demo_mode_page_handler.h"
 
 namespace chromeos {
 DemoModePageHandler::DemoModePageHandler(

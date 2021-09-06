@@ -58,6 +58,7 @@ group("closure_compile") {
 
   if (!is_official_build) {
     deps += [
+      "//ash/webui/demo_mode_app_ui:closure_compile",
       "//ash/webui/sample_system_web_app_ui:closure_compile",
       "//ash/webui/telemetry_extension_ui:closure_compile",
     ]

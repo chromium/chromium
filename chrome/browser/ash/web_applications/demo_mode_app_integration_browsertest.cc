@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
-#include "chromeos/components/demo_mode_app_ui/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"

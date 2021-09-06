@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
-#define CHROMEOS_COMPONENTS_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
+#ifndef ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
+#define ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
 
-#include "chromeos/components/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
+#include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,4 +40,4 @@ class DemoModeAppUI : public ui::MojoWebUIController,
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_
+#endif  // ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_

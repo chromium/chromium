@@ -500,7 +500,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2695],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/demo_mode_app_ui/ash_demo_mode_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
    "includes": [2700],
   },

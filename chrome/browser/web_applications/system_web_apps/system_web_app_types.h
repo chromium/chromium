@@ -67,7 +67,7 @@ enum class SystemAppType {
   // development. Prefer to file bugs to the internal Demo Mode component:
   // b/components/812312
   //
-  // Source: //chromeos/components/demo_mode_app_ui/
+  // Source: //ash/webui/demo_mode_app_ui/
   // Contact: jacksontadie@google.com, drcrash@chromium.org
   DEMO_MODE = 18,
 
