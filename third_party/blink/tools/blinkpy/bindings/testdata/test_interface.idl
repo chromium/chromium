@@ -1,9 +1,0 @@
-[
-    CustomToV8
- ] interface Node : EventTarget {
-    [Reflect] const unsigned short ELEMENT_NODE = 1;
-    attribute [Clamp] Node parentNode;
-    [Custom] Node appendChild(Node newChild);
-};
-
-
