@@ -155,9 +155,6 @@ const char kUrlHandlerTitle[] = "title";
 const char kUsbPrinters[] = "usb_printers";
 const char kVersion[] = "version";
 const char kVersionName[] = "version_name";
-const char kWebAppFileHandlers[] = "web_app_file_handlers";
-const char kWebAppFileHandlerAccept[] = "accept";
-const char kWebAppFileHandlerAction[] = "action";
 const char kWebAppLinkedShortcutItems[] = "web_app_linked_shortcut_items";
 const char kWebAppLinkedShortcutItemIcons[] = "shortcut_item_icons";
 const char kWebAppLinkedShortcutItemIconSize[] = "size";
@@ -628,23 +625,6 @@ const char kInvalidWebAccessibleResourcesList[] =
     "Invalid value for 'web_accessible_resources'.";
 const char kInvalidWebAccessibleResource[] =
     "Invalid value for 'web_accessible_resources[*]'. *";
-const char kInvalidWebAppFileHandlers[] =
-    "Invalid value for 'web_app_file_handlers'.";
-const char kInvalidWebAppFileHandlersNotBookmarkApp[] =
-    "The 'web_app_file_handlers' manifest key is only supported for Bookmark "
-    "Apps.";
-const char kInvalidWebAppFileHandler[] =
-    "Invalid value for 'web_app_file_handlers[*]'.";
-const char kInvalidWebAppFileHandlerAccept[] =
-    "Invalid value for 'web_app_file_handlers[*].accept'.";
-const char kInvalidWebAppFileHandlerAction[] =
-    "Invalid value for 'web_app_file_handlers[*].action'.";
-const char kInvalidWebAppFileHandlerEmptyAccept[] =
-    "'web_app_file_handlers[*].accept' must be non-empty.";
-const char kInvalidWebAppFileHandlerFileExtensions[] =
-    "Invalid value for 'web_app_file_handlers[*].accept[*].file_extensions'.";
-const char kInvalidWebAppFileHandlerFileExtension[] =
-    "Invalid value for web_app_file_handlers[*].accept[*].file_extensions[*]'.";
 const char kInvalidWebAppLinkedShortcutItem[] =
     "Invalid 'web_app_linked_shortcut_item'. Must be a dictionary";
 const char kInvalidWebAppLinkedShortcutItems[] =

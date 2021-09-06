@@ -364,10 +364,6 @@
       "location": "component"
     }
   ],
-  "web_app_file_handlers": {
-    "channel": "stable",
-    "extension_types": ["hosted_app"]
-  },
   // TODO(https://crbug.com/1065748): Remove web_app_linked_shortcut_items and
   // web_app_shortcut_icons keys once we've transitioned PWAs from the current
   // Extensions based representation to WebApp based representation.
