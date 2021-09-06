@@ -163,20 +163,42 @@ class TextInput : public ui::TextInputClient,
   void AttachInputMethod();
   void DetachInputMethod();
 
+  // Delegate to talk to actual its client.
   std::unique_ptr<Delegate> delegate_;
+  // Keyboard Controller to observe the visibility.
   keyboard::KeyboardUIController* keyboard_ui_controller_ = nullptr;
 
+  // On requesting to show Virtual Keyboard, InputMethod may not be connected.
+  // So, remember the request temporarily, and then on InputMethod connection
+  // show the Virtual Keyboard.
   bool pending_vk_visible_ = false;
+
+  // Window instance that this TextInput is activated against.
   aura::Window* window_ = nullptr;
+
+  // InputMethod in Chrome OS that this TextInput is attached to.
   ui::InputMethod* input_method_ = nullptr;
+
+  // Cache of the current caret bounding box, sent from the client.
   gfx::Rect caret_bounds_;
+
+  // Cache of the current input field attributes sent from the client.
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
   ui::TextInputMode input_mode_ = ui::TEXT_INPUT_MODE_DEFAULT;
   int flags_ = ui::TEXT_INPUT_FLAG_NONE;
   bool should_do_learning_ = true;
-  ui::CompositionText composition_;
+
+  // Cache of the current surrounding text, sent from the client.
   std::u16string surrounding_text_;
-  absl::optional<gfx::Range> cursor_pos_;
+
+  // Cache of the current cursor position in the surrounding text, sent from
+  // the client. Maybe "invalid" value, if not available.
+  gfx::Range cursor_pos_ = gfx::Range::InvalidRange();
+
+  // Cache of the current composition, updated from Chrome OS IME.
+  ui::CompositionText composition_;
+
+  // Cache of the current text input direction, update from the Chrome OS IME.
   base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
 };
 

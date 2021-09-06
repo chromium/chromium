@@ -88,9 +88,9 @@ void TextInput::SetSurroundingText(const std::u16string& text,
   surrounding_text_ = text;
   cursor_pos_ = gfx::Range(cursor_pos);
   if (anchor < cursor_pos)
-    cursor_pos_->set_start(anchor);
+    cursor_pos_.set_start(anchor);
   else
-    cursor_pos_->set_end(anchor);
+    cursor_pos_.set_end(anchor);
 }
 
 void TextInput::SetTypeModeFlags(ui::TextInputType type,
@@ -210,32 +210,32 @@ ui::TextInputClient::FocusReason TextInput::GetFocusReason() const {
 }
 
 bool TextInput::GetTextRange(gfx::Range* range) const {
-  if (!cursor_pos_)
+  if (!cursor_pos_.IsValid())
     return false;
   range->set_start(0);
   if (composition_.text.empty()) {
     range->set_end(surrounding_text_.size());
   } else {
-    range->set_end(surrounding_text_.size() - cursor_pos_->length() +
+    range->set_end(surrounding_text_.size() - cursor_pos_.length() +
                    composition_.text.size());
   }
   return true;
 }
 
 bool TextInput::GetCompositionTextRange(gfx::Range* range) const {
-  if (!cursor_pos_ || composition_.text.empty())
+  if (!cursor_pos_.IsValid() || composition_.text.empty())
     return false;
 
-  range->set_start(cursor_pos_->start());
-  range->set_end(cursor_pos_->start() + composition_.text.size());
+  range->set_start(cursor_pos_.start());
+  range->set_end(cursor_pos_.start() + composition_.text.size());
   return true;
 }
 
 bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
-  if (!cursor_pos_)
+  if (!cursor_pos_.IsValid())
     return false;
-  range->set_start(cursor_pos_->start());
-  range->set_end(cursor_pos_->end());
+  range->set_start(cursor_pos_.start());
+  range->set_end(cursor_pos_.end());
   return true;
 }
 
@@ -270,32 +270,32 @@ bool TextInput::GetTextFromRange(const gfx::Range& range,
   gfx::Range text_range;
   if (!GetTextRange(&text_range) || !text_range.Contains(range))
     return false;
-  if (composition_.text.empty() || range.GetMax() <= cursor_pos_->GetMin()) {
+  if (composition_.text.empty() || range.GetMax() <= cursor_pos_.GetMin()) {
     text->assign(surrounding_text_, range.GetMin(), range.length());
     return true;
   }
-  size_t composition_end = cursor_pos_->GetMin() + composition_.text.size();
+  size_t composition_end = cursor_pos_.GetMin() + composition_.text.size();
   if (range.GetMin() >= composition_end) {
     size_t start =
-        range.GetMin() - composition_.text.size() + cursor_pos_->length();
+        range.GetMin() - composition_.text.size() + cursor_pos_.length();
     text->assign(surrounding_text_, start, range.length());
     return true;
   }
 
   size_t start_in_composition = 0;
-  if (range.GetMin() <= cursor_pos_->GetMin()) {
+  if (range.GetMin() <= cursor_pos_.GetMin()) {
     text->assign(surrounding_text_, range.GetMin(),
-                 cursor_pos_->GetMin() - range.GetMin());
+                 cursor_pos_.GetMin() - range.GetMin());
   } else {
-    start_in_composition = range.GetMin() - cursor_pos_->GetMin();
+    start_in_composition = range.GetMin() - cursor_pos_.GetMin();
   }
   if (range.GetMax() <= composition_end) {
     text->append(composition_.text, start_in_composition,
-                 range.GetMax() - cursor_pos_->GetMin() - start_in_composition);
+                 range.GetMax() - cursor_pos_.GetMin() - start_in_composition);
   } else {
     text->append(composition_.text, start_in_composition,
                  composition_.text.size() - start_in_composition);
-    text->append(surrounding_text_, cursor_pos_->GetMax(),
+    text->append(surrounding_text_, cursor_pos_.GetMax(),
                  range.GetMax() - composition_end);
   }
   return true;
@@ -320,12 +320,12 @@ bool TextInput::ChangeTextDirectionAndLayoutAlignment(
 }
 
 void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
-  if (!cursor_pos_)
+  if (!cursor_pos_.IsValid())
     return;
   size_t utf16_start =
-      (cursor_pos_->GetMin() < before) ? 0 : (cursor_pos_->GetMin() - before);
+      (cursor_pos_.GetMin() < before) ? 0 : (cursor_pos_.GetMin() - before);
   size_t utf16_end =
-      std::min(cursor_pos_->GetMax() + after, surrounding_text_.size());
+      std::min(cursor_pos_.GetMax() + after, surrounding_text_.size());
   auto start = ui::Utf8OffsetFromUtf16Offset(surrounding_text_, utf16_start);
   if (!start)
     return;
