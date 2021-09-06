@@ -24,7 +24,8 @@ using network::mojom::WebTransportHandshakeClient;
 using CreateCallback =
     content::ContentBrowserClient::WillCreateWebTransportCallback;
 
-class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
+class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
+                                   public WebTransportHandshakeClient {
  public:
   WebTransportHandshakeProxy(
       mojo::PendingRemote<WebTransportHandshakeClient> handshake_client,
@@ -37,9 +38,10 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
         browser_context_(browser_context),
         info_(std::move(params)),
         create_callback_(std::move(create_callback)) {
-    DCHECK(create_callback_);
     DCHECK(handshake_client_);
+    DCHECK(create_callback_);
   }
+
   ~WebTransportHandshakeProxy() override {
     // This is important to ensure that no outstanding blocking requests
     // continue to reference state owned by this object.
@@ -52,7 +54,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
     const int result =
         ExtensionWebRequestEventRouter::GetInstance()->OnBeforeRequest(
             browser_context_, &info_,
-            base::BindOnce(&WebTransportHandshakeProxy::OnCompleted,
+            base::BindOnce(&WebTransportHandshakeProxy::StartProxyWhenNoError,
                            base::Unretained(this)),
             &redirect_url_, &should_collapse_initiator);
     // It doesn't make sense to collapse WebTransport requests since they won't
@@ -63,29 +65,72 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
       return;
 
     DCHECK(result == net::OK || result == net::ERR_BLOCKED_BY_CLIENT) << result;
-    OnCompleted(result);
+    StartProxyWhenNoError(result);
   }
 
+  // Below two events should be triggered before proxing.
   // TODO(crbug.com/1240935): Implement onBeforeSendHeaders
   // TODO(crbug.com/1240935): Implement onSendHeaders
-  // TODO(crbug.com/1240935): Implement
-  // network::mojom::WebTransportHandshakeClient and Start proxy. This blocks
-  // following TODOs.
+
+  void StartProxyWhenNoError(int error_code) {
+    if (error_code != net::OK) {
+      auto webtransport_error = network::mojom::WebTransportError::New(
+          error_code, quic::QUIC_INTERNAL_ERROR, "Blocked by an extension",
+          false);
+      std::move(create_callback_)
+          .Run(std::move(handshake_client_), std::move(webtransport_error));
+      OnCompleted(error_code);
+      // `this` is deleted.
+      return;
+    }
+
+    // Set up proxing.
+    remote_.Bind(std::move(handshake_client_));
+    remote_.set_disconnect_handler(
+        base::BindOnce(&WebTransportHandshakeProxy::OnCompleted,
+                       base::Unretained(this), net::ERR_ABORTED));
+    std::move(create_callback_)
+        .Run(receiver_.BindNewPipeAndPassRemote(), absl::nullopt);
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&WebTransportHandshakeProxy::OnCompleted,
+                       base::Unretained(this), net::ERR_ABORTED));
+  }
+
+  // WebTransportHandshakeClient implementation:
+  // Proxing should be finished with either of below functions.
+  void OnConnectionEstablished(
+      mojo::PendingRemote<network::mojom::WebTransport> transport,
+      mojo::PendingReceiver<network::mojom::WebTransportClient> client)
+      override {
+    remote_->OnConnectionEstablished(std::move(transport), std::move(client));
+
+    OnCompleted(net::OK);
+    // `this` is deleted.
+  }
+  void OnHandshakeFailed(
+      const absl::optional<net::WebTransportError>& error) override {
+    remote_->OnHandshakeFailed(error);
+
+    int error_code = net::ERR_ABORTED;
+    if (error.has_value()) {
+      int webtransport_error_code = error.value().net_error;
+      if (webtransport_error_code != net::OK)
+        error_code = webtransport_error_code;
+    }
+    OnCompleted(error_code);
+    // `this` is deleted.
+  }
+
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onHeadersReceived
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onResponseStarted
   // TODO(crbug.com/1240935): Implement WebRequestAPI::onCompleted
 
   void OnCompleted(int error_code) {
-    absl::optional<network::mojom::WebTransportErrorPtr> error;
     if (error_code != net::OK) {
-      error = network::mojom::WebTransportError::New(
-          error_code, quic::QUIC_INTERNAL_ERROR, "Blocked by an extension",
-          false);
       ExtensionWebRequestEventRouter::GetInstance()->OnErrorOccurred(
           browser_context_, &info_, /*started=*/true, error_code);
     }
-    std::move(create_callback_)
-        .Run(std::move(handshake_client_), std::move(error));
+
     // Delete `this`.
     proxies_.RemoveProxy(this);
   }
@@ -98,6 +143,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy {
   content::BrowserContext* browser_context_;
   WebRequestInfo info_;
   GURL redirect_url_;
+  mojo::Remote<WebTransportHandshakeClient> remote_;
+  mojo::Receiver<WebTransportHandshakeClient> receiver_{this};
   CreateCallback create_callback_;
 };
 

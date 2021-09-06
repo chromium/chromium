@@ -92,6 +92,55 @@ chrome.tabs.getCurrent(function(tab) {
           }
         },
 
+        // Tries to open a WebTransport session with invalid request.
+        // The connection will not be established.
+        async function serverRejected() {
+          const url = `https://localhost:${testWebTransportPort}/invalid`;
+
+          expect(
+              [
+                // events
+                {
+                  label: 'onBeforeRequest',
+                  event: 'onBeforeRequest',
+                  details: {
+                    method: 'GET',
+                    url: url,
+                    type: 'webtransport',
+                    frameUrl: 'unknown frame URL',
+                    initiator: getDomain(initiators.WEB_INITIATED)
+                  },
+                },
+                {
+                  label: 'onErrorOccurred',
+                  event: 'onErrorOccurred',
+                  details: {
+                    url: url,
+                    type: 'webtransport',
+                    fromCache: false,
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    error: 'net::ERR_ABORTED'
+                  }
+                },
+              ],
+              [  // event order
+                ['onBeforeRequest', 'onErrorOccurred']
+              ],
+              {urls: ['https://*/*']},  // filter
+              ['blocking']              // extraInfoSpec
+          );
+
+          const transport = new WebTransport(url);
+          const done = chrome.test.callbackAdded();
+          try {
+            await transport.ready;
+            chrome.test.fail('Ready should be rejected.');
+          } catch (e) {
+            chrome.test.assertEq({}, e);
+            done();
+          }
+        },
+
       ],
       tab);
 });
