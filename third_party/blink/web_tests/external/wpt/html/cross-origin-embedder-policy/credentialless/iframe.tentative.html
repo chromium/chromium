@@ -40,8 +40,10 @@ const iframeTest = function(name, origin, expected_cookies) {
 
 promise_test_parallel(async test => {
   await Promise.all([
-    setCookie(same_origin, cookie_key, cookie_same_origin),
-    setCookie(cross_origin, cookie_key, cookie_cross_origin),
+    setCookie(same_origin, cookie_key, cookie_same_origin +
+      cookie_same_site_none),
+    setCookie(cross_origin, cookie_key, cookie_cross_origin +
+      cookie_same_site_none),
   ]);
 
   iframeTest("same-origin", same_origin, cookie_same_origin);

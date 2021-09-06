@@ -23,6 +23,8 @@ const coop_same_origin =
 const corp_cross_origin =
     '|header(Cross-Origin-Resource-Policy,cross-origin)';
 
+const cookie_same_site_none = ';SameSite=None;Secure';
+
 // Test using the modern async/await primitives are easier to read/write.
 // However they run sequentially, contrary to async_test. This is the parallel
 // version, to avoid timing out.

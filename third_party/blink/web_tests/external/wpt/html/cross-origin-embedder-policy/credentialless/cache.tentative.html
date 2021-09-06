@@ -53,7 +53,7 @@ const request_url = cross_origin + cacheable_response_path +
   `?uuid=${request_token}`;
 
 promise_setup(async test => {
-  await setCookie(cross_origin, cookie_key, cookie_value);
+  await setCookie(cross_origin, cookie_key, cookie_value + cookie_same_site_none);
 }, "Set cookie");
 
 // The "same-origin" COEP:unsafe-none document fetchs a "cross-origin"

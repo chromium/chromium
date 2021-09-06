@@ -15,8 +15,10 @@ promise_test_parallel(async test => {
   const cookie_cross_origin = "cross_origin";
 
   await Promise.all([
-    setCookie(same_origin, cookie_key, cookie_same_origin),
-    setCookie(cross_origin, cookie_key, cookie_cross_origin),
+    setCookie(same_origin, cookie_key, cookie_same_origin +
+      cookie_same_site_none),
+    setCookie(cross_origin, cookie_key, cookie_cross_origin +
+      cookie_same_site_none),
   ]);
 
   // One window with COEP:none. (control)
