@@ -21,6 +21,7 @@
 #include "third_party/inspector_protocol/crdtp/serializable.h"
 #include "third_party/inspector_protocol/crdtp/serializer_traits.h"
 #include "v8/include/v8-inspector.h"
+#include "v8/include/v8-script.h"
 
 namespace blink {
 
