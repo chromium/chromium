@@ -95665,7 +95665,7 @@
           ],
           "hard_timeout": 1200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 14
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
@@ -97053,7 +97053,7 @@
           ],
           "hard_timeout": 1200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 14
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
