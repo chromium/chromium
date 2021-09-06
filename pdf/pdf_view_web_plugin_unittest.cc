@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
+#include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -108,7 +109,7 @@ blink::WebMouseEvent CreateDefaultMouseDownEvent() {
   return web_event;
 }
 
-class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
+class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
  public:
   explicit FakeContainerWrapper(PdfViewWebPlugin* web_plugin)
       : web_plugin_(web_plugin) {
@@ -125,6 +126,11 @@ class FakeContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   // PdfViewWebPlugin::ContainerWrapper:
   void Invalidate() override {}
+
+  MOCK_METHOD(void,
+              RequestTouchEventType,
+              (blink::WebPluginContainer::TouchEventRequestType),
+              (override));
 
   MOCK_METHOD(void, ReportFindInPageMatchCount, (int, int, bool), (override));
 
@@ -205,18 +211,22 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
 }  // namespace
 
-class PdfViewWebPluginTest : public testing::Test {
+class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
  public:
+  PdfViewWebPluginWithoutInitializeTest(
+      const PdfViewWebPluginWithoutInitializeTest&) = delete;
+  PdfViewWebPluginWithoutInitializeTest& operator=(
+      const PdfViewWebPluginWithoutInitializeTest&) = delete;
+
+ protected:
   // Custom deleter for `plugin_`. PdfViewWebPlugin must be destroyed by
   // PdfViewWebPlugin::Destroy() instead of its destructor.
   struct PluginDeleter {
     void operator()(PdfViewWebPlugin* ptr) { ptr->Destroy(); }
   };
 
-  PdfViewWebPluginTest() = default;
-  PdfViewWebPluginTest(const PdfViewWebPluginTest&) = delete;
-  PdfViewWebPluginTest& operator=(const PdfViewWebPluginTest&) = delete;
-  ~PdfViewWebPluginTest() override = default;
+  PdfViewWebPluginWithoutInitializeTest() = default;
+  ~PdfViewWebPluginWithoutInitializeTest() override = default;
 
   void SetUp() override {
     // Set a dummy URL for initializing the plugin.
@@ -231,17 +241,32 @@ class PdfViewWebPluginTest : public testing::Test {
     plugin_ =
         std::unique_ptr<PdfViewWebPlugin, PluginDeleter>(new PdfViewWebPlugin(
             std::move(client), std::move(unbound_remote), params));
+  }
 
-    auto wrapper = std::make_unique<FakeContainerWrapper>(plugin_.get());
+  void TearDown() override { plugin_.reset(); }
+
+  FakePdfViewWebPluginClient* client_ptr_;
+  std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
+};
+
+class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
+ protected:
+  void SetUp() override {
+    PdfViewWebPluginWithoutInitializeTest::SetUp();
+
+    auto wrapper =
+        std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
     wrapper_ptr_ = wrapper.get();
     auto engine = std::make_unique<TestPDFiumEngine>(plugin_.get());
     engine_ptr_ = engine.get();
-    plugin_->InitializeForTesting(std::move(wrapper), std::move(engine));
+    EXPECT_TRUE(
+        plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
   }
 
   void TearDown() override {
-    plugin_.reset();
     wrapper_ptr_ = nullptr;
+
+    PdfViewWebPluginWithoutInitializeTest::TearDown();
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
@@ -318,12 +343,22 @@ class PdfViewWebPluginTest : public testing::Test {
 
   TestPDFiumEngine* engine_ptr_;
   FakeContainerWrapper* wrapper_ptr_;
-  FakePdfViewWebPluginClient* client_ptr_;
-  std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
 
   // Provides the cc::PaintCanvas for painting.
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};
 };
+
+TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
+  auto wrapper =
+      std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
+  auto engine = std::make_unique<TestPDFiumEngine>(plugin_.get());
+  EXPECT_CALL(*wrapper,
+              RequestTouchEventType(
+                  blink::WebPluginContainer::kTouchEventRequestTypeRaw));
+
+  EXPECT_TRUE(
+      plugin_->InitializeForTesting(std::move(wrapper), std::move(engine)));
+}
 
 // TODO(crbug.com/1238395): Split this test into two: One with zoom-for-DSF
 // enabled, one with zoom-for-DSF disabled.

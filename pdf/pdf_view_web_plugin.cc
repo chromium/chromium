@@ -141,6 +141,11 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
 
   void Invalidate() override { container_->Invalidate(); }
 
+  void RequestTouchEventType(
+      blink::WebPluginContainer::TouchEventRequestType request_type) override {
+    container_->RequestTouchEventType(request_type);
+  }
+
   void ReportFindInPageMatchCount(int identifier,
                                   int total,
                                   bool final_update) override {
@@ -306,6 +311,9 @@ bool PdfViewWebPlugin::InitializeCommon(
   LoadUrl(params->src_url, /*is_print_preview=*/false);
   set_url(params->original_url);
   post_message_sender_.set_container(Container());
+
+  container_wrapper_->RequestTouchEventType(
+      blink::WebPluginContainer::kTouchEventRequestTypeRaw);
   return true;
 }
 

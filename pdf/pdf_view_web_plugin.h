@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "v8/include/v8.h"
 
@@ -31,7 +32,6 @@ class WebAssociatedURLLoader;
 class WebElement;
 class WebLocalFrame;
 class WebLocalFrameClient;
-class WebPluginContainer;
 class WebURL;
 class WebURLRequest;
 struct WebAssociatedURLLoaderOptions;
@@ -65,6 +65,10 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     // Invalidates the entire web plugin container and schedules a paint of the
     // page in it.
     virtual void Invalidate() = 0;
+
+    // Notifies the container about which touch events the plugin accepts.
+    virtual void RequestTouchEventType(
+        blink::WebPluginContainer::TouchEventRequestType request_type) = 0;
 
     // Notify the web plugin container about the total matches of a find
     // request.

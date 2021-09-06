@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/with_feature_override.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -14,6 +15,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
@@ -30,8 +32,11 @@ using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::EnsurePDFHasLoaded;
 }  // namespace
 
-class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
+class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
+                                      public extensions::ExtensionApiTest {
  public:
+  PDFExtensionInteractiveUITest()
+      : WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
   ~PDFExtensionInteractiveUITest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -72,7 +77,7 @@ class PDFExtensionInteractiveUITest : public extensions::ExtensionApiTest {
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
 // On text selection, a touch selection menu should pop up. On clicking ellipsis
 // icon on the menu, the context menu should open up.
-IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
                        ContextMenuOpensFromTouchSelectionMenu) {
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   content::WebContents* const guest_contents = LoadPdfGetGuestContents(url);
@@ -121,4 +126,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest,
            IDC_PRINT, IDC_CONTENT_CONTEXT_ROTATECW,
            IDC_CONTENT_CONTEXT_ROTATECCW, IDC_CONTENT_CONTEXT_INSPECTELEMENT}));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInteractiveUITest);
 #endif  // defined(TOOLKIT_VIEWS) && defined(USE_AURA)

@@ -221,10 +221,12 @@ void PDFWebContentsHelper::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void PDFWebContentsHelper::RunContextMenu() {
-  content::RenderWidgetHostView* view =
-      web_contents()->GetRenderWidgetHostView();
+  content::RenderFrameHost* focused_frame = web_contents()->GetFocusedFrame();
+  if (!focused_frame)
+    return;
 
-  if (!view)
+  content::RenderWidgetHost* widget = focused_frame->GetRenderWidgetHost();
+  if (!widget || !widget->GetView())
     return;
 
   if (!touch_selection_controller_client_manager_)
@@ -240,10 +242,11 @@ void PDFWebContentsHelper::RunContextMenu() {
   gfx::PointF anchor_point =
       gfx::PointF(anchor_rect.CenterPoint().x(), anchor_rect.y());
 
-  gfx::PointF origin = view->TransformPointToRootCoordSpaceF(gfx::PointF());
+  gfx::PointF origin =
+      widget->GetView()->TransformPointToRootCoordSpaceF(gfx::PointF());
   anchor_point.Offset(-origin.x(), -origin.y());
-  view->GetRenderWidgetHost()->ShowContextMenuAtPoint(
-      gfx::ToRoundedPoint(anchor_point), ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+  widget->ShowContextMenuAtPoint(gfx::ToRoundedPoint(anchor_point),
+                                 ui::MENU_SOURCE_TOUCH_EDIT_MENU);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above

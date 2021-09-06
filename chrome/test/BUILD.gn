@@ -8257,6 +8257,7 @@ if (!is_android && !is_fuchsia) {
       ]
       deps += [
         ":pdf_extension_test_utils",
+        "//pdf:features",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/views",
