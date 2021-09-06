@@ -5,6 +5,7 @@
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -71,7 +72,7 @@ class ScopedAcceleratedSkImage {
       return nullptr;
     }
 
-    return absl::WrapUnique<ScopedAcceleratedSkImage>(
+    return base::WrapUnique<ScopedAcceleratedSkImage>(
         new ScopedAcceleratedSkImage(provider, texture_id,
                                      std::move(sk_image)));
   }
