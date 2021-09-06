@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.share.long_screenshots.LongScreenshots
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +39,8 @@ import org.chromium.ui.widget.Toast;
  * them in the area selection dialog.
  */
 public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListener,
-                                                EditorScreenshotSource, View.OnTouchListener {
+                                                EditorScreenshotSource, View.OnTouchListener,
+                                                DialogInterface.OnShowListener {
     private Dialog mDialog;
     private boolean mDone;
     private Runnable mDoneCallback;
@@ -125,18 +127,21 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         mDownButton.setOnTouchListener(this);
 
         mImageView = mDialogView.findViewById(R.id.screenshot_image);
+        mImageView.setScaleType(ImageView.ScaleType.FIT_START);
         mImageView.setImageBitmap(mFullBitmap);
-
-        // Start bottom mask in visible viewport.
-        ViewGroup.LayoutParams bottomParams = mBottomAreaMaskView.getLayoutParams();
-        // TODO(crbug.com/1244430): fix margins and flip this back:
-        // bottomParams.height = mFullBitmap.getHeight() - mScrollView.getHeight() - getTopMaskY();
-        bottomParams.height = mFullBitmap.getHeight() - 800;
-        mBottomAreaMaskView.setLayoutParams(bottomParams);
 
         LongScreenshotsMetrics.logLongScreenshotsEvent(
                 LongScreenshotsMetrics.LongScreenshotsEvent.DIALOG_OPEN);
+        mDialog.setOnShowListener(this);
         mDialog.show();
+    }
+
+    @Override
+    public void onShow(DialogInterface dialog) {
+        // Adjust bottom mask selector.
+        ViewGroup.LayoutParams bottomParams = mBottomAreaMaskView.getLayoutParams();
+        bottomParams.height = mFullBitmap.getHeight() - mScrollView.getHeight() + getTopMaskY();
+        mBottomAreaMaskView.setLayoutParams(bottomParams);
     }
 
     public void areaSelectionDone(View view) {
@@ -162,7 +167,8 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     }
 
     private int getBottomMaskY() {
-        return mFullBitmap.getHeight() - mBottomAreaMaskView.getHeight();
+        return ((View) mBottomAreaMaskView.getParent()).getHeight()
+                - mBottomAreaMaskView.getHeight();
     }
 
     // User tapped the down button inside the top mask selector.
@@ -243,22 +249,32 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         return mDone;
     }
 
+    // Called by host after the dialog is canceled; invalidates |mFullBitmap|.
     @Override
     public Bitmap getScreenshot() {
         // Extract bitmap data from the bottom of the top mask to the top of the bottom mask.
         int startY = getTopMaskY();
         int endY = getBottomMaskY();
 
-        // Short pages (completely above the fold) may be offset vertically inside the scrollview.
-        if (mFullBitmap.getHeight() < mScrollView.getHeight()) {
-            int margin = (int) ((mScrollView.getHeight() - mFullBitmap.getHeight()) / 2);
-            startY -= margin;
-            endY -= margin;
-            startY = Math.max(0, startY);
-            endY = Math.max(startY + MINIMUM_VERTICAL_SELECTION_PX, endY);
+        // Account for ImageView margin inside the view containing the image and the masks.
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mImageView.getLayoutParams();
+        startY -= params.topMargin;
+        endY -= params.topMargin;
+
+        // Account for the imageview being  zoomed out due to margins.
+        int bitmapWidth = mFullBitmap.getWidth();
+        int imageViewWidth = mImageView.getWidth();
+        if (bitmapWidth > imageViewWidth) {
+            float imageScale = 1.0f * bitmapWidth / imageViewWidth;
+            startY = (int) (startY * imageScale);
+            endY = (int) (endY * imageScale);
         }
 
-        return Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
+        Bitmap cropped =
+                Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
+        mFullBitmap = null;
+        return cropped;
     }
 
     // This listener is used to support dragging. Tapping the buttons is an accessible
@@ -294,14 +310,14 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 // Prevent mask regions from overlapping.
                 int topMaskY = getTopMaskY();
                 int bottomMaskY = getBottomMaskY();
-                int bitmapHeight = mFullBitmap.getHeight();
+                int layoutHeight = ((View) mBottomAreaMaskView.getParent()).getHeight();
                 if (isTop && params.height + MINIMUM_VERTICAL_SELECTION_PX > bottomMaskY) {
                     params.height = bottomMaskY - MINIMUM_VERTICAL_SELECTION_PX;
                 }
                 if (!isTop
                         && params.height
-                                > bitmapHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX) {
-                    params.height = bitmapHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX;
+                                > layoutHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX) {
+                    params.height = layoutHeight - topMaskY - MINIMUM_VERTICAL_SELECTION_PX;
                 }
 
                 maskView.setLayoutParams(params);
