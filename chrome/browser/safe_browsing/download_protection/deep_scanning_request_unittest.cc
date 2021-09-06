@@ -189,13 +189,12 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
 class DeepScanningRequestTest : public testing::Test {
  public:
-  DeepScanningRequestTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    EXPECT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile("test-user");
-  }
-
   void SetUp() override {
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("test-user");
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     download_path_ = temp_dir_.GetPath().AppendASCII("download.exe");
@@ -299,10 +298,10 @@ class DeepScanningRequestTest : public testing::Test {
   TestingProfile* profile() { return profile_; }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* profile_;
 
   FakeDownloadProtectionService download_protection_service_;
   download::MockDownloadItem item_;
@@ -335,13 +334,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          DeepScanningRequestFeaturesEnabledTest,
                          testing::Bool());
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_ChecksFeatureFlags DISABLED_ChecksFeatureFlags
-#else
-#define MAYBE_ChecksFeatureFlags ChecksFeatureFlags
-#endif
-TEST_P(DeepScanningRequestFeaturesEnabledTest, MAYBE_ChecksFeatureFlags) {
+TEST_P(DeepScanningRequestFeaturesEnabledTest, ChecksFeatureFlags) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -481,14 +474,7 @@ class DeepScanningAPPRequestTest : public DeepScanningRequestTest,
 
 INSTANTIATE_TEST_SUITE_P(, DeepScanningAPPRequestTest, testing::Bool());
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_GeneratesCorrectRequestForAPP \
-  DISABLED_GeneratesCorrectRequestForAPP
-#else
-#define MAYBE_GeneratesCorrectRequestForAPP GeneratesCorrectRequestForAPP
-#endif
-TEST_P(DeepScanningAPPRequestTest, MAYBE_GeneratesCorrectRequestForAPP) {
+TEST_P(DeepScanningAPPRequestTest, GeneratesCorrectRequestForAPP) {
   enterprise_connectors::AnalysisSettings settings;
   settings.tags = {"malware"};
   DeepScanningRequest request(
@@ -1105,13 +1091,7 @@ TEST_F(DeepScanningReportingTest, MultipleFiles) {
   }
 }
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_Timeout DISABLED_Timeout
-#else
-#define MAYBE_Timeout Timeout
-#endif
-TEST_F(DeepScanningReportingTest, MAYBE_Timeout) {
+TEST_F(DeepScanningReportingTest, Timeout) {
   DeepScanningRequest request(
       &item_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
       base::BindRepeating(&DeepScanningRequestTest::SetLastResult,
@@ -1362,16 +1342,8 @@ class DeepScanningRequestConnectorsFeatureTest
   }
 };
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_ShouldUploadBinary_MalwareListPolicy \
-  DISABLED_ShouldUploadBinary_MalwareListPolicy
-#else
-#define MAYBE_ShouldUploadBinary_MalwareListPolicy \
-  ShouldUploadBinary_MalwareListPolicy
-#endif
 TEST_F(DeepScanningRequestConnectorsFeatureTest,
-       MAYBE_ShouldUploadBinary_MalwareListPolicy) {
+       ShouldUploadBinary_MalwareListPolicy) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED, kScanForMalware);
 
@@ -1404,14 +1376,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
   EXPECT_FALSE(settings().has_value());
 }
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_ShouldUploadBinary_FileURLs DISABLED_ShouldUploadBinary_FileURLs
-#else
-#define MAYBE_ShouldUploadBinary_FileURLs ShouldUploadBinary_FileURLs
-#endif
-TEST_F(DeepScanningRequestConnectorsFeatureTest,
-       MAYBE_ShouldUploadBinary_FileURLs) {
+TEST_F(DeepScanningRequestConnectorsFeatureTest, ShouldUploadBinary_FileURLs) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
@@ -1437,13 +1402,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
   EXPECT_FALSE(settings().has_value());
 }
 
-// TODO(crbug.com/1246079): Flaky on TSAN.
-#if defined(THREAD_SANITIZER)
-#define MAYBE_PopulatesRequest DISABLED_PopulatesRequest
-#else
-#define MAYBE_PopulatesRequest PopulatesRequest
-#endif
-TEST_F(DeepScanningRequestAllFeaturesEnabledTest, MAYBE_PopulatesRequest) {
+TEST_F(DeepScanningRequestAllFeaturesEnabledTest, PopulatesRequest) {
   SetAnalysisConnector(profile_->GetPrefs(),
                        enterprise_connectors::FILE_DOWNLOADED,
                        kScanForDlpAndMalware);
