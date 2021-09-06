@@ -1951,6 +1951,14 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
                                   /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  if (kExpectedMembershipResult) {
+    EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+  } else {
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  }
 }
 
 TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
@@ -1970,6 +1978,9 @@ TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
                                   /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
 }
 
 TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
@@ -1988,6 +1999,9 @@ TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
                                   /*dm_status_count=*/1);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
 }
 
 TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
@@ -2010,6 +2024,9 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
 }
 
 TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
@@ -2029,6 +2046,9 @@ TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
   ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
   VerifyPsmRlweOprfRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
 }
 
 TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
@@ -2046,6 +2066,9 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
   ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
                                   /*dm_status_count=*/1);
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
 TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
@@ -2067,6 +2090,9 @@ TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
                                   /*dm_status_count=*/1);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
 TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
@@ -2107,10 +2133,10 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   // Verify that none of the PSM requests have been sent again. And its cached
   // membership result hasn't changed.
 
-  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
-  // server-backed state.
+  // Fail for DeviceInitialEnrollmentStateRequest with connection error, if the
+  // device has a server-backed state.
   if (kExpectedMembershipResult)
-    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+    ServerWillFail(net::ERR_FAILED, DeviceManagementService::kSuccess);
 
   client()->Retry();
   base::RunLoop().RunUntilIdle();
@@ -2122,6 +2148,14 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
                                   /*dm_status_count=*/2);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  if (kExpectedMembershipResult) {
+    EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+  } else {
+    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+  }
 }
 
 TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
@@ -2157,6 +2191,9 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
                                   /*dm_status_count=*/1);
   VerifyPsmRlweQueryRequest();
   VerifyPsmLastRequestJobType();
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
 INSTANTIATE_TEST_SUITE_P(
