@@ -83,6 +83,8 @@ constexpr char kRestoreArcAppStates[] = "Apps.RestoreArcAppStates";
 constexpr char kNoGhostWindowReasonHistogram[] =
     "Apps.RestoreNoGhostWindowReason";
 
+constexpr char kGhostWindowPopToArcHistogram[] = "Arc.LaunchedWithGhostWindow";
+
 }  // namespace
 
 namespace ash {
@@ -873,6 +875,13 @@ void ArcAppLaunchHandler::RecordRestoreResult() {
   }
 
   base::UmaHistogramEnumeration(kRestoreArcAppStates, restore_state);
+
+#if BUILDFLAG(ENABLE_WAYLAND_SERVER)
+  if (window_handler_) {
+    base::UmaHistogramCounts100(kGhostWindowPopToArcHistogram,
+                                window_handler_->ghost_window_pop_count());
+  }
+#endif
 }
 
 chromeos::SchedulerConfigurationManager*

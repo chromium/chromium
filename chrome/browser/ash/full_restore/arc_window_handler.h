@@ -31,7 +31,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   // the corresponding window session id.
   class WindowSessionResolver : public exo::WMHelper::AppPropertyResolver {
    public:
-    explicit WindowSessionResolver(ShellSurfaceMap* session_id_map);
+    explicit WindowSessionResolver(ArcWindowHandler* handler);
     WindowSessionResolver(const WindowSessionResolver&) = delete;
     WindowSessionResolver& operator=(const WindowSessionResolver&) = delete;
     ~WindowSessionResolver() override = default;
@@ -42,7 +42,7 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
         ui::PropertyHandler& out_properties_container) override;
 
    private:
-    ShellSurfaceMap* session_id_map_;
+    ArcWindowHandler* handler_;
   };
 
  public:
@@ -81,11 +81,15 @@ class ArcWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
                            int64_t display_id,
                            gfx::Rect bounds);
 
+  int ghost_window_pop_count() { return ghost_window_pop_count_; }
+
   // Override exo::WMHelper::LifetimeManager::Observer.
   void OnDestroyed() override;
 
  private:
   bool is_app_instance_connected_ = false;
+
+  int ghost_window_pop_count_ = 0;
 
   // Map window session id to ClientControlledShellSurface.
   ShellSurfaceMap session_id_to_shell_surface_;

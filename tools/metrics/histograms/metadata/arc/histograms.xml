@@ -895,6 +895,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.LaunchedWithGhostWindow" units="apps"
+    expires_after="2021-12-31">
+  <owner>sstan@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    The number of ARC apps launched with ghost window. Recorded when ARC apps
+    are restored by full restore component.
+  </summary>
+</histogram>
+
 <histogram name="Arc.LowLatencyStylusLibrary.PredictionTarget" units="ms"
     expires_after="2021-12-31">
   <owner>shuanghu@chromium.org</owner>
