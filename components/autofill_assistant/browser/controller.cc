@@ -68,6 +68,7 @@ Controller::Controller(
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
       tts_controller_(std::move(tts_controller)) {
   user_model_.AddObserver(this);
+  tts_controller_->SetTtsEventDelegate(this);
 }
 
 Controller::~Controller() {
@@ -2169,6 +2170,11 @@ void Controller::OnInputTextFocusChanged(bool is_text_focused) {
   if (ShouldUpdateChipVisibility()) {
     SetVisibilityAndUpdateUserActions();
   }
+}
+
+void Controller::OnTtsEvent(
+    AutofillAssistantTtsController::TtsEventType tts_event) {
+  // TODO(jainshashank): Implement TTS button state management
 }
 
 ElementArea* Controller::touchable_element_area() {

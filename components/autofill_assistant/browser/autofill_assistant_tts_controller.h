@@ -13,11 +13,22 @@
 namespace autofill_assistant {
 
 // Used to expose Text-to-Speech functionality in Autofill Assistant.
-class AutofillAssistantTtsController {
+class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
  public:
+  enum TtsEventType {
+    TTS_START = 0,  // TTS started playing by TTS Engine
+    TTS_END = 1,    // TTS ended playing (does not include interrupted cases)
+    TTS_ERROR = 2   // Failed to Play TTS
+  };
+
+  class TtsEventDelegate {
+   public:
+    virtual void OnTtsEvent(TtsEventType event) = 0;
+  };
+
   AutofillAssistantTtsController(content::TtsController* tts_controller);
 
-  virtual ~AutofillAssistantTtsController();
+  ~AutofillAssistantTtsController() override;
 
   // Speaks the message in the given locale. Stops any ongoing TTS.
   //
@@ -27,8 +38,21 @@ class AutofillAssistantTtsController {
   // Stops any ongoing TTS.
   virtual void Stop();
 
+  void SetTtsEventDelegate(TtsEventDelegate* tts_event_delegate);
+
+  // Overrides UtteranceEventDelegate
+  // Note: We will get this callback only for the events related to any current
+  // utterance started by this Controller only.
+  void OnTtsEvent(content::TtsUtterance* utterance,
+                  content::TtsEventType event_type,
+                  int char_index,
+                  int char_length,
+                  const std::string& error_message) override;
+
  private:
-  content::TtsController* tts_controller_;
+  content::TtsController* tts_controller_ = nullptr;
+
+  TtsEventDelegate* tts_event_delegate_ = nullptr;
 };
 
 }  // namespace autofill_assistant

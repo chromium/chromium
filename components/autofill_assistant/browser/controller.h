@@ -56,7 +56,8 @@ class Controller : public ScriptExecutorDelegate,
                    public virtual UiDelegate,
                    public ScriptTracker::Listener,
                    private content::WebContentsObserver,
-                   public UserModel::Observer {
+                   public UserModel::Observer,
+                   public AutofillAssistantTtsController::TtsEventDelegate {
  public:
   // |web_contents|, |client|, |tick_clock| and |runtime_manager| must remain
   // valid for the lifetime of the instance. Controller will take ownership of
@@ -272,6 +273,10 @@ class Controller : public ScriptExecutorDelegate,
   void ShutdownIfNecessary() override;
   void OnKeyboardVisibilityChanged(bool visible) override;
   void OnInputTextFocusChanged(bool is_text_focused) override;
+
+  // Overrides AutofillAssistantTtsController::TtsEventDelegate
+  void OnTtsEvent(
+      AutofillAssistantTtsController::TtsEventType tts_event_type) override;
 
  private:
   friend ControllerTest;

@@ -4,6 +4,8 @@
 
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 
+#include "base/logging.h"
+
 namespace autofill_assistant {
 
 AutofillAssistantTtsController::AutofillAssistantTtsController(
@@ -19,12 +21,55 @@ void AutofillAssistantTtsController::Speak(const std::string& message,
   tts_utterance->SetText(message);
   tts_utterance->SetLang(locale);
   tts_utterance->SetShouldClearQueue(true);
+  tts_utterance->SetEventDelegate(this);
 
   tts_controller_->SpeakOrEnqueue(std::move(tts_utterance));
 }
 
 void AutofillAssistantTtsController::Stop() {
   tts_controller_->Stop();
+}
+
+void AutofillAssistantTtsController::SetTtsEventDelegate(
+    TtsEventDelegate* tts_event_delegate) {
+  // Ensure that it is set only once
+  DCHECK(!tts_event_delegate_);
+
+  tts_event_delegate_ = tts_event_delegate;
+}
+
+void AutofillAssistantTtsController::OnTtsEvent(
+    content::TtsUtterance* utterance,
+    content::TtsEventType event_type,
+    int char_index,
+    int char_length,
+    const std::string& error_message) {
+  if (tts_event_delegate_ == nullptr) {
+    VLOG(1) << "AssistantAutofillTtsController: No TtsEventDelegate set.";
+    return;
+  }
+  switch (event_type) {
+    case content::TTS_EVENT_START:
+      tts_event_delegate_->OnTtsEvent(TTS_START);
+      break;
+    case content::TTS_EVENT_END:
+      tts_event_delegate_->OnTtsEvent(TTS_END);
+      break;
+    case content::TTS_EVENT_ERROR:
+      VLOG(1) << __func__ << ": " << error_message;
+      tts_event_delegate_->OnTtsEvent(TTS_ERROR);
+      break;
+    case content::TTS_EVENT_INTERRUPTED:
+    case content::TTS_EVENT_CANCELLED:
+    case content::TTS_EVENT_WORD:
+    case content::TTS_EVENT_SENTENCE:
+    case content::TTS_EVENT_MARKER:
+    case content::TTS_EVENT_PAUSE:
+    case content::TTS_EVENT_RESUME:
+      // Do not care about these events. Android does not send back these
+      // events anyways.
+      break;
+  }
 }
 
 }  // namespace autofill_assistant

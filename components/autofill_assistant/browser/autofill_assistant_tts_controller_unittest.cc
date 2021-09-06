@@ -50,16 +50,32 @@ class MockTtsController : public content::TtsController {
       base::OnceCallback<void(const std::string&)> callback) override {}
 };
 
+class MockTtsEventDelegate
+    : public AutofillAssistantTtsController::TtsEventDelegate {
+ public:
+  MOCK_METHOD1(OnTtsEvent, void(AutofillAssistantTtsController::TtsEventType));
+};
+
 class AutofillAssistantTtsControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
     autofill_assistant_tts_controller_ =
         std::make_unique<AutofillAssistantTtsController>(&mock_tts_controller_);
+
+    autofill_assistant_tts_controller_->SetTtsEventDelegate(
+        &mock_tts_event_delegate_);
+  }
+
+  void SimulateTtsEvent(content::TtsEventType tts_event_type) {
+    autofill_assistant_tts_controller_->OnTtsEvent(
+        /* utterance= */ nullptr, tts_event_type, /* char_index= */ 0,
+        /* char_length= */ 0, /* error_message= */ "");
   }
 
   std::unique_ptr<AutofillAssistantTtsController>
       autofill_assistant_tts_controller_;
   testing::NiceMock<MockTtsController> mock_tts_controller_;
+  testing::NiceMock<MockTtsEventDelegate> mock_tts_event_delegate_;
 };
 
 TEST_F(AutofillAssistantTtsControllerTest, SpeakMessage) {
@@ -78,5 +94,18 @@ TEST_F(AutofillAssistantTtsControllerTest, Stop) {
   autofill_assistant_tts_controller_->Stop();
 }
 
+TEST_F(AutofillAssistantTtsControllerTest, OnTtsEvent) {
+  ::testing::InSequence sequence;
+  EXPECT_CALL(mock_tts_event_delegate_,
+              OnTtsEvent(AutofillAssistantTtsController::TTS_START));
+  EXPECT_CALL(mock_tts_event_delegate_,
+              OnTtsEvent(AutofillAssistantTtsController::TTS_END));
+  EXPECT_CALL(mock_tts_event_delegate_,
+              OnTtsEvent(AutofillAssistantTtsController::TTS_ERROR));
+
+  SimulateTtsEvent(content::TTS_EVENT_START);
+  SimulateTtsEvent(content::TTS_EVENT_END);
+  SimulateTtsEvent(content::TTS_EVENT_ERROR);
+}
 }  // namespace
 }  // namespace autofill_assistant
