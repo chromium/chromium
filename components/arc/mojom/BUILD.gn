@@ -250,6 +250,7 @@ if (is_chromeos_ash) {
 
   mojom("camera_intent") {
     sources = [ "camera_intent.mojom" ]
+    webui_module_path = "/components/arc/mojom"
   }
 
   mojom("notifications") {

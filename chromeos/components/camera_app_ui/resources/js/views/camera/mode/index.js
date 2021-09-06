@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import {
+  CaptureIntent,
+} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+
+import {
   assert,
   assertInstanceof,
 } from '../../../chrome_util.js';
@@ -213,7 +217,7 @@ export class Modes {
     /**
      * @param {!StreamConstraints} constraints
      * @param {!Resolution} resolution
-     * @param {cros.mojom.CaptureIntent} captureIntent
+     * @param {CaptureIntent} captureIntent
      * @return {!Promise}
      */
     const prepareDeviceForPhoto =
@@ -242,7 +246,7 @@ export class Modes {
           }
           const deviceId = constraints.deviceId;
           await deviceOperator.setCaptureIntent(
-              deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
+              deviceId, CaptureIntent.VIDEO_RECORD);
 
           let /** number */ minFrameRate = 0;
           let /** number */ maxFrameRate = 0;
@@ -273,7 +277,7 @@ export class Modes {
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -285,7 +289,7 @@ export class Modes {
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -306,7 +310,7 @@ export class Modes {
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, cros.mojom.CaptureIntent.STILL_CAPTURE),
+            constraints, resolution, CaptureIntent.STILL_CAPTURE),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),
@@ -318,7 +322,7 @@ export class Modes {
         isSupported: async (deviceId) => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(
-            constraints, resolution, cros.mojom.CaptureIntent.DOCUMENT),
+            constraints, resolution, CaptureIntent.DOCUMENT),
         constraintsPreferrer: photoPreferrer,
         getConstraintsForFakeCamera:
             getConstraintsForFakeCamera.bind(this, false),

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  ScreenState,
+} from '/chromeos/components/camera_app_ui/camera_app_helper.mojom-webui.js';
+
 import * as animate from '../animation.js';
 import {
   assert,
@@ -375,7 +379,7 @@ export class Camera extends View {
     setTablet(isTablet);
 
     const setScreenOffAuto = (s) => {
-      const offAuto = s === chromeosCamera.mojom.ScreenState.OFF_AUTO;
+      const offAuto = s === ScreenState.OFF_AUTO;
       state.set(state.State.SCREEN_OFF_AUTO, offAuto);
     };
     const screenState = await helper.initScreenStateMonitor(setScreenOffAuto);

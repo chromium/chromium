@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  Effect,
+} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+
 import {I18nString} from '../../../i18n_string.js';
 import {Filenamer} from '../../../models/file_namer.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
@@ -72,7 +76,7 @@ export class Portrait extends Photo {
 
     try {
       [reference, portrait] = await this.crosImageCapture_.takePhoto(
-          photoSettings, [cros.mojom.Effect.PORTRAIT_MODE]);
+          photoSettings, [Effect.PORTRAIT_MODE]);
       this.handler_.playShutterEffect();
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);

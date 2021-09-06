@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  StreamType,
+} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+import {
+  AndroidControlAeAntibandingMode,
+  AndroidControlAeMode,
+  AndroidControlAeState,
+  AndroidControlAfMode,
+  AndroidControlAfState,
+  AndroidControlAwbMode,
+  AndroidControlAwbState,
+  AndroidStatisticsFaceDetectMode,
+  CameraMetadataTag,
+} from
+    '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
+
 import {assert, assertInstanceof} from '../../chrome_util.js';
 import {
   StreamConstraints,  // eslint-disable-line no-unused-vars
@@ -517,17 +533,17 @@ export class Preview {
       return map;
     };
 
-    const afStateName = buildInverseMap(
-        cros.mojom.AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
-    const aeStateName = buildInverseMap(
-        cros.mojom.AndroidControlAeState, 'ANDROID_CONTROL_AE_STATE_');
-    const awbStateName = buildInverseMap(
-        cros.mojom.AndroidControlAwbState, 'ANDROID_CONTROL_AWB_STATE_');
+    const afStateName =
+        buildInverseMap(AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
+    const aeStateName =
+        buildInverseMap(AndroidControlAeState, 'ANDROID_CONTROL_AE_STATE_');
+    const awbStateName =
+        buildInverseMap(AndroidControlAwbState, 'ANDROID_CONTROL_AWB_STATE_');
     const aeAntibandingModeName = buildInverseMap(
-        cros.mojom.AndroidControlAeAntibandingMode,
+        AndroidControlAeAntibandingMode,
         'ANDROID_CONTROL_AE_ANTIBANDING_MODE_');
 
-    const tag = cros.mojom.CameraMetadataTag;
+    const tag = CameraMetadataTag;
     /** @type {!Object<string, function(!Array<number>): void>} */
     const metadataEntryHandlers = {
       [tag.ANDROID_LENS_FOCUS_DISTANCE]: ([value]) => {
@@ -572,20 +588,17 @@ export class Preview {
       [tag.ANDROID_CONTROL_AF_MODE]: ([value]) => {
         displayCategory(
             '#preview-af',
-            value !==
-                cros.mojom.AndroidControlAfMode.ANDROID_CONTROL_AF_MODE_OFF);
+            value !== AndroidControlAfMode.ANDROID_CONTROL_AF_MODE_OFF);
       },
       [tag.ANDROID_CONTROL_AE_MODE]: ([value]) => {
         displayCategory(
             '#preview-ae',
-            value !==
-                cros.mojom.AndroidControlAeMode.ANDROID_CONTROL_AE_MODE_OFF);
+            value !== AndroidControlAeMode.ANDROID_CONTROL_AE_MODE_OFF);
       },
       [tag.ANDROID_CONTROL_AWB_MODE]: ([value]) => {
         displayCategory(
             '#preview-awb',
-            value !==
-                cros.mojom.AndroidControlAwbMode.ANDROID_CONTROL_AWB_MODE_OFF);
+            value !== AndroidControlAwbMode.ANDROID_CONTROL_AWB_MODE_OFF);
       },
     };
 
@@ -627,7 +640,7 @@ export class Preview {
 
     const updateFace = (mode, rects) => {
       if (mode ===
-          cros.mojom.AndroidStatisticsFaceDetectMode
+          AndroidStatisticsFaceDetectMode
               .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
         dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
         return;
@@ -647,7 +660,7 @@ export class Preview {
         showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
       }
 
-      let faceMode = cros.mojom.AndroidStatisticsFaceDetectMode
+      let faceMode = AndroidStatisticsFaceDetectMode
                          .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF;
       let faceRects = [];
 
@@ -687,7 +700,7 @@ export class Preview {
     };
 
     this.metadataObserver_ = await deviceOperator.addMetadataObserver(
-        deviceId, callback, cros.mojom.StreamType.PREVIEW_OUTPUT);
+        deviceId, callback, StreamType.PREVIEW_OUTPUT);
   }
 
   /**

@@ -4,11 +4,12 @@
 
 import("//chromeos/components/camera_app_ui/resources/images/images.gni")
 import("//chromeos/components/camera_app_ui/resources/js/js.gni")
+import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   closure_flags =
-      default_closure_args + [
+      default_closure_args + mojom_js_args + [
         "language_in=ECMASCRIPT_2020",
         "language_out=ECMASCRIPT_2020",
         "jscomp_error=strictCheckTypes",
@@ -55,10 +56,10 @@ js_library("compile_resources") {
 
   deps = [
     ":preload_images",
-    "//chromeos/components/camera_app_ui:mojo_bindings_js_library_for_compile",
-    "//components/arc/mojom:camera_intent_js_library_for_compile",
-    "//media/capture/mojom:image_capture_js_library_for_compile",
-    "//media/capture/video/chromeos/mojom:cros_camera_js_library_for_compile",
+    "//chromeos/components/camera_app_ui:mojo_bindings_webui_js",
+    "//components/arc/mojom:camera_intent_webui_js",
+    "//media/capture/mojom:image_capture_webui_js",
+    "//media/capture/video/chromeos/mojom:cros_camera_common_webui_js",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",

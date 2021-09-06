@@ -18,6 +18,7 @@ mojom("cros_camera_common") {
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/range/mojom",
   ]
+  webui_module_path = "/media/capture/video/chromeos/mojom"
 }
 
 mojom("cros_camera") {

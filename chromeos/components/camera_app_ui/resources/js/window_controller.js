@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  WindowStateControllerRemote,
+  WindowStateMonitorCallbackRouter,
+  WindowStateType,
+} from '/chromeos/components/camera_app_ui/camera_app_helper.mojom-webui.js';
+
 import {assertInstanceof} from './chrome_util.js';
 import {wrapEndpoint} from './mojo/util.js';
 
 /**
- * @typedef {function(!Array<!chromeosCamera.mojom.WindowStateType>): void}
+ * @typedef {function(!Array<!WindowStateType>): void}
  */
 let WindowStateChangedEventListener;  // eslint-disable-line no-unused-vars
 
@@ -20,13 +26,13 @@ export class WindowController {
   constructor() {
     /**
      * The remote controller from Mojo interface.
-     * @type {?chromeosCamera.mojom.WindowStateControllerRemote}
+     * @type {?WindowStateControllerRemote}
      */
     this.windowStateController_ = null;
 
     /**
      * Current window states.
-     * @type {!Array<!chromeosCamera.mojom.WindowStateType>}
+     * @type {!Array<!WindowStateType>}
      */
     this.windowStates_ = [];
 
@@ -39,14 +45,14 @@ export class WindowController {
 
   /**
    * Binds the controller remote from Mojo interface.
-   * @param {!chromeosCamera.mojom.WindowStateControllerRemote} remoteController
+   * @param {!WindowStateControllerRemote} remoteController
    * @return {!Promise}
    */
   async bind(remoteController) {
     this.windowStateController_ = remoteController;
 
-    const windowMonitorCallbackRouter = wrapEndpoint(
-        new chromeosCamera.mojom.WindowStateMonitorCallbackRouter());
+    const windowMonitorCallbackRouter =
+        wrapEndpoint(new WindowStateMonitorCallbackRouter());
     windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
       this.windowStates_ = states;
       this.listeners_.forEach((listener) => listener(states));
@@ -62,8 +68,7 @@ export class WindowController {
    */
   async minimize() {
     return assertInstanceof(
-               this.windowStateController_,
-               chromeosCamera.mojom.WindowStateControllerRemote)
+               this.windowStateController_, WindowStateControllerRemote)
         .minimize();
   }
 
@@ -73,8 +78,7 @@ export class WindowController {
    */
   async maximize() {
     return assertInstanceof(
-               this.windowStateController_,
-               chromeosCamera.mojom.WindowStateControllerRemote)
+               this.windowStateController_, WindowStateControllerRemote)
         .maximize();
   }
 
@@ -84,8 +88,7 @@ export class WindowController {
    */
   async restore() {
     return assertInstanceof(
-               this.windowStateController_,
-               chromeosCamera.mojom.WindowStateControllerRemote)
+               this.windowStateController_, WindowStateControllerRemote)
         .restore();
   }
 
@@ -95,8 +98,7 @@ export class WindowController {
    */
   async fullscreen() {
     return assertInstanceof(
-               this.windowStateController_,
-               chromeosCamera.mojom.WindowStateControllerRemote)
+               this.windowStateController_, WindowStateControllerRemote)
         .fullscreen();
   }
 
@@ -106,8 +108,7 @@ export class WindowController {
    */
   async focus() {
     return assertInstanceof(
-               this.windowStateController_,
-               chromeosCamera.mojom.WindowStateControllerRemote)
+               this.windowStateController_, WindowStateControllerRemote)
         .focus();
   }
 
@@ -116,8 +117,7 @@ export class WindowController {
    * @return {boolean}
    */
   isMinimized() {
-    return this.windowStates_.includes(
-        chromeosCamera.mojom.WindowStateType.MINIMIZED);
+    return this.windowStates_.includes(WindowStateType.MINIMIZED);
   }
 
   /**
@@ -125,10 +125,8 @@ export class WindowController {
    * @return {boolean}
    */
   isFullscreenOrMaximized() {
-    return this.windowStates_.includes(
-               chromeosCamera.mojom.WindowStateType.FULLSCREEN) ||
-        this.windowStates_.includes(
-            chromeosCamera.mojom.WindowStateType.MAXIMIZED);
+    return this.windowStates_.includes(WindowStateType.FULLSCREEN) ||
+        this.windowStates_.includes(WindowStateType.MAXIMIZED);
   }
 
   /**

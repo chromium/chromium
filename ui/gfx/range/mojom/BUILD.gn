@@ -28,9 +28,7 @@ mojom("mojom") {
   cpp_typemaps = [ shared_cpp_typemap ]
   blink_cpp_typemaps = [ shared_cpp_typemap ]
 
-  if (is_mac) {
-    webui_module_path = "chrome://resources/mojo/gfx/range/mojom"
-  }
+  webui_module_path = "chrome://resources/mojo/ui/gfx/range/mojom"
 }
 
 mojom("test_interfaces") {

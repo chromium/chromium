@@ -2,6 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  Blob as MojoBlob,  // eslint-disable-line no-unused-vars
+} from '/media/capture/mojom/image_capture.mojom-webui.js';
+import {
+  CameraAppDeviceProvider,
+  CameraAppDeviceProviderRemote,  // eslint-disable-line no-unused-vars
+  CameraAppDeviceRemote,          // eslint-disable-line no-unused-vars
+  CameraEventObserverCallbackRouter,
+  CaptureIntent,  // eslint-disable-line no-unused-vars
+  DocumentCornersObserverCallbackRouter,
+  Effect,  // eslint-disable-line no-unused-vars
+  GetCameraAppDeviceStatus,
+  ResultMetadataObserverCallbackRouter,
+  StreamType,  // eslint-disable-line no-unused-vars
+} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+import {
+  CameraFacing,
+} from '/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js';
+import {
+  CameraMetadata,       // eslint-disable-line no-unused-vars
+  CameraMetadataEntry,  // eslint-disable-line no-unused-vars
+  EntryType,
+} from '/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js';
+import {
+  CameraMetadataTag,
+} from
+    '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
+
 import {assert, assertNotReached} from '../chrome_util.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
@@ -24,7 +52,7 @@ import {
 
 /**
  * Parse the entry data according to its type.
- * @param {!cros.mojom.CameraMetadataEntry} entry Camera metadata entry
+ * @param {!CameraMetadataEntry} entry Camera metadata entry
  *     from which to parse the data according to its type.
  * @return {!Array<number>} An array containing elements whose types correspond
  *     to the format of input |tag|.
@@ -33,15 +61,15 @@ import {
 export function parseMetadata(entry) {
   const {buffer} = Uint8Array.from(entry.data);
   switch (entry.type) {
-    case cros.mojom.EntryType.TYPE_BYTE:
+    case EntryType.TYPE_BYTE:
       return Array.from(new Uint8Array(buffer));
-    case cros.mojom.EntryType.TYPE_INT32:
+    case EntryType.TYPE_INT32:
       return Array.from(new Int32Array(buffer));
-    case cros.mojom.EntryType.TYPE_FLOAT:
+    case EntryType.TYPE_FLOAT:
       return Array.from(new Float32Array(buffer));
-    case cros.mojom.EntryType.TYPE_DOUBLE:
+    case EntryType.TYPE_DOUBLE:
       return Array.from(new Float64Array(buffer));
-    case cros.mojom.EntryType.TYPE_INT64:
+    case EntryType.TYPE_INT64:
       return Array.from(new BigInt64Array(buffer), (bigIntVal) => {
         const numVal = Number(bigIntVal);
         if (!Number.isSafeInteger(numVal)) {
@@ -51,7 +79,7 @@ export function parseMetadata(entry) {
         }
         return numVal;
       });
-    case cros.mojom.EntryType.TYPE_RATIONAL: {
+    case EntryType.TYPE_RATIONAL: {
       const arr = new Int32Array(buffer);
       const values = [];
       for (let i = 0; i < arr.length; i += 2) {
@@ -66,9 +94,9 @@ export function parseMetadata(entry) {
 
 /**
  * Gets the data from Camera metadata by its tag.
- * @param {!cros.mojom.CameraMetadata} metadata Camera metadata from which to
+ * @param {!CameraMetadata} metadata Camera metadata from which to
  *     query the data.
- * @param {!cros.mojom.CameraMetadataTag} tag Camera metadata tag to query for.
+ * @param {!CameraMetadataTag} tag Camera metadata tag to query for.
  * @return {!Array<number>} An array containing elements whose types correspond
  *     to the format of input |tag|. If nothing is found, returns an empty
  *     array.
@@ -114,11 +142,10 @@ export class DeviceOperator {
   constructor() {
     /**
      * An interface remote that is used to construct the mojo interface.
-     * @type {!cros.mojom.CameraAppDeviceProviderRemote}
+     * @type {!CameraAppDeviceProviderRemote}
      * @private
      */
-    this.deviceProvider_ =
-        wrapEndpoint(cros.mojom.CameraAppDeviceProvider.getRemote());
+    this.deviceProvider_ = wrapEndpoint(CameraAppDeviceProvider.getRemote());
 
     /**
      * Flag that indicates if the direct communication between camera app and
@@ -135,7 +162,7 @@ export class DeviceOperator {
      * Map which maps from device id to the remote of devices. We want to have
      * only one remote for each devices to avoid unnecessary wastes of resources
      * and also makes it easier to control the connection.
-     * @type {!Map<string, !cros.mojom.CameraAppDeviceRemote>}
+     * @type {!Map<string, !CameraAppDeviceRemote>}
      * @private
      */
     this.devices_ = new Map();
@@ -144,7 +171,7 @@ export class DeviceOperator {
   /**
    * Gets corresponding device remote by given id.
    * @param {string} deviceId The id of target camera device.
-   * @return {!Promise<!cros.mojom.CameraAppDeviceRemote>} Corresponding device
+   * @return {!Promise<!CameraAppDeviceRemote>} Corresponding device
    *     remote.
    * @throws {!Error} Thrown when given device id is invalid.
    */
@@ -156,7 +183,7 @@ export class DeviceOperator {
 
     const {device, status} =
         await this.deviceProvider_.getCameraAppDevice(deviceId);
-    if (status === cros.mojom.GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
+    if (status === GetCameraAppDeviceStatus.ERROR_INVALID_ID) {
       throw new Error(`Invalid device id`);
     }
     if (device === null) {
@@ -173,7 +200,7 @@ export class DeviceOperator {
   /**
    * Gets metadata for the given device from its static characteristics.
    * @param {string} deviceId The id of target camera device.
-   * @param {!cros.mojom.CameraMetadataTag} tag Camera metadata tag to query.
+   * @param {!CameraMetadataTag} tag Camera metadata tag to query.
    * @return {!Promise<!Array<number>>} Promise of the corresponding data
    *     array.
    * @throws {!Error} Thrown when given device id is invalid.
@@ -183,7 +210,7 @@ export class DeviceOperator {
     // signed int32 when passing through mojo. So all number > 0x7FFFFFFF
     // require another conversion.
     if (tag > 0x7FFFFFFF) {
-      tag = /** @type {cros.mojom.CameraMetadataTag} */ (-(~tag + 1));
+      tag = /** @type {CameraMetadataTag} */ (-(~tag + 1));
     }
     const device = await this.getDevice_(deviceId);
     const {cameraInfo} = await device.getCameraInfo();
@@ -229,8 +256,7 @@ export class DeviceOperator {
 
     const streamConfigs = await this.getStaticMetadata(
         deviceId,
-        cros.mojom.CameraMetadataTag
-            .ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS);
+        CameraMetadataTag.ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS);
     // The data of |streamConfigs| looks like:
     // streamConfigs: [FORMAT_1, WIDTH_1, HEIGHT_1, TYPE_1,
     //                 FORMAT_2, WIDTH_2, HEIGHT_2, TYPE_2, ...]
@@ -266,8 +292,7 @@ export class DeviceOperator {
 
     const minFrameDurationConfigs = await this.getStaticMetadata(
         deviceId,
-        cros.mojom.CameraMetadataTag
-            .ANDROID_SCALER_AVAILABLE_MIN_FRAME_DURATIONS);
+        CameraMetadataTag.ANDROID_SCALER_AVAILABLE_MIN_FRAME_DURATIONS);
     // The data of |minFrameDurationConfigs| looks like:
     // minFrameDurationCOnfigs: [FORMAT_1, WIDTH_1, HEIGHT_1, DURATION_1,
     //                           FORMAT_2, WIDTH_2, HEIGHT_2, DURATION_2,
@@ -300,17 +325,17 @@ export class DeviceOperator {
     const device = await this.getDevice_(deviceId);
     const {cameraInfo: {facing}} = await device.getCameraInfo();
     switch (facing) {
-      case cros.mojom.CameraFacing.CAMERA_FACING_BACK:
+      case CameraFacing.CAMERA_FACING_BACK:
         return Facing.ENVIRONMENT;
-      case cros.mojom.CameraFacing.CAMERA_FACING_FRONT:
+      case CameraFacing.CAMERA_FACING_FRONT:
         return Facing.USER;
-      case cros.mojom.CameraFacing.CAMERA_FACING_EXTERNAL:
+      case CameraFacing.CAMERA_FACING_EXTERNAL:
         return Facing.EXTERNAL;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_BACK:
+      case CameraFacing.CAMERA_FACING_VIRTUAL_BACK:
         return Facing.VIRTUAL_ENV;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_FRONT:
+      case CameraFacing.CAMERA_FACING_VIRTUAL_FRONT:
         return Facing.VIRTUAL_USER;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_EXTERNAL:
+      case CameraFacing.CAMERA_FACING_VIRTUAL_EXTERNAL:
         return Facing.VIRTUAL_EXT;
       default:
         assertNotReached(`Unexpected facing value: ${facing}`);
@@ -331,8 +356,7 @@ export class DeviceOperator {
 
     const availableFpsRanges = await this.getStaticMetadata(
         deviceId,
-        cros.mojom.CameraMetadataTag
-            .ANDROID_CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+        CameraMetadataTag.ANDROID_CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
     // The data of |availableFpsRanges| looks like:
     // availableFpsRanges: [RANGE_1_MIN, RANGE_1_MAX,
     //                      RANGE_2_MIN, RANGE_2_MAX, ...]
@@ -359,8 +383,7 @@ export class DeviceOperator {
    */
   async getActiveArraySize(deviceId) {
     const activeArray = await this.getStaticMetadata(
-        deviceId,
-        cros.mojom.CameraMetadataTag.ANDROID_SENSOR_INFO_ACTIVE_ARRAY_SIZE);
+        deviceId, CameraMetadataTag.ANDROID_SENSOR_INFO_ACTIVE_ARRAY_SIZE);
     assert(activeArray.length === 4);
     const width = activeArray[2] - activeArray[0];
     const height = activeArray[3] - activeArray[1];
@@ -377,7 +400,7 @@ export class DeviceOperator {
    */
   async getSensorOrientation(deviceId) {
     const sensorOrientation = await this.getStaticMetadata(
-        deviceId, cros.mojom.CameraMetadataTag.ANDROID_SENSOR_ORIENTATION);
+        deviceId, CameraMetadataTag.ANDROID_SENSOR_ORIENTATION);
     assert(sensorOrientation.length === 1);
     return sensorOrientation[0];
   }
@@ -388,7 +411,7 @@ export class DeviceOperator {
    *     |deviceId| which don't support pan control.
    */
   async getPanDefault(deviceId) {
-    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x8001000d);
+    const tag = /** @type{!CameraMetadataTag} */ (0x8001000d);
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -399,7 +422,7 @@ export class DeviceOperator {
    *     |deviceId| which don't support tilt control.
    */
   async getTiltDefault(deviceId) {
-    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x80010016);
+    const tag = /** @type{!CameraMetadataTag} */ (0x80010016);
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -410,7 +433,7 @@ export class DeviceOperator {
    *     |deviceId| which don't support zoom control.
    */
   async getZoomDefault(deviceId) {
-    const tag = /** @type{!cros.mojom.CameraMetadataTag} */ (0x80010019);
+    const tag = /** @type{!CameraMetadataTag} */ (0x80010019);
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
   }
@@ -448,7 +471,7 @@ export class DeviceOperator {
    * Sets the intent for the upcoming capture session.
    * @param {string} deviceId The renderer-facing device id of the target camera
    *     which could be retrieved from MediaDeviceInfo.deviceId.
-   * @param {!cros.mojom.CaptureIntent} captureIntent The purpose of this
+   * @param {!CaptureIntent} captureIntent The purpose of this
    *     capture, to help the camera device decide optimal configurations.
    * @return {!Promise} Promise for the operation.
    */
@@ -467,7 +490,7 @@ export class DeviceOperator {
   async isPortraitModeSupported(deviceId) {
     // TODO(wtlee): Change to portrait mode tag.
     const portraitModeTag =
-        /** @type{!cros.mojom.CameraMetadataTag} */ (0x80000000);
+        /** @type{!CameraMetadataTag} */ (0x80000000);
 
     const portraitMode =
         await this.getStaticMetadata(deviceId, portraitModeTag);
@@ -477,16 +500,16 @@ export class DeviceOperator {
   /**
    * Adds a metadata observer to Camera App Device through Mojo IPC.
    * @param {string} deviceId The id for target camera device.
-   * @param {function(!cros.mojom.CameraMetadata): void} callback Callback that
+   * @param {function(!CameraMetadata): void} callback Callback that
    *     handles the metadata.
-   * @param {!cros.mojom.StreamType} streamType Stream type which the observer
+   * @param {!StreamType} streamType Stream type which the observer
    *     gets the metadata from.
    * @return {!Promise<!MojoEndpoint>} Added observer endpoint.
    * @throws {!Error} if fails to construct device connection.
    */
   async addMetadataObserver(deviceId, callback, streamType) {
     const observerCallbackRouter =
-        wrapEndpoint(new cros.mojom.ResultMetadataObserverCallbackRouter());
+        wrapEndpoint(new ResultMetadataObserverCallbackRouter());
     observerCallbackRouter.onMetadataAvailable.addListener(callback);
 
     const device = await this.getDevice_(deviceId);
@@ -509,7 +532,7 @@ export class DeviceOperator {
    */
   async addShutterObserver(deviceId, callback) {
     const observerCallbackRouter =
-        wrapEndpoint(new cros.mojom.CameraEventObserverCallbackRouter());
+        wrapEndpoint(new CameraEventObserverCallbackRouter());
     observerCallbackRouter.onShutterDone.addListener(callback);
 
     const device = await this.getDevice_(deviceId);
@@ -523,9 +546,9 @@ export class DeviceOperator {
    * device before taking picture.
    * @param {string} deviceId The renderer-facing device id of the target camera
    *     which could be retrieved from MediaDeviceInfo.deviceId.
-   * @param {!cros.mojom.Effect} effect The target reprocess option (effect)
+   * @param {!Effect} effect The target reprocess option (effect)
    *     that would be applied on the result.
-   * @return {!Promise<!media.mojom.Blob>} The captured result with given
+   * @return {!Promise<!MojoBlob>} The captured result with given
    *     effect.
    * @throws {!Error} Thrown when the reprocess is failed or the device
    *     operation is not supported.
@@ -601,7 +624,7 @@ export class DeviceOperator {
    */
   async registerDocumentCornersObserver(deviceId, callback) {
     const observerCallbackRouter =
-        wrapEndpoint(new cros.mojom.DocumentCornersObserverCallbackRouter());
+        wrapEndpoint(new DocumentCornersObserverCallbackRouter());
     observerCallbackRouter.onDocumentCornersUpdated.addListener((corners) => {
       callback(corners.map((c) => new Point(c.x, c.y)));
     });

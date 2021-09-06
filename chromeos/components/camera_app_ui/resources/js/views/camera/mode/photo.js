@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {
+  StreamType,
+} from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
+import {
+  CameraMetadataTag,
+} from
+    '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
+
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {I18nString} from '../../../i18n_string.js';
@@ -195,7 +203,7 @@ export class Photo extends ModeBase {
     }
 
     const cameraMetadataTagInverseLookup = {};
-    Object.entries(cros.mojom.CameraMetadataTag).forEach(([key, value]) => {
+    Object.entries(CameraMetadataTag).forEach(([key, value]) => {
       if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
         return;
       }
@@ -224,7 +232,7 @@ export class Photo extends ModeBase {
 
     const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
     this.metadataObserver_ = await deviceOperator.addMetadataObserver(
-        deviceId, callback, cros.mojom.StreamType.JPEG_OUTPUT);
+        deviceId, callback, StreamType.JPEG_OUTPUT);
   }
 
   /**

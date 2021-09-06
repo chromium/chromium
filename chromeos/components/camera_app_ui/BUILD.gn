@@ -114,6 +114,7 @@ mojom("mojo_bindings") {
     "//components/arc/mojom:camera_intent",
     "//ui/gfx/geometry/mojom",
   ]
+  webui_module_path = "/chromeos/components/camera_app_ui"
 }
 
 cca_grd_prefix = "chromeos_camera_app"
@@ -185,73 +186,28 @@ generate_grd("build_mojo_grdp") {
     "//components/arc/mojom:camera_intent_js",
     "//media/capture/mojom:image_capture_js",
     "//media/capture/video/chromeos/mojom:cros_camera_js",
-    "//mojo/public/js:bindings_lite",
-    "//mojo/public/mojom/base:base_js",
-    "//third_party/blink/public/mojom:mojom_platform_js",
-    "//ui/gfx/geometry/mojom:mojom_js",
-    "//ui/gfx/range/mojom:mojom_js",
   ]
 
   grd_prefix = "chromeos_camera_app_js_mojo"
-  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/mojom-webui", root_build_dir)
 
-  input_mappings = [
-    {
-      path = "chromeos/components/camera_app_ui/camera_app_helper.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_app_helper.mojom-lite.js"
-    },
-    {
-      path = "components/arc/mojom/camera_intent.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_intent.mojom-lite.js"
-    },
-    {
-      path = "media/capture/mojom/image_capture.mojom-lite.js"
-      rewrite_path = "js/mojo/image_capture.mojom-lite.js"
-    },
-    {
-      path = "media/capture/video/chromeos/mojom/camera_app.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_app.mojom-lite.js"
-    },
-    {
-      path = "media/capture/video/chromeos/mojom/camera_common.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_common.mojom-lite.js"
-    },
-    {
-      path = "media/capture/video/chromeos/mojom/camera_metadata.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_metadata.mojom-lite.js"
-    },
-    {
-      path = "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-lite.js"
-      rewrite_path = "js/mojo/camera_metadata_tags.mojom-lite.js"
-    },
-    {
-      path = "mojo/public/js/mojo_bindings_lite.js"
-      rewrite_path = "js/mojo/mojo_bindings_lite.js"
-    },
-    {
-      path = "mojo/public/mojom/base/time.mojom-lite.js"
-      rewrite_path = "js/mojo/time.mojom-lite.js"
-    },
-    {
-      path = "ui/gfx/geometry/mojom/geometry.mojom-lite.js"
-      rewrite_path = "js/mojo/geometry.mojom-lite.js"
-    },
-    {
-      path = "ui/gfx/range/mojom/range.mojom-lite.js"
-      rewrite_path = "js/mojo/range.mojom-lite.js"
-    },
-    {
-      path = "third_party/blink/public/mojom/idle/idle_manager.mojom-lite.js"
-      rewrite_path = "js/mojo/idle_manager.mojom-lite.js"
-    },
+  # TODO(pihsun): Move all imports of mojom types into the mojo/ folder, and
+  # re-export needed types, so we don't need to have long import paths
+  # scattered in multiple files.
+  # Since closure compiler don't support re-exported types
+  # (https://github.com/google/closure-compiler/issues/2257), this clean-up is
+  # blocked by migration to TypeScript.
+  input_files = [
+    "chromeos/components/camera_app_ui/camera_app_helper.mojom-webui.js",
+    "components/arc/mojom/camera_intent.mojom-webui.js",
+    "media/capture/mojom/image_capture.mojom-webui.js",
+    "media/capture/video/chromeos/mojom/camera3.mojom-webui.js",
+    "media/capture/video/chromeos/mojom/camera_app.mojom-webui.js",
+    "media/capture/video/chromeos/mojom/camera_common.mojom-webui.js",
+    "media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js",
+    "media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js",
   ]
-
-  input_files = []
-  resource_path_rewrites = []
-  foreach(input, input_mappings) {
-    input_files += [ "${input.path}" ]
-    resource_path_rewrites += [ "${input.path}|${input.rewrite_path}" ]
-  }
 
   out_grd = mojo_grdp_file
 }
