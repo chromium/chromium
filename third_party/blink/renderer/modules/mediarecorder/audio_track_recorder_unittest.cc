@@ -32,8 +32,6 @@ using ::testing::_;
 namespace {
 
 const int kDefaultSampleRate = 48000;
-// The |frames_per_buffer| field of AudioParameters is not used by ATR.
-const int kIgnoreFramesPerBuffer = 1;
 
 // The following parameters replicate those in audio_track_recorder.cc, see this
 // file for explanations.
@@ -102,6 +100,11 @@ const ATRTestParams kATRTestParams[] = {
      AudioTrackRecorder::BitrateMode::CONSTANT},
 };
 
+int FramesPerBuffer(int sample_rate) {
+  return kMediaStreamAudioTrackBufferDurationMs * sample_rate /
+         base::Time::kMillisecondsPerSecond;
+}
+
 class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
  public:
   // Initialize |first_params_| based on test parameters, and |second_params_|
@@ -111,11 +114,11 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         first_params_(GetParam().input_format,
                       GetParam().channel_layout,
                       GetParam().sample_rate,
-                      kIgnoreFramesPerBuffer),
+                      FramesPerBuffer(GetParam().sample_rate)),
         second_params_(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                        media::CHANNEL_LAYOUT_STEREO,
                        kDefaultSampleRate,
-                       kIgnoreFramesPerBuffer),
+                       FramesPerBuffer(kDefaultSampleRate)),
         first_source_(first_params_.channels(),     /* # channels */
                       440,                          /* frequency */
                       first_params_.sample_rate()), /* sample rate */

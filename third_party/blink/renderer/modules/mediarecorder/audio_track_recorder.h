@@ -100,6 +100,9 @@ class MODULES_EXPORT AudioTrackRecorder
 
   scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
 
+  // Number of frames per chunked buffer passed to the encoder.
+  int frames_per_chunk_ = 0;
+
   DISALLOW_COPY_AND_ASSIGN(AudioTrackRecorder);
 };
 
