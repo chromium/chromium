@@ -1622,9 +1622,15 @@ void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
   if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled()) &&
       !ForceLegacyLayout()) {
     DCHECK(!child->IsInline());
-    // TODO(crbug.com/716930): Add anonymous blocks as
-    // |AddChildIgnoringContinuation| does.
-    NOTIMPLEMENTED();
+    // Following tests reach here.
+    //  * external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html
+    //  * fast/block/float/float-originating-line-deleted-crash.html
+    //  * paint/stacking/layer-stacking-change-under-inline.html
+    auto* const anonymous_box =
+        CreateAnonymousContainerForBlockChildren(/* split_flow */ false);
+    LayoutBoxModelObject::AddChild(anonymous_box, child);
+    Children()->RemoveChildNode(this, child);
+    anonymous_box->AddChild(child);
     return;
   }
   // We have to split the parent flow.
