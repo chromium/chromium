@@ -5,7 +5,6 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
-<script src="./testcommon.js"></script>
 
 <style>
 html {
@@ -20,18 +19,19 @@ html {
 <script>
 promise_test(async t => {
   const scroller = document.scrollingElement;
-  // Allow layout to finish, otherwise the scroller isn't set up by the time
-  // we check the currentTime of the scroll timeline.
-  await waitForNextFrame();
+  // Set the timeRange(s) such that currentTime maps directly to the value
+  // scrolled. This makes it easier to assert on the currentTime in the test.
+  const scrollerHeight = scroller.scrollHeight - scroller.clientHeight;
+  const scrollerWidth = scroller.scrollWidth - scroller.clientWidth;
 
   const blockScrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { scrollSource: scroller, timeRange: scrollerHeight, orientation: 'block' });
   const inlineScrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'inline' });
+      { scrollSource: scroller, timeRange: scrollerWidth, orientation: 'inline' });
 
   // Unscrolled, both timelines should read a currentTime of 0.
-  assert_percents_equal(blockScrollTimeline.currentTime, 0);
-  assert_percents_equal(inlineScrollTimeline.currentTime, 0);
+  assert_equals(blockScrollTimeline.currentTime, 0);
+  assert_equals(inlineScrollTimeline.currentTime, 0);
 
   // Now do some scrolling and make sure that the ScrollTimelines update.
   scroller.scrollTop = 50;
@@ -40,7 +40,9 @@ promise_test(async t => {
   // current time.
   await waitForNextFrame();
 
-  assert_percents_equal(blockScrollTimeline.currentTime, 50);
-  assert_percents_equal(inlineScrollTimeline.currentTime, 75);
+  // As noted above, the timeRange(s) are mapped such that currentTime should be
+  // the scroll offset.
+  assert_equals(blockScrollTimeline.currentTime, 50);
+  assert_equals(inlineScrollTimeline.currentTime, 75);
 }, 'currentTime calculates the correct time for a document.scrollingElement scrollSource');
 </script>
