@@ -29,10 +29,8 @@
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->
-
       <part file="oobe_image_resources.grdp" />
       <part file="oobe_animation_resources.grdp" />
-      <part file="oobe_components_resources.grdp" />
 
       <!-- Resources that are dynamically chosen to be served in runtime -->
       <!-- OOBE Custom CSS Variables -->

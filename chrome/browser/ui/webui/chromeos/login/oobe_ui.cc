@@ -159,14 +159,6 @@ constexpr char kOobeCustomVarsCssHTML[] =
     "components/oobe_vars/oobe_custom_vars_css.html";
 constexpr char kOobeCustomVarsCssJsM[] =
     "components/oobe_vars/oobe_custom_vars_css.m.js";
-constexpr char kOobeCarouselHTML[] = "components/oobe_carousel/oobe_carousel.html";
-constexpr char kOobeCarouselJS[] = "components/oobe_carousel/oobe_carousel.js";
-constexpr char kOobeSlideHTML[] = "components/oobe_slide/oobe_slide.html";
-constexpr char kOobeSlideJS[] = "components/oobe_slide/oobe_slide.js";
-constexpr char kProgressListItemHTML[] = "components/progress_list_item/progress_list_item.html";
-constexpr char kProgressListItemJS[] = "components/progress_list_item/progress_list_item.js";
-constexpr char kThrobberNoticeHTML[] = "components/throbber_notice/throbber_notice.html";
-constexpr char kThrobberNoticeJS[] = "components/throbber_notice/throbber_notice.js";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
@@ -688,23 +680,6 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source,
   source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
-
-  source->AddResourcePath(kOobeCarouselHTML,
-                          IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_HTML);
-  source->AddResourcePath(kOobeCarouselJS,
-                          IDR_OOBE_COMPONENTS_OOBE_CAROUSEL_JS);
-  source->AddResourcePath(kOobeSlideHTML, IDR_OOBE_COMPONENTS_OOBE_SLIDE_HTML);
-  source->AddResourcePath(kOobeSlideJS, IDR_OOBE_COMPONENTS_OOBE_SLIDE_JS);
-
-  source->AddResourcePath(kProgressListItemHTML,
-                          IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_HTML);
-  source->AddResourcePath(kProgressListItemJS,
-                          IDR_OOBE_COMPONENTS_PROGRESS_LIST_ITEM_JS);
-
-  source->AddResourcePath(kThrobberNoticeHTML,
-                          IDR_OOBE_COMPONENTS_THROBBER_NOTICE_HTML);
-  source->AddResourcePath(kThrobberNoticeJS,
-                          IDR_OOBE_COMPONENTS_THROBBER_NOTICE_JS);
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {
