@@ -48,6 +48,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.viz.common.VizFeatures;
@@ -1356,6 +1357,7 @@ public class AwContentsTest {
     @MediumTest
     @OnlyRunIn(MULTI_PROCESS)
     @CommandLineFlags.Add(ContentSwitches.SITE_PER_PROCESS)
+    @DisabledTest(message = "https://crbug.com/1246585")
     public void testOutOfProcessIframeSmokeTest() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwTestContainerView testView =
