@@ -270,6 +270,8 @@ void OmniboxResult::OnFetchComplete(const GURL& url, const SkBitmap* bitmap) {
                                 .search_list_image_icon_dimension();
       icon_info.shape = IconShape::kRoundedRectangle;
     }
+
+    SetIcon(icon_info);
   }
 }
 
