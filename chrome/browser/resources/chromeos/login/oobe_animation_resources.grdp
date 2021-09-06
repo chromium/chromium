@@ -13,7 +13,6 @@
 
   <!-- Marketing Opt In animations. -->
   <include type="BINDATA" compress="gzip" name="IDR_MARKETING_OPT_IN_ALL_SET_ANIMATION" resource_path="all_set.json" file="images/all_set.json" />
-  <include type="BINDATA" compress="gzip" name="IDR_MARKETING_OPT_IN_ALL_SET_ANIMATION_NEW_NOLOOP" resource_path="all_set_new_noloop.json" file="images/all_set_new_noloop.json" />
 
   <!-- Multi-device Setup animation. -->
   <include type="BINDATA" compress="gzip" name="IDR_MULTIDEVICE_SETUP_ANIMATION" resource_path="multidevice_setup.json" file="images/multidevice_setup.json" />

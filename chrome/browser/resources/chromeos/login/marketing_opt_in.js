@@ -38,20 +38,6 @@ Polymer({
     },
 
     /**
-     * Whether the new OOBE layout is enabled.
-     *
-     * @type {boolean}
-     */
-    newLayoutEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('newLayoutEnabled') &&
-            loadTimeData.getBoolean('newLayoutEnabled');
-      },
-      readOnly: true,
-    },
-
-    /**
      * Whether a verbose footer will be shown to the user containing some legal
      *  information such as the Google address. Currently shown for Canada only.
      */
@@ -78,11 +64,7 @@ Polymer({
 
   /** Shortcut method to control animation */
   setAnimationPlay_(played) {
-    if (this.newLayoutEnabled_) {
-      this.$.newAnimation.setPlay(played);
-    } else {
-      this.$.oldAnimation.setPlay(played);
-    }
+      this.$.animation.setPlay(played);
   },
 
   /** Called when dialog is shown */
@@ -93,8 +75,6 @@ Polymer({
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter_ =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
-    this.hasNewLayoutOrLegalFooter =
-        this.newLayoutEnabled_ || this.hasLegalFooter_;
     this.isAccessibilitySettingsShown_ = false;
     this.setAnimationPlay_(true);
     this.$.marketingOptInOverviewDialog.show();

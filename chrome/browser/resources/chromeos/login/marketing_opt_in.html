@@ -37,23 +37,7 @@
         --marketing-opt-in-line-height: 20px;
       }
 
-      .marketing-animation-container {
-        display: flex;
-        height: 100%;
-        justify-content: center;
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-      }
-
-      .marketing-animation {
-        height: 90.4%;
-        margin-top: 4%;
-        position: absolute;
-        width: 100%;
-      }
-
-      .new-marketing-animation-content {
+      .marketing-animation-content {
         height: 95%;
         /* Lower the animation a bit to make it look more centered. */
         margin-top: 20px;
@@ -109,11 +93,7 @@
         hidden="[[isAccessibilitySettingsShown_]]"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
         aria-describedby="marketing-opt-in-subtitle">
-      <iron-icon slot="icon" icon="oobe-32:checkmark"
-                 hidden="[[newLayoutEnabled_]]">
-      </iron-icon>
-      <iron-icon slot="icon" icon="oobe-32:checkmarkv2"
-                 hidden="[[!newLayoutEnabled_]]">
+      <iron-icon slot="icon" icon="oobe-32:checkmark">
       </iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
@@ -147,7 +127,7 @@
           </cr-toggle>
         </div>
 
-        <!-- Legal footer. Shown for both layouts. -->
+        <!-- Legal footer  -->
         <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
           <div>
             Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
@@ -158,18 +138,9 @@
 
       <div id="contentArea" slot="content" class="layout flex vertical">
         <!-- Animation -->
-        <div class="new-marketing-animation-content"
-            hidden="[[!newLayoutEnabled_]]">
-          <cr-lottie id="newAnimation"
-              animation-url="all_set_new_noloop.json" singleLoop="true">
-          </cr-lottie>
-        </div>
-
-        <!-- Old animation for old layout without the legal footer -->
-        <div id="animation" class="marketing-animation-container"
-            hidden="[[hasNewLayoutOrLegalFooter]]">
-          <cr-lottie id="oldAnimation"
-              class="marketing-animation" animation-url="all_set.json">
+        <div class="marketing-animation-content">
+          <cr-lottie id="animation"
+              animation-url="all_set.json" singleLoop="true">
           </cr-lottie>
         </div>
       </div>
