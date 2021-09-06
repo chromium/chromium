@@ -230,6 +230,7 @@
 <translation id="3184767182050912705">Отключване с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
+<translation id="3230318355092723906">Когато синхронизирането е изключено, пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">Наскоро посетени</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
+<translation id="6020800238007543967">Показване на визуализациите на връзки</translation>
 <translation id="6021332621416007159">Отваряне във...</translation>
 <translation id="6036514205982097558">Един браузър за всичките ви раздели</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@
 <translation id="6801927553864092214">За да сърфирате частно, отворете раздел в режим „инкогнито“</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
+<translation id="681450999322335505">Организацията ви изключи синхронизирането.</translation>
 <translation id="6830804042318138535">Прочетете повече</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>
