@@ -168,9 +168,9 @@ std::vector<FormData> FormCache::ModifiedExtractNewForms(
   std::vector<WebFormControlElement> control_elements;
 
   // Helper function that stores new autofillable forms in |forms|. Returns
-  // false iff the total number of fields exceeds the kMaxParseableFields.
-  // Clears |form|'s FormData::child_frames if the total number of frames
-  // exceeds MaxParseableChildFrames().
+  // false iff the total number of fields exceeds |kMaxParseableFields|. Clears
+  // |form|'s FormData::child_frames if the total number of frames exceeds
+  // MaxParseableChildFrames().
   auto ProcessForm = [&](FormData form) {
     for (const auto& field : form.fields)
       observed_unique_renderer_ids.insert(field.unique_renderer_id);

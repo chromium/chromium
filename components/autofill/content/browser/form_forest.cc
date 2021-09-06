@@ -20,14 +20,19 @@
 // |error_handler| if |condition| is false.
 // TODO(https://crbug.com/1187842): Replace AFCHECK() with DCHECK().
 #if DCHECK_IS_ON()
-#define AFCHECK(condition, ...) DCHECK(condition)
+#define AFCHECK(condition, ...)                            \
+  {                                                        \
+    DEBUG_ALIAS_FOR_GURL(main_url, MainUrlForDebugging()); \
+    DCHECK(condition);                                     \
+  }
 #else
-#define AFCHECK(condition, ...)           \
-  {                                       \
-    if (!(condition)) {                   \
-      base::debug::DumpWithoutCrashing(); \
-      __VA_ARGS__;                        \
-    }                                     \
+#define AFCHECK(condition, ...)                              \
+  {                                                          \
+    if (!(condition)) {                                      \
+      DEBUG_ALIAS_FOR_GURL(main_url, MainUrlForDebugging()); \
+      base::debug::DumpWithoutCrashing();                    \
+      __VA_ARGS__;                                           \
+    }                                                        \
   }
 #endif
 
@@ -64,6 +69,19 @@ FormForest::FrameData::~FrameData() = default;
 
 FormForest::FormForest() = default;
 FormForest::~FormForest() = default;
+
+GURL FormForest::MainUrlForDebugging() const {
+  content::RenderFrameHost* some_rfh = some_rfh_for_debugging_;
+  if (!some_rfh) {
+    for (const auto& frame_data : frame_datas_) {
+      if (frame_data && frame_data->driver)
+        some_rfh = frame_data->driver->render_frame_host();
+    }
+  }
+  if (!some_rfh)
+    return GURL();
+  return some_rfh->GetMainFrame()->GetLastCommittedURL();
+}
 
 absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
                                                     FrameToken query) {
@@ -127,6 +145,7 @@ FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
 }
 
 void FormForest::EraseFrame(LocalFrameToken frame) {
+  some_rfh_for_debugging_ = nullptr;
   if (!frame_datas_.erase(frame))
     return;
   // Removes all fields and unsets |frame|'s children's FrameData::parent_form
@@ -173,6 +192,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   AFCHECK(form, return );
   AFCHECK(driver, return );
   AFCHECK(form->host_frame, return );
+  some_rfh_for_debugging_ = driver->render_frame_host();
 
   FrameData* frame = GetOrCreateFrame(form->host_frame);
   AFCHECK(frame, return );
@@ -338,7 +358,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     std::vector<FormFieldData> root_fields;
     root_fields.reserve(root.form->fields.size() + form_fields.size());
 
-    size_t emergency_counter = 0;
+    size_t num_visits = 0;
     while (!frontier.empty()) {
       // Each node |n| is visited `n.form->child_frames.size() + 1` times.
       // By induction on the tree height, it follows that the overall number of
@@ -348,11 +368,11 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       // number of nodes in the subtree induced by the Ith child. By induction,
       // the number of visits in each subtree is 2 * N_I - 1. The number of
       // visits in the whole tree is therefore
-      //     K + 1 + \sum_{i=1}^K (2 * N_i - 1)
-      //   = 1 + \sum_{i=1}^K 2 * N_i
+      //     K + 1 + \sum_{I=1}^K (2 * N_I - 1)
+      //   = 1 + \sum_{I=1}^K 2 * N_I
       //   = 2 * (1 + \sum_{I=1}^K N_I) - 1
       //   = 2 * N - 1.
-      if (++emergency_counter > kMaxParseableFramesInTree * 2 - 1) {
+      if (++num_visits > kMaxParseableFramesInTree * 2 - 1) {
         AFCHECK(false);
         break;
       }

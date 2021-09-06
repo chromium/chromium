@@ -305,8 +305,8 @@ class FormForest {
   // The first example is the reason why UpdateTreeOfRendererForm() may trigger
   // a reparse in a parent frame. The second example is the reason why we do not
   // cache LocalFrameTokens.
-  static absl::optional<LocalFrameToken> Resolve(const FrameData& reference,
-                                                 FrameToken query);
+  absl::optional<LocalFrameToken> Resolve(const FrameData& reference,
+                                          FrameToken query);
 
   // Returns the FrameData known for |frame|, or creates a new one and returns
   // it, in which case all members but FrameData::host_frame are uninitialized.
@@ -338,6 +338,14 @@ class FormForest {
   // move). In particular, `*renderer_form` and its members can be reassigned.
   void UpdateTreeOfRendererForm(FormData* renderer_form,
                                 ContentAutofillDriver* driver);
+  // The URL of a main frame managed by the FormForest.
+  // TODO(crbug.com/1240247): Remove and make Resolve() static.
+  GURL MainUrlForDebugging() const;
+
+  // The frame managed by the FormForest that was last passed to
+  // UpdateTreeOfRendererForm().
+  // TODO(crbug.com/1240247): Remove and make Resolve() static.
+  content::RenderFrameHost* some_rfh_for_debugging_ = nullptr;
 
   // The FrameData nodes of the forest.
   // The members FrameData::frame_token must not be mutated.

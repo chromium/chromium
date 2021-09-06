@@ -259,6 +259,15 @@ class ContentAutofillRouter {
   void SetLastQueriedSource(ContentAutofillDriver* source);
   void SetLastQueriedTarget(ContentAutofillDriver* target);
 
+  // The URL of a main frame managed by the ContentAutofillRouter.
+  // TODO(crbug.com/1240247): Remove.
+  GURL MainUrlForDebugging() const;
+
+  // The frame managed by the ContentAutofillRouter that was last passed to
+  // an event.
+  // TODO(crbug.com/1240247): Remove.
+  content::RenderFrameHost* some_rfh_for_debugging_ = nullptr;
+
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;
 

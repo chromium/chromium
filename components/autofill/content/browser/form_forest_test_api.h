@@ -17,9 +17,9 @@ class FormForestTestApi {
   using FrameData = FormForest::FrameData;
   using FrameForm = FormForest::FrameAndForm;
 
-  static absl::optional<LocalFrameToken> Resolve(const FrameData& local,
-                                                 FrameToken other) {
-    return FormForest::Resolve(local, other);
+  absl::optional<LocalFrameToken> Resolve(const FrameData& local,
+                                          FrameToken other) {
+    return ff_->Resolve(local, other);
   }
 
   explicit FormForestTestApi(FormForest* ff) : ff_(ff) { DCHECK(ff_); }
