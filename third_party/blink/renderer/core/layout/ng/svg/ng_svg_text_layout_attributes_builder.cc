@@ -285,9 +285,11 @@ void NGSvgTextLayoutAttributesBuilder::Build(
       }
       if (text_length_stack.size() > 0u &&
           text_length_stack.back().layout_object == object) {
-        text_length_range_list_.push_back(
-            SvgTextContentRange{object, text_length_stack.back().start_index,
-                                addressable_index - 1});
+        if (text_length_stack.back().start_index != addressable_index) {
+          text_length_range_list_.push_back(
+              SvgTextContentRange{object, text_length_stack.back().start_index,
+                                  addressable_index - 1});
+        }
         text_length_stack.pop_back();
       }
 

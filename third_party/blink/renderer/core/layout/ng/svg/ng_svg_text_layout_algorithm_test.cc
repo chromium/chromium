@@ -30,4 +30,15 @@ TEST_F(NGSVGTextLayoutAlgorithmTest, PositionOnPathCrash) {
   // Pass if no crashes.
 }
 
+TEST_F(NGSVGTextLayoutAlgorithmTest, EmptyTextLengthCrash) {
+  SetBodyInnerHTML(R"HTML(
+<svg>
+<text>
+C AxBxC
+<textPath textLength="100"></textPath></text>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Pass if no crashes.
+}
+
 }  // namespace blink
