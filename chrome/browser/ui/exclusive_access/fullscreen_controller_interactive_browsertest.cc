@@ -980,7 +980,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #if defined(OS_WIN)
 #define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
 #else
-#define MAYBE_FullscreenOnPermissionGrant FullscreenOnPermissionGrant
+// TODO(crbug.com/1246649): flakes on other bots.
+#define MAYBE_FullscreenOnPermissionGrant DISABLED_FullscreenOnPermissionGrant
 #endif
 // Test requesting fullscreen using the permission grant's transient affordance.
 IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
