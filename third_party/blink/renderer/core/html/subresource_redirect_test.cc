@@ -36,10 +36,18 @@ class SubresourceRedirectSimTest
     : public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool>>,
       public SimTest {
  protected:
-  SubresourceRedirectSimTest()
-      : scoped_lazy_image_loading_for_test_(is_lazyload_image_enabled()),
-        scoped_automatic_lazy_image_loading_for_test_(
-            is_lazyload_image_enabled()) {
+  SubresourceRedirectSimTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+
+    scoped_lazy_image_loading_for_test_ =
+        std::make_unique<ScopedLazyImageLoadingForTest>(
+            is_lazyload_image_enabled());
+    scoped_automatic_lazy_image_loading_for_test_ =
+        std::make_unique<ScopedAutomaticLazyImageLoadingForTest>(
+            is_lazyload_image_enabled());
+
     if (is_subresource_redirect_enabled()) {
       base::FieldTrialParams params;
       if (allow_javascript_crossorigin_images())
@@ -47,7 +55,17 @@ class SubresourceRedirectSimTest
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{features::kSubresourceRedirect, params}}, {});
     }
-    GetNetworkStateNotifier().SetSaveDataEnabled(is_save_data_enabled());
+    GetNetworkStateNotifier().SetSaveDataEnabledOverride(
+        is_save_data_enabled());
+  }
+
+  void TearDown() override {
+    GetNetworkStateNotifier().ClearOverride();
+    scoped_feature_list_.Reset();
+    scoped_automatic_lazy_image_loading_for_test_.reset();
+    scoped_lazy_image_loading_for_test_.reset();
+
+    SimTest::TearDown();
   }
 
   bool is_subresource_redirect_enabled() const {
@@ -106,8 +124,9 @@ class SubresourceRedirectSimTest
               (previews_state & PreviewsTypes::kSubresourceRedirectOn) != 0);
   }
 
-  ScopedLazyImageLoadingForTest scoped_lazy_image_loading_for_test_;
-  ScopedAutomaticLazyImageLoadingForTest
+  std::unique_ptr<ScopedLazyImageLoadingForTest>
+      scoped_lazy_image_loading_for_test_;
+  std::unique_ptr<ScopedAutomaticLazyImageLoadingForTest>
       scoped_automatic_lazy_image_loading_for_test_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
@@ -298,19 +317,26 @@ class SubresourceRedirectCSPSimTest : public ::testing::WithParamInterface<
                                           bool /*allow_csp_restricted_images*/>,
                                       public SimTest {
  protected:
-  SubresourceRedirectCSPSimTest() {
+  SubresourceRedirectCSPSimTest() = default;
+
+  void SetUp() override {
+    SimTest::SetUp();
+
     base::FieldTrialParams params;
     params["allow_csp_restricted_images"] =
         allow_csp_restricted_images() ? "true" : "false";
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kSubresourceRedirect, params}}, {});
-    GetNetworkStateNotifier().SetSaveDataEnabled(true);
-  }
 
-  void SetUp() override {
-    SimTest::SetUp();
+    GetNetworkStateNotifier().SetSaveDataEnabledOverride(true);
     WebView().GetPage()->GetSettings().SetLitePageSubresourceRedirectOrigin(
         "https://litepages.googlezip.net");
+  }
+
+  void TearDown() override {
+    GetNetworkStateNotifier().ClearOverride();
+    scoped_feature_list_.Reset();
+    SimTest::TearDown();
   }
 
   bool allow_csp_restricted_images() const { return GetParam(); }
