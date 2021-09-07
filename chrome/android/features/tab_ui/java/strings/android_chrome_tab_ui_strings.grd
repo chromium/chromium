@@ -457,6 +457,18 @@
       <message name="IDS_MERCHANT_VIEWER_PREVIEW_SHEET_TITLE" desc="Bottom sheet title for the merchant viewer experience.">
         Google | About this store
       </message>
+      <message name="IDS_MERCHANT_VIEWER_OMNIBOX_ICON_IPH" desc="IPH shown when merchant trust message is dismissed at the first time.">
+        View store info
+      </message>
+      <message name="IDS_PAGE_INFO_STORE_INFO_TITLE" desc="The title of the Store info row in Trusted Surface.">
+        Store info
+      </message>
+      <message name="IDS_PAGE_INFO_STORE_INFO_DESCRIPTION_WITH_NO_REVIEW" desc="The description of the Store info row in Trusted Surface for sites with ratings but no reviews.">
+        (store rating)
+      </message>
+      <message name="IDS_PAGE_INFO_STORE_INFO_DESCRIPTION_WITH_NO_RATING" desc="The description of the Store info row in Trusted Surface for sites with return policy but no ratings.">
+        See return policy and more
+      </message>
     </messages>
   </release>
 </grit>
