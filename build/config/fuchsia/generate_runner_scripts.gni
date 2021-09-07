@@ -17,6 +17,11 @@ declare_args() {
   # will be used.
   default_fuchsia_build_dir_for_installation = ""
 
+  # Sets the Fuchsia device node name which will be used by default by the
+  # generated runner scripts. If not specficed, then no default node name will
+  # be used.
+  default_fuchsia_device_node_name = ""
+
   # CPU architecture of the host used to run the tests.
   test_host_cpu = host_cpu
 
@@ -215,6 +220,13 @@ template("fuchsia_package_runner") {
       executable_args += [
         "--fuchsia-out-dir",
         default_fuchsia_build_dir_for_installation,
+      ]
+    }
+
+    if (default_fuchsia_device_node_name != "") {
+      executable_args += [
+        "--node-name",
+        default_fuchsia_device_node_name,
       ]
     }
   }
