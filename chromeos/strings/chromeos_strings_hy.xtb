@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Հիշապահեստ</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
+<translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
 <translation id="4244962993387259361">Հիշողության ստուգումը գործարկելու համար ձեզ անհրաժեշտ է նվազագույնը 500 ՄԲ ազատ տարածք։ Տարածք ազատելու համար անցեք Կարգավորումներ &gt; Հիշողության կառավարում։</translation>
+<translation id="4258281355379922695">HTTP-ի հապաղում</translation>
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
 <translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
+<translation id="463791356324567266">Սկանավորումը չեղարկվում է...</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
 <translation id="4654549501020883054">Փոխել ամեն օր</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Մնացած փորձերի քանակը՝ {0}}one{Մնացած փորձերի քանակը՝ {0}}other{Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />՝ <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Չհաջողվեց ավարտել սկանավորումը</translation>
+<translation id="5502931783115429516">Android-ը չի աշխատում</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@
 <translation id="5701381305118179107">Կենտրոնաբերել</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Պորտալի վիճակը</translation>
+<translation id="5784136236926853061">HTTP-ի բարձր հապաղում</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5849570051105887917">Տան ծառայությունների մատակարարի կոդը</translation>
@@ -349,6 +354,7 @@
 <translation id="7343649194310845056">Ցանցային սարքեր</translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
@@ -356,6 +362,7 @@
 <translation id="7490813197707563893">MAC հասցե</translation>
 <translation id="7497215489070763236">Սերվերի CA հավաստագիր</translation>
 <translation id="7502658306369382406">IPv6 հասցե</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Välimuisti</translation>
 <translation id="3122464029669770682">Keskusyksikkö</translation>
 <translation id="315116470104423982">Mobiilitiedonsiirto</translation>
+<translation id="3156846309055100599">Skannataan sivu <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Captive portal havaittu</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3199982728237701504">Syöttölaite (kaksipuolinen)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Salasana vanhenee: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ei tulostustöitä käynnissä</translation>
 <translation id="4244962993387259361">Tarvitset muistitestin suorittamiseen ainakin 500 Mt vapaata tilaa. Voit vapauttaa tilaa valitsemalla Asetukset &gt; Tallennustilan hallinta.</translation>
+<translation id="4258281355379922695">HTTP-viive</translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
+<translation id="463791356324567266">Perutaan skannausta…</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="4654549501020883054">Vaihda päivittäin</translation>
 <translation id="4665014895760275686">Valmistaja</translation>
@@ -251,6 +254,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} yritys jäljellä}other{{0} yritystä jäljellä}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skannausta ei voi suorittaa loppuun</translation>
+<translation id="5502931783115429516">Android ei käynnissä</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktivoidaan</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5701381305118179107">Keskitä</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Portaalitila</translation>
+<translation id="5784136236926853061">Suuri HTTP-viive</translation>
 <translation id="5832805196449965646">Lisää henkilö</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5849570051105887917">Kotiverkon palveluntarjoajan koodi</translation>
@@ -349,6 +354,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7343649194310845056">Verkkolaitteet</translation>
 <translation id="7359657277149375382">Tiedostotyyppi</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Erittäin suuri HTTP-viive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannaus valmis. 1 sivu skannattu}other{Skannaus valmis. {NUMBER_OF_PAGES} sivua skannattu}}</translation>
 <translation id="7469648432129124067">Portaali havaittu</translation>
@@ -356,6 +362,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7490813197707563893">MAC-osoite</translation>
 <translation id="7497215489070763236">Palvelimen CA-varmenne</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostiikkaohjelmat</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

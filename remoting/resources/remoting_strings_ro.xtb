@@ -79,6 +79,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client deconectat: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nu este configurat corect. Alege alt browser web prestabilit și reactivează redirecționarea adreselor URL.</translation>
 <translation id="4635770493235256822">Dispozitive la distanță</translation>
 <translation id="4660011489602794167">Afișează tastatura</translation>
 <translation id="4703799847237267011">Sesiunea Chromoting s-a încheiat.</translation>

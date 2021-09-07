@@ -79,6 +79,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="4512952200932940229">Ophavsret 2021 The Chromium Authors. Alle rettigheder forbeholdes.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Frakoblet klient: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> er ikke konfigureret korrekt. Vælg en anden standardwebbrowser, og aktivér derefter videresendelse af webadresse igen.</translation>
 <translation id="4635770493235256822">Fjernenheder</translation>
 <translation id="4660011489602794167">Vis tastatur</translation>
 <translation id="4703799847237267011">Din session med Chromoting er afsluttet.</translation>

@@ -79,6 +79,7 @@ Jos <ph name="SERVICE_SCRIPT_NAME" /> on jo valittuna, poista valinta ja valitse
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="4513946894732546136">Palaute</translation>
 <translation id="4563926062592110512">Asiakkaan <ph name="CLIENT_USERNAME" /> yhteys katkaistiin.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> on määritetty väärin. Valitse toinen oletusselain ja ota sitten URL-uudelleenohjaus uudelleen käyttöön.</translation>
 <translation id="4635770493235256822">Etälaitteet</translation>
 <translation id="4660011489602794167">Näytä näppäimistö</translation>
 <translation id="4703799847237267011">Chromoting-käyttökerta on päättynyt.</translation>

@@ -109,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> వలె సైన్ ఇన్ చేశారు.</translation>
 <translation id="579702532610384533">మళ్ళీ కనెక్ట్ చేయి</translation>
 <translation id="5810269635982033450">స్క్రీన్ ట్రాక్‌ప్యాడ్ లాగా పని చేస్తుంది</translation>
+<translation id="5823554426827907568">మీ స్క్రీన్‌ను చూడడానికి, ఇంకా మీ కీబోర్డ్, మౌస్‌ను కంట్రోల్ చేయడానికి కావాల్సిన యాక్సెస్ కోసం <ph name="CLIENT_USERNAME" /> రిక్వెస్ట్ చేశారు. మీరు ఈ రిక్వెస్ట్ కోసం వేచి ఉండకూదనుకుంటే "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />"ను నొక్కండి. లేకపోతే, కనెక్షన్ సిద్ధంగా ఉన్నప్పుడు దానిని అనుమతించడానికి "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />"ను ఎంచుకోండి.</translation>
 <translation id="5823658491130719298">మీరు రిమోట్‌గా యాక్సెస్ చేయాలనుకుంటున్న కంప్యూటర్‌లో Chromeను తెరిచి, <ph name="INSTALLATION_LINK" />ను సందర్శించండి</translation>
 <translation id="5841343754884244200">ప్రదర్శన ఎంపికలు</translation>
 <translation id="6033507038939587647">కీబోర్డ్ ఎంపికలు</translation>

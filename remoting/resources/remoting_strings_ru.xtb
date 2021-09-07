@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">The Chromium Authors, 2021. Все права защищены.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4563926062592110512">Отключен клиент: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />: обнаружены неверные настройки. Выберите другой веб-браузер по умолчанию, а затем снова включите переадресацию URL.</translation>
 <translation id="4635770493235256822">Удаленные устройства</translation>
 <translation id="4660011489602794167">Показать клавиатуру</translation>
 <translation id="4703799847237267011">Сеанс Пульта Chrome завершен.</translation>

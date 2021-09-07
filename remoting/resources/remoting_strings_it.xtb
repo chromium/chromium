@@ -79,6 +79,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client scollegato: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non è configurato correttamente. Scegli un altro browser web predefinito e poi attiva nuovamente l'inoltro di URL.</translation>
 <translation id="4635770493235256822">Dispositivi remoti</translation>
 <translation id="4660011489602794167">Mostra tastiera</translation>
 <translation id="4703799847237267011">La sessione Chromoting è terminata.</translation>

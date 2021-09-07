@@ -79,6 +79,7 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="4512952200932940229">Copyright 2021 Autori prehliadača Chromium. Všetky práva vyhradené.</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4563926062592110512">Klient bol odpojený: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Nástroj <ph name="URL_FORWARDER_NAME" /> nie je správne nakonfigurovaný. Vyberte iný predvolený webový prehliadač a potom znova povoľte preposielanie webových adries.</translation>
 <translation id="4635770493235256822">Vzdialené zariadenia</translation>
 <translation id="4660011489602794167">Zobraziť klávesnicu</translation>
 <translation id="4703799847237267011">Vaša relácia aplikácie Chromoting bola ukončená.</translation>

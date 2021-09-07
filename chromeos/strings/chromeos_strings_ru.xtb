@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
+<translation id="3156846309055100599">Сканирование страницы <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
 <translation id="3199982728237701504">Автоподатчик документов (двусторонний)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4244962993387259361">Для запуска проверки памяти вам нужно не менее 500 МБ незанятого пространства. Чтобы освободить место, выберите "Настройки &gt; Управление хранилищем".</translation>
+<translation id="4258281355379922695">Время ожидания HTTP</translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4627232916386272576">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, напечатано страниц: <ph name="PRINTED_PAGE_NUMBER" /> из <ph name="TOTAL_PAGE_NUMBER" />. Чтобы отменить задание печати, нажмите клавишу "Ввод".</translation>
+<translation id="463791356324567266">Отмена сканирования…</translation>
 <translation id="4646949265910132906">Защищенное подключение к Wi-Fi</translation>
 <translation id="4654549501020883054">Менять ежедневно</translation>
 <translation id="4665014895760275686">Производитель</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Осталась {0} попытка.}one{Осталась {0} попытка.}few{Осталось {0} попытки.}many{Осталось {0} попыток.}other{Осталось {0} попытки.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Не удалось завершить сканирование</translation>
+<translation id="5502931783115429516">ОС Android не запущена</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Активация</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@
 <translation id="5701381305118179107">Выровнять по центру</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> из <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Состояние страницы входа</translation>
+<translation id="5784136236926853061">большое время ожидания HTTP</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5849570051105887917">Код провайдера</translation>
@@ -349,6 +354,7 @@
 <translation id="7343649194310845056">Сетевые устройства</translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
@@ -356,6 +362,7 @@
 <translation id="7490813197707563893">MAC-адрес</translation>
 <translation id="7497215489070763236">Серверный сертификат ЦС</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Программы диагностики</translation>
 <translation id="7561454561030345039">Этим действием управляет администратор.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

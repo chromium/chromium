@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="2074131957428911366">எவற்றை ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம்.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
+<translation id="2080769225927880590">சரியான கணக்கு மூலம் உள்நுழையுங்கள்</translation>
 <translation id="209018056901015185">டெஸ்க்டாப் தளத்தைக் கோரு</translation>
 <translation id="2103075008456228677">history.google.comஐத் திற</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நகர்த்தப்பட்டன</translation>
@@ -467,6 +468,8 @@
 <translation id="5737974891429562743">கணக்கு உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டன. ஒத்திசைவைத் தொடங்க, புதுப்பிக்கவும்.</translation>
 <translation id="5738887413654608789">இதன் மூலம், உங்களைச் சுற்றியுள்ளவற்றின் அடிப்படையில் தொடர்புடைய இணையப் பக்கங்களைக் கண்டறியலாம்.</translation>
 <translation id="5758631781033351321">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
+<translation id="575902488528307720">படத்தைத் தேடு</translation>
+<translation id="5781453543752460388">Photosஸில் சேர்</translation>
 <translation id="5782227691023083829">மொழிபெயர்க்கிறது...</translation>
 <translation id="5803566855766646066">இந்தப் புதிய கார்டை நிராகரிக்க வேண்டுமா?</translation>
 <translation id="5812974770859303494">இதில் சேர்...</translation>
@@ -738,6 +741,7 @@
 <translation id="8205564605687841303">ரத்துசெய்</translation>
 <translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>
 <translation id="8225985093977202398">தற்காலிகமாகச் சேமிக்கப்பட்ட படங்களும் கோப்புகளும்</translation>
+<translation id="8228176677386827255">உங்கள் சாதனம் நிர்வகிக்கப்படுகிறது. உங்கள் நிறுவனத்தின் கணக்கு மூலமாக மட்டுமே நீங்கள் உள்நுழைய முடியும்.</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8271720166617117963">ஏற்று உள்நுழைக</translation>
 <translation id="8281781826761538115">இயல்பு - <ph name="DEFAULT_LOCALE" /></translation>

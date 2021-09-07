@@ -79,6 +79,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973">No se configuró correctamente <ph name="URL_FORWARDER_NAME" />. Elige otro navegador web como predeterminado y, luego, vuelve a habilitar la URL.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">Se cerró tu sesión en Chromoting.</translation>

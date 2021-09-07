@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="1883903952484604915">मेरी फ़ाइलें</translation>
 <translation id="189358972401248634">अन्य भाषाएं</translation>
+<translation id="1910950723001426294">शेयर करने के विकल्पों की सूची बंद है.</translation>
 <translation id="1918175104945982129">यूज़र इंटरफ़ेस (यूआई) पर वॉइस सर्च के लिए, Assistant का इस्तेमाल करने की सहमति आधी स्क्रीन में खुली हुई है</translation>
 <translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>
 <translation id="1922362554271624559">सुझाई गई भाषाएं</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">अपने पासवर्ड की जांच करने के लिए, Google खाते में साइन इन करें</translation>
 <translation id="2278052315791335171">यह पासवर्ड मिटाने से, आपका <ph name="SITE" /> वाला खाता नहीं मिटेगा</translation>
 <translation id="2286841657746966508">बिलिंग पता</translation>
+<translation id="228704530595896923">शेयर करने के विकल्पों की सूची.</translation>
 <translation id="230115972905494466">कोई संगत डिवाइस नहीं मिला</translation>
 <translation id="230155349749732438">इस सेटिंग का इस्तेमाल करने के लिए, <ph name="BEGIN_LINK" />खोजने और ब्राउज़ करने के अनुभव को बेहतर बनाएं<ph name="END_LINK" /> सुविधा को चालू करना ज़रूरी है</translation>
 <translation id="2318045970523081853">कॉल करने के लिए टैप करें</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">डिवाइस की मौजूदा भाषा</translation>
 <translation id="4141536112466364990">Chrome के बारे में जानें</translation>
 <translation id="4149994727733219643">वेब पेजों के लिए सरल बनाया गया व्यू</translation>
+<translation id="4162867837470729563">शेयर करने के विकल्पों की सूची पूरी स्क्रीन पर खुली हुई है.</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4170011742729630528">सेवा उपलब्ध नहीं है; बाद में फिर से प्रयास करें.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> इस्तेमाल किए गए</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">वाई-फ़ाई से कनेक्ट होने पर डाउनलोड होगा</translation>
 <translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
+<translation id="6212786426849242805">Google को कुछ पेजों के टेक्स्ट को ढूंढने की भी अनुमति दें</translation>
 <translation id="6221633008163990886">अपने पासवर्ड निर्यात करने के लिए अनलॉक करें</translation>
 <translation id="6232535412751077445">‘नज़र न रखें’ सुविधा को चालू करने का मतलब है कि आपके ब्राउज़िंग ट्रैफ़िक के साथ कोई अनुरोध शामिल किया जाएगा. कोई भी प्रभाव इस बात पर निर्भर करता है कि वेबसाइट, अनुरोध का जवाब देती है या नहीं और अनुरोध को किस तरह समझा जाता है.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">सर्वे</translation>
 <translation id="6461962085415701688">फ़ाइल नहीं खोली जा सकती</translation>
 <translation id="6464977750820128603">आप Chrome में जिन साइटों पर जाते हैं उन्हें देख सकते हैं और उनके लिए टाइमर लगा सकते हैं.\n\nGoogle उन साइटों की जानकारी लेता है जिनके लिए आप टाइमर लगाते हैं. साथ ही, यह जानकारी भी ली जाती है कि आप उन साइटों पर कितनी देर तक रहे. इस जानकारी का इस्तेमाल 'डिजिटल वेलबीइंग' को बेहतर बनाने के लिए किया जाता है.</translation>
+<translation id="6473086018775716761">शेयर करने के विकल्पों की सूची, आधी स्क्रीन पर खुली हुई है.</translation>
 <translation id="6475951671322991020">वीडियो डाउनलोड करें</translation>
 <translation id="6477928892249167417">शायद ये साइटें आपके लिए अहम हैं:</translation>
 <translation id="6482749332252372425">मेमोरी स्‍थान कम होने के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7857691613771368249">पूछें कि फ़ाइलें कब सेव करनी हैं</translation>
 <translation id="7859988229622350291">कभी अनुवाद न करें</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> को आपके डिवाइस से कनेक्ट करने के लिए, आस-पास मौजूद डिवाइसों के साथ इंटरैक्ट करने की अनुमति की ज़रूरत है</translation>
 <translation id="7875915731392087153">ईमेल बनाएं</translation>
 <translation id="7876243839304621966">सभी को निकालें</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> पेज नहीं पढ़ा है}one{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़ा है}other{आपने <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> पेज नहीं पढ़े हैं}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
 <translation id="8189750580333936930">निजता सैंडबॉक्स</translation>
 <translation id="8190358571722158785">1 दिन शेष</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />आपके डिवाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8209050860603202033">इमेज खोलें</translation>
 <translation id="8216351761227087153">देखें</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">आपके डिवाइस से कनेक्ट किया जा रहा है…</translation>
 <translation id="8310344678080805313">मानक टैब</translation>
 <translation id="831192587911042850">यह मौजूदा वेबसाइट को उन वेबसाइटों की सूची से जोड़ता है जिन्हें आप फ़ॉलो कर रहे हैं.</translation>
+<translation id="8319544457245040955">पेज को बंद किए बिना, किसी विषय के बारे में जानें. खोजने के लिए, पेज पर एक या उससे ज़्यादा शब्द चुनें. अपनी खोज में बदलाव करने के लिए, नतीजों को देखें और उन्हें नए टैब में खोलें.</translation>
 <translation id="8327155640814342956">बेहतरीन ब्राउज़िंग अनुभव के लिए, Chrome अपडेट करें</translation>
 <translation id="834313815369870491">साइटों का अनुवाद कभी न करें</translation>
 <translation id="8349013245300336738">इस्तेमाल किए गए डेटा की मात्रा के हिसाब से क्रम में लगाएं</translation>

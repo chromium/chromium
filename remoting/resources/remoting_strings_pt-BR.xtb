@@ -79,6 +79,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4512952200932940229">Copyright 2021 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">O <ph name="URL_FORWARDER_NAME" /> não foi configurado corretamente. Escolha outro navegador da Web padrão e ative o encaminhamento de URLs novamente.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">Sua sessão do Chromoting foi encerrada.</translation>

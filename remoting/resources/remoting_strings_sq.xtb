@@ -79,6 +79,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="4512952200932940229">Të drejtat e autorit 2021 të "Autorëve të Chromium". Të gjitha të drejtat të rezervuara.</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="4563926062592110512">Klienti u shkëput: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nuk është konfiguruar saktë. Zgjidh një shfletues tjetër të parazgjedhur dhe aktivizo përsëri përcjelljen e URL-ve.</translation>
 <translation id="4635770493235256822">Pajisjet në distancë</translation>
 <translation id="4660011489602794167">Shfaq tastierën</translation>
 <translation id="4703799847237267011">Seanca jote e Chromoting ka përfunduar.</translation>

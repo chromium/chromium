@@ -79,6 +79,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="4512952200932940229">Autorska prava 2021. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4563926062592110512">Klijent čija je veza prekinuta: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nije ispravno konfigurisan. Odaberite drugi podrazumevani veb-pregledač, pa ponovo omogućite prosleđivanje URL-ova.</translation>
 <translation id="4635770493235256822">Udaljeni uređaji</translation>
 <translation id="4660011489602794167">Prikaži tastaturu</translation>
 <translation id="4703799847237267011">Sesija Chromoting-a se završila.</translation>

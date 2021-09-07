@@ -116,6 +116,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="2073572773299281212">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="2074131957428911366">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
+<translation id="2080769225927880590">Inicia sesión cunha conta válida</translation>
 <translation id="209018056901015185">Ver como ordenador</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos movidos</translation>
@@ -467,6 +468,8 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5737974891429562743">Os detalles de inicio de sesión da conta están caducados. Actualízaos para iniciar a sincronización.</translation>
 <translation id="5738887413654608789">Así poderás descubrir páxinas web relevantes en función do que te rodea.</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
+<translation id="575902488528307720">Buscar imaxe</translation>
+<translation id="5781453543752460388">Engadir a Fotos</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="5803566855766646066">Seguro que queres descartar esta tarxeta nova?</translation>
 <translation id="5812974770859303494">Engadir a…</translation>
@@ -738,6 +741,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8205564605687841303">Cancelar</translation>
 <translation id="8206354486702514201">O administrador aplica esta configuración.</translation>
 <translation id="8225985093977202398">Imaxes e ficheiros en caché</translation>
+<translation id="8228176677386827255">O teu dispositivo está xestionado. Só podes iniciar sesión coa conta da túa organización.</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8271720166617117963">Aceptar e iniciar sesión</translation>
 <translation id="8281781826761538115">Idioma predeterminado: <ph name="DEFAULT_LOCALE" /></translation>

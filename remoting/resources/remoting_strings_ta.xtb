@@ -109,6 +109,7 @@
 <translation id="5750083143895808682">உள்நுழைந்துள்ள முகவரி: <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">மீண்டும் இணை</translation>
 <translation id="5810269635982033450">டிராக்பேட் போல திரை செயல்படும்</translation>
+<translation id="5823554426827907568">உங்கள் ஸ்கிரீனைப் பார்ப்பதற்கும் உங்கள் கீபோர்டு, மவுஸ் ஆகியவற்றைக் கட்டுப்படுத்துவதற்கும் <ph name="CLIENT_USERNAME" /> அனுமதி கேட்டுள்ளார். இந்தக் கோரிக்கையை நீங்கள் எதிர்பார்க்கவில்லை எனில் ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' பட்டனை அழுத்தவும். இல்லையெனில் இணைப்பு தயாரானதும் அனுமதி வழங்க ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' பட்டனைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5823658491130719298">தொலைநிலையில் அணுக விரும்பும் கம்ப்யூட்டரில் Chromeமைத் திறந்து, <ph name="INSTALLATION_LINK" /> எனும் இணைப்பிற்குச் செல்லவும்</translation>
 <translation id="5841343754884244200">திரை விருப்பங்கள்</translation>
 <translation id="6033507038939587647">கீபோர்டு விருப்பங்கள்</translation>

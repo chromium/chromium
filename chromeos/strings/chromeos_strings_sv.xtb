@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Cacheminne</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3188257591659621405">Mina filer</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4244962993387259361">Du behöver minst 500 MB ledigt utrymme för att köra ett minnestest. Öppna Inställningar &gt; Lagringshantering om du vill frigöra utrymme.</translation>
+<translation id="4258281355379922695">HTTP-latens</translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
+<translation id="463791356324567266">Skanningen avbryts …</translation>
 <translation id="4646949265910132906">Säker wifi-anslutning</translation>
 <translation id="4654549501020883054">Ändra dagligen</translation>
 <translation id="4665014895760275686">Tillverkare</translation>
@@ -251,6 +254,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} försök kvar}other{{0} försök kvar}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Det gick inte att slutföra skanningen</translation>
+<translation id="5502931783115429516">Android körs inte</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktiverar</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Portalläge</translation>
+<translation id="5784136236926853061">Hög HTTP-latens</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5849570051105887917">Kod för hemleverantör</translation>
@@ -349,6 +354,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen har slutförts. 1 sida har skannats}other{Skanningen har slutförts. {NUMBER_OF_PAGES} sidor har skannats}}</translation>
 <translation id="7469648432129124067">En portal hittades</translation>
@@ -356,6 +362,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7490813197707563893">MAC-adress</translation>
 <translation id="7497215489070763236">Serverns CA-certifikat</translation>
 <translation id="7502658306369382406">IPv6-adress</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostikrutiner</translation>
 <translation id="7561454561030345039">Den här åtgärden hanteras av administratören</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

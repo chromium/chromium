@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
+<translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
 <translation id="3188257591659621405">Моје датотеке</translation>
 <translation id="3199982728237701504">Увлачење документа (двострано)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Лозинка истиче за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ниједан задатак штампања није у току</translation>
 <translation id="4244962993387259361">Треба да имате слободно барем 500 MB да бисте покренули тест меморије. Да бисте ослободили простор, идите у Подешавања &gt; Управљање меморијским простором.</translation>
+<translation id="4258281355379922695">HTTP кашњење</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
+<translation id="463791356324567266">Отказује се скенирање...</translation>
 <translation id="4646949265910132906">Безбедна WiFi веза</translation>
 <translation id="4654549501020883054">Мењај сваког дана</translation>
 <translation id="4665014895760275686">Произвођач</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Преостаје {0} покушај}one{Преостаје {0} покушај}few{Преостају {0} покушаја}other{Преостаје {0} покушаја}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Нисмо успели да довршимо скенирање</translation>
+<translation id="5502931783115429516">Android није покренут</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Активирање</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@
 <translation id="5701381305118179107">Центрирај</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Статус портала</translation>
+<translation id="5784136236926853061">Велико HTTP кашњење</translation>
 <translation id="5832805196449965646">Додај особу</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5849570051105887917">Кôд добављача за Home</translation>
@@ -349,6 +354,7 @@
 <translation id="7343649194310845056">Мрежни уређаји</translation>
 <translation id="7359657277149375382">Тип датотеке</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Веома велико HTTP кашњење</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
@@ -356,6 +362,7 @@
 <translation id="7490813197707563893">MAC адреса</translation>
 <translation id="7497215489070763236">CA сертификат сервера</translation>
 <translation id="7502658306369382406">IPv6 адреса</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7561454561030345039">Овим подешавањем управља администратор</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

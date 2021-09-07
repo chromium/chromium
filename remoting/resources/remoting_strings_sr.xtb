@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Ауторска права 2021. Аутори Chromium-а. Сва права задржана.</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="4563926062592110512">Клијент чија је веза прекинута: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> није исправно конфигурисан. Одаберите други подразумевани веб-прегледач, па поново омогућите прослеђивање URL-ова.</translation>
 <translation id="4635770493235256822">Удаљени уређаји</translation>
 <translation id="4660011489602794167">Прикажи тастатуру</translation>
 <translation id="4703799847237267011">Сесија Chromoting-а се завршила.</translation>

@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">© 2021, The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="4563926062592110512">კლიენტი გაითიშა: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> არასწორად არის კონფიგურირებული. აირჩიეთ განსხვავებული ვებ-ბრაუზერი, შემდეგ კი ხელახლა ჩართეთ URL-ების გადამისამართება.</translation>
 <translation id="4635770493235256822">დისტანციური მოწყობილობები</translation>
 <translation id="4660011489602794167">კლავიატურის ჩვენება</translation>
 <translation id="4703799847237267011">თქვენი Chromoting სესია დასრულდა.</translation>

@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Memoria specifike</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
+<translation id="3156846309055100599">Po skanon faqen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">U zbulua portal izolues</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Fjalëkalimi skadon për <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nuk ka printime në vazhdim</translation>
 <translation id="4244962993387259361">Të duhen të paktën 500 MB hapësirë e lirë për ekzekutimin e një testi të memories. Për të liruar hapësirën, shko te Cilësimet &gt; Menaxhimi i hapësirës ruajtëse.</translation>
+<translation id="4258281355379922695">Vonesa e HTTP-së</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
+<translation id="463791356324567266">Skanimi po anulohet...</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="4654549501020883054">Ndrysho çdo ditë</translation>
 <translation id="4665014895760275686">Prodhuesi</translation>
@@ -250,6 +253,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanimi nuk mund të përfundohej</translation>
+<translation id="5502931783115429516">Android nuk po punon</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -257,6 +261,7 @@
 <translation id="5701381305118179107">Qendër</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Gjendja e portalit</translation>
+<translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="583281660410589416">E panjohur</translation>
 <translation id="5849570051105887917">Kodi i ofruesit të rrjetit bazë</translation>
@@ -348,6 +353,7 @@
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanimi përfundoi. U skanua 1 faqe}other{Skanimi përfundoi. U skanuan {NUMBER_OF_PAGES} faqe}}</translation>
 <translation id="7469648432129124067">U zbulua një portal</translation>
@@ -355,6 +361,7 @@
 <translation id="7490813197707563893">Adresa MAC</translation>
 <translation id="7497215489070763236">Certifikata CA e serverit</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

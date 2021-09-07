@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Версия Chrome устарела</translation>
 <translation id="1883903952484604915">Скачанные</translation>
 <translation id="189358972401248634">Другие языки</translation>
+<translation id="1910950723001426294">Список способов отправки закрыт.</translation>
 <translation id="1918175104945982129">Окно, где требуется разрешить использование Ассистента для голосового поиска, развернуто на пол-экрана</translation>
 <translation id="1919130412786645364">Разрешить вход в Chrome</translation>
 <translation id="1922362554271624559">Рекомендуемые языки</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
+<translation id="228704530595896923">Список способов отправки.</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
 <translation id="230155349749732438">Чтобы использовать эту настройку, активируйте параметр <ph name="BEGIN_LINK" />Помогать улучшить просмотр страниц и поиск<ph name="END_LINK" />.</translation>
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">Текущий язык устройства</translation>
 <translation id="4141536112466364990">Chrome: обучение</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
+<translation id="4162867837470729563">Список способов отправки развернут на весь экран.</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4170011742729630528">Сервис недоступен. Повторите попытку позже.</translation>
 <translation id="4179980317383591987">Использовано: <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">Скачивание начнется, когда будет установлено подключение по Wi-Fi.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
+<translation id="6212786426849242805">Разрешить Google учитывать текст на странице</translation>
 <translation id="6221633008163990886">Чтобы экспортировать пароли, разблокируйте экран</translation>
 <translation id="6232535412751077445">Если вы запретите отслеживание, в запросы браузера будет включена специальная команда. Сайты могут интерпретировать ее и отвечать на нее по-разному.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">Опросы</translation>
 <translation id="6461962085415701688">Не удалось открыть файл</translation>
 <translation id="6464977750820128603">Вы сможете просматривать список сайтов, посещенных в Chrome, и устанавливать для них таймеры.\n\nВ Google будут отправляться сведения о сайтах, для которых настроены таймеры, и времени их посещения. Мы собираем эти данные, чтобы улучшать сервис "Цифровое благополучие".</translation>
+<translation id="6473086018775716761">Список способов отправки развернут на половину экрана.</translation>
 <translation id="6475951671322991020">Скачать видео</translation>
 <translation id="6477928892249167417">Кажется, следующие сайты важны для вас:</translation>
 <translation id="6482749332252372425">Не удалось скачать файл <ph name="FILE_NAME" />, так как места для хранения данных недостаточно.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">Действия</translation>
 <translation id="7857691613771368249">Спрашивать, когда сохранять файлы</translation>
 <translation id="7859988229622350291">Никогда не переводить</translation>
+<translation id="78707286264420418">Чтобы подключиться к вашему устройству, <ph name="PRODUCT_NAME" /> требуется разрешение на доступ к устройствам поблизости.</translation>
 <translation id="7875915731392087153">Написать письмо</translation>
 <translation id="7876243839304621966">Удалить все</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочитанная страница.}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитанная страница.}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитанных страницы.}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитанных страниц.}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитанной страницы.}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Остался 1 день</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>
 <translation id="8216351761227087153">Просмотреть</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">Подключение…</translation>
 <translation id="8310344678080805313">Обычные вкладки</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
+<translation id="8319544457245040955">Эта функция позволяет искать информацию по теме, не покидая открытой страницы. Чтобы найти нужные сведения, выберите на странице одно слово (или несколько). Если вам нужно изменить поисковый запрос, откройте результаты на новой вкладке.</translation>
 <translation id="8327155640814342956">Чтобы работать в браузере было удобнее, откройте Chrome и установите обновление.</translation>
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8349013245300336738">Сортировать по объему использованного трафика</translation>

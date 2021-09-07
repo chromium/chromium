@@ -79,6 +79,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="4512952200932940229">Copyright 2021 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4563926062592110512">Rozłączył się klient: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Rozszerzenie <ph name="URL_FORWARDER_NAME" /> nie jest poprawnie skonfigurowane. Wybierz inną domyślną przeglądarkę, a potem ponownie włącz przekierowywanie adresów URL.</translation>
 <translation id="4635770493235256822">Urządzenia zdalne</translation>
 <translation id="4660011489602794167">Pokaż klawiaturę</translation>
 <translation id="4703799847237267011">Sesja Chromoting została zakończona.</translation>
