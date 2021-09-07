@@ -27,8 +27,12 @@ class SEATBELT_EXPORT SeatbeltExtension {
   enum Type {
     // Requires (allow file-read* (extension "com.apple.app-sandbox.read")).
     FILE_READ,
-    // TODO(rsesek): Potentially support FILE_READ_WRITE, MACH and GENERIC
-    // extension types.
+
+    // Requires: (allow file-read* file-write*
+    //               (extension "com.apple.app-sandbox.read-write"))
+    FILE_READ_WRITE,
+
+    // TODO(rsesek): Potentially support MACH and GENERIC extension types.
   };
 
   // Before an extension is destroyed, it must be consumed or explicitly

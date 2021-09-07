@@ -4,6 +4,7 @@
 
 #include "sandbox/mac/seatbelt_extension.h"
 
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "base/command_line.h"
@@ -21,10 +22,14 @@
 namespace sandbox {
 namespace {
 
-const char kSandboxProfile[] =
-    "(version 1)\n"
-    "(deny default (with no-log))\n"
-    "(allow file-read* (extension \"com.apple.app-sandbox.read\"))";
+const char kSandboxProfile[] = R"(
+  (version 1)
+  (deny default (with no-log))
+  (allow file-read* (extension "com.apple.app-sandbox.read"))
+  (allow file-read* file-write*
+    (extension "com.apple.app-sandbox.read-write")
+  )
+)";
 
 const char kTestData[] = "hello world";
 constexpr int kTestDataLen = base::size(kTestData);
@@ -132,6 +137,93 @@ MULTIPROCESS_TEST_MAIN(FileReadAccess) {
   errno = 0;
   fd.reset(open(path, O_RDONLY));
   PCHECK(fd.get() > 0);
+
+  return 0;
+}
+
+TEST_F(SeatbeltExtensionTest, DirReadWriteAccess) {
+  base::CommandLine command_line(
+      base::GetMultiProcessTestChildBaseCommandLine());
+
+  auto token = sandbox::SeatbeltExtension::Issue(
+      sandbox::SeatbeltExtension::FILE_READ_WRITE,
+      file_path().DirName().value());
+  ASSERT_TRUE(token.get());
+
+  // Ensure any symlinks in the path are canonicalized.
+  base::FilePath path = base::MakeAbsoluteFilePath(file_path());
+  ASSERT_FALSE(path.empty());
+
+  command_line.AppendSwitchPath(kSwitchFile, path);
+  command_line.AppendSwitchASCII(kSwitchExtension, token->token());
+
+  base::Process test_child = base::SpawnMultiProcessTestChild(
+      "DirReadWriteAccess", command_line, base::LaunchOptions());
+
+  int exit_code = 42;
+  test_child.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                    &exit_code);
+  EXPECT_EQ(0, exit_code);
+}
+
+MULTIPROCESS_TEST_MAIN(DirReadWriteAccess) {
+  sandbox::SandboxCompiler compiler(kSandboxProfile);
+  std::string error;
+  CHECK(compiler.CompileAndApplyProfile(&error)) << error;
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+
+  base::FilePath file_path = command_line->GetSwitchValuePath(kSwitchFile);
+  CHECK(!file_path.empty());
+  const char* path = file_path.value().c_str();
+
+  std::string token_str = command_line->GetSwitchValueASCII(kSwitchExtension);
+  CHECK(!token_str.empty());
+
+  auto token = sandbox::SeatbeltExtensionToken::CreateForTesting(token_str);
+  auto extension = sandbox::SeatbeltExtension::FromToken(std::move(token));
+  CHECK(extension);
+  CHECK(token.token().empty());
+
+  // Without consuming the extension, file access is denied.
+  errno = 0;
+  base::ScopedFD fd(open(path, O_RDONLY));
+  CHECK_EQ(-1, fd.get());
+  CHECK_EQ(EPERM, errno);
+
+  CHECK(extension->ConsumePermanently());
+
+  // After consuming the extension, file read/write access is allowed.
+  errno = 0;
+  fd.reset(open(path, O_RDWR));
+  PCHECK(fd.get() > 0);
+
+  char c = 'a';
+  PCHECK(write(fd.get(), &c, sizeof(c)) == sizeof(c));
+
+  // A new file can be created in the extension directory.
+  base::FilePath new_file = file_path.DirName().AppendASCII("new_file.txt");
+  fd.reset(open(path, O_RDWR | O_CREAT));
+  PCHECK(fd.get() > 0);
+
+  // Test reading and writing to the new file.
+  PCHECK(write(fd.get(), &c, sizeof(c)) == sizeof(c));
+
+  PCHECK(lseek(fd.get(), 0, SEEK_SET) == 0);
+
+  c = 'b';
+  PCHECK(read(fd.get(), &c, sizeof(c)) == sizeof(c));
+  CHECK_EQ(c, 'a');
+
+  // Accessing the parent directory is forbidden.
+  errno = 0;
+  struct stat sb;
+  PCHECK(stat(file_path.DirName().DirName().value().c_str(), &sb) == -1);
+  CHECK_EQ(EPERM, errno);
+
+  // ... but the dir itself is okay.
+  errno = 0;
+  PCHECK(stat(file_path.DirName().value().c_str(), &sb) == 0);
 
   return 0;
 }
