@@ -31,23 +31,6 @@ namespace {
 const base::Feature kLacrosShowUpdateNotifications{
     "LacrosShowUpdateNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-struct ComponentInfo {
-  // The client-side component name.
-  const char* const name;
-  // The CRX "extension" ID for component updater.
-  // Must match the Omaha console.
-  const char* const crx_id;
-};
-
-// NOTE: If you change the lacros component names, you must also update
-// chrome/browser/component_updater/cros_component_installer_chromeos.cc
-constexpr ComponentInfo kLacrosDogfoodCanaryInfo = {
-    "lacros-dogfood-canary", "hkifppleldbgkdlijbdfkdpedggaopda"};
-constexpr ComponentInfo kLacrosDogfoodDevInfo = {
-    "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
-constexpr ComponentInfo kLacrosDogfoodStableInfo = {
-    "lacros-dogfood-stable", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
-
 // The rootfs lacros-chrome binary related files.
 constexpr char kLacrosChromeBinary[] = "chrome";
 constexpr char kLacrosMetadata[] = "metadata.json";
@@ -63,29 +46,13 @@ constexpr char kRootfsLacrosPath[] = "/opt/google/lacros";
 constexpr char kLacrosMounterUpstartJob[] = "lacros_2dmounter";
 constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
 
-ComponentInfo GetLacrosComponentInfo() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
-    std::string value =
-        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
-    if (value == browser_util::kLacrosStabilityLeastStable)
-      return kLacrosDogfoodCanaryInfo;
-    if (value == browser_util::kLacrosStabilityLessStable)
-      return kLacrosDogfoodDevInfo;
-    if (value == browser_util::kLacrosStabilityMoreStable)
-      return kLacrosDogfoodStableInfo;
-  }
-  // Use once a week / Dev style updates by default.
-  return kLacrosDogfoodDevInfo;
-}
-
 std::string GetLacrosComponentName() {
-  return GetLacrosComponentInfo().name;
+  return browser_util::GetLacrosComponentInfo().name;
 }
 
 // Returns the CRX "extension" ID for a lacros component.
 std::string GetLacrosComponentCrxId() {
-  return GetLacrosComponentInfo().crx_id;
+  return browser_util::GetLacrosComponentInfo().crx_id;
 }
 
 // Returns whether lacros-chrome component is registered.
@@ -97,9 +64,9 @@ bool CheckRegisteredMayBlock(
 // Returns whether any lacros-chrome component is registered.
 bool CheckAnyRegisteredMayBlock(
     scoped_refptr<component_updater::CrOSComponentManager> manager) {
-  for (const auto& component_info :
-       {kLacrosDogfoodCanaryInfo, kLacrosDogfoodDevInfo,
-        kLacrosDogfoodStableInfo}) {
+  for (const auto& component_info : {browser_util::kLacrosDogfoodCanaryInfo,
+                                     browser_util::kLacrosDogfoodDevInfo,
+                                     browser_util::kLacrosDogfoodStableInfo}) {
     if (manager->IsRegisteredMayBlock(component_info.name))
       return true;
   }

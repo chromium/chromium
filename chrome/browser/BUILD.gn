@@ -4908,6 +4908,7 @@ static_library("browser") {
       "lacros/automation_manager_lacros.h",
       "lacros/browser_service_lacros.cc",
       "lacros/browser_service_lacros.h",
+      "lacros/browser_version_observer.h",
       "lacros/cert_db_initializer.h",
       "lacros/cert_db_initializer_factory.cc",
       "lacros/cert_db_initializer_factory.h",

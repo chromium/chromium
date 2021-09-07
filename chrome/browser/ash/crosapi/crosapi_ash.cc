@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
+#include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
@@ -102,6 +103,8 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : automation_ash_(std::make_unique<AutomationAsh>()),
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
+      browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
+          g_browser_process->component_updater())),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
@@ -198,6 +201,11 @@ void CrosapiAsh::BindBrowserServiceHost(
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>())
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
+}
+
+void CrosapiAsh::BindBrowserVersionService(
+    mojo::PendingReceiver<crosapi::mojom::BrowserVersionService> receiver) {
+  browser_version_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindChromeAppPublisher(

@@ -73,6 +73,18 @@ enum class LacrosSelection {
   kMaxValue = kStateful,
 };
 
+struct ComponentInfo {
+  // The client-side component name.
+  const char* const name;
+  // The CRX "extension" ID for component updater.
+  // Must match the Omaha console.
+  const char* const crx_id;
+};
+
+extern const ComponentInfo kLacrosDogfoodCanaryInfo;
+extern const ComponentInfo kLacrosDogfoodDevInfo;
+extern const ComponentInfo kLacrosDogfoodStableInfo;
+
 extern const base::Feature kLacrosAllowOnStableChannel;
 extern const base::Feature kLacrosGooglePolicyRollout;
 
@@ -254,6 +266,10 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // To be called at primary user login, to cache the policy value for launch
 // switch.
 void CacheLacrosLaunchSwitch(const policy::PolicyMap& map);
+
+// Returns the ComponentInfo associated with the currently active Lacros based
+// on the lacros stability switch selection.
+ComponentInfo GetLacrosComponentInfo();
 
 // Returns the update channel associated with the given loaded lacros selection.
 version_info::Channel GetLacrosSelectionUpdateChannel(

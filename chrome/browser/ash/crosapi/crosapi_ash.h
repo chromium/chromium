@@ -21,6 +21,7 @@ namespace crosapi {
 
 class AutomationAsh;
 class BrowserServiceHostAsh;
+class BrowserVersionServiceAsh;
 class CertDatabaseAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
@@ -78,6 +79,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
+  void BindBrowserVersionService(
+      mojo::PendingReceiver<mojom::BrowserVersionService> receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindChromeAppPublisher(
@@ -199,6 +202,7 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
+  std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;

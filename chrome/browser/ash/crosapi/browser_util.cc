@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/version.h"
+#include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
@@ -331,6 +332,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppWindowTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::BrowserVersionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ClipboardHistory>(),
@@ -418,12 +420,21 @@ bool IsDataWipeRequiredInternal(base::Version data_version,
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 44,
+    crosapi::mojom::Crosapi::Version_ == 45,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");
 
 }  // namespace
+
+// NOTE: If you change the lacros component names, you must also update
+// chrome/browser/component_updater/cros_component_installer_chromeos.cc
+const ComponentInfo kLacrosDogfoodCanaryInfo = {
+    "lacros-dogfood-canary", "hkifppleldbgkdlijbdfkdpedggaopda"};
+const ComponentInfo kLacrosDogfoodDevInfo = {
+    "lacros-dogfood-dev", "ldobopbhiamakmncndpkeelenhdmgfhk"};
+const ComponentInfo kLacrosDogfoodStableInfo = {
+    "lacros-dogfood-stable", "hnfmbeciphpghlfgpjfbcdifbknombnk"};
 
 // When this feature is enabled, Lacros will be available on stable channel.
 const base::Feature kLacrosAllowOnStableChannel{
@@ -982,6 +993,22 @@ Channel GetStatefulLacrosChannel() {
   }
 
   return Channel::UNKNOWN;
+}
+
+ComponentInfo GetLacrosComponentInfo() {
+  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+  if (cmdline->HasSwitch(browser_util::kLacrosStabilitySwitch)) {
+    std::string value =
+        cmdline->GetSwitchValueASCII(browser_util::kLacrosStabilitySwitch);
+    if (value == browser_util::kLacrosStabilityLeastStable)
+      return kLacrosDogfoodCanaryInfo;
+    if (value == browser_util::kLacrosStabilityLessStable)
+      return kLacrosDogfoodDevInfo;
+    if (value == browser_util::kLacrosStabilityMoreStable)
+      return kLacrosDogfoodStableInfo;
+  }
+  // Use once a week / Dev style updates by default.
+  return kLacrosDogfoodDevInfo;
 }
 
 Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {
