@@ -111,7 +111,10 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       scrollbars_hidden_(false),
       embedder_cookie_enabled_(
           web_view->GetPage()->GetSettings().GetCookieEnabled()),
-      document_cookie_disabled_(false) {}
+      document_cookie_disabled_(false),
+      embedder_force_dark_mode_enabled_(
+          web_view->GetPage()->GetSettings().GetForceDarkModeEnabled()),
+      auto_dark_overriden_(false) {}
 
 void DevToolsEmulator::Trace(Visitor* visitor) const {}
 
@@ -537,6 +540,23 @@ void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
   document_cookie_disabled_ = disabled;
   web_view_->GetPage()->GetSettings().SetCookieEnabled(
       document_cookie_disabled_ ? false : embedder_cookie_enabled_);
+}
+
+void DevToolsEmulator::SetAutoDarkModeOverride(bool enabled) {
+  if (!auto_dark_overriden_) {
+    auto_dark_overriden_ = true;
+    embedder_force_dark_mode_enabled_ =
+        web_view_->GetPage()->GetSettings().GetForceDarkModeEnabled();
+  }
+  web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(enabled);
+}
+
+void DevToolsEmulator::ResetAutoDarkModeOverride() {
+  if (auto_dark_overriden_) {
+    web_view_->GetPage()->GetSettings().SetForceDarkModeEnabled(
+        embedder_force_dark_mode_enabled_);
+    auto_dark_overriden_ = false;
+  }
 }
 
 }  // namespace blink

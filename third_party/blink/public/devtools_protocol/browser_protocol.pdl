@@ -3412,6 +3412,13 @@ domain Emulation
       # Whether to enable to disable focus emulation.
       boolean enabled
 
+  # Automatically render all web contents using a dark theme.
+  experimental command setAutoDarkModeOverride
+    parameters
+      # Whether to enable or disable automatic dark mode.
+      # If not specified, any existing override will be cleared.
+      optional boolean enabled
+
   # Enables CPU throttling to emulate slow CPUs.
   experimental command setCPUThrottlingRate
     parameters

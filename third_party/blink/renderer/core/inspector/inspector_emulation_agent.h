@@ -53,6 +53,7 @@ class CORE_EXPORT InspectorEmulationAgent final
   protocol::Response setEmulatedVisionDeficiency(const String&) override;
   protocol::Response setCPUThrottlingRate(double) override;
   protocol::Response setFocusEmulationEnabled(bool) override;
+  protocol::Response setAutoDarkModeOverride(protocol::Maybe<bool>) override;
   protocol::Response setVirtualTimePolicy(
       const String& policy,
       protocol::Maybe<double> virtual_time_budget_ms,
@@ -156,6 +157,8 @@ class CORE_EXPORT InspectorEmulationAgent final
   InspectorAgentState::Integer virtual_time_task_starvation_count_;
   InspectorAgentState::Boolean wait_for_navigation_;
   InspectorAgentState::Boolean emulate_focus_;
+  InspectorAgentState::Boolean emulate_auto_dark_mode_;
+  InspectorAgentState::Boolean auto_dark_mode_override_;
   InspectorAgentState::String timezone_id_override_;
   InspectorAgentState::BooleanMap disabled_image_types_;
 };
