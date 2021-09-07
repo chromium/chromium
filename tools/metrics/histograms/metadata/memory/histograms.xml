@@ -1640,7 +1640,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus"
-    enum="MappedAndResidentPagesDumpState" expires_after="2021-08-22">
+    enum="MappedAndResidentPagesDumpState" expires_after="2022-01-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1656,8 +1656,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint"
-    units="KB" expires_after="2021-08-01">
+    units="KB" expires_after="2022-01-30">
   <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
   <summary>
     The size of the native library code which was ordered, yet is not resident
     in memory, across all processes. This metric is computed by parsing
@@ -1670,8 +1671,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint"
-    units="KB" expires_after="2019-12-01">
+    units="KB" expires_after="2022-01-30">
   <owner>lizeb@chromium.org</owner>
+  <owner>pasko@chromium.org</owner>
   <summary>
     The size of the native library code which is outside the ordered section,
     yet is resident in memory, across all processes. This metric is computed by
