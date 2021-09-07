@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 294 tests; 251 PASS, 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 294 tests; 262 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -218,18 +218,18 @@ PASS FetchEvent interface: attribute resultingClientId
 FAIL FetchEvent interface: attribute replacesClientId assert_true: The prototype object must have a property "replacesClientId" expected true got false
 PASS FetchEvent interface: attribute handled
 PASS FetchEvent interface: operation respondWith(Promise<Response>)
-FAIL FetchEvent must be primary interface of new FetchEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL Stringification of new FetchEvent("type") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "request" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "preloadResponse" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "clientId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "resultingClientId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "replacesClientId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "handled" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: new FetchEvent("type") must inherit property "respondWith(Promise<Response>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL FetchEvent interface: calling respondWith(Promise<Response>) on new FetchEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL ExtendableEvent interface: new FetchEvent("type") must inherit property "waitUntil(Promise<any>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
-FAIL ExtendableEvent interface: calling waitUntil(Promise<any>) on new FetchEvent("type") with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'FetchEvent': 2 arguments required, but only 1 present."
+PASS FetchEvent must be primary interface of new FetchEvent("type", { request: new Request("") })
+PASS Stringification of new FetchEvent("type", { request: new Request("") })
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "request" with the proper type
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "preloadResponse" with the proper type
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "clientId" with the proper type
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "resultingClientId" with the proper type
+FAIL FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "replacesClientId" with the proper type assert_inherits: property "replacesClientId" not found in prototype chain
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "handled" with the proper type
+PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "respondWith(Promise<Response>)" with the proper type
+PASS FetchEvent interface: calling respondWith(Promise<Response>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
+PASS ExtendableEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "waitUntil(Promise<any>)" with the proper type
+PASS ExtendableEvent interface: calling waitUntil(Promise<any>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
 PASS ExtendableMessageEvent interface: existence and properties of interface object
 PASS ExtendableMessageEvent interface object length
 PASS ExtendableMessageEvent interface object name
