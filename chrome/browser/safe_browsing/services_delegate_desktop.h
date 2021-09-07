@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
 
+class DownloadProtectionService;
+class IncidentReportingService;
 class SafeBrowsingDatabaseManager;
 struct V4ProtocolConfig;
 
