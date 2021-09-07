@@ -83563,6 +83563,12 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Challenge-response security token"/>
 </enum>
 
+<enum name="UNNotificationPermissionRequestResult">
+  <int value="0" label="Permission request failed"/>
+  <int value="1" label="Permission denied"/>
+  <int value="2" label="Permission granted"/>
+</enum>
+
 <enum name="UNNotificationPermissionStatus">
   <int value="0" label="Permission not requested yet"/>
   <int value="1" label="Permission denied"/>

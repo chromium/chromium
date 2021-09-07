@@ -62,6 +62,15 @@ UNNotificationPermissionStatus ConvertAuthorizationStatus(
 
 }  // namespace
 
+void LogUNNotificationRequestPermissionResult(
+    UNNotificationRequestPermissionResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Notifications.Permissions.UNNotification.",
+                    MacNotificationStyleSuffix(IsAppBundleAlertStyle()),
+                    ".PermissionRequest"}),
+      result);
+}
+
 void LogUNNotificationSettings(UNUserNotificationCenter* center) {
   [center getNotificationSettingsWithCompletionHandler:^(
               UNNotificationSettings* _Nonnull settings) {

@@ -570,6 +570,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Notifications.Permissions.UNNotification.{Style}.PermissionRequest"
+    enum="UNNotificationPermissionRequestResult" expires_after="M98">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The permission request result for sending out UNNotifications through the
+    MacNotificationServiceUN. This is recorded when instantiating the service
+    which happens at Chrome startup and each time we start the service after
+    shutting it down when there were no more notifications on screen.
+  </summary>
+  <token key="Style" variants="MacOSNotificationStyle"/>
+</histogram>
+
+<histogram
     name="Notifications.Permissions.UNNotification.{Style}.PermissionStatus"
     enum="UNNotificationPermissionStatus" expires_after="M98">
   <owner>knollr@chromium.org</owner>

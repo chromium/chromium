@@ -16,6 +16,7 @@
 #include "chrome/common/notifications/notification_operation.h"
 #include "chrome/grit/generated_resources.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
@@ -197,6 +198,8 @@ void MacNotificationServiceNS::DisplayNotification(
   NSString* notification_id =
       base::SysUTF8ToNSString(DeriveMacNotificationId(notification->meta->id));
   [toast setIdentifier:notification_id];
+
+  LogMacNotificationDelivered(IsAppBundleAlertStyle(), /*success=*/true);
 
   [notification_center_ deliverNotification:toast.get()];
 }

@@ -17,7 +17,6 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -58,7 +57,6 @@ void NotificationPlatformBridgeMac::Display(
     const message_center::Notification& notification,
     std::unique_ptr<NotificationCommon::Metadata> metadata) {
   bool is_alert = IsAlertNotificationMac(notification);
-  mac_notifications::LogMacNotificationDelivered(is_alert, /*success=*/true);
   NotificationDispatcherMac* dispatcher =
       is_alert ? alert_dispatcher_.get() : banner_dispatcher_.get();
   dispatcher->DisplayNotification(notification_type, profile, notification);

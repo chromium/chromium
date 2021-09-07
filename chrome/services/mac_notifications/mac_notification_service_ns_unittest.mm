@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/mac/bundle_locations.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -153,6 +155,34 @@ class MacNotificationServiceNSTest : public testing::Test {
     return displayed;
   }
 
+  mojom::NotificationPtr CreateMojoNotification() {
+    auto profile_identifier =
+        mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+    auto notification_identifier = mojom::NotificationIdentifier::New(
+        "notificationId", std::move(profile_identifier));
+    auto meta = mojom::NotificationMetadata::New(
+        std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+        /*creator_pid=*/0);
+
+    std::vector<mojom::NotificationActionButtonPtr> buttons;
+    return mojom::Notification::New(
+        std::move(meta), u"title", u"subtitle", u"body", /*renotify=*/true,
+        /*show_settings_button=*/true, std::move(buttons),
+        /*icon=*/gfx::ImageSkia());
+  }
+
+  void DisplayNotificationSync() {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+      quit_closure.Run();
+    }] deliverNotification:[OCMArg any]];
+
+    service_remote_->DisplayNotification(CreateMojoNotification());
+    run_loop.Run();
+    [mock_notification_center_ verify];
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockNotificationActionHandler mock_handler_;
   mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver_{
@@ -188,20 +218,7 @@ TEST_F(MacNotificationServiceNSTest, DisplayNotification) {
       }]];
 
   // Create and display a new notification.
-  auto profile_identifier =
-      mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
-  auto notification_identifier = mojom::NotificationIdentifier::New(
-      "notificationId", std::move(profile_identifier));
-  auto meta = mojom::NotificationMetadata::New(
-      std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
-      /*creator_pid=*/0);
-
-  std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
-  auto notification = mac_notifications::mojom::Notification::New(
-      std::move(meta), u"title", u"subtitle", u"body", /*renotify=*/true,
-      /*show_settings_button=*/true, std::move(buttons),
-      /*icon=*/gfx::ImageSkia());
-  service_remote_->DisplayNotification(std::move(notification));
+  service_remote_->DisplayNotification(CreateMojoNotification());
 
   run_loop.Run();
   [mock_notification_center_ verify];
@@ -285,6 +302,34 @@ TEST_F(MacNotificationServiceNSTest, CloseAllNotifications) {
   service_remote_->CloseAllNotifications();
   run_loop.Run();
   [mock_notification_center_ verify];
+}
+
+TEST_F(MacNotificationServiceNSTest, LogsMetricsForAlerts) {
+  base::HistogramTester histogram_tester;
+  id mainBundleMock =
+      [OCMockObject partialMockForObject:base::mac::MainBundle()];
+
+  // Mock the alert style to "alert" and verify we log the correct metrics.
+  [[[mainBundleMock stub]
+      andReturn:@{@"NSUserNotificationAlertStyle" : @"alert"}] infoDictionary];
+  DisplayNotificationSync();
+  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
+                                      /*sample=*/true, /*expected_count=*/1);
+  [mainBundleMock stopMocking];
+}
+
+TEST_F(MacNotificationServiceNSTest, LogsMetricsForBanners) {
+  base::HistogramTester histogram_tester;
+  id mainBundleMock =
+      [OCMockObject partialMockForObject:base::mac::MainBundle()];
+
+  // Mock the alert style to "banner" and verify we log the correct metrics.
+  [[[mainBundleMock stub]
+      andReturn:@{@"NSUserNotificationAlertStyle" : @"banner"}] infoDictionary];
+  DisplayNotificationSync();
+  histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
+                                      /*sample=*/true, /*expected_count=*/1);
+  [mainBundleMock stopMocking];
 }
 
 struct NotificationActionParams {

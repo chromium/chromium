@@ -8,9 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/mac/bundle_locations.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -18,6 +20,7 @@
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -172,11 +175,16 @@ class MacNotificationServiceUNTest : public testing::Test {
   API_AVAILABLE(macos(10.14))
   void DisplayNotificationSync(const std::string& notification_id,
                                const std::string& profile_id,
-                               bool incognito) {
+                               bool incognito,
+                               bool success = true) {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
 
-    [[[mock_notification_center_ expect] andDo:^(NSInvocation*) {
+    [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSError* error);
+      [invocation getArgument:&callback atIndex:3];
+      callback(success ? nil
+                       : [NSError errorWithDomain:@"" code:0 userInfo:nil]);
       quit_closure.Run();
     }] addNotificationRequest:[OCMArg any] withCompletionHandler:[OCMArg any]];
 
@@ -205,6 +213,44 @@ class MacNotificationServiceUNTest : public testing::Test {
         /*renotify=*/true,
         /*show_settings_button=*/true, std::move(buttons),
         /*icon=*/gfx::ImageSkia());
+  }
+
+  // Creates a new service and destroys it immediately. This is used to test any
+  // metrics logged during construction of the service.
+  API_AVAILABLE(macos(10.14))
+  void CreateAndDestroyService(UNNotificationRequestPermissionResult result) {
+    id mock_notification_center =
+        [OCMockObject mockForClass:[UNUserNotificationCenter class]];
+    MockNotificationActionHandler mock_handler;
+    mojo::Receiver<mojom::MacNotificationActionHandler> handler_receiver{
+        &mock_handler};
+    mojo::Remote<mojom::MacNotificationService> service_remote;
+
+    [[mock_notification_center expect] setDelegate:[OCMArg any]];
+    [[mock_notification_center expect]
+        getNotificationSettingsWithCompletionHandler:[OCMArg any]];
+
+    [[[[mock_notification_center expect]
+        ignoringNonObjectArgs] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(BOOL granted, NSError* error);
+      [invocation getArgument:&callback atIndex:3];
+
+      bool granted =
+          result == UNNotificationRequestPermissionResult::kPermissionGranted;
+      NSError* error =
+          result == UNNotificationRequestPermissionResult::kRequestFailed
+              ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
+              : nil;
+
+      callback(granted, error);
+    }] requestAuthorizationWithOptions:0 completionHandler:[OCMArg any]];
+
+    auto service = std::make_unique<MacNotificationServiceUN>(
+        service_remote.BindNewPipeAndPassReceiver(),
+        handler_receiver.BindNewPipeAndPassRemote(), mock_notification_center);
+
+    [[mock_notification_center expect] setDelegate:[OCMArg any]];
+    service.reset();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -392,6 +438,76 @@ TEST_F(MacNotificationServiceUNTest, CloseAllNotifications) {
     run_loop.Run();
     [mock_notification_center_ verify];
     EXPECT_EQ(0u, category_count_);
+  }
+}
+
+TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
+  if (@available(macOS 10.14, *)) {
+    base::HistogramTester histogram_tester;
+    id mainBundleMock =
+        [OCMockObject partialMockForObject:base::mac::MainBundle()];
+
+    // Mock the alert style to "alert" and verify we log the correct metrics.
+    [[[mainBundleMock stub]
+        andReturn:@{@"NSUserNotificationAlertStyle" : @"alert"}]
+        infoDictionary];
+
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
+                            /*success=*/true);
+    histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Alert",
+                                        /*sample=*/true, /*expected_count=*/1);
+
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
+                            /*success=*/false);
+    histogram_tester.ExpectBucketCount("Notifications.macOS.Delivered.Alert",
+                                       /*sample=*/false, /*expected_count=*/1);
+
+    for (auto result :
+         {UNNotificationRequestPermissionResult::kRequestFailed,
+          UNNotificationRequestPermissionResult::kPermissionDenied,
+          UNNotificationRequestPermissionResult::kPermissionGranted}) {
+      CreateAndDestroyService(result);
+      histogram_tester.ExpectBucketCount(
+          "Notifications.Permissions.UNNotification.Alert.PermissionRequest",
+          /*sample=*/result, /*expected_count=*/1);
+    }
+
+    [mainBundleMock stopMocking];
+  }
+}
+
+TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
+  if (@available(macOS 10.14, *)) {
+    base::HistogramTester histogram_tester;
+    id mainBundleMock =
+        [OCMockObject partialMockForObject:base::mac::MainBundle()];
+
+    // Mock the alert style to "banner" and verify we log the correct metrics.
+    [[[mainBundleMock stub]
+        andReturn:@{@"NSUserNotificationAlertStyle" : @"banner"}]
+        infoDictionary];
+
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
+                            /*success=*/true);
+    histogram_tester.ExpectUniqueSample("Notifications.macOS.Delivered.Banner",
+                                        /*sample=*/true, /*expected_count=*/1);
+
+    DisplayNotificationSync("notificationId", "profileId", /*incognito=*/true,
+                            /*success=*/false);
+    histogram_tester.ExpectBucketCount("Notifications.macOS.Delivered.Banner",
+                                       /*sample=*/false, /*expected_count=*/1);
+
+    for (auto result :
+         {UNNotificationRequestPermissionResult::kRequestFailed,
+          UNNotificationRequestPermissionResult::kPermissionDenied,
+          UNNotificationRequestPermissionResult::kPermissionGranted}) {
+      CreateAndDestroyService(result);
+      histogram_tester.ExpectBucketCount(
+          "Notifications.Permissions.UNNotification.Banner.PermissionRequest",
+          /*sample=*/result, /*expected_count=*/1);
+    }
+
+    [mainBundleMock stopMocking];
   }
 }
 

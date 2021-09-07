@@ -19,6 +19,7 @@
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
@@ -178,10 +179,7 @@ void MacNotificationServiceUN::DisplayNotification(
   }
 
   auto completion_handler = ^(NSError* _Nullable error) {
-    // TODO(knollr): Add UMA logging for display errors.
-    if (error != nil) {
-      DVLOG(1) << "Displaying notification did not succeed";
-    }
+    LogMacNotificationDelivered(IsAppBundleAlertStyle(), !error);
   };
 
   // If the renotify is not set try to replace the notification silently.
@@ -314,10 +312,13 @@ void MacNotificationServiceUN::RequestPermission() {
                                        UNAuthorizationOptionBadge;
 
   auto resultHandler = ^(BOOL granted, NSError* _Nullable error) {
-    // TODO(knollr): Add UMA logging for permission status.
-    if (error != nil) {
-      DVLOG(1) << "Requesting permission did not succeed";
+    auto result = UNNotificationRequestPermissionResult::kRequestFailed;
+    if (!error) {
+      result = granted
+                   ? UNNotificationRequestPermissionResult::kPermissionGranted
+                   : UNNotificationRequestPermissionResult::kPermissionDenied;
     }
+    LogUNNotificationRequestPermissionResult(result);
   };
 
   [notification_center_ requestAuthorizationWithOptions:authOptions
