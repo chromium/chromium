@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -71,6 +72,33 @@ TEST_F(AggregatableReportSenderTest, ReportSent_RequestAttributesSet) {
   int load_flags = pending_request->load_flags;
   EXPECT_TRUE(load_flags & net::LOAD_BYPASS_CACHE);
   EXPECT_TRUE(load_flags & net::LOAD_DISABLE_CACHE);
+}
+
+TEST_F(AggregatableReportSenderTest, ReportSent_IsolationKeyDifferent) {
+  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
+                      base::DoNothing());
+  sender_->SendReport(GURL(kExampleURL), GetExampleContents(),
+                      base::DoNothing());
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
+
+  const network::ResourceRequest& request1 =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+  const network::ResourceRequest& request2 =
+      test_url_loader_factory_.GetPendingRequest(1)->request;
+
+  EXPECT_EQ(request1.trusted_params->isolation_info.request_type(),
+            net::IsolationInfo::RequestType::kOther);
+  EXPECT_EQ(request2.trusted_params->isolation_info.request_type(),
+            net::IsolationInfo::RequestType::kOther);
+
+  EXPECT_TRUE(request1.trusted_params->isolation_info.network_isolation_key()
+                  .IsTransient());
+  EXPECT_TRUE(request2.trusted_params->isolation_info.network_isolation_key()
+                  .IsTransient());
+
+  EXPECT_NE(request1.trusted_params->isolation_info.network_isolation_key(),
+            request2.trusted_params->isolation_info.network_isolation_key());
 }
 
 TEST_F(AggregatableReportSenderTest, ReportSent_UploadDataCorrect) {
