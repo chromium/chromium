@@ -1794,9 +1794,6 @@
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
-        },
       },
       'ToTMacASan': {
         'mixins': [
