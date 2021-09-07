@@ -450,37 +450,23 @@ BindWorkerReceiverForStorageKey(
       base::Unretained(host), method);
 }
 
-template <typename... Args>
-void RunOrPostTaskToBindServiceWorkerReceiver(
-    ServiceWorkerHost* host,
-    void (RenderProcessHostImpl::*method)(Args...),
-    Args... args) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(
-          [](int worker_process_id,
-             void (RenderProcessHostImpl::*method)(Args...), Args... args) {
-            auto* process_host = static_cast<RenderProcessHostImpl*>(
-                RenderProcessHost::FromID(worker_process_id));
-            if (process_host)
-              (process_host->*method)(std::forward<Args>(args)...);
-          },
-          host->worker_process_id(), method, std::forward<Args>(args)...));
-}
-
 template <typename Interface>
 base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
 BindServiceWorkerReceiver(
     void (RenderProcessHostImpl::*method)(mojo::PendingReceiver<Interface>),
     ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindRepeating(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              mojo::PendingReceiver<Interface>),
          mojo::PendingReceiver<Interface> receiver) {
-        RunOrPostTaskToBindServiceWorkerReceiver(host, method,
-                                                 std::move(receiver));
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        if (!process_host)
+          return;
+        (process_host->*method)(std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -492,16 +478,20 @@ BindServiceWorkerReceiverForOrigin(
     void (RenderProcessHostImpl::*method)(const url::Origin&,
                                           mojo::PendingReceiver<Interface>),
     ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindRepeating(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              const url::Origin&, mojo::PendingReceiver<Interface>),
          const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
         auto origin = info.storage_key.origin();
-        RunOrPostTaskToBindServiceWorkerReceiver<
-            const url::Origin&, mojo::PendingReceiver<Interface>>(
-            host, method, origin, std::move(receiver));
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        if (!process_host)
+          return;
+        (process_host->*method)(origin, std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -514,16 +504,20 @@ BindServiceWorkerReceiverForOriginAndFrameId(
                                           const url::Origin&,
                                           mojo::PendingReceiver<Interface>),
     ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindRepeating(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              int, const url::Origin&, mojo::PendingReceiver<Interface>),
          const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
         auto origin = info.storage_key.origin();
-        RunOrPostTaskToBindServiceWorkerReceiver<
-            int, const url::Origin&, mojo::PendingReceiver<Interface>>(
-            host, method, MSG_ROUTING_NONE, origin, std::move(receiver));
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        if (!process_host)
+          return;
+        (process_host->*method)(MSG_ROUTING_NONE, origin, std::move(receiver));
       },
       base::Unretained(host), method);
 }
@@ -535,15 +529,19 @@ BindServiceWorkerReceiverForStorageKey(
     void (RenderProcessHostImpl::*method)(const blink::StorageKey&,
                                           mojo::PendingReceiver<Interface>),
     ServiceWorkerHost* host) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindRepeating(
       [](ServiceWorkerHost* host,
          void (RenderProcessHostImpl::*method)(
              const blink::StorageKey&, mojo::PendingReceiver<Interface>),
          const ServiceWorkerVersionBaseInfo& info,
          mojo::PendingReceiver<Interface> receiver) {
-        RunOrPostTaskToBindServiceWorkerReceiver<
-            const blink::StorageKey&, mojo::PendingReceiver<Interface>>(
-            host, method, info.storage_key, std::move(receiver));
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        auto* process_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(host->worker_process_id()));
+        if (!process_host)
+          return;
+        (process_host->*method)(info.storage_key, std::move(receiver));
       },
       base::Unretained(host), method);
 }
