@@ -1175,9 +1175,12 @@ TEST_P(HardwareDisplayPlaneManagerTest, ForceOpaqueFormatsForAddFramebuffer) {
 
   // If DRM supports high-bitdepth formats with Alpha, there's no need for
   // opaque decaying. Note that we have to support all |kFourCCFormats|.
+  std::vector<drm_format_modifier> drm_format_modifiers;
+  drm_format_modifiers.push_back(
+      {/*formats=*/3, /*offset=*/0, /*pad=*/0, DRM_FORMAT_MOD_LINEAR});
   fake_drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobPropId, {DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010},
-      {}));
+      {drm_format_modifiers}));
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
