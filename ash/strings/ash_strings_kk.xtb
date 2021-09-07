@@ -77,12 +77,12 @@
 <translation id="147310119694673958">Телефон батареясы <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Қалқымалы арнайы мүмкіндіктер мәзірі</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
-<translation id="1503394326855300303">Бұл иеленуші есептік жазбасы көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуы керек.</translation>
+<translation id="1503394326855300303">Бұл иеленуші аккаунтсы көп кіру сеансында алғашқы жүйеге кірген аккаунт болуы керек.</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1516740043221086139">Мазаламау режимі қосулы.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
 <translation id="1525508553941733066">ЖАБУ</translation>
-<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын пайдалану үшін алдымен барлық есептік жазбадан шығуыңыз керек. Шығу үшін "Бас тарту" түймесін басып, артқа қайтыңыз. Бұдан кейін күй аумағын ашу уақытын таңдап, "Шығу" түймесін басыңыз. Сосын <ph name="USER_EMAIL_ADDRESS_2" /> есептік жазбасына қайта кіріңіз.</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын пайдалану үшін алдымен барлық аккаунттан шығуыңыз керек. Шығу үшін "Бас тарту" түймесін басып, артқа қайтыңыз. Бұдан кейін күй аумағын ашу уақытын таңдап, "Шығу" түймесін басыңыз. Сосын <ph name="USER_EMAIL_ADDRESS_2" /> есептік жазбасына қайта кіріңіз.</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
 <translation id="1546492247443594934">2-ші жұмыс үстелі</translation>
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
@@ -173,7 +173,7 @@
 <translation id="229397294990920565">Мобильдік интернет өшірілуде...</translation>
 <translation id="2295777434187870477">Микрофон қосулы. Егер түймені бассаңыз, кіріс дыбыс өшеді.</translation>
 <translation id="2298170939937364391">Толық экран ұлғайтқышы қосулы. Оны өшіру үшін Ctrl+Search+M пернелер тіркесімін қайта басыңыз.</translation>
-<translation id="2302092602801625023">Бұл есептік жазба Family Link арқылы басқарылады</translation>
+<translation id="2302092602801625023">Бұл аккаунт Family Link арқылы басқарылады</translation>
 <translation id="2303600792989757991">Терезеде шолу режимін ауыстыру</translation>
 <translation id="2322173485024759474">Бір әріпке артқа жылжу</translation>
 <translation id="2339073806695260576">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Лазерлік меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
@@ -256,7 +256,7 @@
 <translation id="3017687597151988916">Таңдау аймағы терезеге орнатылды.</translation>
 <translation id="3033545621352269033">Қосулы</translation>
 <translation id="3036649622769666520">Файлдарды ашу</translation>
-<translation id="3038571455154067151">Есептік жазбаға кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
+<translation id="3038571455154067151">Аккаунтқа кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="3039939407102840004">Стилус батареясының заряды – <ph name="PERCENTAGE" /> пайыз.</translation>
 <translation id="3045488863354895414">Қайырлы күн!</translation>
 <translation id="3051189971848907985">Профильдің аты өзгертілуде. Бірнеше минут күтіңіз.</translation>
@@ -313,13 +313,13 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3445925074670675829">USB-C құрылғысы</translation>
 <translation id="3454224730401036106">Байланысыңыз әлдеқайда қауіпсіз желіге ауысты</translation>
-<translation id="3465223694362104965">Есептік жазбаға соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
+<translation id="3465223694362104965">Аккаунтқа соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
 <translation id="3465356146291925647">Әкімшіңіз басқарады</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
-<translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын есептік жазба</translation>
+<translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын аккаунт</translation>
 <translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
 <translation id="3560866052109807830">Маркермен сызу құралдары</translation>
 <translation id="3563775809269155755">Хотспотты қосу</translation>
@@ -352,7 +352,7 @@
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
 <translation id="3742055079367172538">Скриншот түсірілді</translation>
 <translation id="3771549900096082774">Жоғары контраст режимі</translation>
-<translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы есептік жазбадан шығуы керек.</translation>
+<translation id="3773700760453577392">Әкімшінің шешімі бойынша енді <ph name="USER_EMAIL" /> электрондық поштасына бір уақытта бірнеше пайдаланушы кіре алмайды. Жалғастыру үшін пайдаланушылардың барлығы аккаунттан шығуы керек.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> құрылғысы қосылуда</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Құлыптау</translation>
@@ -479,7 +479,7 @@
 <translation id="4596144739579517758">Қараңғы тақырып өшірулі.</translation>
 <translation id="4611292653554630842">Жүйеге кіру</translation>
 <translation id="4614295562446151104">Белгілеу құралдарын жаю</translation>
-<translation id="4623167406982293031">Есептік жазбаны растау</translation>
+<translation id="4623167406982293031">Аккаунтты растау</translation>
 <translation id="4628757576491864469">Құрылғылар</translation>
 <translation id="4642092649622328492">Экранның бір бөлігін түсіру</translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
@@ -499,7 +499,7 @@
 <translation id="4782311465517282004">Тінтуірдің оң жақ түймесін басқанда немесе мәтінді басып тұрғанда мәтіннің анықтамасын, аудармасын немесе өлшем бірліктерін көріңіз.</translation>
 <translation id="479989351350248267">іздеу</translation>
 <translation id="4804818685124855865">Ажырату</translation>
-<translation id="4814539958450445987">Есептік жазбаға кіру экраны</translation>
+<translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
 <translation id="4831034276697007977">Автоматты түрде басу функциясын шынымен де өшіргіңіз келе ме?</translation>
 <translation id="4849058404725798627">Нысанды пернетақта фокусымен бөлектеу</translation>
 <translation id="485592688953820832">Ештеңе істемеу (кідірту)</translation>
@@ -513,7 +513,7 @@
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
 <translation id="4924411785043111640">Қайта қосу және бастапқы күйге қайтару</translation>
-<translation id="4925542575807923399">Бұл есептік жазбаның әкімшісі есептік жазбаның көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуын талап етеді.</translation>
+<translation id="4925542575807923399">Бұл аккаунтның әкімшісі аккаунтның көп кіру сеансында алғашқы жүйеге кірген аккаунт болуын талап етеді.</translation>
 <translation id="4942878304446937978">Күй жолағы, уақыты: <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="NETWORK" />,
@@ -784,7 +784,7 @@
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
 <translation id="7106330611027933926">Іздеу жолағын көрсету</translation>
 <translation id="7118268675952955085">скриншот</translation>
-<translation id="7131634465328662194">Есептік жазбадан автоматты түрде шығасыз.</translation>
+<translation id="7131634465328662194">Аккаунттан автоматты түрде шығасыз.</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
@@ -886,10 +886,10 @@
 <translation id="7897375687985782769">Экранды бұруға арналған пернелер тіркесімін бастыңыз. Оны бұрғыңыз келе ме?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Саусақ ізін оқу сканерін түртіңіз.</translation>
-<translation id="7904094684485781019">Бұл есептік жазбаның әкімшісі бірнеше рет кіруге рұқсат бермеген.</translation>
+<translation id="7904094684485781019">Бұл аккаунттың әкімшісі бірнеше рет кіруге рұқсат бермеген.</translation>
 <translation id="7930731167419639574">Айтылған сөз енді жергілікті деңгейде өңделеді және Мәтінді дауыспен енгізу функциясы офлайн режимде жұмыс істейді</translation>
 <translation id="7933084174919150729">Google Assistant тек негізгі профиль үшін қолжетімді.</translation>
-<translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> және <ph name="SECOND_PARENT_EMAIL" /> басқаратын есептік жазба</translation>
+<translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> және <ph name="SECOND_PARENT_EMAIL" /> басқаратын аккаунт</translation>
 <translation id="793716872548410480">Буферді көру үшін <ph name="SHORTCUT_KEY_NAME" /> + V пернелер тіркесімін басыңыз. Соңғы көшірген бес элемент буферде сақталады.</translation>
 <translation id="7955885781510802139">Жоғары контраст режимі</translation>
 <translation id="7977927628060636163">Мобильдік желілер ізделуде…</translation>
@@ -991,7 +991,7 @@
 <translation id="8735953464173050365">Пернетақта параметрлерін көрсету. <ph name="KEYBOARD_NAME" /> таңдалды</translation>
 <translation id="8755498163081687682">Жеке басыңызды растаңыз: <ph name="ORIGIN_NAME" /> жеке басыңызды растағысы келеді.</translation>
 <translation id="875593634123171288">VPN параметрлерін көрсету</translation>
-<translation id="8759408218731716181">Бірнеше есептік жазбаның кіру мүмкіндігін орнату мүмкін емес</translation>
+<translation id="8759408218731716181">Бірнеше аккаунттың кіру мүмкіндігін орнату мүмкін емес</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, қолданба орнатылған, бөгелген</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> желісіне қосылу</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -1003,7 +1003,7 @@
 <translation id="8841375032071747811">"Артқа" түймесі</translation>
 <translation id="8843682306134542540">Бұру құлпын ашу/жабу. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
-<translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, есептік жазбадан шыққаннан кейін, күшіне енеді.</translation>
+<translation id="8853703225951107899">PIN кодыңыз не құпия сөзіңіз әлі расталмады. Ескертпе: құпия сөзіңізді жақында өзгерткен болсаңыз, бұрынғы құпия сөзіңізді пайдаланыңыз. Жаңа құпия сөз, аккаунттан шыққаннан кейін, күшіне енеді.</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" сөзіне қандай <ph name="INTENT" /> берілетінін тағы басқа мүмкіндіктерді көріңіз</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
 <translation id="8871580645200179206">Қараңғы тақырыпты қосу немесе өшіру. <ph name="STATE_TEXT" /></translation>
@@ -1051,7 +1051,7 @@
 <translation id="9151726767154816831">Жаңарту үшін құрылғыны қайта іске қосып, Powerwash функциясын қолданыңыз</translation>
 <translation id="9166331175924255663">Nearby Share функциясының маңайдағыларға көріну режимін қосу немесе өшіру.</translation>
 <translation id="9168436347345867845">Кейінірек</translation>
-<translation id="9179259655489829027">Бұл функция есептік жазбаға кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді есептік жазбалармен пайдаланыңыз.</translation>
+<translation id="9179259655489829027">Бұл функция есептік жазбаға кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
 <translation id="9183456764293710005">Толық экран ұлғайтқышы</translation>
 <translation id="9193626018745640770">Белгісіз қабылдағышта трансляциялауда</translation>
 <translation id="9194617393863864469">Басқа пайдаланушыны кіргізу…</translation>
@@ -1063,7 +1063,7 @@
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> өткен соң, батарея толық зарядталады.</translation>
 <translation id="9215934040295798075">Тұсқағазды орнату</translation>
 <translation id="921989828232331238">Ата-анаңыз құрылғыны бір күнге құлыптап қойды</translation>
-<translation id="9220525904950070496">Есептік жазбаны жою</translation>
+<translation id="9220525904950070496">Аккаунтты жою</translation>
 <translation id="923686485342484400">Шығу үшін Control + Shift + Q тіркесімін екі рет басыңыз.</translation>
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>

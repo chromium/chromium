@@ -1938,7 +1938,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3008232374986381779">Executa IDE, editores e ferramentas de Linux no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
-<translation id="3009300415590184725">Estás seguro de que queres cancelar o proceso de configuración do servizo de datos móbiles?</translation>
+<translation id="3009300415590184725">Seguro que queres cancelar o proceso de configuración do servizo de datos móbiles?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
 <translation id="3010279545267083280">Contrasinal eliminado</translation>
 <translation id="3011384993885886186">Gris cálido</translation>
@@ -4410,7 +4410,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="572328651809341494">Pestanas recentes</translation>
 <translation id="5723508132121499792">Non hai ningunha aplicación executándose en segundo plano</translation>
 <translation id="5723967018671998714">As cookies de terceiros bloquéanse no modo de incógnito</translation>
-<translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Estás seguro de que queres continuar?</translation>
+<translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
 <translation id="5728450728039149624">Opcións de bloqueo de pantalla de Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
@@ -5788,7 +5788,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7251346854160851420">Fondo de pantalla predeterminado</translation>
 <translation id="7251979364707973467"><ph name="WEBSITE" /> expediu a túa chave de seguranza e quere saber o seu número de identificación. O sitio saberá a chave de seguranza que estás utilizando exactamente.</translation>
 <translation id="7253521419891527137">&amp;Máis información</translation>
-<translation id="7254951428499890870">Estás seguro de que queres iniciar "<ph name="APP_NAME" />" no modo de diagnóstico?</translation>
+<translation id="7254951428499890870">Seguro que queres iniciar "<ph name="APP_NAME" />" no modo de diagnóstico?</translation>
 <translation id="725497546968438223">Botón de cartafol de marcadores</translation>
 <translation id="7255002516883565667">Neste momento, tes unha tarxeta que só se pode utilizar neste dispositivo</translation>
 <translation id="7255935316994522020">Aplicar</translation>
@@ -7746,7 +7746,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="988320949174893488">Pestanexo ocasional</translation>
 <translation id="988978206646512040">A frase de acceso non pode estar baleira</translation>
 <translation id="991413375315957741">sensores de movemento ou de luz</translation>
-<translation id="992032470292211616">As extensións, as aplicacións e os temas poden danar o teu dispositivo. Estás seguro de que queres continuar?</translation>
+<translation id="992032470292211616">As extensións, as aplicacións e os temas poden danar o teu dispositivo. Seguro que queres continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desactivar ChromeVox (comentarios orais)</translation>
 <translation id="992778845837390402">Estase creando unha copia de seguranza de Linux</translation>
