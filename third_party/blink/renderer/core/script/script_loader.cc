@@ -160,6 +160,7 @@ void ScriptLoader::DetachPendingScript() {
 
 namespace {
 
+// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
 bool IsValidClassicScriptTypeAndLanguage(
     const String& type,
     const String& language,
@@ -171,17 +172,46 @@ bool IsValidClassicScriptTypeAndLanguage(
   //   text/javascript.
   // - Allowing a different set of languages for language= and type=. language=
   //   supports Javascript 1.1 and 1.4-1.6, but type= does not.
-  if (type.IsEmpty()) {
-    return language.IsEmpty() ||  // assume text/javascript.
-           MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" +
-                                                           language) ||
-           MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(language);
-  } else if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
-                 type.StripWhiteSpace()) ||
-             (support_legacy_types ==
-                  ScriptLoader::kAllowLegacyTypeInTypeAttribute &&
-              MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(type))) {
+
+  if (type.IsNull()) {
+    // <spec step="8">the script element has no type attribute but it has a
+    // language attribute and that attribute's value is the empty string,
+    // or</spec>
+    //
+    // <spec step="8">the script element has neither a type attribute
+    // nor a language attribute, then</spec>
+    if (language.IsEmpty())
+      return true;
+
+    // <spec step="8">Otherwise, the element has a non-empty language attribute;
+    // let the script block's type string for this script element be the
+    // concatenation of the string "text/" followed by the value of the language
+    // attribute.</spec>
+    if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" + language))
+      return true;
+
+    // Not spec'ed.
+    if (MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(language))
+      return true;
+  } else if (type.IsEmpty()) {
+    // <spec step="8">the script element has a type attribute and its value is
+    // the empty string, or</spec>
     return true;
+  } else {
+    // <spec step="8">Otherwise, if the script element has a type attribute, let
+    // the script block's type string for this script element be the value of
+    // that attribute with leading and trailing ASCII whitespace
+    // stripped.</spec>
+    if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
+            type.StripWhiteSpace())) {
+      return true;
+    }
+
+    // Not spec'ed.
+    if (support_legacy_types == ScriptLoader::kAllowLegacyTypeInTypeAttribute &&
+        MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(type)) {
+      return true;
+    }
   }
 
   return false;
@@ -194,22 +224,19 @@ enum class ShouldFireErrorEvent {
 
 }  // namespace
 
-// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
 ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     const String& type,
     const String& language,
     LegacyTypeSupport support_legacy_types) {
   if (IsValidClassicScriptTypeAndLanguage(type, language,
                                           support_legacy_types)) {
-    // <spec step="7">... If the script block's type string is a JavaScript MIME
+    // <spec step="8">... If the script block's type string is a JavaScript MIME
     // type essence match, the script's type is "classic". ...</spec>
-    //
-    // TODO(hiroshige): Annotate and/or cleanup this step.
     return ScriptTypeAtPrepare::kClassic;
   }
 
   if (EqualIgnoringASCIICase(type, script_type_names::kModule)) {
-    // <spec step="7">... If the script block's type string is an ASCII
+    // <spec step="8">... If the script block's type string is an ASCII
     // case-insensitive match for the string "module", the script's type is
     // "module". ...</spec>
     return ScriptTypeAtPrepare::kModule;
@@ -223,7 +250,7 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kSpeculationRules;
   }
 
-  // <spec step="7">... If neither of the above conditions are true, then
+  // <spec step="8">... If neither of the above conditions are true, then
   // return. No script is executed.</spec>
   return ScriptTypeAtPrepare::kInvalid;
 }
