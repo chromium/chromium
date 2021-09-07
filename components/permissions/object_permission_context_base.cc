@@ -265,11 +265,11 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
     return;
   }
 
-  base::ListValue objects_list;
+  base::Value objects_list(base::Value::Type::LIST);
   for (const auto& object : origin_objects_it->second) {
     objects_list.Append(object.second->value.Clone());
   }
-  base::DictionaryValue website_setting_value;
+  base::Value website_setting_value(base::Value::Type::DICTIONARY);
   website_setting_value.SetKey(kObjectListKey, std::move(objects_list));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,

@@ -40,7 +40,7 @@ constexpr char kDiscretizedLikelihood[] = "discretizedLikelihood";
 
 std::string GeneratePredictionsRequestMessageToJson(
     const GeneratePredictionsRequest& message) {
-  base::DictionaryValue dict_message;
+  base::Value dict_message(base::Value::Type::DICTIONARY);
 
   base::Value client_features(base::Value::Type::DICTIONARY);
   client_features.SetKey(kPlatform, base::Value(ClientFeatures_Platform_Name(
