@@ -238,10 +238,8 @@ void OnSigninComplete(Profile* profile,
   DCHECK(signin_util::IsForceSigninEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  bool has_primary_account =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile);
-  if (has_primary_account && !password.empty()) {
+  bool can_be_managed = chrome::enterprise_util::ProfileCanBeManaged(profile);
+  if (can_be_managed && !password.empty()) {
     password_manager::PasswordReuseManager* reuse_manager =
         PasswordReuseManagerFactory::GetForProfile(profile);
     reuse_manager->SaveGaiaPasswordHash(
@@ -251,7 +249,7 @@ void OnSigninComplete(Profile* profile,
             SAVED_ON_CHROME_SIGNIN);
   }
 
-  if (has_primary_account && is_force_sign_in_with_usermanager) {
+  if (can_be_managed && is_force_sign_in_with_usermanager) {
     CoreAccountInfo primary_account =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     AccountInfo primary_account_info =
@@ -295,7 +293,7 @@ void OnSigninComplete(Profile* profile,
     }
   }
 
-  if (!has_primary_account) {
+  if (!can_be_managed) {
     BrowserList::CloseAllBrowsersWithProfile(
         profile, base::BindRepeating(&LockProfileAndShowUserManager),
         // Cannot be called because skip_beforeunload is true.
