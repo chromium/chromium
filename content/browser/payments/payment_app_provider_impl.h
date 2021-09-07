@@ -83,15 +83,8 @@ class CONTENT_EXPORT PaymentAppProviderImpl
       InvokePaymentAppCallback callback,
       int64_t registration_id);
 
-  // Note that constructor of WebContentsObserver is protected.
-  class PaymentHandlerWindowObserver : public WebContentsObserver {
-   public:
-    explicit PaymentHandlerWindowObserver(
-        WebContents* payment_handler_web_contents);
-    ~PaymentHandlerWindowObserver() override;
-  };
-
-  std::unique_ptr<PaymentHandlerWindowObserver> payment_handler_window_;
+  // The opened window's web contents.
+  base::WeakPtr<WebContents> payment_handler_window_;
 
   // Owns this object.
   WebContents* payment_request_web_contents_;

@@ -330,15 +330,14 @@ void PaymentAppProviderImpl::SetOpenedWindow(
   CloseOpenedWindow();
   DCHECK(!payment_handler_window_);
 
-  payment_handler_window_ = std::make_unique<PaymentHandlerWindowObserver>(
-      payment_handler_web_contents);
+  payment_handler_window_ = payment_handler_web_contents->GetWeakPtr();
 }
 
 void PaymentAppProviderImpl::CloseOpenedWindow() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (payment_handler_window_ && payment_handler_window_->web_contents()) {
-    payment_handler_window_->web_contents()->Close();
+  if (payment_handler_window_) {
+    payment_handler_window_->Close();
   }
 
   payment_handler_window_.reset();
@@ -437,12 +436,6 @@ PaymentAppProviderImpl::PaymentAppProviderImpl(
 }
 
 PaymentAppProviderImpl::~PaymentAppProviderImpl() = default;
-
-PaymentAppProviderImpl::PaymentHandlerWindowObserver::
-    PaymentHandlerWindowObserver(WebContents* payment_handler_web_contents)
-    : WebContentsObserver(payment_handler_web_contents) {}
-PaymentAppProviderImpl::PaymentHandlerWindowObserver::
-    ~PaymentHandlerWindowObserver() = default;
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentAppProviderImpl)
 }  // namespace content
