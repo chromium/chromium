@@ -9,14 +9,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/views_export.h"
@@ -30,8 +29,50 @@ class Layer;
 
 namespace views {
 
+class AnimationAbortHandle;
+
 class VIEWS_EXPORT AnimationBuilder {
  public:
+  class Observer : public ui::LayerAnimationObserver {
+   public:
+    Observer();
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
+
+    void SetOnStarted(base::OnceClosure callback);
+    void SetOnEnded(base::OnceClosure callback);
+    void SetOnWillRepeat(base::RepeatingClosure callback);
+    void SetOnAborted(base::OnceClosure callback);
+    void SetOnScheduled(base::OnceClosure callback);
+
+    void SetAbortHandle(AnimationAbortHandle* abort_handle);
+
+    // ui::LayerAnimationObserver:
+    void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
+    void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
+    void OnLayerAnimationWillRepeat(
+        ui::LayerAnimationSequence* sequence) override;
+    void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
+    void OnLayerAnimationScheduled(
+        ui::LayerAnimationSequence* sequence) override;
+
+   protected:
+    void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
+    bool RequiresNotificationWhenAnimatorDestroyed() const override;
+
+   private:
+    using RepeatMap = base::flat_map<ui::LayerAnimationSequence*, int>;
+    RepeatMap repeat_map_;
+    base::OnceClosure on_started_;
+    base::OnceClosure on_ended_;
+    base::RepeatingClosure on_will_repeat_;
+    base::OnceClosure on_aborted_;
+    base::OnceClosure on_scheduled_;
+
+    AnimationAbortHandle* abort_handle_ = nullptr;
+  };
+
   AnimationBuilder();
   ~AnimationBuilder();
 
@@ -81,7 +122,6 @@ class VIEWS_EXPORT AnimationBuilder {
       base::RepeatingClosure deleted_closure);
 
  private:
-  class Observer;
   struct Value;
 
   Observer* GetObserver();

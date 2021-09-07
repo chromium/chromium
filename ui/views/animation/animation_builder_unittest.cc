@@ -16,6 +16,7 @@
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/animation_abort_handle.h"
 
 namespace views {
 

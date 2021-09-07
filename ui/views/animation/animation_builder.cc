@@ -21,51 +21,17 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/animation_key.h"
 #include "ui/views/animation/animation_sequence_block.h"
 
 namespace views {
 
-class AnimationBuilder::Observer : public ui::LayerAnimationObserver {
- public:
-  Observer() = default;
-  Observer(const Observer&) = delete;
-  Observer& operator=(const Observer&) = delete;
-  ~Observer() override;
-
-  void SetOnStarted(base::OnceClosure callback);
-  void SetOnEnded(base::OnceClosure callback);
-  void SetOnWillRepeat(base::RepeatingClosure callback);
-  void SetOnAborted(base::OnceClosure callback);
-  void SetOnScheduled(base::OnceClosure callback);
-
-  void SetAbortHandle(AnimationAbortHandle* abort_handle);
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationWillRepeat(
-      ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationScheduled(ui::LayerAnimationSequence* sequence) override;
-
- protected:
-  void OnDetachedFromSequence(ui::LayerAnimationSequence* sequence) override;
-  bool RequiresNotificationWhenAnimatorDestroyed() const override;
-
- private:
-  using RepeatMap = base::flat_map<ui::LayerAnimationSequence*, int>;
-  RepeatMap repeat_map_;
-  base::OnceClosure on_started_;
-  base::OnceClosure on_ended_;
-  base::RepeatingClosure on_will_repeat_;
-  base::OnceClosure on_aborted_;
-  base::OnceClosure on_scheduled_;
-
-  AnimationAbortHandle* abort_handle_ = nullptr;
-};
+AnimationBuilder::Observer::Observer() = default;
 
 AnimationBuilder::Observer::~Observer() {
+  if (abort_handle_)
+    abort_handle_->OnObserverDeleted();
   base::RepeatingClosure& on_observer_deleted =
       AnimationBuilder::GetObserverDeletedCallback();
   if (on_observer_deleted)
@@ -308,9 +274,8 @@ void AnimationBuilder::TerminateSequence(
 
 std::unique_ptr<AnimationAbortHandle> AnimationBuilder::GetAbortHandle() {
   DCHECK(!abort_handle_) << "An abort handle is already created.";
-  auto abort_handle = base::WrapUnique(new AnimationAbortHandle());
-  GetObserver()->SetAbortHandle(abort_handle_ = abort_handle.get());
-  return abort_handle;
+  abort_handle_ = new AnimationAbortHandle(GetObserver());
+  return base::WrapUnique(abort_handle_);
 }
 
 AnimationBuilder::Observer* AnimationBuilder::GetObserver() {

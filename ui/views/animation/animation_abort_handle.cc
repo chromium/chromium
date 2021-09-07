@@ -9,20 +9,26 @@
 
 namespace views {
 
-AnimationAbortHandle::AnimationAbortHandle() = default;
+AnimationAbortHandle::AnimationAbortHandle(AnimationBuilder::Observer* observer)
+    : observer_(observer) {
+  observer_->SetAbortHandle(this);
+}
 
 AnimationAbortHandle::~AnimationAbortHandle() {
   DCHECK_NE(animation_state_, AnimationState::kNotStarted)
       << "You can't destroy the handle before the animation starts.";
 
-  if (animation_state_ == AnimationState::kEnded)
-    return;
+  if (observer_)
+    observer_->SetAbortHandle(nullptr);
 
-  animation_state_ = AnimationState::kAborting;
-  for (ui::Layer* layer : layers_) {
-    layer->GetAnimator()->AbortAllAnimations();
+  if (animation_state_ != AnimationState::kEnded) {
+    for (ui::Layer* layer : layers_)
+      layer->GetAnimator()->AbortAllAnimations();
   }
-  animation_state_ = AnimationState::kEnded;
+}
+
+void AnimationAbortHandle::OnObserverDeleted() {
+  observer_ = nullptr;
 }
 
 void AnimationAbortHandle::AddLayer(ui::Layer* layer) {
