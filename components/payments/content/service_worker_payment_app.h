@@ -33,8 +33,7 @@ namespace payments {
 class PaymentHandlerHost;
 
 // Represents a service worker based payment app.
-class ServiceWorkerPaymentApp : public PaymentApp,
-                                public content::WebContentsObserver {
+class ServiceWorkerPaymentApp : public PaymentApp {
  public:
   // This constructor is used for a payment app that has been installed in
   // Chrome. The `spec` parameter should not be null.
@@ -168,6 +167,8 @@ class ServiceWorkerPaymentApp : public PaymentApp,
   bool can_show_own_ui_ = true;
 
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<ServiceWorkerPaymentApp> weak_ptr_factory_{this};
 

@@ -39,7 +39,6 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     bool is_incognito,
     const base::RepeatingClosure& show_processing_spinner)
     : PaymentApp(0, PaymentApp::Type::SERVICE_WORKER_APP),
-      content::WebContentsObserver(web_contents),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
       spec_(spec),
@@ -49,7 +48,8 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       show_processing_spinner_(show_processing_spinner),
       can_make_payment_result_(false),
       has_enrolled_instrument_result_(false),
-      needs_installation_(false) {
+      needs_installation_(false),
+      web_contents_(web_contents->GetWeakPtr()) {
   DCHECK(web_contents);
   DCHECK(top_origin_.is_valid());
   DCHECK(frame_origin_.is_valid());
@@ -70,7 +70,6 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
     bool is_incognito,
     const base::RepeatingClosure& show_processing_spinner)
     : PaymentApp(0, PaymentApp::Type::SERVICE_WORKER_APP),
-      content::WebContentsObserver(web_contents),
       top_origin_(top_origin),
       frame_origin_(frame_origin),
       spec_(spec),
@@ -81,7 +80,8 @@ ServiceWorkerPaymentApp::ServiceWorkerPaymentApp(
       has_enrolled_instrument_result_(false),
       needs_installation_(true),
       installable_web_app_info_(std::move(installable_payment_app_info)),
-      installable_enabled_method_(enabled_method) {
+      installable_enabled_method_(enabled_method),
+      web_contents_(web_contents->GetWeakPtr()) {
   DCHECK(web_contents);
   DCHECK(top_origin_.is_valid());
   DCHECK(frame_origin_.is_valid());
@@ -623,10 +623,10 @@ void ServiceWorkerPaymentApp::AbortPaymentApp(
 }
 
 content::PaymentAppProvider* ServiceWorkerPaymentApp::GetPaymentAppProvider() {
-  return (!web_contents())
+  return (!web_contents_)
              ? nullptr
              : content::PaymentAppProvider::GetOrCreateForWebContents(
-                   web_contents());
+                   web_contents_.get());
 }
 
 }  // namespace payments
