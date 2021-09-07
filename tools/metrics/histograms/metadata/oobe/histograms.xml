@@ -332,8 +332,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.Behavior" enum="SyncConsentBehavior"
-    expires_after="2021-12-12">
-  <owner>jamescook@chromium.org</owner>
+    expires_after="2022-02-01">
+  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Whether the sync consent screen was shown, skipped with sync disabled, or
@@ -385,8 +385,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2021-12-12">
-  <owner>jamescook@chromium.org</owner>
+    expires_after="2022-02-01">
+  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Final state of the sync service at the end of the sync consent OOBE step.
@@ -396,8 +396,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.SyncConsentScreen.UserChoice"
-    enum="SyncConsentUserChoice" expires_after="2021-10-10">
-  <owner>jamescook@chromium.org</owner>
+    enum="SyncConsentUserChoice" expires_after="2022-02-01">
+  <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Which button the user clicked on the out-of-box sync consent screen.
