@@ -86,13 +86,13 @@ class SettingsAddressEditDialogElement extends
   private email_: string;
   private canSave_: boolean;
   private showHonorific_: boolean;
-  private countryInfo: CountryDetailManager =
+  private countryInfo_: CountryDetailManager =
       CountryDetailManagerImpl.getInstance();
 
   connectedCallback() {
     super.connectedCallback();
 
-    this.countryInfo.getCountryList().then(countryList => {
+    this.countryInfo_.getCountryList().then(countryList => {
       this.countries_ = countryList;
 
       this.title_ =
@@ -142,7 +142,7 @@ class SettingsAddressEditDialogElement extends
   private updateAddressWrapper_() {
     // Default to the last country used if no country code is provided.
     const countryCode = this.countryCode_ || this.countries_[0].countryCode;
-    this.countryInfo.getAddressFormat(countryCode as string).then(format => {
+    this.countryInfo_.getAddressFormat(countryCode as string).then(format => {
       this.addressWrapper_ = format.components.flatMap(component => {
         // If this is the name field, add a honorific title row before the
         // name.

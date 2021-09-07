@@ -16,7 +16,8 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -24,20 +25,27 @@ import {loadTimeData} from '../i18n_setup.js';
 /**
  * Regular expression for invalid nickname. Nickname containing any digits will
  * be treated as invalid.
- * @type {!RegExp}
  */
-const NICKNAME_INVALID_REGEX = new RegExp('.*\\d+.*');
+const NICKNAME_INVALID_REGEX: RegExp = new RegExp('.*\\d+.*');
 
+declare global {
+  interface HTMLElementEventMap {
+    'save-credit-card': CustomEvent<chrome.autofillPrivate.CreditCardEntry>;
+  }
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
+interface SettingsCreditCardEditDialogElement {
+  $: {
+    dialog: CrDialogElement,
+    month: HTMLSelectElement,
+    year: HTMLSelectElement,
+  };
+}
+
 const SettingsCreditCardEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior], PolymerElement) as
+    {new (): PolymerElement & I18nBehavior};
 
-/** @polymer */
 class SettingsCreditCardEditDialogElement extends
     SettingsCreditCardEditDialogElementBase {
   static get is() {
@@ -52,20 +60,17 @@ class SettingsCreditCardEditDialogElement extends
     return {
       /**
        * The credit card being edited.
-       * @type {!chrome.autofillPrivate.CreditCardEntry}
        */
       creditCard: Object,
 
       /**
        * The actual title that's used for this dialog. Will be context sensitive
        * based on if |creditCard| is being created or edited.
-       * @private
        */
       title_: String,
 
       /**
        * The list of months to show in the dropdown.
-       * @private {!Array<string>}
        */
       monthList_: {
         type: Array,
@@ -74,28 +79,18 @@ class SettingsCreditCardEditDialogElement extends
         ],
       },
 
-      /**
-       * The list of years to show in the dropdown.
-       * @private {!Array<string>}
-       */
+      /** The list of years to show in the dropdown. */
       yearList_: Array,
 
-      /** @private */
       expirationYear_: String,
-
-      /** @private {string|undefined} */
       expirationMonth_: String,
 
-      /**
-       * Whether the current nickname input is invalid.
-       * @private
-       */
+      /** Whether the current nickname input is invalid. */
       nicknameInvalid_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       expired_: {
         type: Boolean,
         computed: 'computeExpired_(expirationMonth_, expirationYear_)',
@@ -105,11 +100,19 @@ class SettingsCreditCardEditDialogElement extends
     };
   }
 
+  creditCard: chrome.autofillPrivate.CreditCardEntry;
+  private title_: string;
+  private monthList_: Array<string>;
+  private yearList_: Array<string>;
+  private expirationYear_?: string;
+  private expirationMonth_?: string;
+  private nicknameInvalid_: boolean;
+  private expired_: boolean;
+
   /**
-   * @return {boolean} True iff the provided expiration date is passed.
-   * @private
+   * @return True iff the provided expiration date is passed.
    */
-  computeExpired_() {
+  private computeExpired_(): boolean {
     if (this.expirationYear_ === undefined ||
         this.expirationMonth_ === undefined) {
       return false;
@@ -124,7 +127,6 @@ class SettingsCreditCardEditDialogElement extends
          expirationMonth <= now.getMonth()));
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -132,14 +134,14 @@ class SettingsCreditCardEditDialogElement extends
         this.creditCard.guid ? 'editCreditCardTitle' : 'addCreditCardTitle');
 
     // Add a leading '0' if a month is 1 char.
-    if (this.creditCard.expirationMonth.length === 1) {
+    if (this.creditCard.expirationMonth!.length === 1) {
       this.creditCard.expirationMonth = '0' + this.creditCard.expirationMonth;
     }
 
     const date = new Date();
     let firstYear = date.getFullYear();
     let lastYear = firstYear + 19;  // Show next 19 years (20 total).
-    let selectedYear = parseInt(this.creditCard.expirationYear, 10);
+    let selectedYear = parseInt(this.creditCard.expirationYear!, 10);
 
     // |selectedYear| must be valid and between first and last years.
     if (!selectedYear) {
@@ -170,17 +172,15 @@ class SettingsCreditCardEditDialogElement extends
 
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
-   * @private
    */
-  onCancelButtonTap_() {
+  private onCancelButtonTap_() {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for tapping the save button.
-   * @private
    */
-  onSaveButtonTap_() {
+  private onSaveButtonTap_() {
     if (!this.saveEnabled_()) {
       return;
     }
@@ -194,18 +194,15 @@ class SettingsCreditCardEditDialogElement extends
     this.close();
   }
 
-  /** @private */
-  onMonthChange_() {
+  private onMonthChange_() {
     this.expirationMonth_ = this.monthList_[this.$.month.selectedIndex];
   }
 
-  /** @private */
-  onYearChange_() {
+  private onYearChange_() {
     this.expirationYear_ = this.yearList_[this.$.year.selectedIndex];
   }
 
-  /** @private */
-  saveEnabled_() {
+  private saveEnabled_() {
     // The save button is enabled if:
     // There is and name or number for the card
     // and the expiration date is valid
@@ -218,23 +215,22 @@ class SettingsCreditCardEditDialogElement extends
 
   /**
    * Handles a11y error announcement the same way as in cr-input.
-   * @private
    */
-  onExpiredChanged_() {
+  private onExpiredChanged_() {
     const ERROR_ID = 'expired-error';
-    const errorElement = this.shadowRoot.querySelector(`#${ERROR_ID}`);
+    const errorElement = this.shadowRoot!.querySelector(`#${ERROR_ID}`)!;
     // Readding attributes is needed for consistent announcement by VoiceOver
     if (this.expired_) {
       errorElement.setAttribute('role', 'alert');
-      this.shadowRoot.querySelector(`#month`).setAttribute(
+      this.shadowRoot!.querySelector(`#month`)!.setAttribute(
           'aria-errormessage', ERROR_ID);
-      this.shadowRoot.querySelector(`#year`).setAttribute(
+      this.shadowRoot!.querySelector(`#year`)!.setAttribute(
           'aria-errormessage', ERROR_ID);
     } else {
       errorElement.removeAttribute('role');
-      this.shadowRoot.querySelector(`#month`).removeAttribute(
+      this.shadowRoot!.querySelector(`#month`)!.removeAttribute(
           'aria-errormessage');
-      this.shadowRoot.querySelector(`#year`).removeAttribute(
+      this.shadowRoot!.querySelector(`#year`)!.removeAttribute(
           'aria-errormessage');
     }
   }
@@ -242,36 +238,32 @@ class SettingsCreditCardEditDialogElement extends
   /**
    * Validate no digits are used in nickname. Display error message and disable
    * the save button when invalid.
-   * @private
    */
-  validateNickname_() {
+  private validateNickname_() {
     this.nicknameInvalid_ =
-        NICKNAME_INVALID_REGEX.test(this.creditCard.nickname);
+        NICKNAME_INVALID_REGEX.test(this.creditCard.nickname!);
   }
 
   /**
-   * @param {string|undefined} nickname of the card, undefined when not set.
-   * @return {number} nickname character length.
-   * @private
+   * @param  nickname of the card, undefined when not set.
+   * @return nickname character length.
    */
-  computeNicknameCharCount_(nickname) {
+  private computeNicknameCharCount_(nickname?: string): number {
     return (nickname || '').length;
   }
 
   /**
-   * @return {string} 'true' or 'false' for the aria-invalid attribute
+   * @return 'true' or 'false' for the aria-invalid attribute
    *     of expiration selectors.
-   * @private
    */
-  getExpirationAriaInvalid_() {
+  private getExpirationAriaInvalid_(): string {
     return this.expired_ ? 'true' : 'false';
   }
 
   /**
    * Trim credit card's name, cardNumber and nickname if exist.
-   * @private
    */
-  trimCreditCard_() {
+  private trimCreditCard_() {
     if (this.creditCard.name) {
       this.creditCard.name = this.creditCard.name.trim();
     }

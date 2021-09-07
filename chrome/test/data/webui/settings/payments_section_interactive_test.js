@@ -36,7 +36,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Override the PaymentsManagerImpl for testing.
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
-    PaymentsManagerImpl.instance_ = paymentsManager;
+    PaymentsManagerImpl.setInstance(paymentsManager);
 
     const section = document.createElement('settings-payments-section');
     document.body.appendChild(section);

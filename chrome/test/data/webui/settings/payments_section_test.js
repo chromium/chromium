@@ -55,7 +55,7 @@ suite('PaymentsSection', function() {
     const paymentsManager = new TestPaymentsManager();
     paymentsManager.data.creditCards = creditCards;
     paymentsManager.data.upiIds = upiIds;
-    PaymentsManagerImpl.instance_ = paymentsManager;
+    PaymentsManagerImpl.setInstance(paymentsManager);
 
     const section = document.createElement('settings-payments-section');
     section.prefs = {autofill: prefValues};

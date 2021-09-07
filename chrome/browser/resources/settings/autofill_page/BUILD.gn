@@ -13,8 +13,6 @@ js_type_check("closure_compile") {
     ":autofill_page",
     ":avatar_icon",
     ":blocking_request_manager",
-    ":credit_card_edit_dialog",
-    ":credit_card_list_entry",
     ":merge_exceptions_store_copies_behavior",
     ":merge_passwords_store_copies_behavior",
     ":multi_store_exception_entry",
@@ -36,10 +34,7 @@ js_type_check("closure_compile") {
     ":passwords_export_dialog",
     ":passwords_list_handler",
     ":passwords_section",
-    ":payments_list",
-    ":payments_section",
     ":show_password_mixin",
-    ":upi_id_list_entry",
   ]
 }
 
@@ -67,22 +62,6 @@ js_library("avatar_icon") {
 }
 
 js_library("blocking_request_manager") {
-}
-
-js_library("credit_card_edit_dialog") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
-js_library("credit_card_list_entry") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
 }
 
 js_library("password_check") {
@@ -295,31 +274,6 @@ js_library("passwords_device_section") {
   ]
 }
 
-js_library("payments_list") {
-  deps = [
-    ":credit_card_list_entry",
-    ":upi_id_list_entry",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("payments_section") {
-  deps = [
-    ":credit_card_edit_dialog",
-    ":payments_list",
-    "..:metrics_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
-  ]
-  externs_list = [ "$externs_path/autofill_private.js" ]
-}
-
 js_library("show_password_mixin") {
   deps = [
     ":blocking_request_manager",
@@ -346,12 +300,6 @@ js_library("merge_exceptions_store_copies_behavior") {
   ]
 }
 
-js_library("upi_id_list_entry") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "address_edit_dialog.ts",
@@ -360,8 +308,8 @@ html_to_js("web_components") {
     "avatar_icon.js",
     "autofill_section.ts",
     "passwords_list_handler.js",
-    "credit_card_edit_dialog.js",
-    "credit_card_list_entry.js",
+    "credit_card_edit_dialog.ts",
+    "credit_card_list_entry.ts",
     "password_check_edit_dialog.js",
     "password_check_edit_disclaimer_dialog.js",
     "password_check_list_item.js",
@@ -376,8 +324,8 @@ html_to_js("web_components") {
     "passwords_section.js",
     "passwords_device_section.js",
     "passwords_shared_css.js",
-    "payments_list.js",
-    "payments_section.js",
-    "upi_id_list_entry.js",
+    "payments_list.ts",
+    "payments_section.ts",
+    "upi_id_list_entry.ts",
   ]
 }

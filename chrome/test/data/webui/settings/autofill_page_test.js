@@ -151,7 +151,7 @@ suite('PasswordsAndForms', function() {
 
     // Override the PaymentsManagerImpl for testing.
     paymentsManager = new TestPaymentsManager();
-    PaymentsManagerImpl.instance_ = paymentsManager;
+    PaymentsManagerImpl.setInstance(paymentsManager);
   });
 
   test('baseLoadAndRemove', function() {

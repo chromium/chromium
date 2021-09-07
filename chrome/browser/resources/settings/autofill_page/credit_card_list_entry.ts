@@ -15,7 +15,6 @@ import './passwords_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 class SettingsCreditCardListEntryElement extends PolymerElement {
   static get is() {
     return 'settings-credit-card-list-entry';
@@ -27,31 +26,28 @@ class SettingsCreditCardListEntryElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * A saved credit card.
-       * @type {!chrome.autofillPrivate.CreditCardEntry}
-       */
+      /** A saved credit card. */
       creditCard: Object,
     };
   }
 
+  creditCard: chrome.autofillPrivate.CreditCardEntry;
+
   /**
    * Opens the credit card action menu.
-   * @private
    */
-  onDotsMenuClick_() {
+  private onDotsMenuClick_() {
     this.dispatchEvent(new CustomEvent('dots-card-menu-click', {
       bubbles: true,
       composed: true,
       detail: {
         creditCard: this.creditCard,
-        anchorElement: this.shadowRoot.querySelector('#creditCardMenu'),
+        anchorElement: this.shadowRoot!.querySelector('#creditCardMenu'),
       }
     }));
   }
 
-  /** @private */
-  onRemoteEditClick_() {
+  private onRemoteEditClick_() {
     this.dispatchEvent(new CustomEvent('remote-card-menu-click', {
       bubbles: true,
       composed: true,
@@ -60,12 +56,11 @@ class SettingsCreditCardListEntryElement extends PolymerElement {
 
   /**
    * The 3-dot menu should not be shown if the card is entirely remote.
-   * @return {boolean}
-   * @private
    */
-  showDots_() {
+  private showDots_(): boolean {
     return !!(
-        this.creditCard.metadata.isLocal || this.creditCard.metadata.isCached);
+        this.creditCard.metadata!.isLocal ||
+        this.creditCard.metadata!.isCached);
   }
 }
 

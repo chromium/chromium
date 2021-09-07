@@ -14,7 +14,6 @@ import '../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
 class SettingsUpiIdListEntryElement extends PolymerElement {
   static get is() {
     return 'settings-upi-id-list-entry';

@@ -17,9 +17,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {loadTimeData} from '../i18n_setup.js';
 
-
-
-/** @polymer */
 class SettingsPaymentsListElement extends PolymerElement {
   static get is() {
     return 'settings-payments-list';
@@ -33,13 +30,11 @@ class SettingsPaymentsListElement extends PolymerElement {
     return {
       /**
        * An array of all saved credit cards.
-       * @type {!Array<!chrome.autofillPrivate.CreditCardEntry>}
        */
       creditCards: Array,
 
       /**
        * An array of all saved UPI Virtual Payment Addresses.
-       * @type {!Array<!string>}
        */
       upiIds: Array,
 
@@ -75,49 +70,44 @@ class SettingsPaymentsListElement extends PolymerElement {
     };
   }
 
+  creditCards: Array<chrome.autofillPrivate.CreditCardEntry>;
+  upiIds: Array<string>;
+  private enableUpiIds_: boolean;
+  private showCreditCardUpiSeparator_: boolean;
+  private showAnyPaymentMethods_: boolean;
+
   /**
-   * Returns true if the list exists and has items.
-   * @param {Array<?>} list
-   * @return {boolean}
-   * @private
+   * @return Whether the list exists and has items.
    */
-  hasSome_(list) {
+  private hasSome_(list: Array<any>): boolean {
     return !!(list && list.length);
   }
 
   /**
-   * Returns true iff there are credit cards to be shown.
-   * @return {boolean}
-   * @private
+   * @return true iff there are credit cards to be shown.
    */
-  showCreditCards_() {
+  private showCreditCards_(): boolean {
     return this.hasSome_(this.creditCards);
   }
 
   /**
-   * Returns true iff both credit cards and UPI IDs will be shown.
-   * @return {boolean}
-   * @private
+   * @return true iff both credit cards and UPI IDs will be shown.
    */
-  computeShowCreditCardUpiSeparator_() {
+  private computeShowCreditCardUpiSeparator_(): boolean {
     return this.showCreditCards_() && this.showUpiIds_();
   }
 
   /**
-   * Returns true iff there UPI IDs and they should be shown.
-   * @return {boolean}
-   * @private
+   * @return true iff there UPI IDs and they should be shown.
    */
-  showUpiIds_() {
+  private showUpiIds_(): boolean {
     return this.enableUpiIds_ && this.hasSome_(this.upiIds);
   }
 
   /**
-   * Returns true iff any payment methods will be shown.
-   * @return {boolean}
-   * @private
+   * @return true iff any payment methods will be shown.
    */
-  computeShowAnyPaymentMethods_() {
+  private computeShowAnyPaymentMethods_(): boolean {
     return this.showCreditCards_() || this.showUpiIds_();
   }
 }
