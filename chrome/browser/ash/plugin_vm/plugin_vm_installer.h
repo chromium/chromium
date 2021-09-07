@@ -79,8 +79,10 @@ class PluginVmInstaller : public KeyedService,
     DOWNLOAD_FAILED_401 = 28,  // Common HTTP status codes for errors.
     DOWNLOAD_FAILED_403 = 29,
     DOWNLOAD_FAILED_404 = 30,
+    // Download appeared to succeed but downloaded image size was unexpected
+    DOWNLOAD_SIZE_MISMATCH = 31,
 
-    kMaxValue = DOWNLOAD_FAILED_404,
+    kMaxValue = DOWNLOAD_SIZE_MISMATCH,
   };
 
   enum class InstallingState {
@@ -93,6 +95,9 @@ class PluginVmInstaller : public KeyedService,
     kDownloadingImage,
     kImporting,
   };
+
+  static constexpr int64_t kImageSizeUnknown = -1;
+  static constexpr int64_t kImageSizeError = -2;
 
   // Observer for installation progress.
   class Observer {
@@ -273,8 +278,8 @@ class PluginVmInstaller : public KeyedService,
   base::FilePath downloaded_image_;
   // Used to identify our running import with concierge.
   std::string current_import_command_uuid_;
-  // -1 when is not yet determined.
-  int64_t downloaded_image_size_ = -1;
+  int64_t expected_image_size_;
+  int64_t downloaded_image_size_;
   bool creating_new_vm_ = false;
   double progress_ = 0;
   std::unique_ptr<PluginVmDriveImageDownloadService> drive_download_service_;

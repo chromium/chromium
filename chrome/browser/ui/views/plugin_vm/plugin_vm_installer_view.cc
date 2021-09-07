@@ -424,6 +424,7 @@ std::u16string PluginVmInstallerView::GetMessage() const {
         case Reason::DOWNLOAD_FAILED_UNKNOWN:
         case Reason::DOWNLOAD_FAILED_NETWORK:
         case Reason::DOWNLOAD_FAILED_ABORTED:
+        case Reason::DOWNLOAD_SIZE_MISMATCH:
           return l10n_util::GetStringFUTF16(
               IDS_PLUGIN_VM_INSTALLER_ERROR_MESSAGE_DOWNLOAD_FAILED,
               base::NumberToString16(

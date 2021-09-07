@@ -206,6 +206,17 @@ void PluginVmInstaller::OnDownloadStarted() {}
 void PluginVmInstaller::OnDownloadProgressUpdated(uint64_t bytes_downloaded,
                                                   int64_t content_length) {
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
+
+  if (expected_image_size_ == kImageSizeUnknown) {
+    if (content_length > 0) {
+      expected_image_size_ = content_length;
+    }
+  } else if (expected_image_size_ > 0) {
+    if (content_length != expected_image_size_) {
+      expected_image_size_ = kImageSizeError;
+    }
+  }
+
   if (observer_)
     observer_->OnDownloadProgressUpdated(bytes_downloaded, content_length);
 
@@ -226,7 +237,14 @@ void PluginVmInstaller::OnDownloadCompleted(
     downloaded_image_ = downloaded_image_for_testing_.value();
 
   if (!VerifyDownload(info.hash256)) {
-    OnDownloadFailed(FailureReason::HASH_MISMATCH);
+    LOG(ERROR) << "Expected image size: " << expected_image_size_
+               << ", downloaded image size: " << downloaded_image_size_;
+    if (expected_image_size_ == kImageSizeUnknown ||
+        expected_image_size_ == downloaded_image_size_) {
+      OnDownloadFailed(FailureReason::HASH_MISMATCH);
+    } else {
+      OnDownloadFailed(FailureReason::DOWNLOAD_SIZE_MISMATCH);
+    }
     return;
   }
 
@@ -553,6 +571,8 @@ void PluginVmInstaller::StartDownload() {
     return;
   }
 
+  expected_image_size_ = kImageSizeUnknown;
+  downloaded_image_size_ = kImageSizeUnknown;
   absl::optional<std::string> drive_id = GetIdFromDriveUrl(url);
   using_drive_download_service_ = drive_id.has_value();
 
@@ -993,7 +1013,6 @@ void PluginVmInstaller::OnTemporaryImageRemoved(bool success) {
                << downloaded_image_.value() << " failed to be deleted";
     return;
   }
-  downloaded_image_size_ = -1;
   downloaded_image_.clear();
   creating_new_vm_ = false;
 }

@@ -66053,6 +66053,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="28" label="DOWNLOAD_FAILED_401"/>
   <int value="29" label="DOWNLOAD_FAILED_403"/>
   <int value="30" label="DOWNLOAD_FAILED_404"/>
+  <int value="31" label="DOWNLOAD_SIZE_MISMATCH"/>
 </enum>
 
 <enum name="PluginVmSetupResult">
