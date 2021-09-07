@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/accuracy_tips/accuracy_service.h"
 #include "components/accuracy_tips/accuracy_tip_status.h"
@@ -20,6 +21,7 @@
 using testing::_;
 using testing::Invoke;
 using testing::Mock;
+using testing::Return;
 using AccuracyCheckCallback =
     accuracy_tips::AccuracyService::AccuracyCheckCallback;
 
@@ -40,7 +42,10 @@ class MockAccuracyService : public AccuracyService {
       : AccuracyService(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr) {}
   MOCK_METHOD2(CheckAccuracyStatus, void(const GURL&, AccuracyCheckCallback));
   MOCK_METHOD1(MaybeShowAccuracyTip, void(content::WebContents*));
-  MOCK_METHOD1(IsSecureConnection, bool(content::WebContents*));
+
+  bool IsSecureConnection(content::WebContents* web_contents) override {
+    return web_contents->GetURL().SchemeIsCryptographic();
+  }
 };
 
 class AccuracyWebContentsObserverTest
@@ -54,86 +59,111 @@ class AccuracyWebContentsObserverTest
   }
 
   MockAccuracyService* service() { return service_.get(); }
+  base::HistogramTester* tester() { return &tester_; }
 
  private:
   std::unique_ptr<testing::StrictMock<MockAccuracyService>> service_;
+  base::HistogramTester tester_;
 };
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceOnNavigationToRandomSite) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
-  EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://example.com"), _))
+  GURL url("https://example.com");
+  EXPECT_CALL(*service(), CheckAccuracyStatus(url, _))
       .WillOnce(Invoke(&ReturnNone));
-  EXPECT_CALL(*service(), IsSecureConnection(web_contents()));
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://example.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+
+  tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                               AccuracyTipStatus::kNone, 1);
+}
+
+TEST_F(AccuracyWebContentsObserverTest,
+       CheckServiceOnNavigationToRandomInsecureSite) {
+  AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
+  GURL url("http://example.com");
+  EXPECT_CALL(*service(), CheckAccuracyStatus(url, _))
+      .WillOnce(Invoke(&ReturnNone));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+  tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                               AccuracyTipStatus::kNone, 1);
 }
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceOnNavigationToBadSite) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
-  EXPECT_CALL(*service(),
-              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
+  GURL url("https://accuracytip.com");
+  EXPECT_CALL(*service(), CheckAccuracyStatus(url, _))
       .WillOnce(Invoke(&ReturnIsMisinformation));
-  EXPECT_CALL(*service(), IsSecureConnection(web_contents()))
-      .WillOnce(testing::Return(true));
   EXPECT_CALL(*service(), MaybeShowAccuracyTip(web_contents()));
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://accuracytip.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+
+  tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                               AccuracyTipStatus::kShowAccuracyTip, 1);
 }
 
 TEST_F(AccuracyWebContentsObserverTest,
-       CheckServiceOnNavigationToNotSecureSite) {
+       CheckServiceOnNavigationToInSecureSiteInList) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
-  EXPECT_CALL(*service(),
-              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
+  GURL url("http://accuracytip.com");
+  EXPECT_CALL(*service(), CheckAccuracyStatus(url, _))
       .WillOnce(Invoke(&ReturnIsMisinformation));
-  EXPECT_CALL(*service(), IsSecureConnection(web_contents()))
-      .WillOnce(testing::Return(false));
   EXPECT_CALL(*service(), MaybeShowAccuracyTip(web_contents())).Times(0);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://accuracytip.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+
+  tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                               AccuracyTipStatus::kNotSecure, 1);
 }
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndNavigationBeforeResult) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
+  GURL example_url("https://example.com");
+  GURL accuracy_tip_url("https://accuracytip.com");
+
   // Capture callback for first navigation.
   AccuracyCheckCallback callback;
-  EXPECT_CALL(*service(),
-              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
+  EXPECT_CALL(*service(), CheckAccuracyStatus(accuracy_tip_url, _))
       .WillOnce(Invoke([&](const GURL&, AccuracyCheckCallback cb) {
         callback = std::move(cb);
       }));
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://accuracytip.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             accuracy_tip_url);
   Mock::VerifyAndClearExpectations(service());
 
   // Navigate to a different site.
-  EXPECT_CALL(*service(), CheckAccuracyStatus(GURL("https://example.com"), _))
+  EXPECT_CALL(*service(), CheckAccuracyStatus(example_url, _))
       .WillOnce(Invoke(&ReturnNone));
   // Twice, once per each time a callback is ran.
-  EXPECT_CALL(*service(), IsSecureConnection(web_contents())).Times(2);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://example.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             example_url);
 
   // Verify that there is no call to MaybeShowAccuracyTip if callback is invoked
   // after navigation to a different site.
   std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
   Mock::VerifyAndClearExpectations(service());
+
+  tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
+                               AccuracyTipStatus::kNone, 1);
 }
 
 TEST_F(AccuracyWebContentsObserverTest, CheckServiceAndDestroyBeforeResult) {
   AccuracyWebContentsObserver::CreateForWebContents(web_contents(), service());
+  GURL url("https://accuracytip.com");
   AccuracyCheckCallback callback;
-  EXPECT_CALL(*service(),
-              CheckAccuracyStatus(GURL("https://accuracytip.com"), _))
+  EXPECT_CALL(*service(), CheckAccuracyStatus(url, _))
       .WillOnce(Invoke([&](const GURL&, AccuracyCheckCallback cb) {
         callback = std::move(cb);
       }));
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL("https://accuracytip.com"));
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
 
   // Invoke callback after webcontents is destroyed.
   DeleteContents();
   std::move(callback).Run(AccuracyTipStatus::kShowAccuracyTip);
+
+  tester()->ExpectTotalCount("Privacy.AccuracyTip.PageStatus", 0);
 }
 
 }  // namespace accuracy_tips
