@@ -255,6 +255,7 @@ void SyncConsentScreen::OnContinue(
 
 void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
   DCHECK(features::IsSyncConsentOptionalEnabled());
+  DCHECK(features::IsSyncSettingsCategorizationEnabled());
   // For historical reasons, Chrome OS always has a "sync-consented" primary
   // account in IdentityManager and always has browser sync "enabled". If the
   // user disables the browser sync toggle we disable all browser data types,
@@ -267,9 +268,7 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (sync_service) {
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
-    // TODO(crbug.com/1229582) Revisit this logic.
-    if (features::IsSplitSettingsSyncEnabled())
-      sync_settings->SetOsSyncFeatureEnabled(enable_sync);
+    sync_settings->SetOsSyncFeatureEnabled(enable_sync);
     if (!enable_sync) {
       syncer::UserSelectableTypeSet empty_set;
       sync_settings->SetSelectedTypes(/*sync_everything=*/false, empty_set);

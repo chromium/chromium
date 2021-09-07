@@ -364,7 +364,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
 class SyncConsentRecorderTest : public SyncConsentTest {
  public:
   SyncConsentRecorderTest() {
-    features_.InitAndDisableFeature(features::kSyncConsentOptional);
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kSyncSettingsCategorization},
+        /*disabled_features=*/{features::kSyncConsentOptional});
   }
   ~SyncConsentRecorderTest() override = default;
 
@@ -554,16 +556,13 @@ IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, MAYBE_DefaultFlow) {
   EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
               testing::UnorderedElementsAreArray(expected_ids));
 
-  // OS sync should be on if SplitSettingsSync is enabled.
-  // TODO(https://crbug.com/1229582): Migrate to SyncSettingsCategorization and
-  // create an additional test suite when SyncSettingsCategorization enabled.
-  EXPECT_EQ(prefs->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled),
-            features::IsSplitSettingsSyncEnabled());
+  // OS sync should be on.
+  syncer::SyncUserSettings* settings = GetSyncUserSettings();
+  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
 
   // Browser sync is on.
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
   EXPECT_TRUE(settings->IsSyncRequested());
   EXPECT_TRUE(settings->IsFirstSetupComplete());
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
@@ -680,12 +679,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, SkippedNotBrandedBuild) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
 
-  // OS sync should be on if SplitSettingsSync is enabled.
-  // TODO(https://crbug.com/1229582): Migrate to SyncSettingsCategorization and
-  // create an additional test suite when SyncSettingsCategorization enabled.
+  // OS sync should be on.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  if (features::IsSplitSettingsSyncEnabled())
-    EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
+  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
 
   // Browser sync is on.
   EXPECT_TRUE(settings->IsSyncRequested());
@@ -708,13 +704,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, SkippedSyncDisabledByPolicy) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
 
-  // OS sync should be off if SplitSettingsSync is enabled. The function DCHECKs
-  // if SplitSettingsSync is disabled.
-  // TODO(https://crbug.com/1229582): Migrate to SyncSettingsCategorization and
-  // create an additional test suite when SyncSettingsCategorization enabled.
+  // OS sync should be off.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  if (features::IsSplitSettingsSyncEnabled())
-    EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
+  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
 
   // Browser sync is off.
   EXPECT_FALSE(settings->IsSyncRequested());
@@ -763,8 +755,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentActiveDirectoryTest, LoginDoesNotStartSync) {
 
   // OS sync is off.
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  if (features::IsSplitSettingsSyncEnabled())
-    EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
+  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
 
   // Browser sync is off.
   EXPECT_FALSE(settings->IsSyncRequested());

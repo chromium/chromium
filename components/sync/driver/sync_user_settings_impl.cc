@@ -162,9 +162,7 @@ bool SyncUserSettingsImpl::IsOsSyncFeatureEnabled() const {
 }
 
 void SyncUserSettingsImpl::SetOsSyncFeatureEnabled(bool enabled) {
-  // TODO(https://crbug.com/1227417): Remove SplitSettingsSync from this check.
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled() ||
-         chromeos::features::IsSyncSettingsCategorizationEnabled());
+  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   // OsSyncFeature can't be disabled unless SyncConsentOptional is on.
   DCHECK(enabled || chromeos::features::IsSyncConsentOptionalEnabled());
   prefs_->SetOsSyncFeatureEnabled(enabled);
