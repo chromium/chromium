@@ -799,7 +799,7 @@ void TtsControllerImpl::SetCurrentUtterance(
     std::unique_ptr<TtsUtterance> utterance) {
   current_utterance_ = std::move(utterance);
   Observe(current_utterance_
-              ? AsUtteranceImpl(current_utterance_.get())->web_contents()
+              ? AsUtteranceImpl(current_utterance_.get())->GetWebContents()
               : nullptr);
 }
 
@@ -818,7 +818,7 @@ void TtsControllerImpl::StopCurrentUtteranceAndRemoveUtterancesMatching(
   // it, we won't get the corresponding WebContentsDestroyed()).
   auto eraser = [wc](const std::unique_ptr<TtsUtterance>& utterance) {
     TtsUtteranceImpl* utterance_impl = AsUtteranceImpl(utterance.get());
-    if (utterance_impl->web_contents() == wc) {
+    if (utterance_impl->GetWebContents() == wc) {
       utterance_impl->Finish();
       return true;
     }
@@ -839,13 +839,14 @@ bool TtsControllerImpl::ShouldSpeakUtterance(TtsUtterance* utterance) {
 
   // If the WebContents that created the utterance has been destroyed, don't
   // speak it.
-  if (!utterance_impl->web_contents())
+  if (!utterance_impl->GetWebContents())
     return false;
 
   // Allow speaking if either the WebContents is visible, or the WebContents
   // isn't required to be visible before speaking.
   return !stop_speaking_when_hidden_ ||
-         utterance_impl->web_contents()->GetVisibility() != Visibility::HIDDEN;
+         utterance_impl->GetWebContents()->GetVisibility() !=
+             Visibility::HIDDEN;
 }
 
 //
