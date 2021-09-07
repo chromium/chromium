@@ -27,42 +27,53 @@ constexpr std::array<const char*, 6> kDictionaryPoliciesToMerge{
 }  // namespace
 
 // static
-bool PolicyMerger::ConflictCanBeMerged(
-    const PolicyMap::Entry& conflict,
-    const PolicyMap::Entry& policy,
+bool PolicyMerger::EntriesCanBeMerged(
+    const PolicyMap::Entry& entry_1,
+    const PolicyMap::Entry& entry_2,
     const bool is_user_cloud_merging_enabled) {
-  if (conflict.ignored() ||
-      conflict.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
-      conflict.level != policy.level)
+  if (entry_1.ignored() || entry_2.ignored() ||
+      entry_1.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
+      entry_2.source == POLICY_SOURCE_ENTERPRISE_DEFAULT ||
+      entry_1.level != entry_2.level)
     return false;
 
   // If the policies have matching scope and are non-user, they can be merged.
-  if (conflict.scope == policy.scope && conflict.scope != POLICY_SCOPE_USER)
+  if (entry_1.scope == entry_2.scope && entry_1.scope != POLICY_SCOPE_USER)
     return true;
+
+  // Merging of user-level GPO policies is not permitted to prevent unexpected
+  // behavior. If such merging is desired, it will be implemented in a similar
+  // way as user cloud merging.
+  if ((entry_1.scope == POLICY_SCOPE_USER &&
+       entry_1.source == POLICY_SOURCE_PLATFORM) ||
+      (entry_2.scope == POLICY_SCOPE_USER &&
+       entry_2.source == POLICY_SOURCE_PLATFORM))
+    return false;
 
   // On desktop, the user cloud policy potentially comes from a different
   // domain than e.g. GPO policy or machine-level cloud policy. Merging a user
   // cloud policy with policies from other sources is only permitted if both of
   // the following conditions are met:
-  //   1. The CloudUserPolicyMerge is set to True.
+  //   1. The CloudUserPolicyMerge metapolicy is set to True.
   //   2. The user is affiliated with the machine-level cloud policy provider.
-  const bool is_conflict_user_cloud_policy =
-      conflict.scope == POLICY_SCOPE_USER &&
-      conflict.source == POLICY_SOURCE_CLOUD;
+  const bool has_user_cloud_policy = (entry_1.scope == POLICY_SCOPE_USER &&
+                                      entry_1.source == POLICY_SOURCE_CLOUD) ||
+                                     (entry_2.scope == POLICY_SCOPE_USER &&
+                                      entry_2.source == POLICY_SOURCE_CLOUD);
+  const bool is_user_cloud_condition_satisfied =
+      !has_user_cloud_policy || is_user_cloud_merging_enabled;
 
-  // Merging of user-level GPO policies is not permitted to prevent unexpected
-  // behavior. If such merging is desired, it will be implemented in a similar
-  // way as user cloud merging.
-  const bool is_conflict_user_platform_policy =
-      conflict.scope == POLICY_SCOPE_USER &&
-      conflict.source == POLICY_SOURCE_PLATFORM;
-
+  // For the scope condition to be satisfied, either the scopes of the two
+  // policies should match or the policy override should be enabled. The scope
+  // check override is only enabled when a user cloud policy is present and user
+  // cloud merging is enabled -- this allows user cloud policies to merge with
+  // machine-level policies.
   const bool is_scope_overriden =
-      is_conflict_user_cloud_policy && is_user_cloud_merging_enabled;
+      has_user_cloud_policy && is_user_cloud_merging_enabled;
+  const bool is_scope_condition_satisfied =
+      entry_1.scope == entry_2.scope || is_scope_overriden;
 
-  return !is_conflict_user_platform_policy &&
-         (!is_conflict_user_cloud_policy || is_user_cloud_merging_enabled) &&
-         (conflict.scope == policy.scope || is_scope_overriden);
+  return is_user_cloud_condition_satisfied && is_scope_condition_satisfied;
 }
 
 PolicyMerger::PolicyMerger() = default;
@@ -131,8 +142,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
   // Concatenates the values from accepted conflicting sources to the policy
   // value while avoiding duplicates.
   for (const auto& it : policy->conflicts) {
-    if (!PolicyMerger::ConflictCanBeMerged(it.entry(), *policy,
-                                           AllowUserCloudPolicyMerging())) {
+    if (!PolicyMerger::EntriesCanBeMerged(it.entry(), *policy,
+                                          AllowUserCloudPolicyMerging())) {
       continue;
     }
 
@@ -235,7 +246,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
 
   // Merges all the keys from the policies from different sources.
   for (const auto* it : policies) {
-    if (it != policy && !PolicyMerger::ConflictCanBeMerged(
+    if (it != policy && !PolicyMerger::EntriesCanBeMerged(
                             *it, *policy, AllowUserCloudPolicyMerging()))
       continue;
 

@@ -21,11 +21,11 @@ class POLICY_EXPORT PolicyMerger {
  public:
   PolicyMerger();
 
-  // Determines if a policy value is eligible for merging depending on several
-  // factors including its scope, source, and level.
-  static bool ConflictCanBeMerged(const PolicyMap::Entry& conflict,
-                                  const PolicyMap::Entry& policy,
-                                  const bool is_user_cloud_merging_enabled);
+  // Determines if two policy entries are eligible for merging with each other
+  // depending on several factors including its scope, source, and level.
+  static bool EntriesCanBeMerged(const PolicyMap::Entry& entry_1,
+                                 const PolicyMap::Entry& entry_2,
+                                 const bool is_user_cloud_merging_enabled);
 
   virtual ~PolicyMerger();
   virtual void Merge(PolicyMap* policies) const = 0;

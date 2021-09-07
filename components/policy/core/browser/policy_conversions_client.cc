@@ -171,7 +171,7 @@ Value PolicyConversionsClient::GetPolicyValue(
   if (policy.source == POLICY_SOURCE_MERGED) {
     bool policy_has_unmerged_source = false;
     for (const auto& conflict : policy.conflicts) {
-      if (PolicyMerger::ConflictCanBeMerged(
+      if (PolicyMerger::EntriesCanBeMerged(
               conflict.entry(), policy,
               /*is_user_cloud_merging_enabled=*/false))
         continue;
