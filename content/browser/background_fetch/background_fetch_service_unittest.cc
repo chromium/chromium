@@ -1113,12 +1113,8 @@ TEST_F(BackgroundFetchServiceTest, GetDeveloperIds) {
     std::vector<std::string> developer_ids;
 
     GetDeveloperIds(service_worker_registration_id, &error, &developer_ids);
-    ASSERT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
-
-    // TODO(crbug.com/850076): The Storage Worker Database access is not
-    // checking the origin. In a non-test environment this won't happen since a
-    // ServiceWorker registration ID is tied to the origin.
-    ASSERT_EQ(developer_ids.size(), 2u);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::STORAGE_ERROR);
+    EXPECT_TRUE(developer_ids.empty());
   }
 
   // Verify that using the wrong service worker id does not return developer ids
@@ -1132,9 +1128,8 @@ TEST_F(BackgroundFetchServiceTest, GetDeveloperIds) {
 
     GetDeveloperIds(bogus_service_worker_registration_id, &error,
                     &developer_ids);
-    ASSERT_EQ(error, blink::mojom::BackgroundFetchError::NONE);
-
-    ASSERT_EQ(developer_ids.size(), 0u);
+    EXPECT_EQ(error, blink::mojom::BackgroundFetchError::STORAGE_ERROR);
+    EXPECT_TRUE(developer_ids.empty());
   }
 }
 
