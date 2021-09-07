@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -19,20 +21,6 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace {
-
-constexpr char kEchoSystemExtensionManifest[] =
-    R"({
-          "name": "Sample System Web Extension",
-          "short_name": "Sample SWX",
-          "companion_web_app_url": "https://example.com",
-          "service_worker_url": "/sw.js",
-          "id": "01020304",
-          "type": "echo"
-    })";
-
-}  // namespace
 
 SystemExtensionsInstallManager::SystemExtensionsInstallManager() {
   InstallFromCommandLineIfNecessary();
@@ -58,8 +46,15 @@ const SystemExtension* SystemExtensionsInstallManager::GetSystemExtensionById(
 }
 
 void SystemExtensionsInstallManager::InstallFromCommandLineIfNecessary() {
-  sandboxed_unpacker_.GetSystemExtensionFromString(
-      kEchoSystemExtensionManifest,
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(chromeos::switches::kInstallSystemExtension)) {
+    return;
+  }
+  base::FilePath system_extension_dir = command_line->GetSwitchValuePath(
+      chromeos::switches::kInstallSystemExtension);
+
+  sandboxed_unpacker_.GetSystemExtensionFromDir(
+      system_extension_dir,
       base::BindOnce(
           &SystemExtensionsInstallManager::OnGetSystemExtensionFromDir,
           weak_ptr_factory_.GetWeakPtr()));

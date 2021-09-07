@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
@@ -24,11 +27,6 @@ constexpr char kSystemExtensionsProfileDirectory[] = "SystemExtensions";
 
 constexpr SystemExtensionId kTestSystemExtensionId = {1, 2, 3, 4};
 
-constexpr char kTestSystemExtensionIndex[] = R"(
-<title>SystemExtension</title>
-<h1>I'm a System Extension!</h1>
-)";
-
 constexpr char kTestSystemExtensionIndexURL[] =
     "chrome-untrusted://system-extension-echo-01020304/html/index.html";
 
@@ -37,6 +35,12 @@ constexpr char kTestSystemExtensionWrongURL[] =
 
 constexpr char kTestSystemExtensionEmptyPathURL[] =
     "chrome-untrusted://system-extension-echo-01020304/";
+
+base::FilePath GetBasicSystemExtensionDir() {
+  base::FilePath test_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
+  return test_dir.Append("system_extensions").Append("basic_system_extension");
+}
 
 // Creates fake resources in the directory where the System Extension would
 // be installed.
@@ -48,15 +52,13 @@ void CreateFakeSystemExtensionResources(
       profile_path.Append(kSystemExtensionsProfileDirectory);
   ASSERT_TRUE(base::CreateDirectory(system_extensions_dir));
 
+  ASSERT_TRUE(base::CopyDirectory(GetBasicSystemExtensionDir(),
+                                  system_extensions_dir, true));
+
   base::FilePath system_extension_dir = system_extensions_dir.Append(
       SystemExtension::IdToString(kTestSystemExtensionId));
-  ASSERT_TRUE(base::CreateDirectory(system_extension_dir));
-
-  base::FilePath html_resources_dir = system_extension_dir.Append("html");
-  ASSERT_TRUE(base::CreateDirectory(html_resources_dir));
-
-  base::FilePath index_html = html_resources_dir.Append("index.html");
-  ASSERT_TRUE(base::WriteFile(index_html, kTestSystemExtensionIndex));
+  ASSERT_TRUE(base::Move(system_extensions_dir.Append("basic_system_extension"),
+                         system_extension_dir));
 }
 
 class SystemExtensionsBrowserTest : public InProcessBrowserTest {
@@ -66,6 +68,12 @@ class SystemExtensionsBrowserTest : public InProcessBrowserTest {
   }
 
   ~SystemExtensionsBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchPath(chromeos::switches::kInstallSystemExtension,
+                                   GetBasicSystemExtensionDir());
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;

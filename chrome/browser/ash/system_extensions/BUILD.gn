@@ -34,6 +34,7 @@ source_set("system_extensions") {
   ]
   deps = [
     ":system_extensions_group",
+    "//ash/constants",
     "//base",
     "//chrome/browser/chromeos",
     "//chrome/browser/profiles",

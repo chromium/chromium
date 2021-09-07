@@ -601,6 +601,10 @@ const char kIgnoreUserProfileMappingForTests[] =
 const char kInstallLogFastUploadForTests[] =
     "install-log-fast-upload-for-tests";
 
+// When specified, Chrome OS will install a System Extension from the specified
+// directory. For now, only one extension can be specified.
+const char kInstallSystemExtension[] = "install-system-extension";
+
 // If set, the Chrome settings will not expose the option to enable crostini
 // unless the enable-experimental-kernel-vm-support flag is set in
 // chrome://flags
