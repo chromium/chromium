@@ -94,6 +94,7 @@
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
@@ -259,6 +260,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
+  client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
+      web_contents);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
   DataReductionProxyTabHelper::CreateForWebContents(web_contents);

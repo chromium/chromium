@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "url/origin.h"
 
 class GURL;
@@ -62,6 +63,14 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
 
   // Clears the additional hints set by |SetAdditionalHints|.
   virtual void ClearAdditionalClientHints() = 0;
+
+  // Used to track the visible viewport size. This value is only used with
+  // prefetch requests, because they cannot get the viewport size directly
+  // unlike other requests. The embedder is responsible for calling this when
+  // the size of the visible viewport changes.
+  virtual void SetMostRecentMainFrameViewportSize(
+      const gfx::Size& viewport_size) = 0;
+  virtual gfx::Size GetMostRecentMainFrameViewportSize() = 0;
 };
 
 }  // namespace content

@@ -6,6 +6,8 @@ source_set("browser") {
   sources = [
     "client_hints.cc",
     "client_hints.h",
+    "client_hints_web_contents_observer.cc",
+    "client_hints_web_contents_observer.h",
   ]
   deps = [
     "//base",

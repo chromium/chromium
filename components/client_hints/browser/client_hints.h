@@ -11,6 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "ui/gfx/geometry/size_f.h"
 
 class GURL;
 class HostContentSettingsMap;
@@ -47,12 +48,21 @@ class ClientHints : public KeyedService,
 
   void ClearAdditionalClientHints() override;
 
+  void SetMostRecentMainFrameViewportSize(
+      const gfx::Size& viewport_size) override;
+  gfx::Size GetMostRecentMainFrameViewportSize() override;
+
  private:
   content::BrowserContext* context_ = nullptr;
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
   HostContentSettingsMap* settings_map_ = nullptr;
   blink::UserAgentMetadata user_agent_metadata_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
+
+  // This stores the viewport size of the most recent visible main frame tree
+  // node. This value is only used when calculating the viewport width and
+  // height on prefetches. Other requests can get the viewport size directly.
+  gfx::Size viewport_size_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientHints);
 };

@@ -252,41 +252,61 @@ void AddDPRHeader(net::HttpRequestHeaders* headers,
                     device_scale_factor * zoom_factor);
 }
 
+gfx::Size GetVisibleViewportSize(FrameTreeNode* frame_tree_node,
+                                 ClientHintsControllerDelegate* delegate) {
+  // The |frame_tree_node| can be null when prefetching. When this happens we
+  // get the viewport size from the |ClientHints| KeyedService which is updated
+  // by the |ClientHintsWebContentsObserver|.
+  if (!frame_tree_node) {
+    return delegate->GetMostRecentMainFrameViewportSize();
+  }
+  return frame_tree_node->current_frame_host()
+      ->GetRenderWidgetHost()
+      ->GetView()
+      ->GetVisibleViewportSize();
+}
+
 void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
                             BrowserContext* context,
-                            const GURL& url) {
+                            const GURL& url,
+                            FrameTreeNode* frame_tree_node,
+                            ClientHintsControllerDelegate* delegate) {
   DCHECK(headers);
   DCHECK(context);
-  // The default value on Android. See
-  // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/core/css/viewportAndroid.css.
+  DCHECK(frame_tree_node || delegate);
+  // The default viewport width on Android. See:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/css/viewportAndroid.css
   double viewport_width = 980;
 
 #if !defined(OS_ANDROID)
-  double device_scale_factor = GetDeviceScaleFactor();
-  viewport_width = (display::Screen::GetScreen()
-                        ->GetPrimaryDisplay()
-                        .GetSizeInPixel()
-                        .width()) /
-                   GetZoomFactor(context, url) / device_scale_factor;
+  viewport_width = GetVisibleViewportSize(frame_tree_node, delegate).width() /
+                   GetZoomFactor(context, url) / GetDeviceScaleFactor();
 #endif  // !OS_ANDROID
+
   DCHECK_LT(0, viewport_width);
-  // TODO(yoav): Find out why this 0 check is needed...
-  if (viewport_width > 0) {
-    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth, viewport_width);
-  }
+  SetHeaderToInt(headers, WebClientHintsType::kViewportWidth, viewport_width);
 }
 
 void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
                              BrowserContext* context,
-                             const GURL& url) {
+                             const GURL& url,
+                             FrameTreeNode* frame_tree_node,
+                             ClientHintsControllerDelegate* delegate) {
   DCHECK(headers);
   DCHECK(context);
+  DCHECK(frame_tree_node || delegate);
 
-  double viewport_height = (display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .GetSizeInPixel()
-                                .height()) /
-                           GetZoomFactor(context, url) / GetDeviceScaleFactor();
+  // On Android, the viewport is scaled so the width is 980 and the height
+  // maintains the same ratio.
+  gfx::Size visible_viewport_size =
+      GetVisibleViewportSize(frame_tree_node, delegate);
+  double viewport_height =
+      visible_viewport_size.height() * (980.0 / visible_viewport_size.width());
+
+#if !defined(OS_ANDROID)
+  viewport_height = visible_viewport_size.height() /
+                    GetZoomFactor(context, url) / GetDeviceScaleFactor();
+#endif  // !OS_ANDROID
 
   DCHECK_LT(0, viewport_height);
 
@@ -659,11 +679,11 @@ void AddRequestClientHintsHeaders(
     AddDPRHeader(headers, context, url);
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth)) {
-    AddViewportWidthHeader(headers, context, url);
+    AddViewportWidthHeader(headers, context, url, frame_tree_node, delegate);
   }
   if (ShouldAddClientHint(
           data, network::mojom::WebClientHintsType::kViewportHeight)) {
-    AddViewportHeightHeader(headers, context, url);
+    AddViewportHeightHeader(headers, context, url, frame_tree_node, delegate);
   }
   network::NetworkQualityTracker* network_quality_tracker =
       delegate->GetNetworkQualityTracker();
