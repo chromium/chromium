@@ -93,6 +93,11 @@ const char kIosSettingsPromoAlreadySeen[] = "ios.settings.promo_already_seen";
 const char kIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
 
+// Preference that holds a boolean indicating whether the link previews are
+// enabled. Link previews display a live preview of the selected link after a
+// long press.
+const char kLinkPreviewEnabled[] = "ios.link_preview_enabled";
+
 // Preference that holds a boolean indicating whether the suggestions on the NTP
 // are enabled.
 const char kNTPContentSuggestionsEnabled[] =

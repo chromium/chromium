@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -14,12 +15,15 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/block_popups_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
+#import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -49,6 +53,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsBlockPopups = kItemTypeEnumZero,
   ItemTypeSettingsComposeEmail,
+  ItemTypeSettingsShowLinkPreview,
 };
 
 }  // namespace
@@ -61,8 +66,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* _blockPopupsDetailItem;
   TableViewDetailIconItem* _composeEmailDetailItem;
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
-  SettingsSwitchItem* _linkPreviewItem;
 }
+
+// PrefBackedBoolean for "Show Link Preview" setting state.
+@property(nonatomic, strong, readonly) PrefBackedBoolean* linkPreviewEnabled;
+
+// The item related to the switch for the "Show Link Preview" setting.
+@property(nonatomic, strong) SettingsSwitchItem* linkPreviewItem;
 
 // Helpers to create collection view items.
 - (id)blockPopupsItem;
@@ -89,6 +99,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              settingID:ContentSettingsType::POPUPS
                               inverted:YES];
     [_disablePopupsSetting setObserver:self];
+
+    _linkPreviewEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_browserState->GetPrefs()
+                   prefName:prefs::kLinkPreviewEnabled];
+    [_linkPreviewEnabled setObserver:self];
   }
   return self;
 }
@@ -217,14 +232,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _openedInAnotherWindowItem;
 }
 
-- (TableViewItem*)linkPreviewItem {
-  _linkPreviewItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSettingsBlockPopups];
-  _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
-  // TODO(crbug.com/1245823): set the swicher's initial status.
-  _linkPreviewItem.on = YES;
-  _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
+- (SettingsSwitchItem*)linkPreviewItem {
+  if (!_linkPreviewItem) {
+    _linkPreviewItem = [[SettingsSwitchItem alloc]
+        initWithType:ItemTypeSettingsShowLinkPreview];
+
+    _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
+    _linkPreviewItem.on = [self.linkPreviewEnabled value];
+    _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
+  }
   return _linkPreviewItem;
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  if (itemType == ItemTypeSettingsShowLinkPreview) {
+    SettingsSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    [switchCell.switchView addTarget:self
+                              action:@selector(showLinkPreviewSwitchToggled:)
+                    forControlEvents:UIControlEventValueChanged];
+  }
+  return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -267,19 +302,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  DCHECK_EQ(observableBoolean, _disablePopupsSetting);
+  if (observableBoolean == _disablePopupsSetting) {
+    NSString* subtitle = [_disablePopupsSetting value]
+                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    // Update the item.
+    _blockPopupsDetailItem.detailText = subtitle;
 
-  NSString* subtitle = [_disablePopupsSetting value]
-                           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  // Update the item.
-  _blockPopupsDetailItem.detailText = subtitle;
-
-  // Update the cell.
-  [self reconfigureCellsForItems:@[ _blockPopupsDetailItem ]];
+    // Update the cell.
+    [self reconfigureCellsForItems:@[ _blockPopupsDetailItem ]];
+  } else if (observableBoolean == self.linkPreviewEnabled) {
+    self.linkPreviewItem.on = [self.linkPreviewEnabled value];
+    [self reconfigureCellsForItems:@[ self.linkPreviewItem ]];
+  } else {
+    NOTREACHED();
+  }
 }
 
-#pragma mark Private
+#pragma mark - Switch Actions
+
+- (void)showLinkPreviewSwitchToggled:(UISwitch*)sender {
+  BOOL newSwitchValue = sender.isOn;
+  self.linkPreviewItem.on = newSwitchValue;
+  [self.linkPreviewEnabled setValue:newSwitchValue];
+}
+
+#pragma mark - Private
 
 // Called to reload data when another window has mailTo settings opened.
 - (void)mailToControllerChanged {
