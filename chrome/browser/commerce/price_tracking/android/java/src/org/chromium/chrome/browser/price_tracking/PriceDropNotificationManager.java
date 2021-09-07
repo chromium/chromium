@@ -88,7 +88,7 @@ public class PriceDropNotificationManager {
                 assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
                     : "Currently only turn off alert action uses this activity.";
                 priceDropNotificationManager.onNotificationActionClicked(
-                        actionId, destinationUrl, offerId);
+                        actionId, destinationUrl, offerId, /*recordMetrics=*/false);
                 // Finish immediately. Could be better to have a callback from shopping backend.
                 finish();
             });
@@ -171,7 +171,7 @@ public class PriceDropNotificationManager {
 
     /**
      * When user clicks the notification, they will be sent to the tab with price drop which
-     * triggered the notification.
+     * triggered the notification. Only Chime notification code path should use this.
      *
      * @param url of the tab which triggered the notification.
      */
@@ -187,10 +187,12 @@ public class PriceDropNotificationManager {
      * @param actionId the id used to identify certain action.
      * @param url of the tab which triggered the notification.
      * @param offerId the id of the offer associated with this notification.
+     * @param recordMetrics Whether to record metrics using {@link NotificationUmaTracker}. Only
+     *         Chime notification code path should set this to true.
      */
-    public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId) {
-        if (actionId.equals(ACTION_ID_VISIT_SITE)) {
-            // TODO(xingliu): Split uma tracker calls into separate functions.
+    public void onNotificationActionClicked(
+            String actionId, String url, @Nullable String offerId, boolean recordMetrics) {
+        if (actionId.equals(ACTION_ID_VISIT_SITE) && recordMetrics) {
             NotificationUmaTracker.getInstance().onNotificationActionClick(
                     NotificationUmaTracker.ActionType.PRICE_DROP_VISIT_SITE,
                     NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
@@ -205,11 +207,22 @@ public class PriceDropNotificationManager {
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
                             SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID),
                     (didSucceed) -> { assert didSucceed : "Failed to remove subscriptions."; });
-            NotificationUmaTracker.getInstance().onNotificationActionClick(
-                    NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
-                    NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
-                    NotificationIntentInterceptor.INVALID_CREATE_TIME);
+            if (recordMetrics) {
+                NotificationUmaTracker.getInstance().onNotificationActionClick(
+                        NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
+                        NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
+                        NotificationIntentInterceptor.INVALID_CREATE_TIME);
+            }
         }
+    }
+
+    /**
+     * @See {@link #onNotificationActionClicked(String, String, String, boolean)}.
+     */
+    @Deprecated
+    public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId) {
+        // TODO(xingliu): Change download stream callsite and remove this.
+        onNotificationActionClicked(actionId, url, offerId, /*recordMetrics=*/true);
     }
 
     /**

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.PendingIntent;
 import android.graphics.Bitmap;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.ActionTy
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.ActionData;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.NotificationData;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -104,6 +106,8 @@ public class PriceDropNotifierUnitTest {
     private NotificationManagerProxy mNotificationManagerProxy;
     @Mock
     private ChromeBrowserInitializer mChromeInitializer;
+    @Mock
+    private NotificationWrapper mNotificationWrapper;
 
     @Captor
     ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -119,6 +123,7 @@ public class PriceDropNotifierUnitTest {
         mPriceDropNotifier = new PriceDropNotifier(ContextUtils.getApplicationContext(),
                 mImageFetcher, mNotificationBuilder, mNotificationManagerProxy);
         ChromeBrowserInitializer.setForTesting(mChromeInitializer);
+        when(mNotificationBuilder.buildNotificationWrapper()).thenReturn(mNotificationWrapper);
     }
 
     @After

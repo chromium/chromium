@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -157,7 +158,9 @@ public class PriceDropNotifier {
                         actionIdToUmaActionType(action.actionId));
             }
         }
-        mNotificationManagerProxy.notify(mNotificationBuilder.buildNotificationWrapper());
+        NotificationWrapper notificationWrapper = mNotificationBuilder.buildNotificationWrapper();
+        mNotificationManagerProxy.notify(notificationWrapper);
+        mPriceDropNotificationManager.onNotificationPosted(notificationWrapper.getNotification());
     }
 
     private static @NotificationUmaTracker.ActionType int actionIdToUmaActionType(String actionId) {
