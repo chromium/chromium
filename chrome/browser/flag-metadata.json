@@ -2138,7 +2138,7 @@
   {
     "name": "enable-jxl",
     "owners": [ "deymo", "firsching", "lode" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enable-lacros-in-web-kiosk",
