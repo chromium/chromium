@@ -198,19 +198,6 @@
     'autoclick': {
       'filepath': 'ash/autoclick/',
     },
-    'autofill': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/autofill/|'\
-                  'chrome/browser/autofill/|'\
-                  'chrome/browser/ui/android/autofill/|'\
-                  'chrome/browser/ui/autofill/|'\
-                  'chrome/browser/ui/cocoa/autofill/|'\
-                  'chrome/browser/ui/views/autofill/|'\
-                  'chrome/renderer/autofill/|'\
-                  'chrome/test/data/autofill/|'\
-                  'components/autofill/|'\
-                  'components/autofill/browser/webdata/|'\
-                  'components/webdata/',
-    },
     'autofill_assistant': {
       'filepath': 'chrome/android/features/autofill_assistant/|'\
                   'chrome/browser/android/autofill_assistant/|'\
@@ -2180,8 +2167,6 @@
     'aura': ['sadrul@chromium.org'],
     'aura_compositor': ['jbauman+watch@chromium.org'],
     'autoclick': ['katie+watch@chromium.org'],
-    'autofill': ['ftirelo+autofillwatch@chromium.org',
-                 'tmartino+autofillwatch@chromium.org'],
     'autofill_assistant': ['autofill_assistant+watch@google.com'],
     'autofill_payments': ['armalhotra+autofillwatch@google.com',
                           'jsaul+autofillwatch@google.com',
