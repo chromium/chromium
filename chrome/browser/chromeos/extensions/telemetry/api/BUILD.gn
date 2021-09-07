@@ -14,6 +14,8 @@ source_set("api") {
   sources = [
     "diagnostics_api.cc",
     "diagnostics_api.h",
+    "diagnostics_api_converters.cc",
+    "diagnostics_api_converters.h",
     "telemetry_api.cc",
     "telemetry_api.h",
   ]
@@ -62,5 +64,17 @@ source_set("browser_tests") {
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//extensions:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "diagnostics_api_converters_unittest.cc" ]
+
+  deps = [
+    ":api",
+    "//ash/webui/telemetry_extension_ui/mojom",
+    "//chrome/common/chromeos/extensions/api",
+    "//chrome/test:test_support",
   ]
 }

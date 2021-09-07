@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 
 namespace chromeos {
@@ -22,40 +23,6 @@ DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
 // OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
-
-namespace {
-
-bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
-                        api::os_diagnostics::RoutineType* out) {
-  DCHECK(out);
-  switch (in) {
-    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryCapacity:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_CAPACITY;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryCharge:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_CHARGE;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryDischarge:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_DISCHARGE;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kBatteryHealth:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_BATTERY_HEALTH;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kCpuCache:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_CACHE;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kCpuStress:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_CPU_STRESS;
-      return true;
-    case ash::health::mojom::DiagnosticRoutineEnum::kMemory:
-      *out = api::os_diagnostics::RoutineType::ROUTINE_TYPE_MEMORY;
-      return true;
-    default:
-      return false;
-  }
-}
-
-}  // namespace
 
 OsDiagnosticsGetAvailableRoutinesFunction::
     OsDiagnosticsGetAvailableRoutinesFunction() = default;
@@ -77,7 +44,7 @@ void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
   api::os_diagnostics::GetAvailableRoutinesResponse result;
   for (const auto in : routines) {
     api::os_diagnostics::RoutineType out;
-    if (ConvertMojoRoutine(in, &out)) {
+    if (converters::ConvertMojoRoutine(in, &out)) {
       result.routines.push_back(out);
     }
   }
@@ -87,41 +54,6 @@ void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
 }
 
 // DiagnosticsApiRunRoutineFunctionBase ----------------------------------------
-
-namespace {
-
-api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
-    ash::health::mojom::DiagnosticRoutineStatusEnum status) {
-  namespace health = ::ash::health;
-  switch (status) {
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kReady:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_READY;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kRunning:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_RUNNING;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kWaiting:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_WAITING;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kPassed:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_PASSED;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kFailed:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_FAILED;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kError:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_ERROR;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kCancelled:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_CANCELLED;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kFailedToStart:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_FAILED_TO_START;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kRemoved:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_REMOVED;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kCancelling:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_CANCELLING;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kUnsupported:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_UNSUPPORTED;
-    case ash::health::mojom::DiagnosticRoutineStatusEnum::kNotRun:
-      return api::os_diagnostics::RoutineStatus::ROUTINE_STATUS_NOT_RUN;
-  }
-}
-
-}  // namespace
 
 DiagnosticsApiRunRoutineFunctionBase::DiagnosticsApiRunRoutineFunctionBase() =
     default;
@@ -139,7 +71,7 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
 
   api::os_diagnostics::RunRoutineResponse result;
   result.id = ptr->id;
-  result.status = ConvertRoutineStatus(ptr->status);
+  result.status = converters::ConvertRoutineStatus(ptr->status);
   Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
