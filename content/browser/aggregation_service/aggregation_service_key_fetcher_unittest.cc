@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,12 +70,8 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
 };
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeys_Succeed) {
-  base::Time now = base::Time::Now();
-
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                         /*not_before_time=*/now - base::TimeDelta::FromDays(1),
-                         /*not_after_time=*/now + base::TimeDelta::FromDays(1));
+  PublicKey expected_key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
   PublicKeysForOrigin origin_keys(origin, {expected_key});
 
   SetPublicKeys(origin_keys);
@@ -85,12 +80,8 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeys_Succeed) {
 
 TEST_F(AggregationServiceKeyFetcherTest,
        GetPublicKeysUntrustworthyOrigin_Failed) {
-  base::Time now = base::Time::Now();
-
   url::Origin origin = url::Origin::Create(GURL("http://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                /*not_before_time=*/now - base::TimeDelta::FromDays(1),
-                /*not_after_time=*/now + base::TimeDelta::FromDays(1));
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
   PublicKeysForOrigin origin_keys(origin, {key});
 
   SetPublicKeys(origin_keys);
@@ -101,12 +92,8 @@ TEST_F(AggregationServiceKeyFetcherTest,
 }
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
-  base::Time now = base::Time::Now();
-
   url::Origin origin = url::Origin::Create(GURL("about:blank"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                /*not_before_time=*/now - base::TimeDelta::FromDays(1),
-                /*not_after_time=*/now + base::TimeDelta::FromDays(1));
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
   PublicKeysForOrigin origin_keys(origin, {key});
 
   SetPublicKeys(origin_keys);
@@ -118,46 +105,14 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
 
 TEST_F(AggregationServiceKeyFetcherTest,
        GetPublicKeysWithNoKeysForOrigin_Failed) {
-  base::Time now = base::Time::Now();
-
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                /*not_before_time=*/now - base::TimeDelta::FromDays(1),
-                /*not_after_time=*/now + base::TimeDelta::FromDays(1));
+  PublicKey key(/*id=*/"abcd", /*key=*/kABCD1234AsBytes);
   PublicKeysForOrigin origin_keys(origin, {key});
 
   SetPublicKeys(origin_keys);
 
   url::Origin other_origin = url::Origin::Create(GURL("https://b.com"));
   ExpectKeyFetchFailure(other_origin,
-                        AggregationServiceKeyFetcher::PublicKeyFetchStatus::
-                            kPublicKeyFetchFailed);
-}
-
-TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysInvalidTime_Failed) {
-  base::Time now = base::Time::Now();
-
-  url::Origin origin_a = url::Origin::Create(GURL("https://a.com"));
-  // not_before_time later than now.
-  PublicKey key_a(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                  /*not_before_time=*/now + base::TimeDelta::FromDays(1),
-                  /*not_after_time=*/now + base::TimeDelta::FromDays(2));
-  PublicKeysForOrigin keys_a(origin_a, {key_a});
-
-  url::Origin origin_b = url::Origin::Create(GURL("https://b.com"));
-  // not_after_time earlier than now.
-  PublicKey key_b(/*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                  /*not_before_time=*/now - base::TimeDelta::FromDays(2),
-                  /*not_after_time=*/now - base::TimeDelta::FromDays(1));
-  PublicKeysForOrigin keys_b(origin_b, {key_b});
-
-  SetPublicKeys(keys_a);
-  ExpectKeyFetchFailure(origin_a,
-                        AggregationServiceKeyFetcher::PublicKeyFetchStatus::
-                            kPublicKeyFetchFailed);
-
-  SetPublicKeys(keys_b);
-  ExpectKeyFetchFailure(origin_b,
                         AggregationServiceKeyFetcher::PublicKeyFetchStatus::
                             kPublicKeyFetchFailed);
 }

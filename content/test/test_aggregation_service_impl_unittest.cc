@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +31,11 @@ class TestAggregationServiceImplTest : public testing::Test {
 TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
   std::string json_string = R"(
         {
-            "1.0" : [
+            "version" : "v1",
+            "keys" : [
                 {
                     "id" : "abcd",
-                    "key" : "ABCD1234",
-                    "not_before": "1623000000000",
-                    "not_after" : "1624000000000"
+                    "key" : "ABCD1234"
                 }
             ]
         }
@@ -54,10 +52,7 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
   impl_->GetPublicKeys(
       origin, base::BindLambdaForTesting([&](PublicKeysForOrigin keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
-            {content::PublicKey(
-                /*id=*/"abcd", /*key=*/kABCD1234AsBytes,
-                /*not_before_time=*/base::Time::FromJavaTime(1623000000000),
-                /*not_after_time=*/base::Time::FromJavaTime(1624000000000))},
+            {content::PublicKey(/*id=*/"abcd", /*key=*/kABCD1234AsBytes)},
             keys.keys));
         run_loop.Quit();
       }));

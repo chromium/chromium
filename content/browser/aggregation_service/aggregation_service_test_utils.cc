@@ -7,7 +7,6 @@
 #include <tuple>
 
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 
 namespace content {
@@ -17,8 +16,7 @@ namespace aggregation_service {
 testing::AssertionResult PublicKeysEqual(const std::vector<PublicKey>& expected,
                                          const std::vector<PublicKey>& actual) {
   const auto tie = [](const PublicKey& key) {
-    return std::make_tuple(key.id(), key.key(), key.not_before_time(),
-                           key.not_after_time());
+    return std::make_tuple(key.id, key.key);
   };
 
   if (expected.size() != actual.size()) {

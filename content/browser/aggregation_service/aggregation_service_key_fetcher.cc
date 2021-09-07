@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/rand_util.h"
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -52,18 +51,9 @@ void AggregationServiceKeyFetcher::OnPublicKeysReceivedFromStorage(
   // Each report should randomly select a key. This ensures that the set of
   // reports a client sends are not a subset of the reports identified by any
   // one key.
-  PublicKey& random_key =
-      keys_for_origin.keys.at(base::RandGenerator(keys_for_origin.keys.size()));
-
-  if (!random_key.IsValidAtTime(base::Time::Now())) {
-    // TODO(crbug.com/1217823): Fetch public keys from the network.
-
-    std::move(callback).Run(absl::nullopt,
-                            PublicKeyFetchStatus::kPublicKeyFetchFailed);
-    return;
-  }
-
-  std::move(callback).Run(std::move(random_key), PublicKeyFetchStatus::kOk);
+  uint64_t key_index = base::RandGenerator(keys_for_origin.keys.size());
+  std::move(callback).Run(std::move(keys_for_origin.keys[key_index]),
+                          PublicKeyFetchStatus::kOk);
 }
 
 }  // namespace content

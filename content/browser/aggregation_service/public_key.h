@@ -11,42 +11,24 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
 namespace content {
 
-// Class that contains all the data of a public key.
-class CONTENT_EXPORT PublicKey {
+// Contains all the data of a public key.
+struct CONTENT_EXPORT PublicKey {
  public:
-  PublicKey(std::string id,
-            std::vector<uint8_t> key,
-            base::Time not_before_time,
-            base::Time not_after_time);
+  PublicKey(std::string id, std::vector<uint8_t> key);
   PublicKey(const PublicKey& other);
   PublicKey& operator=(const PublicKey& other);
   ~PublicKey();
 
-  const std::string& id() const { return id_; }
-  const std::vector<uint8_t>& key() const { return key_; }
-  const base::Time& not_before_time() const { return not_before_time_; }
-  const base::Time& not_after_time() const { return not_after_time_; }
-
-  bool IsValidAtTime(base::Time time);
-
- private:
   // String identifying the key, controlled by the helper server.
-  std::string id_;
+  std::string id;
 
   // The key itself.
-  std::vector<uint8_t> key_;
-
-  // The first time the key is valid.
-  base::Time not_before_time_;
-
-  // The time the key expires.
-  base::Time not_after_time_;
+  std::vector<uint8_t> key;
 };
 
 struct CONTENT_EXPORT PublicKeysForOrigin {

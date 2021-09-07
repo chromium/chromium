@@ -18,10 +18,13 @@ class CONTENT_EXPORT AggregationServiceKeyStorage {
   virtual ~AggregationServiceKeyStorage() = default;
 
   // Returns the public keys for `origin`.
+  // TODO(crbug.com/1228792): Update comment that the returned keys should be
+  // currently valid and therefore shouldn't be used outside of one operation.
   virtual PublicKeysForOrigin GetPublicKeys(
       const url::Origin& origin) const = 0;
 
   // Sets the public keys for `origin`.
+  // TODO(crbug.com/1228792): Add fetch_time and expiry_time as parameters.
   virtual void SetPublicKeys(const PublicKeysForOrigin& keys) = 0;
 
   // Clears the stored public keys for `origin`.

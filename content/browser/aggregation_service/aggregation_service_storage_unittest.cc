@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,12 +26,8 @@ class AggregationServiceStorageTest : public testing::Test {
 
 TEST_F(AggregationServiceStorageTest, GetSetPublicKeys) {
   std::vector<PublicKey> expected_keys{
-      PublicKey("abcd", kABCD1234AsBytes,
-                base::Time::FromJavaTime(1623000000000),
-                base::Time::FromJavaTime(1624000000000)),
-      PublicKey("bcde", kEFGH5678AsBytes,
-                base::Time::FromJavaTime(1624000000000),
-                base::Time::FromJavaTime(1625000000000)),
+      PublicKey("abcd", kABCD1234AsBytes),
+      PublicKey("bcde", kEFGH5678AsBytes),
   };
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
