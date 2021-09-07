@@ -2867,10 +2867,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/credblob-supported.https.html
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-large-blob-not-supported.https.html [ Crash ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-extensions.https.html [ Crash Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-grid/alignment/grid-content-alignment-overflow-002.html [ Failure ]
-crbug.com/626703 external/wpt/webtransport/idlharness.any.worker.html [ Failure Skip Timeout ]
-crbug.com/626703 external/wpt/webtransport/idlharness.any.serviceworker.html [ Failure ]
-crbug.com/626703 external/wpt/webtransport/idlharness.any.html [ Failure ]
-crbug.com/626703 external/wpt/webtransport/idlharness.any.sharedworker.html [ Failure ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/inert/inert-retargeting-iframe.tentative.html [ Failure Timeout ]
@@ -6068,6 +6064,7 @@ crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
 
 # WebTransport tests should eventually run when the WebTransport WPT server is added.
 crbug.com/1201569 external/wpt/webtransport/* [ Skip ]
+crbug.com/1201569 external/wpt/webtransport/idlharness.any.html [ Pass ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 

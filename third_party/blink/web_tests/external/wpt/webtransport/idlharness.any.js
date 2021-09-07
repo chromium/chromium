@@ -16,5 +16,9 @@ idl_test(
       // ReceiveStream
     });
     self.webTransport = new WebTransport("https://example.com/");
+    // `ready` and `closed` promises will be rejected due to connection error.
+    // Catches them to avoid unhandled rejections.
+    self.webTransport.ready.catch(() => {});
+    self.webTransport.closed.catch(() => {});
   }
 );

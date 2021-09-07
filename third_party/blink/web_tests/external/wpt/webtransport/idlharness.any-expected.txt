@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 69 tests; 61 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 57 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS WebTransport includes UnidirectionalStreamsTransport: member names are unique
@@ -51,16 +51,15 @@ PASS SendStream interface object name
 PASS SendStream interface: existence and properties of interface prototype object
 PASS SendStream interface: existence and properties of interface prototype object's "constructor" property
 PASS SendStream interface: existence and properties of interface prototype object's @@unscopables property
-PASS SendStream interface: attribute writingAborted
-PASS SendStream interface: operation abortWriting(optional StreamAbortInfo)
+FAIL SendStream interface: attribute remoteCanceled assert_true: The prototype object must have a property "remoteCanceled" expected true got false
+FAIL SendStream interface: operation reset(optional StreamAbortInfo) assert_own_property: interface prototype object missing non-static operation expected property "reset" missing
 PASS ReceiveStream interface: existence and properties of interface object
 PASS ReceiveStream interface object length
 PASS ReceiveStream interface object name
 PASS ReceiveStream interface: existence and properties of interface prototype object
 PASS ReceiveStream interface: existence and properties of interface prototype object's "constructor" property
 PASS ReceiveStream interface: existence and properties of interface prototype object's @@unscopables property
-PASS ReceiveStream interface: attribute readingAborted
-PASS ReceiveStream interface: operation abortReading(optional StreamAbortInfo)
+FAIL ReceiveStream interface: attribute remoteReset assert_true: The prototype object must have a property "remoteReset" expected true got false
 PASS BidirectionalStream interface: existence and properties of interface object
 PASS BidirectionalStream interface object length
 PASS BidirectionalStream interface object name
