@@ -127,10 +127,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // Set DidCommit*Params history_list_was_cleared flag to |history_cleared|.
   void set_history_list_was_cleared(bool history_cleared);
 
-  // Manually force the value of did_create_new_entry flag in DidCommit*Params
-  // to |did_create_new_entry|.
-  void set_did_create_new_entry(bool did_create_new_entry);
-
   // Manually force the value of should_replace_current_entry flag in
   // DidCommit*Params to |should_replace_current_entry|.
   void set_should_replace_current_entry(bool should_replace_current_entry) {
@@ -286,7 +282,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   // Infers from internal parameters whether the navigation created a new
   // entry.
-  bool DidCreateNewEntry();
+  bool DidCreateNewEntry(bool same_document, bool should_replace_current_entry);
 
   // Set the navigation to be done towards the specified navigation controller
   // offset. Typically -1 for back navigations or 1 for forward navigations.
@@ -411,7 +407,6 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   bool history_list_was_cleared_ = false;
   bool should_replace_current_entry_ = false;
-  absl::optional<bool> did_create_new_entry_;
   bool was_aborted_prior_to_ready_to_commit_ = false;
 
   bool early_hints_preload_link_header_received_ = false;

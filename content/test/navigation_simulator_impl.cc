@@ -344,12 +344,7 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
     render_frame_host->InitializeRenderFrameIfNeeded();
 
   if (render_frame_host && render_frame_host->GetParent()) {
-    if (render_frame_host->frame_tree_node()
-            ->is_on_initial_empty_document_or_subsequent_empty_documents()) {
-      transition_ = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
-    } else {
-      transition_ = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
-    }
+    transition_ = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
   }
 
   browser_interface_broker_receiver_ =
@@ -375,6 +370,12 @@ void NavigationSimulatorImpl::InitializeFromStartedRequest(
   // |same_document_| should always be false here.
   referrer_ = request_->common_params().referrer.Clone();
   transition_ = request_->GetPageTransition();
+  if (!request->IsInMainFrame()) {
+    // Subframe transitions always start as MANUAL_SUBFRAME, and the final
+    // value will be calculated at DidCommit time (see
+    // BuildDidCommitProvisionalLoadParams()).
+    transition_ = ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
+  }
   // |reload_type_| cannot be set after the request has started.
   // |session_history_offset_| cannot be set after the request has started.
   has_user_gesture_ = request_->HasUserGesture();
@@ -1351,30 +1352,35 @@ bool NavigationSimulatorImpl::IsDeferred() {
   return !throttle_checks_complete_closure_.is_null();
 }
 
-bool NavigationSimulatorImpl::DidCreateNewEntry() {
-  if (did_create_new_entry_.has_value())
-    return did_create_new_entry_.value();
-  if (ui::PageTransitionCoreTypeIs(transition_,
-                                   ui::PAGE_TRANSITION_AUTO_SUBFRAME))
-    return false;
-  if (reload_type_ != ReloadType::NONE ||
-      (request_ && NavigationTypeUtils::IsReload(
-                       request_->common_params().navigation_type))) {
-    return false;
-  }
+bool NavigationSimulatorImpl::DidCreateNewEntry(
+    bool same_document,
+    bool should_replace_current_entry) {
   if (session_history_offset_ ||
       (request_ && NavigationTypeUtils::IsHistory(
                        request_->common_params().navigation_type))) {
+    // History navigation.
     return false;
   }
-  if (request_ && (request_->common_params().navigation_type ==
-                       blink::mojom::NavigationType::RESTORE ||
-                   request_->common_params().navigation_type ==
-                       blink::mojom::NavigationType::RESTORE_WITH_POST)) {
+  bool has_valid_page_state =
+      request_ && blink::PageState::CreateFromEncodedData(
+                      request_->commit_params().page_state)
+                      .IsValid();
+
+  if (has_valid_page_state && NavigationTypeUtils::IsRestore(
+                                  request_->common_params().navigation_type)) {
+    // Restore navigation.
     return false;
   }
 
-  return true;
+  bool is_reload = reload_type_ != ReloadType::NONE ||
+                   (request_ && NavigationTypeUtils::IsReload(
+                                    request_->common_params().navigation_type));
+
+  // Return false if this is a "standard" (non replacement/reload) commit, or a
+  // main frame cross-document replacement.
+  return (!is_reload && !should_replace_current_entry) ||
+         (frame_tree_node_->IsMainFrame() && should_replace_current_entry &&
+          !same_document);
 }
 
 void NavigationSimulatorImpl::SetSessionHistoryOffset(
@@ -1383,11 +1389,6 @@ void NavigationSimulatorImpl::SetSessionHistoryOffset(
   session_history_offset_ = session_history_offset;
   transition_ =
       ui::PageTransitionFromInt(transition_ | ui::PAGE_TRANSITION_FORWARD_BACK);
-}
-
-void NavigationSimulatorImpl::set_did_create_new_entry(
-    bool did_create_new_entry) {
-  did_create_new_entry_ = did_create_new_entry;
 }
 
 void NavigationSimulatorImpl::set_history_list_was_cleared(
@@ -1416,19 +1417,28 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
 
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();
 
-  // See CalculateShouldReplaceCurrentEntry() in RenderFrameHostImpl on why we
-  // calculate "should_replace_current_entry" in this way.
   params->should_replace_current_entry =
       should_replace_current_entry_ ||
       (request_ && request_->common_params().should_replace_current_entry);
 
-  if (params->should_replace_current_entry &&
-      PageTransitionCoreTypeIs(transition_,
-                               ui::PAGE_TRANSITION_MANUAL_SUBFRAME)) {
-    transition_ = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+  params->did_create_new_entry =
+      DidCreateNewEntry(same_document, params->should_replace_current_entry);
+
+  // See CalculateTransition() in render_frame_host_impl.cc.
+  if (frame_tree_node_->IsMainFrame() && request_) {
+    params->transition =
+        ui::PageTransitionFromInt(request_->common_params().transition);
+  } else if (!params->did_create_new_entry &&
+             PageTransitionCoreTypeIs(transition_,
+                                      ui::PAGE_TRANSITION_MANUAL_SUBFRAME)) {
+    // Non-standard commits (replacements, reloads, history navigations, etc) on
+    // subframe will result in PAGE_TRANSITION_AUTO_SUBFRAME transition. These
+    // navigations can be detected from the |did_create_new_entry| value (on
+    // subframes).
+    params->transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+  } else {
+    params->transition = transition_;
   }
-  params->transition = transition_;
-  params->did_create_new_entry = DidCreateNewEntry();
 
   params->navigation_token = request_
                                  ? request_->commit_params().navigation_token

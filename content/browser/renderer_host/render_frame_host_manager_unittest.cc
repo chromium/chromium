@@ -833,7 +833,6 @@ TEST_P(RenderFrameHostManagerTest, AlwaysSendEnableViewSourceMode) {
   navigation = NavigationSimulatorImpl::CreateBrowserInitiated(kViewSourceUrl,
                                                                contents());
 
-  navigation->set_did_create_new_entry(false);
   navigation->Start();
   request = main_test_rfh()->frame_tree_node()->navigation_request();
   CHECK(request);

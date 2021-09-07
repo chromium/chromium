@@ -230,10 +230,18 @@ class NavigationControllerBrowserTest
     return form_post_id;
   }
 
-  void ReplaceState(FrameTreeNode* node, const std::string& state) {
+  void ReplaceState(FrameTreeNode* node,
+                    const std::string& state,
+                    GURL url = GURL()) {
     FrameNavigateParamsCapturer capturer(node);
     capturer.set_wait_for_load(false);
-    EXPECT_TRUE(ExecJs(node, JsReplace("history.replaceState($1, '')", state)));
+    if (url.is_empty()) {
+      EXPECT_TRUE(
+          ExecJs(node, JsReplace("history.replaceState($1, '')", state)));
+    } else {
+      EXPECT_TRUE(ExecJs(
+          node, JsReplace("history.replaceState($1, '', $2)", state, url)));
+    }
     capturer.Wait();
     EXPECT_TRUE(capturer.is_same_document());
   }
@@ -3331,6 +3339,106 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_FALSE(capturer.did_replace_entry());
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
+  }
+}
+
+// Verify that navigations to the same URL are correctly classified as
+// EXISTING_ENTRY even after redirects.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    NavigationTypeClassification_ExistingEntrySameURLRedirect) {
+  GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url2(embedded_test_server()->GetURL("/title2.html"));
+  GURL redirect_to_url2(
+      embedded_test_server()->GetURL("/server-redirect?" + url2.spec()));
+  // Navigate to |url_1|.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(1, controller.GetEntryCount());
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetFrameTree()->root();
+
+  // Change the current URL to |redirect_to_url2| with replaceState, which
+  // will stay in the same document and won't trigger an actual load to
+  // |redirect_to_url2|.
+  ReplaceState(root, "", redirect_to_url2);
+  NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(redirect_to_url2, previous_entry->GetURL());
+
+  {
+    // 1) Do a browser-initiated navigation to |redirect_to_url2|.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), redirect_to_url2, url2));
+    capturer.Wait();
+
+    // Since it started out as a browser-initiated same-URL navigation, it got
+    // converted to a reload and classified as NAVIGATION_TYPE_EXISTING_ENTRY
+    // and reuses the previous entry, even though it ended up at a different URL
+    // than before.
+    // TODO(https://crbug.com/1247185): Perhaps this should be classified as
+    // NAVIGATION_TYPE_NEW_ENTRY with replacement instead, to be consistent with
+    // reloads that redirected cross-site.
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+
+    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
+    EXPECT_EQ(1, controller.GetEntryCount());
+  }
+
+  // Change the current URL to |redirect_to_url2| with replaceState again.
+  ReplaceState(root, "", redirect_to_url2);
+  previous_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(redirect_to_url2, previous_entry->GetURL());
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  {
+    // 2) Do a renderer-initiated navigation to |redirect_to_url2|.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root, redirect_to_url2, url2));
+    capturer.Wait();
+
+    // Since it started out as a renderer-initiated same-URL navigation, it got
+    // converted to a replacement navigation, so it's classified as
+    // NAVIGATION_TYPE_NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
+    EXPECT_EQ(1, controller.GetEntryCount());
+  }
+
+  // Change the current URL to |redirect_to_url2| with replaceState again.
+  ReplaceState(root, "", redirect_to_url2);
+  previous_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(redirect_to_url2, previous_entry->GetURL());
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  {
+    // 3) Do a form submission to |redirect_to_url2|.
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(contents(),
+                       JsReplace(R"(var form = document.createElement('form');
+                                 form.method = 'POST';
+                                 form.action = $1;
+                                 document.body.appendChild(form);
+                                 form.submit();)",
+                                 redirect_to_url2)));
+    capturer.Wait();
+
+    // It started out as a same-URL navigation, but since it was a POST
+    // navigation, it didn't get converted to replacement.
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
+    EXPECT_EQ(2, controller.GetEntryCount());
+
+    // The POST data should not be saved in the final NavigationEntry.
+    EXPECT_FALSE(controller.GetLastCommittedEntry()->GetHasPostData());
   }
 }
 

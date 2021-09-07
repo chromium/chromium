@@ -26,6 +26,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/site_instance_impl.h"
@@ -1749,115 +1750,6 @@ TEST_F(NavigationControllerTest, Forward_GeneratesNewPage) {
   EXPECT_FALSE(controller.CanGoForward());
 }
 
-// Two consecutive navigations for the same URL entered in should be considered
-// as EXISTING_ENTRY reload navigations even when we are redirected to some
-// other page.
-TEST_F(NavigationControllerTest, Redirect) {
-  NavigationControllerImpl& controller = controller_impl();
-
-  const GURL url1("http://foo1");
-  const GURL url2("http://foo2");  // Redirection target
-
-  // First request.
-  auto navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation->Start();
-
-  EXPECT_EQ(0U, navigation_entry_changed_counter_);
-  EXPECT_EQ(0U, navigation_list_pruned_counter_);
-
-  navigation->Redirect(url2);
-  navigation->Commit();
-  EXPECT_EQ(1U, navigation_entry_committed_counter_);
-  navigation_entry_committed_counter_ = 0;
-
-  // Second request.
-  auto navigation2 =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation2->Start();
-
-  EXPECT_TRUE(controller.GetPendingEntry());
-  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_EQ(url1, controller.GetVisibleEntry()->GetURL());
-
-  EXPECT_EQ(0U, navigation_entry_changed_counter_);
-  EXPECT_EQ(0U, navigation_list_pruned_counter_);
-
-  LoadCommittedDetailsObserver observer(contents());
-  navigation2->set_did_create_new_entry(false);
-  navigation2->Redirect(url2);
-  navigation2->Commit();
-  EXPECT_EQ(1U, navigation_entry_committed_counter_);
-  navigation_entry_committed_counter_ = 0;
-
-  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
-  EXPECT_EQ(controller.GetEntryCount(), 1);
-  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-  EXPECT_TRUE(controller.GetLastCommittedEntry());
-  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_FALSE(controller.GetPendingEntry());
-  EXPECT_EQ(url2, controller.GetVisibleEntry()->GetURL());
-
-  EXPECT_FALSE(controller.CanGoBack());
-  EXPECT_FALSE(controller.CanGoForward());
-}
-
-// Similar to Redirect above, but the first URL is requested by POST,
-// the second URL is requested by GET. NavigationEntry::has_post_data_
-// must be cleared. http://crbug.com/21245
-TEST_F(NavigationControllerTest, PostThenRedirect) {
-  NavigationControllerImpl& controller = controller_impl();
-
-  const GURL url1("http://foo1");
-  const GURL url2("http://foo2");  // Redirection target
-
-  // First request as POST.
-  auto navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation->SetMethod("POST");
-  navigation->Start();
-
-  EXPECT_EQ(0U, navigation_entry_changed_counter_);
-  EXPECT_EQ(0U, navigation_list_pruned_counter_);
-
-  navigation->Redirect(url2);
-  navigation->Commit();
-  EXPECT_EQ(1U, navigation_entry_committed_counter_);
-  navigation_entry_committed_counter_ = 0;
-
-  // Second request.
-  auto navigation2 =
-      NavigationSimulatorImpl::CreateBrowserInitiated(url1, contents());
-  navigation2->Start();
-
-  EXPECT_TRUE(controller.GetPendingEntry());
-  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_EQ(url1, controller.GetVisibleEntry()->GetURL());
-
-  EXPECT_EQ(0U, navigation_entry_changed_counter_);
-  EXPECT_EQ(0U, navigation_list_pruned_counter_);
-
-  LoadCommittedDetailsObserver observer(contents());
-  navigation2->set_did_create_new_entry(false);
-  navigation2->Redirect(GURL("http://foo2"));
-  navigation2->Commit();
-
-  EXPECT_EQ(1U, navigation_entry_committed_counter_);
-  navigation_entry_committed_counter_ = 0;
-
-  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
-  EXPECT_EQ(controller.GetEntryCount(), 1);
-  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-  EXPECT_TRUE(controller.GetLastCommittedEntry());
-  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_FALSE(controller.GetPendingEntry());
-  EXPECT_EQ(url2, controller.GetVisibleEntry()->GetURL());
-  EXPECT_FALSE(controller.GetVisibleEntry()->GetHasPostData());
-
-  EXPECT_FALSE(controller.CanGoBack());
-  EXPECT_FALSE(controller.CanGoForward());
-}
-
 // A redirect right off the bat should be a NEW_ENTRY.
 TEST_F(NavigationControllerTest, ImmediateRedirect) {
   NavigationControllerImpl& controller = controller_impl();
@@ -2419,15 +2311,20 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   // Create a NavigationController with a restored set of tabs.
   GURL url("http://foo");
   std::vector<std::unique_ptr<NavigationEntry>> entries;
-  std::unique_ptr<NavigationEntry> entry =
-      NavigationController::CreateNavigationEntry(
-          url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
-          std::string(), browser_context(),
-          nullptr /* blob_url_loader_factory */);
+  std::unique_ptr<NavigationEntryImpl> entry =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
+              std::string(), browser_context(),
+              nullptr /* blob_url_loader_factory */));
   entry->SetTitle(u"Title");
   const base::Time timestamp = base::Time::Now();
   entry->SetTimestamp(timestamp);
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry->SetPageState(blink::PageState::CreateFromURL(url), context.get());
   entries.push_back(std::move(entry));
+
   std::unique_ptr<WebContents> our_contents =
       WebContents::Create(WebContents::CreateParams(browser_context()));
   WebContentsImpl* raw_our_contents =
@@ -2487,13 +2384,18 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   // Create a NavigationController with a restored set of tabs.
   GURL url("http://foo");
   std::vector<std::unique_ptr<NavigationEntry>> entries;
-  std::unique_ptr<NavigationEntry> new_entry =
-      NavigationController::CreateNavigationEntry(
-          url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
-          std::string(), browser_context(),
-          nullptr /* blob_url_loader_factory */);
+  std::unique_ptr<NavigationEntryImpl> new_entry =
+      NavigationEntryImpl::FromNavigationEntry(
+          NavigationController::CreateNavigationEntry(
+              url, Referrer(), absl::nullopt, ui::PAGE_TRANSITION_RELOAD, false,
+              std::string(), browser_context(),
+              nullptr /* blob_url_loader_factory */));
   new_entry->SetTitle(u"Title");
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  new_entry->SetPageState(blink::PageState::CreateFromURL(url), context.get());
   entries.push_back(std::move(new_entry));
+
   std::unique_ptr<WebContents> our_contents =
       WebContents::Create(WebContents::CreateParams(browser_context()));
   WebContentsImpl* raw_our_contents =
@@ -3654,13 +3556,18 @@ TEST_F(NavigationControllerTest, CopyRestoredStateAndNavigate) {
   };
   const GURL kInitialUrl("http://site3.com");
 
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
   std::vector<std::unique_ptr<NavigationEntry>> entries;
-  for (size_t i = 0; i < base::size(kRestoredUrls); ++i) {
-    std::unique_ptr<NavigationEntry> entry =
-        NavigationController::CreateNavigationEntry(
-            kRestoredUrls[i], Referrer(), absl::nullopt,
-            ui::PAGE_TRANSITION_RELOAD, false, std::string(), browser_context(),
-            nullptr /* blob_url_loader_factory */);
+  for (const GURL& restoredUrl : kRestoredUrls) {
+    std::unique_ptr<NavigationEntryImpl> entry =
+        NavigationEntryImpl::FromNavigationEntry(
+            NavigationController::CreateNavigationEntry(
+                restoredUrl, Referrer(), absl::nullopt,
+                ui::PAGE_TRANSITION_RELOAD, false, std::string(),
+                browser_context(), nullptr /* blob_url_loader_factory */));
+    entry->SetPageState(blink::PageState::CreateFromURL(restoredUrl),
+                        context.get());
     entries.push_back(std::move(entry));
   }
 

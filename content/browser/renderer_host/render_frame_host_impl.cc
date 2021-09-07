@@ -817,7 +817,23 @@ enum class VerifyDidCommitParamsDifference {
   kGesture = 8,
   kShouldReplaceCurrentEntry = 9,
   kURL = 10,
-  kMaxValue = kURL,
+  kDidCreateNewEntry = 11,
+  kTransition = 12,
+  kHistoryListWasCleared = 13,
+  kMaxValue = kHistoryListWasCleared,
+};
+
+// A simplified version of Blink's WebFrameLoadType, used to simulate renderer
+// calculations. See CalculateRendererLoadType() further below.
+// TODO(https://crbug.com/1131832): This should only be here temporarily.
+// Remove this once the renderer behavior at commit time is more consistent with
+// what the browser instructed it to do (e.g. reloads will always be classified
+// as kReload).
+enum class RendererLoadType {
+  kStandard,
+  kBackForward,
+  kReload,
+  kReplaceCurrentItem,
 };
 
 bool ValidateCSPAttribute(const std::string& value) {
@@ -11293,6 +11309,100 @@ bool CalculateShouldReplaceCurrentEntry(
              : request->common_params().should_replace_current_entry;
 }
 
+// Tries to simulate WebFrameLoadType in NavigationTypeToLoadType() in
+// render_frame_impl.cc and RenderFrameImpl::CommitFailedNavigation().
+// TODO(https://crbug.com/1131832): This should only be here temporarily.
+// Remove this once the renderer behavior at commit time is more consistent with
+// what the browser instructed it to do (e.g. reloads will always be classified
+// as kReload).
+RendererLoadType CalculateRendererLoadType(NavigationRequest* request,
+                                           bool should_replace_current_entry,
+                                           const GURL& previous_document_url) {
+  const bool is_restore =
+      NavigationTypeUtils::IsRestore(request->common_params().navigation_type);
+  const bool is_history =
+      NavigationTypeUtils::IsHistory(request->common_params().navigation_type);
+  const bool is_reload =
+      NavigationTypeUtils::IsReload(request->common_params().navigation_type);
+  const bool has_valid_page_state = blink::PageState::CreateFromEncodedData(
+                                        request->commit_params().page_state)
+                                        .IsValid();
+  const bool is_error_page = request->DidEncounterError();
+
+  // Predict if the renderer classified the navigation as a "back/forward"
+  // navigation (WebFrameLoadType::kBackForward).
+  bool will_be_classified_as_back_forward_navigation = false;
+  if (is_error_page) {
+    // For error pages, whenever the navigation has a valid PageState, it will
+    // be considered as a back/forward navigation. This includes history
+    // navigations and restores. See RenderFrameImpl's CommitFailedNavigation().
+    will_be_classified_as_back_forward_navigation = has_valid_page_state;
+  } else {
+    // For normal navigations, RenderFrameImpl's NavigationTypeToLoadType()
+    // will classify a navigation as kBackForward if it's a history navigation,
+    // or if it's a restore navigation with valid PageState.
+    will_be_classified_as_back_forward_navigation =
+        is_history || (is_restore && has_valid_page_state);
+  }
+
+  if (will_be_classified_as_back_forward_navigation) {
+    // If the navigation is classified as kBackForward, it can't be changed to
+    // another RendererLoadType below, so we can immediately return here.
+    return RendererLoadType::kBackForward;
+  }
+
+  if (!is_error_page && is_reload) {
+    // For non-error pages, if the NavigationType given by the browser is
+    // a reload, then the navigation will be classified as a reload.
+    return RendererLoadType::kReload;
+  }
+
+  return should_replace_current_entry ? RendererLoadType::kReplaceCurrentItem
+                                      : RendererLoadType::kStandard;
+}
+
+bool CalculateDidCreateNewEntry(NavigationRequest* request,
+                                bool should_replace_current_entry,
+                                RendererLoadType renderer_load_type) {
+  // This function tries to simulate the calculation of |did_create_new_entry|
+  // in RenderFrameImpl::MakeDidCommitProvisionalLoadParams().
+  // Standard navigations will always create a new entry.
+  if (renderer_load_type == RendererLoadType::kStandard)
+    return true;
+
+  // Back/Forward navigations won't create a new entry.
+  if (renderer_load_type == RendererLoadType::kBackForward)
+    return false;
+
+  // Otherwise, |did_create_new_entry| is true only for main frame
+  // cross-document replacements.
+  return request->IsInMainFrame() && should_replace_current_entry &&
+         !request->IsSameDocument();
+}
+
+ui::PageTransition CalculateTransition(
+    NavigationRequest* request,
+    RendererLoadType renderer_load_type,
+    const mojom::DidCommitProvisionalLoadParams& params) {
+  if (request->IsSameDocument())
+    return params.transition;
+  if (request->IsInMainFrame()) {
+    // This follows GetTransitionType() in render_frame_impl.cc.
+    ui::PageTransition supplied_transition =
+        ui::PageTransitionFromInt(request->common_params().transition);
+    if (ui::PageTransitionCoreTypeIs(supplied_transition,
+                                     ui::PAGE_TRANSITION_LINK) &&
+        request->common_params().post_data) {
+      return ui::PAGE_TRANSITION_FORM_SUBMIT;
+    }
+    return supplied_transition;
+  }
+  // This follows RenderFrameImpl::MakeDidCommitProvisionalLoadParams().
+  if (renderer_load_type == RendererLoadType::kStandard)
+    return ui::PAGE_TRANSITION_MANUAL_SUBFRAME;
+  return ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+}
+
 // Calculates the "loading" URL for a given navigation. This tries to replicate
 // RenderFrameImpl::GetLoadingUrl() and is used to predict the value of "url" in
 // DidCommitProvisionalLoadParams. Note that this is a bit different from
@@ -11435,6 +11545,9 @@ void RenderFrameHostImpl::
   // - gesture
   // - should_replace_current_entry
   // - url
+  // - did_create_new_entry
+  // - transition
+  // - history_list_was_cleared
   // TODO(crbug.com/1131832): Verify more params.
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
@@ -11491,6 +11604,23 @@ void RenderFrameHostImpl::
   const GURL browser_url = CalculateLoadingURL(
       request, params, renderer_url_info_, is_error_page_, last_committed_url_);
 
+  const RendererLoadType renderer_load_type =
+      CalculateRendererLoadType(request, browser_should_replace_current_entry,
+                                renderer_url_info_.last_document_url);
+
+  const bool browser_did_create_new_entry =
+      request->is_synchronous_renderer_commit()
+          ? params.did_create_new_entry
+          : CalculateDidCreateNewEntry(request,
+                                       browser_should_replace_current_entry,
+                                       renderer_load_type);
+
+  const ui::PageTransition browser_transition =
+      CalculateTransition(request, renderer_load_type, params);
+
+  const bool browser_history_list_was_cleared =
+      request->commit_params().should_clear_history_list;
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -11508,7 +11638,14 @@ void RenderFrameHostImpl::
       (!ShouldVerify("should_replace_current_entry") ||
        browser_should_replace_current_entry ==
            params.should_replace_current_entry) &&
-      (!ShouldVerify("url") || browser_url == params.url)) {
+      (!ShouldVerify("url") || browser_url == params.url) &&
+      (!ShouldVerify("did_create_new_entry") ||
+       browser_did_create_new_entry == params.did_create_new_entry) &&
+      (!ShouldVerify("transition") ||
+       ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
+                                                   params.transition)) &&
+      (!ShouldVerify("history_list_was_cleared") ||
+       browser_history_list_was_cleared == params.history_list_was_cleared)) {
     return;
   }
 
@@ -11589,6 +11726,21 @@ void RenderFrameHostImpl::
                         browser_should_replace_current_entry);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_renderer",
                         params.should_replace_current_entry);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "create_browser",
+                        browser_did_create_new_entry);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "create_renderer",
+                        params.did_create_new_entry);
+
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "transition_browser",
+                          browser_transition);
+  SCOPED_CRASH_KEY_NUMBER("VerifyDidCommit", "transition_renderer",
+                          params.transition);
+
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "cleared_browser",
+                        browser_history_list_was_cleared);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "cleared_renderer",
+                        params.history_list_was_cleared);
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "url_browser",
                              browser_url.possibly_invalid_spec());
@@ -11702,6 +11854,10 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_should_replace_current_entry,
             params.should_replace_current_entry);
   DCHECK_EQ(browser_url, params.url);
+  DCHECK_EQ(browser_did_create_new_entry, params.did_create_new_entry);
+  DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
+                                                     params.transition));
+  DCHECK_EQ(browser_history_list_was_cleared, params.history_list_was_cleared);
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
@@ -11743,9 +11899,21 @@ void RenderFrameHostImpl::
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kShouldReplaceCurrentEntry);
   }
-
   if (browser_url != params.url) {
     LogVerifyDidCommitParamsDifference(VerifyDidCommitParamsDifference::kURL);
+  }
+  if (browser_did_create_new_entry != params.did_create_new_entry) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kDidCreateNewEntry);
+  }
+  if (!ui::PageTransitionTypeIncludingQualifiersIs(browser_transition,
+                                                   params.transition)) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kTransition);
+  }
+  if (browser_history_list_was_cleared != params.history_list_was_cleared) {
+    LogVerifyDidCommitParamsDifference(
+        VerifyDidCommitParamsDifference::kHistoryListWasCleared);
   }
 
   base::debug::DumpWithoutCrashing();
