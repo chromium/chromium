@@ -448,8 +448,9 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
                : PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  bool saving_locally = GetDefaultPasswordStore(pref_service, sync_service) ==
-                        PasswordForm::Store::kProfileStore;
+  bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
+                        GetDefaultPasswordStore(pref_service, sync_service) ==
+                            PasswordForm::Store::kProfileStore;
 
   // Signed in. Check for account storage opt-in.
   if (IsOptedInForAccountStorage(pref_service, sync_service)) {
