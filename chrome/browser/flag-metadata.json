@@ -3894,12 +3894,12 @@
   },
   {
     "name": "microphone-mute-notifications",
-    "owners": ["tbarzic", "rtiknoff", "amehfooz"],
+    "owners": ["tbarzic", "rtiknoff@google.com", "amehfooz"],
     "expiry_milestone": 94
   },
   {
     "name": "microphone-mute-switch-device",
-    "owners": ["tbarzic", "rtiknoff", "amehfooz"],
+    "owners": ["tbarzic", "rtiknoff@google.com", "amehfooz"],
     "expiry_milestone": 94
   },
   {
@@ -5370,7 +5370,7 @@
   },
   {
     "name": "terminal-ssh",
-    "owners": [ "lxj", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
+    "owners": [ "lxj@google.com", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
     "expiry_milestone": 100
   },
   {
@@ -5653,7 +5653,7 @@
   },
   {
     "name": "vm-status-page",
-    "owners": [ "lxj", "joelhockey", "timloh" ],
+    "owners": [ "lxj@google.com", "joelhockey", "timloh" ],
     "expiry_milestone": 94
   },
   {
