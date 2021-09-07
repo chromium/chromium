@@ -54,6 +54,7 @@ import org.chromium.ui.util.ColorUtils;
  */
 public class CustomTabActivity extends BaseCustomTabActivity {
     private CustomTabsSessionToken mSession;
+    private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
 
@@ -93,6 +94,14 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    protected void changeBackgroundColorForResizing() {
+        if (mCustomTabHeightStrategy == null
+                || !mCustomTabHeightStrategy.changeBackgroundColorForResizing()) {
+            super.changeBackgroundColorForResizing();
+        }
+    }
+
+    @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
         mTabProvider.addObserver(mTabChangeObserver);
@@ -103,9 +112,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         CustomTabNavigationBarController.update(getWindow(), mIntentDataProvider, getResources());
 
-        CustomTabHeightStrategy.createStrategy(this, mIntentDataProvider.getInitialActivityHeight(),
-                getMultiWindowModeStateDispatcher(), mConnection, mSession,
-                getLifecycleDispatcher());
+        mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(this,
+                mIntentDataProvider.getInitialActivityHeight(), getMultiWindowModeStateDispatcher(),
+                mConnection, mSession, getLifecycleDispatcher());
     }
 
     @Override
