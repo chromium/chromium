@@ -108,12 +108,12 @@ void BluetoothSerialPortImpl::StartWriting(
   DCHECK(!write_pending_);
 
   if (in_stream_) {
-    mojo::ReportBadMessage("Data pipe consumer still open.");
+    receiver_.ReportBadMessage("Data pipe consumer still open.");
     return;
   }
 
   if (!bluetooth_socket_) {
-    mojo::ReportBadMessage("No Bluetooth socket.");
+    receiver_.ReportBadMessage("No Bluetooth socket.");
     return;
   }
 

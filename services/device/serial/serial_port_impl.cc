@@ -88,7 +88,7 @@ void SerialPortImpl::PortOpened(OpenCallback callback, bool success) {
 
 void SerialPortImpl::StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) {
   if (in_stream_) {
-    mojo::ReportBadMessage("Data pipe consumer still open.");
+    receiver_.ReportBadMessage("Data pipe consumer still open.");
     return;
   }
 
@@ -105,7 +105,7 @@ void SerialPortImpl::StartWriting(mojo::ScopedDataPipeConsumerHandle consumer) {
 
 void SerialPortImpl::StartReading(mojo::ScopedDataPipeProducerHandle producer) {
   if (out_stream_) {
-    mojo::ReportBadMessage("Data pipe producer still open.");
+    receiver_.ReportBadMessage("Data pipe producer still open.");
     return;
   }
 
