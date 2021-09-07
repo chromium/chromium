@@ -17,6 +17,7 @@
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -80,10 +81,13 @@ void SaveCardMessageControllerAndroid::Show(
   card_label_ = card.CardIdentifierStringForAutofillDisplay();
   message_->SetDescription(card_label_);
 
-  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-      GetSaveCardIconId(IsGooglePayBrandingEnabled())));
+  bool use_gpay_icon =
+      IsGooglePayBrandingEnabled() && messages::UseGPayIconForSaveCardMessage();
 
-  if (IsGooglePayBrandingEnabled()) {
+  message_->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(GetSaveCardIconId(use_gpay_icon)));
+
+  if (use_gpay_icon) {
     // Do not tint image; otherwise, the image will lose its original color and
     // be filled with a tint color.
     message_->DisableIconTint();
@@ -93,8 +97,11 @@ void SaveCardMessageControllerAndroid::Show(
   promo_continue_ = options.should_request_name_from_user ||
                     options.should_request_expiration_date_from_user;
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      promo_continue_ ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
-                      : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+      promo_continue_
+          ? (messages::UseFollowupButtonTextForSaveCardMessage()
+                 ? IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP
+                 : IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE)
+          : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
   if (is_upload_ && !promo_continue_) {
     expiration_date_year_ = card.expiration_year();
     expiration_date_month_ = card.expiration_month();

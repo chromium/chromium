@@ -78,6 +78,10 @@ int GetSavePasswordMessageDismissDurationMs();
 
 bool UseFollowupButtonTextForUpdatePasswordButton();
 
+bool UseFollowupButtonTextForSaveCardMessage();
+
+bool UseGPayIconForSaveCardMessage();
+
 }  // namespace messages
 
 #endif  // COMPONENTS_MESSAGES_ANDROID_MESSAGES_FEATURE_H_

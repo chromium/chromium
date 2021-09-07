@@ -43,6 +43,14 @@ const base::Feature kMessagesForAndroidSafetyTip{
 const base::Feature kMessagesForAndroidSaveCard{
     "MessagesForAndroidSaveCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
+constexpr base::FeatureParam<bool>
+    kMessagesForAndroidSaveCard_UseFollowupButtonText{
+        &kMessagesForAndroidSaveCard,
+        "save_card_message_use_followup_button_text", false};
+
+constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseGPayIcon{
+    &kMessagesForAndroidSaveCard, "save_card_message_use_gpay_icon", true};
+
 const base::Feature kMessagesForAndroidUpdatePassword{
     "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -99,6 +107,14 @@ bool IsPermissionUpdateMessagesUiEnabled() {
 
 int GetSavePasswordMessageDismissDurationMs() {
   return kMessagesForAndroidPasswords_MessageDismissDurationMs.Get();
+}
+
+bool UseFollowupButtonTextForSaveCardMessage() {
+  return kMessagesForAndroidSaveCard_UseFollowupButtonText.Get();
+}
+
+bool UseGPayIconForSaveCardMessage() {
+  return kMessagesForAndroidSaveCard_UseGPayIcon.Get();
 }
 
 }  // namespace messages
