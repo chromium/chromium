@@ -2892,6 +2892,24 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
   }
 }
 
+RenderFrameProxyHost*
+RenderFrameHostManager::GetProxyHostWithoutRenderViewHost() {
+  RenderFrameProxyHost* outer_delegate_proxy =
+      IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate() : nullptr;
+  for (const auto& pair : proxy_hosts_) {
+    // Do not check for proxies in the outer delegate's process, similar to
+    // CreateProxiesForChildFrame() above.
+    RenderFrameProxyHost* proxy = pair.second.get();
+    if (proxy == outer_delegate_proxy)
+      continue;
+    if (!frame_tree_node_->frame_tree()->GetRenderViewHost(
+            proxy->GetSiteInstance())) {
+      return proxy;
+    }
+  }
+  return nullptr;
+}
+
 void RenderFrameHostManager::EnsureRenderViewInitialized(
     RenderViewHostImpl* render_view_host,
     SiteInstance* instance) {

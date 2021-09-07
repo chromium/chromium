@@ -3367,6 +3367,52 @@ void RenderFrameHostImpl::OnCreateChildFrame(
       return;
   }
 
+  if (RenderFrameProxyHost* proxy = frame_tree_node_->render_manager()
+                                        ->GetProxyHostWithoutRenderViewHost()) {
+    // If there's no RenderViewHost for one of the RenderFrameProxyHost for the
+    // parent of the new subframe, we can't create all the proxies needed for
+    // this new subframe. Ignore the call because otherwise we will hit a
+    // browser CHECK. Also trigger a DumpWithoutCrashing for debugging purposes.
+    // TODO(https://crbug.com/1243541): Add tracing, debug, and remove this.
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "is_main_frame",
+                          frame_tree_node_->IsMainFrame());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "is_created_by_script",
+                          is_created_by_script);
+    SCOPED_CRASH_KEY_STRING32("NoRVH", "lifecycle_state",
+                              LifecycleStateImplToString(lifecycle_state()));
+    SCOPED_CRASH_KEY_STRING32(
+        "NoRVH", "main_frame_lifecycle_state",
+        LifecycleStateImplToString(GetMainFrame()->lifecycle_state()));
+
+    SCOPED_CRASH_KEY_NUMBER("NoRVH", "site_instance",
+                            GetSiteInstance()->GetId().value());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "site_instance_default",
+                          GetSiteInstance()->IsDefaultSiteInstance());
+    SCOPED_CRASH_KEY_STRING256("NoRVH", "site_instance_url",
+                               GetSiteInstance()->GetSiteURL().spec());
+
+    SiteInstanceImpl* main_frame_si = GetMainFrame()->GetSiteInstance();
+    SCOPED_CRASH_KEY_NUMBER("NoRVH", "main_frame_site_instance",
+                            main_frame_si->GetId().value());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "main_frame_site_instance_default",
+                          main_frame_si->IsDefaultSiteInstance());
+    SCOPED_CRASH_KEY_STRING256("NoRVH", "main_frame_site_instance_url",
+                               main_frame_si->GetSiteURL().spec());
+
+    SiteInstanceImpl* proxy_si =
+        static_cast<SiteInstanceImpl*>(proxy->GetSiteInstance());
+    SCOPED_CRASH_KEY_NUMBER("NoRVH", "proxy_site_instance",
+                            proxy_si->GetId().value());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "proxy_site_instance_default",
+                          proxy_si->IsDefaultSiteInstance());
+    SCOPED_CRASH_KEY_STRING256("NoRVH", "proxy_site_instance_url",
+                               proxy_si->GetSiteURL().spec());
+    SCOPED_CRASH_KEY_BOOL("NoRVH", "proxy_live",
+                          proxy->is_render_frame_proxy_live());
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   // |new_routing_id|, |browser_interface_broker_receiver| and
   // |devtools_frame_token| were generated on the browser's IO thread and not
   // taken from the renderer process.
