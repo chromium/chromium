@@ -11,13 +11,9 @@ assert(is_android)
 cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-manifest_variables = [ "is_android_appliance=$is_android_appliance" ]
-
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
   output = cast_shell_android_manifest
-
-  variables = manifest_variables
 }
 
 java_cpp_template("cast_shell_build_config_gen") {
@@ -178,10 +174,6 @@ android_library("cast_shell_java") {
     "//ui/android:ui_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  if (is_android_appliance) {
-    deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-  }
 }
 
 junit_binary("cast_shell_junit_tests") {

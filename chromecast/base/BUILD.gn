@@ -16,12 +16,7 @@ declare_args() {
   if (is_android_arc) {
     cast_product_type = 7  # CAST_PRODUCT_TYPE_CHROME_OS
   } else if (is_android) {
-    if (is_android_appliance) {
-      # Android Things and Appliances under the Android Things product type.
-      cast_product_type = 6  # CAST_PRODUCT_TYPE_ANDROID_THINGS
-    } else {
-      cast_product_type = 4  # CAST_PRODUCT_TYPE_ANDROID_TV
-    }
+    cast_product_type = 4  # CAST_PRODUCT_TYPE_ANDROID_TV
   } else if (is_fuchsia) {
     cast_product_type = 8  # CAST_PRODUCT_TYPE_FUCHSIA_OS
   } else {

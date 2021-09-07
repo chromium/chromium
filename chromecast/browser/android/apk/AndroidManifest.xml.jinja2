@@ -20,9 +20,6 @@
                   android:exported="true"
                   android:hardwareAccelerated="true"
                   android:launchMode="standard"
-                  {% if is_android_appliance == "true" %}
-                  android:persistent="true"
-                  {% endif %}
                   android:screenOrientation="landscape"
                   android:taskAffinity=".CastWebContentsActivity"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
