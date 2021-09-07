@@ -21,34 +21,24 @@ static ResolvedUnderlinePosition ResolveUnderlinePosition(
   // scripts where it would not be appropriate (e.g., ideographs.)
   // However, this has performance implications. For now, we only work with
   // vertical text.
-  switch (baseline_type) {
-    case kAlphabeticBaseline:
-      if (style.TextUnderlinePosition() & kTextUnderlinePositionUnder)
-        return ResolvedUnderlinePosition::kUnder;
-      if (style.TextUnderlinePosition() & kTextUnderlinePositionFromFont)
-        return ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont;
-      return ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
-    case kCentralBaseline: {
-      // Compute language-appropriate default underline position.
-      // https://drafts.csswg.org/css-text-decor-3/#default-stylesheet
-      UScriptCode script = style.GetFontDescription().GetScript();
-      if (script == USCRIPT_KATAKANA_OR_HIRAGANA || script == USCRIPT_HANGUL) {
-        if (style.TextUnderlinePosition() & kTextUnderlinePositionLeft) {
-          return ResolvedUnderlinePosition::kUnder;
-        }
-        return ResolvedUnderlinePosition::kOver;
-      }
-      if (style.TextUnderlinePosition() & kTextUnderlinePositionRight) {
-        return ResolvedUnderlinePosition::kOver;
-      }
+  if (baseline_type != kCentralBaseline) {
+    if (style.TextUnderlinePosition() & kTextUnderlinePositionUnder)
       return ResolvedUnderlinePosition::kUnder;
-    }
-    default:
-      NOTREACHED();
-      break;
+    if (style.TextUnderlinePosition() & kTextUnderlinePositionFromFont)
+      return ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont;
+    return ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
   }
-  NOTREACHED();
-  return ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto;
+  // Compute language-appropriate default underline position.
+  // https://drafts.csswg.org/css-text-decor-3/#default-stylesheet
+  UScriptCode script = style.GetFontDescription().GetScript();
+  if (script == USCRIPT_KATAKANA_OR_HIRAGANA || script == USCRIPT_HANGUL) {
+    if (style.TextUnderlinePosition() & kTextUnderlinePositionLeft)
+      return ResolvedUnderlinePosition::kUnder;
+    return ResolvedUnderlinePosition::kOver;
+  }
+  if (style.TextUnderlinePosition() & kTextUnderlinePositionRight)
+    return ResolvedUnderlinePosition::kOver;
+  return ResolvedUnderlinePosition::kUnder;
 }
 
 static bool ShouldSetDecorationAntialias(const ComputedStyle& style) {
