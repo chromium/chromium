@@ -1,7 +1,6 @@
 // META: global=window,worker
 // META: script=/common/get-host-info.sub.js
-
-const HOST = get_host_info().ORIGINAL_HOST;
+// META: script=resources/webtransport-test-helpers.sub.js
 
 const BAD_URLS = [
   null,
@@ -21,12 +20,10 @@ for (const url of BAD_URLS) {
   }, `WebTransport constructor should reject URL '${url}'`);
 }
 
-// TODO(bashi): Test CSP.
-
 promise_test(t => {
   const wt = new WebTransport(`https://${HOST}:0/`);
   return Promise.all([
-    promise_rejects_js(t, TypeError, wt.ready, 'ready promise rejects'),
-    promise_rejects_js(t, TypeError, wt.closed, 'closed promise rejects'),
+    promise_rejects_js(t, TypeError, wt.ready, 'ready promise should be rejected'),
+    promise_rejects_js(t, TypeError, wt.closed, 'closed promise should be rejected'),
   ]);
-}, 'connection to port 0 should fail');
+}, 'Connection to port 0 should fail');
