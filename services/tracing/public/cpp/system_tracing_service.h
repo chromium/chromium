@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/tracing/public/mojom/system_tracing_service.mojom.h"
+#include "third_party/perfetto/include/perfetto/ext/base/unix_socket.h"
 
 namespace tracing {
 
@@ -37,7 +38,13 @@ class COMPONENT_EXPORT(TRACING_CPP) SystemTracingService
   SystemTracingService();
   ~SystemTracingService() override;
 
-  void OpenProducerSocket(OpenProducerSocketCallback cb) override;
+  void OpenProducerSocket(OpenProducerSocketCallback callback) override;
+
+  using OnConnectCallback = base::OnceCallback<void(bool)>;
+  // Same as OpenProducerSocket() with an extra parameter for testing the socket
+  // connection callback.
+  void OpenProducerSocketForTesting(OpenProducerSocketCallback callback,
+                                    OnConnectCallback on_connect_callback);
 
   mojo::PendingRemote<mojom::SystemTracingService> BindAndPassPendingRemote();
 
