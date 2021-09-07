@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.color.MaterialColors;
@@ -89,8 +90,9 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator
-        implements FeedSurfaceProvider, FeedIPHDelegate, SwipeRefreshLayout.OnRefreshListener {
+public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDelegate,
+                                               SwipeRefreshLayout.OnRefreshListener,
+                                               BackToTopBubbleScrollListener.ResultHandler {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
@@ -159,6 +161,7 @@ public class FeedSurfaceCoordinator
 
     private @Nullable HeaderIphScrollListener mHeaderIphScrollListener;
     private @Nullable RefreshIphScrollListener mRefreshIphScrollListener;
+    private @Nullable BackToTopBubbleScrollListener mBackToTopBubbleScrollListener;
 
     private final FeedLaunchReliabilityLoggingState mLaunchReliabilityLoggingState;
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
@@ -167,6 +170,8 @@ public class FeedSurfaceCoordinator
     private final Supplier<Toolbar> mToolbarSupplier;
 
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
+
+    private BackToTopBubble mBackToTopBubble;
 
     @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
@@ -373,7 +378,7 @@ public class FeedSurfaceCoordinator
             mSwipeRefreshLayout.disableSwipe();
             mSwipeRefreshLayout = null;
         }
-        stopIph();
+        stopBubbleTriggering();
         mMediator.destroy();
         if (mFeedSurfaceLifecycleManager != null) mFeedSurfaceLifecycleManager.destroy();
         mFeedSurfaceLifecycleManager = null;
@@ -825,16 +830,21 @@ public class FeedSurfaceCoordinator
         return mSectionHeaderView;
     }
 
+    @VisibleForTesting
+    public BackToTopBubble getBackToTopBubble() {
+        return mBackToTopBubble;
+    }
+
     /**
-     * Initializes things related to the IPH which will start listening to scroll events to
-     * determine whether the IPH should be triggered.
+     * Initializes things related to the bubbles which will start listening to scroll events to
+     * determine whether a bubble should be triggered.
      *
-     * You must stop the IPH with #stopIph before tearing down feed components, e.g., on #destroy.
-     * This also applies for the case where the feed stream is deleted when disabled (e.g., by
-     * policy).
+     * You must stop the IPH with #stopBubbleTriggering before tearing down feed components, e.g.,
+     * on #destroy. This also applies for the case where the feed stream is deleted when disabled
+     * (e.g., by policy).
      */
-    void initializeIph() {
-        // Don't do anything when there is no feed stream because the IPH isn't needed in that
+    void initializeBubbleTriggering() {
+        // Don't do anything when there is no feed stream because the bubble isn't needed in that
         // case.
         if (mStream == null) return;
 
@@ -847,6 +857,9 @@ public class FeedSurfaceCoordinator
         createHeaderIphScrollListener();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
             createRefreshIphScrollListener();
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BACK_TO_TOP)) {
+            createBackToTopBubbleScrollListener();
         }
     }
 
@@ -868,14 +881,18 @@ public class FeedSurfaceCoordinator
         mScrollableContainerDelegate.addScrollListener(mRefreshIphScrollListener);
     }
 
+    private void createBackToTopBubbleScrollListener() {
+        mBackToTopBubbleScrollListener = new BackToTopBubbleScrollListener(this, this);
+        mScrollableContainerDelegate.addScrollListener(mBackToTopBubbleScrollListener);
+    }
+
     /**
-     * Stops and deletes things related to the IPH. Must be called before tearing down feed
+     * Stops and deletes things related to the bubbles. Must be called before tearing down feed
      * components, e.g., on #destroy. This also applies for the case where the feed stream is
      * deleted when disabled (e.g., by policy).
      */
-    private void stopIph() {
-        if (mStream != null && mScrollableContainerDelegate != null
-                && mHeaderIphScrollListener != null) {
+    private void stopBubbleTriggering() {
+        if (mStream != null && mScrollableContainerDelegate != null) {
             if (mHeaderIphScrollListener != null) {
                 mScrollableContainerDelegate.removeScrollListener(mHeaderIphScrollListener);
                 mHeaderIphScrollListener = null;
@@ -883,6 +900,10 @@ public class FeedSurfaceCoordinator
             if (mRefreshIphScrollListener != null) {
                 mScrollableContainerDelegate.removeScrollListener(mRefreshIphScrollListener);
                 mRefreshIphScrollListener = null;
+            }
+            if (mBackToTopBubbleScrollListener != null) {
+                mScrollableContainerDelegate.removeScrollListener(mBackToTopBubbleScrollListener);
+                mBackToTopBubbleScrollListener = null;
             }
         }
         stopScrollTracking();
@@ -939,6 +960,51 @@ public class FeedSurfaceCoordinator
         // RefreshIphScrollListener.onHeaderOffsetChanged may still be triggered which will call
         // into this method.
         return (mSwipeRefreshLayout == null) ? true : mSwipeRefreshLayout.canScrollVertically(-1);
+    }
+
+    @Override
+    public boolean isShowingBackToTopBubble() {
+        return mBackToTopBubble != null && mBackToTopBubble.isShowing();
+    }
+
+    @Override
+    public int getHeaderCount() {
+        return mHeaderCount;
+    }
+
+    @Override
+    public int getItemCount() {
+        return ((LinearLayoutManager) mRecyclerView.getLayoutManager()).getItemCount();
+    }
+
+    @Override
+    public int getFirstVisiblePosition() {
+        return ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                .findFirstVisibleItemPosition();
+    }
+
+    @Override
+    public int getLastVisiblePosition() {
+        return ((LinearLayoutManager) mRecyclerView.getLayoutManager())
+                .findLastVisibleItemPosition();
+    }
+
+    @Override
+    public void showBubble() {
+        if (mBackToTopBubble != null) return;
+        mBackToTopBubble = new BackToTopBubble(mActivity, mRootView.getContext(), mRootView, () -> {
+            mBackToTopBubble.dismiss();
+            mBackToTopBubble = null;
+            mRecyclerView.smoothScrollToPosition(0);
+        });
+        mBackToTopBubble.show();
+    }
+
+    @Override
+    public void dismissBubble() {
+        if (mBackToTopBubble == null) return;
+        mBackToTopBubble.dismiss();
+        mBackToTopBubble = null;
     }
 
     private boolean isReliabilityLoggingEnabled() {

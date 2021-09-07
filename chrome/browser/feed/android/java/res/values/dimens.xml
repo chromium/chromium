@@ -26,4 +26,12 @@
     <dimen name="follow_item_margin">10dp</dimen>
     <dimen name="follow_empty_margin">24dp</dimen>
     <dimen name="follow_management_loading_spinner_size">36dp</dimen>
+
+    <!-- Back-to-top dimens. -->
+    <dimen name="back_to_top_bubble_offset_below_toolbar">16dp</dimen>
+    <dimen name="back_to_top_bubble_corner_radius">24dp</dimen>
+    <dimen name="back_to_top_bubble_horizontal_padding">16dp</dimen>
+    <dimen name="back_to_top_bubble_vertical_padding">10dp</dimen>
+    <dimen name="back_to_top_bubble_image_size">12dp</dimen>
+    <dimen name="back_to_top_bubble_image_margin_end">9dp</dimen>
 </resources>

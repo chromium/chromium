@@ -26,7 +26,7 @@ public class RefreshIphScrollListener implements ScrollListener {
     @VisibleForTesting
     static final long FETCH_TIME_AGE_THREASHOLD_MS = 5 * 60 * 1000; // 5 minutes.
 
-    private final FeedIPHDelegate mDelegate;
+    private final FeedBubbleDelegate mDelegate;
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
     private final Runnable mShowIPHRunnable;
     private int mMaxLastVisibleFeedItemPosition;
@@ -34,7 +34,7 @@ public class RefreshIphScrollListener implements ScrollListener {
     /**
      * Constructor for IPH triggering.
      */
-    RefreshIphScrollListener(FeedIPHDelegate delegate,
+    RefreshIphScrollListener(FeedBubbleDelegate delegate,
             ScrollableContainerDelegate scrollableContainerDelegate, Runnable showIPHRunnable) {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;

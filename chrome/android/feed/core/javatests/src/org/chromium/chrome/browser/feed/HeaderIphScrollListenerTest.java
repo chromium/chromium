@@ -123,7 +123,7 @@ public final class HeaderIphScrollListenerTest {
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
 
-        FeedIPHDelegate iphDelegate = new FeedIPHDelegate() {
+        FeedBubbleDelegate delegate = new FeedBubbleDelegate() {
             @Override
             public Tracker getFeatureEngagementTracker() {
                 return mTracker;
@@ -152,6 +152,26 @@ public final class HeaderIphScrollListenerTest {
             @Override
             public boolean canScrollUp() {
                 return false;
+            }
+            @Override
+            public boolean isShowingBackToTopBubble() {
+                return false;
+            }
+            @Override
+            public int getHeaderCount() {
+                return 0;
+            }
+            @Override
+            public int getItemCount() {
+                return 0;
+            }
+            @Override
+            public int getFirstVisiblePosition() {
+                return 0;
+            }
+            @Override
+            public int getLastVisiblePosition() {
+                return 0;
             }
         };
 
@@ -177,7 +197,7 @@ public final class HeaderIphScrollListenerTest {
 
         // Trigger IPH through the scroll listener.
         HeaderIphScrollListener listener = new HeaderIphScrollListener(
-                iphDelegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
+                delegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
         listener.onScrollStateChanged(scrollState);
 
         if (expectEnabled) {
@@ -199,7 +219,7 @@ public final class HeaderIphScrollListenerTest {
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
 
-        FeedIPHDelegate iphDelegate = new FeedIPHDelegate() {
+        FeedBubbleDelegate delegate = new FeedBubbleDelegate() {
             @Override
             public Tracker getFeatureEngagementTracker() {
                 return mTracker;
@@ -229,6 +249,26 @@ public final class HeaderIphScrollListenerTest {
             public boolean canScrollUp() {
                 return false;
             }
+            @Override
+            public boolean isShowingBackToTopBubble() {
+                return false;
+            }
+            @Override
+            public int getHeaderCount() {
+                return 0;
+            }
+            @Override
+            public int getItemCount() {
+                return 0;
+            }
+            @Override
+            public int getFirstVisiblePosition() {
+                return 0;
+            }
+            @Override
+            public int getLastVisiblePosition() {
+                return 0;
+            }
         };
 
         ScrollableContainerDelegate scrollableContainerDelegate =
@@ -253,7 +293,7 @@ public final class HeaderIphScrollListenerTest {
 
         // Trigger IPH through the scroll listener.
         HeaderIphScrollListener listener = new HeaderIphScrollListener(
-                iphDelegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
+                delegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
         listener.onHeaderOffsetChanged(-verticalScrollOffset);
 
         if (expectEnabled) {

@@ -20,7 +20,9 @@ feed_deps = [
 ]
 
 feed_java_sources = [
-  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedIPHDelegate.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubble.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLaunchReliabilityLoggingState.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizer.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedSurfaceCoordinator.java",
@@ -64,6 +66,7 @@ feed_junit_test_java_sources = [
 ]
 
 feed_test_java_sources = [
+  "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedV2NewTabPageTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/RefreshIphScrollListenerTest.java",

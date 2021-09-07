@@ -443,7 +443,7 @@ public class FeedSurfaceMediator
             // Build menu after section enabled key is set.
             mFeedMenuModel = buildMenuItems();
 
-            mCoordinator.initializeIph();
+            mCoordinator.initializeBubbleTriggering();
             mSigninManager.getIdentityManager().addObserver(this);
 
             mSectionHeaderModel.set(
