@@ -1292,7 +1292,7 @@
   {
     // See: https://crbug.com/993569.
     "name": "dynamic-tcmalloc-tuning",
-    "owners": [ "bgeffon", "sonnyrao" ],
+    "owners": [ "bgeffon" ],
     "expiry_milestone": 89
   },
   {
@@ -5456,7 +5456,7 @@
   },
   {
     "name": "trim-on-memory-pressure",
-    "owners": [ "bgeffon", "sonnyrao" ],
+    "owners": [ "bgeffon" ],
     "expiry_milestone": 90
   },
   {
