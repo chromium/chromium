@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -421,6 +422,11 @@ bool IsAppLaunch(const base::CommandLine& command_line,
   return false;
 }
 
+bool CanOpenWebApp(Profile* profile) {
+  return web_app::AreWebAppsEnabled(profile) &&
+         apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile);
+}
+
 // Opens an application window or tab if the process was launched with the web
 // application command line switches. Returns true if launch succeeded (or is
 // proceeding asynchronously); otherwise, returns false to indicate that
@@ -431,6 +437,8 @@ bool MaybeLaunchApplication(
     const base::FilePath& cur_dir,
     Profile* profile,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+  DCHECK(CanOpenWebApp(profile));
+
   std::string url_string, app_id;
   if (!IsAppLaunch(command_line, &url_string, &app_id))
     return false;
@@ -1121,6 +1129,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
             privacy_safe_profile, app_id, command_line, cur_dir)) {
       return true;
     }
+  }
+
+  // Launch the browser if the profile is unable to open web apps.
+  if (!CanOpenWebApp(privacy_safe_profile)) {
+    return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
+                                        last_used_profile,
+                                        last_opened_profiles);
   }
 
   // Web app Protocol handling.
