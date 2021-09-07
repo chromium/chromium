@@ -116,8 +116,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return {"OutstandingNetworkRequestDirectSocket",
               "outstanding network request (direct socket)"};
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
-      return {"IsolatedWorldScript", "Isolated world ran script"};
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
+      return {"InjectedJavascript", "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return {"InjectedStyleSheet", "External systesheet injected"};
   }
@@ -188,7 +188,7 @@ WebSchedulerTrackedFeatures StickyFeatures() {
       WebSchedulerTrackedFeature::kPaymentManager,
       WebSchedulerTrackedFeature::kKeyboardLock,
       WebSchedulerTrackedFeature::kWebOTPService,
-      WebSchedulerTrackedFeature::kIsolatedWorldScript,
+      WebSchedulerTrackedFeature::kInjectedJavascript,
       WebSchedulerTrackedFeature::kInjectedStyleSheet);
   return features;
 }

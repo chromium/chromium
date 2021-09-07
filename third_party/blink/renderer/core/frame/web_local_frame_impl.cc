@@ -863,7 +863,7 @@ void WebLocalFrameImpl::ExecuteScriptInIsolatedWorld(
 
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        SchedulingPolicy::Feature::kInjectedJavascript,
         {SchedulingPolicy::DisableBackForwardCache()});
   }
 
@@ -887,7 +887,7 @@ WebLocalFrameImpl::ExecuteScriptInIsolatedWorldAndReturnValue(
 
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        SchedulingPolicy::Feature::kInjectedJavascript,
         {SchedulingPolicy::DisableBackForwardCache()});
   }
 
@@ -1034,12 +1034,8 @@ void WebLocalFrameImpl::RequestExecuteScriptImpl(
   DCHECK(GetFrame());
 
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
-    // TODO(devlin): This isn't necessarily an "isolated world" script, but the
-    // purpose is always the same when it comes to BFCache: this was a script
-    // injected by the embedder that isn't strictly a part of the page. Should
-    // these be separate features, or should kIsolatedWorldScript be renamed?
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
-        SchedulingPolicy::Feature::kIsolatedWorldScript,
+        SchedulingPolicy::Feature::kInjectedJavascript,
         {SchedulingPolicy::DisableBackForwardCache()});
   }
 

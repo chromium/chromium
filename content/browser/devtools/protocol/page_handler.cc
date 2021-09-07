@@ -1519,8 +1519,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestDirectSocket;
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
-      return Page::BackForwardCacheNotRestoredReasonEnum::IsolatedWorldScript;
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
+      return Page::BackForwardCacheNotRestoredReasonEnum::InjectedJavascript;
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
       return Page::BackForwardCacheNotRestoredReasonEnum::InjectedStyleSheet;
   }
@@ -1734,7 +1734,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
-    case WebSchedulerTrackedFeature::kIsolatedWorldScript:
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kDocumentLoaded:

@@ -247,7 +247,7 @@ BlockListedFeatures GetDisallowedFeatures(
   WebSchedulerTrackedFeatures result = kAlwaysDisallowedFeatures;
 
   if (!IsContentInjectionSupported()) {
-    result.Put(WebSchedulerTrackedFeature::kIsolatedWorldScript);
+    result.Put(WebSchedulerTrackedFeature::kInjectedJavascript);
     result.Put(WebSchedulerTrackedFeature::kInjectedStyleSheet);
   }
 

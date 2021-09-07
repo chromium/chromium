@@ -859,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(
       1,
       histogram_tester_.GetBucketCount(
           "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
-          blink::scheduler::WebSchedulerTrackedFeature::kIsolatedWorldScript));
+          blink::scheduler::WebSchedulerTrackedFeature::kInjectedJavascript));
 }
 // Tests sending a message to all frames does not send it to back-forward
 // cached frames.

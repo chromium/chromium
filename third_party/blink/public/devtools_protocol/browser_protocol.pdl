@@ -7923,7 +7923,7 @@ domain Page
       KeyboardLock
       WebOTPService
       OutstandingNetworkRequestDirectSocket
-      IsolatedWorldScript
+      InjectedJavascript
       InjectedStyleSheet
       # Disabled for render frame host reasons
       ContentSecurityHandler

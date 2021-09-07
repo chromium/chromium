@@ -104,7 +104,7 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kKeyboardLock = 51,
   kWebOTPService = 52,
   kOutstandingNetworkRequestDirectSocket = 53,
-  kIsolatedWorldScript = 54,
+  kInjectedJavascript = 54,
   kInjectedStyleSheet = 55,
   // kMediaSessionImplOnServiceCreated = 56, Removed after implementing
   // MediaSessionImplOnServiceCreated support in back/forward cache.
