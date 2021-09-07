@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_animation_types.h"
@@ -271,6 +272,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         UpdateWindow(window_state, WindowStateType::kTrustedPinned,
                      true /* animated */);
       break;
+    case WM_EVENT_TOGGLE_FLOATING:
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE:
     case WM_EVENT_TOGGLE_HORIZONTAL_MAXIMIZE:

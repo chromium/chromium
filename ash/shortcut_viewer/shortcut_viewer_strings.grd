@@ -821,6 +821,9 @@
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the right
   </message>
+  <message name="IDS_KSV_DESCRIPTION_FLOAT" desc="Description of the command in keyboard shortcut viewer.">
+    Float active window on top
+  </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_GOOGLE_ASSISTANT" desc="Description of the command in keyboard shortcut viewer.">
     Open Google Assistant
   </message>

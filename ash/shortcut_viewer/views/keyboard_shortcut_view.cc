@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/ash_typography.h"
@@ -152,6 +153,8 @@ bool ShouldExcludeItem(const ash::KeyboardShortcutItem& item) {
       return ui::DeviceKeyboardHasAssistantKey();
     case IDS_KSV_DESCRIPTION_PRIVACY_SCREEN_TOGGLE:
       return !ash::Shell::Get()->privacy_screen_controller()->IsSupported();
+    case IDS_KSV_DESCRIPTION_FLOAT:
+      return !ash::features::IsWindowControlMenuEnabled();
   }
 
   return false;

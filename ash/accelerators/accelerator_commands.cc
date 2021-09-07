@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_commands.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -20,6 +21,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
@@ -183,6 +185,15 @@ void ShiftPrimaryDisplay() {
 
   Shell::Get()->display_configuration_controller()->SetPrimaryDisplayId(
       primary_display_iter->id(), true /* throttle */);
+}
+
+void ToggleFloating() {
+  DCHECK(features::IsWindowControlMenuEnabled());
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return;
+  WMEvent event(WM_EVENT_TOGGLE_FLOATING);
+  WindowState::Get(active_window)->OnWMEvent(&event);
 }
 
 void ToggleFullscreen() {

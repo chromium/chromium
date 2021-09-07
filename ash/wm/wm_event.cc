@@ -69,6 +69,7 @@ bool WMEvent::IsTransitionEvent() const {
     case WM_EVENT_NORMAL:
     case WM_EVENT_MAXIMIZE:
     case WM_EVENT_MINIMIZE:
+    case WM_EVENT_TOGGLE_FLOATING:
     case WM_EVENT_FULLSCREEN:
     case WM_EVENT_SNAP_PRIMARY:
     case WM_EVENT_SNAP_SECONDARY:

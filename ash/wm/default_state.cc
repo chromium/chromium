@@ -554,6 +554,9 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
       }
       break;
     }
+    case WindowStateType::kFloating:
+      // TODO(shidi): Implement the bounds finder for float.
+      break;
     case WindowStateType::kMaximized:
       bounds_in_parent = screen_util::GetMaximizedWindowBoundsInParent(window);
       break;

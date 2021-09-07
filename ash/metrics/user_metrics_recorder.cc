@@ -75,6 +75,7 @@ ActiveWindowStateType GetActiveWindowState() {
       case WindowStateType::kPip:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_PIP;
         break;
+      case WindowStateType::kFloating:
       case WindowStateType::kDefault:
       case WindowStateType::kNormal:
       case WindowStateType::kMinimized:

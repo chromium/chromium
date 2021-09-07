@@ -45,6 +45,9 @@ enum WMEventType {
   // Following events are compond events which may lead to different
   // states depending on the current state.
 
+  // A user requested to make a window floating.
+  WM_EVENT_TOGGLE_FLOATING,
+
   // A user requested to toggle maximized state by double clicking window
   // header.
   WM_EVENT_TOGGLE_MAXIMIZE_CAPTION,

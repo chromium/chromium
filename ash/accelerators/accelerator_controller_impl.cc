@@ -40,6 +40,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_profile_uma.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/toast_data.h"
@@ -628,6 +629,11 @@ bool CanHandleToggleResizeLockMenu() {
   return frame_view && frame_view->GetToggleResizeLockMenuCallback();
 }
 
+bool CanHandleToggleFloatingWindow() {
+  return features::IsWindowControlMenuEnabled() &&
+         !Shell::Get()->tablet_mode_controller()->InTabletMode();
+}
+
 // Enters capture mode image type with |source|.
 void EnterImageCaptureMode(CaptureModeSource source,
                            CaptureModeEntryType entry_type) {
@@ -758,6 +764,15 @@ void HandleToggleAppList(const ui::Accelerator& accelerator,
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()->GetDisplayNearestWindow(root_window).id(),
       show_source, accelerator.time_stamp());
+}
+
+void HandleToggleFloating() {
+  DCHECK(features::IsWindowControlMenuEnabled());
+  // Floating is currently not supported for tablet mode, see timeline here:
+  // https://crbug.com/1240411
+  DCHECK(!Shell::Get()->tablet_mode_controller()->InTabletMode());
+  accelerators::ToggleFloating();
+  base::RecordAction(UserMetricsAction("Accel_Toggle_Floating"));
 }
 
 void HandleToggleFullscreen(const ui::Accelerator& accelerator) {
@@ -1861,6 +1876,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleScreenshot(action);
     case TOGGLE_RESIZE_LOCK_MENU:
       return CanHandleToggleResizeLockMenu();
+    case TOGGLE_FLOATING:
+      return CanHandleToggleFloatingWindow();
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:
@@ -2275,6 +2292,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_DOCKED_MAGNIFIER:
       HandleToggleDockedMagnifier();
+      break;
+    case TOGGLE_FLOATING:
+      HandleToggleFloating();
       break;
     case TOGGLE_FULLSCREEN:
       HandleToggleFullscreen(accelerator);

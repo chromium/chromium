@@ -45,6 +45,7 @@ void LockWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_PIP:
     case WM_EVENT_PIN:
     case WM_EVENT_TRUSTED_PIN:
+    case WM_EVENT_TOGGLE_FLOATING:
       NOTREACHED();
       break;
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:

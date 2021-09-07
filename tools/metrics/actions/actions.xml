@@ -1210,6 +1210,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accel_Toggle_Floating">
+  <owner>shidi@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <description>
+    Metric recorded when the user toggles the Window Floating feature with a
+    keyboard shortcut.
+  </description>
+</action>
+
 <action name="Accel_Toggle_Fullscreen_Magnifier">
   <owner>afakhry@chromium.org</owner>
   <description>
