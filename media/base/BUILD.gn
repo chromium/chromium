@@ -362,6 +362,7 @@ source_set("base") {
     ":video_facing",
     "//media:media_buildflags",
     "//media:shared_memory_support",
+    "//media/gpu:buildflags",
     "//ui/gfx:color_space",
     "//ui/gl",
   ]

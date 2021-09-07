@@ -310,10 +310,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
-  // Get and initialize the frame pool.
-  DCHECK(client_);
-  frame_pool_ = client_->GetVideoFramePool();
-
   aspect_ratio_ = config.aspect_ratio();
 
   output_cb_ = std::move(output_cb);
@@ -474,11 +470,14 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   DCHECK(current_decode_task_);
 
   // Get a video frame from the video frame pool.
-  scoped_refptr<VideoFrame> frame = frame_pool_->GetFrame();
+  DCHECK(client_);
+  DmabufVideoFramePool* frame_pool = client_->GetVideoFramePool();
+  DCHECK(frame_pool);
+  scoped_refptr<VideoFrame> frame = frame_pool->GetFrame();
   if (!frame) {
     // Ask the video frame pool to notify us when new frames are available, so
     // we can retry the current decode task.
-    frame_pool_->NotifyWhenFrameAvailable(
+    frame_pool->NotifyWhenFrameAvailable(
         base::BindOnce(&VaapiVideoDecoder::NotifyFrameAvailable, weak_this_));
     return nullptr;
   }
@@ -562,12 +561,10 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateDecodeSurface() {
 bool VaapiVideoDecoder::IsScalingDecode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kDecoding || state_ == State::kChangingResolution);
-
-  // If we're not decoding while scaling, we shouldn't have any surfaces for
-  // that purpose.
-  DCHECK(!!decode_to_output_scale_factor_ ||
-         decode_surface_pool_for_scaling_.empty());
-  return !!decode_to_output_scale_factor_;
+  // TODO(andrescj): this was used by the VD-SFC path for scaling protected
+  // content. Now that we have the VE-SFC path, we need to get rid of this
+  // method and related code.
+  return false;
 }
 
 const gfx::Rect VaapiVideoDecoder::GetOutputVisibleRect(
@@ -637,6 +634,23 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
     // still valid once we get to the compositor stage.
     uint32_t protected_instance_id = vaapi_wrapper_->GetProtectedInstanceID();
     video_frame->metadata().hw_protected_validation_id = protected_instance_id;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Additionally, we store the VA-API protected session ID so that it can be
+    // re-used for scaling the decoded video frame later in the pipeline.
+    VAProtectedSessionID va_protected_session_id =
+        vaapi_wrapper_->GetProtectedSessionID();
+
+    static_assert(
+        std::is_same<decltype(va_protected_session_id),
+                     decltype(
+                         video_frame->metadata()
+                             .hw_va_protected_session_id)::value_type>::value,
+        "The type of VideoFrameMetadata::hw_va_protected_session_id "
+        "does not match the type exposed by VaapiWrapper");
+    video_frame->metadata().hw_va_protected_session_id =
+        va_protected_session_id;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
@@ -708,12 +722,14 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     decode_surface_pool_for_scaling_.pop();
   decode_to_output_scale_factor_.reset();
 
-  gfx::Rect output_visible_rect = decoder_->GetVisibleRect();
-  gfx::Size output_pic_size = decoder_->GetPicSize();
-  if (output_pic_size.IsEmpty()) {
+  gfx::Rect decoder_visible_rect = decoder_->GetVisibleRect();
+  gfx::Size decoder_pic_size = decoder_->GetPicSize();
+  if (decoder_pic_size.IsEmpty()) {
     SetErrorState("|decoder_| returned an empty picture size");
     return;
   }
+  gfx::Rect output_visible_rect = decoder_visible_rect;
+  gfx::Size output_pic_size = decoder_pic_size;
   const auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
   CHECK(format_fourcc);
   if (!screen_resolutions.empty()) {
@@ -723,8 +739,8 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     // visible rect later.
     CHECK(cdm_context_ref_);
     gfx::Size max_desired_size;
-    const float pic_aspect =
-        static_cast<float>(output_pic_size.width()) / output_pic_size.height();
+    const float pic_aspect = static_cast<float>(decoder_pic_size.width()) /
+                             decoder_pic_size.height();
     for (const auto& screen : screen_resolutions) {
       if (screen.IsEmpty())
         continue;
@@ -734,23 +750,23 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
           static_cast<float>(screen.width()) / screen.height();
       if (pic_aspect >= screen_aspect) {
         // Constrain on width.
-        if (screen.width() < output_pic_size.width()) {
+        if (screen.width() < decoder_pic_size.width()) {
           target_width = screen.width();
           target_height =
               base::checked_cast<int>(std::lround(target_width / pic_aspect));
         } else {
-          target_width = output_pic_size.width();
-          target_height = output_pic_size.height();
+          target_width = decoder_pic_size.width();
+          target_height = decoder_pic_size.height();
         }
       } else {
         // Constrain on height.
-        if (screen.height() < output_pic_size.height()) {
+        if (screen.height() < decoder_pic_size.height()) {
           target_height = screen.height();
           target_width =
               base::checked_cast<int>(std::lround(target_height * pic_aspect));
         } else {
-          target_height = output_pic_size.height();
-          target_width = output_pic_size.width();
+          target_height = decoder_pic_size.height();
+          target_width = decoder_pic_size.width();
         }
       }
       if (target_width > max_desired_size.width() ||
@@ -759,17 +775,24 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
       }
     }
     if (!max_desired_size.IsEmpty() &&
-        max_desired_size.width() < output_pic_size.width()) {
+        max_desired_size.width() < decoder_pic_size.width()) {
       // Fix this so we are sure it's on a multiple of two to deal with
       // subsampling.
       max_desired_size.set_width(RoundUpToEven(max_desired_size.width()));
       max_desired_size.set_height(RoundUpToEven(max_desired_size.height()));
-      decode_to_output_scale_factor_ =
+      const auto decode_to_output_scale_factor =
           static_cast<float>(max_desired_size.width()) /
           output_pic_size.width();
       output_pic_size = max_desired_size;
-      output_visible_rect =
-          GetOutputVisibleRect(output_visible_rect, output_pic_size);
+      output_visible_rect = ScaleToEnclosedRect(decoder_visible_rect,
+                                                decode_to_output_scale_factor);
+      // Make the dimensions even numbered to align with other requirements
+      // later in the pipeline.
+      output_visible_rect.set_width(
+          RoundDownToEven(output_visible_rect.width()));
+      output_visible_rect.set_height(
+          RoundDownToEven(output_visible_rect.height()));
+      CHECK(gfx::Rect(output_pic_size).Contains(output_visible_rect));
 
       // Create the surface pool for decoding, the normal pool will be used for
       // output.
@@ -836,11 +859,14 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     return;
   }
 
-  const gfx::Size natural_size =
-      aspect_ratio_.GetNaturalSize(output_visible_rect);
-  auto status_or_layout = frame_pool_->Initialize(
-      *format_fourcc, output_pic_size, output_visible_rect, natural_size,
-      decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_);
+  const gfx::Size decoder_natural_size =
+      aspect_ratio_.GetNaturalSize(decoder_visible_rect);
+  auto status_or_layout = client_->PickDecoderOutputFormat(
+      /*candidates=*/{{*format_fourcc, decoder_pic_size}}, decoder_visible_rect,
+      decoder_natural_size, output_visible_rect.size(),
+      decoder_->GetRequiredNumOfPictures(),
+      /*use_protected=*/!!cdm_context_ref_,
+      /*need_aux_frame_pool=*/true);
   if (status_or_layout.has_error()) {
     if (std::move(status_or_layout).error().code() == StatusCode::kAborted) {
       DVLOGF(2) << "The frame pool initialization is aborted.";

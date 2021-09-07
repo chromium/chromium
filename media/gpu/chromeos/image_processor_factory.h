@@ -22,9 +22,11 @@ namespace media {
 
 class MEDIA_GPU_EXPORT ImageProcessorFactory {
  public:
-  // Callback to pick a valid format from given |candidates| formats.
+  // Callback to pick a valid format from the given |candidates| formats giving
+  // preference to |preferred_fourcc| if provided.
   using PickFormatCB = base::RepeatingCallback<absl::optional<Fourcc>(
-      const std::vector<Fourcc>& /* candidates */)>;
+      const std::vector<Fourcc>& /* candidates */,
+      absl::optional<Fourcc> /* preferred_fourcc */)>;
 
   // Factory method to create ImageProcessor.
   // Given input and output PortConfig, it tries to find out the most suitable
@@ -63,10 +65,10 @@ class MEDIA_GPU_EXPORT ImageProcessorFactory {
   // Unlike Create(), the caller passes a list of supported inputs,
   // |input_candidates|. It also passes the |input_visible_rect| and the desired
   // |output_size|. |out_format_picker| allows us to negotiate the output
-  // format: we'll call it with a list of supported formats and the callback
-  // picks one. With the rest of the parameters the factory can instantiate a
-  // suitable ImageProcessor. Returns nullptr if an ImageProcessor can't be
-  // created.
+  // format: we'll call it with a list of supported formats and (possibly) a
+  // preferred one and the callback picks one. With the rest of the parameters
+  // the factory can instantiate a suitable ImageProcessor. Returns nullptr if
+  // an ImageProcessor can't be created.
   static std::unique_ptr<ImageProcessor> CreateWithInputCandidates(
       const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
       const gfx::Rect& input_visible_rect,

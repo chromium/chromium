@@ -46,11 +46,24 @@ constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
     Fourcc::NV12,
     Fourcc::YV12,
+    Fourcc::P010,
 };
 
 // Picks the preferred compositor renderable format from |candidates|, if any.
+// If |preferred_fourcc| is provided and considered renderable, it returns that.
+// Otherwise, it goes through |kPreferredRenderableFourccs| until it finds one
+// that's in |candidates|. If it can't find a renderable format in |candidates|,
+// it returns absl::nullopt.
 absl::optional<Fourcc> PickRenderableFourcc(
-    const std::vector<Fourcc>& candidates) {
+    const std::vector<Fourcc>& candidates,
+    absl::optional<Fourcc> preferred_fourcc) {
+  if (preferred_fourcc) {
+    DCHECK(base::Contains(candidates, preferred_fourcc));
+    for (const auto value : kPreferredRenderableFourccs) {
+      if (Fourcc(value) == preferred_fourcc)
+        return preferred_fourcc;
+    }
+  }
   for (const auto value : kPreferredRenderableFourccs) {
     if (base::Contains(candidates, Fourcc(value)))
       return Fourcc(value);
@@ -566,45 +579,86 @@ DmabufVideoFramePool* VideoDecoderPipeline::GetVideoFramePool() const {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
-  // |main_frame_pool_| is used by |image_processor_| in this case.
-  // |decoder_| will output native buffer allocated by itself.
-  // (e.g. V4L2 MMAP buffer in V4L2 API and VA surface in VA API.)
+  // TODO(andrescj): consider returning a WeakPtr instead. That way, if callers
+  // store the returned pointer, they know that they should check it's valid
+  // because the video frame pool can change across resolution changes if we go
+  // from using an image processor to not using one (or viceversa).
   if (image_processor_)
-    return nullptr;
+    return auxiliary_frame_pool_.get();
   return main_frame_pool_.get();
 }
 
 StatusOr<std::pair<Fourcc, gfx::Size>>
 VideoDecoderPipeline::PickDecoderOutputFormat(
     const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
-    const gfx::Rect& visible_rect) {
+    const gfx::Rect& decoder_visible_rect,
+    const gfx::Size& decoder_natural_size,
+    absl::optional<gfx::Size> output_size,
+    size_t num_of_pictures,
+    bool use_protected,
+    bool need_aux_frame_pool) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   if (candidates.empty())
     return Status(StatusCode::kInvalidArgument);
 
+  auxiliary_frame_pool_.reset();
   image_processor_.reset();
 
-  // Check if any of the |candidates| formats is directly renderable.
-  for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
-    for (const auto& candidate : candidates) {
-      if (candidate.first == Fourcc(preferred_fourcc))
-        return candidate;
+  // As long as we're not scaling, check if any of the |candidates| formats is
+  // directly renderable.
+  if (!output_size || *output_size == decoder_visible_rect.size()) {
+    for (const auto preferred_fourcc : kPreferredRenderableFourccs) {
+      for (const auto& candidate : candidates) {
+        if (candidate.first == Fourcc(preferred_fourcc)) {
+          StatusOr<GpuBufferLayout> status_or_layout =
+              main_frame_pool_->Initialize(
+                  candidate.first, candidate.second, decoder_visible_rect,
+                  decoder_natural_size, num_of_pictures, use_protected);
+          return status_or_layout.has_error()
+                     ? StatusOr<std::pair<Fourcc, gfx::Size>>(
+                           std::move(status_or_layout).error())
+                     : StatusOr<std::pair<Fourcc, gfx::Size>>(candidate);
+        }
+      }
     }
   }
 
   std::unique_ptr<ImageProcessor> image_processor =
       ImageProcessorFactory::CreateWithInputCandidates(
-          candidates, /*input_visible_rect=*/visible_rect,
-          /*output_size=*/visible_rect.size(), kNumFramesForImageProcessor,
-          decoder_task_runner_, base::BindRepeating(&PickRenderableFourcc),
+          candidates, /*input_visible_rect=*/decoder_visible_rect, *output_size,
+          kNumFramesForImageProcessor, decoder_task_runner_,
+          base::BindRepeating(&PickRenderableFourcc),
           BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
                                                 decoder_weak_this_,
                                                 "ImageProcessor error")));
   if (!image_processor) {
     DVLOGF(2) << "Unable to find ImageProcessor to convert format";
     return Status(StatusCode::kInvalidArgument);
+  }
+
+  if (need_aux_frame_pool) {
+    // Initialize the auxiliary frame pool with the input format of the image
+    // processor. Note that we pass nullptr as the GpuMemoryBufferFactory. That
+    // way, the pool will allocate buffers using minigbm directly instead of
+    // going through Ozone which means it won't create DRM/KMS framebuffers for
+    // those buffers. This is good because these buffers don't end up as
+    // overlays anyway.
+    auxiliary_frame_pool_ = std::make_unique<PlatformVideoFramePool>(
+        /*gpu_memory_buffer_factory=*/nullptr);
+    auxiliary_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+    StatusOr<GpuBufferLayout> status_or_layout =
+        auxiliary_frame_pool_->Initialize(
+            image_processor->input_config().fourcc,
+            image_processor->input_config().size, decoder_visible_rect,
+            decoder_natural_size, num_of_pictures, use_protected);
+    if (status_or_layout.has_error()) {
+      // A PlatformVideoFramePool should never abort initialization.
+      DCHECK_NE(status_or_layout.code(), StatusCode::kAborted);
+      DVLOGF(2) << "Could not initialize the auxiliary frame pool";
+      return Status(StatusCode::kInvalidArgument);
+    }
   }
 
   // Note that fourcc is specified in ImageProcessor's factory method.
@@ -614,7 +668,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // Setup new pipeline.
   auto status_or_image_processor = ImageProcessorWithPool::Create(
       std::move(image_processor), main_frame_pool_.get(),
-      kNumFramesForImageProcessor, decoder_task_runner_);
+      kNumFramesForImageProcessor, use_protected, decoder_task_runner_);
   if (status_or_image_processor.has_error()) {
     DVLOGF(2) << "Unable to create ImageProcessorWithPool.";
     return std::move(status_or_image_processor).error();

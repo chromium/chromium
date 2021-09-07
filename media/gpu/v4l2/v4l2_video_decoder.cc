@@ -383,7 +383,10 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
 
   // Ask the pipeline to pick the output format.
   StatusOr<std::pair<Fourcc, gfx::Size>> status_or_output_format =
-      client_->PickDecoderOutputFormat(candidates, visible_rect);
+      client_->PickDecoderOutputFormat(
+          candidates, visible_rect, aspect_ratio_.GetNaturalSize(visible_rect),
+          /*output_size=*/absl::nullopt, num_output_frames_,
+          /*use+protected=*/false, /*need_aux_frame_pool=*/false);
   if (status_or_output_format.has_error()) {
     VLOGF(1) << "Failed to pick an output format.";
     return false;
@@ -413,6 +416,12 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   // created by VideoFramePool.
   DmabufVideoFramePool* pool = client_->GetVideoFramePool();
   if (pool) {
+    // TODO(andrescj): the call to PickDecoderOutputFormat() should have already
+    // initialized the frame pool, so this call to Initialize() is redundant.
+    // However, we still have to get the GpuBufferLayout to find out the
+    // modifier that we need to give to the driver. We should add a
+    // GetGpuBufferLayout() method to DmabufVideoFramePool to query that without
+    // having to re-initialize the pool.
     StatusOr<GpuBufferLayout> status_or_layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
         aspect_ratio_.GetNaturalSize(visible_rect), num_output_frames_,

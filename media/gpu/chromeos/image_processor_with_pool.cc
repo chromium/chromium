@@ -17,11 +17,12 @@ ImageProcessorWithPool::Create(
     std::unique_ptr<ImageProcessor> image_processor,
     DmabufVideoFramePool* const frame_pool,
     size_t num_frames,
+    bool use_protected,
     const scoped_refptr<base::SequencedTaskRunner> task_runner) {
   const ImageProcessor::PortConfig& config = image_processor->output_config();
-  StatusOr<GpuBufferLayout> status_or_layout = frame_pool->Initialize(
-      config.fourcc, config.size, config.visible_rect, config.size, num_frames,
-      /*use_protected=*/false);
+  StatusOr<GpuBufferLayout> status_or_layout =
+      frame_pool->Initialize(config.fourcc, config.size, config.visible_rect,
+                             config.size, num_frames, use_protected);
   if (status_or_layout.has_error()) {
     VLOGF(1) << "Failed to initialize the pool.";
     return std::move(status_or_layout).error();

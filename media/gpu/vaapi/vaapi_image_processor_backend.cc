@@ -96,6 +96,10 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     return nullptr;
   }
 
+  // Note that EncryptionScheme::kUnencrypted is fine even for the use case
+  // where the VPP is needed for processing protected content after decoding.
+  // That's because when calling VaapiWrapper::BlitSurface(), we re-use the
+  // protected session ID created at decoding time.
   auto vaapi_wrapper = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
       EncryptionScheme::kUnencrypted,
@@ -159,6 +163,23 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
+  bool use_protected = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  VAProtectedSessionID va_protected_session_id = VA_INVALID_ID;
+  if (input_frame->metadata().hw_va_protected_session_id.has_value()) {
+    static_assert(
+        std::is_same<decltype(input_frame->metadata()
+                                  .hw_va_protected_session_id)::value_type,
+                     VAProtectedSessionID>::value,
+        "The optional type of VideoFrameMetadata::hw_va_protected_session_id "
+        "is "
+        "not VAProtectedSessionID");
+    va_protected_session_id =
+        input_frame->metadata().hw_va_protected_session_id.value();
+    use_protected = va_protected_session_id != VA_INVALID_ID;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   DCHECK(input_frame);
   DCHECK(output_frame);
   scoped_refptr<gfx::NativePixmap> input_pixmap =
@@ -169,8 +190,8 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
     return;
   }
 
-  auto src_va_surface =
-      vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(input_pixmap));
+  auto src_va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
+      std::move(input_pixmap), use_protected);
   if (!src_va_surface) {
     error_cb_.Run();
     return;
@@ -184,8 +205,8 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
     return;
   }
 
-  auto dst_va_surface =
-      vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(output_pixmap));
+  auto dst_va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(
+      std::move(output_pixmap), use_protected);
   if (!dst_va_surface) {
     error_cb_.Run();
     return;
@@ -194,11 +215,33 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   // VA-API performs pixel format conversion and scaling without any filters.
   if (!vaapi_wrapper_->BlitSurface(
           *src_va_surface, *dst_va_surface, input_frame->visible_rect(),
-          output_frame->visible_rect(), relative_rotation_)) {
+          output_frame->visible_rect(), relative_rotation_
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+          ,
+          va_protected_session_id
+#endif
+          )) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (use_protected &&
+        vaapi_wrapper_->IsProtectedSessionDead(va_protected_session_id)) {
+      DCHECK_NE(va_protected_session_id, VA_INVALID_ID);
+
+      // If the VPP failed because the protected session is dead, we should
+      // still output the frame. That's because we don't want to put the
+      // VideoDecoderPipeline into an unusable error state: the
+      // VaapiVideoDecoder can recover from a dead protected session later and
+      // the compositor should not try to render the frame we output here
+      // anyway.
+      output_frame->set_timestamp(input_frame->timestamp());
+      std::move(cb).Run(std::move(output_frame));
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     error_cb_.Run();
     return;
   }
 
+  output_frame->set_timestamp(input_frame->timestamp());
   std::move(cb).Run(std::move(output_frame));
 }
 

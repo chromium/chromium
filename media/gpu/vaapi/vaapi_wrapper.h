@@ -289,6 +289,20 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // querying libva indicates that our protected session is no longer alive,
   // otherwise this will return false.
   bool IsProtectedSessionDead();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns true if and only if |va_protected_session_id| is not VA_INVALID_ID
+  // and querying libva indicates that the protected session identified by
+  // |va_protected_session_id| is no longer alive.
+  bool IsProtectedSessionDead(VAProtectedSessionID va_protected_session_id);
+
+  // Returns the ID of the current protected session or VA_INVALID_ID if there's
+  // none. This must be called on the same sequence as other methods that use
+  // the protected session ID internally.
+  //
+  // TODO(b/183515581): update this documentation once we force the VaapiWrapper
+  // to be used on a single sequence.
+  VAProtectedSessionID GetProtectedSessionID() const;
+#endif
   // If we have a protected session, destroys it immediately. This should be
   // used as part of recovering dead protected sessions.
   void DestroyProtectedSession();
@@ -472,13 +486,21 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Blits a VASurface |va_surface_src| into another VASurface
   // |va_surface_dest| applying pixel format conversion, rotation, cropping
   // and scaling if needed. |src_rect| and |dest_rect| are optional. They can
-  // be used to specify the area used in the blit.
-  virtual bool BlitSurface(const VASurface& va_surface_src,
-                           const VASurface& va_surface_dest,
-                           absl::optional<gfx::Rect> src_rect = absl::nullopt,
-                           absl::optional<gfx::Rect> dest_rect = absl::nullopt,
-                           VideoRotation rotation = VIDEO_ROTATION_0)
-      WARN_UNUSED_RESULT;
+  // be used to specify the area used in the blit. If |va_protected_session_id|
+  // is provided and is not VA_INVALID_ID, the corresponding protected session
+  // is attached to the VPP context prior to submitting the VPP buffers and
+  // detached after submitting those buffers.
+  virtual bool BlitSurface(
+      const VASurface& va_surface_src,
+      const VASurface& va_surface_dest,
+      absl::optional<gfx::Rect> src_rect = absl::nullopt,
+      absl::optional<gfx::Rect> dest_rect = absl::nullopt,
+      VideoRotation rotation = VIDEO_ROTATION_0
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ,
+      VAProtectedSessionID va_protected_session_id = VA_INVALID_ID
+#endif
+      ) WARN_UNUSED_RESULT;
 
   // Initialize static data before sandbox is enabled.
   static void PreSandboxInitialization();

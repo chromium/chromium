@@ -34,6 +34,7 @@ class ImageProcessorWithPool {
       std::unique_ptr<ImageProcessor> image_processor,
       DmabufVideoFramePool* const frame_pool,
       size_t num_frames,
+      bool use_protected,
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~ImageProcessorWithPool();
 

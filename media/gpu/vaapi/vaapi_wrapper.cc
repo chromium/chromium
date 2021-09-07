@@ -1877,6 +1877,8 @@ bool VaapiWrapper::CreateProtectedSession(
 
     va_res = vaCreateProtectedSession(va_display_, va_protected_config_id_,
                                       &va_protected_session_id_);
+    DCHECK(va_res == VA_STATUS_SUCCESS ||
+           va_protected_session_id_ == VA_INVALID_ID);
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateProtectedSession,
                          false);
   }
@@ -1993,7 +1995,16 @@ uint32_t VaapiWrapper::GetProtectedInstanceID() {
 
 bool VaapiWrapper::IsProtectedSessionDead() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (va_protected_session_id_ == VA_INVALID_ID)
+  return IsProtectedSessionDead(va_protected_session_id_);
+#else
+  return false;
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool VaapiWrapper::IsProtectedSessionDead(
+    VAProtectedSessionID va_protected_session_id) {
+  if (va_protected_session_id == VA_INVALID_ID)
     return false;
 
   uint8_t alive;
@@ -2006,25 +2017,28 @@ bool VaapiWrapper::IsProtectedSessionDead() {
 
   base::AutoLock auto_lock(*va_lock_);
   VABufferID buf_id;
-  VAStatus va_res =
-      vaCreateBuffer(va_display_, va_protected_session_id_,
-                     VAProtectedSessionExecuteBufferType, sizeof(tee_exec_buf),
-                     1, &tee_exec_buf, &buf_id);
+  VAStatus va_res = vaCreateBuffer(
+      va_display_, va_protected_session_id, VAProtectedSessionExecuteBufferType,
+      sizeof(tee_exec_buf), 1, &tee_exec_buf, &buf_id);
   // Failure here is valid if the protected session has been closed.
   if (va_res != VA_STATUS_SUCCESS)
     return true;
 
   va_res =
-      vaProtectedSessionExecute(va_display_, va_protected_session_id_, buf_id);
+      vaProtectedSessionExecute(va_display_, va_protected_session_id, buf_id);
   vaDestroyBuffer(va_display_, buf_id);
   if (va_res != VA_STATUS_SUCCESS)
     return true;
 
   return !alive;
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#endif
 }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+VAProtectedSessionID VaapiWrapper::GetProtectedSessionID() const {
+  return va_protected_session_id_;
+}
+#endif
 
 void VaapiWrapper::DestroyProtectedSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2685,7 +2699,12 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
                                absl::optional<gfx::Rect> src_rect,
                                absl::optional<gfx::Rect> dest_rect,
-                               VideoRotation rotation) {
+                               VideoRotation rotation
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                               ,
+                               VAProtectedSessionID va_protected_session_id
+#endif
+) {
   DCHECK_EQ(mode_, kVideoProcess);
   base::AutoLock auto_lock(*va_lock_);
 
@@ -2751,6 +2770,22 @@ bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
     VA_SUCCESS_OR_RETURN(mapping.Unmap(), VaapiFunctions::kVAUnmapBuffer,
                          false);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::ScopedClosureRunner protected_session_detacher;
+  if (va_protected_session_id != VA_INVALID_ID) {
+    VA_SUCCESS_OR_RETURN(vaAttachProtectedSession(va_display_, va_context_id_,
+                                                  va_protected_session_id),
+                         VaapiFunctions::kVAAttachProtectedSession, false);
+    // Note that we use a lambda expression to wrap vaDetachProtectedSession()
+    // because the function in |protected_session_detacher| must return void.
+    protected_session_detacher.ReplaceClosure(base::BindOnce(
+        [](VADisplay va_display, VAContextID va_context_id) {
+          vaDetachProtectedSession(va_display, va_context_id);
+        },
+        va_display_, va_context_id_));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   VA_SUCCESS_OR_RETURN(
       vaBeginPicture(va_display_, va_context_id_, va_surface_dest.id()),

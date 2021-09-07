@@ -136,7 +136,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // reference frame. Note that this doesn't mean the frame can be reused
   // immediately, as it might still be used by the client.
   void ReleaseVideoFrame(VASurfaceID surface_id);
-  // Callback for |frame_pool_| to notify of available resources.
+  // Callback for the frame pool to notify us when a frame becomes available.
   void NotifyFrameAvailable();
   // Callback from accelerator to indicate the protected state has been updated
   // so we can proceed or fail.
@@ -202,9 +202,6 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_;
 
-  // Video frame pool used to allocate and recycle video frames.
-  DmabufVideoFramePool* frame_pool_ = nullptr;
-
   // The time at which each buffer decode operation started. Not each decode
   // operation leads to a frame being output and frames might be reordered, so
   // we don't know when it's safe to drop a timestamp. This means we need to use
@@ -221,10 +218,10 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   // The list of frames currently used as output buffers or reference frames.
   std::map<VASurfaceID, scoped_refptr<VideoFrame>> output_frames_;
 
-  // VASurfaces are created via importing |frame_pool_| resources into libva in
-  // CreateSurface(). The following map keeps those VASurfaces for reuse
-  // according to the expectations of libva vaDestroySurfaces(): "Surfaces can
-  // only be destroyed after all contexts using these surfaces have been
+  // VASurfaces are created via importing resources from a DmabufVideoFramePool
+  // into libva in CreateSurface(). The following map keeps those VASurfaces for
+  // reuse according to the expectations of libva vaDestroySurfaces(): "Surfaces
+  // can only be destroyed after all contexts using these surfaces have been
   // destroyed."
   // TODO(crbug.com/1040291): remove this keep-alive when using SharedImages.
   base::small_map<std::map<gfx::GpuMemoryBufferId, scoped_refptr<VASurface>>>

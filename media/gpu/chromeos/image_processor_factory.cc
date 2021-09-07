@@ -51,7 +51,14 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
   if (!chosen_input_candidate)
     return nullptr;
 
-  auto chosen_output_format = out_format_picker.Run(vpp_supported_formats);
+  // Note that we pick the first input candidate as the preferred output format.
+  // The reason is that in practice, the VaapiVideoDecoder will make
+  // |input_candidates| either {NV12} or {P010} depending on the bitdepth. So
+  // choosing the first (and only) element will keep the bitdepth of the frame
+  // which is needed to display HDR content.
+  auto chosen_output_format =
+      out_format_picker.Run(/*candidates=*/vpp_supported_formats,
+                            /*preferred_fourcc=*/input_candidates[0].first);
   if (!chosen_output_format)
     return nullptr;
 
@@ -93,7 +100,8 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
       supported_fourccs.push_back(*fourcc);
   }
 
-  const auto output_fourcc = out_format_picker.Run(supported_fourccs);
+  const auto output_fourcc = out_format_picker.Run(
+      /*candidates=*/supported_fourccs, /*preferred_fourcc=*/absl::nullopt);
   if (!output_fourcc)
     return nullptr;
 

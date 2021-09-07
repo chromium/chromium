@@ -49,8 +49,10 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     Client() = default;
     virtual ~Client() = default;
 
-    // Get the video frame pool without passing the ownership. Return nullptr if
-    // the decoder is responsible for allocating its own frames.
+    // Returns the video frame pool without giving up ownership or nullptr if
+    // the decoder is responsible for allocating its own frames. Note that
+    // callers may not assume that the returned pointer is valid after a call to
+    // PickDecoderOutputFormat().
     virtual DmabufVideoFramePool* GetVideoFramePool() const = 0;
 
     // After this method is called from |decoder_|, the client needs to call
@@ -58,14 +60,33 @@ class MEDIA_GPU_EXPORT VideoDecoderMixin : public VideoDecoder {
     // flushed.
     virtual void PrepareChangeResolution() = 0;
 
-    // Return a valid format and size for |decoder_| output from given
-    // |candidates| and the visible rect. The size might be modified from the
-    // ones provided originally to accommodate the needs of the pipeline.
-    // Return StatusCode::kAborted if the process is aborted.
-    // Return StatusCode::kInvalidArgument if no valid format is found.
+    // Negotiates the output format and size of the decoder: if not scaling
+    // (i.e., the size of |decoder_visible_rect| is equal to |output_size|), it
+    // selects a renderable format out of |candidates| and initializes the main
+    // video frame pool with the selected format and the given arguments. If
+    // scaling or none of the |candidates| are considered renderable, this
+    // method attempts to initialize an image processor to reconcile the formats
+    // and/or perform scaling. |need_aux_frame_pool| indicates whether the
+    // caller needs a frame pool in the event that an image processor is needed:
+    // if true, a new pool is initialized and that pool can be obtained by
+    // calling GetVideoFramePool(). This pool will provide buffers consistent
+    // with the selected candidate out of |candidates|. If false, the caller
+    // must allocate its own buffers.
+    //
+    // This method returns StatusCode::kAborted if the initialization of a frame
+    // pool is aborted. On any other failure, it returns
+    // StatusCode::kInvalidArgument.
+    //
+    // Note: after a call to this method, callers should assume that a pointer
+    // returned by a prior call to GetVideoFramePool() is no longer valid.
     virtual StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
         const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
-        const gfx::Rect& visible_rect) = 0;
+        const gfx::Rect& decoder_visible_rect,
+        const gfx::Size& decoder_natural_size,
+        absl::optional<gfx::Size> output_size,
+        size_t num_of_pictures,
+        bool use_protected,
+        bool need_aux_frame_pool) = 0;
   };
 
   VideoDecoderMixin(
@@ -138,12 +159,14 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // VideoDecoderMixin::Client implementation.
   DmabufVideoFramePool* GetVideoFramePool() const override;
   void PrepareChangeResolution() override;
-  // After picking a format, it instantiates an |image_processor_| if none of
-  // format in |candidates| is renderable and an ImageProcessor can convert a
-  // candidate to renderable format.
   StatusOr<std::pair<Fourcc, gfx::Size>> PickDecoderOutputFormat(
       const std::vector<std::pair<Fourcc, gfx::Size>>& candidates,
-      const gfx::Rect& visible_rect) override;
+      const gfx::Rect& decoder_visible_rect,
+      const gfx::Size& decoder_natural_size,
+      absl::optional<gfx::Size> output_size,
+      size_t num_of_pictures,
+      bool use_protected,
+      bool need_aux_frame_pool) override;
 
  private:
   friend class VideoDecoderPipelineTest;
@@ -211,6 +234,12 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // thread safe and used from |client_task_runner_| and
   // |decoder_task_runner_|.
   std::unique_ptr<DmabufVideoFramePool> main_frame_pool_;
+
+  // When an image processor is needed, |auxiliary_frame_pool_| is the pool of
+  // output buffers for the |decoder_| (which will serve as the input buffers
+  // for the image processor) and |main_frame_pool_| will be the pool of output
+  // buffers for the image processor.
+  std::unique_ptr<DmabufVideoFramePool> auxiliary_frame_pool_;
 
   // The image processor is only created when the decoder cannot output frames
   // with renderable format.
