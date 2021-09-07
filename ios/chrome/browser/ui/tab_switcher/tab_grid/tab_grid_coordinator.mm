@@ -565,6 +565,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  // TODO(crbug.com/1246931): refactor to call setIncognitoBrowser from this
+  // function.
   IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
       agentFromScene:SceneStateBrowserAgent::FromBrowser(_incognitoBrowser)
                          ->GetSceneState()];
