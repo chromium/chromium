@@ -312,11 +312,24 @@
 
   self.attemptStatus = first_run::SignInAttemptStatus::ATTEMPTED;
 
-  [self.mediator startSignIn];
-
-  [self finishPresentingAndSkipRemainingScreens:NO];
-  base::UmaHistogramEnumeration("FirstRun.Stage",
-                                first_run::kSignInScreenCompletionWithSignIn);
+  DCHECK(self.mediator.selectedIdentity);
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.mediator.selectedIdentity
+                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.viewController];
+  __weak __typeof(self) weakSelf = self;
+  [self.mediator
+      startSignInWithAuthenticationFlow:authenticationFlow
+                             completion:^() {
+                               [weakSelf
+                                   finishPresentingAndSkipRemainingScreens:NO];
+                               base::UmaHistogramEnumeration(
+                                   "FirstRun.Stage",
+                                   first_run::
+                                       kSignInScreenCompletionWithSignIn);
+                             }];
 }
 
 @end

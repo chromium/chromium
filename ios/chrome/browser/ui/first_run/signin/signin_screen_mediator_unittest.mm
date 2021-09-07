@@ -4,14 +4,19 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
+#include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
@@ -38,6 +43,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) NSString* givenName;
 @property(nonatomic, strong) UIImage* avatar;
+@property(nonatomic, assign) BOOL UIWasEnabled;
 
 @end
 
@@ -58,6 +64,7 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 }
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
+  self.UIWasEnabled = UIEnabled;
 }
 
 @end
@@ -244,15 +251,66 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
 // Tests Signing In the selected identity.
 TEST_F(SigninScreenMediatorTest, TestSignIn) {
   mediator_.selectedIdentity = identity_;
+  identity_service_->AddIdentity(identity_);
+  mediator_.consumer = consumer_;
 
-  AuthenticationService* authenticationService =
+  // Set browser UI objects.
+  WebStateList* web_state_list = nullptr;
+  std::unique_ptr<Browser> browser =
+      std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+  UIViewController* presenting_view_controller_mock =
+      OCMStrictClassMock([UIViewController class]);
+
+  AuthenticationFlowPerformer* performer_mock =
+      OCMStrictClassMock([AuthenticationFlowPerformer class]);
+
+  // Set the authenticaiton flow for testing.
+  AuthenticationFlow* authentication_flow = [[AuthenticationFlow alloc]
+               initWithBrowser:browser.get()
+                      identity:identity_
+               shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
+              postSignInAction:POST_SIGNIN_ACTION_NONE
+      presentingViewController:presenting_view_controller_mock];
+  [authentication_flow setPerformerForTesting:performer_mock];
+
+  AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
 
-  EXPECT_NSEQ(nil, authenticationService->GetPrimaryIdentity(
-                       signin::ConsentLevel::kSignin));
+  // Mock the performer.
+  OCMExpect([performer_mock fetchManagedStatus:browser_state_.get()
+                                   forIdentity:identity_])
+      .andDo(^(NSInvocation*) {
+        [authentication_flow didFetchManagedStatus:nil];
+      });
+  OCMExpect([performer_mock signInIdentity:identity_
+                          withHostedDomain:nil
+                            toBrowserState:browser_state_.get()])
+      .andDo(^(NSInvocation*) {
+        auth_service->SignIn(identity_);
+      });
+  OCMExpect([performer_mock
+                shouldHandleMergeCaseForIdentity:identity_
+                                    browserState:browser_state_.get()])
+      .andReturn(NO);
 
-  [mediator_ startSignIn];
+  // Verify that there is no primary identity already signed in.
+  EXPECT_NSEQ(nil,
+              auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
 
-  EXPECT_NSEQ(identity_, authenticationService->GetPrimaryIdentity(
-                             signin::ConsentLevel::kSignin));
+  // Sign-in asynchronously using the mediator.
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  [mediator_ startSignInWithAuthenticationFlow:authentication_flow
+                                    completion:^() {
+                                      run_loop_ptr->QuitWhenIdle();
+                                    }];
+
+  EXPECT_FALSE(consumer_.UIWasEnabled);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(consumer_.UIWasEnabled);
+
+  EXPECT_NSEQ(identity_,
+              auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
 }

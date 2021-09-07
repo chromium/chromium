@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
@@ -68,12 +69,27 @@
   _accountManagerServiceObserver.reset();
 }
 
-- (void)startSignIn {
-  self.authenticationService->SignIn(self.selectedIdentity);
-
-  [self.logger logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                               addedAccount:self.addedAccount
-                      advancedSettingsShown:NO];
+- (void)startSignInWithAuthenticationFlow:
+            (AuthenticationFlow*)authenticationFlow
+                               completion:(ProceduralBlock)completion {
+  [self.consumer setUIEnabled:NO];
+  __weak __typeof(self) weakSelf = self;
+  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    // There is a bug in -startSignInWithCompletion: where the
+    // completion block may be invoked synchronously. To ensure
+    // that the completion block is always invoked asynchronously
+    // use a dispatch_async. Remove once crbug.com/1246480 is fixed.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf.consumer setUIEnabled:YES];
+      if (!success)
+        return;
+      [weakSelf.logger
+          logSigninCompletedWithResult:SigninCoordinatorResultSuccess
+                          addedAccount:weakSelf.addedAccount
+                 advancedSettingsShown:NO];
+      completion();
+    });
+  }];
 }
 
 #pragma mark - Properties

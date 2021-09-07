@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
+@class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
 @class ChromeIdentity;
@@ -37,7 +40,9 @@ class ChromeAccountManagerService;
 - (void)disconnect;
 
 // Sign in the selected account.
-- (void)startSignIn;
+- (void)startSignInWithAuthenticationFlow:
+            (AuthenticationFlow*)authenticationFlow
+                               completion:(ProceduralBlock)completion;
 
 @end
 
