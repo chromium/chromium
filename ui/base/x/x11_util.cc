@@ -207,6 +207,15 @@ bool GetDecoratedWindowBounds(x11::Window window, gfx::Rect* rect) {
   return true;
 }
 
+// Returns true if the event has event_x and event_y fields.
+bool EventHasCoordinates(const x11::Event& event) {
+  return event.As<x11::KeyEvent>() || event.As<x11::ButtonEvent>() ||
+         event.As<x11::MotionNotifyEvent>() || event.As<x11::CrossingEvent>() ||
+         event.As<x11::Input::LegacyDeviceEvent>() ||
+         event.As<x11::Input::DeviceEvent>() ||
+         event.As<x11::Input::CrossingEvent>();
+}
+
 }  // namespace
 
 bool GetWmNormalHints(x11::Window window, SizeHints* hints) {
@@ -354,34 +363,34 @@ bool QueryShmSupport() {
 
 int CoalescePendingMotionEvents(const x11::Event& x11_event,
                                 x11::Event* last_event) {
+  auto* conn = x11::Connection::Get();
+  auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
+  int num_coalesced = 0;
+
   const auto* motion = x11_event.As<x11::MotionNotifyEvent>();
   const auto* device = x11_event.As<x11::Input::DeviceEvent>();
   DCHECK(motion || device);
-  auto* conn = x11::Connection::Get();
-  int num_coalesced = 0;
+  DCHECK(!device || device->opcode == x11::Input::DeviceEvent::Motion ||
+         device->opcode == x11::Input::DeviceEvent::TouchUpdate);
 
   conn->ReadResponses();
-  if (motion) {
-    for (auto& next_event : conn->events()) {
+  for (auto& event : conn->events()) {
+    if (!EventHasCoordinates(event))
+      continue;
+
+    if (motion) {
+      const auto* next_motion = event.As<x11::MotionNotifyEvent>();
+
       // Discard all but the most recent motion event that targets the same
       // window with unchanged state.
-      const auto* next_motion = next_event.As<x11::MotionNotifyEvent>();
       if (next_motion && next_motion->event == motion->event &&
           next_motion->child == motion->child &&
           next_motion->state == motion->state) {
-        *last_event = std::move(next_event);
-      } else {
-        break;
+        *last_event = std::move(event);
+        continue;
       }
-    }
-  } else {
-    DCHECK(device->opcode == x11::Input::DeviceEvent::Motion ||
-           device->opcode == x11::Input::DeviceEvent::TouchUpdate);
-
-    auto* ddmx11 = ui::DeviceDataManagerX11::GetInstance();
-    for (auto& event : conn->events()) {
+    } else {
       auto* next_device = event.As<x11::Input::DeviceEvent>();
-
       if (!next_device)
         break;
 
@@ -395,27 +404,26 @@ int CoalescePendingMotionEvents(const x11::Event& x11_event,
         continue;
       }
 
+      // Confirm that the motion event is of the same type, is
+      // targeted at the same window, and that no buttons or modifiers
+      // have changed.
       if (next_device->opcode == device->opcode &&
           !ddmx11->IsCMTGestureEvent(event) &&
-          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL) {
-        // Confirm that the motion event is targeted at the same window
-        // and that no buttons or modifiers have changed.
-        if (device->event == next_device->event &&
-            device->child == next_device->child &&
-            device->detail == next_device->detail &&
-            device->button_mask == next_device->button_mask &&
-            device->mods.base == next_device->mods.base &&
-            device->mods.latched == next_device->mods.latched &&
-            device->mods.locked == next_device->mods.locked &&
-            device->mods.effective == next_device->mods.effective) {
-          *last_event = std::move(event);
-          num_coalesced++;
-          continue;
-        }
+          ddmx11->GetScrollClassEventDetail(event) == SCROLL_TYPE_NO_SCROLL &&
+          device->event == next_device->event &&
+          device->child == next_device->child &&
+          device->detail == next_device->detail &&
+          device->button_mask == next_device->button_mask &&
+          device->mods.base == next_device->mods.base &&
+          device->mods.latched == next_device->mods.latched &&
+          device->mods.locked == next_device->mods.locked &&
+          device->mods.effective == next_device->mods.effective) {
+        *last_event = std::move(event);
+        num_coalesced++;
+        continue;
       }
-
-      break;
     }
+    break;
   }
 
   return num_coalesced;
