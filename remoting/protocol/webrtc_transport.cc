@@ -56,6 +56,9 @@ namespace protocol {
 class ScopedAllowThreadJoinForWebRtcTransport
     : public base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {};
 
+class ScopedAllowSyncPrimitivesForWebRtcTransport
+    : public base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {};
+
 namespace {
 
 using DataChannelState = webrtc::DataChannelInterface::DataState;
@@ -325,18 +328,28 @@ class WebrtcTransport::PeerConnectionWrapper
   ~PeerConnectionWrapper() override {
     thread_join_watchdog_->Arm();
 
-    // PeerConnection creates threads internally, which are joined when the
-    // connection is closed. See crbug.com/660081.
-    ScopedAllowThreadJoinForWebRtcTransport allow_thread_join;
-    peer_connection_->Close();
-    peer_connection_ = nullptr;
-    peer_connection_factory_ = nullptr;
+    {
+      // |peer_connection_| creates threads internally, which are joined when
+      // the connection is closed. See crbug.com/660081.
+      ScopedAllowThreadJoinForWebRtcTransport allow_thread_join;
+      peer_connection_->Close();
+      peer_connection_ = nullptr;
+      peer_connection_factory_ = nullptr;
+    }
+
     audio_module_ = nullptr;
 
     if (before_disarm_thread_join_watchdog_callback_) {
       std::move(before_disarm_thread_join_watchdog_callback_).Run();
     }
     thread_join_watchdog_->Disarm();
+
+    {
+      // |thread_join_watchdog_| uses a lock internally so we need to allow sync
+      // primitives when destroying the watchdog.
+      ScopedAllowSyncPrimitivesForWebRtcTransport allow_sync_primitives;
+      thread_join_watchdog_.reset();
+    }
   }
 
   WebrtcAudioModule* audio_module() {
@@ -562,12 +575,15 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
       return false;
     }
 
-    peer_connection()->SetRemoteDescription(
-        SetSessionDescriptionObserver::Create(base::BindOnce(
-            &WebrtcTransport::OnRemoteDescriptionSet,
-            weak_factory_.GetWeakPtr(),
-            type == webrtc::SessionDescriptionInterface::kOffer)),
-        webrtc_session_description.release());
+    {
+      ScopedAllowThreadJoinForWebRtcTransport allow_wait;
+      peer_connection()->SetRemoteDescription(
+          SetSessionDescriptionObserver::Create(base::BindOnce(
+              &WebrtcTransport::OnRemoteDescriptionSet,
+              weak_factory_.GetWeakPtr(),
+              type == webrtc::SessionDescriptionInterface::kOffer)),
+          webrtc_session_description.release());
+    }
 
     // SetRemoteDescription() might overwrite any bitrate caps previously set,
     // so (re)apply them here. This might happen if ICE state were already
@@ -1217,6 +1233,7 @@ void WebrtcTransport::StartRtcEventLogging() {
 void WebrtcTransport::StopRtcEventLogging() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (peer_connection()) {
+    ScopedAllowThreadJoinForWebRtcTransport allow_wait;
     peer_connection()->StopRtcEventLog();
   }
 }

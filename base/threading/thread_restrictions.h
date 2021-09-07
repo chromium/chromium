@@ -300,6 +300,7 @@ namespace remoting {
 class AutoThread;
 class ScopedBypassIOThreadRestrictions;
 namespace protocol {
+class ScopedAllowSyncPrimitivesForWebRtcTransport;
 class ScopedAllowThreadJoinForWebRtcTransport;
 }
 }
@@ -601,8 +602,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class dbus::Bus;                           // http://crbug.com/125222
   friend class disk_cache::BackendImpl;             // http://crbug.com/74623
   friend class disk_cache::InFlightIO;              // http://crbug.com/74623
-  friend class remoting::protocol::
-      ScopedAllowThreadJoinForWebRtcTransport;      // http://crbug.com/660081
   friend class midi::TaskService;                   // https://crbug.com/796830
   friend class net::internal::AddressTrackerLinux;  // http://crbug.com/125097
   friend class net::
@@ -612,6 +611,10 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   friend class proxy_resolver::
       ScopedAllowThreadJoinForProxyResolverV8Tracing;  // http://crbug.com/69710
   friend class remoting::AutoThread;  // https://crbug.com/944316
+  friend class remoting::protocol::
+      ScopedAllowSyncPrimitivesForWebRtcTransport;  // http://crbug.com/1198501
+  friend class remoting::protocol::
+      ScopedAllowThreadJoinForWebRtcTransport;  // http://crbug.com/660081
   // Not used in production yet, https://crbug.com/844078.
   friend class service_manager::ServiceProcessLauncher;
   friend class ui::WindowResizeHelperMac;  // http://crbug.com/902829
