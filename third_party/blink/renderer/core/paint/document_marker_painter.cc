@@ -75,18 +75,9 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
   // Match the artwork used by the Mac.
   static const float kR = 1.5f;
 
-  // top->bottom translucent gradient.
-  const SkColor colors[2] = {
-      SkColorSetARGB(0x48, SkColorGetR(color), SkColorGetG(color),
-                     SkColorGetB(color)),
-      color};
-  const SkPoint pts[2] = {SkPoint::Make(0, 0), SkPoint::Make(0, 2 * kR)};
-
   PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(color);
-  flags.setShader(PaintShader::MakeLinearGradient(
-      pts, colors, nullptr, base::size(colors), SkTileMode::kClamp));
   PaintRecorder recorder;
   recorder.beginRecording(kMarkerWidth, kMarkerHeight);
   recorder.getRecordingCanvas()->drawOval(SkRect::MakeWH(2 * kR, 2 * kR),
