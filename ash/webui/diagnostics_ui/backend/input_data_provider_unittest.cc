@@ -479,5 +479,23 @@ TEST_F(InputDataProviderTest, GetKeyboardVisualLayout_FrenchFrench) {
   run_loop.Run();
 }
 
+TEST_F(InputDataProviderTest, ResetReceiverOnDisconnect) {
+  ASSERT_FALSE(provider_->ReceiverIsBound());
+  mojo::Remote<mojom::InputDataProvider> remote;
+  provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(provider_->ReceiverIsBound());
+
+  // Unbind remote to trigger disconnect and disconnect handler.
+  remote.reset();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(provider_->ReceiverIsBound());
+
+  // Test intent is to ensure interface can be rebound when application is
+  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
+  // will reset the receiver to its unbound state.
+  provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(provider_->ReceiverIsBound());
+}
+
 }  // namespace diagnostics
 }  // namespace ash

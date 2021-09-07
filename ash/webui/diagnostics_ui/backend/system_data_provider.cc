@@ -322,7 +322,18 @@ void SystemDataProvider::PowerChanged(
 
 void SystemDataProvider::BindInterface(
     mojo::PendingReceiver<mojom::SystemDataProvider> pending_receiver) {
+  DCHECK(!ReceiverIsBound());
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &SystemDataProvider::OnBoundInterfaceDisconnect, base::Unretained(this)));
+}
+
+bool SystemDataProvider::ReceiverIsBound() {
+  return receiver_.is_bound();
+}
+
+void SystemDataProvider::OnBoundInterfaceDisconnect() {
+  receiver_.reset();
 }
 
 void SystemDataProvider::SetBatteryChargeStatusTimerForTesting(

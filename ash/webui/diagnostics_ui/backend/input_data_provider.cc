@@ -127,9 +127,19 @@ void InputDataProvider::Initialize() {
 
 void InputDataProvider::BindInterface(
     mojo::PendingReceiver<mojom::InputDataProvider> pending_receiver) {
+  DCHECK(!ReceiverIsBound());
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &InputDataProvider::OnBoundInterfaceDisconnect, base::Unretained(this)));
 }
 
+bool InputDataProvider::ReceiverIsBound() {
+  return receiver_.is_bound();
+}
+
+void InputDataProvider::OnBoundInterfaceDisconnect() {
+  receiver_.reset();
+}
 void InputDataProvider::GetConnectedDevices(
     GetConnectedDevicesCallback callback) {
   std::vector<mojom::KeyboardInfoPtr> keyboard_vector;

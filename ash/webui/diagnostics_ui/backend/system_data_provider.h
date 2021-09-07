@@ -68,6 +68,10 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void SetCpuUsageTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
 
+  // Handler for when remote attached to |receiver_| disconnects.
+  void OnBoundInterfaceDisconnect();
+  bool ReceiverIsBound();
+
  private:
   void BindCrosHealthdProbeServiceIfNeccessary();
 

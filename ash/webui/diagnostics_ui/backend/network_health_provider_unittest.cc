@@ -4,9 +4,12 @@
 
 #include "ash/webui/diagnostics_ui/backend/network_health_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/diagnostics_ui/backend/networking_log.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
@@ -31,7 +34,6 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "dbus/object_path.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -1006,6 +1008,31 @@ TEST_F(NetworkHealthProviderTest, NetworkingLog) {
   // Log contents tested in networking_log_unittest.cc -
   // NetworkingLogTest.DetailedLogContentsWiFi.
   EXPECT_FALSE(log.GetContents().empty());
+}
+
+TEST_F(NetworkHealthProviderTest, ResetReceiverOnDisconnect) {
+  // Ensure required features are enabled before binding to avoid DCHECK.
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      std::vector<base::Feature>{features::kDiagnosticsAppNavigation,
+                                 features::kEnableNetworkingInDiagnosticsApp,
+                                 features::kDiagnosticsApp},
+      std::vector<base::Feature>{});
+  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
+  mojo::Remote<mojom::NetworkHealthProvider> remote;
+  network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
+
+  // Unbind remote to trigger disconnect and disconnect handler.
+  remote.reset();
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(network_health_provider_->ReceiverIsBound());
+
+  // Test intent is to ensure interface can be rebound when application is
+  // reloaded using |CTRL + R|.  A disconnect should be signaled in which we
+  // will reset the receiver to its unbound state.
+  network_health_provider_->BindInterface(remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(network_health_provider_->ReceiverIsBound());
 }
 
 }  // namespace diagnostics

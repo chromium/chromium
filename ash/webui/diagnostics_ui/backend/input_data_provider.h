@@ -45,6 +45,9 @@ class InputDataProvider : public mojom::InputDataProvider,
 
   void BindInterface(
       mojo::PendingReceiver<mojom::InputDataProvider> pending_receiver);
+  // Handler for when remote attached to |receiver_| disconnects.
+  void OnBoundInterfaceDisconnect();
+  bool ReceiverIsBound();
 
   // mojom::InputDataProvider:
   void GetConnectedDevices(GetConnectedDevicesCallback callback) override;

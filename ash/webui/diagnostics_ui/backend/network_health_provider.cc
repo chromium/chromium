@@ -527,7 +527,19 @@ void NetworkHealthProvider::OnManagedPropertiesReceived(
 void NetworkHealthProvider::BindInterface(
     mojo::PendingReceiver<mojom::NetworkHealthProvider> pending_receiver) {
   DCHECK(features::IsNetworkingInDiagnosticsAppEnabled());
+  DCHECK(!ReceiverIsBound());
   receiver_.Bind(std::move(pending_receiver));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&NetworkHealthProvider::OnBoundInterfaceDisconnect,
+                     base::Unretained(this)));
+}
+
+bool NetworkHealthProvider::ReceiverIsBound() {
+  return receiver_.is_bound();
+}
+
+void NetworkHealthProvider::OnBoundInterfaceDisconnect() {
+  receiver_.reset();
 }
 
 void NetworkHealthProvider::NotifyNetworkListObservers() {
