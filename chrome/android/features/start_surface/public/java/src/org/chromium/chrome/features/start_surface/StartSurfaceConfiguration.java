@@ -66,6 +66,12 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     HOME_BUTTON_ON_GRID_TAB_SWITCHER_PARAM, false);
 
+    private static final String TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM =
+            "tab_count_button_on_start_surface";
+    public static final BooleanCachedFieldTrialParameter TAB_COUNT_BUTTON_ON_START_SURFACE =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    TAB_COUNT_BUTTON_ON_START_SURFACE_PARAM, false);
+
     private static final String NEW_SURFACE_PARAM = "new_home_surface_from_home_button";
     public static final StringCachedFieldTrialParameter NEW_SURFACE_FROM_HOME_BUTTON =
             new StringCachedFieldTrialParameter(

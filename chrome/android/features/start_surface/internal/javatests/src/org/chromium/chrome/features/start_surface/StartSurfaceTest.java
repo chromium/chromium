@@ -1522,7 +1522,8 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
-            + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"})
+            + "/new_home_surface_from_home_button/hide_mv_tiles_and_tab_switcher"
+            + "/tab_count_button_on_start_surface/true"})
     public void testNewSurfaceFromHomeButton(){
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1556,7 +1557,8 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/false"
-            + "/new_home_surface_from_home_button/hide_tab_switcher_only"})
+            + "/new_home_surface_from_home_button/hide_tab_switcher_only"
+            + "/tab_count_button_on_start_surface/true"})
     public void testNewSurfaceHideTabOnlyFromHomeButton() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
