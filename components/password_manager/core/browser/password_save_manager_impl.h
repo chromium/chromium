@@ -26,8 +26,9 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       std::unique_ptr<FormSaver> account_form_saver);
   ~PasswordSaveManagerImpl() override;
 
-  // Returns a MultiStorePasswordSaveManager if the password account storage
-  // feature is enabled. Returns a PasswordSaveManagerImpl otherwise.
+  // Creates a PasswordSaveManagerImpl instance.
+  // TODO(crbug.com/1108738): Remove this factory method and update call sites
+  // to use the constructor directly.
   static std::unique_ptr<PasswordSaveManagerImpl> CreatePasswordSaveManagerImpl(
       const PasswordManagerClient* client);
 

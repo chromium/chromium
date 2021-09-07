@@ -12,7 +12,6 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
-#include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -304,20 +303,15 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
     auto mock_profile_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
     mock_profile_form_saver_ = mock_profile_form_saver.get();
 
-    if (!enable_account_store) {
-      password_save_manager_impl_ = std::make_unique<PasswordSaveManagerImpl>(
-          /*profile_form_saver=*/std::move(mock_profile_form_saver),
-          /*account_form_saver=*/nullptr);
-    } else {
-      auto mock_account_form_saver =
-          std::make_unique<NiceMock<MockFormSaver>>();
+    std::unique_ptr<NiceMock<MockFormSaver>> mock_account_form_saver;
+    if (enable_account_store) {
+      mock_account_form_saver = std::make_unique<NiceMock<MockFormSaver>>();
       mock_account_form_saver_ = mock_account_form_saver.get();
-
-      password_save_manager_impl_ =
-          std::make_unique<MultiStorePasswordSaveManager>(
-              /*profile_form_saver=*/std::move(mock_profile_form_saver),
-              /*account_form_saver=*/std::move(mock_account_form_saver));
     }
+
+    password_save_manager_impl_ = std::make_unique<PasswordSaveManagerImpl>(
+        /*profile_form_saver=*/std::move(mock_profile_form_saver),
+        /*account_form_saver=*/std::move(mock_account_form_saver));
 
     password_save_manager_impl_->Init(&client_, fetcher_.get(),
                                       metrics_recorder_, &votes_uploader_);
@@ -418,8 +412,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  NiceMock<MockFormSaver>* mock_account_form_saver_;
-  NiceMock<MockFormSaver>* mock_profile_form_saver_;
+  NiceMock<MockFormSaver>* mock_account_form_saver_ = nullptr;
+  NiceMock<MockFormSaver>* mock_profile_form_saver_ = nullptr;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
 };
 

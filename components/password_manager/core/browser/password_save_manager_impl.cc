@@ -15,7 +15,6 @@
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
-#include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_generation_manager.h"
@@ -204,7 +203,7 @@ PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(
   PasswordStoreInterface* account_store =
       client->GetAccountPasswordStoreInterface();
 
-  return std::make_unique<MultiStorePasswordSaveManager>(
+  return std::make_unique<PasswordSaveManagerImpl>(
       std::make_unique<FormSaverImpl>(profile_store),
       account_store ? std::make_unique<FormSaverImpl>(account_store) : nullptr);
 }

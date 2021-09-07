@@ -113,8 +113,6 @@ static_library("browser") {
     "move_password_to_account_store_helper.h",
     "multi_store_form_fetcher.cc",
     "multi_store_form_fetcher.h",
-    "multi_store_password_save_manager.cc",
-    "multi_store_password_save_manager.h",
     "old_google_credentials_cleaner.cc",
     "old_google_credentials_cleaner.h",
     "origin_credential_store.cc",
