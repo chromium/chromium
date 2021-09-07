@@ -1910,6 +1910,9 @@ crbug.com/687225 external/wpt/css/css-counter-styles/ethiopic-numeric/* [ Skip ]
 wpt_internal/document-transition/* [ Skip ]
 virtual/document-transition/wpt_internal/document-transition/* [ Pass ]
 
+# Manual tests in wpt/touch-events
+crbug.com/1247306 external/wpt/touch-events/touch-retargeting-manual.html [ Skip ]
+
 # Tests Linux system font available only in Regular style in Linux set of fonts.
 crbug.com/509989 [ Mac ] virtual/text-antialias/font-synthesis-weight-system-linux.html [ Skip ]
 crbug.com/509989 [ Win ] virtual/text-antialias/font-synthesis-weight-system-linux.html [ Skip ]

@@ -184,7 +184,8 @@ void TouchEvent::Trace(Visitor* visitor) const {
 }
 
 DispatchEventResult TouchEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  GetEventPath().AdjustForTouchEvent(*this);
+  if (isTrusted())
+    GetEventPath().AdjustForTouchEvent(*this);
   return dispatcher.Dispatch();
 }
 

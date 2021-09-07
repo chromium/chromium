@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -91,6 +93,18 @@ TEST_F(TouchEventTest,
                   "https://www.chromestatus.com/features/5093566007214080"));
   EXPECT_THAT(MessageSources(),
               ElementsAre(mojom::ConsoleMessageSource::kIntervention));
+}
+
+TEST_F(TouchEventTest, DispatchWithEmptyDocTargetDoesntCrash) {
+  String script =
+      "var empty_document = new Document();"
+      "var touch = new Touch({'identifier': 0, 'target': empty_document});"
+      "var touch_event = new TouchEvent('touchmove', {'touches': [touch]});"
+      "document.dispatchEvent(touch_event);";
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script))
+      ->RunScript(GetDocument().domWindow());
 }
 
 class TouchEventTestNoFrame : public testing::Test {};
