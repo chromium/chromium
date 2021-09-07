@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_PREPOPULATED_COMPUTED_STYLE_PROPERTY_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_PREPOPULATED_COMPUTED_STYLE_PROPERTY_MAP_H_
 
-#include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
