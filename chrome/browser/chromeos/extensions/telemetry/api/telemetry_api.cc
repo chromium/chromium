@@ -18,7 +18,7 @@ TelemetryApiFunctionBase::TelemetryApiFunctionBase()
     : probe_service_(remote_probe_service_.BindNewPipeAndPassReceiver()) {}
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
-// getVpdInfo ------------------------------------------------------------------
+// OsTelemetryGetVpdInfoFunction -----------------------------------------------
 
 OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
 OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
@@ -62,7 +62,7 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
   Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
 }
 
-// getOemData ------------------------------------------------------------------
+// OsTelemetryGetOemDataFunction -----------------------------------------------
 
 OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
 OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;

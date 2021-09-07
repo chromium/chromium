@@ -21,7 +21,7 @@ DiagnosticsApiFunctionBase::DiagnosticsApiFunctionBase()
           remote_diagnostics_service_.BindNewPipeAndPassReceiver()) {}
 DiagnosticsApiFunctionBase::~DiagnosticsApiFunctionBase() = default;
 
-// getAvailableRoutines --------------------------------------------------------
+// OsDiagnosticsGetAvailableRoutinesFunction -----------------------------------
 
 namespace {
 
@@ -143,7 +143,7 @@ void DiagnosticsApiRunRoutineFunctionBase::OnResult(
   Respond(OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
 }
 
-// runBatteryCapacityRoutine ---------------------------------------------------
+// OsDiagnosticsRunBatteryCapacityRoutineFunction ------------------------------
 
 OsDiagnosticsRunBatteryCapacityRoutineFunction::
     OsDiagnosticsRunBatteryCapacityRoutineFunction() = default;
@@ -160,7 +160,7 @@ OsDiagnosticsRunBatteryCapacityRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runBatteryChargeRoutine -----------------------------------------------------
+// OsDiagnosticsRunBatteryChargeRoutineFunction --------------------------------
 
 OsDiagnosticsRunBatteryChargeRoutineFunction::
     OsDiagnosticsRunBatteryChargeRoutineFunction() = default;
@@ -183,7 +183,7 @@ OsDiagnosticsRunBatteryChargeRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runBatteryDischargeRoutine --------------------------------------------------
+// OsDiagnosticsRunBatteryDischargeRoutineFunction -----------------------------
 
 OsDiagnosticsRunBatteryDischargeRoutineFunction::
     OsDiagnosticsRunBatteryDischargeRoutineFunction() = default;
@@ -207,7 +207,7 @@ OsDiagnosticsRunBatteryDischargeRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runBatteryHealthRoutine -----------------------------------------------------
+// OsDiagnosticsRunBatteryHealthRoutineFunction --------------------------------
 
 OsDiagnosticsRunBatteryHealthRoutineFunction::
     OsDiagnosticsRunBatteryHealthRoutineFunction() = default;
@@ -224,7 +224,7 @@ OsDiagnosticsRunBatteryHealthRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runCpuCacheRoutine ----------------------------------------------------------
+// OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
 
 OsDiagnosticsRunCpuCacheRoutineFunction::
     OsDiagnosticsRunCpuCacheRoutineFunction() = default;
@@ -246,7 +246,7 @@ OsDiagnosticsRunCpuCacheRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runCpuStressRoutine ---------------------------------------------------------
+// OsDiagnosticsRunCpuStressRoutineFunction ------------------------------------
 
 OsDiagnosticsRunCpuStressRoutineFunction::
     OsDiagnosticsRunCpuStressRoutineFunction() = default;
@@ -268,7 +268,7 @@ OsDiagnosticsRunCpuStressRoutineFunction::Run() {
   return RespondLater();
 }
 
-// runMemoryRoutine ------------------------------------------------------------
+// OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
 
 OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =
     default;
