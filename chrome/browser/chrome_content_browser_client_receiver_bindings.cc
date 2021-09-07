@@ -258,11 +258,9 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
       ui_task_runner);
 #endif
 #if defined(OS_ANDROID)
-  Profile* profile =
-      Profile::FromBrowserContext(render_process_host->GetBrowserContext());
   registry->AddInterface(
       base::BindRepeating(&android::AvailableOfflineContentProvider::Create,
-                          profile),
+                          render_process_host->GetID()),
       content::GetUIThreadTaskRunner({}));
 #endif
 

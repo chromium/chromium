@@ -27,7 +27,7 @@ class AvailableOfflineContentProvider
     : public chrome::mojom::AvailableOfflineContentProvider {
  public:
   // Public for testing.
-  explicit AvailableOfflineContentProvider(Profile* profile);
+  explicit AvailableOfflineContentProvider(int render_process_host_id);
   ~AvailableOfflineContentProvider() override;
 
   // chrome::mojom::AvailableOfflineContentProvider methods.
@@ -38,7 +38,7 @@ class AvailableOfflineContentProvider
   void ListVisibilityChanged(bool is_visible) override;
 
   static void Create(
-      Profile* profile,
+      int render_process_host_id,
       mojo::PendingReceiver<chrome::mojom::AvailableOfflineContentProvider>
           receiver);
 
@@ -48,7 +48,9 @@ class AvailableOfflineContentProvider
       offline_items_collection::OfflineContentAggregator* aggregator,
       const std::vector<offline_items_collection::OfflineItem>& all_items);
 
-  Profile* profile_;
+  Profile* GetProfile();
+
+  const int render_process_host_id_;
 
   base::WeakPtrFactory<AvailableOfflineContentProvider> weak_ptr_factory_{this};
 

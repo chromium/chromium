@@ -15,6 +15,7 @@
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/common/available_offline_content.mojom-test-utils.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -124,13 +125,27 @@ OfflineItemVisuals TestThumbnail() {
   return visuals;
 }
 
-class AvailableOfflineContentTest : public testing::Test {
+class AvailableOfflineContentTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    content_provider_ = std::make_unique<
+        offline_items_collection::MockOfflineContentProvider>();
+    provider_ = std::make_unique<AvailableOfflineContentProvider>(
+        main_rfh()->GetProcess()->GetID());
+
     aggregator_ =
-        OfflineContentAggregatorFactory::GetForKey(profile_.GetProfileKey());
-    aggregator_->RegisterProvider(kProviderNamespace, &content_provider_);
-    content_provider_.SetVisuals({});
+        OfflineContentAggregatorFactory::GetForKey(profile()->GetProfileKey());
+    aggregator_->RegisterProvider(kProviderNamespace, content_provider_.get());
+    content_provider_->SetVisuals({});
+  }
+
+  void TearDown() override {
+    provider_.release();
+    content_provider_.release();
+
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   std::tuple<bool, std::vector<chrome::mojom::AvailableOfflineContentPtr>>
@@ -138,18 +153,17 @@ class AvailableOfflineContentTest : public testing::Test {
     bool list_visible_by_prefs;
     std::vector<chrome::mojom::AvailableOfflineContentPtr> suggestions;
     chrome::mojom::AvailableOfflineContentProviderAsyncWaiter waiter(
-        &provider_);
+        provider_.get());
     waiter.List(&list_visible_by_prefs, &suggestions);
     return std::make_tuple(list_visible_by_prefs, std::move(suggestions));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_ =
       std::make_unique<base::test::ScopedFeatureList>();
   OfflineContentAggregator* aggregator_;
-  offline_items_collection::MockOfflineContentProvider content_provider_;
-  AvailableOfflineContentProvider provider_{&profile_};
+  std::unique_ptr<offline_items_collection::MockOfflineContentProvider>
+      content_provider_;
+  std::unique_ptr<AvailableOfflineContentProvider> provider_;
 };
 
 TEST_F(AvailableOfflineContentTest, NoContent) {
@@ -164,10 +178,10 @@ TEST_F(AvailableOfflineContentTest, NoContent) {
 TEST_F(AvailableOfflineContentTest, TooFewInterestingItems) {
   // Adds items so that we're one-ff of reaching the minimum required count so
   // that any extra item considered interesting would effect the results.
-  content_provider_.SetItems({UninterestingImageItem(), OfflinePageItem(),
-                              SuggestedOfflinePageItem(), VideoItem(),
-                              TransientItem(), OffTheRecordItem(),
-                              IncompleteItem(), DangerousItem()});
+  content_provider_->SetItems({UninterestingImageItem(), OfflinePageItem(),
+                               SuggestedOfflinePageItem(), VideoItem(),
+                               TransientItem(), OffTheRecordItem(),
+                               IncompleteItem(), DangerousItem()});
 
   // Call List().
   bool list_visible_by_prefs;
@@ -182,11 +196,11 @@ TEST_F(AvailableOfflineContentTest, TooFewInterestingItems) {
 
 TEST_F(AvailableOfflineContentTest, FourInterestingItems) {
   // We need at least 4 interesting items for anything to show up at all.
-  content_provider_.SetItems({UninterestingImageItem(), VideoItem(),
-                              SuggestedOfflinePageItem(), AudioItem(),
-                              OfflinePageItem()});
+  content_provider_->SetItems({UninterestingImageItem(), VideoItem(),
+                               SuggestedOfflinePageItem(), AudioItem(),
+                               OfflinePageItem()});
 
-  content_provider_.SetVisuals(
+  content_provider_->SetVisuals(
       {{SuggestedOfflinePageItem().id, TestThumbnail()}});
 
   // Call List().
@@ -226,14 +240,14 @@ TEST_F(AvailableOfflineContentTest, FourInterestingItems) {
 
 TEST_F(AvailableOfflineContentTest, ListVisibilityChanges) {
   // We need at least 4 interesting items for anything to show up at all.
-  content_provider_.SetItems({UninterestingImageItem(), VideoItem(),
-                              SuggestedOfflinePageItem(), AudioItem(),
-                              OfflinePageItem()});
+  content_provider_->SetItems({UninterestingImageItem(), VideoItem(),
+                               SuggestedOfflinePageItem(), AudioItem(),
+                               OfflinePageItem()});
 
-  content_provider_.SetVisuals(
+  content_provider_->SetVisuals(
       {{SuggestedOfflinePageItem().id, TestThumbnail()}});
   // Set pref to hide the list.
-  profile_.GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible, false);
+  profile()->GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible, false);
 
   // Call List().
   bool list_visible_by_prefs;
@@ -245,10 +259,10 @@ TEST_F(AvailableOfflineContentTest, ListVisibilityChanges) {
   EXPECT_FALSE(list_visible_by_prefs);
 
   // Simulate visibility changed by the user to "shown".
-  provider_.ListVisibilityChanged(true);
+  provider_->ListVisibilityChanged(true);
 
   EXPECT_TRUE(
-      profile_.GetPrefs()->GetBoolean(feed::prefs::kArticlesListVisible));
+      profile()->GetPrefs()->GetBoolean(feed::prefs::kArticlesListVisible));
 
   // Call List() again and check list is not visible.
   std::tie(list_visible_by_prefs, suggestions) = ListAndWait();
