@@ -241,47 +241,48 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 // If the profile are created dynamically and there is more than one profile
 // simultaneously, the WorkerTaskProvider can still works.
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
-                       DISABLED_CreateTasksForMultiProfiles) {
+                       CreateTasksForMultiProfiles) {
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
+
+  const GURL kCreateServiceWorkerURL = embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html");
+
   Browser* browser_1 = CreateNewProfileAndSwitch();
-  ui_test_utils::NavigateToURL(
-      browser_1, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
-  EXPECT_EQ("DONE", EvalJs(browser_1->tab_strip_model()->GetActiveWebContents(),
+  content::RenderFrameHost* render_frame_host_1 =
+      ui_test_utils::NavigateToURL(browser_1, kCreateServiceWorkerURL);
+  ASSERT_EQ(render_frame_host_1->GetLastCommittedURL(),
+            kCreateServiceWorkerURL);
+  EXPECT_EQ("DONE", EvalJs(render_frame_host_1,
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
 
   Browser* browser_2 = CreateNewProfileAndSwitch();
-  ui_test_utils::NavigateToURL(
-      browser_2, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
-  EXPECT_EQ("DONE", EvalJs(browser_2->tab_strip_model()->GetActiveWebContents(),
+  content::RenderFrameHost* render_frame_host_2 =
+      ui_test_utils::NavigateToURL(browser_2, kCreateServiceWorkerURL);
+  ASSERT_EQ(render_frame_host_2->GetLastCommittedURL(),
+            kCreateServiceWorkerURL);
+  EXPECT_EQ("DONE", EvalJs(render_frame_host_2,
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(2);
+
+  const GURL kServiceWorkerURL = embedded_test_server()->GetURL(
+      "/service_worker/respond_with_fetch_worker.js");
 
   const Task* task_1 = tasks()[0];
   EXPECT_EQ(task_1->GetChildProcessUniqueID(), GetChildProcessID(browser_1));
   EXPECT_EQ(Task::SERVICE_WORKER, task_1->GetType());
-  EXPECT_TRUE(base::StartsWith(
-      task_1->title(),
-      ExpectedTaskTitle(
-          embedded_test_server()
-              ->GetURL("/service_worker/respond_with_fetch_worker.js")
-              .spec()),
-      base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(task_1->title(),
+                               ExpectedTaskTitle(kServiceWorkerURL.spec()),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
   const Task* task_2 = tasks()[1];
   EXPECT_EQ(task_2->GetChildProcessUniqueID(), GetChildProcessID(browser_2));
   EXPECT_EQ(Task::SERVICE_WORKER, task_2->GetType());
-  EXPECT_TRUE(base::StartsWith(
-      task_2->title(),
-      ExpectedTaskTitle(
-          embedded_test_server()
-              ->GetURL("/service_worker/respond_with_fetch_worker.js")
-              .spec()),
-      base::CompareCase::INSENSITIVE_ASCII));
+  EXPECT_TRUE(base::StartsWith(task_2->title(),
+                               ExpectedTaskTitle(kServiceWorkerURL.spec()),
+                               base::CompareCase::INSENSITIVE_ASCII));
 
   GetServiceWorkerContext(browser_1)->StopAllServiceWorkersForStorageKey(
       blink::StorageKey(
