@@ -370,7 +370,7 @@ void BackgroundFetchEventDispatcher::LogBackgroundFetchCompletionForDevTools(
 
   // TODO(https://crbug.com/1199077): Pass `registration_id.storage_key()`
   // directly once DevToolsBackgroundServicesContextImpl implements StorageKey.
-  devtools_context_->LogBackgroundServiceEventOnCoreThread(
+  devtools_context_->LogBackgroundServiceEvent(
       registration_id.service_worker_registration_id(),
       registration_id.storage_key().origin(),
       DevToolsBackgroundService::kBackgroundFetch,

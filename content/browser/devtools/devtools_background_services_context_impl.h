@@ -36,8 +36,7 @@ class ServiceWorkerContextWrapper;
 // client, as the protocol handler will have access to an instance of the
 // context.
 //
-// TODO(crbug.com/824858): This class should be single-threaded after
-// the service worker core thread moves to the UI thread.
+// Lives on the UI thread.
 class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
     : public DevToolsBackgroundServicesContext,
       public base::RefCountedThreadSafe<DevToolsBackgroundServicesContextImpl> {
@@ -72,15 +71,8 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
       const std::string& instance_id,
       const std::map<std::string, std::string>& event_metadata) override;
 
-  // Helper functions for public overriden APIs. Can be used directly.
+  // Helper function for public override. Can be used directly.
   bool IsRecording(devtools::proto::BackgroundService service);
-  void LogBackgroundServiceEventOnCoreThread(
-      uint64_t service_worker_registration_id,
-      const url::Origin& origin,
-      DevToolsBackgroundService service,
-      const std::string& event_name,
-      const std::string& instance_id,
-      const std::map<std::string, std::string>& event_metadata);
 
   // Enables recording mode for |service|. This is capped at 3 days in case
   // developers forget to switch it off.
@@ -110,17 +102,10 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
   // Whether |service| has an expiration time and it was exceeded.
   bool IsRecordingExpired(devtools::proto::BackgroundService service);
 
-  void GetLoggedBackgroundServiceEventsOnCoreThread(
-      devtools::proto::BackgroundService service,
-      GetLoggedBackgroundServiceEventsCallback callback);
-
   void DidGetUserData(
       GetLoggedBackgroundServiceEventsCallback callback,
       const std::vector<std::pair<int64_t, std::string>>& user_data,
       blink::ServiceWorkerStatusCode status);
-
-  void ClearLoggedBackgroundServiceEventsOnCoreThread(
-      devtools::proto::BackgroundService service);
 
   void NotifyEventObservers(
       const devtools::proto::BackgroundServiceEvent& event);
@@ -139,10 +124,8 @@ class CONTENT_EXPORT DevToolsBackgroundServicesContextImpl
 
   base::ObserverList<EventObserver> observers_;
 
-  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl>
-      weak_ptr_factory_ui_{this};
-  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl>
-      weak_ptr_factory_core_{this};
+  base::WeakPtrFactory<DevToolsBackgroundServicesContextImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsBackgroundServicesContextImpl);
 };

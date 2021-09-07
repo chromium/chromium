@@ -166,7 +166,7 @@ class DevToolsBackgroundServicesContextTest
   }
 
   void LogTestBackgroundServiceEvent(const std::string& log_message) {
-    context_->LogBackgroundServiceEventOnCoreThread(
+    context_->LogBackgroundServiceEvent(
         service_worker_registration_id_, origin_,
         DevToolsBackgroundService::kBackgroundFetch, kEventName, kInstanceId,
         {{"key", log_message}});
