@@ -6,35 +6,13 @@
 
 #include "base/values.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_features.h"
-#include "chrome/browser/apps/app_discovery_service/remote_url_search/remote_url_client.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace apps {
-namespace {
 
-constexpr char kIndexStoragePath[] = "launcher/remote_url_index.json";
-
-}
-
-RemoteUrlFetcher::RemoteUrlFetcher(Profile* profile) {
-  GURL url;
-
-  // TODO(crbug.com/1244221): Enabled state should also depend on whether we can
-  // find a url.
-  enabled_ = IsRemoteUrlSearchEnabled();
-  if (enabled_) {
-    index_ = std::make_unique<RemoteUrlIndex>(
-        std::make_unique<RemoteUrlClient>(url),
-        profile->GetPath().AppendASCII(kIndexStoragePath));
-  }
-}
-
-RemoteUrlFetcher::~RemoteUrlFetcher() {}
+RemoteUrlFetcher::RemoteUrlFetcher(Profile* profile) {}
 
 void RemoteUrlFetcher::GetApps(ResultCallback callback) {
-  // TODO(crbug.com/1244221): When available, add error handling for when
-  // featured is disabled
-  if (!enabled_) {
+  if (!IsRemoteUrlSearchEnabled()) {
     std::move(callback).Run(base::Value());
     return;
   }
