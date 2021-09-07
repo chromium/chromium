@@ -78,7 +78,7 @@ js_library("os_about_page") {
     "../..:i18n_setup",
     "../..:lifetime_browser_proxy",
     "../..:router",
-    "../os_settings_page:main_page_behavior.m",
+    "../os_settings_page:main_page_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",

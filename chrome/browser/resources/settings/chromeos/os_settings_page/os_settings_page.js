@@ -7,12 +7,46 @@
  * 'os-settings-page' is the settings page containing the actual OS settings.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/hidden_style_css.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './settings_idle_load.js';
+import '../os_apps_page/os_apps_page.m.js';
+import '../os_people_page/os_people_page.m.js';
+import '../os_privacy_page/os_privacy_page.js';
+import '../os_printing_page/os_printing_page.js';
+import '../os_search_page/os_search_page.js';
+import '../personalization_page/personalization_page.m.js';
+import '../../settings_page/settings_section.js';
+import '../../settings_page_css.js';
+import '../bluetooth_page/bluetooth_page.js';
+import '../device_page/device_page.m.js';
+import '../internet_page/internet_page.js';
+import '../kerberos_page/kerberos_page.m.js';
+import '../multidevice_page/multidevice_page.m.js';
+import '../os_bluetooth_page/os_bluetooth_page.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {beforeNextRender, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {routes} from '../os_route.m.js';
+
+import {MainPageBehavior} from './main_page_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-page',
 
   behaviors: [
-    settings.MainPageBehavior,
-    settings.RouteObserverBehavior,
+    MainPageBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -99,7 +133,7 @@ Polymer({
       value: !!loadTimeData.getString('updateRequiredEolBannerText'),
     },
 
-    /** @private {!settings.Route|undefined} */
+    /** @private {!Route|undefined} */
     currentRoute_: Object,
 
     /**
@@ -139,25 +173,24 @@ Polymer({
 
   /** @override */
   attached: function() {
-    this.currentRoute_ = settings.Router.getInstance().getCurrentRoute();
+    this.currentRoute_ = Router.getInstance().getCurrentRoute();
 
     this.allowCrostini_ = loadTimeData.valueExists('allowCrostini') &&
         loadTimeData.getBoolean('allowCrostini');
 
     this.addWebUIListener(
         'android-apps-info-update', this.androidAppsInfoUpdate_.bind(this));
-    settings.AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
+    AndroidAppsBrowserProxyImpl.getInstance().requestAndroidAppsInfo();
   },
 
   /**
-   * @param {!settings.Route} newRoute
-   * @param {settings.Route} oldRoute
+   * @param {!Route} newRoute
+   * @param {Route} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
     this.currentRoute_ = newRoute;
 
-    if (settings.routes.ADVANCED &&
-        settings.routes.ADVANCED.contains(newRoute)) {
+    if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
       this.advancedToggleExpanded = true;
     }
 
@@ -171,14 +204,13 @@ Polymer({
       assert(!this.hasExpandedSection_);
     }
 
-    settings.MainPageBehavior.currentRouteChanged.call(
-        this, newRoute, oldRoute);
+    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
   },
 
-  // Override settings.MainPageBehavior method.
+  // Override MainPageBehavior method.
   containsRoute(route) {
-    return !route || settings.routes.BASIC.contains(route) ||
-        settings.routes.ADVANCED.contains(route);
+    return !route || routes.BASIC.contains(route) ||
+        routes.ADVANCED.contains(route);
   },
 
   /**
@@ -242,8 +274,8 @@ Polymer({
     }
 
     // In Polymer2, async() does not wait long enough for layout to complete.
-    // Polymer.RenderStatus.beforeNextRender() must be used instead.
-    Polymer.RenderStatus.beforeNextRender(this, () => {
+    // beforeNextRender() must be used instead.
+    beforeNextRender(this, () => {
       this.$$('#advancedPageTemplate').get();
     });
   },
@@ -279,18 +311,18 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} currentRoute
+   * @param {!Route} currentRoute
    * @param {boolean} hasExpandedSection
    * @return {boolean} Whether to show the basic page, taking into account
    *     both routing and search state.
    * @private
    */
   showBasicPage_(currentRoute, hasExpandedSection) {
-    return !hasExpandedSection || settings.routes.BASIC.contains(currentRoute);
+    return !hasExpandedSection || routes.BASIC.contains(currentRoute);
   },
 
   /**
-   * @param {!settings.Route} currentRoute
+   * @param {!Route} currentRoute
    * @param {boolean} hasExpandedSection
    * @param {boolean} advancedToggleExpanded
    * @return {boolean} Whether to show the advanced page, taking into account
@@ -299,8 +331,7 @@ Polymer({
    */
   showAdvancedPage_(currentRoute, hasExpandedSection, advancedToggleExpanded) {
     return hasExpandedSection ?
-        (settings.routes.ADVANCED &&
-         settings.routes.ADVANCED.contains(currentRoute)) :
+        (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
         advancedToggleExpanded;
   },
 

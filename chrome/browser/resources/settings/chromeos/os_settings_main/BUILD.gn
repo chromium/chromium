@@ -20,7 +20,7 @@ js_library("os_settings_main.m") {
     "..:os_page_visibility.m",
     "..:os_route.m",
     "../..:router",
-    "../os_settings_page:os_settings_page.m",
+    "../os_settings_page:os_settings_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]

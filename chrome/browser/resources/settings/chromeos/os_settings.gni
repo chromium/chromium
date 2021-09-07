@@ -389,6 +389,8 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_search_page/search_engines_browser_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/os_search_page/search_subpage.html",
                                  "chrome/browser/resources/settings/chromeos/os_settings_menu/os_settings_menu.html",
+                                 "chrome/browser/resources/settings/chromeos/os_settings_page/os_settings_page.html",
+                                 "chrome/browser/resources/settings/chromeos/os_settings_page/settings_idle_load.html",
                                  "chrome/browser/resources/settings/chromeos/os_settings_search_box/os_settings_search_box.html",
                                  "chrome/browser/resources/settings/chromeos/os_toolbar/os_toolbar.html",
                                  "chrome/browser/resources/settings/chromeos/os_settings_search_box/os_search_result_row.html",
