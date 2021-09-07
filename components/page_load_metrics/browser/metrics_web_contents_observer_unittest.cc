@@ -432,7 +432,7 @@ TEST_F(MetricsWebContentsObserverTest, DontLogIrrelevantNavigation) {
   ASSERT_TRUE(is_first_navigation_in_web_contents().has_value());
   ASSERT_FALSE(is_first_navigation_in_web_contents().value());
 
-  CheckErrorEvent(ERR_IPC_FROM_BAD_URL_SCHEME, 1);
+  CheckErrorEvent(ERR_IPC_FROM_BAD_URL_SCHEME, 0);
   CheckErrorEvent(ERR_IPC_WITH_NO_RELEVANT_LOAD, 1);
   CheckTotalErrorEvents();
 }

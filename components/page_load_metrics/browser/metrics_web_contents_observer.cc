@@ -966,25 +966,19 @@ void MetricsWebContentsObserver::OnTimingUpdated(
 
 bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     PageLoadTracker* tracker) {
-  // While timings arriving for the wrong frame are expected, we do not expect
-  // any of the errors below for main frames. Thus, we track occurrences of
-  // all errors below, rather than returning early after encountering an
-  // error.
   // TODO(crbug/1061090): Update page load metrics IPC validation to ues
   // mojo::ReportBadMessage.
-  bool error = false;
   if (!tracker) {
     RecordInternalError(ERR_IPC_WITH_NO_RELEVANT_LOAD);
-    error = true;
+    return true;
   }
 
-  // TODO(crbug.com/1190112): Move this function to PageLoadTracker and use
-  // Page's URL rather than WebContents'.
-  if (!web_contents()->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+  if (!tracker->GetUrl().SchemeIsHTTPOrHTTPS()) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
-    error = true;
+    return true;
   }
-  return error;
+
+  return false;
 }
 
 void MetricsWebContentsObserver::UpdateTiming(
