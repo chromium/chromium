@@ -422,16 +422,21 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask>,
   // TODO(bikineev): Move these checks to StarScanScanLoop.
   struct GigaCageLookupPolicy {
     ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
-#if defined(PA_HAS_64_BITS_POINTERS)
-#if PA_STARSCAN_USE_CARD_TABLE
       PA_DCHECK(
           IsManagedByPartitionAllocBRPPool(reinterpret_cast<void*>(maybe_ptr)));
+#if defined(PA_HAS_64_BITS_POINTERS)
+#if PA_STARSCAN_USE_CARD_TABLE
       return QuarantineCardTable::GetFrom(maybe_ptr).IsQuarantined(maybe_ptr);
 #else
       // Without the card table, use the reservation offset table. It's not as
       // precise (meaning that we may have hit the slow path more frequently),
-      // but reduces the memory overhead.
-      return IsManagedByNormalBuckets(reinterpret_cast<void*>(maybe_ptr));
+      // but reduces the memory overhead.  Since we are certain here, that
+      // |maybe_ptr| refers to the BRP pool, it's okay to use non-checking
+      // version of ReservationOffsetPointer().
+      const uintptr_t offset =
+          maybe_ptr & ~PartitionAddressSpace::BRPPoolBaseMask();
+      return *ReservationOffsetPointer(kBRPPoolHandle, offset) ==
+             kOffsetTagNormalBuckets;
 #endif
 #else   // defined(PA_HAS_64_BITS_POINTERS)
       return IsManagedByPartitionAllocBRPPool(
