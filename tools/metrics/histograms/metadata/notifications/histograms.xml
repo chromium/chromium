@@ -21,6 +21,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="MacOSNotificationStyle">
+  <variant name="Alert" summary="Alert: Stays on screen"/>
+  <variant name="Alerts">
+    <obsolete>
+      Replaced by Alert in 2021/09.
+    </obsolete>
+  </variant>
+  <variant name="Banner" summary="Banner: Auto dismisses"/>
+  <variant name="Banners">
+    <obsolete>
+      Replaced by Banner in 2021/09.
+    </obsolete>
+  </variant>
+</variants>
+
 <histogram name="Notifications.Actions" enum="NotificationActionType"
     expires_after="M85">
   <owner>dewittj@chromium.org</owner>
@@ -441,10 +456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     will continue to pass along the event. Logged on every action received by
     the system (click or close) on any {Style} style notification.
   </summary>
-  <token key="Style">
-    <variant name="Alert"/>
-    <variant name="Banner"/>
-  </token>
+  <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
 
 <histogram name="Notifications.macOS.Delivered.{Style}" enum="BooleanSuccess"
@@ -455,10 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Whether delivering a notification to the system was successful or not.
     Logged every time we pass a notification with {Style} style to the system.
   </summary>
-  <token key="Style">
-    <variant name="Alert"/>
-    <variant name="Banner"/>
-  </token>
+  <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
 
 <histogram name="Notifications.macOS.LaunchedViaNotificationAction"
@@ -571,10 +580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     which happens at Chrome startup and each time we start the service after
     shutting it down when there were no more notifications on screen.
   </summary>
-  <token key="Style">
-    <variant name="Alerts"/>
-    <variant name="Banners"/>
-  </token>
+  <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
 
 <histogram name="Notifications.Permissions.UNNotification.{Style}.Style"
@@ -588,10 +594,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     service after shutting it down when there were no more notifications on
     screen.
   </summary>
-  <token key="Style">
-    <variant name="Alerts"/>
-    <variant name="Banners"/>
-  </token>
+  <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
 
 <histogram name="Notifications.PerNotificationActions"

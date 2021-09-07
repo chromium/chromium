@@ -9,13 +9,31 @@
 
 #import <string>
 
-#include "base/mac/bundle_locations.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 
 namespace mac_notifications {
 
 namespace {
+
+// This enum is used in UMA. Do not delete or re-order entries. New entries
+// should only be added at the end.
+enum class UNNotificationStyle {
+  kNone = 0,
+  kBanners = 1,
+  kAlerts = 2,
+  kMaxValue = kAlerts,
+};
+
+// This enum is used in UMA. Do not delete or re-order entries. New entries
+// should only be added at the end.
+enum class UNNotificationPermissionStatus {
+  kNotRequestedYet = 0,
+  kPermissionDenied = 1,
+  kPermissionGranted = 2,
+  kMaxValue = kPermissionGranted,
+};
 
 API_AVAILABLE(macosx(10.14))
 UNNotificationStyle ConvertNotificationStyle(UNAlertStyle alert_style) {
@@ -42,14 +60,6 @@ UNNotificationPermissionStatus ConvertAuthorizationStatus(
   }
 }
 
-// Returns the alert style of the current app bundle. Must match the "Style"
-// token used in "Notifications.Permissions.UNNotification.*" metrics.
-std::string AppBundleNotificationStyle() {
-  NSDictionary* infoDictionary = [base::mac::MainBundle() infoDictionary];
-  NSString* alertStyle = infoDictionary[@"NSUserNotificationAlertStyle"];
-  return [alertStyle isEqualToString:@"alert"] ? "Alerts" : "Banners";
-}
-
 }  // namespace
 
 void LogUNNotificationSettings(UNUserNotificationCenter* center) {
@@ -57,7 +67,7 @@ void LogUNNotificationSettings(UNUserNotificationCenter* center) {
               UNNotificationSettings* _Nonnull settings) {
     std::string prefix =
         base::StrCat({"Notifications.Permissions.UNNotification.",
-                      AppBundleNotificationStyle()});
+                      MacNotificationStyleSuffix(IsAppBundleAlertStyle())});
 
     base::UmaHistogramEnumeration(
         base::StrCat({prefix, ".Style"}),

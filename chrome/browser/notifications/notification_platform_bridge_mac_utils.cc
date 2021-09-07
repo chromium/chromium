@@ -11,12 +11,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
-#include "chrome/browser/notifications/notification_platform_bridge_mac_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
+#include "chrome/services/mac_notifications/public/cpp/mac_notification_metrics.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -152,7 +152,7 @@ void ProcessMacNotificationResponse(
     bool is_alert,
     mac_notifications::mojom::NotificationActionInfoPtr info) {
   bool is_valid = VerifyMacNotificationData(info);
-  LogMacNotificationActionReceived(is_alert, is_valid);
+  mac_notifications::LogMacNotificationActionReceived(is_alert, is_valid);
 
   if (!is_valid)
     return;
