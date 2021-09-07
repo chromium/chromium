@@ -115,7 +115,7 @@ def validate(spec_json, details):
     valid_subresource_names = [
         "a-tag", "area-tag", "audio-tag", "form-tag", "iframe-tag", "img-tag",
         "link-css-tag", "link-prefetch-tag", "object-tag", "picture-tag",
-        "script-tag", "video-tag"
+        "script-tag", "script-tag-dynamic-import", "video-tag"
     ] + ["beacon", "fetch", "xhr", "websocket"] + [
         "worker-classic", "worker-module", "worker-import",
         "worker-import-data", "sharedworker-classic", "sharedworker-module",
