@@ -61,8 +61,11 @@ void AttachHistoryClustersActions(
   if (!service)
     return;
 
-  if (!base::FeatureList::IsEnabled(history_clusters::kMemories))
+  // Both features must be enabled to ever attach the action chip.
+  if (!base::FeatureList::IsEnabled(history_clusters::kMemories) ||
+      !base::FeatureList::IsEnabled(history_clusters::kMemoriesOmniboxAction)) {
     return;
+  }
 
   for (auto& match : result) {
     // Skip incomptatible matches (like entities) or ones with existing actions.

@@ -44,6 +44,9 @@ const base::FeatureParam<bool> kUseOnDeviceClusteringBackend{
 
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMemoriesOmniboxAction{"MemoriesOmniboxAction",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRemoteModelForDebugging{"MemoriesRemoteModelForDebugging",

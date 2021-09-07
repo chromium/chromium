@@ -54,6 +54,10 @@ extern const base::FeatureParam<bool> kUseOnDeviceClusteringBackend;
 // Enables the Chrome Memories history clustering feature.
 extern const base::Feature kMemories;
 
+// Enables the Chrome Memories Omnibox Action chip. `kMemories` must also be
+// enabled for this to take effect.
+extern const base::Feature kMemoriesOmniboxAction;
+
 // Enables debug info; e.g. shows visit metadata on chrome://history entries.
 extern const base::Feature kDebug;
 
