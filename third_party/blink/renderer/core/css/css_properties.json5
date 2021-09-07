@@ -4462,7 +4462,7 @@
       alias_for: "appearance",
     },
     {
-      name: "-webkit-app-region",
+      name: "app-region",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
@@ -4470,6 +4470,10 @@
       default_value: "none",
       name_for_methods: "DraggableRegionMode",
       style_builder_custom_functions: ["initial", "inherit", "value"],
+    },
+    {
+      name: "-webkit-app-region",
+      alias_for: "app-region",
     },
     {
       name: "-webkit-border-horizontal-spacing",

@@ -2,7 +2,6 @@ This test documents Blink's web-exposed CSS properties.
 All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 [LONGHANDS]
-    -webkit-app-region
     -webkit-border-horizontal-spacing
     -webkit-border-image
     -webkit-border-vertical-spacing
@@ -70,6 +69,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-name
     animation-play-state
     animation-timing-function
+    app-region
     appearance
     aspect-ratio
     backdrop-filter
@@ -758,6 +758,8 @@ All changes to this list should go through Blink's feature review process: http:
         animation-play-state
     -webkit-animation-timing-function
         animation-timing-function
+    -webkit-app-region
+        app-region
     -webkit-appearance
         appearance
     -webkit-backface-visibility

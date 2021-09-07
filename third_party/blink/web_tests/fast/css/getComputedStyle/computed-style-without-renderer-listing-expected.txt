@@ -2,7 +2,6 @@ This test documents all computed styles on a display: none element.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
--webkit-app-region: none
 -webkit-border-horizontal-spacing: 0px
 -webkit-border-image: none
 -webkit-border-vertical-spacing: 0px
@@ -64,6 +63,7 @@ animation-name: none
 animation-play-state: running
 animation-timeline: auto
 animation-timing-function: ease
+app-region: none
 appearance: none
 backdrop-filter: none
 backface-visibility: visible

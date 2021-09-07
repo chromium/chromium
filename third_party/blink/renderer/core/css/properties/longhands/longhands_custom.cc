@@ -7438,7 +7438,7 @@ const CSSValue* Visibility::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.Visibility());
 }
 
-const CSSValue* WebkitAppRegion::CSSValueFromComputedStyleInternal(
+const CSSValue* AppRegion::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
@@ -7450,12 +7450,12 @@ const CSSValue* WebkitAppRegion::CSSValueFromComputedStyleInternal(
                                         : CSSValueID::kNoDrag);
 }
 
-void WebkitAppRegion::ApplyInitial(StyleResolverState& state) const {}
+void AppRegion::ApplyInitial(StyleResolverState& state) const {}
 
-void WebkitAppRegion::ApplyInherit(StyleResolverState& state) const {}
+void AppRegion::ApplyInherit(StyleResolverState& state) const {}
 
-void WebkitAppRegion::ApplyValue(StyleResolverState& state,
-                                 const CSSValue& value) const {
+void AppRegion::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value) const {
   const auto& identifier_value = To<CSSIdentifierValue>(value);
   state.Style()->SetDraggableRegionMode(identifier_value.GetValueID() ==
                                                 CSSValueID::kDrag
