@@ -58,22 +58,23 @@ ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
 ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
     const KURL& bundle_url,
     const base::UnguessableToken& web_bundle_token,
-    mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle)
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
+        web_bundle_handle)
     : bundle_url(bundle_url),
       token(web_bundle_token),
       handle(std::move(web_bundle_handle)) {}
 
-mojo::PendingRemote<network::mojom::WebBundleHandle>
+mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
 ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {
   if (!handle)
     return mojo::NullRemote();
-  mojo::Remote<network::mojom::WebBundleHandle> remote(std::move(
-      const_cast<mojo::PendingRemote<network::mojom::WebBundleHandle>&>(
+  mojo::Remote<network::mojom::blink::WebBundleHandle> remote(std::move(
+      const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
           handle)));
-  mojo::PendingRemote<network::mojom::WebBundleHandle> new_remote;
+  mojo::PendingRemote<network::mojom::blink::WebBundleHandle> new_remote;
   remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
-  const_cast<mojo::PendingRemote<network::mojom::WebBundleHandle>&>(handle) =
-      remote.Unbind();
+  const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
+      handle) = remote.Unbind();
   return new_remote;
 }
 

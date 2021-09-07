@@ -346,7 +346,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
         absl::make_optional(network::ResourceRequest::WebBundleTokenParams(
             src.GetWebBundleTokenParams()->bundle_url,
             src.GetWebBundleTokenParams()->token,
-            src.GetWebBundleTokenParams()->CloneHandle()));
+            ToCrossVariantMojoType(
+                src.GetWebBundleTokenParams()->CloneHandle())));
   }
 
   // TODO(kinuko): Deprecate this.

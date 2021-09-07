@@ -33,7 +33,7 @@ namespace blink {
 
 class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
                         public ThreadableLoaderClient,
-                        public network::mojom::WebBundleHandle {
+                        public network::mojom::blink::WebBundleHandle {
  public:
   WebBundleLoader(LinkWebBundle& link_web_bundle,
                   Document& document,
@@ -71,7 +71,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
         network::mojom::RequestDestination::kWebBundle);
     request.SetPriority(ResourceLoadPriority::kHigh);
 
-    mojo::PendingRemote<network::mojom::WebBundleHandle> web_bundle_handle;
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
+        web_bundle_handle;
     receivers_.Add(web_bundle_handle.InitWithNewPipeAndPassReceiver(),
                    task_runner_);
     request.SetWebBundleTokenParams(ResourceRequestHead::WebBundleTokenParams(
@@ -103,15 +104,14 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   void DidFail(uint64_t, const ResourceError&) override { DidFailInternal(); }
   void DidFailRedirectCheck(uint64_t) override { DidFailInternal(); }
 
-  // network::mojom::WebBundleHandle
-  void Clone(mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver)
-      override {
+  // network::mojom::blink::WebBundleHandle
+  void Clone(mojo::PendingReceiver<network::mojom::blink::WebBundleHandle>
+                 receiver) override {
     receivers_.Add(std::move(receiver), task_runner_);
   }
   void OnWebBundleError(network::mojom::WebBundleErrorType type,
-                        const std::string& message) override {
-    link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " +
-                                       message.c_str());
+                        const String& message) override {
+    link_web_bundle_->OnWebBundleError(url_.ElidedString() + ": " + message);
   }
   void OnWebBundleLoadFinished(bool success) override {
     if (failed_)
@@ -151,7 +151,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // we need ReceiverSet here because WebBundleHandle is cloned when
   // ResourceRequest is copied.
-  HeapMojoReceiverSet<network::mojom::WebBundleHandle, WebBundleLoader>
+  HeapMojoReceiverSet<network::mojom::blink::WebBundleHandle, WebBundleLoader>
       receivers_;
 };
 

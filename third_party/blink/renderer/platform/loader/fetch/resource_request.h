@@ -56,12 +56,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
-namespace network {
-namespace mojom {
-class WebBundleHandle;
-}  // namespace mojom
-}  // namespace network
-
 namespace blink {
 
 class EncodedFormData;
@@ -98,13 +92,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
     WebBundleTokenParams(
         const KURL& bundle_url,
         const base::UnguessableToken& token,
-        mojo::PendingRemote<network::mojom::WebBundleHandle> handle);
+        mojo::PendingRemote<network::mojom::blink::WebBundleHandle> handle);
 
-    mojo::PendingRemote<network::mojom::WebBundleHandle> CloneHandle() const;
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle> CloneHandle()
+        const;
 
     KURL bundle_url;
     base::UnguessableToken token;
-    mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle> handle;
   };
 
   ResourceRequestHead();
