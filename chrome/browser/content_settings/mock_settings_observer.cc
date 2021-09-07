@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/mock_settings_observer.h"
 
 #include "chrome/browser/chrome_notification_types.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "url/gurl.h"
 
 MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)
@@ -13,20 +12,17 @@ MockSettingsObserver::MockSettingsObserver(HostContentSettingsMap* map)
   observation_.Observe(map_);
 }
 
-MockSettingsObserver::~MockSettingsObserver() {}
+MockSettingsObserver::~MockSettingsObserver() = default;
 
 void MockSettingsObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type);
-  OnContentSettingsChanged(map_,
-                           details.type(),
-                           details.update_all_types(),
-                           details.primary_pattern(),
-                           details.secondary_pattern(),
-                           details.update_all());
+  bool all_types = content_type == ContentSettingsType::DEFAULT;
+  bool all_hosts =
+      primary_pattern.MatchesAllHosts() && secondary_pattern.MatchesAllHosts();
+  OnContentSettingsChanged(map_, content_type, all_types, primary_pattern,
+                           secondary_pattern, all_hosts);
   // This checks that calling a Get function from an observer doesn't
   // deadlock.
   GURL url("http://random-hostname.com/");

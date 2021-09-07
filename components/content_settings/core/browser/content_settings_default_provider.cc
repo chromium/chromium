@@ -259,8 +259,8 @@ bool DefaultProvider::SetWebsiteSetting(
     WriteToPref(content_type, value.get());
   }
 
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  content_type);
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(), content_type);
 
   return true;
 }
@@ -368,8 +368,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
     }
   }
 
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  content_type);
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(), content_type);
 }
 
 std::unique_ptr<base::Value> DefaultProvider::ReadFromPref(

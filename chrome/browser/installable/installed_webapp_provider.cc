@@ -103,6 +103,6 @@ void InstalledWebappProvider::ShutdownOnUIThread() {
 }
 
 void InstalledWebappProvider::Notify(ContentSettingsType content_type) {
-  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  content_type);
+  NotifyObservers(ContentSettingsPattern::Wildcard(),
+                  ContentSettingsPattern::Wildcard(), content_type);
 }

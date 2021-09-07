@@ -15,7 +15,6 @@
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -348,14 +347,11 @@ void DownloadRequestLimiter::TabDownloadState::OnContentSettingChanged(
     return;
 
   GURL origin = origin_.GetURL();
-  // Analogous to PageSpecificContentSettings::OnContentSettingChanged:
-  const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type);
 
   // Check if the settings change affects the most recent origin passed
   // to SetDownloadStatusAndNotify(). If so, we need to update the omnibox
   // decoration.
-  if (!details.update_all() && !details.primary_pattern().Matches(origin))
+  if (!primary_pattern.Matches(origin))
     return;
 
   // Content settings have been updated for our web contents, e.g. via the OIB

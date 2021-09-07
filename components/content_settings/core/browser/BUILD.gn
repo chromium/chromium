@@ -9,8 +9,6 @@ static_library("browser") {
   sources = [
     "content_settings_default_provider.cc",
     "content_settings_default_provider.h",
-    "content_settings_details.cc",
-    "content_settings_details.h",
     "content_settings_global_value_map.cc",
     "content_settings_global_value_map.h",
     "content_settings_info.cc",
@@ -83,9 +81,7 @@ static_library("browser") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

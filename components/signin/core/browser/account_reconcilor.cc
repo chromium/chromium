@@ -360,13 +360,10 @@ void AccountReconcilor::OnContentSettingChanged(
   if (content_type != ContentSettingsType::COOKIES)
     return;
 
-  // If this does not affect GAIA, just ignore.  If the primary pattern is
-  // invalid, then assume it could affect GAIA.  The secondary pattern is
-  // not needed.
-  if (primary_pattern.IsValid() &&
-      !primary_pattern.Matches(GaiaUrls::GetInstance()->gaia_url())) {
+  // If this does not affect GAIA, just ignore. The secondary pattern is not
+  // needed.
+  if (!primary_pattern.Matches(GaiaUrls::GetInstance()->gaia_url()))
     return;
-  }
 
   VLOG(1) << "AccountReconcilor::OnContentSettingChanged";
   StartReconcile(Trigger::kCookieSettingChange);

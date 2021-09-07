@@ -590,7 +590,8 @@ void SiteSettingsHandler::OnContentSettingChanged(
   if (!site_settings::HasRegisteredGroupName(content_type))
     return;
 
-  if (primary_pattern.ToString().empty()) {
+  if (primary_pattern.MatchesAllHosts() &&
+      secondary_pattern.MatchesAllHosts()) {
     FireWebUIListener("contentSettingCategoryChanged",
                       base::Value(site_settings::ContentSettingsTypeToGroupName(
                           content_type)));
@@ -607,8 +608,8 @@ void SiteSettingsHandler::OnContentSettingChanged(
 
   // If the default sound content setting changed then we should send block
   // autoplay status.
-  if (primary_pattern == ContentSettingsPattern() &&
-      secondary_pattern == ContentSettingsPattern() &&
+  if (primary_pattern.MatchesAllHosts() &&
+      secondary_pattern.MatchesAllHosts() &&
       content_type == ContentSettingsType::SOUND) {
     SendBlockAutoplayStatus();
   }

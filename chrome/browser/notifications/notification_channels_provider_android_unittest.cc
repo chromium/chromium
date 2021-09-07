@@ -384,8 +384,8 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                               ContentSettingsType::NOTIFICATIONS));
 
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(ContentSettingsPattern(),
-                                      ContentSettingsPattern(),
+              OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsPattern::Wildcard(),
                                       ContentSettingsType::NOTIFICATIONS));
 
   channels_provider_->ClearAllContentSettingsRules(

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 
 #include "base/scoped_observation.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -65,14 +64,11 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
   if (setting_.isModifyingContentSetting) {
     return;
   }
-  const ContentSettingsDetails settings_details(
-      primary_pattern, secondary_pattern, content_type);
-  ContentSettingsType settingID = settings_details.type();
   // Unfortunately, because the ContentSettingsPolicyProvider doesn't publish
   // the specific content setting on policy updates, we must refresh on every
   // ContentSettingsType::DEFAULT notification.
-  if (settingID != ContentSettingsType::DEFAULT &&
-      settingID != setting_.settingID) {
+  if (content_type != ContentSettingsType::DEFAULT &&
+      content_type != setting_.settingID) {
     return;
   }
   // Notify the BooleanObserver.

@@ -24,7 +24,6 @@
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -802,11 +801,8 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type);
   const GURL current_url = main_frame_->GetLastCommittedURL();
-  if (!details.update_all() &&
-      !details.primary_pattern().Matches(current_url)) {
+  if (!primary_pattern.Matches(current_url)) {
     return;
   }
 

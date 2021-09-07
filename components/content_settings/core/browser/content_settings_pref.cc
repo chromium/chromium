@@ -234,8 +234,8 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
     ClearPref();
   }
 
-  notify_callback_.Run(ContentSettingsPattern(), ContentSettingsPattern(),
-                       content_type_);
+  notify_callback_.Run(ContentSettingsPattern::Wildcard(),
+                       ContentSettingsPattern::Wildcard(), content_type_);
 }
 
 size_t ContentSettingsPref::GetNumExceptions() {
@@ -370,8 +370,8 @@ void ContentSettingsPref::OnPrefChanged() {
 
   ReadContentSettingsFromPref();
 
-  notify_callback_.Run(ContentSettingsPattern(), ContentSettingsPattern(),
-                       content_type_);
+  notify_callback_.Run(ContentSettingsPattern::Wildcard(),
+                       ContentSettingsPattern::Wildcard(), content_type_);
 }
 
 void ContentSettingsPref::UpdatePref(

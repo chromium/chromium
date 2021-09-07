@@ -1290,6 +1290,7 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
+  DCHECK(primary_pattern.IsValid());
   if (content_type != ContentSettingsType::NOTIFICATIONS)
     return;
 
@@ -1303,13 +1304,7 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
           : content_setting_changed_callback_for_testing_);
 
   for (const PushMessagingAppIdentifier& app_identifier : all_app_identifiers) {
-    // If |primary_pattern| is not valid, we should always check for a
-    // permission change because it can happen for example when the entire
-    // Push or Notifications permissions are cleared.
-    // Otherwise, the permission should be checked if the pattern matches the
-    // origin.
-    if (primary_pattern.IsValid() &&
-        !primary_pattern.Matches(app_identifier.origin())) {
+    if (!primary_pattern.Matches(app_identifier.origin())) {
       barrier_closure.Run();
       continue;
     }

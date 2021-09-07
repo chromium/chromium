@@ -174,7 +174,7 @@ class AccountReconcilor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            StartReconcileContentSettingsNonGaiaUrl);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
-                           StartReconcileContentSettingsInvalidPattern);
+                           StartReconcileContentSettingsWildcardPattern);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            GetAccountsFromCookieSuccess);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,

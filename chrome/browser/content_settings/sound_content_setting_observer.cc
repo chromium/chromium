@@ -107,8 +107,8 @@ void SoundContentSettingObserver::OnContentSettingChanged(
     return;
 
 #if !defined(OS_ANDROID)
-  if (primary_pattern == ContentSettingsPattern() &&
-      secondary_pattern == ContentSettingsPattern()) {
+  if (primary_pattern.MatchesAllHosts() &&
+      secondary_pattern.MatchesAllHosts()) {
     UpdateAutoplayPolicy();
   }
 #endif

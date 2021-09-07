@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
@@ -23,7 +24,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_default_provider.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
@@ -304,7 +304,8 @@ void HostContentSettingsMap::RegisterProvider(
       << "Used from multiple threads before initialization complete.";
 #endif
 
-  OnContentSettingChanged(ContentSettingsPattern(), ContentSettingsPattern(),
+  OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                          ContentSettingsPattern::Wildcard(),
                           ContentSettingsType::DEFAULT);
 }
 
@@ -743,6 +744,8 @@ void HostContentSettingsMap::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
+  DCHECK(primary_pattern.IsValid());
+  DCHECK(secondary_pattern.IsValid());
   for (content_settings::Observer& observer : observers_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
                                      content_type);

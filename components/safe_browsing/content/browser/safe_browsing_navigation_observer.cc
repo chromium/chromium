@@ -244,7 +244,7 @@ void SafeBrowsingNavigationObserver::OnContentSettingChanged(
     ContentSettingsType content_type) {
   // For all the content settings that can be changed via page info UI, we
   // assume there is a user gesture associated with the content setting change.
-  if (web_contents() &&
+  if (web_contents() && !primary_pattern.MatchesAllHosts() &&
       primary_pattern.Matches(web_contents()->GetLastCommittedURL()) &&
       PageInfoUI::ContentSettingsTypeInPageInfo(content_type)) {
     OnUserInteraction();
