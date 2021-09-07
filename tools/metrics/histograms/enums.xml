@@ -68535,14 +68535,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Triggered reset"/>
 </enum>
 
-<enum name="ProfileSigninStatus">
-  <int value="0" label="All profiles signed in"/>
-  <int value="1" label="All profiles not signed in"/>
-  <int value="2" label="Mixed signin status"/>
-  <int value="3" label="Unknown signin status"/>
-  <int value="4" label="Error getting signin status"/>
-</enum>
-
 <enum name="ProfileSync">
   <int value="0" label="Signed in to sync"/>
   <int value="1" label="Signed in to sync from original profile"/>
@@ -68558,6 +68550,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Chose what to sync"/>
   <int value="2" label="Encrypted all data"/>
   <int value="3" label="Selected a passphrase"/>
+</enum>
+
+<enum name="ProfileSyncStatus">
+  <int value="0" label="All profiles syncing"/>
+  <int value="1" label="All profiles not syncing"/>
+  <int value="2" label="Mixed sync status"/>
+  <int value="3" label="Unknown sync status"/>
+  <int value="4" label="Error getting sync status"/>
 </enum>
 
 <enum name="ProfileType">
