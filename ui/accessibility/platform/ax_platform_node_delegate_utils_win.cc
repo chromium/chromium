@@ -33,7 +33,8 @@ bool IsValuePatternSupported(AXPlatformNodeDelegate* delegate) {
          IsLink(delegate->GetRole()) ||
          delegate->GetRole() == ax::mojom::Role::kColorWell ||
          delegate->IsCellOrHeaderOfARIAGrid() ||
-         IsPlatformDocument(delegate->GetRole());
+         (IsPlatformDocument(delegate->GetRole()) &&
+          delegate->GetRole() != ax::mojom::Role::kPdfRoot);
 }
 
 }  // namespace ui

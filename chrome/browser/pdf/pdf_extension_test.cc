@@ -3218,9 +3218,9 @@ using AXInspectType = AXInspectFactory::Type;
 
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionTestWithoutUnseasonedOverride,
-      public ::testing::WithParamInterface<AXInspectType> {
+      public ::testing::WithParamInterface<std::tuple<AXInspectType, bool>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(GetParam()) {}
+  PDFExtensionAccessibilityTreeDumpTest() : test_helper_(ax_inspect_type()) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3231,11 +3231,24 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  protected:
+  AXInspectType ax_inspect_type() const { return std::get<0>(GetParam()); }
+  bool should_enable_unseasoned() const { return std::get<1>(GetParam()); }
+
   std::vector<base::Feature> GetEnabledFeatures() const override {
     auto enabled =
         PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
+    if (should_enable_unseasoned())
+      enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
     return enabled;
+  }
+
+  std::vector<base::Feature> GetDisabledFeatures() const override {
+    auto disabled =
+        PDFExtensionTestWithoutUnseasonedOverride::GetDisabledFeatures();
+    if (!should_enable_unseasoned())
+      disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
+    return disabled;
   }
 
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
@@ -3283,7 +3296,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     ui::AXInspectScenario scenario = ParsePdfForExtraDirectives(pdf_contents);
 
     std::unique_ptr<AXTreeFormatter> formatter =
-        AXInspectFactory::CreateFormatter(GetParam());
+        AXInspectFactory::CreateFormatter(ax_inspect_type());
     formatter->SetPropertyFilters(scenario.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
@@ -3368,8 +3381,10 @@ class PDFExtensionAccessibilityTreeDumpTest
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectType>& i) const {
-    return std::string(i.param);
+      const ::testing::TestParamInfo<std::tuple<AXInspectType, bool>>& i)
+      const {
+    return (std::get<1>(i.param) ? "Unseasoned_" : "") +
+           std::string(std::get<0>(i.param));
   }
 };
 
@@ -3383,7 +3398,8 @@ const std::vector<AXInspectFactory::Type> GetAXTestValues() {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionAccessibilityTreeDumpTest,
-                         testing::ValuesIn(GetAXTestValues()),
+                         testing::Combine(testing::ValuesIn(GetAXTestValues()),
+                                          testing::Bool()),
                          DumpAccessibilityTreeTestPassToString());
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, HelloWorld) {

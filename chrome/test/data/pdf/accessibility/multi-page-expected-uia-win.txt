@@ -1,4 +1,4 @@
-Document Name='PDF document containing 2 pages' Value.Value='chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html'
+Document Name='PDF document containing 2 pages'
 ++Group Name='Page 1'
 ++++Group IsControlElement=false
 ++++++Text Name='Page 1'
