@@ -27,6 +27,7 @@ function areArraysEqual(a1, a2) {
 
 function areMetadataEqual(metadata1, metadata2, type) {
   return metadata1.synchronizationSource === metadata2.synchronizationSource &&
+         metadata1.payloadType == metadata2.payloadType &&
          areArraysEqual(metadata1.contributingSources, metadata2.contributingSources) &&
          metadata1.frameId === metadata2.frameId &&
          areArraysEqual(metadata1.dependencies, metadata2.dependencies) &&

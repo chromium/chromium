@@ -56,6 +56,9 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
       RTCEncodedAudioFrameMetadata::Create();
   metadata->setSynchronizationSource(delegate_->Ssrc());
   metadata->setContributingSources(delegate_->ContributingSources());
+  if (delegate_->PayloadType() != 255) {
+    metadata->setPayloadType(delegate_->PayloadType());
+  }
   return metadata;
 }
 

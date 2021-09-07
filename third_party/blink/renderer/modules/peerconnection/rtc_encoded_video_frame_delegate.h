@@ -36,6 +36,7 @@ class RTCEncodedVideoFrameDelegate
   void SetData(const DOMArrayBuffer* data);
   DOMArrayBuffer* CreateAdditionalDataBuffer() const;
   uint32_t Ssrc() const;
+  uint8_t PayloadType() const;
   const webrtc::VideoFrameMetadata* GetMetadata() const;
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> PassWebRtcFrame();
 

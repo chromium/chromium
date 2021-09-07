@@ -56,6 +56,9 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());
   metadata->setTemporalIndex(webrtc_metadata->GetTemporalIndex());
+  if (delegate_->PayloadType() != 255) {
+    metadata->setPayloadType(delegate_->PayloadType());
+  }
   return metadata;
 }
 

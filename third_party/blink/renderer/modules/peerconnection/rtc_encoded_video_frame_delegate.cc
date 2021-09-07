@@ -80,6 +80,12 @@ uint32_t RTCEncodedVideoFrameDelegate::Ssrc() const {
   return webrtc_frame_ ? webrtc_frame_->GetSsrc() : 0;
 }
 
+uint8_t RTCEncodedVideoFrameDelegate::PayloadType() const {
+  MutexLocker lock(mutex_);
+  // 255 is outside the range [0..127] of valid payload types.
+  return webrtc_frame_ ? webrtc_frame_->GetPayloadType() : 255;
+}
+
 const webrtc::VideoFrameMetadata* RTCEncodedVideoFrameDelegate::GetMetadata()
     const {
   MutexLocker lock(mutex_);

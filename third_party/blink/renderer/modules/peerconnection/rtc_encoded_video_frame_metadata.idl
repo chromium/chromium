@@ -15,4 +15,5 @@ dictionary RTCEncodedVideoFrameMetadata {
     long temporalIndex;
     unsigned long synchronizationSource;
     sequence<unsigned long> contributingSources;
+    short payloadType;
 };

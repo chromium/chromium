@@ -54,6 +54,12 @@ uint32_t RTCEncodedAudioFrameDelegate::Ssrc() const {
   return webrtc_frame_ ? webrtc_frame_->GetSsrc() : 0;
 }
 
+uint8_t RTCEncodedAudioFrameDelegate::PayloadType() const {
+  MutexLocker lock(mutex_);
+  // 255 is outside the range [0..127] of valid payload types.
+  return webrtc_frame_ ? webrtc_frame_->GetPayloadType() : 255;
+}
+
 Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
   MutexLocker lock(mutex_);
   return contributing_sources_;
