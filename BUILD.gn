@@ -1364,7 +1364,7 @@ if (!is_ios) {
         "//third_party/blink/web_tests/platform/mac-mac10.13/",
         "//third_party/blink/web_tests/platform/mac-mac10.14/",
         "//third_party/blink/web_tests/platform/mac-mac10.15/",
-        "//third_party/blink/web_tests/platform/mac-mac-arm11.0/",
+        "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
       ]
     }
 
