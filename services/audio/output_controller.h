@@ -193,6 +193,17 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     LOCAL_OUTPUT_TOGGLE = 2,
   };
 
+  // Used to log the result of rendering startup.
+  // Elements in this enum should not be deleted or rearranged; the only
+  // permitted operation is to add new elements before kMaxValue and update
+  // kMaxValue.
+  enum class StreamCreationResult {
+    kOk = 0,
+    kCreateFailed = 1,
+    kOpenFailed = 2,
+    kMaxValue = kOpenFailed,
+  };
+
   // Used to store various stats about a stream. The lifetime of this object is
   // from play until pause. The underlying physical stream may be changed when
   // resuming playback, hence separate stats are logged for each play/pause
@@ -225,6 +236,12 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     base::AtomicRefCount on_more_io_data_called_;
     base::OneShotTimer wedge_timer_;
   };
+
+  // Reports UMA statistics for stream creation.
+  static void ReportStreamCreationUma(RecreateReason reason,
+                                      StreamCreationResult result);
+
+  static const char* RecreateReasonToString(RecreateReason reason);
 
   // Closes the current stream and re-creates a new one via the AudioManager. If
   // reason is LOCAL_OUTPUT_TOGGLE, the new stream will be a fake one and UMA
