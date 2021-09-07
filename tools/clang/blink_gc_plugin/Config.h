@@ -134,7 +134,6 @@ class Config {
     return name == "Vector" ||
            name == "Deque" ||
            name == "HashSet" ||
-           name == "ListHashSet" ||
            name == "LinkedHashSet" ||
            name == "HashCountedSet" ||
            name == "HashMap";
@@ -142,17 +141,12 @@ class Config {
 
   static bool IsGCCollection(llvm::StringRef name) {
     return name == "HeapVector" || name == "HeapDeque" ||
-           name == "HeapHashSet" || name == "HeapListHashSet" ||
-           name == "HeapLinkedHashSet" || name == "HeapHashCountedSet" ||
-           name == "HeapHashMap";
+           name == "HeapHashSet" || name == "HeapLinkedHashSet" ||
+           name == "HeapHashCountedSet" || name == "HeapHashMap";
   }
 
   static bool IsGCCollectionWithUnsafeIterator(llvm::StringRef name) {
     if (!IsGCCollection(name))
-      return false;
-    // The list hash set iterators refer to the set, not the
-    // backing store and are consequently safe.
-    if (name == "HeapListHashSet")
       return false;
     return true;
   }

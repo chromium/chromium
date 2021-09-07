@@ -88,20 +88,6 @@ class HashSet {
 };
 
 template <typename ValueArg,
-          typename HashArg = void,
-          typename TraitsArg = void,
-          typename Allocator = DefaultAllocator>
-class ListHashSet {
- public:
-  typedef ValueArg* iterator;
-  typedef const ValueArg* const_iterator;
-  typedef ValueArg* reverse_iterator;
-  typedef const ValueArg* const_reverse_iterator;
-
-  ~ListHashSet() {}
-};
-
-template <typename ValueArg,
           typename TraitsArg = void,
           typename Allocator = DefaultAllocator>
 class LinkedHashSet {
@@ -412,10 +398,6 @@ class HeapDeque : public GarbageCollected<HeapDeque<T, inlineCapacity>>,
 template <typename T>
 class HeapHashSet : public GarbageCollected<HeapHashSet<T>>,
                     public HashSet<T, void, void, HeapAllocator> {};
-
-template <typename T>
-class HeapListHashSet : public GarbageCollected<HeapListHashSet<T>>,
-                        public ListHashSet<T, void, void, HeapAllocator> {};
 
 template <typename T>
 class HeapLinkedHashSet : public GarbageCollected<HeapLinkedHashSet<T>>,
