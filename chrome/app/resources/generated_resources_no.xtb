@@ -1856,7 +1856,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2932330436172705843"><ph name="PROFILE_DISPLAY_NAME" /> (Konto for barn)</translation>
 <translation id="2932483646085333864">Logg av og på igjen for å starte synkroniseringen</translation>
-<translation id="2932883381142163287">Rapportér misbruk</translation>
+<translation id="2932883381142163287">Rapportér uriktig bruk</translation>
 <translation id="2933632078076743449">Siste oppdatering</translation>
 <translation id="2934999512438267372">Full kontroll over MIDI-enheter tillates</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
@@ -4350,7 +4350,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5691772641933328258">Gjenkjenner ikke fingeravtrykket</translation>
 <translation id="5692183275898619210">Utskriften er fullført</translation>
 <translation id="5695184138696833495">Android-app-ADB for Linux</translation>
-<translation id="5696143504434933566">Rapportér misbruk fra «<ph name="EXTENSION_NAME" />»</translation>
+<translation id="5696143504434933566">Rapportér uriktig bruk fra «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="5696177755977520104">Synkronisering av Chrome OS-innstillinger</translation>
 <translation id="5696679855467848181">Gjeldende PPD-fil i bruk: <ph name="PPD_NAME" /></translation>
 <translation id="5697832193891326782">Emojivelger</translation>
