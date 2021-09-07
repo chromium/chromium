@@ -502,17 +502,18 @@ void WebAppIntegrationBrowserTestBase::SetOpenInWindow(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
 }
 
-void WebAppIntegrationBrowserTestBase::SwitchProfileClients() {
+void WebAppIntegrationBrowserTestBase::SwitchProfileClients(
+    const std::string& client_mode) {
   std::vector<Profile*> profiles = delegate_->GetAllProfiles();
   ASSERT_EQ(2U, profiles.size())
       << "Cannot switch profile clients if delegate only supports one profile";
   DCHECK(active_profile_);
-  if (active_profile_ == profiles[0]) {
-    active_profile_ = profiles[1];
-  } else if (active_profile_ == profiles[1]) {
+  if (client_mode == "Client1") {
     active_profile_ = profiles[0];
+  } else if (client_mode == "Client2") {
+    active_profile_ = profiles[1];
   } else {
-    NOTREACHED();
+    NOTREACHED() << "Unknown client mode " << client_mode;
   }
   active_browser_ = chrome::FindTabbedBrowser(
       active_profile_, /*match_original_profiles=*/false);

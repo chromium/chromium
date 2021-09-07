@@ -178,34 +178,32 @@ class WebAppIntegrationBrowserTestBase : AppRegistrarObserver {
                                 base::Value default_launch_container,
                                 const bool create_shortcut);
   void ClosePwa();
-  void InstallCreateShortcutTabbed(const std::string& site_mode = "SiteA");
-  void InstallCreateShortcutWindowed(const std::string& site_mode = "SiteA");
-  void InstallMenuOption(const std::string& site_mode = "SiteA");
-  void InstallLocally(const std::string& site_mode = "SiteA");
-  void InstallOmniboxIcon(const std::string& site_mode = "SiteA");
-  void InstallPolicyAppTabbedNoShortcut(const std::string& site_mode = "SiteA");
-  void InstallPolicyAppTabbedShortcut(const std::string& site_mode = "SiteA");
-  void InstallPolicyAppWindowedNoShortcut(
-      const std::string& site_mode = "SiteA");
-  void InstallPolicyAppWindowedShortcut(const std::string& site_mode = "SiteA");
-  void LaunchInternal(const std::string& site_mode = "SiteA");
+  void InstallCreateShortcutTabbed(const std::string& site_mode);
+  void InstallCreateShortcutWindowed(const std::string& site_mode);
+  void InstallMenuOption(const std::string& site_mode);
+  void InstallLocally(const std::string& site_mode);
+  void InstallOmniboxIcon(const std::string& site_mode);
+  void InstallPolicyAppTabbedNoShortcut(const std::string& site_mode);
+  void InstallPolicyAppTabbedShortcut(const std::string& site_mode);
+  void InstallPolicyAppWindowedNoShortcut(const std::string& site_mode);
+  void InstallPolicyAppWindowedShortcut(const std::string& site_mode);
+  void LaunchInternal(const std::string& site_mode);
   void ListAppsInternal();
   void NavigateTabbedBrowserToSite(const GURL& url);
-  void NavigateBrowser(const std::string& site_mode = "SiteA");
-  void ManifestUpdateDisplayMinimal(const std::string& site_mode = "SiteA");
-  void SetOpenInTab(const std::string& site_mode = "SiteA");
-  void SetOpenInWindow(const std::string& site_mode = "SiteA");
-  void SwitchProfileClients();
+  void NavigateBrowser(const std::string& site_mode);
+  void ManifestUpdateDisplayMinimal(const std::string& site_mode);
+  void SetOpenInTab(const std::string& site_mode);
+  void SetOpenInWindow(const std::string& site_mode);
+  void SwitchProfileClients(const std::string& client_mode);
   void SyncTurnOff();
   void SyncTurnOn();
-  void UninstallFromMenu(const std::string& site_mode = "SiteA");
-  void UninstallPolicyApp(const std::string& site_mode = "SiteA");
+  void UninstallFromMenu(const std::string& site_mode);
+  void UninstallPolicyApp(const std::string& site_mode);
 
   // State Check Actions
   void CheckAppLocallyInstalledInternal();
-  void CheckAppInListNotLocallyInstalled(
-      const std::string& site_mode = "SiteA");
-  void CheckAppNotInList(const std::string& site_mode = "SiteA");
+  void CheckAppInListNotLocallyInstalled(const std::string& site_mode);
+  void CheckAppNotInList(const std::string& site_mode);
   void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();

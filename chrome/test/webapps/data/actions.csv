@@ -77,7 +77,7 @@ install_omnibox_icon,SiteA* | SiteAFoo | SiteABar | SiteB,,InstOmnibox,,,,,Imple
 launch_internal,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,LaunchInternal,,,,,Implemented,Launching using internal API,
 manifest_update_display_minimal,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,MnfstUpdateDsplMinimal,,,,,Implemented,Updates the display property of the manifest to 'minimal' on the given site's manifest,
 navigate_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,Nav,,,,,Implemented,Navigate the browser to one of the static sites provided by the testing framework.,
-switch_profile_clients,UserAClient2* | UserAClient1,,SwitchProfileClient,,,,,Implemented,Switch to a different instance of chrome signed in to the same profile,
+switch_profile_clients,Client2* | Client1,,SwitchProfileClient,,,,,Implemented,Switch to a different instance of chrome signed in to the same profile,
 sync_turn_off,,,TurnSyncOff,,,,,Implemented,"Turn chrome sync off for ""Apps"": chrome://settings/syncSetup/advanced",
 sync_turn_on,,,TurnSyncOn,,,,,Implemented,"Turn chrome sync on for ""Apps"": chrome://settings/syncSetup/advanced",
 uninstall_from_menu,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,UninstallFromMenu,,,,,Implemented,Uninstall the webapp from the 3-dot menu in the webapp window,

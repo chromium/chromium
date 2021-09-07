@@ -66,6 +66,20 @@ class TestPlatform(Enum):
         return result
 
     @staticmethod
+    def get_test_fixture_suffix(platforms: Set["TestPlatform"]) -> str:
+        """Output a string from the platforms to suffix the test fixture name.
+        If all platforms are specified, the suffix is blank.
+        Example: {MAC, LINUX} outputs "MacLinux"
+        """
+        if len(platforms) == len(TestPlatform):
+            return ""
+        result: str = ""
+        for platform in TestPlatform:
+            if platform in platforms:
+                result += platform.suffix.capitalize()
+        return result
+
+    @staticmethod
     def get_platforms_from_browsertest_filename(filename: str
                                                 ) -> Set["TestPlatform"]:
         result = set()
@@ -244,9 +258,10 @@ class CoverageTest:
              f"  helper_.{create_after_action_method(action)};")
             for action in self.actions
         ])
+        fixture = (f"{test_partition.test_fixture}"
+                   f"{TestPlatform.get_test_fixture_suffix(self.platforms)}")
         return (f"IN_PROC_BROWSER_TEST_F("
-                f"{test_partition.test_fixture}, "
-                f"{CoverageTest.TEST_ID_PREFIX}{self.id}){{\n"
+                f"{fixture}, {CoverageTest.TEST_ID_PREFIX}{self.id}){{\n"
                 f"{body}\n}}")
 
     def __str__(self):
