@@ -283,13 +283,13 @@ export class PasswordManagerProxy {
 
   /**
    * Records a given interaction on the Password Check page.
-   * @param {!PasswordManagerProxy.PasswordCheckInteraction} interaction
+   * @param {!PasswordCheckInteraction} interaction
    */
   recordPasswordCheckInteraction(interaction) {}
 
   /**
    * Records the referrer of a given navigation to the Password Check page.
-   * @param {!PasswordManagerProxy.PasswordCheckReferrer} referrer
+   * @param {!PasswordCheckReferrer} referrer
    */
   recordPasswordCheckReferrer(referrer) {}
 }
@@ -306,7 +306,7 @@ export class PasswordManagerProxy {
  *
  * @enum {number}
  */
-PasswordManagerProxy.PasswordCheckInteraction = {
+export const PasswordCheckInteraction = {
   START_CHECK_AUTOMATICALLY: 0,
   START_CHECK_MANUALLY: 1,
   STOP_CHECK: 2,
@@ -329,7 +329,7 @@ PasswordManagerProxy.PasswordCheckInteraction = {
  *
  * @enum {number}
  */
-PasswordManagerProxy.PasswordCheckReferrer = {
+export const PasswordCheckReferrer = {
   SAFETY_CHECK: 0,            // Web UI, recorded in JavaScript.
   PASSWORD_SETTINGS: 1,       // Web UI, recorded in JavaScript.
   PHISH_GUARD_DIALOG: 2,      // Native UI, recorded in C++.
@@ -593,14 +593,14 @@ export class PasswordManagerImpl {
   recordPasswordCheckInteraction(interaction) {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.BulkCheck.UserAction', interaction,
-        PasswordManagerProxy.PasswordCheckInteraction.COUNT);
+        PasswordCheckInteraction.COUNT);
   }
 
   /** override */
   recordPasswordCheckReferrer(referrer) {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.BulkCheck.PasswordCheckReferrer', referrer,
-        PasswordManagerProxy.PasswordCheckReferrer.COUNT);
+        PasswordCheckReferrer.COUNT);
   }
 
   /** @return {!PasswordManagerProxy} */

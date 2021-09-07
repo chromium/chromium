@@ -12,7 +12,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStatus} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';
@@ -239,9 +239,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
   });
 
   // Test verifies that clicking 'Start Check' make proper function call to
@@ -259,9 +257,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
   });
 
   // Test verifies that clicking 'Check again' make proper function call to
@@ -281,8 +277,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('stopBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.STOP_CHECK, interaction);
+    assertEquals(PasswordCheckInteraction.STOP_CHECK, interaction);
   });
 
   // Test verifies that sync users see only the link to account checkup and no
@@ -349,9 +344,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
   });
 
   // Test verifies that 'Check again' is shown when users is signed out.
@@ -370,9 +363,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
   });
 
   // Test verifies that 'Try again' is hidden when users encounter a
@@ -400,9 +391,7 @@ suite('PasswordsCheckSection', function() {
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY,
-        interaction);
+    assertEquals(PasswordCheckInteraction.START_CHECK_MANUALLY, interaction);
   });
 
   // Test verifies that if no compromised credentials found than list of
@@ -473,9 +462,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals('http://one.com/', url);
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.CHANGE_PASSWORD,
-        interaction);
+    assertEquals(PasswordCheckInteraction.CHANGE_PASSWORD, interaction);
   });
 
   // Verify that the More Actions menu opens when the button is clicked.
@@ -509,9 +496,7 @@ suite('PasswordsCheckSection', function() {
     const {id, username, formattedOrigin} =
         await passwordManager.whenCalled('removeInsecureCredential');
 
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.REMOVE_PASSWORD,
-        interaction);
+    assertEquals(PasswordCheckInteraction.REMOVE_PASSWORD, interaction);
     assertEquals(0, id);
     assertEquals('test4', username);
     assertEquals('one.com', formattedOrigin);
@@ -1386,9 +1371,7 @@ suite('PasswordsCheckSection', function() {
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     const {newPassword} =
         await passwordManager.whenCalled('changeInsecureCredential');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.EDIT_PASSWORD,
-        interaction);
+    assertEquals(PasswordCheckInteraction.EDIT_PASSWORD, interaction);
     assertEquals('yadhtribym', newPassword);
   });
 
@@ -1413,8 +1396,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_AUTOMATICALLY,
-        interaction);
+        PasswordCheckInteraction.START_CHECK_AUTOMATICALLY, interaction);
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -1440,9 +1422,7 @@ suite('PasswordsCheckSection', function() {
     const interaction =
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
 
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckInteraction.SHOW_PASSWORD,
-        interaction);
+    assertEquals(PasswordCheckInteraction.SHOW_PASSWORD, interaction);
     const {reason} =
         await passwordManager.whenCalled('getPlaintextInsecurePassword');
     expectEquals(chrome.passwordsPrivate.PlaintextReason.VIEW, reason);

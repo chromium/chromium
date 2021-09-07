@@ -23,7 +23,7 @@ import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
 /** @polymer */
@@ -133,7 +133,7 @@ class PasswordCheckListItemElement extends PolymerElement {
     OpenWindowProxyImpl.getInstance().openURL(url);
 
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
-        PasswordManagerProxy.PasswordCheckInteraction.CHANGE_PASSWORD);
+        PasswordCheckInteraction.CHANGE_PASSWORD);
   }
 
   /**
@@ -207,7 +207,7 @@ class PasswordCheckListItemElement extends PolymerElement {
    */
   showPassword() {
     this.passwordManager_.recordPasswordCheckInteraction(
-        PasswordManagerProxy.PasswordCheckInteraction.SHOW_PASSWORD);
+        PasswordCheckInteraction.SHOW_PASSWORD);
     this.passwordManager_
         .getPlaintextInsecurePassword(
             assert(this.item), chrome.passwordsPrivate.PlaintextReason.VIEW)

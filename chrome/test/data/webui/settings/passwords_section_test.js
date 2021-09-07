@@ -8,7 +8,7 @@
 import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {createExceptionEntry, createMultiStoreExceptionEntry, createMultiStorePasswordEntry, createPasswordEntry, makeCompromisedCredential, makePasswordCheckStatus, PasswordSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {runCancelExportTest, runExportFlowErrorRetryTest, runExportFlowErrorTest, runExportFlowFastTest, runExportFlowSlowTest, runFireCloseEventAfterExportCompleteTest,runStartExportTest} from 'chrome://test/settings/passwords_export_test.js';
 import {getSyncAllPrefs, simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
@@ -2061,8 +2061,7 @@ suite('PasswordsSection', function() {
     assertEquals('true', router.getQueryParameters().get('start'));
     const referrer =
         await passwordManager.whenCalled('recordPasswordCheckReferrer');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
+    assertEquals(PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
   });
 
   test('clickingCheckPasswordsRowStartsCheck', async function() {
@@ -2075,8 +2074,7 @@ suite('PasswordsSection', function() {
     assertEquals('true', router.getQueryParameters().get('start'));
     const referrer =
         await passwordManager.whenCalled('recordPasswordCheckReferrer');
-    assertEquals(
-        PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
+    assertEquals(PasswordCheckReferrer.PASSWORD_SETTINGS, referrer);
   });
 
   test('hatsInformedOnOpen', async function() {

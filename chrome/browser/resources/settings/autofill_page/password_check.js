@@ -40,7 +40,7 @@ import {Route, RouteObserverMixin, Router} from '../router.js';
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
@@ -270,8 +270,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
         !this.startCheckAutomaticallySucceeded &&
         router.getQueryParameters().get('start') === 'true') {
       this.passwordManager.recordPasswordCheckInteraction(
-          PasswordManagerProxy.PasswordCheckInteraction
-              .START_CHECK_AUTOMATICALLY);
+          PasswordCheckInteraction.START_CHECK_AUTOMATICALLY);
       this.passwordManager.startBulkPasswordCheck().then(
           () => {
             this.startCheckAutomaticallySucceeded = true;
@@ -293,7 +292,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
     switch (this.status.state) {
       case CheckState.RUNNING:
         this.passwordManager.recordPasswordCheckInteraction(
-            PasswordManagerProxy.PasswordCheckInteraction.STOP_CHECK);
+            PasswordCheckInteraction.STOP_CHECK);
         this.passwordManager.stopBulkPasswordCheck();
         return;
       case CheckState.IDLE:
@@ -301,14 +300,14 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
       case CheckState.OFFLINE:
       case CheckState.OTHER_ERROR:
         this.passwordManager.recordPasswordCheckInteraction(
-            PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY);
+            PasswordCheckInteraction.START_CHECK_MANUALLY);
         this.passwordManager.startBulkPasswordCheck();
         return;
       case CheckState.SIGNED_OUT:
         // Runs the startBulkPasswordCheck to check passwords for weakness that
         // works for both sign in and sign out users.
         this.passwordManager.recordPasswordCheckInteraction(
-            PasswordManagerProxy.PasswordCheckInteraction.START_CHECK_MANUALLY);
+            PasswordCheckInteraction.START_CHECK_MANUALLY);
         this.passwordManager.startBulkPasswordCheck().then(
             () => {},
             error => {

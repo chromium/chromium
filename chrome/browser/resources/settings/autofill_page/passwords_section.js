@@ -8,18 +8,28 @@
  * save any passwords.
  */
 
-/** @typedef {!{model: !{item: !chrome.passwordsPrivate.ExceptionEntry}}} */
-let ExceptionEntryEntryEvent;
-
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import {OpenWindowProxyImpl} from '../open_window_proxy.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '../controls/extension_controlled_indicator.js';
+// <if expr="chromeos">
+import '../controls/password_prompt_dialog.js';
+// </if>
+import '../controls/settings_toggle_button.js';
+import '../prefs/prefs.js';
+import '../settings_shared_css.js';
+import '../site_favicon.js';
+import './password_list_item.js';
+import './passwords_list_handler.js';
+import './passwords_export_dialog.js';
+import './passwords_shared_css.js';
+import './avatar_icon.js';
+
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
@@ -27,35 +37,29 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '../controls/extension_controlled_indicator.js';
-import '../controls/settings_toggle_button.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import '../prefs/prefs.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
+import {Router} from '../router.js';
+
+// <if expr="chromeos">
+import {BlockingRequestManager} from './blocking_request_manager.js';
+// </if>
 import {MergeExceptionsStoreCopiesBehavior, MergeExceptionsStoreCopiesBehaviorInterface} from './merge_exceptions_store_copies_behavior.js';
 import {MergePasswordsStoreCopiesBehavior, MergePasswordsStoreCopiesBehaviorInterface} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
-import {Router} from '../router.js';
-import '../settings_shared_css.js';
-import '../site_favicon.js';
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
-import './password_list_item.js';
-import './passwords_list_handler.js';
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
-import './passwords_export_dialog.js';
-import './passwords_shared_css.js';
-import './avatar_icon.js';
-// <if expr="chromeos">
-import '../controls/password_prompt_dialog.js';
-import {BlockingRequestManager} from './blocking_request_manager.js';
-// </if>
+import {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+
+
+/** @typedef {!{model: !{item: !chrome.passwordsPrivate.ExceptionEntry}}} */
+let ExceptionEntryEntryEvent;
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -517,7 +521,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     Router.getInstance().navigateTo(
         routes.CHECK_PASSWORDS, new URLSearchParams('start=true'));
     this.passwordManager_.recordPasswordCheckReferrer(
-        PasswordManagerProxy.PasswordCheckReferrer.PASSWORD_SETTINGS);
+        PasswordCheckReferrer.PASSWORD_SETTINGS);
   }
 
   /**

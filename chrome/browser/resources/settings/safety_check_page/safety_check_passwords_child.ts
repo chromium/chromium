@@ -12,7 +12,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
+import {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from '../autofill_page/password_manager_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
@@ -154,7 +154,7 @@ export class SettingsSafetyCheckPasswordsChildElement extends
         routes.CHECK_PASSWORDS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
     PasswordManagerImpl.getInstance().recordPasswordCheckReferrer(
-        PasswordManagerProxy.PasswordCheckReferrer.SAFETY_CHECK);
+        PasswordCheckReferrer.SAFETY_CHECK);
   }
 }
 

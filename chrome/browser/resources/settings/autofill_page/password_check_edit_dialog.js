@@ -23,7 +23,7 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
 
 
@@ -106,7 +106,7 @@ class SettingsPasswordCheckEditDialogElement extends
    */
   onSave_() {
     this.passwordManager_.recordPasswordCheckInteraction(
-        PasswordManagerProxy.PasswordCheckInteraction.EDIT_PASSWORD);
+        PasswordCheckInteraction.EDIT_PASSWORD);
     this.passwordManager_
         .changeInsecureCredential(assert(this.item), this.$.passwordInput.value)
         .finally(() => {
