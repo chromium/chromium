@@ -173,11 +173,6 @@ builder.
   Path regular expressions:
   * [`//infra/config/.+`](https://cs.chromium.org/chromium/src/infra/config/)
 
-* [cast_shell_linux_arm64](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux_arm64) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+cast_shell_linux_arm64)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+cast_shell_linux_arm64))
-
-  Path regular expressions:
-  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
-
 * [cast_shell_linux_dbg](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux_dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+cast_shell_linux_dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+cast_shell_linux_dbg))
 
   Path regular expressions:
