@@ -11,7 +11,10 @@ declare_args() {
   # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
   # Keep using static linking for now.
   # In windows use static linking.
-  grpc_use_static_linking = is_android || is_win
+  # Use static linking on Chrome OS as a workaround for the symbol lookup
+  # error(crbug/1241330) due to a gRPC version mismatch between what Chrome
+  # uses and what CrOS provides.
+  grpc_use_static_linking = is_android || is_win || is_chromeos
 }
 
 if (is_android) {
