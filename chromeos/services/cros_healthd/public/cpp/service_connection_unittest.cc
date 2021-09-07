@@ -757,6 +757,19 @@ TEST_F(CrosHealthdServiceConnectionTest, RunVideoConferencingRoutine) {
   run_loop.Run();
 }
 
+// Test that we can run the ARC HTTP routine.
+TEST_F(CrosHealthdServiceConnectionTest, RunArcHttpRoutine) {
+  auto response = MakeRunRoutineResponse();
+  FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
+  base::RunLoop run_loop;
+  ServiceConnection::GetInstance()->RunArcHttpRoutine(
+      base::BindLambdaForTesting([&](mojom::RunRoutineResponsePtr response) {
+        EXPECT_EQ(response, MakeRunRoutineResponse());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 // Test that we can add a Bluetooth observer.
 TEST_F(CrosHealthdServiceConnectionTest, AddBluetoothObserver) {
   MockCrosHealthdBluetoothObserver observer;

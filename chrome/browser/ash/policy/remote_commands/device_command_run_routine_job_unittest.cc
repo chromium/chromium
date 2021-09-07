@@ -1377,4 +1377,23 @@ TEST_F(DeviceCommandRunRoutineJobTest,
       })));
 }
 
+// Note that the ARC HTTP routine has no parameters, so we only need to
+// test that it can be run successfully.
+TEST_F(DeviceCommandRunRoutineJobTest, RunArcHttpRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(
+      RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kArcHttp,
+             std::move(params_dict),
+             base::BindLambdaForTesting([](RemoteCommandJob* job) {
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+               std::unique_ptr<std::string> payload = job->GetResultPayload();
+               EXPECT_TRUE(payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+             })));
+}
+
 }  // namespace policy

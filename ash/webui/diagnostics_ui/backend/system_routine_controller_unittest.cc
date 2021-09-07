@@ -538,12 +538,13 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
        healthd::DiagnosticRoutineEnum::kHttpsFirewall,
        healthd::DiagnosticRoutineEnum::kHttpsLatency,
        healthd::DiagnosticRoutineEnum::kLanConnectivity,
-       healthd::DiagnosticRoutineEnum::kSignalStrength});
+       healthd::DiagnosticRoutineEnum::kSignalStrength,
+       healthd::DiagnosticRoutineEnum::kArcHttp});
 
   base::RunLoop run_loop;
   system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
       [&](const std::vector<mojom::RoutineType>& supported_routines) {
-        EXPECT_EQ(14u, supported_routines.size());
+        EXPECT_EQ(15u, supported_routines.size());
         EXPECT_FALSE(base::Contains(supported_routines,
                                     mojom::RoutineType::kBatteryCharge));
         EXPECT_FALSE(base::Contains(supported_routines,
@@ -580,6 +581,8 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
             base::Contains(supported_routines, mojom::RoutineType::kMemory));
         EXPECT_TRUE(base::Contains(supported_routines,
                                    mojom::RoutineType::kSignalStrength));
+        EXPECT_TRUE(
+            base::Contains(supported_routines, mojom::RoutineType::kArcHttp));
         run_loop.Quit();
       }));
   run_loop.Run();

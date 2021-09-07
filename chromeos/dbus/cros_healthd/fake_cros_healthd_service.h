@@ -134,6 +134,7 @@ class FakeCrosHealthdService final
   void RunVideoConferencingRoutine(
       const absl::optional<std::string>& stun_server_hostname,
       RunVideoConferencingRoutineCallback callback) override;
+  void RunArcHttpRoutine(RunArcHttpRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

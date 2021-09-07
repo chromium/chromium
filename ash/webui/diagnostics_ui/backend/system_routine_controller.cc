@@ -191,6 +191,12 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
   BindCrosHealthdDiagnosticsServiceIfNeccessary();
 
   switch (routine_type) {
+    case mojom::RoutineType::kArcHttp:
+      diagnostics_service_->RunArcHttpRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+
     case mojom::RoutineType::kBatteryCharge:
       diagnostics_service_->RunBatteryChargeRoutine(
           GetExpectedRoutineDurationInSeconds(routine_type),

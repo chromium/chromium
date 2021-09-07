@@ -437,6 +437,16 @@ interface CrosHealthdDiagnosticsService {
   //                routine.
   RunVideoConferencingRoutine(string? stun_server_hostname)
       => (RunRoutineResponse response);
+
+  // Requests that the ArcHttp routine is created and started on the
+  // platform. This routine checks whether the HTTP latency from inside ARC
+  // is within established tolerance levels for the system. This routine is
+  // only available if GetAvailableRoutines returned kArcHttp.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunArcHttpRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

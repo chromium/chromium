@@ -57,6 +57,7 @@ std::unique_ptr<base::DictionaryValue> GetDataSourceUpdate() {
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"arcHttpRoutineText", IDS_NETWORK_DIAGNOSTICS_ARC_HTTP},
       {"batteryCalculatingText", IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT},
       {"batteryChargeRoutineText", IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT},
       {"batteryDischargeRoutineText",
@@ -188,8 +189,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"troubleConnecting", IDS_DIAGNOSTICS_TROUBLE_CONNECTING},
       {"troubleshootingText", IDS_DIAGNOSTICS_TROUBLESHOOTING_TEXT},
       {"versionInfo", IDS_DIAGNOSTICS_VERSION_INFO_TEXT},
-      {"wifiLabel", IDS_NETWORK_TYPE_WIFI},
-  };
+      {"wifiLabel", IDS_NETWORK_TYPE_WIFI}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedStrings(*GetDataSourceUpdate());
   html_source->UseStringsJs();

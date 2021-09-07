@@ -43,6 +43,7 @@ enum DiagnosticRoutineEnum {
   kHttpsFirewall = 24,
   kHttpsLatency = 25,
   kVideoConferencing = 26,
+  kArcHttp = 27
 };
 
 // Enumeration of the possible DiskRead routine's command type
