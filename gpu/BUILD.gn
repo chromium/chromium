@@ -296,6 +296,10 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash) {
       "//ui/gl:gl",
       "//ui/gl/init:init",
     ]
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
   }
 }
 
