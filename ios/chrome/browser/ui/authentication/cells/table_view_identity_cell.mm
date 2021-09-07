@@ -50,9 +50,9 @@ const CGFloat kSeparatorMargin = 80;
                        checked:(BOOL)checked
              identityViewStyle:(IdentityViewStyle)identityViewStyle
                     titleColor:(UIColor*)titleColor {
+  self.identityView.style = identityViewStyle;
   [self.identityView setTitle:title subtitle:subtitle];
   [self.identityView setAvatar:image];
-  self.identityView.style = identityViewStyle;
   self.identityView.titleColor = titleColor;
   self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone;

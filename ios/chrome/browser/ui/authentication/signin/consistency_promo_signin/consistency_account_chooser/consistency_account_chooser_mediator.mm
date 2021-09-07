@@ -106,7 +106,7 @@
   configurator.email = identity.userEmail;
   configurator.avatar =
       self.accountManagerService->GetIdentityAvatarWithIdentity(
-          identity, IdentityAvatarSize::DefaultLarge);
+          identity, IdentityAvatarSize::TableViewIcon);
   configurator.selected = [identity isEqual:self.selectedIdentity];
 }
 
