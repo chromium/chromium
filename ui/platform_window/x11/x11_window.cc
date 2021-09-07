@@ -1152,6 +1152,14 @@ bool X11Window::HandleAsAtkEvent(const x11::Event& x11_event, bool transient) {
 }
 
 void X11Window::OnEvent(const x11::Event& xev) {
+  auto event_type = ui::EventTypeFromXEvent(xev);
+  if (event_type != ET_UNKNOWN) {
+    // If this event can be translated, it will be handled in ::DispatchEvent.
+    // Otherwise, we end up processing XEvents twice that could lead to unwanted
+    // behaviour like loosing activation during tab drag and etc.
+    return;
+  }
+
   auto* prop = xev.As<x11::PropertyNotifyEvent>();
   auto* target_current_context = drag_drop_client_->target_current_context();
   if (prop && target_current_context &&
