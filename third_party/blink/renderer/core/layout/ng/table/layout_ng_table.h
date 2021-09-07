@@ -35,6 +35,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
                                   public LayoutNGTableInterface {
  public:
   explicit LayoutNGTable(Element*);
+  ~LayoutNGTable() override;
 
   // TODO(atotic) Replace all H/VBorderSpacing with BorderSpacing?
   LogicalSize BorderSpacing() const {

@@ -40,6 +40,8 @@ inline bool NeedsTableSection(const LayoutObject& object) {
 LayoutNGTable::LayoutNGTable(Element* element)
     : LayoutNGMixin<LayoutBlock>(element) {}
 
+LayoutNGTable::~LayoutNGTable() = default;
+
 wtf_size_t LayoutNGTable::ColumnCount() const {
   NOT_DESTROYED();
   const NGLayoutResult* cached_layout_result = GetCachedLayoutResult();

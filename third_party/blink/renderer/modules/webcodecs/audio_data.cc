@@ -203,6 +203,8 @@ AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)
     close();
 }
 
+AudioData::~AudioData() = default;
+
 AudioData* AudioData::clone(ExceptionState& exception_state) {
   if (!data_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

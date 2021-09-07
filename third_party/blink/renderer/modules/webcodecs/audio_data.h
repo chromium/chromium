@@ -30,6 +30,8 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   // audio_data.idl implementation.
   explicit AudioData(AudioDataInit*, ExceptionState&);
 
+  ~AudioData() final;
+
   // Creates a clone of |this|, taking on a new reference on |data_|. The cloned
   // frame will not be closed when |this| is, and its lifetime should be
   // independently managed.
