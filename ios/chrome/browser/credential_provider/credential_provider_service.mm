@@ -21,6 +21,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "ios/chrome/browser/credential_provider/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_util.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
@@ -147,6 +148,7 @@ CredentialProviderService::CredentialProviderService(
 
   DCHECK(authentication_service_);
   UpdateAccountId();
+  UpdateUserEmail();
 
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
@@ -188,6 +190,7 @@ void CredentialProviderService::Shutdown() {
 
 void CredentialProviderService::RequestSyncAllCredentials() {
   UpdateAccountId();
+  UpdateUserEmail();
   password_store_->GetAutofillableLogins(this);
 }
 
@@ -260,8 +263,20 @@ void CredentialProviderService::UpdateAccountId() {
   [app_group::GetGroupUserDefaults()
       setObject:account_id_
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
+}
+
+void CredentialProviderService::UpdateUserEmail() {
+  ChromeIdentity* identity =
+      authentication_service_->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+
+  bool sync_enabled = sync_service_->IsSyncFeatureEnabled();
+  bool passwords_sync_enabled =
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords);
+  NSString* user_email =
+      (sync_enabled && passwords_sync_enabled) ? identity.userEmail : nil;
   [app_group::GetGroupUserDefaults()
-      setObject:identity.userEmail
+      setObject:user_email
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
@@ -352,6 +367,13 @@ void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
 
 void CredentialProviderService::OnSyncConfigurationCompleted(
     syncer::SyncService* sync) {
+  RequestSyncAllCredentialsIfNeeded();
+}
+
+void CredentialProviderService::OnStateChanged(syncer::SyncService* sync) {
+  // When the state changes, it's possible that password syncing has
+  // started/stopped, so the user's email must be updated.
+  UpdateUserEmail();
   RequestSyncAllCredentialsIfNeeded();
 }
 

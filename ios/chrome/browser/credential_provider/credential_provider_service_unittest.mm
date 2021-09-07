@@ -13,6 +13,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -39,6 +40,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForFileOperationTimeout;
 using password_manager::PasswordStoreImpl;
 using password_manager::LoginDatabase;
+
+NSString* const userEmail = @"test@email.com";
 
 class CredentialProviderServiceTest : public PlatformTest {
  public:
@@ -67,6 +70,7 @@ class CredentialProviderServiceTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationServiceFake*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             chrome_browser_state_.get()));
+
     account_manager_service_ =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
@@ -76,7 +80,10 @@ class CredentialProviderServiceTest : public PlatformTest {
 
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
         &testing_pref_service_, password_store_, auth_service_,
-        credential_store_, nullptr, nullptr);
+        credential_store_, nullptr, &sync_service_);
+
+    // Fire sync service state changed to simulate sync setup finishing.
+    sync_service_.FireStateChanged();
   }
 
   void TearDown() override {
@@ -105,6 +112,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   ChromeAccountManagerService* account_manager_service_;
+  syncer::TestSyncService sync_service_;
 
   DISALLOW_COPY_AND_ASSIGN(CredentialProviderServiceTest);
 };
@@ -261,6 +269,35 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
       objectForKey:
           AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled()]
       boolValue]);
+}
+
+// Tests that the CredentialProviderService has the correct stored email based
+// on the password sync state.
+TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
+  // Start by signing in and turning sync on.
+  FakeChromeIdentity* identity =
+      [FakeChromeIdentity identityWithEmail:userEmail
+                                     gaiaID:@"gaiaID"
+                                       name:@"Test Name"];
+  auth_service_->SignIn(identity);
+  auth_service_->GrantSyncConsent(identity);
+  sync_service_.FireStateChanged();
+
+  EXPECT_NSEQ(
+      userEmail,
+      [app_group::GetGroupUserDefaults()
+          stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+
+  // Turn off password sync.
+  auto model_type_set = sync_service_.GetActiveDataTypes();
+  model_type_set.Remove(syncer::PASSWORDS);
+  sync_service_.SetPreferredDataTypes(model_type_set);
+  sync_service_.SetActiveDataTypes(model_type_set);
+
+  sync_service_.FireStateChanged();
+
+  EXPECT_FALSE([app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 }
 
 }  // namespace

@@ -74,6 +74,10 @@ class CredentialProviderService
   // Syncs account_id_.
   void UpdateAccountId();
 
+  // Syncs the current logged in user's email to the extension if they are
+  // syncing passwords.
+  void UpdateUserEmail();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> results)
@@ -94,6 +98,7 @@ class CredentialProviderService
 
   // syncer::SyncServiceObserver:
   void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
+  void OnStateChanged(syncer::SyncService* sync) override;
 
   // Observer for when |saving_passwords_enabled_| changes.
   void OnSavingPasswordsEnabledChanged();
