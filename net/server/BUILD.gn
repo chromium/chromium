@@ -16,10 +16,12 @@ static_library("http_server") {
     "//chrome/browser/devtools",
     "//chrome/test/chromedriver/*",
     "//content/browser",
+    "//net:net_web_socket_encoder_fuzzer",
   ]
 
   friend = [
     ":net_http_server_fuzzer",
+    "//net:net_web_socket_encoder_fuzzer",
     ":tests",
     "//chrome/browser/devtools",
     "//chrome/test/chromedriver/*",

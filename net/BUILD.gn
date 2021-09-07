@@ -5240,6 +5240,16 @@ fuzzer_test("net_websocket_frame_parser_fuzzer") {
   libfuzzer_options = [ "max_len=256" ]
 }
 
+fuzzer_test("net_web_socket_encoder_fuzzer") {
+  sources = [ "server/web_socket_encoder_fuzzer.cc" ]
+  deps = [
+    ":net_fuzzer_test_support",
+    "//net",
+    "//net/server:http_server",
+  ]
+  libfuzzer_options = [ "max_len=256" ]
+}
+
 fuzzer_test("net_http_chunked_decoder_fuzzer") {
   sources = [ "http/http_chunked_decoder_fuzzer.cc" ]
   deps = [
