@@ -81,11 +81,13 @@ base::File VfsBackend::OpenFile(const base::FilePath& file_path,
   if (!(desired_flags & SQLITE_OPEN_MAIN_DB))
     flags |= base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE;
 
-  flags |= ((desired_flags & SQLITE_OPEN_CREATE) ?
-           base::File::FLAG_OPEN_ALWAYS : base::File::FLAG_OPEN);
-
-  if (desired_flags & SQLITE_OPEN_EXCLUSIVE)
-    flags |= base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE;
+  if (desired_flags & SQLITE_OPEN_CREATE) {
+    flags |= (desired_flags & SQLITE_OPEN_EXCLUSIVE)
+                 ? base::File::FLAG_CREATE
+                 : base::File::FLAG_OPEN_ALWAYS;
+  } else {
+    flags |= base::File::FLAG_OPEN;
+  }
 
   if (desired_flags & SQLITE_OPEN_DELETEONCLOSE) {
     flags |= base::File::FLAG_TEMPORARY | base::File::FLAG_HIDDEN |
