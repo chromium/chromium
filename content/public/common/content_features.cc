@@ -661,9 +661,17 @@ const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Browser-side feature flag for Secure Payment Confirmation (SPC) that also
-// controls the render side feature state.
-const base::Feature kSecurePaymentConfirmation{
-    "SecurePaymentConfirmationBrowser", base::FEATURE_DISABLED_BY_DEFAULT};
+// controls the render side feature state. SPC initial launch is intended
+// only for Mac devices with Touch ID and and Windows devices with
+// Windows Hello authentication available and setup.
+const base::Feature kSecurePaymentConfirmation {
+  "SecurePaymentConfirmationBrowser",
+#if defined(OS_MAC) || defined(OS_WIN)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Used to control whether to remove the restriction that PaymentCredential in
 // WebAuthn and secure payment confirmation method in PaymentRequest API must

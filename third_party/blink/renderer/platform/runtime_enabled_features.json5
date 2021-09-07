@@ -1977,7 +1977,7 @@
     },
     {
       name: "SecurePaymentConfirmation",
-      status: "test",
+      status: "stable",
     },
     {
       name: "SecurePaymentConfirmationDebug",
