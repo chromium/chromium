@@ -7,9 +7,13 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,6 +68,12 @@
                     forControlEvents:UIControlEventValueChanged];
     ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     switchCell.switchView.tag = item.type;
+  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
+    TableViewInfoButtonCell* managedCell =
+        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+    [managedCell.trailingButton addTarget:self
+                                   action:@selector(didTapManagedUIInfoButton:)
+                         forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
 }
@@ -123,6 +133,30 @@
   CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
   [self.serviceDelegate didSelectItem:item cellRect:cellRect];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - Sync helpers
+
+// Called when the user clicks on the information button of the managed
+// setting's UI. Shows a textual bubble with the information of the enterprise.
+- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+          initWithMessage:
+              l10n_util::GetNSString(
+                  IDS_IOS_ENTERPRISE_MANAGED_SETTING_SYNC_EVERYTHING_MESSAGE)
+           enterpriseName:nil];
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
 }
 
 @end

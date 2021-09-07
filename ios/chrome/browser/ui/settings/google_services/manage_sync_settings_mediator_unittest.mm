@@ -10,6 +10,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/pref_names.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -56,6 +57,14 @@ PrefService* SetPrefService() {
   PrefRegistrySimple* registry = prefs->registry();
   registry->RegisterBooleanPref(autofill::prefs::kAutofillWalletImportEnabled,
                                 true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncAutofill, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncBookmarks, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncTypedUrls, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncTabs, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncPasswords, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncReadingList, true);
+  registry->RegisterBooleanPref(syncer::prefs::kSyncPreferences, true);
+
   return prefs;
 }
 }  // namespace
@@ -395,6 +404,41 @@ TEST_F(ManageSyncSettingsMediatorTest,
     SyncSwitchItem* switch_item =
         base::mac::ObjCCastStrict<SyncSwitchItem>(item);
     if (switch_item.type == AutocompleteWalletItemType) {
+      ASSERT_FALSE(switch_item.enabled);
+    } else {
+      ASSERT_TRUE(switch_item.enabled);
+    }
+  }
+}
+
+// Tests that the items are correct when a sync type list is managed.
+TEST_F(ManageSyncSettingsMediatorTest,
+       CheckItemsWhenSyncTypeListHasEnabledItems) {
+  FirstSetupSyncOnWithConsentEnabled();
+
+  TestingPrefServiceSimple* pref_service =
+      static_cast<TestingPrefServiceSimple*>(pref_service_);
+  pref_service->SetManagedPref(syncer::prefs::kSyncBookmarks,
+                               std::make_unique<base::Value>(true));
+  pref_service->SetManagedPref(syncer::prefs::kSyncPasswords,
+                               std::make_unique<base::Value>(true));
+
+  // Loads the Sync page.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Check sync switches.
+  NSArray* items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+  for (TableViewItem* item in items) {
+    if (item.type == SyncEverythingItemType) {
+      ASSERT_FALSE([item isKindOfClass:[SyncSwitchItem class]]);
+      continue;
+    }
+    SyncSwitchItem* switch_item =
+        base::mac::ObjCCastStrict<SyncSwitchItem>(item);
+    if (switch_item.type == BookmarksDataTypeItemType ||
+        switch_item.type == PasswordsDataTypeItemType ||
+        switch_item.type == AutocompleteWalletItemType) {
       ASSERT_FALSE(switch_item.enabled);
     } else {
       ASSERT_TRUE(switch_item.enabled);
