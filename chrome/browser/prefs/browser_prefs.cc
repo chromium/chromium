@@ -242,7 +242,6 @@
 #include "chrome/browser/new_tab_page/modules/task_module/task_module_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
-#include "chrome/browser/search/search_suggest/search_suggest_service.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -654,6 +653,15 @@ const char kAccountManagerNumTimesMigrationRanSuccessfully[] =
     "account_manager.num_times_migration_ran_successfully";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !defined(OS_ANDROID)
+// Deprecated 09/2021.
+const char kNtpSearchSuggestionsBlocklist[] =
+    "ntp.search_suggestions_blocklist";
+const char kNtpSearchSuggestionsImpressions[] =
+    "ntp.search_suggestions_impressions";
+const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -844,6 +852,12 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kAccountStorageExists, false);
 
   registry->RegisterDictionaryPref(kUserLanguageProfile);
+
+#if !defined(OS_ANDROID)
+  registry->RegisterDictionaryPref(kNtpSearchSuggestionsBlocklist);
+  registry->RegisterDictionaryPref(kNtpSearchSuggestionsImpressions);
+  registry->RegisterBooleanPref(kNtpSearchSuggestionsOptOut, false);
+#endif
 }
 
 }  // namespace
@@ -1240,7 +1254,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   PromoService::RegisterProfilePrefs(registry);
-  SearchSuggestService::RegisterProfilePrefs(registry);
   settings::SettingsUI::RegisterProfilePrefs(registry);
   send_tab_to_self::SendTabToSelfBubbleController::RegisterProfilePrefs(
       registry);
@@ -1663,6 +1676,13 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   web_app::ExternallyInstalledWebAppPrefs::RemoveTerminalPWA(profile_prefs);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !defined(OS_ANDROID)
+  // Added 09/2021.
+  profile_prefs->ClearPref(kNtpSearchSuggestionsBlocklist);
+  profile_prefs->ClearPref(kNtpSearchSuggestionsImpressions);
+  profile_prefs->ClearPref(kNtpSearchSuggestionsOptOut);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

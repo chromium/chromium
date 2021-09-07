@@ -41,16 +41,6 @@ const base::Feature kRealboxMatchOmniboxTheme{
 const base::Feature kRealboxUseGoogleGIcon{"NtpRealboxUseGoogleGIcon",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, shows Vasco suggestion chips in the NTP below fakebox/realbox
-// despite other config except DisableSearchSuggestChips below.
-const base::Feature kSearchSuggestChips{"SearchSuggestChips",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled, hides Vasco suggestion chips in the NTP below fakebox/realbox
-// despite other config.
-const base::Feature kDisableSearchSuggestChips{
-    "DisableSearchSuggestChips", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
 // navigation is issued.

@@ -32,15 +32,10 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
   bool ShouldProcessUndoMostVisitedDeletion() override;
   bool ShouldProcessUndoAllMostVisitedDeletions() override;
   bool ShouldProcessLogEvent() override;
-  bool ShouldProcessLogSuggestionEventWithValue() override;
   bool ShouldSendSetInputInProgress(bool is_active_tab) override;
   bool ShouldSendOmniboxFocusChanged() override;
   bool ShouldSendMostVisitedInfo() override;
   bool ShouldSendNtpTheme() override;
-  bool ShouldProcessBlocklistSearchSuggestion() override;
-  bool ShouldProcessBlocklistSearchSuggestionWithHash() override;
-  bool ShouldProcessSearchSuggestionSelected() override;
-  bool ShouldProcessOptOutOfSearchSuggestions() override;
   bool ShouldProcessThemeChangeMessages() override;
 
   // Used by unit tests.

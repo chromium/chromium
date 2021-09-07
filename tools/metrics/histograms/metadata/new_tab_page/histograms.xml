@@ -1509,8 +1509,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.SearchSuggestions.IndexClicked" units="units"
     expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
+  <obsolete>
+    Not recorded since deprecation of search suggestions. Marked obsolete
+    09/2021.
+  </obsolete>
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1524,6 +1526,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.SearchSuggestions.RequestLatencyV2" units="ms"
     expires_after="M82">
+  <obsolete>
+    Not recorded since deprecation of search suggestions. Marked obsolete
+    09/2021.
+  </obsolete>
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -1534,6 +1540,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.SearchSuggestions.RequestStatusV2"
     enum="NTPSearchSuggestionsRequestStatus" expires_after="M82">
+  <obsolete>
+    Not recorded since deprecation of search suggestions. Marked obsolete
+    09/2021.
+  </obsolete>
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -1544,6 +1554,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="NewTabPage.SearchSuggestions.ShownCount" units="units"
     expires_after="M82">
+  <obsolete>
+    Not recorded since deprecation of search suggestions. Marked obsolete
+    09/2021.
+  </obsolete>
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>

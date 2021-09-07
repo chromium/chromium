@@ -21,8 +21,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/search/search_suggest/search_suggest_service.h"
-#include "chrome/browser/search/search_suggest/search_suggest_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -124,9 +122,6 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
   if (instant_service_)
     instant_service_->AddObserver(this);
-
-  search_suggest_service_ =
-      SearchSuggestServiceFactory::GetForProfile(profile());
 
   chrome_colors_service_ =
       chrome_colors::ChromeColorsFactory::GetForProfile(profile());
@@ -289,14 +284,6 @@ void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,
     logger_->LogEvent(event, time);
 }
 
-void SearchTabHelper::OnLogSuggestionEventWithValue(
-    NTPSuggestionsLoggingEventType event,
-    int data,
-    base::TimeDelta time) {
-  if (logger_)
-    logger_->LogSuggestionEventWithValue(event, data, time);
-}
-
 void SearchTabHelper::OnLogMostVisitedImpression(
     const ntp_tiles::NTPTileImpression& impression) {
   if (logger_)
@@ -322,34 +309,6 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
   // a spurious oninputend when the user accepts a match in the omnibox.
   if (web_contents_->GetController().GetPendingEntry() == nullptr)
     ipc_router_.SetInputInProgress(IsInputInProgress());
-}
-
-void SearchTabHelper::OnBlocklistSearchSuggestion(int task_version,
-                                                  long task_id) {
-  if (search_suggest_service_)
-    search_suggest_service_->BlocklistSearchSuggestion(task_version, task_id);
-}
-
-void SearchTabHelper::OnBlocklistSearchSuggestionWithHash(
-    int task_version,
-    long task_id,
-    const uint8_t hash[4]) {
-  if (search_suggest_service_)
-    search_suggest_service_->BlocklistSearchSuggestionWithHash(task_version,
-                                                               task_id, hash);
-}
-
-void SearchTabHelper::OnSearchSuggestionSelected(int task_version,
-                                                 long task_id,
-                                                 const uint8_t hash[4]) {
-  if (search_suggest_service_)
-    search_suggest_service_->SearchSuggestionSelected(task_version, task_id,
-                                                      hash);
-}
-
-void SearchTabHelper::OnOptOutOfSearchSuggestions() {
-  if (search_suggest_service_)
-    search_suggest_service_->OptOutOfSearchSuggestions();
 }
 
 void SearchTabHelper::OnApplyDefaultTheme() {

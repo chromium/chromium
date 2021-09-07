@@ -45,15 +45,6 @@ class NTPUserDataLogger {
                             bool using_most_visited,
                             bool is_visible);
 
-  // Called when a search suggestion event occurs on the NTP that has an integer
-  // value associated with it; N suggestions were shown on this NTP load, the
-  // Nth suggestion was clicked, etc. |time| is the delta time from navigation
-  // start until this event happened. Requires Google as the default search
-  // provider.
-  void LogSuggestionEventWithValue(NTPSuggestionsLoggingEventType event,
-                                   int data,
-                                   base::TimeDelta time);
-
   // Logs an impression on one of the NTP tiles by given details.
   void LogMostVisitedImpression(const ntp_tiles::NTPTileImpression& impression);
 

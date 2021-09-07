@@ -38,8 +38,6 @@ extern const base::Feature kNtpDriveModule;
 extern const base::Feature kNtpPhotosModule;
 extern const base::Feature kNtpSafeBrowsingModule;
 extern const base::Feature kNtpModulesDragAndDrop;
-extern const base::Feature kSearchSuggestChips;
-extern const base::Feature kDisableSearchSuggestChips;
 
 extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
 

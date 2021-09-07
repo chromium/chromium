@@ -316,7 +316,7 @@ Refer to README.md for content description and update process.
  <item id="sct_auditing" added_in_milestone="87" hash_code="48603483" type="0" content_hash_code="43567503" os_list="linux,windows" file_path="chrome/browser/ssl/sct_reporting_service.cc"/>
  <item id="sdch_dictionary_fetch" added_in_milestone="62" hash_code="47152935" type="0" deprecated="2017-09-16" content_hash_code="16764294" file_path=""/>
  <item id="search_prefetch_service" added_in_milestone="88" hash_code="108986091" type="0" content_hash_code="125257414" os_list="windows,linux" file_path="chrome/browser/prefetch/search_prefetch/base_search_prefetch_request.cc"/>
- <item id="search_suggest_service" added_in_milestone="73" hash_code="57785193" type="0" content_hash_code="132247652" os_list="linux,windows" file_path="chrome/browser/search/search_suggest/search_suggest_loader_impl.cc"/>
+ <item id="search_suggest_service" added_in_milestone="73" hash_code="57785193" type="0" deprecated="2021-09-02" content_hash_code="132247652" file_path=""/>
  <item id="security_key_socket" added_in_milestone="66" hash_code="31074955" type="0" content_hash_code="13741232" os_list="linux,windows" file_path="remoting/host/security_key/security_key_socket.cc"/>
  <item id="send_message_express" added_in_milestone="85" hash_code="23527666" type="0" deprecated="2020-09-21" content_hash_code="96850228" file_path=""/>
  <item id="service_worker_navigation_preload" added_in_milestone="63" hash_code="129872904" type="0" content_hash_code="79473248" os_list="linux,windows" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc"/>

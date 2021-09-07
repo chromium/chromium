@@ -12,9 +12,6 @@ import "url/mojom/url.mojom";
 enum NTPLoggingEventType;
 
 [Native]
-enum NTPSuggestionsLoggingEventType;
-
-[Native]
 enum OmniboxFocusState;
 
 [Native]
@@ -54,14 +51,6 @@ interface EmbeddedSearch {
            NTPLoggingEventType event,
            mojo_base.mojom.TimeDelta time);
 
-  // Logs events related to search suggestions from InstantExtended New Tab
-  // Pages along with an integer value. These events currently include number
-  // of suggestion chips shown and the index of chips that were clicked.
-  LogSuggestionEventWithValue(int32 page_seq_no,
-           NTPSuggestionsLoggingEventType event,
-           int32 data,
-           mojo_base.mojom.TimeDelta time);
-
   // Logs an impression on one of the Most Visited tile on the InstantExtended
   // New Tab Page.
   LogMostVisitedImpression(int32 page_seq_no, NTPTileImpression impression);
@@ -69,21 +58,6 @@ interface EmbeddedSearch {
   // Logs a navigation on one of the Most Visited tile on the InstantExtended
   // New Tab Page.
   LogMostVisitedNavigation(int32 page_seq_no, NTPTileImpression impression);
-
-  // Add a search suggestion task id to the blocklist.
-  BlocklistSearchSuggestion(int32 task_version, int64 task_id);
-
-  // Add a search suggestion task id and hash to the blocklist.
-  BlocklistSearchSuggestionWithHash(int32 task_version, int64 task_id,
-                                    array<uint8, 4> hash);
-
-  // A search suggestion was selected, issue a new request with the suggestion
-  // temporarily added to the blocklist.
-  SearchSuggestionSelected(int32 task_version, int64 task_id,
-                                    array<uint8, 4> hash);
-
-  // Opts the user out of receiving search suggestions.
-  OptOutOfSearchSuggestions();
 
   // Applies the default theme.
   ApplyDefaultTheme();

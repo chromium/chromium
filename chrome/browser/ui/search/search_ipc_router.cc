@@ -224,20 +224,6 @@ void SearchIPCRouter::LogEvent(int page_seq_no,
   delegate_->OnLogEvent(event, time);
 }
 
-void SearchIPCRouter::LogSuggestionEventWithValue(
-    int page_seq_no,
-    NTPSuggestionsLoggingEventType event,
-    int data,
-    base::TimeDelta time) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  if (!policy_->ShouldProcessLogSuggestionEventWithValue())
-    return;
-
-  delegate_->OnLogSuggestionEventWithValue(event, data, time);
-}
-
 void SearchIPCRouter::LogMostVisitedImpression(
     int page_seq_no,
     const ntp_tiles::NTPTileImpression& impression) {
@@ -262,48 +248,6 @@ void SearchIPCRouter::LogMostVisitedNavigation(
     return;
 
   delegate_->OnLogMostVisitedNavigation(impression);
-}
-
-void SearchIPCRouter::BlocklistSearchSuggestion(int32_t task_version,
-                                                int64_t task_id) {
-  if (!policy_->ShouldProcessBlocklistSearchSuggestion())
-    return;
-
-  delegate_->OnBlocklistSearchSuggestion(task_version, task_id);
-}
-
-void SearchIPCRouter::BlocklistSearchSuggestionWithHash(
-    int32_t task_version,
-    int64_t task_id,
-    const std::vector<uint8_t>& hash) {
-  if (!policy_->ShouldProcessBlocklistSearchSuggestionWithHash())
-    return;
-
-  if (hash.size() > 4) {
-    return;
-  }
-  delegate_->OnBlocklistSearchSuggestionWithHash(task_version, task_id,
-                                                 hash.data());
-}
-
-void SearchIPCRouter::SearchSuggestionSelected(
-    int32_t task_version,
-    int64_t task_id,
-    const std::vector<uint8_t>& hash) {
-  if (!policy_->ShouldProcessSearchSuggestionSelected())
-    return;
-
-  if (hash.size() > 4) {
-    return;
-  }
-  delegate_->OnSearchSuggestionSelected(task_version, task_id, hash.data());
-}
-
-void SearchIPCRouter::OptOutOfSearchSuggestions() {
-  if (!policy_->ShouldProcessOptOutOfSearchSuggestions())
-    return;
-
-  delegate_->OnOptOutOfSearchSuggestions();
 }
 
 void SearchIPCRouter::ApplyDefaultTheme() {

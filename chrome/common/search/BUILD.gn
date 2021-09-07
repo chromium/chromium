@@ -45,10 +45,6 @@ mojom("mojo_bindings") {
           cpp = "::NTPLoggingEventType"
         },
         {
-          mojom = "search.mojom.NTPSuggestionsLoggingEventType"
-          cpp = "::NTPSuggestionsLoggingEventType"
-        },
-        {
           mojom = "search.mojom.NTPTileImpression"
           cpp = "::ntp_tiles::NTPTileImpression"
         },
