@@ -8,15 +8,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -32,15 +34,13 @@
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
-#include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/command_line.h"
-#include "base/compiler_specific.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,7 +55,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/test/views_test_base.h"
 
 namespace ash {
 namespace test {
@@ -64,9 +63,9 @@ namespace {
 
 constexpr int kNumOfSuggestedApps = 3;
 
-class PageFlipWaiter : public ash::PaginationModelObserver {
+class PageFlipWaiter : public PaginationModelObserver {
  public:
-  explicit PageFlipWaiter(ash::PaginationModel* model) : model_(model) {
+  explicit PageFlipWaiter(PaginationModel* model) : model_(model) {
     model_->AddObserver(this);
   }
 
@@ -97,7 +96,7 @@ class PageFlipWaiter : public ash::PaginationModelObserver {
   }
 
   std::unique_ptr<base::RunLoop> ui_run_loop_;
-  ash::PaginationModel* model_ = nullptr;
+  PaginationModel* model_ = nullptr;
   bool wait_ = false;
   std::string selected_pages_;
 
@@ -141,9 +140,9 @@ aura::Window* FindMenuWindow(aura::Window* root) {
 }
 
 // Dragging task to be run after page flip is observed.
-class DragAfterPageFlipTask : public ash::PaginationModelObserver {
+class DragAfterPageFlipTask : public PaginationModelObserver {
  public:
-  DragAfterPageFlipTask(ash::PaginationModel* model,
+  DragAfterPageFlipTask(PaginationModel* model,
                         AppsGridView* view,
                         const ui::MouseEvent& drag_event)
       : model_(model), view_(view), drag_event_(drag_event) {
@@ -163,7 +162,7 @@ class DragAfterPageFlipTask : public ash::PaginationModelObserver {
   void TransitionChanged() override {}
   void TransitionEnded() override {}
 
-  ash::PaginationModel* model_;
+  PaginationModel* model_;
   AppsGridView* view_;
   ui::MouseEvent drag_event_;
 
@@ -173,7 +172,7 @@ class DragAfterPageFlipTask : public ash::PaginationModelObserver {
 class TestSuggestedSearchResult : public TestSearchResult {
  public:
   TestSuggestedSearchResult() {
-    set_display_type(ash::SearchResultDisplayType::kChip);
+    set_display_type(SearchResultDisplayType::kChip);
     set_is_recommendation(true);
   }
   ~TestSuggestedSearchResult() override = default;
@@ -184,38 +183,7 @@ class TestSuggestedSearchResult : public TestSearchResult {
 
 }  // namespace
 
-class TestAppsGridViewFolderDelegate : public AppsGridViewFolderDelegate {
- public:
-  TestAppsGridViewFolderDelegate() = default;
-  TestAppsGridViewFolderDelegate(const TestAppsGridViewFolderDelegate&) =
-      delete;
-  TestAppsGridViewFolderDelegate& operator=(
-      const TestAppsGridViewFolderDelegate&) = delete;
-  ~TestAppsGridViewFolderDelegate() override = default;
-
-  void ReparentItem(AppListItemView* original_drag_view,
-                    const gfx::Point& drag_point_in_folder_grid) override {}
-
-  void DispatchDragEventForReparent(
-      AppsGridView::Pointer pointer,
-      const gfx::Point& drag_point_in_folder_grid) override {}
-
-  void DispatchEndDragEventForReparent(
-      bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag,
-      std::unique_ptr<AppDragIconProxy> drag_icon_proxy) override {}
-
-  bool IsDragPointOutsideOfFolder(const gfx::Point& drag_point) override {
-    return false;
-  }
-
-  bool IsOEMFolder() const override { return false; }
-
-  void HandleKeyboardReparent(AppListItemView* reparented_item,
-                              ui::KeyboardCode key_code) override {}
-};
-
-class AppsGridViewTest : public views::ViewsTestBase {
+class AppsGridViewTest : public AshTestBase {
  public:
   AppsGridViewTest() = default;
   AppsGridViewTest(bool is_rtl,
@@ -235,35 +203,48 @@ class AppsGridViewTest : public views::ViewsTestBase {
       base::i18n::SetICUDefaultLocale("he");
     feature_list.InitWithFeatureState(app_list_features::kNewDragSpecInLauncher,
                                       is_pagination_preview_active_);
-    views::ViewsTestBase::SetUp();
-    gfx::NativeView parent = GetContext();
-    // Ensure that parent is big enough to show the full AppListView.
-    parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(1024, 768)));
-    delegate_ = std::make_unique<AppListTestViewDelegate>();
-    delegate_->SetIsTabletModeEnabled(create_as_tablet_mode_);
-    app_list_view_ = new AppListView(delegate_.get());
-    app_list_view_->InitView(parent);
-    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
-                         false /*is_side_shelf*/);
-    contents_view_ = app_list_view_->app_list_main_view()->contents_view();
-    apps_grid_view_ = contents_view_->apps_container_view()->apps_grid_view();
-    app_list_view_->GetWidget()->Show();
+    AshTestBase::SetUp();
 
-    model_ = delegate_->GetTestModel();
-    search_model_ = delegate_->GetSearchModel();
-    suggestions_container_ = contents_view_->apps_container_view()
-                                 ->suggestion_chip_container_view_for_test();
-    expand_arrow_view_ = contents_view_->expand_arrow_view();
+    // Make the display big enough to hold the app list.
+    UpdateDisplay("1024x768");
+
+    // Replace the model before the app list views are created, because some
+    // views cache pointers to the model.
+    auto model = std::make_unique<test::AppListTestModel>();
+    model_ = model.get();
+    Shell::Get()->app_list_controller()->SetAppListModelForTest(
+        std::move(model));
+
+    // Populate some suggested apps.
+    search_model_ = Shell::Get()->app_list_controller()->GetSearchModel();
     for (size_t i = 0; i < kNumOfSuggestedApps; ++i) {
       search_model_->results()->Add(
           std::make_unique<TestSuggestedSearchResult>());
     }
-    // Needed to update suggestions from |model_|.
-    suggestions_container_->Update();
+
+    // Show the app list.
+    auto* helper = GetAppListTestHelper();
+    if (create_as_tablet_mode_) {
+      // The app list will be shown automatically when tablet mode is enabled.
+      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    } else {
+      // Show fullscreen so folders are available.
+      helper->Show(GetPrimaryDisplay().id());
+      helper->GetAppListView()->SetState(AppListViewState::kFullscreenAllApps);
+    }
+    // Wait for any show animations to complete.
+    base::RunLoop().RunUntilIdle();
+
+    // Cache view pointers to make tests more concise.
+    app_list_view_ = helper->GetAppListView();
+    contents_view_ = app_list_view_->app_list_main_view()->contents_view();
+    apps_grid_view_ = contents_view_->apps_container_view()->apps_grid_view();
+    suggestions_container_ = contents_view_->apps_container_view()
+                                 ->suggestion_chip_container_view_for_test();
+    expand_arrow_view_ = contents_view_->expand_arrow_view();
 
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view_);
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
-        true);
+    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
 
     // In production, page flip duration > page transition > overscroll.
     SetPageFlipDurationForTest(apps_grid_view_);
@@ -272,10 +253,9 @@ class AppsGridViewTest : public views::ViewsTestBase {
 
   void TearDown() override {
     page_flip_waiter_.reset();
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
-    app_list_view_->GetWidget()->Close();
-    views::ViewsTestBase::TearDown();
+    AshTestBase::TearDown();
     AppListView::SetShortAnimationForTesting(false);
   }
 
@@ -354,7 +334,7 @@ class AppsGridViewTest : public views::ViewsTestBase {
 
   int GetTilesPerPage(int page) const { return test_api_->TilesPerPage(page); }
 
-  ash::PaginationModel* GetPaginationModel() const {
+  PaginationModel* GetPaginationModel() const {
     return apps_grid_view_->pagination_model();
   }
 
@@ -438,16 +418,14 @@ class AppsGridViewTest : public views::ViewsTestBase {
     apps_grid_view_->MoveItemInModel(item_view->item(), target);
   }
 
-  TestAppListColorProvider color_provider_;      // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;         // Owned by native widget.
   PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
   ContentsView* contents_view_ = nullptr;        // Owned by |app_list_view_|.
   SearchResultContainerView* suggestions_container_ =
       nullptr;                                    // Owned by |apps_grid_view_|.
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.
-  std::unique_ptr<AppListTestViewDelegate> delegate_;
-  AppListTestModel* model_ = nullptr;    // Owned by |delegate_|.
-  SearchModel* search_model_ = nullptr;  // Owned by |delegate_|.
+  AppListTestModel* model_ = nullptr;
+  SearchModel* search_model_ = nullptr;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
   // True if the test screen is configured to work with RTL locale.
@@ -464,9 +442,6 @@ class AppsGridViewTest : public views::ViewsTestBase {
  private:
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
-  // Used by AppListFolderView::UpdatePreferredBounds.
-  keyboard::KeyboardUIController keyboard_ui_controller_;
 
   base::test::ScopedFeatureList feature_list;
 };
@@ -742,6 +717,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseCrash) {
 
   // |view0| should be animating with layer.
   EXPECT_TRUE(view0->layer());
+  EXPECT_TRUE(apps_grid_view_->IsAnimatingView(view0));
 
   test_api_->WaitForItemMoveAnimationDone();
   // |view0| layer should be cleared after the animation.
@@ -754,7 +730,10 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
   ASSERT_LE(0, cols);
   model_->PopulateApps(cols * 2);
 
-  apps_grid_view_->GetWidget()->Hide();
+  // NOTE: Dismissing the app list creates layers for item views as part of the
+  // opacity animations, even in tests. https://crbug.com/1246567
+  GetAppListTestHelper()->DismissAndRunLoop();
+  ASSERT_FALSE(apps_grid_view_->GetWidget()->IsVisible());
 
   AppListItemView* view0 = GetItemViewInTopLevelGrid(0);
   model_->top_level_item_list()->MoveItem(0, cols + 2);
@@ -764,7 +743,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
   EXPECT_EQ(view0, GetItemViewInTopLevelGrid(cols + 2));
 
   // The item should be repositioned immediately when the widget is not visible.
-  EXPECT_FALSE(view0->layer());
+  EXPECT_FALSE(apps_grid_view_->IsAnimatingView(view0));
   EXPECT_EQ(view0->bounds(), GetItemRectOnCurrentPageAt(1, 2));
 }
 
@@ -1026,7 +1005,7 @@ TEST_F(AppsGridViewTest, PageResetAfterOpenFolder) {
 
   // Open the folder. It should be at page 0.
   test_api_->PressItemAt(0);
-  ash::PaginationModel* pagination_model =
+  PaginationModel* pagination_model =
       app_list_folder_view()->items_grid_view()->pagination_model();
   EXPECT_EQ(3, pagination_model->total_pages());
   EXPECT_EQ(0, pagination_model->selected_page());
@@ -1380,7 +1359,7 @@ TEST_F(AppsGridViewTest, CheckFolderWithMultiplePagesContents) {
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
-  ash::PaginationModel* folder_pagination_model =
+  PaginationModel* folder_pagination_model =
       folder_apps_grid_view()->pagination_model();
   EXPECT_EQ(1, folder_pagination_model->total_pages());
   EXPECT_EQ(0, folder_pagination_model->selected_page());
@@ -2493,23 +2472,20 @@ TEST_P(AppsGridViewDragAndDropTest, MouseDragFlipToPreviousPage) {
   EndDrag(apps_grid_view_, /*cancel=*/true);
 }
 
-TEST_P(AppsGridViewDragAndDropTest, UpdateFolderBackgroundOnCancelDrag) {
+TEST_P(AppsGridViewDragAndDropTest, CancelDragDoesNotReorderItems) {
   const int kTotalItems = 4;
-  TestAppsGridViewFolderDelegate folder_delegate;
-  apps_grid_view_->set_folder_delegate(&folder_delegate);
-  test::AppsGridViewTestApi(apps_grid_view_)
-      .GetPagedViewStructure()
-      ->Init(PagedViewStructure::Mode::kFullPages);
   model_->PopulateApps(kTotalItems);
+  ASSERT_EQ(std::string("Item 0,Item 1,Item 2,Item 3"),
+            model_->GetModelContent());
 
   // Starts a mouse drag and then cancels it.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
-  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
   UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
+  EndDrag(apps_grid_view_, /*cancel=*/true);
 
-  EndDrag(apps_grid_view_, true /*cancel*/);
-
+  // Model is not changed.
   EXPECT_EQ(std::string("Item 0,Item 1,Item 2,Item 3"),
             model_->GetModelContent());
 }
@@ -2699,7 +2675,7 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
-  ash::PaginationModel* folder_pagination_model =
+  PaginationModel* folder_pagination_model =
       folder_apps_grid_view()->pagination_model();
   EXPECT_EQ(1, folder_pagination_model->total_pages());
   EXPECT_EQ(0, folder_pagination_model->selected_page());
@@ -3022,11 +2998,6 @@ TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
 TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
   model_->PopulateApps(30);
 
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(1024, 768)));
-  app_list_view_->OnParentWindowBoundsChanged();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
-
   // Enter cardified state.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
                                      apps_grid_view_);
@@ -3054,11 +3025,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << last_item_bounds.ToString();
 
-  // Simulate rotation by updating the bounds of the widget in which the app
-  // list was shown.
-  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(768, 1024)));
-  app_list_view_->OnParentWindowBoundsChanged();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+  // Simulate screen rotation (r = 90 degrees clockwise).
+  UpdateDisplay("1024x768/r");
 
   ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
   ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
@@ -3092,11 +3060,6 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
 
 TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
   model_->PopulateApps(30);
-
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(1024, 768)));
-  app_list_view_->OnParentWindowBoundsChanged();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Enter cardified state, and drag the item to the second apps grid page.
   InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
@@ -3134,11 +3097,8 @@ TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
       << " clip rect " << clip_rect.ToString() << " item bounds "
       << last_item_bounds.ToString();
 
-  // Simulate rotation by updating the bounds of the widget in which the app
-  // list was shown.
-  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(768, 1024)));
-  app_list_view_->OnParentWindowBoundsChanged();
-  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+  // Simulate screen rotation (r = 90 degrees clockwise).
+  UpdateDisplay("1024x768/r");
 
   ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
   ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
