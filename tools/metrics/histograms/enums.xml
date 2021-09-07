@@ -85909,6 +85909,7 @@ others/histograms.xml -->
   <int value="2" label="Third Party (CrOS)"/>
   <int value="3" label="Third Party (Android)"/>
   <int value="4" label="PPTP"/>
+  <int value="5" label="WireGuard"/>
 </enum>
 
 <enum name="VPNRemoteAuthenticationType">
@@ -85927,6 +85928,17 @@ others/histograms.xml -->
   <int value="4" label="L2TP/IPSec None"/>
   <int value="5" label="L2TP/IPSec Certificate"/>
   <int value="6" label="L2TP/IPSec Username/Password"/>
+</enum>
+
+<enum name="VPNWireGuardAllowedIPsType">
+  <int value="0" label="0.0.0.0/0 is set in in at least one of the peers"/>
+  <int value="1" label="No peer contains 0.0.0.0/0 in its AllowedIPs"/>
+</enum>
+
+<enum name="VPNWireGuardKeyPairSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Input by user"/>
+  <int value="2" label="Generated inside shill"/>
 </enum>
 
 <enum name="VRAssetsComponentUpdateStatus">
