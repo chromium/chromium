@@ -44,6 +44,7 @@ Event& Event::operator=(Event&& other) {
   return *this;
 }
 
+Event::Event() = default;
 Event::~Event() = default;
 
 const std::string& Event::project_name() const {

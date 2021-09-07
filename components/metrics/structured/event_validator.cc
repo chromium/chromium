@@ -10,6 +10,7 @@ namespace metrics {
 namespace structured {
 
 EventValidator::EventValidator(uint64_t event_hash) : event_hash_(event_hash) {}
+EventValidator::~EventValidator() = default;
 
 uint64_t EventValidator::event_hash() const {
   return event_hash_;

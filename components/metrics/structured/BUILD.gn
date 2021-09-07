@@ -31,7 +31,6 @@ static_library("structured") {
     ":neutrino_logging",
     ":storage",
     ":structured_events",
-    ":structured_metrics_validator",
     "//base",
     "//components/metrics",
     "//components/metrics/structured/mojom",
@@ -42,12 +41,13 @@ static_library("structured") {
 
 static_library("events") {
   sources = [
+    "enums.h",
     "event.cc",
     "event.h",
   ]
   deps = [
-    ":common",
     "//base",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -70,7 +70,6 @@ proto_library("storage") {
 # Sources used by all static libraries in this BUILD file.
 source_set("common") {
   sources = [
-    "enums.h",
     "event_base.cc",
     "event_base.h",
     "histogram_util.cc",
@@ -82,7 +81,9 @@ source_set("common") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":events",
     ":storage",
+    ":structured_metrics_validator",
     "//components/prefs",
     "//third_party/metrics_proto",
   ]
@@ -163,7 +164,7 @@ static_library("structured_metrics_validator") {
             ]
 
   deps = [
-    ":common",
+    ":events",
     ":gen_structured_metrics_validator",
     "//base",
   ]
@@ -199,6 +200,7 @@ static_library("neutrino_logging_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "event_base_unittest.cc",
     "external_metrics_unittest.cc",
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
@@ -206,6 +208,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":events",
     ":storage",
     ":structured",
     ":structured_events",

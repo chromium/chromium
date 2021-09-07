@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/metrics/structured/enums.h"
+#include "components/metrics/structured/event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
@@ -51,6 +52,8 @@ class EventBase {
     std::string hmac_value;
     int64_t int_value;
     std::string string_value;
+
+    bool operator==(const Metric& other) const;
   };
 
   // Finalizes the event and sends it for recording. After this call, the event
@@ -71,14 +74,19 @@ class EventBase {
 
   IdScope id_scope() const { return id_scope_; }
 
-  StructuredEventProto_EventType event_type() const { return event_type_; }
+  EventType event_type() const { return event_type_; }
+
+  // Converts an unhashed,raw |event| into an EventBase. If |event| is
+  // malformatted (ie wrong metric name or metric vlaue type) or is not
+  // registered within structured.xml, then returns absl::nullopt.
+  static absl::optional<EventBase> FromEvent(const Event& event);
 
  protected:
   EventBase(uint64_t event_name_hash,
             uint64_t project_name_hash,
             IdType id_type,
             IdScope id_scope,
-            StructuredEventProto_EventType event_type);
+            EventType event_type);
 
   void AddHmacMetric(uint64_t name_hash, const std::string& value);
 
@@ -113,7 +121,7 @@ class EventBase {
   // Specifies the type of an event, which determines how it is treated after
   // upload. See /third_party/metrics_proto/structured_data.proto for more
   // information.
-  StructuredEventProto_EventType event_type_;
+  EventType event_type_;
 
   std::vector<Metric> metrics_;
 };

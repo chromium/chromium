@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+#include "components/metrics/structured/enums.h"
+#include "components/metrics/structured/event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
@@ -17,6 +19,12 @@ namespace structured {
 // messages received by the structured metric service.
 class EventValidator {
  public:
+  // Metadata about a registered metric.
+  struct MetricMetadata {
+    Event::MetricType metric_type;
+    uint64_t metric_name_hash;
+  };
+
   // Should not be copied or moved.
   EventValidator(const EventValidator&) = delete;
   EventValidator& operator=(const EventValidator& other) = delete;
@@ -26,8 +34,8 @@ class EventValidator {
   // Returns the event validator if |metric_name| is a valid metric for this
   // event. This method is virtual because a static constexpr map will be
   // defined within each event validator implementation.
-  virtual absl::optional<uint64_t> GetMetricHash(
-      const std::string& metric_name) const;
+  virtual absl::optional<MetricMetadata> GetMetricMetadata(
+      const std::string& metric_name) const = 0;
 
   uint64_t event_hash() const;
 

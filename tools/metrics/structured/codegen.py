@@ -142,8 +142,10 @@ class EventInfo:
 
   def build_metric_hash_map(self) -> str:
     metric_infos = (MetricInfo(metric) for metric in self.metrics)
-    return ',\n  '.join('{{\"{}\", {}::kEventNameHash}}'.format(
-        metric_info.name, self.validator_name) for metric_info in metric_infos)
+    return ',\n  '.join(
+        '{{\"{}\", {{ Event::MetricType::{}, UINT64_C({})}}}}'.format(
+            metric_info.name, metric_info.type_enum, metric_info.hash)
+        for metric_info in metric_infos)
 
   def build_validator_init(self) -> str:
     return ('static {} {};').format(self.validator_name,
@@ -164,12 +166,15 @@ class MetricInfo:
     if metric.type == 'hmac-string':
       self.type = 'std::string&'
       self.setter = 'AddHmacMetric'
+      self.type_enum = 'kHmac'
     elif metric.type == 'int':
       self.type = 'int64_t'
       self.setter = 'AddIntMetric'
+      self.type_enum = 'kLong'
     elif metric.type == 'raw-string':
       self.type = 'std::string&'
       self.setter = 'AddRawStringMetric'
+      self.type_enum = 'kRawString'
     else:
       raise ValueError('Invalid metric type.')
 

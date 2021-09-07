@@ -11,6 +11,13 @@
 
 #include "base/values.h"
 
+// Builder classes for sending events are generated in the similarily-named
+// //components/metrics/structured/structured_events.h.
+//
+// Builder classes will generate subclasses of |Event| rather than |EventBase|
+// once the mojo implementation of structured metrics is complete. |EventBase|
+// will only be used by the central service to record events.
+
 namespace metrics {
 namespace structured {
 
@@ -20,6 +27,8 @@ namespace structured {
 class Event {
  public:
   // There should be a 1-1 mapping between MetricType and the mojom enums.
+  //
+  // TODO(jongahn): Move this into common enum file.
   enum class MetricType {
     kHmac = 0,
     kLong = 1,
@@ -44,6 +53,7 @@ class Event {
     base::Value value;
   };
 
+  Event();
   Event(const std::string& project_name, const std::string& event_name);
 
   Event(Event&& other);

@@ -20,5 +20,7 @@ ProjectValidator::ProjectValidator(uint64_t project_hash,
       id_scope_(id_scope),
       event_type_(event_type) {}
 
+ProjectValidator::~ProjectValidator() = default;
+
 }  // namespace structured
 }  // namespace metrics

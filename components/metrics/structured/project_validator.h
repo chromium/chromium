@@ -28,7 +28,7 @@ class ProjectValidator {
   // Returns the event validator if |event_name| is a valid event for this
   // project.
   virtual absl::optional<const EventValidator*> GetEventValidator(
-      const std::string& event_name);
+      const std::string& event_name) const = 0;
 
   uint64_t project_hash() const { return project_hash_; }
   IdType id_type() const { return id_type_; }

@@ -41,6 +41,7 @@ IMPL_FILE_TEMPLATE = """\
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/structured/enums.h"
+#include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_validator.h"
 #include "components/metrics/structured/project_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -86,10 +87,10 @@ class {project.validator} final :
     public ::metrics::structured::ProjectValidator {{
   public:
     {project.validator}();
-    ~{project.validator}() override;
+    ~{project.validator}();
 
     absl::optional<const EventValidator*> GetEventValidator(
-      const std::string& event_name) override;
+      const std::string& event_name) const override;
 
     static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
     static constexpr IdType kIdType = IdType::{project.id_type};
@@ -110,7 +111,7 @@ class {project.validator} final :
 {project.validator}::~{project.validator}() = default;
 
 absl::optional<const EventValidator*> {project.validator}::GetEventValidator(
-                                        const std::string& event_name) {{
+                                        const std::string& event_name) const {{
    const auto it = k{project.validator}EventMap.find(event_name);
    if (it == k{project.validator}EventMap.end())
       return absl::nullopt;
@@ -141,8 +142,8 @@ class {event.validator_name} final :
 
     static constexpr uint64_t kEventNameHash = UINT64_C({event.name_hash});
 
-    absl::optional<uint64_t> GetMetricHash(const std::string& metric_name)
-        const override;
+    absl::optional<MetricMetadata>
+      GetMetricMetadata(const std::string& metric_name) const override;
 }};
 
 {event.validator_name}::{event.validator_name}() :
@@ -151,10 +152,11 @@ class {event.validator_name} final :
 
 {event.validator_name}::~{event.validator_name}() = default;
 
-absl::optional<uint64_t> {event.validator_name}::GetMetricHash(
-                                        const std::string& metric_name) const {{
-  static constexpr auto metric_hash_map = base::MakeFixedFlatMap<
-      base::StringPiece, uint64_t>({{
+absl::optional<EventValidator::MetricMetadata>
+{event.validator_name}::GetMetricMetadata(const std::string& metric_name)
+const {{
+   static constexpr auto metric_hash_map = base::MakeFixedFlatMap<
+      base::StringPiece, EventValidator::MetricMetadata>({{
     {metric_hash_map}
    }});
    const auto* it = metric_hash_map.find(metric_name);
