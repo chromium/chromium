@@ -281,7 +281,5 @@ if (!is_ios) {
       "//third_party/blink/renderer/platform:platform_export",
       "//third_party/blink/renderer/platform/wtf",
     ]
-
-    public_configs = [ "//third_party/blink/renderer:config" ]
   }
 }
