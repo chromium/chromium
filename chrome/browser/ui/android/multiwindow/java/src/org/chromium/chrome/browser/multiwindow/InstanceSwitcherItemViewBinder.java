@@ -14,6 +14,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class InstanceSwitcherItemViewBinder {
+    static ListMenuButton sMoreMenu;
+
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (InstanceSwitcherItemProperties.FAVICON == propertyKey) {
             ((ImageView) view.findViewById(R.id.favicon))
@@ -48,7 +50,13 @@ class InstanceSwitcherItemViewBinder {
 
         } else if (InstanceSwitcherItemProperties.MORE_MENU == propertyKey) {
             ListMenuButtonDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
-            ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
+            ListMenuButton moreMenu = (ListMenuButton) view.findViewById(R.id.more);
+            moreMenu.setDelegate(delegate);
+            moreMenu.setOnClickListener((v) -> {
+                if (sMoreMenu != null) sMoreMenu.dismiss();
+                moreMenu.showMenu();
+                sMoreMenu = moreMenu;
+            });
 
         } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {
             View newWindow = view.findViewById(R.id.new_window);

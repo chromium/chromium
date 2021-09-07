@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -29,6 +30,12 @@ import java.util.List;
  */
 public class TargetSelectorCoordinator {
     private static final int TYPE_ENTRY = 0;
+
+    // Last selector dialog instance. This is used to prevent the user from interacting with
+    // multiple instances of selector UI.
+    @SuppressLint("StaticFieldLeak")
+    static TargetSelectorCoordinator sPrevInstance;
+
     private final Context mContext;
     private final Callback<InstanceInfo> mMoveCallback;
 
@@ -73,6 +80,8 @@ public class TargetSelectorCoordinator {
     }
 
     private void showDialog(List<InstanceInfo> items) {
+        UiUtils.closeOpenDialogs();
+        sPrevInstance = this;
         mDialog = createDialog(items);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
     }
@@ -88,19 +97,19 @@ public class TargetSelectorCoordinator {
         }
         ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
             @Override
-            public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {}
+            public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                sPrevInstance = null;
+            }
 
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 switch (buttonType) {
                     case ModalDialogProperties.ButtonType.POSITIVE:
-                        mModalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+                        dismissDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         mMoveCallback.onResult(mSelectedItem);
                         break;
                     case ModalDialogProperties.ButtonType.NEGATIVE:
-                        mModalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                        dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
                         break;
                     default:
                 }
@@ -119,6 +128,10 @@ public class TargetSelectorCoordinator {
                         R.string.target_selector_move)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources, R.string.cancel)
                 .build();
+    }
+
+    void dismissDialog(@DialogDismissalCause int cause) {
+        mModalDialogManager.dismissDialog(mDialog, cause);
     }
 
     private PropertyModel generateListItem(InstanceInfo item) {
