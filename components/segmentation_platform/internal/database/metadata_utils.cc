@@ -122,7 +122,8 @@ void SetFeatureNameHashesFromName(
   }
 }
 
-bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {
+bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info,
+                                   const base::Time& now) {
   if (!segment_info.has_prediction_result())
     return true;
 
@@ -134,10 +135,11 @@ bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info) {
       segment_info.model_metadata().result_time_to_live() *
       GetTimeUnit(segment_info.model_metadata());
 
-  return last_result_timestamp + result_ttl < base::Time::Now();
+  return last_result_timestamp + result_ttl < now;
 }
 
-bool HasFreshResults(const proto::SegmentInfo& segment_info) {
+bool HasFreshResults(const proto::SegmentInfo& segment_info,
+                     const base::Time& now) {
   if (!segment_info.has_prediction_result())
     return false;
 
@@ -150,7 +152,7 @@ bool HasFreshResults(const proto::SegmentInfo& segment_info) {
   base::TimeDelta result_ttl =
       metadata.result_time_to_live() * GetTimeUnit(metadata);
 
-  return base::Time::Now() - last_result_timestamp < result_ttl;
+  return now - last_result_timestamp < result_ttl;
 }
 
 base::TimeDelta GetTimeUnit(

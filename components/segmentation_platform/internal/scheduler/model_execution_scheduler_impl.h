@@ -13,6 +13,10 @@
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 
+namespace base {
+class Clock;
+}  // namespace base
+
 namespace segmentation_platform {
 
 namespace proto {
@@ -27,7 +31,8 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   ModelExecutionSchedulerImpl(Observer* observer,
                               SegmentInfoDatabase* segment_database,
                               SignalStorageConfig* signal_storage_config,
-                              ModelExecutionManager* model_execution_manager);
+                              ModelExecutionManager* model_execution_manager,
+                              base::Clock* clock);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -66,6 +71,9 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // The class that executes the models.
   ModelExecutionManager* model_execution_manager_;
+
+  // The time provider.
+  base::Clock* clock_;
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.
