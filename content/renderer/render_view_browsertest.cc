@@ -2973,7 +2973,7 @@ class AddMessageToConsoleMockLocalFrameHost : public LocalFrameHostInterceptor {
   void DidAddMessageToConsole(
       blink::mojom::ConsoleMessageLevel log_level,
       const std::u16string& msg,
-      int32_t line_number,
+      uint32_t line_number,
       const absl::optional<std::u16string>& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override {
     if (did_add_message_to_console_callback_) {

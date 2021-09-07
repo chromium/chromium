@@ -2098,7 +2098,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidAddMessageToConsole(
       blink::mojom::ConsoleMessageLevel log_level,
       const std::u16string& message,
-      int32_t line_no,
+      uint32_t line_no,
       const absl::optional<std::u16string>& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;

@@ -227,7 +227,7 @@ void FakeLocalFrameHost::GetKeepAliveHandleFactory(
 void FakeLocalFrameHost::DidAddMessageToConsole(
     mojom::ConsoleMessageLevel log_level,
     const WTF::String& message,
-    int32_t line_no,
+    uint32_t line_no,
     const WTF::String& source_id,
     const WTF::String& untrusted_stack_trace) {}
 

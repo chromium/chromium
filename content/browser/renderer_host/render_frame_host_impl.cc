@@ -3322,7 +3322,7 @@ void RenderFrameHostImpl::OnAudibleStateChanged(bool is_audible) {
 void RenderFrameHostImpl::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel log_level,
     const std::u16string& message,
-    int32_t line_no,
+    uint32_t line_no,
     const absl::optional<std::u16string>& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
   std::u16string updated_source_id;

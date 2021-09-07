@@ -552,7 +552,7 @@ interface LocalFrameHost {
   DidAddMessageToConsole(
       ConsoleMessageLevel log_level,
       mojo_base.mojom.BigString16 msg,
-      int32 line_number,
+      uint32 line_number,
       mojo_base.mojom.String16? source_id,
       mojo_base.mojom.BigString16? untrusted_stack_trace);
 
