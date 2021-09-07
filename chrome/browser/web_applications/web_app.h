@@ -113,6 +113,10 @@ class WebApp {
   const base::Time& last_launch_time() const { return last_launch_time_; }
   // Represents the time when this app is installed.
   const base::Time& install_time() const { return install_time_; }
+  // Represents the time when this app is updated.
+  const base::Time& manifest_update_time() const {
+    return manifest_update_time_;
+  }
 
   // Represents the "icons" field in the manifest.
   const std::vector<apps::IconInfo>& icon_infos() const { return icon_infos_; }
@@ -268,6 +272,7 @@ class WebApp {
   void SetLastBadgingTime(const base::Time& time);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
+  void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
@@ -332,6 +337,7 @@ class WebApp {
   base::Time last_badging_time_;
   base::Time last_launch_time_;
   base::Time install_time_;
+  base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   SyncFallbackData sync_fallback_data_;
   blink::mojom::CaptureLinks capture_links_ =

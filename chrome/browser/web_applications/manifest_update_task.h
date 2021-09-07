@@ -32,6 +32,7 @@ class WebAppRegistrar;
 class WebAppUiManager;
 class WebAppInstallManager;
 class OsIntegrationManager;
+class WebAppSyncBridge;
 enum class InstallResultCode;
 
 // This enum is recorded by UMA, the numeric values must not change.
@@ -85,7 +86,8 @@ class ManifestUpdateTask final
                      const WebAppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallManager* install_manager,
-                     OsIntegrationManager& os_integration_manager);
+                     OsIntegrationManager& os_integration_manager,
+                     WebAppSyncBridge* sync_bridge);
 
   ~ManifestUpdateTask() override;
 
@@ -142,6 +144,7 @@ class ManifestUpdateTask final
   WebAppUiManager& ui_manager_;
   WebAppInstallManager& install_manager_;
   OsIntegrationManager& os_integration_manager_;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   Stage stage_;
   absl::optional<WebApplicationInfo> web_application_info_;

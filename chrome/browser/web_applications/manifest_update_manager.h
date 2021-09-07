@@ -27,6 +27,7 @@ class WebAppUiManager;
 class WebAppInstallManager;
 class OsIntegrationManager;
 class SystemWebAppManager;
+class WebAppSyncBridge;
 
 // Checks for updates to a web app's manifest and triggers a reinstall if the
 // current installation is out of date.
@@ -49,7 +50,8 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                      WebAppUiManager* ui_manager,
                      WebAppInstallManager* install_manager,
                      SystemWebAppManager* system_web_app_manager,
-                     OsIntegrationManager* os_integration_manager);
+                     OsIntegrationManager* os_integration_manager,
+                     WebAppSyncBridge* sync_bridge);
   void Start();
   void Shutdown();
 
@@ -91,6 +93,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   WebAppInstallManager* install_manager_ = nullptr;
   SystemWebAppManager* system_web_app_manager_ = nullptr;
   OsIntegrationManager* os_integration_manager_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

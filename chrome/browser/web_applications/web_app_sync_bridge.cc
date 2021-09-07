@@ -304,6 +304,16 @@ void WebAppSyncBridge::SetAppInstallTime(const AppId& app_id,
   registrar_->NotifyWebAppInstallTimeChanged(app_id, time);
 }
 
+void WebAppSyncBridge::SetAppManifestUpdateTime(const AppId& app_id,
+                                                const base::Time& time) {
+  {
+    ScopedRegistryUpdate update(this);
+    WebApp* web_app = update->UpdateApp(app_id);
+    if (web_app)
+      web_app->SetManifestUpdateTime(time);
+  }
+}
+
 void WebAppSyncBridge::SetUserPageOrdinal(const AppId& app_id,
                                           syncer::StringOrdinal page_ordinal) {
   ScopedRegistryUpdate update(this);

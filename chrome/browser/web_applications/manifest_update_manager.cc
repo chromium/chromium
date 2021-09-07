@@ -32,13 +32,15 @@ void ManifestUpdateManager::SetSubsystems(
     WebAppUiManager* ui_manager,
     WebAppInstallManager* install_manager,
     SystemWebAppManager* system_web_app_manager,
-    OsIntegrationManager* os_integration_manager) {
+    OsIntegrationManager* os_integration_manager,
+    WebAppSyncBridge* sync_bridge) {
   registrar_ = registrar;
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
   install_manager_ = install_manager;
   system_web_app_manager_ = system_web_app_manager;
   os_integration_manager_ = os_integration_manager;
+  sync_bridge_ = sync_bridge;
 }
 
 void ManifestUpdateManager::Start() {
@@ -91,7 +93,8 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
                   base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
                                  base::Unretained(this)),
                   hang_update_checks_for_testing_, *registrar_, *icon_manager_,
-                  ui_manager_, install_manager_, *os_integration_manager_));
+                  ui_manager_, install_manager_, *os_integration_manager_,
+                  sync_bridge_));
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {

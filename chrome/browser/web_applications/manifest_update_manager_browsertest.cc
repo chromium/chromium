@@ -2418,6 +2418,32 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
             kAnotherIconSize);
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+                       CheckUpdateTimeChange) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "theme_color": "$2"
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  base::Time manifest_update_time = web_app->manifest_update_time();
+
+  // CSS #RRGGBBAA syntax.
+  OverrideManifest(kManifestTemplate, {kInstallableIconList, "#00FF00F0"});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+
+  // Update time is updated.
+  EXPECT_LT(manifest_update_time, web_app->manifest_update_time());
+}
+
 class ManifestUpdateManagerIconUpdatingBrowserTest
     : public ManifestUpdateManagerBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_{

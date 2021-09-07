@@ -226,4 +226,8 @@ message WebAppProto {
   repeated string approved_launch_protocols = 37;
 
   optional LaunchHandlerProto launch_handler = 38;
+
+  // Time the app is updated.
+  // ms since the Unix epoch. See sync/base/time.h.
+  optional int64 manifest_update_time = 39;
 }

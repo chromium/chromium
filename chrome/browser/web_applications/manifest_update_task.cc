@@ -24,6 +24,8 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "third_party/blink/public/common/features.h"
@@ -125,13 +127,15 @@ ManifestUpdateTask::ManifestUpdateTask(
     const WebAppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallManager* install_manager,
-    OsIntegrationManager& os_integration_manager)
+    OsIntegrationManager& os_integration_manager,
+    WebAppSyncBridge* sync_bridge)
     : content::WebContentsObserver(web_contents),
       registrar_(registrar),
       icon_manager_(icon_manager),
       ui_manager_(*ui_manager),
       install_manager_(*install_manager),
       os_integration_manager_(os_integration_manager),
+      sync_bridge_(sync_bridge),
       url_(url),
       app_id_(app_id),
       stopped_callback_(std::move(stopped_callback)),
@@ -582,6 +586,8 @@ void ManifestUpdateTask::OnInstallationComplete(
   DCHECK_EQ(app_id_, app_id);
   DCHECK(!IsUpdateNeededForManifest());
   DCHECK_EQ(code, InstallResultCode::kSuccessAlreadyInstalled);
+
+  sync_bridge_->SetAppManifestUpdateTime(app_id, base::Time::Now());
 
   DestroySelf(ManifestUpdateResult::kAppUpdated);
 }

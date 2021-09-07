@@ -272,6 +272,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     local_data->set_install_time(
         syncer::TimeToProtoTime(web_app.install_time()));
   }
+  if (!web_app.manifest_update_time().is_null()) {
+    local_data->set_manifest_update_time(
+        syncer::TimeToProtoTime(web_app.manifest_update_time()));
+  }
 
   if (web_app.chromeos_data().has_value()) {
     auto& chromeos_data = web_app.chromeos_data().value();
@@ -631,6 +635,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   if (local_data.has_install_time()) {
     web_app->SetInstallTime(syncer::ProtoTimeToTime(local_data.install_time()));
+  }
+  if (local_data.has_manifest_update_time()) {
+    web_app->SetManifestUpdateTime(
+        syncer::ProtoTimeToTime(local_data.manifest_update_time()));
   }
 
   absl::optional<WebApp::SyncFallbackData> parsed_sync_fallback_data =

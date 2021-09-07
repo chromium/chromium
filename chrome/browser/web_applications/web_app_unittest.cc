@@ -187,6 +187,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "launch_handler": null,
    "launch_query_params": null,
    "manifest_id": null,
+   "manifest_update_time": "1601-01-01 00:00:00.000 UTC",
    "manifest_url": "",
    "note_taking_new_note_url": "",
    "protocol_handlers": [  ],
@@ -370,6 +371,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
    },
    "launch_query_params": "3248422070",
    "manifest_id": null,
+   "manifest_update_time": "1970-01-21 01:09:01.170 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "",
    "protocol_handlers": [ {

@@ -287,6 +287,10 @@ void WebApp::SetInstallTime(const base::Time& time) {
   install_time_ = time;
 }
 
+void WebApp::SetManifestUpdateTime(const base::Time& time) {
+  manifest_update_time_ = time;
+}
+
 void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
   run_on_os_login_mode_ = mode;
 }
@@ -405,6 +409,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.last_badging_time_,
         app.last_launch_time_,
         app.install_time_,
+        app.manifest_update_time_,
         app.run_on_os_login_mode_,
         app.sync_fallback_data_,
         app.capture_links_,
@@ -543,6 +548,9 @@ base::Value WebApp::AsDebugValue() const {
   root.SetKey("launch_query_params", ConvertOptional(launch_query_params_));
 
   root.SetKey("manifest_id", ConvertOptional(manifest_id_));
+
+  root.SetStringKey("manifest_update_time",
+                    ConvertToString(manifest_update_time_));
 
   root.SetStringKey("manifest_url", ConvertToString(manifest_url_));
 
