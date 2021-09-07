@@ -2537,7 +2537,20 @@ TEST_F(FeedApiTest, ManualRefreshFailesWhenLoadingInProgress) {
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsGroupedByDefault) {
+TEST_F(FeedApiTest, ForYouContentOrderUnset) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(
+      feedwire::FeedQuery::ContentOrder::
+          FeedQuery_ContentOrder_CONTENT_ORDER_UNSPECIFIED,
+      network_.query_request_sent->feed_request().feed_query().order_by());
+}
+
+TEST_F(FeedApiTest, ContentOrderIsGroupedByDefault) {
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -2548,7 +2561,8 @@ TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsGroupedByDefault) {
       network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderReloadsContent) {
+TEST_F(FeedApiTest, SetContentOrderReloadsContent) {
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -2564,8 +2578,8 @@ TEST_F(FeedStreamTestForAllStreamTypes, SetContentOrderReloadsContent) {
       network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes,
-       SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
+TEST_F(FeedApiTest, SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   // "Raw prefs" order value should start as unspecified.
   EXPECT_EQ(ContentOrder::kUnspecified,
             feed::prefs::GetWebFeedContentOrder(profile_prefs_));
@@ -2582,7 +2596,8 @@ TEST_F(FeedStreamTestForAllStreamTypes,
             feed::prefs::GetWebFeedContentOrder(profile_prefs_));
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsFinchControllable) {
+TEST_F(FeedApiTest, ContentOrderIsFinchControllable) {
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams params;
   params["following_feed_content_order"] = "reverse_chron";
@@ -2599,7 +2614,8 @@ TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderIsFinchControllable) {
       network_.query_request_sent->feed_request().feed_query().order_by());
 }
 
-TEST_F(FeedStreamTestForAllStreamTypes, ContentOrderPrefOverridesFinch) {
+TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
+  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
   base::test::ScopedFeatureList scoped_feature_list;
   // Sets the "raw prefs" order value
   feed::prefs::SetWebFeedContentOrder(profile_prefs_, ContentOrder::kGrouped);

@@ -153,9 +153,10 @@ feedwire::Request CreateFeedQueryRequest(
           feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT);
       break;
     case ContentOrder::kGrouped:
-    default:
       query.set_order_by(
           feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED);
+      break;
+    case ContentOrder::kUnspecified:
       break;
   }
 
