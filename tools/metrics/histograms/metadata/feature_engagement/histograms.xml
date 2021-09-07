@@ -194,6 +194,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="IPH_SharedHighlightingBuilder"
       summary="the in product help message to notify the user that the share
                action can preemptively share a link-to-text"/>
+  <variant name="IPH_SharedHighlightingReceiver"
+      summary="the in product help message encouraging users to create
+               highlights"/>
   <variant name="IPH_SharingHubLinkToggle"
       summary="turning on link sharing in the Sharing Hub"/>
   <variant name="IPH_StartSurfaceTabSwitcherHomeButton"

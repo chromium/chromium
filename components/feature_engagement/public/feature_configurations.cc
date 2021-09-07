@@ -404,6 +404,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 1, 360));
     return config;
   }
+
+  if (kIPHSharedHighlightingReceiverFeature.name == feature->name) {
+    // A config that allows the shared highlighting message IPH to be shown
+    // when a user receives a highlight:
+    // * Once per 7 days
+    // * Up to 5 times but only if unused in the last 7 days.
+    // * Used fewer than 2 times
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("iph_shared_highlighting_receiver_trigger",
+                                  Comparator(LESS_THAN, 5), 360, 360);
+    config->used = EventConfig("iph_shared_highlighting_button_clicked",
+                               Comparator(LESS_THAN, 2), 360, 360);
+    config->event_configs.insert(
+        EventConfig("iph_shared_highlighting_receiver_trigger",
+                    Comparator(EQUAL, 0), 7, 360));
+    return config;
+  }
 #endif  // defined(OS_ANDROID)
 
   if (kIPHDummyFeature.name == feature->name) {

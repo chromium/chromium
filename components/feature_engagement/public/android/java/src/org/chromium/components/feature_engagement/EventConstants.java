@@ -260,6 +260,10 @@ public final class EventConstants {
     public static final String START_SURFACE_TAB_SWITCHER_HOME_BUTTON_CLICKED =
             "start_surface_tab_switcher_home_button_clicked";
 
+    /** Shared Highlighting button event */
+    public static final String IPH_SHARED_HIGHLIGHTING_BUTTON_CLICKED =
+            "iph_shared_highlighting_button_clicked";
+
     /**
      * Do not instantiate.
      */

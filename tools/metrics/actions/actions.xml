@@ -29211,6 +29211,8 @@ should be able to be added at any place in this file.
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
+  <suffix name="SharedHighlightingReceiver"
+      label="For SharedHighlightingReceiver feature."/>
   <suffix name="SharingHubLinkToggle"
       label="For Sharing Hub link toggle feature."/>
   <suffix name="StartSurfaceTabSwitcherHomeButton"

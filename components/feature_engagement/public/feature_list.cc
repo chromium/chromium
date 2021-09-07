@@ -82,6 +82,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHWebFeedFollowFeature,
     &kIPHWebFeedPostFollowDialogFeature,
     &kIPHSharedHighlightingBuilder,
+    &kIPHSharedHighlightingReceiverFeature,
     &kIPHStartSurfaceTabSwitcherHomeButton,
     &kIPHUpdatedConnectionSecurityIndicatorsFeature,
 #endif  // defined(OS_ANDROID)

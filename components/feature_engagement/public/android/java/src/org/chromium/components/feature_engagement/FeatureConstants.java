@@ -59,7 +59,8 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
         FeatureConstants.SHARED_HIGHLIGHTING_BUILDER_FEATURE,
         FeatureConstants.START_SURFACE_TAB_SWITCHER_HOME_BUTTON_FEATURE,
-        FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE})
+        FeatureConstants.IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE,
+        FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE =
@@ -300,4 +301,9 @@ public @interface FeatureConstants {
      */
     String IPH_UPDATED_CONNECTION_SECURITY_INDICATORS_FEATURE =
             "IPH_UpdatedConnectionSecurityIndicators";
+
+    /**
+     * An IPH feature encouraging users to create highlights.
+     */
+    String SHARED_HIGHLIGHTING_RECEIVER_FEATURE = "IPH_SharedHighlightingReceiver";
 }

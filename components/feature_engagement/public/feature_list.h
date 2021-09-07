@@ -158,6 +158,8 @@ DEFINE_VARIATION_PARAM(kIPHWebFeedPostFollowDialogFeature,
                        "IPH_WebFeedPostFollowDialog");
 DEFINE_VARIATION_PARAM(kIPHSharedHighlightingBuilder,
                        "IPH_SharedHighlightingBuilder");
+DEFINE_VARIATION_PARAM(kIPHSharedHighlightingReceiverFeature,
+                       "IPH_SharedHighlightingReceiver");
 DEFINE_VARIATION_PARAM(kIPHStartSurfaceTabSwitcherHomeButton,
                        "IPH_StartSurfaceTabSwitcherHomeButton");
 DEFINE_VARIATION_PARAM(kIPHUpdatedConnectionSecurityIndicatorsFeature,
@@ -280,6 +282,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHWebFeedFollowFeature),
         VARIATION_ENTRY(kIPHWebFeedPostFollowDialogFeature),
         VARIATION_ENTRY(kIPHSharedHighlightingBuilder),
+        VARIATION_ENTRY(kIPHSharedHighlightingReceiverFeature),
         VARIATION_ENTRY(kIPHUpdatedConnectionSecurityIndicatorsFeature),
 #elif defined(OS_IOS)
         VARIATION_ENTRY(kIPHBottomToolbarTipFeature),
