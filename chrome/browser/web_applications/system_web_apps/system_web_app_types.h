@@ -35,7 +35,7 @@ enum class SystemAppType {
 
   // The ChromeOS Media App. Acts as a file handler for a variety of file types.
   //
-  // Source: //chromeos/components/media_app
+  // Source: //ash/webui/media_app
   // Contact: essential-apps-dev@chromium.org
   // Buganizer component (preferred): b/components/562866
   // Monorail component: Platform>Apps>MediaPlayer

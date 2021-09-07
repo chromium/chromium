@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_UI_H_
-#define CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_UI_H_
+#ifndef ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_UI_H_
+#define ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_UI_H_
 
 #include <memory>
 
-#include "chromeos/components/media_app_ui/media_app_ui.mojom.h"
-#include "chromeos/components/media_app_ui/media_app_ui_delegate.h"
+#include "ash/webui/media_app_ui/media_app_ui.mojom.h"
+#include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -48,4 +48,4 @@ class MediaAppUI : public ui::MojoWebUIController,
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_UI_H_
+#endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_UI_H_

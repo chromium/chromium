@@ -9,14 +9,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "base/containers/span.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
-#include "chromeos/grit/chromeos_media_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"

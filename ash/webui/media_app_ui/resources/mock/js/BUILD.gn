@@ -22,7 +22,7 @@ js_type_check("closure_compile") {
 
 js_library("app_main") {
   externs_list =
-      [ "//chromeos/components/media_app_ui/resources/js/media_app.externs.js" ]
+      [ "//ash/webui/media_app_ui/resources/js/media_app.externs.js" ]
 }
 
 js_library("mock_module") {

@@ -8,7 +8,6 @@
 
 import("//chromeos/assistant/assistant.gni")
 import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
-import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//chromeos/components/projector_app/projector_app.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -27,7 +26,6 @@ grit("resources") {
 
   defines = [
     "enable_cros_libassistant=$enable_cros_libassistant",
-    "enable_cros_media_app=$enable_cros_media_app",
     "enable_cros_eche_app=$enable_cros_eche_app",
   ]
 
@@ -137,47 +135,6 @@ grit("connectivity_diagnostics_resources") {
     "grit/connectivity_diagnostics_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/chromeos"
-}
-
-# Resources used by chrome://media-app, and parts of the sandboxed app it hosts
-# that do not come from the app bundle (below).
-grit("media_app_resources") {
-  source = "../components/media_app_ui/resources/media_app_resources.grd"
-
-  outputs = [
-    "grit/chromeos_media_app_resources.h",
-    "chromeos_media_app_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
-
-  use_brotli = true
-
-  deps = [
-    "//chromeos/components/media_app_ui:mojo_bindings_js",
-    "//chromeos/components/media_app_ui/resources/js:launch_rollup",
-    "//chromeos/components/media_app_ui/resources/js:piex_rollup",
-    "//chromeos/components/media_app_ui/resources/js:receiver_rollup",
-  ]
-}
-
-# Resources automatically served by the chrome://media-app bundle, obtained via DEPS.
-grit("media_app_bundle_resources") {
-  if (enable_cros_media_app) {
-    # Obtained via an internal CIPD package in src/DEPS.
-    source = "../components/media_app_ui/resources/prod/media_app_bundle_resources.grd"
-  } else {
-    source = "../components/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd"
-  }
-
-  use_brotli = true
-
-  outputs = [
-    "grit/chromeos_media_app_bundle_resources.h",
-    "grit/chromeos_media_app_bundle_resources_map.cc",
-    "grit/chromeos_media_app_bundle_resources_map.h",
-    "chromeos_media_app_bundle_resources.pak",
-  ]
   output_dir = "$root_gen_dir/chromeos"
 }
 

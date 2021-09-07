@@ -30,7 +30,7 @@ copy("stage_static") {
 # This is for files that are generated in "gen/".
 copy("stage_generated") {
   sources = [
-    "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
+    "$target_gen_dir/../../../../../chromeos/components/system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
     "$target_gen_dir/message_types.m.js",
   ]
@@ -39,7 +39,7 @@ copy("stage_generated") {
 
   deps = [
     ":modulize",
-    "//chromeos/components/media_app_ui:mojo_bindings_js",
+    "//ash/webui/media_app_ui:mojo_bindings_js",
     "//chromeos/components/system_apps/public/js:modulize",
   ]
 }
@@ -85,7 +85,7 @@ js_modulizer("modulize") {
 # is shipped to resources.pak.
 
 media_closure_flags = system_app_closure_flags_strict + [
-                        "hide_warnings_for=chromeos/components/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+                        "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
 
                         # For all js module in source tree.
                         "js_module_root=" + rebase_path(".", root_build_dir),
@@ -143,7 +143,8 @@ js_library("message_types") {
 }
 
 js_library("message_types.m") {
-  sources = [ "$root_gen_dir/chromeos/components/media_app_ui/resources/js/message_types.m.js" ]
+  sources =
+      [ "$root_gen_dir/ash/webui/media_app_ui/resources/js/message_types.m.js" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -170,7 +171,5 @@ js_library("receiver") {
 }
 
 js_library("mojo_api_bootstrap") {
-  deps = [
-    "//chromeos/components/media_app_ui:mojo_bindings_js_library_for_compile",
-  ]
+  deps = [ "//ash/webui/media_app_ui:mojo_bindings_js_library_for_compile" ]
 }

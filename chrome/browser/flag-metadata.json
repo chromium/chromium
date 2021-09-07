@@ -3744,17 +3744,17 @@
   },
   {
     "name": "media-app-handles-audio",
-    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 99
   },
   {
     "name": "media-app-handles-pdf",
-    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 96
   },
   {
     "name": "media-app-multi-window",
-    "owners": [ "//chromeos/components/media_app_ui/OWNERS" ],
+    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 98
   },
   {

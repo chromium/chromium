@@ -2273,9 +2273,9 @@ if (!is_android && !is_fuchsia) {
       if (is_chromeos_ash) {
         deps += [
           "//ash/webui/help_app_ui:browser_tests_js",
+          "//ash/webui/media_app_ui:browser_tests_js",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
           "//chromeos/components/eche_app_ui:browser_tests_js",
-          "//chromeos/components/media_app_ui:browser_tests_js",
           "//chromeos/components/personalization_app:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
@@ -3514,6 +3514,9 @@ if (!is_android && !is_fuchsia) {
         "//ash/webui/help_app_ui",
         "//ash/webui/help_app_ui:buildflags",
         "//ash/webui/help_app_ui/search:mojo_bindings",
+        "//ash/webui/media_app_ui",
+        "//ash/webui/media_app_ui:browser_test_support",
+        "//ash/webui/media_app_ui:buildflags",
         "//ash/webui/os_feedback_ui:os_feedback_ui",
         "//ash/webui/scanning",
         "//ash/webui/shimless_rma",
@@ -3542,9 +3545,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/attestation",
         "//chromeos/attestation:test_support",
         "//chromeos/components/eche_app_ui",
-        "//chromeos/components/media_app_ui",
-        "//chromeos/components/media_app_ui:browser_test_support",
-        "//chromeos/components/media_app_ui:buildflags",
         "//chromeos/components/print_management",
         "//chromeos/components/projector_app",
         "//chromeos/components/smbfs",

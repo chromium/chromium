@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/webui/help_app_ui/help_app_ui.gni")
+import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -151,7 +152,8 @@ grit("help_app_resources") {
 grit("help_app_bundle_resources") {
   if (enable_cros_help_app) {
     # Obtained via an internal CIPD package in src/DEPS.
-    source = "//ash/webui/help_app_ui/resources/prod/help_app_bundle_resources.grd"
+    source =
+        "//ash/webui/help_app_ui/resources/prod/help_app_bundle_resources.grd"
   } else {
     source = "//ash/webui/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd"
   }
@@ -185,6 +187,50 @@ grit("help_app_kids_magazine_bundle_resources") {
     "grit/chromeos_help_app_kids_magazine_bundle_resources_map.cc",
     "grit/chromeos_help_app_kids_magazine_bundle_resources_map.h",
     "chromeos_help_app_kids_magazine_bundle_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}
+
+# Resources used by chrome://media-app, and parts of the sandboxed app it hosts
+# that do not come from the app bundle (below).
+grit("media_app_resources") {
+  source = "//ash/webui/media_app_ui/resources/media_app_resources.grd"
+
+  outputs = [
+    "grit/ash_media_app_resources.h",
+    "ash_media_app_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash"
+
+  use_brotli = true
+
+  deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//ash/webui/media_app_ui/resources/js:launch_rollup",
+    "//ash/webui/media_app_ui/resources/js:piex_rollup",
+    "//ash/webui/media_app_ui/resources/js:receiver_rollup",
+  ]
+}
+
+# Resources automatically served by the chrome://media-app bundle, obtained via DEPS.
+grit("media_app_bundle_resources") {
+  if (enable_cros_media_app) {
+    # Obtained via an internal CIPD package in src/DEPS.
+    source =
+        "//ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd"
+  }
+
+  use_brotli = true
+
+  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
+  # when .grd from internal CIPD package is updated.
+  outputs = [
+    "grit/chromeos_media_app_bundle_resources.h",
+    "grit/chromeos_media_app_bundle_resources_map.cc",
+    "grit/chromeos_media_app_bundle_resources_map.h",
+    "chromeos_media_app_bundle_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
 }

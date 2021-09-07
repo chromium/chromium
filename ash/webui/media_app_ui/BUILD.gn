@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/media_app_ui/media_app_ui.gni")
 import("//build/buildflag_header.gni")
 import("//chrome/test/base/js2gtest.gni")
-import("//chromeos/components/media_app_ui/media_app_ui.gni")
 import("//chromeos/components/web_applications/system_apps.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -27,9 +27,9 @@ static_library("media_app_ui") {
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
+    "//ash/webui/resources:media_app_bundle_resources",
+    "//ash/webui/resources:media_app_resources",
     "//chromeos/components/web_applications",
-    "//chromeos/resources:media_app_bundle_resources",
-    "//chromeos/resources:media_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
@@ -93,7 +93,7 @@ mojom("mojo_bindings") {
 }
 
 media_test_lib_closure_flags = system_app_closure_flags_strict + [
-                                 "hide_warnings_for=chromeos/components/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+                                 "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
                                  "js_module_root=" +
                                      rebase_path(".", root_build_dir),
                                  "js_module_root=" +
@@ -104,7 +104,7 @@ media_test_lib_closure_flags = system_app_closure_flags_strict + [
 # Use relaxed flags for the browsertest files themselves. This removes null
 # checks and "could not determine type" errors which don't add a lot of value.
 media_browsertest_closure_flags = system_app_closure_flags + [
-                                    "hide_warnings_for=chromeos/components/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+                                    "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
                                     "js_module_root=" +
                                         rebase_path(".", root_build_dir),
                                     "js_module_root=" +
@@ -151,7 +151,7 @@ js_library("test_guest_query_receiver_js") {
   deps = [
     ":test_dom_testing_helpers_js",
     ":test_driver_api_js",
-    "//chromeos/components/media_app_ui/resources/js:receiver",
+    "//ash/webui/media_app_ui/resources/js:receiver",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }
@@ -162,7 +162,7 @@ js_library("test_driver_js") {
   externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
   deps = [
     ":test_driver_api_js",
-    "//chromeos/components/media_app_ui/resources/js:launch",
+    "//ash/webui/media_app_ui/resources/js:launch",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }
@@ -185,7 +185,7 @@ js_library("test_media_app_ui_browsertest_js") {
   sources = [ "test/media_app_ui_browsertest.js" ]
   deps = [
     ":test_driver_js",
-    "//chromeos/components/media_app_ui/resources/js:launch",
+    "//ash/webui/media_app_ui/resources/js:launch",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }
@@ -198,7 +198,7 @@ js_library("test_media_app_guest_ui_browsertest_js") {
   deps = [
     ":test_driver_js",
     ":test_worker_js",
-    "//chromeos/components/media_app_ui/resources/js:receiver",
+    "//ash/webui/media_app_ui/resources/js:receiver",
     "//chromeos/components/system_apps/public/js:message_pipe",
   ]
 }

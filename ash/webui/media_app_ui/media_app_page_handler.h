@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_
-#define CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_
+#ifndef ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_
+#define ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_
 
-#include "chromeos/components/media_app_ui/media_app_ui.mojom.h"
+#include "ash/webui/media_app_ui/media_app_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,4 +35,4 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
   chromeos::MediaAppUI* media_app_ui_;  // Owns |this|.
 };
 
-#endif  // CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_
+#endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_

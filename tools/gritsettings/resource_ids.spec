@@ -443,7 +443,7 @@
   "ash/webui/help_app_ui/resources/mock/help_app_bundle_mock_resources.grd": {
     "includes": [2540],
   },
-  "chromeos/components/media_app_ui/resources/media_app_resources.grd": {
+  "ash/webui/media_app_ui/resources/media_app_resources.grd": {
     "META": {"join": 2},
     "includes": [2560],
   },
@@ -451,11 +451,11 @@
   # start with the same id because only one of them is built depending on if
   # src_internal is available. Lower bound for number of resource ids is number
   # of languages (74).
-  "chromeos/components/media_app_ui/resources/prod/media_app_bundle_resources.grd": {
+  "ash/webui/media_app_ui/resources/prod/media_app_bundle_resources.grd": {
     "META": {"sizes": {"includes": [120],}},  # Relies on src-internal.
     "includes": [2580],
   },
-  "chromeos/components/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd": {
+  "ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd": {
     "includes": [2580],
   },
   "chromeos/components/print_management/resources/print_management_resources.grd": {

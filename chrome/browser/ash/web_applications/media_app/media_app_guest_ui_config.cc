@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"

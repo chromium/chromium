@@ -5,7 +5,7 @@
 /**
  * @fileoverview js2gtest wrapper for the chrome://media-app test suite.
  */
-GEN('#include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"');
+GEN('#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');

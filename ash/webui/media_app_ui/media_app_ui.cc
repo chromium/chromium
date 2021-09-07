@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/media_app_ui/media_app_ui.h"
+#include "ash/webui/media_app_ui/media_app_ui.h"
 
 #include <utility>
 
-#include "chromeos/components/media_app_ui/media_app_page_handler.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
+#include "ash/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/media_app_page_handler.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
-#include "chromeos/grit/chromeos_media_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
@@ -27,7 +27,7 @@ content::WebUIDataSource* CreateHostDataSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIMediaAppHost);
 
-  // Add resources from chromeos_media_app_resources.pak.
+  // Add resources from ash_media_app_resources.pak.
   source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
   source->AddLocalizedString("appTitle", IDS_MEDIA_APP_APP_NAME);

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_
 
-#include "chromeos/components/media_app_ui/media_app_guest_ui.h"
+#include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ui/webui/webui_config.h"
 
 namespace content {

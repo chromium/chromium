@@ -761,7 +761,7 @@
                   'ui/login/',
     },
     'chromeos_media_app': {
-      'filepath': 'chromeos/components/media_app_ui/|'\
+      'filepath': 'ash/webui/media_app_ui/|'\
                   'chrome/browser/ash/web_applications/media_app/',
     },
     'chromeos_net': {

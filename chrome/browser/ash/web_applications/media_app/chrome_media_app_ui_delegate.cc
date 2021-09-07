@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/channel_info.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "url/gurl.h"

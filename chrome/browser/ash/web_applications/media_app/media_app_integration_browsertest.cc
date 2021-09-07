@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/media_app_ui/buildflags.h"
+#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -23,9 +26,6 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/components/media_app_ui/buildflags.h"
-#include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"

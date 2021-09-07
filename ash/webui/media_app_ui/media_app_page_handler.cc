@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/media_app_ui/media_app_page_handler.h"
+#include "ash/webui/media_app_ui/media_app_page_handler.h"
 
 #include <utility>
 
-#include "chromeos/components/media_app_ui/media_app_ui.h"
-#include "chromeos/components/media_app_ui/media_app_ui_delegate.h"
+#include "ash/webui/media_app_ui/media_app_ui.h"
+#include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 
 MediaAppPageHandler::MediaAppPageHandler(
     chromeos::MediaAppUI* media_app_ui,

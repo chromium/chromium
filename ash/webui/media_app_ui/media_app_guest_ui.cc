@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/media_app_ui/media_app_guest_ui.h"
-#include "chromeos/components/media_app_ui/url_constants.h"
+#include "ash/webui/media_app_ui/media_app_guest_ui.h"
+
+#include "ash/grit/ash_media_app_resources.h"
+#include "ash/webui/media_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
-#include "chromeos/grit/chromeos_media_app_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -22,7 +23,7 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
     MediaAppGuestUIDelegate* delegate) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIMediaAppGuestURL);
-  // Add resources from chromeos_media_app_resources.pak.
+  // Add resources from ash_media_app_resources.pak.
   source->AddResourcePath("app.html", IDR_MEDIA_APP_APP_HTML);
   source->AddResourcePath("receiver.js", IDR_MEDIA_APP_RECEIVER_JS);
   source->AddResourcePath("piex_module.js", IDR_MEDIA_APP_PIEX_MODULE_JS);
