@@ -708,6 +708,24 @@ TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabled) {
   EXPECT_EQ(sizes.max_size, LayoutUnit(90));
 }
 
+TEST_F(NGLineBreakerTest, MinMaxWithHyphensDisabledWithTrailingSpaces) {
+  LoadAhem();
+  NGInlineNode node = CreateInlineNode(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font: 10px/1 Ahem;
+      hyphens: none;
+    }
+    </style>
+    <div id=container>abcd&shy; ef xx</div>
+  )HTML");
+
+  const auto sizes = ComputeMinMaxSizes(node);
+  EXPECT_EQ(sizes.min_size, LayoutUnit(50));
+  EXPECT_EQ(sizes.max_size, LayoutUnit(100));
+}
+
 TEST_F(NGLineBreakerTest, MinMaxWithHyphensAuto) {
   LoadAhem();
   LayoutLocale::SetHyphenationForTesting("en-us", MockHyphenation::Create());

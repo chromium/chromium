@@ -1297,15 +1297,15 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
              IsBreakableSpace(text[non_hangable_run_end - 1])) {
         --non_hangable_run_end;
       }
-      end_offset = non_hangable_run_end;
     }
 
-    if (end_offset >= item.EndOffset())
+    if (non_hangable_run_end >= item.EndOffset())
       break;
 
     // Ignore soft-hyphen opportunities if `hyphens: none`.
     bool has_hyphen = text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
-    if (has_hyphen && !enable_soft_hyphen_) {
+    if (UNLIKELY(has_hyphen && !enable_soft_hyphen_ &&
+                 non_hangable_run_end == end_offset)) {
       ++end_offset;
       if (end_offset < item.EndOffset())
         continue;
@@ -1359,14 +1359,8 @@ bool NGLineBreaker::HandleTextForFastMinContent(NGInlineItemResult* item_result,
     }
 
     last_end_offset = non_hangable_run_end;
-    // TODO (jfernandez): I think that having the non_hangable_run_end
-    // would make this loop unnecessary/redudant.
     start_offset = end_offset;
-    while (start_offset < item.EndOffset() &&
-           IsBreakableSpace(text[start_offset])) {
-      ++start_offset;
-    }
-    end_offset = start_offset + 1;
+    ++end_offset;
   }
 
   if (saved_line_break_type.has_value())
