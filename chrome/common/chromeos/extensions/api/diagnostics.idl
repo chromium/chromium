@@ -21,7 +21,7 @@ namespace os.diagnostics {
   enum RoutineStatus {
     ready,
     running,
-    waiting,
+    waiting_user_action,
     passed,
     failed,
     error,

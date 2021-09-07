@@ -56,7 +56,7 @@ RoutineStatus ConvertRoutineStatus(MojoRoutineStatus status) {
     case MojoRoutineStatus::kRunning:
       return RoutineStatus::ROUTINE_STATUS_RUNNING;
     case MojoRoutineStatus::kWaiting:
-      return RoutineStatus::ROUTINE_STATUS_WAITING;
+      return RoutineStatus::ROUTINE_STATUS_WAITING_USER_ACTION;
     case MojoRoutineStatus::kPassed:
       return RoutineStatus::ROUTINE_STATUS_PASSED;
     case MojoRoutineStatus::kFailed:

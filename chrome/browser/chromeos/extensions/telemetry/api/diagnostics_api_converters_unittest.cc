@@ -109,7 +109,7 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kRunning),
             RoutineStatus::ROUTINE_STATUS_RUNNING);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kWaiting),
-            RoutineStatus::ROUTINE_STATUS_WAITING);
+            RoutineStatus::ROUTINE_STATUS_WAITING_USER_ACTION);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kPassed),
             RoutineStatus::ROUTINE_STATUS_PASSED);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kFailed),
