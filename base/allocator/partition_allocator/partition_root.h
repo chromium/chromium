@@ -390,6 +390,7 @@ struct BASE_EXPORT PartitionRoot {
                  bool is_light_dump,
                  PartitionStatsDumper* partition_stats_dumper);
 
+  static void DeleteForTesting(PartitionRoot* partition_root);
   void ResetBookkeepingForTesting();
 
   static uint16_t SizeToBucketIndex(size_t size);

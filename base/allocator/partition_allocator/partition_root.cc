@@ -1008,6 +1008,17 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
 }
 
 template <bool thread_safe>
+void PartitionRoot<thread_safe>::DeleteForTesting(
+    PartitionRoot* partition_root) {
+  if (partition_root->with_thread_cache) {
+    internal::ThreadCache::SwapForTesting(nullptr);
+    partition_root->with_thread_cache = false;
+  }
+
+  delete partition_root;
+}
+
+template <bool thread_safe>
 void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
   ScopedGuard guard{lock_};
   max_size_of_allocated_bytes = total_size_of_allocated_bytes;

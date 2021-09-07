@@ -196,6 +196,9 @@ class BASE_EXPORT ThreadCache {
   // Deletes existing thread cache and creates a new one for |root|.
   static void SwapForTesting(PartitionRoot<ThreadSafe>* root);
 
+  // Removes the tombstone marker that would be returned by Get() otherwise.
+  static void RemoveTombstoneForTesting();
+
   // Can be called several times, must be called before any ThreadCache
   // interactions.
   static void EnsureThreadSpecificDataInitialized();

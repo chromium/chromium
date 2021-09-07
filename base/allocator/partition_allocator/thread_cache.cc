@@ -313,8 +313,21 @@ void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
   g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
   if (old_tcache)
     ThreadCache::DeleteForTesting(old_tcache);
-  Init(root);
-  Create(root);
+  if (root) {
+    Init(root);
+    Create(root);
+  } else {
+#if defined(OS_WIN)
+    // OnDllProcessDetach accesses g_thread_cache_root which is nullptr now.
+    PartitionTlsSetOnDllProcessDetach(nullptr);
+#endif
+  }
+}
+
+// static
+void ThreadCache::RemoveTombstoneForTesting() {
+  PA_CHECK(IsTombstone(Get()));
+  PartitionTlsSet(g_thread_cache_key, nullptr);
 }
 
 // static

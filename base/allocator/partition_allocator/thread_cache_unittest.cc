@@ -67,54 +67,47 @@ class DeltaCounter {
   uint64_t initial_value_;
 };
 
-// Need to be a global object without a destructor, because the cache is a
-// global object with a destructor (to handle thread destruction), and the
-// PartitionRoot has to outlive it.
-//
 // Forbid extras, since they make finding out which bucket is used harder.
-NoDestructor<ThreadSafePartitionRoot> g_root{
-    PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
+ThreadSafePartitionRoot* CreatePartitionRoot() {
+  ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot(
+      PartitionOptions{PartitionOptions::AlignedAlloc::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                     PartitionOptions::ThreadCache::kEnabled,
+                       PartitionOptions::ThreadCache::kEnabled,
 #else
-                     PartitionOptions::ThreadCache::kDisabled,
+                       PartitionOptions::ThreadCache::kDisabled,
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                     PartitionOptions::Quarantine::kAllowed,
-                     PartitionOptions::Cookie::kDisallowed,
-                     PartitionOptions::RefCount::kDisallowed}};
+                       PartitionOptions::Quarantine::kAllowed,
+                       PartitionOptions::Cookie::kDisallowed,
+                       PartitionOptions::RefCount::kDisallowed
+  });
 
-size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
-  uint16_t bucket_index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(size);
-  std::vector<void*> allocated_data;
+  // We do this here instead of in SetUp()/TearDown() because we need this to
+  // run before the task environment (which creates threads and hence is racy
+  // with attempting to disable the thread cache).
+  SwapOutProcessThreadCacheForTesting(root);
 
-  for (size_t i = 0; i < count; ++i) {
-    allocated_data.push_back(g_root->Alloc(size, ""));
-  }
-  for (void* ptr : allocated_data) {
-    g_root->Free(ptr);
-  }
-
-  return bucket_index;
-}
-
-void FillThreadCacheWithMemory(size_t target_cached_memory) {
-  for (int batch : {1, 2, 4, 8, 16}) {
-    for (size_t allocation_size = 1;
-         allocation_size <= ThreadCache::kLargeSizeThreshold;
-         allocation_size++) {
-      FillThreadCacheAndReturnIndex(allocation_size, batch);
-
-      if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
-        return;
-    }
-  }
-
-  ASSERT_GE(ThreadCache::Get()->CachedMemory(), target_cached_memory);
+  return root;
 }
 
 }  // namespace
 
 class PartitionAllocThreadCacheTest : public ::testing::Test {
+ public:
+  PartitionAllocThreadCacheTest()
+      : root_(CreatePartitionRoot()),
+        task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  ~PartitionAllocThreadCacheTest() override {
+    ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
+    SwapInProcessThreadCacheForTesting(root_);
+
+    ThreadSafePartitionRoot::DeleteForTesting(root_);
+
+    // Cleanup the global state so next test can recreate ThreadCache.
+    if (internal::ThreadCache::IsTombstone(internal::ThreadCache::Get()))
+      internal::ThreadCache::RemoveTombstoneForTesting();
+  }
+
  protected:
   void SetUp() override {
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -133,7 +126,7 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
     FillThreadCacheAndReturnIndex(kMediumSize, 1000);
 
     // There are allocations, a thread cache is created.
-    auto* tcache = g_root->thread_cache_for_testing();
+    auto* tcache = root_->thread_cache_for_testing();
     ASSERT_TRUE(tcache);
 
     // Make sure that periodic purge will not interfere with tests.
@@ -145,46 +138,57 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
     ASSERT_EQ(0u, task_env_.GetPendingMainThreadTaskCount());
   }
 
-  // Used to disable the thread cache for the lifetime of a scope (in this case
-  // the lifetime of the PartitionAllocThreadCacheTest).
-  class ScopedThreadCacheDisabler {
-   public:
-    ScopedThreadCacheDisabler() {
-      SwapOutProcessThreadCacheForTesting(g_root.get());
-    }
-    ~ScopedThreadCacheDisabler() {
-      ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
-      SwapInProcessThreadCacheForTesting(g_root.get());
-    }
-  };
+  size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
+    uint16_t bucket_index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(size);
+    std::vector<void*> allocated_data;
 
-  // We do this here instead of in SetUp()/TearDown() because we need this to
-  // run before the task environment (which creates threads and hence is racy
-  // with attempting to disable the thread cache).
-  ScopedThreadCacheDisabler scoped_thread_cache_disabler_{};
+    for (size_t i = 0; i < count; ++i) {
+      allocated_data.push_back(root_->Alloc(size, ""));
+    }
+    for (void* ptr : allocated_data) {
+      root_->Free(ptr);
+    }
 
-  base::test::TaskEnvironment task_env_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+    return bucket_index;
+  }
+
+  void FillThreadCacheWithMemory(size_t target_cached_memory) {
+    for (int batch : {1, 2, 4, 8, 16}) {
+      for (size_t allocation_size = 1;
+           allocation_size <= ThreadCache::kLargeSizeThreshold;
+           allocation_size++) {
+        FillThreadCacheAndReturnIndex(allocation_size, batch);
+
+        if (ThreadCache::Get()->CachedMemory() >= target_cached_memory)
+          return;
+      }
+    }
+
+    ASSERT_GE(ThreadCache::Get()->CachedMemory(), target_cached_memory);
+  }
+
+  ThreadSafePartitionRoot* root_;
+  base::test::TaskEnvironment task_env_;
 };
 
 TEST_F(PartitionAllocThreadCacheTest, Simple) {
   // There is a cache.
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
   DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
 
-  void* ptr = g_root->Alloc(kSmallSize, "");
+  void* ptr = root_->Alloc(kSmallSize, "");
   ASSERT_TRUE(ptr);
 
   uint16_t index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(kSmallSize);
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
 
-  g_root->Free(ptr);
+  root_->Free(ptr);
   // Freeing fills the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
-  void* ptr2 = g_root->Alloc(kSmallSize, "");
+  void* ptr2 = root_->Alloc(kSmallSize, "");
   EXPECT_EQ(ptr, ptr2);
   // Allocated from the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket - 1,
@@ -192,26 +196,26 @@ TEST_F(PartitionAllocThreadCacheTest, Simple) {
 
   EXPECT_EQ(1u, batch_fill_counter.Delta());
 
-  g_root->Free(ptr2);
+  root_->Free(ptr2);
 }
 
 TEST_F(PartitionAllocThreadCacheTest, InexactSizeMatch) {
-  void* ptr = g_root->Alloc(kSmallSize, "");
+  void* ptr = root_->Alloc(kSmallSize, "");
   ASSERT_TRUE(ptr);
 
   // There is a cache.
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
 
   uint16_t index = PartitionRoot<ThreadSafe>::SizeToBucketIndex(kSmallSize);
   EXPECT_EQ(kFillCountForSmallBucket - 1,
             tcache->bucket_count_for_testing(index));
 
-  g_root->Free(ptr);
+  root_->Free(ptr);
   // Freeing fills the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket, tcache->bucket_count_for_testing(index));
 
-  void* ptr2 = g_root->Alloc(kSmallSize + 1, "");
+  void* ptr2 = root_->Alloc(kSmallSize + 1, "");
   EXPECT_EQ(ptr, ptr2);
   // Allocated from the thread cache.
   EXPECT_EQ(kFillCountForSmallBucket - 1,
@@ -219,7 +223,7 @@ TEST_F(PartitionAllocThreadCacheTest, InexactSizeMatch) {
 }
 
 TEST_F(PartitionAllocThreadCacheTest, MultipleObjectsCachedPerBucket) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kFillCountForMediumBucket + 2);
@@ -232,14 +236,14 @@ TEST_F(PartitionAllocThreadCacheTest, MultipleObjectsCachedPerBucket) {
 
 TEST_F(PartitionAllocThreadCacheTest, ObjectsCachedCountIsLimited) {
   size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize, 1000);
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   EXPECT_LT(tcache->bucket_count_for_testing(bucket_index), 1000u);
 }
 
 TEST_F(PartitionAllocThreadCacheTest, Purge) {
   size_t allocations = 10;
   size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize, allocations);
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   EXPECT_EQ(
       (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket,
       tcache->bucket_count_for_testing(bucket_index));
@@ -258,7 +262,7 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
   void* ptr = root.Alloc(kSmallSize, "");
   ASSERT_TRUE(ptr);
 
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   EXPECT_EQ(kFillCountForSmallBucket,
             tcache->bucket_count_for_testing(bucket_index));
 
@@ -270,7 +274,7 @@ TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
 #if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)  // Required to record hits and
                                                 // misses.
 TEST_F(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
       tcache->stats_.alloc_miss_too_large};
@@ -278,7 +282,7 @@ TEST_F(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
 
   FillThreadCacheAndReturnIndex(100 * 1024);
-  tcache = g_root->thread_cache_for_testing();
+  tcache = root_->thread_cache_for_testing();
   EXPECT_EQ(1u, alloc_miss_counter.Delta());
   EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
   EXPECT_EQ(1u, cache_fill_counter.Delta());
@@ -294,13 +298,13 @@ TEST_F(PartitionAllocThreadCacheTest, DirectMappedAllocationsAreNotCached) {
 
 TEST_F(PartitionAllocThreadCacheTest, MultipleThreadCaches) {
   FillThreadCacheAndReturnIndex(kMediumSize);
-  auto* parent_thread_tcache = g_root->thread_cache_for_testing();
+  auto* parent_thread_tcache = root_->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
     FillThreadCacheAndReturnIndex(kMediumSize);
-    auto* tcache = g_root->thread_cache_for_testing();
+    auto* tcache = root_->thread_cache_for_testing();
     EXPECT_TRUE(tcache);
 
     EXPECT_NE(parent_thread_tcache, tcache);
@@ -318,15 +322,15 @@ TEST_F(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   // Allocate enough objects to force a cache fill at the next allocation.
   std::vector<void*> tmp;
   for (size_t i = 0; i < kDefaultCountForMediumBucket / 4; i++) {
-    tmp.push_back(g_root->Alloc(kMediumSize, ""));
+    tmp.push_back(root_->Alloc(kMediumSize, ""));
   }
 
   void* other_thread_ptr;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
-    other_thread_ptr = g_root->Alloc(kMediumSize, "");
-    g_root->Free(other_thread_ptr);
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
+    other_thread_ptr = root_->Alloc(kMediumSize, "");
+    root_->Free(other_thread_ptr);
     // |other_thread_ptr| is now in the thread cache.
   })};
 
@@ -334,14 +338,14 @@ TEST_F(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
   PlatformThread::Create(0, &delegate, &thread_handle);
   PlatformThread::Join(thread_handle);
 
-  void* this_thread_ptr = g_root->Alloc(kMediumSize, "");
+  void* this_thread_ptr = root_->Alloc(kMediumSize, "");
   // |other_thread_ptr| was returned to the central allocator, and is returned
   // here, as it comes from the freelist.
   EXPECT_EQ(this_thread_ptr, other_thread_ptr);
-  g_root->Free(other_thread_ptr);
+  root_->Free(other_thread_ptr);
 
   for (void* ptr : tmp)
-    g_root->Free(ptr);
+    root_->Free(ptr);
 }
 
 // On Android with PartitionAlloc as malloc, we have extra thread caches being
@@ -353,7 +357,7 @@ TEST_F(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
 
 TEST_F(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
-  auto* parent_thread_tcache = g_root->thread_cache_for_testing();
+  auto* parent_thread_tcache = root_->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
   {
@@ -363,9 +367,9 @@ TEST_F(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
   }
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
     FillThreadCacheAndReturnIndex(kSmallSize);
-    auto* tcache = g_root->thread_cache_for_testing();
+    auto* tcache = root_->thread_cache_for_testing();
     EXPECT_TRUE(tcache);
 
     PartitionAutoLock lock(ThreadCacheRegistry::GetLock());
@@ -384,7 +388,7 @@ TEST_F(PartitionAllocThreadCacheTest, MAYBE_ThreadCacheRegistry) {
 
 #if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
 TEST_F(PartitionAllocThreadCacheTest, RecordStats) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_counter{tcache->stats_.alloc_count};
   DeltaCounter alloc_hits_counter{tcache->stats_.alloc_hits};
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
@@ -396,13 +400,13 @@ TEST_F(PartitionAllocThreadCacheTest, RecordStats) {
   DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
 
   // Cache has been purged, first allocation is a miss.
-  void* data = g_root->Alloc(kMediumSize, "");
+  void* data = root_->Alloc(kMediumSize, "");
   EXPECT_EQ(1u, alloc_counter.Delta());
   EXPECT_EQ(1u, alloc_miss_counter.Delta());
   EXPECT_EQ(0u, alloc_hits_counter.Delta());
 
   // Cache fill worked.
-  g_root->Free(data);
+  root_->Free(data);
   EXPECT_EQ(1u, cache_fill_counter.Delta());
   EXPECT_EQ(1u, cache_fill_hits_counter.Delta());
   EXPECT_EQ(0u, cache_fill_misses_counter.Delta());
@@ -426,29 +430,29 @@ TEST_F(PartitionAllocThreadCacheTest, RecordStats) {
   size_t expected_count =
       kDefaultCountForMediumBucket / 2 - 1 +
       (1 + allocations / kFillCountForMediumBucket) * kFillCountForMediumBucket;
-  EXPECT_EQ(g_root->buckets[bucket_index].slot_size * expected_count,
+  EXPECT_EQ(root_->buckets[bucket_index].slot_size * expected_count,
             stats.bucket_total_memory);
   EXPECT_EQ(sizeof(ThreadCache), stats.metadata_overhead);
 }
 
 TEST_F(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   FillThreadCacheAndReturnIndex(kMediumSize);
-  uint64_t alloc_count = g_root->thread_cache_for_testing()->stats_.alloc_count;
+  uint64_t alloc_count = root_->thread_cache_for_testing()->stats_.alloc_count;
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
-    EXPECT_FALSE(g_root->thread_cache_for_testing());  // No allocations yet.
+    EXPECT_FALSE(root_->thread_cache_for_testing());  // No allocations yet.
     size_t bucket_index = FillThreadCacheAndReturnIndex(kMediumSize);
 
     ThreadCacheStats stats;
     ThreadCacheRegistry::Instance().DumpStats(false, &stats);
     // 2* for this thread and the parent one.
     EXPECT_EQ(
-        2 * g_root->buckets[bucket_index].slot_size * kFillCountForMediumBucket,
+        2 * root_->buckets[bucket_index].slot_size * kFillCountForMediumBucket,
         stats.bucket_total_memory);
     EXPECT_EQ(2 * sizeof(ThreadCache), stats.metadata_overhead);
 
     uint64_t this_thread_alloc_count =
-        g_root->thread_cache_for_testing()->stats_.alloc_count;
+        root_->thread_cache_for_testing()->stats_.alloc_count;
     EXPECT_EQ(alloc_count + this_thread_alloc_count, stats.alloc_count);
   })};
 
@@ -464,13 +468,13 @@ TEST_F(PartitionAllocThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
   std::atomic<bool> purge_called{false};
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
-  ThreadCache* this_thread_tcache = g_root->thread_cache_for_testing();
+  ThreadCache* this_thread_tcache = root_->thread_cache_for_testing();
   ThreadCache* other_thread_tcache = nullptr;
 
   LambdaThreadDelegate delegate{
       BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
         FillThreadCacheAndReturnIndex(kSmallSize);
-        other_thread_tcache = g_root->thread_cache_for_testing();
+        other_thread_tcache = root_->thread_cache_for_testing();
 
         other_thread_started.store(true, std::memory_order_release);
         while (!purge_called.load(std::memory_order_acquire)) {
@@ -480,11 +484,11 @@ TEST_F(PartitionAllocThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
         EXPECT_EQ(kFillCountForSmallBucket,
                   other_thread_tcache->bucket_count_for_testing(bucket_index));
         // Allocations do not trigger Purge().
-        void* data = g_root->Alloc(kSmallSize, "");
+        void* data = root_->Alloc(kSmallSize, "");
         EXPECT_EQ(kFillCountForSmallBucket - 1,
                   other_thread_tcache->bucket_count_for_testing(bucket_index));
         // But deallocations do.
-        g_root->Free(data);
+        root_->Free(data);
         EXPECT_EQ(0u,
                   other_thread_tcache->bucket_count_for_testing(bucket_index));
       })};
@@ -633,7 +637,7 @@ TEST_F(PartitionAllocThreadCacheTest,
 }
 
 TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
   EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
@@ -642,13 +646,13 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
       ThreadCache::kDefaultMultiplier / 2);
   // No immediate batch deallocation.
   EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
-  void* data = g_root->Alloc(kMediumSize, "");
+  void* data = root_->Alloc(kMediumSize, "");
   // Not triggered by allocations.
   EXPECT_EQ(kDefaultCountForMediumBucket - 1,
             tcache->buckets_[bucket_index].count);
 
   // Free() triggers the purge within limits.
-  g_root->Free(data);
+  root_->Free(data);
   EXPECT_LE(tcache->buckets_[bucket_index].count,
             kDefaultCountForMediumBucket / 2);
 
@@ -666,14 +670,14 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucket) {
 }
 
 TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
       ThreadCache::kDefaultMultiplier / 1000.);
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
     if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
-      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      EXPECT_EQ(root_->buckets[i].active_slot_spans_head, nullptr);
       continue;
     }
     EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 1u);
@@ -684,7 +688,7 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
     if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
-      EXPECT_EQ(g_root->buckets[i].active_slot_spans_head, nullptr);
+      EXPECT_EQ(root_->buckets[i].active_slot_spans_head, nullptr);
       continue;
     }
     EXPECT_LT(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 0xff);
@@ -695,7 +699,7 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
   std::atomic<bool> other_thread_started{false};
   std::atomic<bool> threshold_changed{false};
 
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket);
   EXPECT_EQ(kDefaultCountForSmallBucket, tcache->buckets_[bucket_index].count);
@@ -707,7 +711,7 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
 
   LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
     FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket + 10);
-    auto* this_thread_tcache = g_root->thread_cache_for_testing();
+    auto* this_thread_tcache = root_->thread_cache_for_testing();
     // More than the default since the multiplier has changed.
     EXPECT_GT(this_thread_tcache->buckets_[bucket_index].count,
               kDefaultCountForSmallBucket + 10);
@@ -716,9 +720,9 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
     while (!threshold_changed.load(std::memory_order_acquire)) {
     }
 
-    void* data = g_root->Alloc(kSmallSize, "");
+    void* data = root_->Alloc(kSmallSize, "");
     // Deallocations trigger limit enforcement.
-    g_root->Free(data);
+    root_->Free(data);
     // Since the bucket is too full, it gets halved by batched deallocation.
     EXPECT_EQ(static_cast<uint8_t>(ThreadCache::kSmallBucketBaseCount / 2),
               this_thread_tcache->bucket_count_for_testing(bucket_index));
@@ -737,7 +741,7 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicCountPerBucketMultipleThreads) {
 }
 
 TEST_F(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
       tcache->stats_.alloc_miss_too_large};
@@ -773,7 +777,7 @@ TEST_F(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
 }
 
 TEST_F(PartitionAllocThreadCacheTest, DynamicSizeThresholdPurge) {
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
       tcache->stats_.alloc_miss_too_large};
@@ -810,7 +814,7 @@ TEST_F(PartitionAllocThreadCacheTest, ClearFromTail) {
     return count;
   };
 
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
   size_t index = FillThreadCacheAndReturnIndex(kSmallSize, 10);
   ASSERT_GE(count_items(tcache, index), 10);
   void* head = tcache->buckets_[index].freelist_head;
@@ -826,63 +830,62 @@ TEST_F(PartitionAllocThreadCacheTest, ClearFromTail) {
 
 TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
   void* arr[kFillCountForMediumBucket] = {};
-  auto* tcache = g_root->thread_cache_for_testing();
+  auto* tcache = root_->thread_cache_for_testing();
 
-  g_root->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
-                      PartitionPurgeDiscardUnusedSystemPages);
-  g_root->ResetBookkeepingForTesting();
+  root_->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
+                     PartitionPurgeDiscardUnusedSystemPages);
+  root_->ResetBookkeepingForTesting();
 
-  size_t tc_bucket_index = g_root->SizeToBucketIndex(sizeof(ThreadCache));
-  auto* tc_bucket = &g_root->buckets[tc_bucket_index];
+  size_t tc_bucket_index = root_->SizeToBucketIndex(sizeof(ThreadCache));
+  auto* tc_bucket = &root_->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
-  size_t expected_committed_size = g_root->use_lazy_commit
+  size_t expected_committed_size = root_->use_lazy_commit
                                        ? SystemPageSize()
                                        : tc_bucket->get_bytes_per_span();
 
-  EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-  EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root_->total_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root_->max_size_of_committed_pages);
   EXPECT_EQ(expected_allocated_size,
-            g_root->get_total_size_of_allocated_bytes());
-  EXPECT_EQ(expected_allocated_size, g_root->get_max_size_of_allocated_bytes());
+            root_->get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_allocated_size, root_->get_max_size_of_allocated_bytes());
 
-  void* ptr = g_root->Alloc(kMediumSize, "");
+  void* ptr = root_->Alloc(kMediumSize, "");
 
-  auto* medium_bucket =
-      &g_root->buckets[g_root->SizeToBucketIndex(kMediumSize)];
+  auto* medium_bucket = &root_->buckets[root_->SizeToBucketIndex(kMediumSize)];
   size_t medium_alloc_size = medium_bucket->slot_size;
   expected_allocated_size += medium_alloc_size;
-  expected_committed_size += g_root->use_lazy_commit
+  expected_committed_size += root_->use_lazy_commit
                                  ? SystemPageSize()
                                  : medium_bucket->get_bytes_per_span();
 
-  EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-  EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root_->total_size_of_committed_pages);
+  EXPECT_EQ(expected_committed_size, root_->max_size_of_committed_pages);
   EXPECT_EQ(expected_allocated_size,
-            g_root->get_total_size_of_allocated_bytes());
-  EXPECT_EQ(expected_allocated_size, g_root->get_max_size_of_allocated_bytes());
+            root_->get_total_size_of_allocated_bytes());
+  EXPECT_EQ(expected_allocated_size, root_->get_max_size_of_allocated_bytes());
 
   expected_allocated_size += kFillCountForMediumBucket * medium_alloc_size;
 
   // These allocations all come from the thread-cache.
   for (size_t i = 0; i < kFillCountForMediumBucket; i++) {
-    arr[i] = g_root->Alloc(kMediumSize, "");
-    EXPECT_EQ(expected_committed_size, g_root->total_size_of_committed_pages);
-    EXPECT_EQ(expected_committed_size, g_root->max_size_of_committed_pages);
+    arr[i] = root_->Alloc(kMediumSize, "");
+    EXPECT_EQ(expected_committed_size, root_->total_size_of_committed_pages);
+    EXPECT_EQ(expected_committed_size, root_->max_size_of_committed_pages);
     EXPECT_EQ(expected_allocated_size,
-              g_root->get_total_size_of_allocated_bytes());
+              root_->get_total_size_of_allocated_bytes());
     EXPECT_EQ(expected_allocated_size,
-              g_root->get_max_size_of_allocated_bytes());
+              root_->get_max_size_of_allocated_bytes());
     EXPECT_EQ((kFillCountForMediumBucket - 1 - i) * medium_alloc_size,
               tcache->CachedMemory());
   }
 
   EXPECT_EQ(0U, tcache->CachedMemory());
 
-  g_root->Free(ptr);
+  root_->Free(ptr);
 
   for (auto*& el : arr) {
-    g_root->Free(el);
+    root_->Free(el);
   }
 }
 
