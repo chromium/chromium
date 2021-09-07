@@ -298,7 +298,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.MainFrame.Max" units="KiB"
-    expires_after="2022-01-02">
+    expires_after="2022-03-06">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -334,7 +334,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Clients.Ads.Memory.UpdateCount" units="count"
-    expires_after="2022-01-02">
+    expires_after="2022-03-06">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -446,7 +446,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe"
-    units="scorex10" expires_after="M97">
+    units="scorex10" expires_after="2022-03-06">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
@@ -464,7 +464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.AMP.LayoutInstability.CumulativeShiftScore.Subframe.FullNavigation"
-    units="scorex10" expires_after="M97">
+    units="scorex10" expires_after="2022-03-06">
   <owner>bmcquade@chromium.org</owner>
   <owner>skobes@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
@@ -1263,7 +1263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.MainFrame.Max" units="KiB"
-    expires_after="2022-01-02">
+    expires_after="2022-03-06">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -1277,7 +1277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.Subframe.Aggregate.Max"
-    units="KiB" expires_after="2022-01-02">
+    units="KiB" expires_after="2022-03-06">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
@@ -1292,7 +1292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Experimental.Memory.Core.Total.Max" units="KiB"
-    expires_after="2022-01-02">
+    expires_after="2022-03-06">
   <owner>cammie@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>

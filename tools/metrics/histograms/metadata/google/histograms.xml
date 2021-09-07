@@ -217,7 +217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
-    expires_after="2021-12-31">
+    expires_after="2022-03-06">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The error code for a failed on-demand update check.</summary>
