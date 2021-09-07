@@ -921,8 +921,16 @@ bool SetCookie(BrowserContext* browser_context,
 uint32_t DeleteCookies(BrowserContext* browser_context,
                        network::mojom::CookieDeletionFilter filter);
 
-// Fetch the histograms data from other processes. This should be called after
-// the test code has been executed but before performing assertions.
+// Fetches the histograms data from other processes.
+//
+// This function should be called after a child process has logged the
+// histogram/metric being tested, to ensure that base::HistogramTester sees all
+// the data from the child process.
+//
+// The caller should ensure that there is no race between 1) the call to
+// FetchHistogramsFromChildProcesses() and 2) the child process shutting down.
+// See also https://crbug.com/1246137 which describes how this is a test-only
+// problem.
 void FetchHistogramsFromChildProcesses();
 
 // Registers a request handler which redirects to a different host, based
