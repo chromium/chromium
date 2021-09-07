@@ -82,18 +82,6 @@ using web::WebStateImpl;
 using web::wk_navigation_util::IsRestoreSessionUrl;
 using web::wk_navigation_util::IsWKInternalUrl;
 
-namespace {
-
-// Keys for JavaScript command handlers context.
-NSString* const kUserIsInteractingKey = @"userIsInteracting";
-NSString* const kOriginURLKey = @"originURL";
-NSString* const kIsMainFrame = @"isMainFrame";
-
-// URL scheme for messages sent from javascript for asynchronous processing.
-NSString* const kScriptMessageName = @"crwebinvoke";
-
-}  // namespace
-
 // TODO(crbug.com/1174560): Allow usage of iOS15 interactionState on iOS 14 SDK
 // based builds.
 #if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_15_0
@@ -249,10 +237,6 @@ NSString* const kScriptMessageName = @"crwebinvoke";
 // may be called multiple times and thus must be idempotent.
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
                      forContext:(web::NavigationContextImpl*)context;
-// Called when web controller receives a new message from the web page.
-- (void)didReceiveScriptMessage:(WKScriptMessage*)message;
-// Attempts to handle a script message. Returns YES on success, NO otherwise.
-- (BOOL)respondToWKScriptMessage:(WKScriptMessage*)scriptMessage;
 
 // Restores the state for this page from session history.
 - (void)restoreStateFromHistory;
@@ -451,14 +435,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     for (NSString* keyPath in self.WKWebViewObservers) {
       [_webView addObserver:self forKeyPath:keyPath options:0 context:nullptr];
     }
-
-    __weak CRWWebController* weakSelf = self;
-    [messageRouter
-        setScriptMessageHandler:^(WKScriptMessage* message) {
-          [weakSelf didReceiveScriptMessage:message];
-        }
-                           name:kScriptMessageName
-                        webView:_webView];
 
     _webView.allowsBackForwardNavigationGestures =
         _allowsBackForwardNavigationGestures;
@@ -1198,54 +1174,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)containerView:(CRWWebControllerContainerView*)containerView
     storeWebViewInWindow:(UIView*)viewToStash {
   [web::GetWebClient()->GetWindowedContainer() addSubview:viewToStash];
-}
-
-#pragma mark - JavaScript message Helpers (Private)
-
-- (void)didReceiveScriptMessage:(WKScriptMessage*)message {
-  // Broken out into separate method to catch errors.
-  if (![self respondToWKScriptMessage:message]) {
-    DLOG(WARNING) << "Message from JS not handled due to invalid format";
-  }
-}
-
-- (BOOL)respondToWKScriptMessage:(WKScriptMessage*)scriptMessage {
-  if (![scriptMessage.name isEqualToString:kScriptMessageName]) {
-    return NO;
-  }
-
-  std::unique_ptr<base::Value> messageAsValue =
-      web::ValueResultFromWKResult(scriptMessage.body);
-  base::DictionaryValue* message = nullptr;
-  if (!messageAsValue || !messageAsValue->GetAsDictionary(&message)) {
-    return NO;
-  }
-
-  web::WebFrame* senderFrame = nullptr;
-  std::string frameID;
-  if (message->GetString("crwFrameId", &frameID)) {
-    senderFrame = web::GetWebFrameWithId([self webState], frameID);
-  }
-  // Message must be associated with a current frame.
-  if (!senderFrame) {
-    return NO;
-  }
-
-  base::DictionaryValue* crwCommand = nullptr;
-  if (!message->GetDictionary("crwCommand", &crwCommand)) {
-    return NO;
-  }
-
-  std::string command;
-  if (!crwCommand->GetString("command", &command)) {
-    DLOG(WARNING) << "JS message parameter not found: command";
-    return NO;
-  }
-
-  self.webStateImpl->OnScriptCommandReceived(
-      command, *crwCommand, net::GURLWithNSURL(self.webView.URL),
-      self.isUserInteracting, senderFrame);
-  return YES;
 }
 
 #pragma mark - CRWWebViewScrollViewProxyObserver

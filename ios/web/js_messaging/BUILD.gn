@@ -21,6 +21,7 @@ source_set("js_messaging") {
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_view:util",
     "//url",
   ]
@@ -32,6 +33,8 @@ source_set("js_messaging") {
     "crw_wk_script_message_router.mm",
     "page_script_util.h",
     "page_script_util.mm",
+    "script_command_java_script_feature.h",
+    "script_command_java_script_feature.mm",
     "web_frame_impl.h",
     "web_frame_impl.mm",
     "web_frame_internal.h",
