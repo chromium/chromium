@@ -4,9 +4,9 @@
 
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIDemoModeAppHost[] = "demo-mode-app";
 const char kChromeUIDemoModeAppURL[] = "chrome://demo-mode-app/";
 
-}  // namespace chromeos
+}  // namespace ash

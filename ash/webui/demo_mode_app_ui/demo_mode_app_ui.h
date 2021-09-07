@@ -11,7 +11,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
+
 // The WebUI for chrome://demo-mode-app
 class DemoModeAppUI : public ui::MojoWebUIController,
                       public mojom::demo_mode::PageHandlerFactory {
@@ -38,6 +39,6 @@ class DemoModeAppUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_APP_UI_H_

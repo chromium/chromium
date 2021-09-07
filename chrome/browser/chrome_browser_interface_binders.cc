@@ -941,10 +941,9 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-  if (chromeos::features::IsDemoModeSWAEnabled()) {
+  if (ash::features::IsDemoModeSWAEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        chromeos::mojom::demo_mode::PageHandlerFactory,
-        chromeos::DemoModeAppUI>(map);
+        ash::mojom::demo_mode::PageHandlerFactory, ash::DemoModeAppUI>(map);
   }
 
   if (base::FeatureList::IsEnabled(chromeos::features::kTelemetryExtension)) {

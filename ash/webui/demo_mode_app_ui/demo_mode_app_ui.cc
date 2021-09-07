@@ -13,12 +13,12 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(chromeos::kChromeUIDemoModeAppHost);
+      content::WebUIDataSource::Create(kChromeUIDemoModeAppHost);
 
   // Add required resources.
   for (size_t i = 0; i < kAshDemoModeAppResourcesSize; ++i) {
@@ -52,4 +52,4 @@ void DemoModeAppUI::CreatePageHandler(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DemoModeAppUI)
 
-}  // namespace chromeos
+}  // namespace ash

@@ -20,7 +20,7 @@ var DemoModeAppUIBrowserTest = class extends testing.Test {
 
   /** @override */
   get featureList() {
-    return {enabled: ['chromeos::features::kDemoModeSWA']};
+    return {enabled: ['ash::features::kDemoModeSWA']};
   }
 };
 

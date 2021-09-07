@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 class DemoModePageHandler : public mojom::demo_mode::PageHandler {
  public:
@@ -31,5 +31,7 @@ class DemoModePageHandler : public mojom::demo_mode::PageHandler {
 
   views::Widget* widget_;
 };
-}  // namespace chromeos
+
+}  // namespace ash
+
 #endif  // ASH_WEBUI_DEMO_MODE_APP_UI_DEMO_MODE_PAGE_HANDLER_H_

@@ -5,11 +5,11 @@
 #ifndef ASH_WEBUI_DEMO_MODE_APP_UI_URL_CONSTANTS_H_
 #define ASH_WEBUI_DEMO_MODE_APP_UI_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUIDemoModeAppHost[];
 extern const char kChromeUIDemoModeAppURL[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_DEMO_MODE_APP_UI_URL_CONSTANTS_H_

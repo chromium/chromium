@@ -54,7 +54,7 @@ class WidgetFullscreenWaiter : public views::WidgetObserver {
 
 // Test that the Demo Mode App installs and launches correctly
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
-  const GURL url(chromeos::kChromeUIDemoModeAppURL);
+  const GURL url(ash::kChromeUIDemoModeAppURL);
   EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
       web_app::SystemAppType::DEMO_MODE, url, "Demo Mode App"));
 }

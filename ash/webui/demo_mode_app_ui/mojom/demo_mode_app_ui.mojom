@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.mojom.demo_mode;
+module ash.mojom.demo_mode;
 
 // Implemented in the browser process. Interface for the Demo Mode WebUI to
 // retrieve an endpoint to the PageHandler interface, and to provide its own

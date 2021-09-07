@@ -4,7 +4,8 @@
 
 #include "ash/webui/demo_mode_app_ui/demo_mode_page_handler.h"
 
-namespace chromeos {
+namespace ash {
+
 DemoModePageHandler::DemoModePageHandler(
     mojo::PendingReceiver<mojom::demo_mode::PageHandler> pending_receiver,
     views::Widget* widget)
@@ -15,4 +16,5 @@ DemoModePageHandler::~DemoModePageHandler() = default;
 void DemoModePageHandler::ToggleFullscreen() {
   widget_->SetFullscreen(!widget_->IsFullscreen());
 }
-}  // namespace chromeos
+
+}  // namespace ash

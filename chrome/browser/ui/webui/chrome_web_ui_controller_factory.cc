@@ -924,9 +924,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<DeviceEmulatorUI>;
   }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
-  if (url.host_piece() == chromeos::kChromeUIDemoModeAppHost) {
-    if (chromeos::features::IsDemoModeSWAEnabled()) {
-      return &NewWebUI<chromeos::DemoModeAppUI>;
+  if (url.host_piece() == ash::kChromeUIDemoModeAppHost) {
+    if (ash::features::IsDemoModeSWAEnabled()) {
+      return &NewWebUI<ash::DemoModeAppUI>;
     }
   }
   if (url.host_piece() == ash::kChromeUISampleSystemWebAppHost)
