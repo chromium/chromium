@@ -81,4 +81,13 @@ ScriptPromise FederatedCredential::logout(
                                          "Logout API not yet implemented"));
 }
 
+ScriptPromise FederatedCredential::revoke(ScriptState* script_state,
+                                          String account_id) {
+  // TODO(goto): actually implement this.
+  return ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotSupportedError,
+                                         "Revocation API not yet implemented"));
+}
+
 }  // namespace blink

@@ -4,15 +4,25 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 promise_test(function(t) {
-    // Expects the credential manager to throw a NotSupportedError while
-    // attemping to use the WebID when it is not yet enabled.
+    // Throws a not implemented error.
     return promise_rejects_dom(t, "NotSupportedError",
-            navigator.credentials.get({
+        navigator.credentials.get({
               federated: {
                 providers: [{
-                  provider: "bar"
+                  provider: "https://accounts.idp.example",
+                  clientId: "1234",
+                  nonce: "5678",
                 }]
               }
-            }));
-}, "navigator.credentials.get() with invalid providers.");
+            })
+    );
+}, "navigator.credentials.get() with a FederatedIdentityProvider.");
+
+promise_test(function(t) {
+  // Revocation API not supported yet.
+  return promise_rejects_dom(t, "NotSupportedError",
+    FederatedCredential.revoke("1234")
+  );
+}, "navigator.credentials.revoke() basic.");
+
 </script>

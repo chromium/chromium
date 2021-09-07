@@ -2472,6 +2472,7 @@
     },
     {
       name: "WebID",
+      status: "test",
     },
     {
       name: "WebNFC",

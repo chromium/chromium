@@ -61,6 +61,7 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
   }
 
   static ScriptPromise logout(ScriptState*, const Vector<String>&);
+  static ScriptPromise revoke(ScriptState*, const String);
 
  private:
   const scoped_refptr<const SecurityOrigin> provider_;

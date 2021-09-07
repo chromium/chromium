@@ -1015,14 +1015,21 @@ ScriptPromise CredentialsContainer::get(
   Vector<KURL> providers;
   if (options->hasFederated() && options->federated()->hasProviders()) {
     for (const auto& provider : options->federated()->providers()) {
-      if (!provider->IsString() && !RuntimeEnabledFeatures::WebIDEnabled()) {
+      if (provider->IsString()) {
+        KURL url = KURL(NullURL(), provider->GetAsString());
+        if (url.IsValid())
+          providers.push_back(std::move(url));
+      } else if (provider->IsFederatedIdentityProvider()) {
+        if (!RuntimeEnabledFeatures::WebIDEnabled()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
+          return promise;
+        }
+        // TODO: connect this with the browser Mojo service.
         resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
+            DOMExceptionCode::kNotSupportedError, "Not implemented"));
         return promise;
       }
-      KURL url = KURL(NullURL(), provider->GetAsString());
-      if (url.IsValid())
-        providers.push_back(std::move(url));
     }
   }
 

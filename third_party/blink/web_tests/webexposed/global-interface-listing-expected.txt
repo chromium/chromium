@@ -2605,8 +2605,11 @@ interface FeaturePolicy
     method features
     method getAllowlistForFeature
 interface FederatedCredential : Credential
+    static method logout
+    static method revoke
     attribute @@toStringTag
     getter iconURL
+    getter idToken
     getter name
     getter protocol
     getter provider
@@ -5731,6 +5734,7 @@ interface Navigator
     getter geolocation
     getter hardwareConcurrency
     getter hid
+    getter id
     getter ink
     getter keyboard
     getter language
@@ -10491,6 +10495,12 @@ interface WebGLUniformLocation
 interface WebGLVertexArrayObject
     attribute @@toStringTag
     method constructor
+interface WebId
+    attribute @@toStringTag
+    method constructor
+    method get
+    method logout
+    method provide
 interface WebKitCSSMatrix : DOMMatrixReadOnly
     attribute @@toStringTag
     getter a
