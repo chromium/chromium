@@ -51,13 +51,11 @@ class InstanceSwitcherItemViewBinder {
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
 
         } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {
-            View command = view.findViewById(R.id.command);
-            View info = view.findViewById(R.id.max_info);
-            View favicon = view.findViewById(R.id.favicon);
+            View newWindow = view.findViewById(R.id.new_window);
+            View maxInfo = view.findViewById(R.id.max_info);
             boolean enabled = model.get(InstanceSwitcherItemProperties.ENABLE_COMMAND);
-            command.setVisibility(enabled ? View.VISIBLE : View.GONE);
-            favicon.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
-            info.setVisibility(enabled ? View.GONE : View.VISIBLE);
+            newWindow.setVisibility(enabled ? View.VISIBLE : View.GONE);
+            maxInfo.setVisibility(enabled ? View.GONE : View.VISIBLE);
         }
     }
 }

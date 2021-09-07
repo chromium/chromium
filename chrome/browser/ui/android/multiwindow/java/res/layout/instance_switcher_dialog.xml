@@ -21,10 +21,8 @@
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="48dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp"
             android:gravity="center_horizontal"
             android:layout_gravity="center"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary" />

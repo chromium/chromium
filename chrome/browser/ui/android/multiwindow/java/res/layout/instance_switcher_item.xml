@@ -7,18 +7,24 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content"
     style="@style/ListItemContainer" >
 
+    <View
+        android:id="@+id/spacer"
+        android:layout_width="24dp"
+        android:layout_height="64dp"
+        android:layout_alignParentStart="true" />
+
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/current"
-        android:layout_alignParentStart="true"
         android:src="@drawable/circle_green"
         android:visibility="gone"
+        android:layout_toEndOf="@id/spacer"
         android:layout_width="8dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginVertical="28dp"
         android:layout_gravity="center_vertical" />
 
     <org.chromium.ui.widget.ChromeImageView
@@ -26,48 +32,53 @@
         android:layout_toEndOf="@id/current"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginVertical="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginVertical="20dp"
         android:scaleType="fitCenter"
         android:layout_gravity="center_vertical"
-        tools:ignore="ContentDescription" />
+        android:importantForAccessibility="no" />
 
     <LinearLayout
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/favicon"
-        android:layout_toStartOf="@id/end_button"
+        android:layout_marginEnd="72dp"
+        android:layout_alignParentEnd="true"
         android:orientation="vertical"
-        android:paddingEnd="@dimen/default_list_row_padding"
         android:layout_gravity="center_vertical" >
 
-        <TextView
+        <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:layout_marginEnd="@dimen/default_list_title_margin"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            app:leading="@dimen/text_size_large_leading" />
         <TextView
             android:id="@+id/desc"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginBottom="10dp"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            android:layout_gravity="center_vertical" />
+            android:layout_gravity="center_vertical"
+            app:leading="@dimen/text_size_medium_leading" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/check_mark"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:src="@drawable/checkmark_24dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="12dp"
         android:layout_alignParentEnd="true"
-        android:paddingEnd="@dimen/default_list_row_padding"
-        android:src="@drawable/ic_checkmark_24dp"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="12dp"
         android:tint="@color/checked_item"
         android:visibility="gone"
         android:importantForAccessibility="no"
@@ -75,14 +86,15 @@
 
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/more"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingStart="@dimen/default_list_row_padding"
-        android:paddingEnd="@dimen/default_list_row_padding"
-        android:background="@null"
-        android:layout_alignParentEnd="true"
         android:src="@drawable/ic_more_vert_24dp"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_alignParentEnd="true"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="12dp"
+        android:background="?attr/selectableItemBackground"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_tint_list"
-        tools:ignore="ContentDescription" />
+        app:tint="@color/default_icon_color_tint_list" />
 </RelativeLayout>

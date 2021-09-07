@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -40,10 +41,14 @@ class UiUtils {
         Resources res = context.getResources();
         mMinIconSizeDp = (int) res.getDimension(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = res.getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIncognitoFavicon = res.getDrawable(R.drawable.incognito_simple, null);
-        mIncognitoFavicon.setTint(R.color.default_icon_color);
-        mGlobeFavicon = res.getDrawable(R.drawable.ic_globe_24dp, null);
+        mIncognitoFavicon = getTintedIcon(R.drawable.incognito_simple);
+        mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(res);
+    }
+
+    Drawable getTintedIcon(@DrawableRes int drawableId) {
+        return org.chromium.ui.UiUtils.getTintedDrawable(
+                mContext, drawableId, R.color.default_icon_color);
     }
 
     /**

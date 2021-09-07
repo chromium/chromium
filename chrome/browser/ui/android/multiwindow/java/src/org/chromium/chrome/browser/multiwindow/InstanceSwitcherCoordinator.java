@@ -8,6 +8,7 @@ import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.b
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -60,6 +61,7 @@ public class InstanceSwitcherCoordinator {
     private final ModelList mModelList = new ModelList();
     private final UiUtils mUiUtils;
     private final View mDialogView;
+    private final Drawable mArrowBackIcon;
 
     private PropertyModel mDialog;
     private PropertyModel mConfirmDialog;
@@ -97,6 +99,7 @@ public class InstanceSwitcherCoordinator {
         mCloseCallback = closeCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
+        mArrowBackIcon = mUiUtils.getTintedIcon(R.drawable.ic_arrow_back_24dp);
 
         ModelListAdapter adapter = new ModelListAdapter(mModelList);
         // TODO: Extend modern_list_item_view.xml to replace instance_switcher_item.xml
@@ -146,7 +149,7 @@ public class InstanceSwitcherCoordinator {
                         break;
                     case ModalDialogProperties.ButtonType.NEGATIVE:
                         assert mIsShowingConfirmationMessage;
-                        dismissDialog(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                        hideConfirmationMessage();
                         break;
                     default:
                 }
@@ -252,6 +255,7 @@ public class InstanceSwitcherCoordinator {
         String header = res.getString(R.string.instance_switcher_close_confirm_header);
         String closeButton = res.getString(R.string.instance_switcher_close_confirm_button);
         mDialog.set(ModalDialogProperties.TITLE, header);
+        mDialog.set(ModalDialogProperties.TITLE_ICON, mArrowBackIcon);
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, closeButton);
         mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, res.getString(R.string.cancel));
         TextView messageView = (TextView) mDialogView.findViewById(R.id.message);
@@ -264,6 +268,7 @@ public class InstanceSwitcherCoordinator {
     private void hideConfirmationMessage() {
         Resources res = mContext.getResources();
         mDialog.set(ModalDialogProperties.TITLE, res.getString(R.string.instance_switcher_header));
+        mDialog.set(ModalDialogProperties.TITLE_ICON, null);
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_TEXT, res.getString(R.string.cancel));
         mDialog.set(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, null);
         mDialogView.findViewById(R.id.list_view).setVisibility(View.VISIBLE);
