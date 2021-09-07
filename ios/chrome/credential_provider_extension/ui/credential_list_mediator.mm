@@ -100,6 +100,7 @@
       }
       [self.consumer presentSuggestedPasswords:self.suggestedCredentials
                                   allPasswords:self.allCredentials
+                                 showSearchBar:self.allCredentials.count > 0
                          showNewPasswordOption:IsPasswordCreationEnabled()];
     });
   });
@@ -130,19 +131,24 @@
       }
     }
   }
+
   NSMutableArray<id<Credential>>* all = [[NSMutableArray alloc] init];
-  if (self.allCredentials.count > 0) {
-    for (id<Credential> credential in self.allCredentials) {
-      if ([filter length] == 0 ||
-          [credential.serviceName localizedStandardContainsString:filter] ||
-          [credential.user localizedStandardContainsString:filter]) {
-        [all addObject:credential];
+  if (!filter.length) {
+    all = [self.allCredentials mutableCopy];
+  } else {
+    if (self.allCredentials.count > 0) {
+      for (id<Credential> credential in self.allCredentials) {
+        if ([credential.serviceName localizedStandardContainsString:filter] ||
+            [credential.user localizedStandardContainsString:filter]) {
+          [all addObject:credential];
+        }
       }
     }
   }
   BOOL showNewPasswordOption = !filter.length && IsPasswordCreationEnabled();
   [self.consumer presentSuggestedPasswords:suggested
                               allPasswords:all
+                             showSearchBar:YES
                      showNewPasswordOption:showNewPasswordOption];
 }
 

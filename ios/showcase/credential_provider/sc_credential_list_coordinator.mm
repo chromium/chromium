@@ -97,6 +97,7 @@ NSArray<id<Credential>>* allPasswords = @[
 
   [self.viewController presentSuggestedPasswords:suggestedPasswords
                                     allPasswords:allPasswords
+                                   showSearchBar:YES
                            showNewPasswordOption:NO];
 }
 
@@ -124,6 +125,7 @@ NSArray<id<Credential>>* allPasswords = @[
   }
   [self.viewController presentSuggestedPasswords:suggested
                                     allPasswords:all
+                                   showSearchBar:YES
                            showNewPasswordOption:NO];
 }
 
