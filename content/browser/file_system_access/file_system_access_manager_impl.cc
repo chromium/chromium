@@ -294,6 +294,8 @@ FileSystemAccessManagerImpl::FileSystemAccessManagerImpl(
     : context_(std::move(context)),
       blob_context_(std::move(blob_context)),
       permission_context_(permission_context),
+      write_lock_manager_(
+          std::make_unique<FileSystemAccessWriteLockManager>(PassKey())),
       off_the_record_(off_the_record) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -907,48 +909,11 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
       result.InitWithNewPipeAndPassReceiver());
   return result;
 }
-
-FileSystemAccessManagerImpl::WriteLockManager::WriteLockManager() = default;
-
-FileSystemAccessManagerImpl::WriteLockManager::~WriteLockManager() = default;
-
-bool FileSystemAccessManagerImpl::WriteLockManager::AddAccessHandle(
+absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+FileSystemAccessManagerImpl::TakeWriteLock(
     const storage::FileSystemURL& url,
-    std::unique_ptr<FileSystemAccessAccessHandleHostImpl> access_handle) {
-  DCHECK(url.type() == storage::kFileSystemTypeTemporary);
-
-  // TODO(fivedots): Verify that there are no active writers for `url`, once we
-  // implement Add/RemoveWriter.
-  auto insert_result =
-      access_handle_receivers_.emplace(url, std::move(access_handle));
-  bool insert_success = insert_result.second;
-  return insert_success;
-}
-
-bool FileSystemAccessManagerImpl::WriteLockManager::AddWriter(
-    const storage::FileSystemURL& url,
-    std::unique_ptr<FileSystemAccessFileWriterImpl> writer) {
-  DCHECK(url.type() == storage::kFileSystemTypeTemporary);
-
-  // TODO(fivedots): implement this method and migrate ownership of writers.
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void FileSystemAccessManagerImpl::WriteLockManager::RemoveAccessHandle(
-    const storage::FileSystemURL& url) {
-  DCHECK(url.type() == storage::kFileSystemTypeTemporary);
-
-  size_t count_removed = access_handle_receivers_.erase(url);
-  DCHECK_EQ(1u, count_removed);
-}
-
-void FileSystemAccessManagerImpl::WriteLockManager::RemoveWriter(
-    const storage::FileSystemURL& url) {
-  DCHECK(url.type() == storage::kFileSystemTypeTemporary);
-
-  // TODO(fivedots): implement this method and migrate ownership of writers.
-  NOTIMPLEMENTED();
+    FileSystemAccessWriteLockManager::WriteLockType lock_type) {
+  return write_lock_manager_->TakeLock(url, lock_type);
 }
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
@@ -956,9 +921,12 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     const SharedHandleState& handle_state,
     bool auto_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(lock->type() ==
+         FileSystemAccessWriteLockManager::WriteLockType::kShared);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> result;
 
@@ -966,7 +934,7 @@ FileSystemAccessManagerImpl::CreateFileWriter(
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
   CreateFileWriter(
-      binding_context, url, swap_url, handle_state,
+      binding_context, url, swap_url, std::move(lock), handle_state,
       result.InitWithNewPipeAndPassReceiver(), has_transient_user_activation,
       auto_close,
       GetContentClient()->browser()->GetQuarantineConnectionCallback());
@@ -978,6 +946,7 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const BindingContext& binding_context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -986,14 +955,13 @@ FileSystemAccessManagerImpl::CreateFileWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto writer = std::make_unique<FileSystemAccessFileWriterImpl>(
-      this, PassKey(), binding_context, url, swap_url, handle_state,
-      std::move(receiver), has_transient_user_activation, auto_close,
-      quarantine_connection_callback);
+      this, PassKey(), binding_context, url, swap_url, std::move(lock),
+      handle_state, std::move(receiver), has_transient_user_activation,
+      auto_close, quarantine_connection_callback);
 
   base::WeakPtr<FileSystemAccessFileWriterImpl> writer_weak =
       writer->weak_ptr();
   writer_receivers_.insert(std::move(writer));
-
   return writer_weak;
 }
 
@@ -1003,21 +971,20 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
         file_delegate_receiver,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
-        capacity_allocation_host_receiver) {
+        capacity_allocation_host_receiver,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(lock->type() ==
+         FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
   auto receiver = result.InitWithNewPipeAndPassReceiver();
   auto access_handle_host =
       std::make_unique<FileSystemAccessAccessHandleHostImpl>(
-          this, url, PassKey(), std::move(receiver),
+          this, url, std::move(lock), PassKey(), std::move(receiver),
           std::move(file_delegate_receiver),
           std::move(capacity_allocation_host_receiver));
-  auto success =
-      write_lock_manager_.AddAccessHandle(url, std::move(access_handle_host));
-  if (!success) {
-    return mojo::NullRemote();
-  }
+  access_handle_host_receivers_.insert(std::move(access_handle_host));
 
   return result;
 }
@@ -1369,10 +1336,12 @@ void FileSystemAccessManagerImpl::RemoveFileWriter(
 }
 
 void FileSystemAccessManagerImpl::RemoveAccessHandleHost(
-    const storage::FileSystemURL& url) {
+    FileSystemAccessAccessHandleHostImpl* access_handle_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  write_lock_manager_.RemoveAccessHandle(url);
+  size_t count_removed =
+      access_handle_host_receivers_.erase(access_handle_host);
+  DCHECK_EQ(1u, count_removed);
 }
 
 void FileSystemAccessManagerImpl::RemoveToken(

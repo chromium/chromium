@@ -70,41 +70,36 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                                     bool auto_close,
                                     CreateFileWriterCallback callback,
                                     bool can_write);
-  void CreateSwapFile(int count,
-                      bool keep_existing_data,
-                      bool auto_close,
-                      CreateFileWriterCallback callback);
+  void CreateSwapFile(
+      int count,
+      bool keep_existing_data,
+      bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>,
+      CreateFileWriterCallback callback);
   void DidCreateSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,
       bool keep_existing_data,
       bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DidCopySwapFile(
       const storage::FileSystemURL& swap_url,
       bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
   void DoOpenIncognitoFile(
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessFileDelegateHost>
-          file_delegate_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       OpenAccessHandleCallback callback);
   void DoOpenFile(
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       OpenAccessHandleCallback callback);
 
   void DidOpenFile(
       OpenAccessHandleCallback callback,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
-          access_handle_host_remote,
-      mojo::PendingRemote<blink::mojom::FileSystemAccessCapacityAllocationHost>
-          capacity_allocation_host_remote,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       base::File file,
       base::OnceClosure on_close_callback);
 

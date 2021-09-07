@@ -45,6 +45,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
       const BindingContext& context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       const SharedHandleState& handle_state,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
       bool has_transient_user_activation,
@@ -133,6 +134,9 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // execute a move operation from the swap URL to the target URL at `url_`. In
   // most filesystems, this move operation is atomic.
   storage::FileSystemURL swap_url_;
+
+  // Shared write lock on the file. It is released on destruction.
+  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
 
   CloseCallback close_callback_;
 

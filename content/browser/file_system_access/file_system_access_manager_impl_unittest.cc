@@ -503,8 +503,13 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url));
 
+  auto lock = manager_->TakeWriteLock(
+      test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  ASSERT_TRUE(lock.has_value());
+
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 std::move(lock.value()),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -536,8 +541,13 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
+  auto lock = manager_->TakeWriteLock(
+      test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  ASSERT_TRUE(lock.has_value());
+
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 std::move(lock.value()),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -580,8 +590,13 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
+  auto lock = manager_->TakeWriteLock(
+      test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  ASSERT_TRUE(lock.has_value());
+
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 std::move(lock.value()),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -613,8 +628,13 @@ TEST_F(FileSystemAccessManagerImplTest,
             storage::AsyncFileTestHelper::CreateFileWithData(
                 file_system_context_.get(), test_swap_url, "foo", 3));
 
+  auto lock = manager_->TakeWriteLock(
+      test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  ASSERT_TRUE(lock.has_value());
+
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
+                                 std::move(lock.value()),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/true));

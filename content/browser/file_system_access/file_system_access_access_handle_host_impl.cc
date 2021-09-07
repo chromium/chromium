@@ -13,6 +13,7 @@ namespace content {
 FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     FileSystemAccessManagerImpl* manager,
     const storage::FileSystemURL& url,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     base::PassKey<FileSystemAccessManagerImpl> /*pass_key*/,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessAccessHandleHost>
         receiver,
@@ -20,8 +21,12 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
         file_delegate_receiver,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
         capacity_allocation_host_receiver)
-    : manager_(manager), url_(url), receiver_(this, std::move(receiver)) {
+    : manager_(manager),
+      lock_(std::move(lock)),
+      receiver_(this, std::move(receiver)) {
   DCHECK(manager_);
+  DCHECK_EQ(lock_->type(),
+            FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
 
   DCHECK(manager_->context()->is_incognito() ==
          file_delegate_receiver.is_valid());
@@ -57,14 +62,14 @@ void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
 
   std::move(callback).Run();
   receiver_.reset();
-  manager_->RemoveAccessHandleHost(url_);
+  manager_->RemoveAccessHandleHost(this);
 }
 
 void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   receiver_.reset();
-  manager_->RemoveAccessHandleHost(url_);
+  manager_->RemoveAccessHandleHost(this);
 }
 
 }  // namespace content

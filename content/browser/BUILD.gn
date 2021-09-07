@@ -909,6 +909,8 @@ source_set("browser") {
     "file_system_access/file_system_access_manager_impl.h",
     "file_system_access/file_system_access_transfer_token_impl.cc",
     "file_system_access/file_system_access_transfer_token_impl.h",
+    "file_system_access/file_system_access_write_lock_manager.cc",
+    "file_system_access/file_system_access_write_lock_manager.h",
     "file_system_access/file_system_chooser.cc",
     "file_system_access/file_system_chooser.h",
     "file_system_access/fixed_file_system_access_permission_grant.cc",

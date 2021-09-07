@@ -134,6 +134,7 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -142,11 +143,14 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
     : FileSystemAccessHandleBase(manager, context, url, handle_state),
       receiver_(this, std::move(receiver)),
       swap_url_(swap_url),
+      lock_(std::move(lock)),
       quarantine_connection_callback_(
           std::move(quarantine_connection_callback)),
       has_transient_user_activation_(has_transient_user_activation),
       auto_close_(auto_close) {
   DCHECK_EQ(swap_url.type(), url.type());
+  DCHECK_EQ(lock_->type(),
+            FileSystemAccessWriteLockManager::WriteLockType::kShared);
   receiver_.set_disconnect_handler(base::BindOnce(
       &FileSystemAccessFileWriterImpl::OnDisconnect, base::Unretained(this)));
 }

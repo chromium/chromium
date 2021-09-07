@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
@@ -154,10 +155,15 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
           quarantine_receivers_.Add(&quarantine_, std::move(receiver));
         });
 
+    auto lock = manager_->TakeWriteLock(
+        test_file_url_,
+        FileSystemAccessWriteLockManager::WriteLockType::kShared);
+    ASSERT_TRUE(lock.has_value());
+
     handle_ = manager_->CreateFileWriter(
         FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
                                                     kFrameId),
-        test_file_url_, test_swap_url_,
+        test_file_url_, test_swap_url_, std::move(lock.value()),
         FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
                                                        permission_grant_),
         remote_.InitWithNewPipeAndPassReceiver(),
@@ -682,16 +688,20 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
             storage::AsyncFileTestHelper::CreateFile(file_system_context_.get(),
                                                      test_swap_url_));
 
+  auto lock = manager_->TakeWriteLock(
+      test_file_url_, FileSystemAccessWriteLockManager::WriteLockType::kShared);
+  ASSERT_TRUE(lock.has_value());
+
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
-  handle_ =
-      manager_->CreateFileWriter(FileSystemAccessManagerImpl::BindingContext(
-                                     kTestStorageKey, kTestURL, kFrameId),
-                                 test_file_url_, test_swap_url_,
-                                 FileSystemAccessManagerImpl::SharedHandleState(
-                                     permission_grant_, permission_grant_),
-                                 remote.InitWithNewPipeAndPassReceiver(),
-                                 /*has_transient_user_activation=*/false,
-                                 /*auto_close=*/false, quarantine_callback_);
+  handle_ = manager_->CreateFileWriter(
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      test_file_url_, test_swap_url_, std::move(lock.value()),
+      FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
+                                                     permission_grant_),
+      remote.InitWithNewPipeAndPassReceiver(),
+      /*has_transient_user_activation=*/false,
+      /*auto_close=*/false, quarantine_callback_);
 
   uint64_t bytes_written;
   FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);
