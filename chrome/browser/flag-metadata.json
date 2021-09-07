@@ -1526,7 +1526,7 @@
   {
     "name": "enable-browsing-data-lifetime-manager",
     "owners": ["ydago"],
-    "expiry_milestone": 91
+    "expiry_milestone": 99
   },
   {
     "name": "enable-cast-streaming-av1",
