@@ -45,4 +45,8 @@ tast_disabled_tests_from_chrome_all = [
   "apps.SystemWebAppsReinstall.all_apps_stable",
   "apps.SystemWebAppsReinstall.default_enabled_apps_stable",
   "camera.EncodeAccelJPEG",
+
+  # crbug.com/1247177
+  "inputs.PhysicalKeyboardEnglishTyping",
+  "inputs.PhysicalKeyboardEmoji",
 ]
