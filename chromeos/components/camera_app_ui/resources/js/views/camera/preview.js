@@ -669,7 +669,7 @@ export class Preview {
           case tag.ANDROID_STATISTICS_FACE_DETECT_MODE: {
             const data = parseMetadata(entry);
             assert(data.length === 1);
-            faceMode = data;
+            faceMode = data[0];
             return true;
           }
           case tag.ANDROID_STATISTICS_FACE_RECTANGLES: {
