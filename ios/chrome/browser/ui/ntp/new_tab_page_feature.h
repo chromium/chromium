@@ -27,4 +27,7 @@ bool IsRefactoredNTP();
 // Whether the discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();
 
+// Whether the discover feed appflows are enabled.
+bool IsDiscoverFeedAppFlowsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_
