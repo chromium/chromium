@@ -145,7 +145,7 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   ULONG profile_buffer_length = 0;
   QUOTA_LIMITS limits;
   LUID luid;
-  HANDLE token;
+  HANDLE token = INVALID_HANDLE_VALUE;
 
   strcpy_s(source.SourceName, base::size(source.SourceName), "Chrome");
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier))
