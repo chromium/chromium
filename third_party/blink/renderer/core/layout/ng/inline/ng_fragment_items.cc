@@ -251,6 +251,11 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     if (line_box_fragment.IsEmptyLineBox())
       return &item;
 
+    // Abort reusing block-in-inline because it may need to set
+    // |NGPreviousInflowData|.
+    if (UNLIKELY(line_box_fragment.IsBlockInInline()))
+      return &item;
+
     // TODO(kojii): Running the normal layout code at least once for this
     // child helps reducing the code to setup internal states after the
     // partial. Remove the last fragment if it is the end of the

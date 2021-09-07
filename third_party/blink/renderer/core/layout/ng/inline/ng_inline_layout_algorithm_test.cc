@@ -21,6 +21,19 @@
 namespace blink {
 namespace {
 
+const NGPhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
+    Element* container) {
+  NGInlineCursor cursor(*To<LayoutBlockFlow>(container->GetLayoutObject()));
+  for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
+    const NGPhysicalLineBoxFragment* fragment =
+        cursor.Current()->LineBoxFragment();
+    DCHECK(fragment);
+    if (fragment->IsBlockInInline())
+      return fragment;
+  }
+  return nullptr;
+}
+
 class NGInlineLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
  protected:
   static std::string AsFragmentItemsString(const LayoutBlockFlow& root) {
@@ -417,6 +430,41 @@ TEST_F(NGInlineLayoutAlgorithmTest,
 
   // On the same line.
   EXPECT_EQ(wide_float->OffsetTop(), narrow_float->OffsetTop());
+}
+
+// Block-in-inline is not reusable. See |EndOfReusableItems|.
+TEST_F(NGInlineLayoutAlgorithmTest, BlockInInlineAppend) {
+  ScopedLayoutNGBlockInInlineForTest scoped_for_test(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      :root {
+        font-size: 10px;
+      }
+      #container {
+        width: 10ch;
+      }
+    </style>
+    <div id="container">
+      <span id="span">
+        12345678
+        <div>block</div>
+        12345678
+      </span>
+      12345678
+    </div>
+  )HTML");
+  Element* container_element = GetElementById("container");
+  scoped_refptr<const NGPhysicalLineBoxFragment> before_append =
+      FindBlockInInlineLineBoxFragment(container_element);
+  ASSERT_TRUE(before_append);
+
+  Document& doc = GetDocument();
+  container_element->appendChild(doc.createTextNode("12345678"));
+  UpdateAllLifecyclePhasesForTest();
+  scoped_refptr<const NGPhysicalLineBoxFragment> after_append =
+      FindBlockInInlineLineBoxFragment(container_element);
+  EXPECT_NE(before_append, after_append);
 }
 
 // Verifies that InlineLayoutAlgorithm positions floats with respect to their

@@ -266,6 +266,8 @@ NGFragmentItemsBuilder::AddPreviousItems(
       if (end_item) {
         // Check if this line has valid item_index and offset.
         const NGPhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
+        // Block-in-inline should have been prevented by |EndOfReusableItems|.
+        DCHECK(!line_fragment->IsBlockInInline());
         const NGInlineBreakToken* break_token =
             To<NGInlineBreakToken>(line_fragment->BreakToken());
         DCHECK(break_token);
