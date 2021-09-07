@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -75,16 +77,6 @@ PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
       begin + (data_string.size() * sizeof(typename StringType::value_type)));
   return scoped_refptr<base::RefCountedBytes>(
       base::RefCountedBytes::TakeVector(&result));
-}
-
-void WriteCustomDataToPickle(
-    const std::unordered_map<std::u16string, std::u16string>& data,
-    base::Pickle* pickle) {
-  pickle->WriteUInt32(data.size());
-  for (const auto& it : data) {
-    pickle->WriteString16(it.first);
-    pickle->WriteString16(it.second);
-  }
 }
 
 }  // namespace
@@ -315,27 +307,43 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   window_->SetPointerFocus(restored_focus);
 }
 
-// Regression test for https://crbug.com/1236708.
-TEST_P(WaylandDataDragControllerTest, StartDragWithCustomDataDontCrash) {
+// Ensures data drag controller properly offers dragged data with custom
+// formats. Regression test for a bunch of bugs, such as:
+//  - https://crbug.com/1236708
+//  - https://crbug.com/1207607
+//  - https://crbug.com/1247063
+TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   bool restored_focus = window_->has_pointer_focus();
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+  OSExchangeData data(OSExchangeDataProviderFactory::CreateProvider());
 
-  // The client starts dragging offering data with |kMimeTypeHTML|
-  std::unordered_map<std::u16string, std::u16string> custom_data;
-  custom_data.emplace(u"application/vnd.chromium.tab",
-                      u"any data that comes with it");
+  // TODO(crbug.com/1247063): Add more custom formats once generic mechanism for
+  // retrieving mime types is implemented.
+  ClipboardFormatType kCustomFormats[] = {
+      ClipboardFormatType::WebCustomDataType(),
+      ClipboardFormatType::GetType("chromium/x-bookmark-entries")};
+  for (auto format : kCustomFormats)
+    data.SetPickledData(format, {});
 
-  std::unique_ptr<ui::OSExchangeDataProvider> provider =
-      ui::OSExchangeDataProviderFactory::CreateProvider();
-  base::Pickle pickle;
-  WriteCustomDataToPickle(custom_data, &pickle);
-  provider->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                           pickle);
-  OSExchangeData os_exchange_data(std::move(provider));
-
-  drag_controller()->StartSession(os_exchange_data, DragDropTypes::DRAG_MOVE,
+  // The client starts dragging offering pickled data with custom formats.
+  drag_controller()->StartSession(data, DragDropTypes::DRAG_MOVE,
                                   DragEventSource::kMouse);
   Sync();
+
+  ASSERT_TRUE(data_device_manager_->data_source());
+  auto mime_types = data_device_manager_->data_source()->mime_types();
+  EXPECT_EQ(1u, mime_types.size());
+
+  for (auto format : kCustomFormats) {
+    // TODO(crbug.com/1247063): Double-check whether offering custom format name
+    // is not enough here. For now, for webui tab drag, format is extracted from
+    // the pickled data and used as mime type at Wayland protocol level.
+    if (format == ClipboardFormatType::WebCustomDataType())
+      continue;
+
+    EXPECT_TRUE(base::Contains(mime_types, format.GetName()))
+        << "Format '" << format.GetName() << "' should be offered.";
+  }
 
   window_->SetPointerFocus(restored_focus);
 }

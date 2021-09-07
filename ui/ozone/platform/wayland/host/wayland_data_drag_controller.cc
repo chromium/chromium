@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -78,6 +79,14 @@ uint32_t DragOperationsToDndActions(int operations) {
 const SkBitmap* GetDragImage(const OSExchangeData& data) {
   const SkBitmap* icon_bitmap = data.provider().GetDragImage().bitmap();
   return icon_bitmap && !icon_bitmap->empty() ? icon_bitmap : nullptr;
+}
+
+// TODO(crbug.com/1247063): This duplicates code in bookmarks::BookmarkNodeData.
+// Remove once a generic mechanism for retrieving mime types is implemented.
+const ClipboardFormatType& GetChromiumBookmarkFormat() {
+  static const base::NoDestructor<ClipboardFormatType> format(
+      ClipboardFormatType::GetType("chromium/x-bookmark-entries"));
+  return *format;
 }
 
 }  // namespace
@@ -369,8 +378,9 @@ void WaylandDataDragController::Offer(const OSExchangeData& data,
       }
     }
   }
+  if (data.HasCustomFormat(GetChromiumBookmarkFormat()))
+    mime_types.push_back(GetChromiumBookmarkFormat().GetName());
 
-  DCHECK(!mime_types.empty());
   data_source_->Offer(mime_types);
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 }
