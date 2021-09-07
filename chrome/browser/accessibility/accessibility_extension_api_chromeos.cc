@@ -645,6 +645,11 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
       enabled = ::features::IsEnhancedNetworkVoicesEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_DICTATIONCOMMANDS:
+      enabled =
+          ::features::IsExperimentalAccessibilityDictationCommandsEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }

@@ -140,6 +140,15 @@ bool IsDictationOfflineAvailableAndEnabled() {
          IsExperimentalAccessibilityDictationOfflineEnabled();
 }
 
+const base::Feature kExperimentalAccessibilityDictationCommands{
+    "ExperimentalAccessibilityDictationCommands",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsExperimentalAccessibilityDictationCommandsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityDictationCommands);
+}
+
 const base::Feature kEnhancedNetworkVoices{"EnhancedNetworkVoices",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 

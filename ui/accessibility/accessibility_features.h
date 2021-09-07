@@ -110,6 +110,14 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationOfflineEnabled();
 
 AX_BASE_EXPORT bool IsDictationOfflineAvailableAndEnabled();
 
+// Enables text-editing commands in the dictation.
+AX_BASE_EXPORT extern const base::Feature
+    kExperimentalAccessibilityDictationCommands;
+
+// Returns true if the expeirmental accessibility feature to enable dictation
+// text editing commands is enabled.
+AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationCommandsEnabled();
+
 // Enables high-quality, network-based voices in Select-to-speak.
 AX_BASE_EXPORT extern const base::Feature kEnhancedNetworkVoices;
 

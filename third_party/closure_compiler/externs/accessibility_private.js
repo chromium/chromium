@@ -261,6 +261,7 @@ chrome.accessibilityPrivate.AcceleratorAction = {
 chrome.accessibilityPrivate.AccessibilityFeature = {
   SELECT_TO_SPEAK_NAVIGATION_CONTROL: 'selectToSpeakNavigationControl',
   ENHANCED_NETWORK_VOICES: 'enhancedNetworkVoices',
+  DICTATION_COMMANDS: 'dictationCommands',
 };
 
 /**

@@ -4557,6 +4557,11 @@ const char kExperimentalAccessibilityDictationOfflineDescription[] =
     "Enables offline speech recognition for the accessibility dictation "
     "feature.";
 
+const char kExperimentalAccessibilityDictationCommandsName[] =
+    "Experimental accessibility dictation commands";
+const char kExperimentalAccessibilityDictationCommandsDescription[] =
+    "Enables text editing commands for the accessibility dictation feature.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

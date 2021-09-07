@@ -48811,6 +48811,8 @@ from previous Chrome versions.
   <int value="-771080109" label="GrantNotificationsToDSE:disabled"/>
   <int value="-770319039" label="enable-touch-editing"/>
   <int value="-769865314" label="AutofillCacheQueryResponses:disabled"/>
+  <int value="-767460914"
+      label="ExperimentalAccessibilityDictationCommands:disabled"/>
   <int value="-766805224" label="MirroringService:enabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-763900417" label="CCTModuleUseIntentExtras:enabled"/>
@@ -51818,6 +51820,8 @@ from previous Chrome versions.
   <int value="1636721063"
       label="AutofillLocalCardMigrationShowFeedback:enabled"/>
   <int value="1636962093" label="disable-material-design-ntp"/>
+  <int value="1637611166"
+      label="ExperimentalAccessibilityDictationCommands:enabled"/>
   <int value="1637615389" label="PrintServerScaling:enabled"/>
   <int value="1638123293" label="DeprecateAltClick:disabled"/>
   <int value="1638582559" label="UpdatedCellularActivationUi:disabled"/>
