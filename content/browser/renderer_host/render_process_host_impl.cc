@@ -697,7 +697,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       spare_render_process_host_->RemoveObserver(this);
 
       // Make sure the RenderProcessHost object gets destroyed.
-      if (!spare_render_process_host_->IsWorkerAndKeepAliveRefCountDisabled())
+      if (!spare_render_process_host_->AreRefCountsDisabled())
         spare_render_process_host_->Cleanup();
 
       // Drop reference to the RenderProcessHost object.
@@ -1678,7 +1678,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       pending_views_(0),
       keep_alive_ref_count_(0),
       worker_ref_count_(0),
-      is_worker_and_keep_alive_ref_count_disabled_(false),
+      shutdown_delay_ref_count_(0),
+      are_ref_counts_disabled_(false),
       visible_clients_(0),
       priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
@@ -2300,12 +2301,11 @@ void RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& unload_handler_timeout,
     const SiteInfo& site_info) {
   // No need to delay shutdown if the process is already shutting down.
-  if (IsWorkerAndKeepAliveRefCountDisabled() || deleting_soon_ ||
-      fast_shutdown_started_) {
+  if (AreRefCountsDisabled() || deleting_soon_ || fast_shutdown_started_) {
     return;
   }
 
-  IncrementKeepAliveRefCount();
+  shutdown_delay_ref_count_++;
 
   // Add to the delayed-shutdown tracker with the site that triggered the delay.
   if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
@@ -2373,6 +2373,9 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
 
   if (keep_alive_ref_count_ != 0)
     ret += " karc=" + base::NumberToString(keep_alive_ref_count_);
+
+  if (shutdown_delay_ref_count_ != 0)
+    ret += " sdrc=" + base::NumberToString(shutdown_delay_ref_count_);
 
   if (worker_ref_count_ != 0)
     ret += " wrc=" + base::NumberToString(worker_ref_count_);
@@ -2839,54 +2842,60 @@ bool RenderProcessHostImpl::IsProcessBackgrounded() {
 
 void RenderProcessHostImpl::IncrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  DCHECK(!are_ref_counts_disabled_);
   ++keep_alive_ref_count_;
+}
+
+bool RenderProcessHostImpl::AreAllRefCountsZero() {
+  return keep_alive_ref_count_ == 0 && worker_ref_count_ == 0 &&
+         shutdown_delay_ref_count_ == 0;
 }
 
 void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  DCHECK(!are_ref_counts_disabled_);
   DCHECK_GT(keep_alive_ref_count_, 0U);
   --keep_alive_ref_count_;
-  if (keep_alive_ref_count_ == 0 && worker_ref_count_ == 0)
+  if (AreAllRefCountsZero())
     Cleanup();
 }
 
 void RenderProcessHostImpl::IncrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  DCHECK(!are_ref_counts_disabled_);
   ++worker_ref_count_;
 }
 
 void RenderProcessHostImpl::DecrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!is_worker_and_keep_alive_ref_count_disabled_);
+  DCHECK(!are_ref_counts_disabled_);
   DCHECK_GT(worker_ref_count_, 0U);
   --worker_ref_count_;
-  if (worker_ref_count_ == 0 && keep_alive_ref_count_ == 0)
+  if (AreAllRefCountsZero())
     Cleanup();
 }
 
-void RenderProcessHostImpl::DisableWorkerAndKeepAliveRefCount() {
-  TRACE_EVENT("shutdown", "RenderProcessHostImpl::DisableKeepAliveRefCount",
+void RenderProcessHostImpl::DisableRefCounts() {
+  TRACE_EVENT("shutdown", "RenderProcessHostImpl::DisableRefCounts",
               ChromeTrackEvent::kRenderProcessHost, *this);
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (is_worker_and_keep_alive_ref_count_disabled_)
+  if (are_ref_counts_disabled_)
     return;
-  is_worker_and_keep_alive_ref_count_disabled_ = true;
+  are_ref_counts_disabled_ = true;
 
   keep_alive_ref_count_ = 0;
   worker_ref_count_ = 0;
+  shutdown_delay_ref_count_ = 0;
   // Cleaning up will also remove this from the SpareRenderProcessHostManager.
   // (in this case |keep_alive_ref_count_| would be 0 even before).
   Cleanup();
 }
 
-bool RenderProcessHostImpl::IsWorkerAndKeepAliveRefCountDisabled() {
+bool RenderProcessHostImpl::AreRefCountsDisabled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return is_worker_and_keep_alive_ref_count_disabled_;
+  return are_ref_counts_disabled_;
 }
 
 mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
@@ -3220,8 +3229,8 @@ bool RenderProcessHostImpl::IsSpareProcessForCrashReporting(
 }
 
 bool RenderProcessHostImpl::HostHasNotBeenUsed() {
-  return IsUnused() && listeners_.IsEmpty() && keep_alive_ref_count_ == 0 &&
-         worker_ref_count_ == 0 && pending_views_ == 0;
+  return IsUnused() && listeners_.IsEmpty() && AreAllRefCountsZero() &&
+         pending_views_ == 0;
 }
 
 void RenderProcessHostImpl::SetProcessLock(
@@ -3701,6 +3710,11 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
   if (worker_ref_count_ != 0)
     return false;
 
+  // TODO(wjmaclean): This is probably unnecessary, but let's remove it in a
+  // separate CL to be safe.
+  if (shutdown_delay_ref_count_ != 0)
+    return false;
+
   // Set this before ProcessDied() so observers can tell if the render process
   // died due to fast shutdown versus another cause.
   fast_shutdown_started_ = true;
@@ -3901,6 +3915,16 @@ void RenderProcessHostImpl::Cleanup() {
           proto->set_keep_alive_ref_count(keep_alive_ref_count_);
         });
     return;
+  } else if (shutdown_delay_ref_count_ != 0) {
+    TRACE_EVENT(
+        "shutdown", "RenderProcessHostImpl::Cleanup : Have shutdown_delay_ref.",
+        ChromeTrackEvent::kRenderProcessHost, *this,
+        [&](perfetto::EventContext ctx) {
+          auto* proto =
+              ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
+          proto->set_shutdown_delay_ref_count(shutdown_delay_ref_count_);
+        });
+    return;
   } else if (worker_ref_count_ != 0) {
     TRACE_EVENT2(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have worker_ref.",
@@ -3954,7 +3978,7 @@ void RenderProcessHostImpl::Cleanup() {
                               browser_context_);
   // Remove this host from the delayed-shutdown tracker if present, as the
   // shutdown delay has now been cancelled.
-  CancelAllProcessShutdownDelays();
+  StopTrackingProcessForShutdownDelay();
 
   // Use `DeleteSoon` to delete `this` RenderProcessHost *after* the tasks
   // that are *already* queued on the UI thread have been given a chance to run
@@ -4524,7 +4548,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
           render_process_host != nullptr);
       if (render_process_host) {
         is_unmatched_service_worker = false;
-        render_process_host->CancelAllProcessShutdownDelays();
+        render_process_host->StopTrackingProcessForShutdownDelay();
       } else {
         RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
             reusable_host_lookup_time, site_instance->GetProcessLock(),
@@ -5229,12 +5253,12 @@ void RenderProcessHostImpl::GetBrowserHistogram(
 
 void RenderProcessHostImpl::CancelProcessShutdownDelay(
     const SiteInfo& site_info) {
-  if (IsWorkerAndKeepAliveRefCountDisabled())
+  if (AreRefCountsDisabled())
     return;
 
   // Remove from the delayed-shutdown tracker. This may have already been done
-  // in CancelAllProcessShutdownDelays() if the process was reused before this
-  // task executed.
+  // in StopTrackingProcessForShutdownDelay() if the process was reused before
+  // this task executed.
   if (base::FeatureList::IsEnabled(features::kSubframeShutdownDelay) &&
       ShouldTrackProcessForSite(GetBrowserContext(), this, site_info)) {
     SiteProcessCountTracker* delayed_shutdown_tracker =
@@ -5245,10 +5269,15 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
       delayed_shutdown_tracker->DecrementSiteProcessCount(site_info, GetID());
   }
 
-  DecrementKeepAliveRefCount();
+  // Decrement shutdown delay ref count.
+  DCHECK(!are_ref_counts_disabled_);
+  DCHECK_GT(shutdown_delay_ref_count_, 0U);
+  shutdown_delay_ref_count_--;
+  if (AreAllRefCountsZero())
+    Cleanup();
 }
 
-void RenderProcessHostImpl::CancelAllProcessShutdownDelays() {
+void RenderProcessHostImpl::StopTrackingProcessForShutdownDelay() {
   if (!base::FeatureList::IsEnabled(features::kSubframeShutdownDelay))
     return;
   SiteProcessCountTracker* delayed_shutdown_tracker =

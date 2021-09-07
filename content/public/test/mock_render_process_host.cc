@@ -405,22 +405,22 @@ size_t MockRenderProcessHost::GetWorkerRefCount() const {
   return worker_ref_count_;
 }
 
-void MockRenderProcessHost::DisableWorkerAndKeepAliveRefCount() {
+void MockRenderProcessHost::DisableRefCounts() {
   keep_alive_ref_count_ = 0;
   worker_ref_count_ = 0;
 
-  // RenderProcessHost::DisableKeepAliveRefCount() virtual method gets called as
-  // part of BrowserContext::NotifyWillBeDestroyed(...).  Normally
-  // MockRenderProcessHost::DisableKeepAliveRefCount doesn't call Cleanup,
-  // because the MockRenderProcessHost might be owned by a test.  However, when
-  // the MockRenderProcessHost is the spare RenderProcessHost, we know that it
-  // is owned by the SpareRenderProcessHostManager and we need to delete the
-  // spare to avoid reports/DCHECKs about memory leaks.
+  // RenderProcessHost::DisableRefCounts() virtual method gets called as part of
+  // BrowserContext::NotifyWillBeDestroyed(...).  Normally
+  // MockRenderProcessHost::DisableRefCounts() doesn't call Cleanup, because the
+  // MockRenderProcessHost might be owned by a test.  However, when the
+  // MockRenderProcessHost is the spare RenderProcessHost, we know that it is
+  // owned by the SpareRenderProcessHostManager and we need to delete the spare
+  // to avoid reports/DCHECKs about memory leaks.
   if (this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting())
     Cleanup();
 }
 
-bool MockRenderProcessHost::IsWorkerAndKeepAliveRefCountDisabled() {
+bool MockRenderProcessHost::AreRefCountsDisabled() {
   return false;
 }
 

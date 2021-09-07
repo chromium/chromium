@@ -582,8 +582,10 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
   DISALLOW_COPY_AND_ASSIGN(RenderProcessHostObserverCounter);
 };
 
-// Check that the spare renderer is properly destroyed via
-// DisableKeepAliveRefCount.
+// Check that the spare renderer is properly destroyed via DisableRefCounts().
+// Note: DisableRefCounts() used to be called DisableKeepAliveRefCount();
+// the name if this test is left unchanged to avoid disrupt any tracking
+// tools (e.g. flakiness) that might reference the old name.
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareVsDisableKeepAliveRefCount) {
   RenderProcessHost::WarmupSpareRenderProcessHost(
       ShellContentBrowserClient::Get()->browser_context());
@@ -596,7 +598,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareVsDisableKeepAliveRefCount) {
   RenderProcessHostWatcher process_watcher(
       spare_renderer, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
 
-  spare_renderer->DisableWorkerAndKeepAliveRefCount();
+  spare_renderer->DisableRefCounts();
 
   process_watcher.Wait();
   EXPECT_TRUE(process_watcher.did_exit_normally());
@@ -612,8 +614,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareVsDisableKeepAliveRefCount) {
   DCHECK_EQ(1, counter.destroyed_count());
 }
 
-// Check that the spare renderer is properly destroyed via
-// DisableKeepAliveRefCount.
+// Check that the spare renderer is properly destroyed via DisableRefCounts().
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareVsFastShutdown) {
   RenderProcessHost::WarmupSpareRenderProcessHost(
       ShellContentBrowserClient::Get()->browser_context());

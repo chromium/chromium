@@ -202,7 +202,7 @@ void Shell::Shutdown() {
 
   for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
-    it.GetCurrentValue()->DisableWorkerAndKeepAliveRefCount();
+    it.GetCurrentValue()->DisableRefCounts();
   }
   if (*g_quit_main_message_loop)
     std::move(*g_quit_main_message_loop).Run();

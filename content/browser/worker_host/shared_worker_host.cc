@@ -100,7 +100,7 @@ class SharedWorkerHost::ScopedProcessHostRef {
   }
 
   ~ScopedProcessHostRef() {
-    if (!render_process_host_->IsWorkerAndKeepAliveRefCountDisabled())
+    if (!render_process_host_->AreRefCountsDisabled())
       render_process_host_->DecrementWorkerRefCount();
   }
 

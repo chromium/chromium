@@ -6842,7 +6842,7 @@ void RenderFrameHostImpl::CreateNewPopupWidget(
 void RenderFrameHostImpl::GetKeepAliveHandleFactory(
     mojo::PendingReceiver<blink::mojom::KeepAliveHandleFactory> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (GetProcess()->IsWorkerAndKeepAliveRefCountDisabled())
+  if (GetProcess()->AreRefCountsDisabled())
     return;
 
   if (base::FeatureList::IsEnabled(network::features::kDisableKeepaliveFetch)) {

@@ -258,7 +258,7 @@ constexpr MessageInfo kRenderProcessHost = {kRenderProcessHostIndices,
                                             kRenderProcessHostComplexMessages};
 
 // Proto Message: RenderProcessHostCleanup
-constexpr int kRenderProcessHostCleanupIndices[] = {1, 2, -1};
+constexpr int kRenderProcessHostCleanupIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kRenderProcessHostCleanup = {
     kRenderProcessHostCleanupIndices, nullptr};
 

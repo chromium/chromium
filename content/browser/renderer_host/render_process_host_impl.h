@@ -248,8 +248,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void DecrementKeepAliveRefCount() override;
   void IncrementWorkerRefCount() override;
   void DecrementWorkerRefCount() override;
-  void DisableWorkerAndKeepAliveRefCount() override;
-  bool IsWorkerAndKeepAliveRefCountDisabled() override;
+  void DisableRefCounts() override;
+  bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -535,11 +535,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
                             const SiteInfo& site_info);
   bool IsProcessShutdownDelayedForTesting();
   // Remove the host from the delayed-shutdown tracker, if present. This does
-  // not decrement |keep_alive_ref_count_|; if it was incremented by a shutdown
-  // delay, it will be decremented when the delay expires. This ensures that
-  // the host is not destroyed between cancelling its shutdown delay and the new
-  // navigation adding listeners to keep it alive.
-  void CancelAllProcessShutdownDelays() override;
+  // not decrement |shutdown_delay_ref_count_|; if it was incremented by a
+  // shutdown delay, it will be decremented when the delay expires. This ensures
+  // that the host is not destroyed between cancelling its shutdown delay and
+  // the new navigation adding listeners to keep it alive.
+  void StopTrackingProcessForShutdownDelay() override;
 
   // Binds |receiver| to the FileSystemManager instance owned by the render
   // process host, and is used by workers via BrowserInterfaceBroker.
@@ -940,16 +940,23 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // swapping. See blink::DiskDataAllocator for uses.
   void ProvideSwapFileForRenderer();
 
+  // True when |keep_alive_ref_count_|, |worker_ref_count_| and
+  // |shutdown_delay_ref_count_| are all zero.
+  bool AreAllRefCountsZero();
+
   mojo::OutgoingInvitation mojo_invitation_;
 
   // These cover mutually-exclusive cases. While keep-alive is time-based,
-  // workers are not. Attached documents are tracked via |listeners_| below.
+  // workers are not. Shutdown-delay is also time-based, but uses a different
+  // delay time. Attached documents are tracked via |listeners_| below.
   size_t keep_alive_ref_count_;
   size_t worker_ref_count_;
+  size_t shutdown_delay_ref_count_;
 
-  // Set in DisableWorkerAndKeepAliveRefCount(). When true,
-  // |keep_alive_ref_count_| and |worker_ref_count_| must no longer be modified.
-  bool is_worker_and_keep_alive_ref_count_disabled_;
+  // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
+  // |worker_ref_count_|, and |shutdown_delay_ref_count_| must no longer be
+  // modified.
+  bool are_ref_counts_disabled_;
 
   // The registered IPC listener objects. When this list is empty, we should
   // delete ourselves.
