@@ -205,6 +205,14 @@ class WebTransport::DatagramUnderlyingSource final
   // Implementation of UnderlyingSourceBase.
   ScriptPromise pull(ScriptState* script_state) override {
     DVLOG(1) << "DatagramUnderlyingSource::pull()";
+
+    if (waiting_for_datagrams_) {
+      // This can happen if a second read is issued while a read is already
+      // pending.
+      DCHECK(queue_.empty());
+      return ScriptPromise::CastUndefined(script_state);
+    }
+
     // If high water mark is reset to 0 and then read() is called, it should
     // block waiting for a new datagram. So we may need to discard datagrams
     // here.
@@ -218,7 +226,6 @@ class WebTransport::DatagramUnderlyingSource final
         return ScriptPromise::CastUndefined(script_state);
       }
 
-      DCHECK(!waiting_for_datagrams_);
       waiting_for_datagrams_ = true;
       return ScriptPromise::CastUndefined(script_state);
     }

@@ -1141,6 +1141,40 @@ TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
   EXPECT_FALSE(tester.IsRejected());
 }
 
+// This is a regression test for https://crbug.com/1246335
+TEST_F(WebTransportTest, TwoSimultaneousReadsWork) {
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+  auto* readable = web_transport->datagrams()->readable();
+  auto* script_state = scope.GetScriptState();
+  auto* reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
+
+  ScriptPromise result1 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+
+  const std::array<uint8_t, 1> chunk1 = {'A'};
+  client_remote_->OnDatagramReceived(chunk1);
+
+  const std::array<uint8_t, 1> chunk2 = {'B'};
+  client_remote_->OnDatagramReceived(chunk2);
+
+  ScriptPromiseTester tester1(script_state, result1);
+  tester1.WaitUntilSettled();
+  EXPECT_TRUE(tester1.IsFulfilled());
+
+  EXPECT_THAT(GetValueAsVector(script_state, tester1.Value()),
+              ElementsAre('A'));
+
+  ScriptPromiseTester tester2(script_state, result2);
+  tester2.WaitUntilSettled();
+  EXPECT_TRUE(tester2.IsFulfilled());
+
+  EXPECT_THAT(GetValueAsVector(script_state, tester2.Value()),
+              ElementsAre('B'));
+}
+
 bool ValidProducerHandle(const mojo::ScopedDataPipeProducerHandle& handle) {
   return handle.is_valid();
 }
