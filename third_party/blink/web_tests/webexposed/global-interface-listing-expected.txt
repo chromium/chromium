@@ -5781,6 +5781,7 @@ interface Navigator
     method getInstalledRelatedApps
     method getUserMedia
     method javaEnabled
+    method queryHandwritingRecognizer
     method queryHandwritingRecognizerSupport
     method registerProtocolHandler
     method requestMIDIAccess

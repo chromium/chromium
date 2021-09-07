@@ -5,6 +5,7 @@
 #include "content/browser/handwriting/handwriting_recognition_service_impl_cros.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -102,6 +103,13 @@ void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
   }
 
   std::move(callback).Run(std::move(query_result));
+}
+
+void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
+    handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+    QueryHandwritingRecognizerCallback callback) {
+  std::move(callback).Run(CrOSHandwritingRecognizerImpl::GetModelDescriptor(
+      std::move(model_constraint)));
 }
 
 CrOSHandwritingRecognitionServiceImpl::CrOSHandwritingRecognitionServiceImpl() =

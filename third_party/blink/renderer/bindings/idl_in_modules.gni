@@ -306,6 +306,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/handwriting/handwriting_drawing_segment.idl",
           "//third_party/blink/renderer/modules/handwriting/handwriting_feature_query.idl",
           "//third_party/blink/renderer/modules/handwriting/handwriting_feature_query_result.idl",
+          "//third_party/blink/renderer/modules/handwriting/handwriting_recognizer_query_result.idl",
           "//third_party/blink/renderer/modules/handwriting/handwriting_hints.idl",
           "//third_party/blink/renderer/modules/handwriting/handwriting_model_constraint.idl",
           "//third_party/blink/renderer/modules/handwriting/handwriting_point.idl",

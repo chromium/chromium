@@ -13,8 +13,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_hints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_hints_query_result.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_input_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_point.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_prediction.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognition_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognizer_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_segment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_stroke.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
@@ -282,6 +286,89 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingPredictionIdl) {
                 ->drawingSegments()[0]
                 ->endPointIndex(),
             8u);
+}
+
+TEST(HandwritingTypeConvertersTest, MojoHandwritingRecognizerQueryResultIdl) {
+  auto mojo_query_result =
+      handwriting::mojom::blink::QueryHandwritingRecognizerResult::New();
+  mojo_query_result->text_alternatives = true;
+  mojo_query_result->text_segmentation = true;
+  mojo_query_result->hints =
+      handwriting::mojom::blink::HandwritingHintsQueryResult::New();
+  mojo_query_result->hints->recognition_type =
+      Vector<handwriting::mojom::blink::HandwritingRecognitionType>{
+          handwriting::mojom::blink::HandwritingRecognitionType::kText};
+  mojo_query_result->hints->input_type =
+      Vector<handwriting::mojom::blink::HandwritingInputType>{
+          handwriting::mojom::blink::HandwritingInputType::kMouse,
+          handwriting::mojom::blink::HandwritingInputType::kStylus,
+          handwriting::mojom::blink::HandwritingInputType::kTouch};
+  mojo_query_result->hints->alternatives = true;
+  mojo_query_result->hints->text_context = true;
+
+  auto* idl_query_result =
+      mojo::ConvertTo<blink::HandwritingRecognizerQueryResult*>(
+          mojo_query_result);
+  ASSERT_NE(idl_query_result, nullptr);
+  EXPECT_TRUE(idl_query_result->hasTextAlternatives());
+  EXPECT_TRUE(idl_query_result->textAlternatives());
+  EXPECT_TRUE(idl_query_result->hasTextSegmentation());
+  EXPECT_TRUE(idl_query_result->textSegmentation());
+  EXPECT_TRUE(idl_query_result->hasHints());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasRecognitionType());
+  EXPECT_EQ(1u, idl_query_result->hints()->recognitionType().size());
+  EXPECT_EQ("text", idl_query_result->hints()->recognitionType()[0].AsString());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasInputType());
+  EXPECT_EQ(3u, idl_query_result->hints()->inputType().size());
+  EXPECT_EQ("mouse", idl_query_result->hints()->inputType()[0].AsString());
+  EXPECT_EQ("stylus", idl_query_result->hints()->inputType()[1].AsString());
+  EXPECT_EQ("touch", idl_query_result->hints()->inputType()[2].AsString());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasAlternatives());
+  EXPECT_TRUE(idl_query_result->hints()->alternatives());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasTextContext());
+  EXPECT_TRUE(idl_query_result->hints()->textContext());
+}
+
+TEST(HandwritingTypeConvertersTest,
+     MojoHandwritingRecognizerQueryResultIdl_FalseValues) {
+  auto mojo_query_result =
+      handwriting::mojom::blink::QueryHandwritingRecognizerResult::New();
+  mojo_query_result->text_alternatives = false;
+  mojo_query_result->text_segmentation = false;
+  mojo_query_result->hints =
+      handwriting::mojom::blink::HandwritingHintsQueryResult::New();
+  mojo_query_result->hints->recognition_type =
+      Vector<handwriting::mojom::blink::HandwritingRecognitionType>{};
+  mojo_query_result->hints->input_type =
+      Vector<handwriting::mojom::blink::HandwritingInputType>{};
+  mojo_query_result->hints->alternatives = false;
+  mojo_query_result->hints->text_context = false;
+
+  auto* idl_query_result =
+      mojo::ConvertTo<blink::HandwritingRecognizerQueryResult*>(
+          mojo_query_result);
+  ASSERT_NE(idl_query_result, nullptr);
+  EXPECT_TRUE(idl_query_result->hasTextAlternatives());
+  EXPECT_FALSE(idl_query_result->textAlternatives());
+  EXPECT_TRUE(idl_query_result->hasTextSegmentation());
+  EXPECT_FALSE(idl_query_result->textSegmentation());
+  EXPECT_TRUE(idl_query_result->hasHints());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasRecognitionType());
+  EXPECT_EQ(0u, idl_query_result->hints()->recognitionType().size());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasInputType());
+  EXPECT_EQ(0u, idl_query_result->hints()->inputType().size());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasAlternatives());
+  EXPECT_FALSE(idl_query_result->hints()->alternatives());
+
+  EXPECT_TRUE(idl_query_result->hints()->hasTextContext());
+  EXPECT_FALSE(idl_query_result->hints()->textContext());
 }
 
 }  // namespace blink
