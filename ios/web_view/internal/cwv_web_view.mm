@@ -159,6 +159,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 namespace {
 NSString* gCustomUserAgent = nil;
 NSString* gUserAgentProduct = nil;
+BOOL gChromeContextMenuEnabled = NO;
 }  // namespace
 
 @implementation CWVWebView
@@ -184,6 +185,14 @@ NSString* gUserAgentProduct = nil;
   }
 
   ios_web_view::InitializeGlobalState();
+}
+
++ (BOOL)chromeContextMenuEnabled {
+  return gChromeContextMenuEnabled;
+}
+
++ (void)setChromeContextMenuEnabled:(BOOL)newValue {
+  gChromeContextMenuEnabled = newValue;
 }
 
 + (NSString*)customUserAgent {
@@ -458,26 +467,6 @@ NSString* gUserAgentProduct = nil;
   }
 }
 
-- (void)webState:(web::WebState*)webState
-    handleContextMenu:(const web::ContextMenuParams&)params {
-  SEL selector = @selector(webView:
-           runContextMenuWithTitle:forHTMLElement:inView:userGestureLocation:);
-  if (![_UIDelegate respondsToSelector:selector]) {
-    return;
-  }
-  NSURL* hyperlink = net::NSURLWithGURL(params.link_url);
-  NSURL* mediaSource = net::NSURLWithGURL(params.src_url);
-  CWVHTMLElement* HTMLElement =
-      [[CWVHTMLElement alloc] initWithHyperlink:hyperlink
-                                    mediaSource:mediaSource
-                                           text:params.link_text];
-  [_UIDelegate webView:self
-      runContextMenuWithTitle:params.menu_title
-               forHTMLElement:HTMLElement
-                       inView:params.view
-          userGestureLocation:params.location];
-}
-
 #pragma mark - CRWWebStateDelegate
 
 - (web::WebState*)webState:(web::WebState*)webState
@@ -524,12 +513,18 @@ NSString* gUserAgentProduct = nil;
                         (void (^)(UIContextMenuConfiguration*))completionHandler
     API_AVAILABLE(ios(13.0)) {
   SEL selector = @selector(webView:
-      contextMenuConfigurationForLinkWithURL:completionHandler:);
+      contextMenuConfigurationForElement:completionHandler:);
   if ([_UIDelegate respondsToSelector:selector]) {
+    NSURL* hyperlink = net::NSURLWithGURL(params.link_url);
+    NSURL* mediaSource = net::NSURLWithGURL(params.src_url);
+    CWVHTMLElement* HTMLElement =
+        [[CWVHTMLElement alloc] initWithHyperlink:hyperlink
+                                      mediaSource:mediaSource
+                                             text:params.link_text];
+
     [_UIDelegate webView:self
-        contextMenuConfigurationForLinkWithURL:net::NSURLWithGURL(
-                                                   params.link_url)
-                             completionHandler:completionHandler];
+        contextMenuConfigurationForElement:HTMLElement
+                         completionHandler:completionHandler];
   } else {
     completionHandler(nil);
   }

@@ -258,6 +258,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   ]];
 
   [CWVWebView setUserAgentProduct:@"Dummy/1.0"];
+  CWVWebView.chromeContextMenuEnabled = YES;
 
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
@@ -591,6 +592,29 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                   createWebViewWithConfiguration:configuration];
                             }]];
 
+  // Developers can choose to use system or Chrome context menu in the shell
+  // app. This will also recreate the web view.
+  BOOL chromeContextMenuEnabled = CWVWebView.chromeContextMenuEnabled;
+  NSString* contextMenuSwitchActionTitle = [NSString
+      stringWithFormat:@"%@ Chrome context menu",
+                       chromeContextMenuEnabled ? @"Disable" : @"Enable"];
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:contextMenuSwitchActionTitle
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              CWVWebView.chromeContextMenuEnabled =
+                                  !chromeContextMenuEnabled;
+                              NSLog(@"Chrome context menu is %@ now.",
+                                    !chromeContextMenuEnabled ? @"OFF" : @"ON");
+                              CWVWebViewConfiguration* configuration =
+                                  weakSelf.webView.configuration;
+                              [weakSelf removeWebView];
+                              weakSelf.field.text = @"";
+                              weakSelf.webView = [weakSelf
+                                  createWebViewWithConfiguration:configuration];
+                            }]];
+
   // Resets all translation settings to default values.
   [alertController
       addAction:[UIAlertAction actionWithTitle:@"Reset translate settings"
@@ -805,51 +829,15 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)webView:(CWVWebView*)webView
-    runContextMenuWithTitle:(NSString*)menuTitle
-             forHTMLElement:(CWVHTMLElement*)element
-                     inView:(UIView*)view
-        userGestureLocation:(CGPoint)location {
-  if (!element.hyperlink) {
-    return;
-  }
-
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:menuTitle
-                       message:nil
-                preferredStyle:UIAlertControllerStyleActionSheet];
-  alert.popoverPresentationController.sourceView = view;
-  alert.popoverPresentationController.sourceRect =
-      CGRectMake(location.x, location.y, 1.0, 1.0);
-
-  void (^copyHandler)(UIAlertAction*) = ^(UIAlertAction* action) {
-    NSDictionary* item = @{
-      (NSString*)(kUTTypeURL) : element.hyperlink,
-      (NSString*)(kUTTypeUTF8PlainText) : [[element.hyperlink absoluteString]
-          dataUsingEncoding:NSUTF8StringEncoding],
-    };
-    [[UIPasteboard generalPasteboard] setItems:@[ item ]];
-  };
-  [alert addAction:[UIAlertAction actionWithTitle:@"Copy Link"
-                                            style:UIAlertActionStyleDefault
-                                          handler:copyHandler]];
-
-  [alert addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                            style:UIAlertActionStyleCancel
-                                          handler:nil]];
-
-  [self presentViewController:alert animated:YES completion:nil];
-}
-
-- (void)webView:(CWVWebView*)webView
-    contextMenuConfigurationForLinkWithURL:(NSURL*)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration*))
-                                 completionHandler API_AVAILABLE(ios(13.0)) {
+    contextMenuConfigurationForElement:(CWVHTMLElement*)element
+                     completionHandler:(void (^)(UIContextMenuConfiguration*))
+                                           completionHandler
+    API_AVAILABLE(ios(13.0)) {
   void (^copyHandler)(UIAction*) = ^(UIAction* action) {
     NSDictionary* item = @{
-      (NSString*)(kUTTypeURL) : linkURL.absoluteString,
-      (NSString*)(kUTTypeUTF8PlainText) :
-          [linkURL.absoluteString dataUsingEncoding:NSUTF8StringEncoding],
+      (NSString*)(kUTTypeURL) : element.hyperlink.absoluteString,
+      (NSString*)(kUTTypeUTF8PlainText) : [element.hyperlink.absoluteString
+          dataUsingEncoding:NSUTF8StringEncoding],
     };
     [[UIPasteboard generalPasteboard] setItems:@[ item ]];
   };
@@ -876,8 +864,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                             handler:^(id _){
                             }]
         ];
-        NSString* menuTitle = [NSString
-            stringWithFormat:@"iOS13 Context Menu: %@", linkURL.absoluteString];
+        NSString* menuTitle =
+            [NSString stringWithFormat:@"iOS13 Context Menu: %@",
+                                       element.hyperlink.absoluteString];
         return [UIMenu menuWithTitle:menuTitle children:actions];
       }];
 

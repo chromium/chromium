@@ -166,4 +166,8 @@ void WebViewWebClient::PrepareErrorPage(
   }
 }
 
+bool WebViewWebClient::EnableLongPressUIContextMenu() const {
+  return CWVWebView.chromeContextMenuEnabled;
+}
+
 }  // namespace ios_web_view

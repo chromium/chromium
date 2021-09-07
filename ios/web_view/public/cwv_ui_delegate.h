@@ -37,16 +37,6 @@ CWV_EXPORT
 // DOM.
 - (void)webViewDidClose:(CWVWebView*)webView;
 
-// Instructs the delegate to present context menu in response to user’s long
-// press gesture at |location| in |view| coordinate space. |element| is an HTML
-// element which received the gesture. If this method is not implemented, no
-// context menu will be displayed.
-- (void)webView:(CWVWebView*)webView
-    runContextMenuWithTitle:(NSString*)menuTitle
-             forHTMLElement:(CWVHTMLElement*)element
-                     inView:(UIView*)view
-        userGestureLocation:(CGPoint)location;
-
 // Instructs the delegate to show UI in response to window.alert JavaScript
 // call.
 - (void)webView:(CWVWebView*)webView
@@ -76,29 +66,20 @@ CWV_EXPORT
 
 // Equivalent of -[WKUIDelegate
 // webView:contextMenuConfigurationForElement:completionHandler:].
-// Must set |CWVWebView.chromeLongPressAndForceTouchHandlingEnabled| to NO
-// before the |webView| is initialized to use this delegate method, otherwise it
-// won't be called.
 - (void)webView:(CWVWebView*)webView
-    contextMenuConfigurationForLinkWithURL:(NSURL*)linkURL
-                         completionHandler:
-                             (void (^)(UIContextMenuConfiguration* _Nullable))
-                                 completionHandler API_AVAILABLE(ios(13.0));
+    contextMenuConfigurationForElement:(CWVHTMLElement*)element
+                     completionHandler:
+                         (void (^)(UIContextMenuConfiguration* _Nullable))
+                             completionHandler API_AVAILABLE(ios(13.0));
 
 // Equivalent of -[WKUIDelegate
 // webView:contextMenuWillPresentForElement:].
-// Must set |CWVWebView.chromeLongPressAndForceTouchHandlingEnabled| to NO
-// before the |webView| is initialized to use this delegate method, otherwise it
-// won't be called.
 - (void)webView:(CWVWebView*)webView
     contextMenuWillPresentForLinkWithURL:(NSURL*)linkURL
     API_AVAILABLE(ios(13.0));
 
 // Equivalent of -[WKUIDelegate
 // webView:contextMenuForElement:willCommitWithAnimator:].
-// Must set |CWVWebView.chromeLongPressAndForceTouchHandlingEnabled| to NO
-// before the |webView| is initialized to use this delegate method, otherwise it
-// won't be called.
 - (void)webView:(CWVWebView*)webView
     contextMenuForLinkWithURL:(NSURL*)linkURL
        willCommitWithAnimator:
@@ -107,9 +88,6 @@ CWV_EXPORT
 
 // Equivalent of -[WKUIDelegate
 // webView:contextMenuDidEndForElement:].
-// Must set |CWVWebView.chromeLongPressAndForceTouchHandlingEnabled| to NO
-// before the |webView| is initialized to use this delegate method, otherwise it
-// won't be called.
 - (void)webView:(CWVWebView*)webView
     contextMenuDidEndForLinkWithURL:(NSURL*)linkURL API_AVAILABLE(ios(13.0));
 

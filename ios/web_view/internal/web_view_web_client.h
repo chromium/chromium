@@ -42,6 +42,7 @@ class WebViewWebClient : public web::WebClient {
                         const absl::optional<net::SSLInfo>& info,
                         int64_t navigation_id,
                         base::OnceCallback<void(NSString*)> callback) override;
+  bool EnableLongPressUIContextMenu() const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebViewWebClient);
