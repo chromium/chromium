@@ -61,7 +61,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
           unsigned texture_target,
           unsigned query_type,
-          base::TimeDelta wait_for_release_time);
+          base::TimeDelta wait_for_release_time,
+          bool is_overlay_candidate);
   ~Texture() override;
 
   // Overridden from viz::ContextLostObserver:
@@ -151,7 +152,8 @@ Buffer::Texture::Texture(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     unsigned texture_target,
     unsigned query_type,
-    base::TimeDelta wait_for_release_delay)
+    base::TimeDelta wait_for_release_delay,
+    bool is_overlay_candidate)
     : gpu_memory_buffer_(gpu_memory_buffer),
       size_(gpu_memory_buffer->GetSize()),
       context_provider_(std::move(context_provider)),
@@ -159,10 +161,11 @@ Buffer::Texture::Texture(
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                         gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
+  uint32_t usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  if (is_overlay_candidate) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
   mailbox_ = sii->CreateSharedImage(
       gpu_memory_buffer_, gpu_memory_buffer_manager, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
@@ -448,7 +451,7 @@ bool Buffer::ProduceTransferableResource(
     contents_texture_ = std::make_unique<Texture>(
         context_provider, context_factory->GetGpuMemoryBufferManager(),
         gpu_memory_buffer_.get(), texture_target_, query_type_,
-        wait_for_release_delay_);
+        wait_for_release_delay_, is_overlay_candidate_);
   }
   Texture* contents_texture = contents_texture_.get();
 
