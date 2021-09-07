@@ -13,6 +13,11 @@
 // other hyper-thread on this core. See the following for context:
 // https://software.intel.com/en-us/articles/benefitting-power-and-performance-sleep-loops
 
+#if defined(OS_NACL)
+// Inline assembly not allowed.
+#define YIELD_PROCESSOR ((void)0)
+#else
+
 #if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_X86)
 #define YIELD_PROCESSOR __asm__ __volatile__("pause")
 #elif (defined(ARCH_CPU_ARMEL) && __ARM_ARCH >= 6) || defined(ARCH_CPU_ARM64)
@@ -36,5 +41,7 @@
 #ifndef YIELD_PROCESSOR
 #define YIELD_PROCESSOR ((void)0)
 #endif
+
+#endif  // defined(OS_NACL)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_YIELD_PROCESSOR_H_

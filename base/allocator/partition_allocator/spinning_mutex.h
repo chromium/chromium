@@ -16,8 +16,6 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
-#if defined(PA_HAS_SPINNING_MUTEX)
-
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
 #endif
@@ -30,6 +28,9 @@
 namespace base {
 namespace internal {
 
+// The behavior of this class depends on whether PA_HAS_FAST_MUTEX is defined.
+// 1. When it is defined:
+//
 // Simple spinning lock. It will spin in user space a set number of times before
 // going into the kernel to sleep.
 //
@@ -51,6 +52,10 @@ namespace internal {
 // As an interesting side-effect to be used in the allocator, this code does not
 // make any allocations, locks are small with a constexpr constructor and no
 // destructor.
+//
+// 2. Otherwise:
+// This is a simple SpinLock, in the sense that it does not have any awareness
+// of other threads' behavior.
 class LOCKABLE BASE_EXPORT SpinningMutex {
  public:
   inline constexpr SpinningMutex();
@@ -60,11 +65,13 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   void AssertAcquired() const {}  // Not supported.
 
  private:
-  void LockSlow();
+  void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
 
   // Same as SpinLock, not scientifically calibrated. Consider lowering later,
   // as the slow path has better characteristics than SpinLocks's.
   static constexpr int kSpinCount = 1000;
+
+#if defined(PA_HAS_FAST_MUTEX)
 
 #if defined(PA_HAS_LINUX_KERNEL)
   void FutexWait();
@@ -79,6 +86,10 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
 #elif defined(OS_POSIX)
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+#else  // defined(PA_HAS_FAST_MUTEX)
+  std::atomic<bool> lock_{false};
 #endif
 };
 
@@ -112,6 +123,8 @@ ALWAYS_INLINE void SpinningMutex::Acquire() {
 }
 
 inline constexpr SpinningMutex::SpinningMutex() = default;
+
+#if defined(PA_HAS_FAST_MUTEX)
 
 #if defined(PA_HAS_LINUX_KERNEL)
 
@@ -175,8 +188,20 @@ ALWAYS_INLINE void SpinningMutex::Release() {
 
 #endif
 
+#else   // defined(PA_HAS_FAST_MUTEX)
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  // Possibly faster than CAS. The theory is that if the cacheline is shared,
+  // then it can stay shared, for the contended case.
+  return !lock_.load(std::memory_order_relaxed) &&
+         !lock_.exchange(true, std::memory_order_acquire);
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  lock_.store(false, std::memory_order_release);
+}
+#endif  // defined(PA_HAS_FAST_MUTEX)
+
 }  // namespace internal
 }  // namespace base
-#endif  // defined(PA_HAS_SPINNING_MUTEX)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_

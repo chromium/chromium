@@ -61,16 +61,23 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_LINUX_KERNEL
 #endif
 
-// SpinningMutex uses either futex(2) on Linux, or a fast userspace "try"
-// operation, which is available on Windows.
+// On some platforms, we implement locking by spinning in userspace, then going
+// into the kernel only if there is contention. This requires platform support,
+// namely:
+// - On Linux,  futex(2)
+// - On Windows a fast userspace "try" operation, which is available on Windows
+//   with SRWLock
+// - On macOS 10.14+, pthread.
 //
 // On macOS, pthread_mutex_trylock() is fast by default starting with macOS
 // 10.14. Chromium targets an earlier version, so it cannot be known at
 // compile-time. However, ARM64 macOS devices shipped *after* this release, so
 // they necessarily have a fast implementation.
+//
+// Otherwise, a userspace spinlock implementation is used.
 #if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || \
     (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
-#define PA_HAS_SPINNING_MUTEX
+#define PA_HAS_FAST_MUTEX
 #endif
 
 // If set to 1, enables zeroing memory on Free() with roughly 1% probability.

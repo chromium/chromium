@@ -15,8 +15,6 @@
 #include <pthread.h>
 #endif
 
-#if defined(PA_HAS_SPINNING_MUTEX)
-
 #if defined(PA_HAS_LINUX_KERNEL)
 #include <errno.h>
 #include <linux/futex.h>
@@ -24,8 +22,27 @@
 #include <unistd.h>
 #endif  // defined(PA_HAS_LINUX_KERNEL)
 
+#if !defined(PA_HAS_FAST_MUTEX)
+#include "base/threading/platform_thread.h"
+
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include <sched.h>
+
+#define YIELD_THREAD sched_yield()
+
+#else  // Other OS
+
+#warning "Thread yield not supported on this OS."
+#define YIELD_THREAD ((void)0)
+#endif
+
+#endif  // !defined(PA_HAS_FAST_MUTEX)
+
 namespace base {
 namespace internal {
+
+#if defined(PA_HAS_FAST_MUTEX)
+
 #if defined(PA_HAS_LINUX_KERNEL)
 
 void SpinningMutex::FutexWait() {
@@ -92,7 +109,26 @@ void SpinningMutex::LockSlow() {
 }
 
 #endif
+
+#else  // defined(PA_HAS_FAST_MUTEX)
+
+void SpinningMutex::LockSlow() {
+  int yield_thread_count = 0;
+  do {
+    if (yield_thread_count < 10) {
+      YIELD_THREAD;
+      yield_thread_count++;
+    } else {
+      // At this point, it's likely that the lock is held by a lower priority
+      // thread that is unavailable to finish its work because of higher
+      // priority threads spinning here. Sleeping should ensure that they make
+      // progress.
+      PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+    }
+  } while (!Try());
+}
+
+#endif  // defined(PA_HAS_FAST_MUTEX)
+
 }  // namespace internal
 }  // namespace base
-
-#endif  // defined(PA_HAS_SPINNING_MUTEX)

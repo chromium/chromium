@@ -54,41 +54,6 @@ class SCOPED_LOCKABLE ScopedUnlockGuard {
   MaybeSpinLock<thread_safe>& lock_;
 };
 
-#if !defined(PA_HAS_SPINNING_MUTEX)
-// Spinlock. Do not use, to be removed. crbug.com/1061437.
-class LOCKABLE BASE_EXPORT SpinLock {
- public:
-  constexpr SpinLock() = default;
-  ~SpinLock() = default;
-
-  ALWAYS_INLINE void Acquire() EXCLUSIVE_LOCK_FUNCTION() {
-    if (LIKELY(!lock_.exchange(true, std::memory_order_acquire)))
-      return;
-    AcquireSlow();
-  }
-
-  ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true) {
-    // Faster than simple CAS.
-    return !lock_.load(std::memory_order_relaxed) &&
-           !lock_.exchange(true, std::memory_order_acquire);
-  }
-
-  ALWAYS_INLINE void Release() UNLOCK_FUNCTION() {
-    lock_.store(false, std::memory_order_release);
-  }
-
-  // Not supported.
-  void AssertAcquired() const {}
-
- private:
-  // This is called if the initial attempt to acquire the lock fails. It's
-  // slower, but has a much better scheduling and power consumption behavior.
-  void AcquireSlow();
-
-  std::atomic_int lock_{0};
-};
-#endif  // !defined(PA_HAS_SPINNING_MUTEX)
-
 template <>
 class LOCKABLE MaybeSpinLock<true> {
  public:
@@ -145,13 +110,7 @@ class LOCKABLE MaybeSpinLock<true> {
   }
 
  private:
-#if defined(PA_HAS_SPINNING_MUTEX)
   SpinningMutex lock_;
-#else
-  // base::Lock is slower on the fast path than SpinLock, hence we still use
-  // SpinLock. crbug.com/1125999
-  SpinLock lock_;
-#endif  // defined(PA_HAS_SPINNING_MUTEX)
 
 #if DCHECK_IS_ON()
   // Should in theory be protected by |lock_|, but we need to read it to detect
