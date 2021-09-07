@@ -17,6 +17,8 @@ network::mojom::ReportingApiReportStatus EnumTraits<
       return network::mojom::ReportingApiReportStatus::kPending;
     case net::ReportingReport::Status::DOOMED:
       return network::mojom::ReportingApiReportStatus::kDoomed;
+    case net::ReportingReport::Status::SUCCESS:
+      return network::mojom::ReportingApiReportStatus::kSuccess;
   }
   NOTREACHED();
   return network::mojom::ReportingApiReportStatus::kQueued;
@@ -36,6 +38,9 @@ bool EnumTraits<network::mojom::ReportingApiReportStatus,
       return true;
     case network::mojom::ReportingApiReportStatus::kDoomed:
       *output = net::ReportingReport::Status::DOOMED;
+      return true;
+    case network::mojom::ReportingApiReportStatus::kSuccess:
+      *output = net::ReportingReport::Status::SUCCESS;
       return true;
   }
   NOTREACHED();

@@ -6105,11 +6105,17 @@ domain Network
   # The status of a Reporting API report.
   experimental type ReportStatus extends string
     enum
-      # Report has been queued but no attempt has been made to deliver it yet,
+      # Report has been queued and no attempt has been made to deliver it yet,
       # or attempted previous upload failed (impermanently).
       Queued
       # There is an ongoing attempt to upload this report.
       Pending
+      # Deletion of this report was requested while it was pending, so it will
+      # be removed after possibly outstanding upload attempts complete (successful
+      # or not).
+      MarkedForRemoval
+      # Successfully uploaded and MarkedForRemoval.
+      Success
 
   experimental type ReportId extends string
 

@@ -106,6 +106,10 @@ class TestReportingCache : public ReportingCache {
       const std::vector<const ReportingReport*>& reports) override {
     NOTREACHED();
   }
+  void RemoveReports(const std::vector<const ReportingReport*>& reports,
+                     bool delivery_success) override {
+    NOTREACHED();
+  }
   void RemoveAllReports() override { NOTREACHED(); }
   size_t GetFullReportCountForTesting() const override {
     NOTREACHED();

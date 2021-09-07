@@ -51,7 +51,8 @@ ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
 }
 
 bool ReportingReport::IsUploadPending() const {
-  return status == Status::PENDING || status == Status::DOOMED;
+  return status == Status::PENDING || status == Status::DOOMED ||
+         status == Status::SUCCESS;
 }
 
 }  // namespace net

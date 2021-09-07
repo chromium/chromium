@@ -137,6 +137,8 @@ class NET_EXPORT ReportingCache {
   // pending.
   virtual void RemoveReports(
       const std::vector<const ReportingReport*>& reports) = 0;
+  virtual void RemoveReports(const std::vector<const ReportingReport*>& reports,
+                             bool delivery_success) = 0;
 
   // Removes all reports. Like |RemoveReports()|, pending reports are doomed
   // until no longer pending.

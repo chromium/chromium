@@ -15,6 +15,7 @@ enum ReportingApiReportStatus {
   kQueued,
   kPending,
   kDoomed,
+  kSuccess,
 };
 
 // A Reporting API report.

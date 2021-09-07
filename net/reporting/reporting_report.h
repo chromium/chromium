@@ -26,7 +26,8 @@ namespace net {
 struct NET_EXPORT ReportingReport {
  public:
   enum class Status {
-    // Report has been queued but no attempt has been made to deliver it yet.
+    // Report has been queued and no attempt has been made to deliver it yet,
+    // or attempted previous upload failed (impermanently).
     QUEUED,
 
     // There is an ongoing attempt to upload this report.
@@ -35,6 +36,10 @@ struct NET_EXPORT ReportingReport {
     // Deletion of this report was requested while it was pending, so it should
     // be removed after the attempted upload completes.
     DOOMED,
+
+    // Similar to DOOMED with the difference that the upload was already
+    // successful.
+    SUCCESS,
   };
 
   // TODO(chlily): Remove |attempts| argument as it is (almost?) always 0.

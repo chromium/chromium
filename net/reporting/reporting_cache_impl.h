@@ -68,6 +68,8 @@ class ReportingCacheImpl : public ReportingCache {
       const override;
   void RemoveReports(
       const std::vector<const ReportingReport*>& reports) override;
+  void RemoveReports(const std::vector<const ReportingReport*>& reports,
+                     bool delivery_success) override;
   void RemoveAllReports() override;
   size_t GetFullReportCountForTesting() const override;
   size_t GetReportCountWithStatusForTesting(

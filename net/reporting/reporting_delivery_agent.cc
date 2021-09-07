@@ -136,7 +136,7 @@ class Delivery {
                                          group_name_and_count.second, success);
     }
     if (success) {
-      cache->RemoveReports(reports_);
+      cache->RemoveReports(reports_, /* delivery_success */ true);
     } else {
       cache->IncrementReportsAttempts(reports_);
     }
