@@ -2636,7 +2636,10 @@ test("base_perftests") {
   ]
   if (!is_ios) {
     # iOS doesn't use the partition allocator, therefore it can't run this test.
-    sources += [ "allocator/partition_allocator/partition_alloc_perftest.cc" ]
+    sources += [
+      "allocator/partition_allocator/partition_alloc_perftest.cc",
+      "allocator/partition_allocator/partition_lock_perftest.cc",
+    ]
   }
   deps = [
     ":base",
