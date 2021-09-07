@@ -6375,26 +6375,6 @@
             ]
         }
     ],
-    "PartitionAllocPCScanBrowserOnly": [
-        {
-            "platforms": [
-                "android",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocPCScanBrowserOnly"
-                    ],
-                    "disable_features": [
-                        "PartitionAllocPCScanEagerClearing",
-                        "PartitionAllocPCScanImmediateFreeing"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionConnectionsByNetworkIsolationKey": [
         {
             "platforms": [
