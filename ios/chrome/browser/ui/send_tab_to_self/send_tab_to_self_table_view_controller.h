@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TABLE_VIEW_CONTROLLER_H_
 
+#import <vector>
+
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 namespace send_tab_to_self {
-class SendTabToSelfModel;
+struct TargetDeviceInfo;
 }
 
 @protocol SendTabToSelfModalDelegate;
@@ -17,10 +19,12 @@ class SendTabToSelfModel;
 // Send Tab To Self Modal dialog.
 @interface SendTabToSelfTableViewController : ChromeTableViewController
 
-- (instancetype)initWithModel:
-                    (send_tab_to_self::SendTabToSelfModel*)sendTabToSelfModel
-                     delegate:(id<SendTabToSelfModalDelegate>)delegate
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithDeviceList:
+        (std::vector<send_tab_to_self::TargetDeviceInfo>)targetDeviceList
+              delegate:(id<SendTabToSelfModalDelegate>)delegate
+         accountAvatar:(UIImage*)accountAvatar
+          accountEmail:(NSString*)accountEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

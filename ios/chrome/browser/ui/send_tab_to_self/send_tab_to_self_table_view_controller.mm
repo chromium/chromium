@@ -4,14 +4,19 @@
 
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
 
+#import <utility>
+
 #include "base/check.h"
+#import "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -39,20 +44,16 @@ NSString* const kSendTabToSelfModalSendButton =
 
 }  // namespace
 
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  SectionIdentifierDevicesToSend = kSectionIdentifierEnumZero,
-  SectionIdentifierActionButton,
-};
-
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSend = kItemTypeEnumZero,
   ItemTypeDevice,
+  ItemTypeManageDevices,
 };
 
 @interface SendTabToSelfTableViewController () {
   // The list of devices with thier names, cache_guids, device types,
   // and active times.
-  std::vector<send_tab_to_self::TargetDeviceInfo> _target_device_list;
+  std::vector<send_tab_to_self::TargetDeviceInfo> _targetDeviceList;
 }
 // Item that holds the currently selected device.
 @property(nonatomic, strong) SendTabToSelfImageDetailTextItem* selectedItem;
@@ -60,20 +61,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Delegate to handle dismisal and event actions.
 @property(nonatomic, weak) id<SendTabToSelfModalDelegate> delegate;
 
+// Avatar of the account sharing a tab.
+@property(nonatomic, strong) UIImage* accountAvatar;
+// Email of the account sharing a tab.
+@property(nonatomic, strong) NSString* accountEmail;
+
 // Item that holds the cancel Button for this modal dialog.
 @property(nonatomic, strong) TableViewTextButtonItem* sendToDevice;
 @end
 
 @implementation SendTabToSelfTableViewController
 
-- (instancetype)initWithModel:
-                    (send_tab_to_self::SendTabToSelfModel*)sendTabToSelfModel
-                     delegate:(id<SendTabToSelfModalDelegate>)delegate {
+- (instancetype)initWithDeviceList:
+                    (std::vector<send_tab_to_self::TargetDeviceInfo>)
+                        targetDeviceList
+                          delegate:(id<SendTabToSelfModalDelegate>)delegate
+                     accountAvatar:(UIImage*)accountAvatar
+                      accountEmail:(NSString*)accountEmail {
   self = [super initWithStyle:UITableViewStylePlain];
 
   if (self) {
-    _target_device_list = sendTabToSelfModel->GetTargetDeviceInfoSortedList();
+    _targetDeviceList = std::move(targetDeviceList);
     _delegate = delegate;
+    _accountEmail = accountEmail;
+    _accountAvatar = accountAvatar;
   }
   return self;
 }
@@ -87,8 +98,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [UIColor colorNamed:kPrimaryBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   self.tableView.sectionFooterHeight = 0;
-  [self.tableView
-      setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
 
   // Configure the NavigationBar.
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
@@ -111,9 +120,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierDevicesToSend];
-  for (auto iter = _target_device_list.begin();
-       iter != _target_device_list.end(); ++iter) {
+  [model addSectionWithIdentifier:kSectionIdentifierEnumZero];
+  for (auto iter = _targetDeviceList.begin(); iter != _targetDeviceList.end();
+       ++iter) {
     int daysSinceLastUpdate =
         (base::Time::Now() - iter->last_updated_timestamp).InDays();
 
@@ -139,7 +148,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         deviceItem.iconImageName = @"send_tab_to_self_devices";
     }
 
-    if (iter == _target_device_list.begin()) {
+    if (iter == _targetDeviceList.begin()) {
       deviceItem.selected = YES;
       self.selectedItem = deviceItem;
     }
@@ -147,10 +156,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
     deviceItem.cacheGuid = base::SysUTF8ToNSString(iter->cache_guid);
 
     [model addItem:deviceItem
-        toSectionWithIdentifier:SectionIdentifierDevicesToSend];
+        toSectionWithIdentifier:kSectionIdentifierEnumZero];
   }
 
-  [model addSectionWithIdentifier:SectionIdentifierActionButton];
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
+    SendTabToSelfManageDevicesItem* manageDevicesItem =
+        [[SendTabToSelfManageDevicesItem alloc]
+            initWithType:ItemTypeManageDevices];
+    manageDevicesItem.accountAvatar = self.accountAvatar;
+    manageDevicesItem.accountEmail = self.accountEmail;
+    manageDevicesItem.delegate = self.delegate;
+    [model addItem:manageDevicesItem
+        toSectionWithIdentifier:kSectionIdentifierEnumZero];
+  }
+
   self.sendToDevice =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSend];
   self.sendToDevice.buttonText =
@@ -161,7 +181,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.sendToDevice.boldButtonText = NO;
   self.sendToDevice.accessibilityIdentifier = kSendTabToSelfModalSendButton;
   [model addItem:self.sendToDevice
-      toSectionWithIdentifier:SectionIdentifierActionButton];
+      toSectionWithIdentifier:kSectionIdentifierEnumZero];
 }
 
 #pragma mark - UITableViewDataSource
@@ -180,6 +200,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                        action:@selector(sendTabWhenPressed:)
                              forControlEvents:UIControlEventTouchUpInside];
   }
+
+  // Hide the separator for the last row ("manage devices" item) by maxing out
+  // the left margin. For other cells, use a standard value.
+  CGFloat separatorLeftMargin = itemType == ItemTypeManageDevices
+                                    ? self.tableView.bounds.size.width
+                                    : kTableViewHorizontalSpacing;
+  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
   return cell;
 }
 

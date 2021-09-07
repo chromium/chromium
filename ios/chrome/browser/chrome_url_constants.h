@@ -113,6 +113,9 @@ extern const char kGoogleHistoryURL[];
 // Google my account URL for the sign-in confirmation screen.
 extern const char kGoogleMyAccountURL[];
 
+// URL of the Google Account page showing the known user devices.
+extern const char kGoogleMyAccountDeviceActivityURL[];
+
 // URL used in referrer to signal that the navigation originates from Reading
 // List page and thus should not be considered for Most Visited.
 extern const char kReadingListReferrerURL[];

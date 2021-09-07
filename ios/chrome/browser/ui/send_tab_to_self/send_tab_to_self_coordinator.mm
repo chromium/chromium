@@ -9,12 +9,19 @@
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/send_tab_to_self/target_device_info.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
@@ -23,6 +30,7 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -58,10 +66,19 @@ NSString* const kActivityServicesSnackbarCategory =
   // This modal should not be launched in incognito mode where syncService is
   // undefined.
   DCHECK(syncService);
-
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  DCHECK(accountManagerService);
+  ChromeIdentity* account = accountManagerService->GetDefaultIdentity();
+  DCHECK(account) << "The user must be signed in to share a tab";
   self.sendTabToSelfViewController = [[SendTabToSelfTableViewController alloc]
-      initWithModel:syncService->GetSendTabToSelfModel()
-           delegate:self];
+      initWithDeviceList:syncService->GetSendTabToSelfModel()
+                             ->GetTargetDeviceInfoSortedList()
+                delegate:self
+           accountAvatar:accountManagerService->GetIdentityAvatarWithIdentity(
+                             account, IdentityAvatarSize::TableViewIcon)
+            accountEmail:account.userEmail];
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.sendTabToSelfViewController];
 
@@ -159,6 +176,14 @@ NSString* const kActivityServicesSnackbarCategory =
   [snackbarHandler showSnackbarMessage:message];
 
   [self stop];
+}
+
+- (void)openManageDevicesTab {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [handler openURLInNewTab:[OpenNewTabCommand
+                               commandWithURLFromChrome:
+                                   GURL(kGoogleMyAccountDeviceActivityURL)]];
 }
 
 @end

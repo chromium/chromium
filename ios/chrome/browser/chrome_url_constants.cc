@@ -122,6 +122,9 @@ const char kGoogleHistoryURL[] = "https://history.google.com";
 const char kGoogleMyAccountURL[] =
     "https://myaccount.google.com/privacy#activitycontrols";
 
+const char kGoogleMyAccountDeviceActivityURL[] =
+    "https://myaccount.google.com/device-activity";
+
 const char kReadingListReferrerURL[] =
     "chrome://do_not_consider_for_most_visited/reading_list";
 
