@@ -231,6 +231,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
   }
   if (err) {
     OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
+    *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
     return TrustStatus::UNSPECIFIED;
   }
   TrustStatus trust = IsTrustSettingsTrustedForPolicy(
@@ -326,6 +327,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
         continue;
       }
       OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
+      *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
       continue;
     }
     if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {

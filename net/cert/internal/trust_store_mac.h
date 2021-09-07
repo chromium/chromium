@@ -68,6 +68,10 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     // One of the trustSettings dictionaries contained a
     // kSecTrustSettingsAllowedError key.
     TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR = 1 << 10,
+
+    // SecTrustSettingsCopyTrustSettings returned a value other than
+    // errSecSuccess or errSecItemNotFound.
+    COPY_TRUST_SETTINGS_ERROR = 1 << 11,
   };
 
   enum class TrustImplType {

@@ -259,6 +259,7 @@ message TrialVerificationInfo {
     MAC_TRUST_SETTINGS_DICT_CONTAINS_RESULT = 9;
     MAC_TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE = 10;
     MAC_TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR = 11;
+    MAC_COPY_TRUST_SETTINGS_ERROR = 12;
   }
   // Debug flags from the trial verifier path building attempt, only populated
   // on reports from macOS.  Contains the union of flags from all the GetTrust
