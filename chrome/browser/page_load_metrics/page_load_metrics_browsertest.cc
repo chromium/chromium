@@ -3331,13 +3331,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
       internal::PageLoadBackForwardCacheEvent::kRestoreFromBackForwardCache, 0);
 }
 
-// TODO(crbug.com/1246479): Flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_EarlyHints DISABLED_EarlyHints
-#else
-#define MAYBE_EarlyHints EarlyHints
-#endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_EarlyHints) {
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, EarlyHints) {
   content::NavigationHandleTiming timing =
       NavigateWithEarlyHints(EarlyHintsPolicy::OneHint);
 
@@ -3358,7 +3352,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_EarlyHints) {
             timing.early_hints_for_first_request_time);
   // The non-informational response start time should be recorded separately.
   EXPECT_FALSE(timing.final_non_informational_response_start_time.is_null());
-  EXPECT_LT(timing.final_response_start_time,
+  EXPECT_LE(timing.final_response_start_time,
             timing.final_non_informational_response_start_time);
 
   // The timings of the Early Hints response should be recorded.
