@@ -17,6 +17,12 @@ bool ConvertMojoRoutine(ash::health::mojom::DiagnosticRoutineEnum in,
 chromeos::api::os_diagnostics::RoutineStatus ConvertRoutineStatus(
     ash::health::mojom::DiagnosticRoutineStatusEnum status);
 
+ash::health::mojom::DiagnosticRoutineCommandEnum ConvertRoutineCommand(
+    chromeos::api::os_diagnostics::RoutineCommandType commandType);
+
+chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
+    ash::health::mojom::DiagnosticRoutineUserMessageEnum userMessage);
+
 }  // namespace converters
 }  // namespace chromeos
 

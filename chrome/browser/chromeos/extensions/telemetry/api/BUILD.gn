@@ -57,6 +57,7 @@ source_set("browser_tests") {
 
   deps = [
     ":api",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/test:test_support",
     "//chromeos/dbus",
     "//chromeos/dbus/cros_healthd",
@@ -74,6 +75,7 @@ source_set("unit_tests") {
   deps = [
     ":api",
     "//ash/webui/telemetry_extension_ui/mojom",
+    "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chrome/test:test_support",
   ]

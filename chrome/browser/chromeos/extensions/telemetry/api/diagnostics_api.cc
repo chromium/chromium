@@ -53,6 +53,68 @@ void OsDiagnosticsGetAvailableRoutinesFunction::OnResult(
       api::os_diagnostics::GetAvailableRoutines::Results::Create(result)));
 }
 
+// OsDiagnosticsGetRoutineUpdateFunction ---------------------------------------
+
+OsDiagnosticsGetRoutineUpdateFunction::OsDiagnosticsGetRoutineUpdateFunction() =
+    default;
+OsDiagnosticsGetRoutineUpdateFunction::
+    ~OsDiagnosticsGetRoutineUpdateFunction() = default;
+
+ExtensionFunction::ResponseAction OsDiagnosticsGetRoutineUpdateFunction::Run() {
+  std::unique_ptr<api::os_diagnostics::GetRoutineUpdate::Params> params(
+      api::os_diagnostics::GetRoutineUpdate::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  auto cb =
+      base::BindOnce(&OsDiagnosticsGetRoutineUpdateFunction::OnResult, this);
+
+  remote_diagnostics_service_->GetRoutineUpdate(
+      params->request.id,
+      converters::ConvertRoutineCommand(params->request.command),
+      /* include_output= */ true, std::move(cb));
+
+  return RespondLater();
+}
+
+void OsDiagnosticsGetRoutineUpdateFunction::OnResult(
+    ash::health::mojom::RoutineUpdatePtr ptr) {
+  if (!ptr) {
+    // |ptr| should never be null, otherwise Mojo validation will fail.
+    // However it's safer to handle it in case of API changes.
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  api::os_diagnostics::GetRoutineUpdateResponse result;
+  result.progress_percent = ptr->progress_percent;
+
+  if (ptr->output.has_value() && !ptr->output.value().empty()) {
+    result.output =
+        std::make_unique<std::string>(std::move(ptr->output.value()));
+  }
+
+  switch (ptr->routine_update_union->which()) {
+    case ash::health::mojom::RoutineUpdateUnion::Tag::NONINTERACTIVE_UPDATE: {
+      auto& routine_update =
+          ptr->routine_update_union->get_noninteractive_update();
+      result.status = converters::ConvertRoutineStatus(routine_update->status);
+      result.status_message = std::move(routine_update->status_message);
+      break;
+    }
+    case ash::health::mojom::RoutineUpdateUnion::Tag::INTERACTIVE_UPDATE:
+      // Routine is waiting for user action. Set the status to waiting.
+      result.status = api::os_diagnostics::RoutineStatus::
+          ROUTINE_STATUS_WAITING_USER_ACTION;
+      result.status_message = "Waiting for user action. See user_message";
+      result.user_message = converters::ConvertRoutineUserMessage(
+          ptr->routine_update_union->get_interactive_update()->user_message);
+      break;
+  }
+
+  Respond(ArgumentList(
+      api::os_diagnostics::GetRoutineUpdate::Results::Create(result)));
+}
+
 // DiagnosticsApiRunRoutineFunctionBase ----------------------------------------
 
 DiagnosticsApiRunRoutineFunctionBase::DiagnosticsApiRunRoutineFunctionBase() =

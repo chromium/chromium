@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -46,6 +49,117 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       }
     ]);
   )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       GetRoutineUpdateNonInteractiveSuccess) {
+  // Configure FakeCrosHealthd to return noninteractive response for
+  // GetRoutineUpdate().
+  auto nonInteractiveRoutineUpdate =
+      cros_healthd::mojom::NonInteractiveRoutineUpdate::New();
+  nonInteractiveRoutineUpdate->status =
+      cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady;
+  nonInteractiveRoutineUpdate->status_message = "Routine ran by Google.";
+
+  auto routineUpdateUnion = cros_healthd::mojom::RoutineUpdateUnion::New();
+  routineUpdateUnion->set_noninteractive_update(
+      std::move(nonInteractiveRoutineUpdate));
+
+  auto response = cros_healthd::mojom::RoutineUpdate::New();
+  response->progress_percent = 87;
+  response->routine_update_union = std::move(routineUpdateUnion);
+
+  cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetGetRoutineUpdateResponseForTesting(response);
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getRoutineUpdate() {
+        const response =
+          await chrome.os.diagnostics.getRoutineUpdate(
+            {
+              id: 123456,
+              command: "status"
+            }
+          );
+        chrome.test.assertEq(
+          {
+            progress_percent: 87,
+            status: "ready",
+            status_message: "Routine ran by Google."
+          },
+          response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+
+  // Verify that CrosHealthd is called with the correct parameters.
+  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+      update_params =
+          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+
+  ASSERT_TRUE(update_params.has_value());
+  EXPECT_EQ(123456, update_params->id);
+  EXPECT_EQ(cros_healthd::mojom::DiagnosticRoutineCommandEnum::kGetStatus,
+            update_params->command);
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       GetRoutineUpdateInteractiveSuccess) {
+  // Configure FakeCrosHealthd to return interactive response for
+  // GetRoutineUpdate().
+  auto interactiveRoutineUpdate =
+      cros_healthd::mojom::InteractiveRoutineUpdate::New();
+  interactiveRoutineUpdate->user_message =
+      cros_healthd::mojom::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
+
+  auto routineUpdateUnion = cros_healthd::mojom::RoutineUpdateUnion::New();
+  routineUpdateUnion->set_interactive_update(
+      std::move(interactiveRoutineUpdate));
+
+  auto response = cros_healthd::mojom::RoutineUpdate::New();
+  response->progress_percent = 50;
+  response->output = ash::MojoUtils::CreateReadOnlySharedMemoryMojoHandle(
+      "routine is running...");
+  response->routine_update_union = std::move(routineUpdateUnion);
+
+  cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetGetRoutineUpdateResponseForTesting(response);
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getRoutineUpdate() {
+        const response =
+          await chrome.os.diagnostics.getRoutineUpdate(
+            {
+              id: 654321,
+              command: "remove",
+            }
+          );
+        chrome.test.assertEq(
+          {
+            progress_percent: 50,
+            output: "routine is running...",
+            status: "waiting_user_action",
+            status_message: "Waiting for user action. See user_message",
+            user_message: "unplug_ac_power"
+          },
+          response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+
+  // Verify that CrosHealthd is called with the correct parameters.
+  absl::optional<cros_healthd::FakeCrosHealthdService::RoutineUpdateParams>
+      update_params =
+          cros_healthd::FakeCrosHealthdClient::Get()->GetRoutineUpdateParams();
+
+  ASSERT_TRUE(update_params.has_value());
+  EXPECT_EQ(654321, update_params->id);
+  EXPECT_EQ(cros_healthd::mojom::DiagnosticRoutineCommandEnum::kRemove,
+            update_params->command);
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,

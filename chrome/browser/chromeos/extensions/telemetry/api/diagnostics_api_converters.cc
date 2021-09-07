@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api_converters.h"
 
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
+#include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 
 namespace chromeos {
@@ -12,11 +13,16 @@ namespace converters {
 
 namespace {
 
+using MojoRoutineCommandType = ash::health::mojom::DiagnosticRoutineCommandEnum;
 using MojoRoutineStatus = ::ash::health::mojom::DiagnosticRoutineStatusEnum;
 using MojoRoutineType = ::ash::health::mojom::DiagnosticRoutineEnum;
+using MojoRoutineUserMessageType =
+    ash::health::mojom::DiagnosticRoutineUserMessageEnum;
 
+using RoutineCommandType = ::chromeos::api::os_diagnostics::RoutineCommandType;
 using RoutineStatus = ::chromeos::api::os_diagnostics::RoutineStatus;
 using RoutineType = ::chromeos::api::os_diagnostics::RoutineType;
+using RoutineUserMessageType = ::chromeos::api::os_diagnostics::UserMessageType;
 
 }  // namespace
 
@@ -75,6 +81,35 @@ RoutineStatus ConvertRoutineStatus(MojoRoutineStatus status) {
       return RoutineStatus::ROUTINE_STATUS_UNSUPPORTED;
     case MojoRoutineStatus::kNotRun:
       return RoutineStatus::ROUTINE_STATUS_NOT_RUN;
+  }
+}
+
+MojoRoutineCommandType ConvertRoutineCommand(RoutineCommandType commandType) {
+  switch (commandType) {
+    case RoutineCommandType::ROUTINE_COMMAND_TYPE_CANCEL:
+      return MojoRoutineCommandType::kCancel;
+    case RoutineCommandType::ROUTINE_COMMAND_TYPE_REMOVE:
+      return MojoRoutineCommandType::kRemove;
+    case RoutineCommandType::ROUTINE_COMMAND_TYPE_RESUME:
+      return MojoRoutineCommandType::kContinue;
+    case RoutineCommandType::ROUTINE_COMMAND_TYPE_STATUS:
+      return MojoRoutineCommandType::kGetStatus;
+    case RoutineCommandType::ROUTINE_COMMAND_TYPE_NONE:
+      break;
+  }
+
+  NOTREACHED() << "Unknown command type: " << commandType;
+  return static_cast<MojoRoutineCommandType>(
+      static_cast<int>(MojoRoutineCommandType::kMaxValue) + 1);
+}
+
+RoutineUserMessageType ConvertRoutineUserMessage(
+    MojoRoutineUserMessageType userMessage) {
+  switch (userMessage) {
+    case MojoRoutineUserMessageType::kUnplugACPower:
+      return RoutineUserMessageType::USER_MESSAGE_TYPE_UNPLUG_AC_POWER;
+    case MojoRoutineUserMessageType::kPlugInACPower:
+      return RoutineUserMessageType::USER_MESSAGE_TYPE_PLUG_IN_AC_POWER;
   }
 }
 

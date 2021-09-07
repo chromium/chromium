@@ -33,8 +33,34 @@ namespace os.diagnostics {
     not_run
   };
 
+  enum RoutineCommandType {
+    cancel,
+    remove,
+    resume,
+    status
+  };
+
+  enum UserMessageType {
+    unplug_ac_power,
+    plug_in_ac_power
+  };
+
   dictionary GetAvailableRoutinesResponse {
     RoutineType[] routines;
+  };
+
+  dictionary GetRoutineUpdateRequest {
+    long id;
+    RoutineCommandType command;
+  };
+
+  dictionary GetRoutineUpdateResponse {
+    long progress_percent;
+    DOMString? output;
+    RoutineStatus status;
+    DOMString status_message;
+    // Returned for routines that require user action (e.g. unplug power cable).
+    UserMessageType? user_message;
   };
 
   dictionary RunBatteryChargeRoutineRequest {
@@ -61,11 +87,17 @@ namespace os.diagnostics {
 
   callback GetAvailableRoutinesCallback = void (GetAvailableRoutinesResponse response);
 
+  callback GetRoutineUpdateCallback = void (GetRoutineUpdateResponse response);
+
   callback RunRoutineCallback = void (RunRoutineResponse response);
 
   interface Functions {
     // Starts battery capacity routine.
     [supportsPromises] static void getAvailableRoutines(GetAvailableRoutinesCallback callback);
+
+    // Get routine update
+    [supportsPromises] static void getRoutineUpdate(GetRoutineUpdateRequest request,
+                                                    GetRoutineUpdateCallback callback);
 
     // Starts battery capacity routine.
     [supportsPromises] static void runBatteryCapacityRoutine(RunRoutineCallback callback);

@@ -53,6 +53,27 @@ class OsDiagnosticsGetAvailableRoutinesFunction
       const std::vector<ash::health::mojom::DiagnosticRoutineEnum>& routines);
 };
 
+class OsDiagnosticsGetRoutineUpdateFunction
+    : public DiagnosticsApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.getRoutineUpdate",
+                             OS_DIAGNOSTICS_GETROUTINEUPDATE)
+
+  OsDiagnosticsGetRoutineUpdateFunction();
+  OsDiagnosticsGetRoutineUpdateFunction(
+      const OsDiagnosticsGetRoutineUpdateFunction&) = delete;
+  OsDiagnosticsGetRoutineUpdateFunction& operator=(
+      const OsDiagnosticsGetRoutineUpdateFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsGetRoutineUpdateFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnResult(ash::health::mojom::RoutineUpdatePtr ptr);
+};
+
 class DiagnosticsApiRunRoutineFunctionBase : public DiagnosticsApiFunctionBase {
  public:
   DiagnosticsApiRunRoutineFunctionBase();

@@ -1649,6 +1649,7 @@ enum HistogramValue {
   SCRIPTING_UPDATECONTENTSCRIPTS = 1586,
   FILEMANAGERPRIVATE_OPENWINDOW = 1587,
   OS_DIAGNOSTICS_RUNMEMORYROUTINE = 1588,
+  OS_DIAGNOSTICS_GETROUTINEUPDATE = 1589,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

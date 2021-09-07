@@ -12,11 +12,16 @@ namespace converters {
 
 namespace {
 
+using MojoRoutineCommandType = ash::health::mojom::DiagnosticRoutineCommandEnum;
 using MojoRoutineStatus = ::ash::health::mojom::DiagnosticRoutineStatusEnum;
 using MojoRoutineType = ::ash::health::mojom::DiagnosticRoutineEnum;
+using MojoRoutineUserMessageType =
+    ash::health::mojom::DiagnosticRoutineUserMessageEnum;
 
+using RoutineCommandType = ::chromeos::api::os_diagnostics::RoutineCommandType;
 using RoutineStatus = ::chromeos::api::os_diagnostics::RoutineStatus;
 using RoutineType = ::chromeos::api::os_diagnostics::RoutineType;
+using RoutineUserMessageType = ::chromeos::api::os_diagnostics::UserMessageType;
 
 }  // namespace
 
@@ -128,6 +133,32 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertRoutineStatus) {
             RoutineStatus::ROUTINE_STATUS_UNSUPPORTED);
   EXPECT_EQ(ConvertRoutineStatus(MojoRoutineStatus::kNotRun),
             RoutineStatus::ROUTINE_STATUS_NOT_RUN);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineCommand) {
+  EXPECT_EQ(
+      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_CANCEL),
+      MojoRoutineCommandType::kCancel);
+  EXPECT_EQ(
+      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_REMOVE),
+      MojoRoutineCommandType::kRemove);
+  EXPECT_EQ(
+      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_RESUME),
+      MojoRoutineCommandType::kContinue);
+  EXPECT_EQ(
+      ConvertRoutineCommand(RoutineCommandType::ROUTINE_COMMAND_TYPE_STATUS),
+      MojoRoutineCommandType::kGetStatus);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineUserMessage) {
+  EXPECT_EQ(
+      ConvertRoutineUserMessage(MojoRoutineUserMessageType::kUnplugACPower),
+      RoutineUserMessageType::USER_MESSAGE_TYPE_UNPLUG_AC_POWER);
+  EXPECT_EQ(
+      ConvertRoutineUserMessage(MojoRoutineUserMessageType::kPlugInACPower),
+      RoutineUserMessageType::USER_MESSAGE_TYPE_PLUG_IN_AC_POWER);
 }
 
 }  // namespace converters
