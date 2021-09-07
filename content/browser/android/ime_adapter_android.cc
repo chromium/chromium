@@ -19,10 +19,10 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -473,10 +473,7 @@ RenderFrameHost* ImeAdapterAndroid::GetFocusedFrame() {
     return nullptr;
   RenderWidgetHostImpl* rwh =
       RenderWidgetHostImpl::From(rwhva_->GetRenderWidgetHost());
-  if (!rwh || !rwh->delegate())
-    return nullptr;
-
-  if (auto* contents = rwh->delegate()->GetAsWebContents())
+  if (auto* contents = WebContentsImpl::FromRenderWidgetHostImpl(rwh))
     return contents->GetFocusedFrame();
 
   return nullptr;

@@ -204,6 +204,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   static WebContents* FromFrameTreeNodeId(int frame_tree_node_id);
   static WebContentsImpl* FromOuterFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
+  static WebContentsImpl* FromRenderWidgetHostImpl(RenderWidgetHostImpl* rwh);
 
   // Complex initialization here. Specifically needed to avoid having
   // members call back into our virtual functions in the constructor.
@@ -924,7 +925,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderWidgetHostImpl* GetRenderWidgetHostWithPageFocus() override;
   void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) override;
-  WebContents* GetAsWebContents() override;
   void RendererUnresponsive(
       RenderWidgetHostImpl* render_widget_host,
       base::RepeatingClosure hang_monitor_restarter) override;

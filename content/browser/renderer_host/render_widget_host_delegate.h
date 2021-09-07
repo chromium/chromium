@@ -42,7 +42,6 @@ class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
-class WebContents;
 enum class KeyboardEventProcessingResult;
 struct NativeWebKeyboardEvent;
 
@@ -51,6 +50,12 @@ struct NativeWebKeyboardEvent;
 //
 //  An interface implemented by an object interested in knowing about the state
 //  of the RenderWidgetHost.
+//
+// Layering note: Generally, WebContentsImpl should be the only implementation
+// of this interface. In particular, WebContentsImpl::FromRenderWidgetHostImpl()
+// assumes this. This delegate interface is useful for renderer_host/ to make
+// requests to WebContentsImpl, as renderer_host/ is not permitted to know the
+// WebContents type (see //renderer_host/DEPS).
 class CONTENT_EXPORT RenderWidgetHostDelegate {
  public:
   // Functions for controlling the browser top controls slide behavior with page
@@ -248,7 +253,7 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   // Inner WebContents Helpers -------------------------------------------------
   //
-  // These functions are helpers in managing a hierharchy of WebContents
+  // These functions are helpers in managing a hierarchy of WebContents
   // involved in rendering inner WebContents.
 
   // Get the RenderWidgetHost that should receive page level focus events. This
@@ -262,10 +267,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // the focused WebContents.
   virtual void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) {}
-
-  // Return this object cast to a WebContents, if it is one. If the object is
-  // not a WebContents, returns nullptr.
-  virtual WebContents* GetAsWebContents();
 
   // Get the UKM source ID for current content. This is used for providing
   // data about the content to the URL-keyed metrics service.

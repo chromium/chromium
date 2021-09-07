@@ -110,6 +110,8 @@ class RenderWidgetHostOwnerDelegate;
 class SyntheticGestureController;
 class TimeoutMonitor;
 class TouchEmulator;
+// TODO(https://crbug.com/82582): Remove this layering violation.
+class WebContents;
 
 // This implements the RenderWidgetHost interface that is exposed to
 // embedders of content, and adds things only visible to content.

@@ -592,6 +592,13 @@ WebContents* WebContents::FromFrameTreeNodeId(int frame_tree_node_id) {
   return WebContentsImpl::FromFrameTreeNode(frame_tree_node);
 }
 
+WebContentsImpl* WebContentsImpl::FromRenderWidgetHostImpl(
+    RenderWidgetHostImpl* rwh) {
+  if (!rwh)
+    return nullptr;
+  return static_cast<WebContentsImpl*>(rwh->delegate());
+}
+
 void WebContents::SetScreenOrientationDelegate(
     ScreenOrientationDelegate* delegate) {
   ScreenOrientationProvider::SetDelegate(delegate);
@@ -3560,7 +3567,7 @@ void WebContentsImpl::LostMouseLock(RenderWidgetHostImpl* render_widget_host) {
                         "render_widget_host", render_widget_host);
   CHECK(mouse_lock_widget_);
 
-  if (mouse_lock_widget_->delegate()->GetAsWebContents() != this)
+  if (WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_) != this)
     return mouse_lock_widget_->delegate()->LostMouseLock(render_widget_host);
 
   mouse_lock_widget_->SendMouseLockLost();
@@ -3598,7 +3605,7 @@ bool WebContentsImpl::RequestKeyboardLock(
                         "render_widget_host", render_widget_host,
                         "esc_key_locked", esc_key_locked);
   DCHECK(render_widget_host);
-  if (render_widget_host->delegate()->GetAsWebContents() != this) {
+  if (WebContentsImpl::FromRenderWidgetHostImpl(render_widget_host) != this) {
     NOTREACHED();
     return false;
   }
@@ -4995,11 +5002,10 @@ bool WebContentsImpl::GotResponseToLockMouseRequest(
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::GotResponseToLockMouseRequest");
   if (mouse_lock_widget_) {
-    if (mouse_lock_widget_->delegate()->GetAsWebContents() != this) {
-      return mouse_lock_widget_->delegate()
-          ->GetAsWebContents()
-          ->GotResponseToLockMouseRequest(result);
-    }
+    auto* web_contents =
+        WebContentsImpl::FromRenderWidgetHostImpl(mouse_lock_widget_);
+    if (web_contents != this)
+      return web_contents->GotResponseToLockMouseRequest(result);
 
     if (mouse_lock_widget_->GotResponseToLockMouseRequest(result))
       return true;
@@ -5038,7 +5044,8 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   if (!keyboard_lock_widget_)
     return false;
 
-  if (keyboard_lock_widget_->delegate()->GetAsWebContents() != this) {
+  if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
+      this) {
     NOTREACHED();
     return false;
   }
@@ -7658,10 +7665,6 @@ void WebContentsImpl::FocusOwningWebContents(
        focused_widget->delegate() != render_widget_host->delegate())) {
     SetAsFocusedWebContentsIfNecessary();
   }
-}
-
-WebContents* WebContentsImpl::GetAsWebContents() {
-  return this;
 }
 
 void WebContentsImpl::OnIgnoredUIEvent() {

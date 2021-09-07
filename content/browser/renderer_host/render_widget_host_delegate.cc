@@ -129,10 +129,6 @@ ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {
   return ukm::kInvalidSourceId;
 }
 
-WebContents* RenderWidgetHostDelegate::GetAsWebContents() {
-  return nullptr;
-}
-
 bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {
   return false;
 }
