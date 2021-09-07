@@ -1127,7 +1127,7 @@
   {
     "name": "disable-idle-sockets-close-on-memory-pressure",
     "owners": [ "pmarko" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 100
   },
   {
     "name": "disable-javascript-harmony-shipping",
