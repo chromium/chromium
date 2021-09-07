@@ -8,14 +8,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 // Tracks when the Data Saver setting is enabled or disabled and notifies
 // content.
 class DataReductionProxyTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<DataReductionProxyTabHelper>,
+    : public content::WebContentsUserData<DataReductionProxyTabHelper>,
       public data_reduction_proxy::DataReductionProxySettingsObserver {
  public:
   ~DataReductionProxyTabHelper() override;
@@ -36,6 +34,8 @@ class DataReductionProxyTabHelper
   void UpdateWebkitPreferencesNow();
 
   data_reduction_proxy::DataReductionProxySettings* drp_settings_;
+
+  content::WebContents* const web_contents_;
 
   base::WeakPtrFactory<DataReductionProxyTabHelper> weak_factory_{this};
 
