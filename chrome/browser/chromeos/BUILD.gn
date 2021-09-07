@@ -59,6 +59,7 @@ source_set("chromeos") {
     "//ui/accessibility/mojom",
     "//ui/chromeos/resources",
     "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/resources",
     "//ui/strings",
   ]

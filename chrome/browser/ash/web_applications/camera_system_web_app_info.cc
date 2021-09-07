@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -41,7 +42,9 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {
            IDR_CHROMEOS_CAMERA_APP_IMAGES_CAMERA_APP_ICONS_192_PNG},
       },
       *info);
-  info->theme_color = 0xff000000;
+  info->theme_color = cros_styles::ResolveColor(
+      cros_styles::ColorName::kGoogleGrey900, /*is_dark_mode=*/true,
+      /*use_debug_colors=*/false);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
