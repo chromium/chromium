@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
 <translation id="189358972401248634">Други јазици</translation>
+<translation id="1910950723001426294">Списокот со опции за споделување е затворен.</translation>
 <translation id="1918175104945982129">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на половина екран</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
 <translation id="1922362554271624559">Предложени јазици</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">Најавете се на сметката на Google за да ги проверите лозинките</translation>
 <translation id="2278052315791335171">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплата</translation>
+<translation id="228704530595896923">Список со опции за споделување.</translation>
 <translation id="230115972905494466">Не се најдени компатибилни уреди</translation>
 <translation id="230155349749732438">За користење на поставкава, мора да е вклучено <ph name="BEGIN_LINK" />Подобрете ги пребарувањата и прелистувањето<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Допрете за да остварите повик</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4137746084635924146">Тековен јазик на уред</translation>
 <translation id="4141536112466364990">Дознајте повеќе за Chrome</translation>
 <translation id="4149994727733219643">Поедноставен приказ за веб-страници</translation>
+<translation id="4162867837470729563">Список со опции за споделување отворен на целосен екран.</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4170011742729630528">Услугата не е достапна, обидете се повторно подоцна.</translation>
 <translation id="4179980317383591987">Искористено: <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6203593061661911168">Преземањето ќе започне кога ќе бидете на Wi-Fi</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
+<translation id="6212786426849242805">Дозволете Google да зема предвид и дел од текстот на страницата</translation>
 <translation id="6221633008163990886">Отклучете за да ги извезете лозинките</translation>
 <translation id="6232535412751077445">Овозможувањето на функцијата „Не ме следи“ значи дека вашиот сообраќај на прелистување ќе вклучува и барање. Ефектите ќе зависат од тоа дали веб-сајтот ќе реагира на барањето и како тоа ќе се толкува.
 
@@ -895,6 +899,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6459045781120991510">Анкети</translation>
 <translation id="6461962085415701688">Не може да се отвори датотеката</translation>
 <translation id="6464977750820128603">Може да ги гледате сајтовите што ги посетувате во Chrome и да поставувате тајмери за нив.\n\nGoogle добива информации за тоа на кои сајтови поставувате тајмери и колку време поминувате на нив. Овие информации се користат за подобрување на „Дигиталната благосостојба“.</translation>
+<translation id="6473086018775716761">Список со опции за споделување отворен на половина екран.</translation>
 <translation id="6475951671322991020">Преземи видео</translation>
 <translation id="6477928892249167417">Изгледа дека сајтовиве ви се важни:</translation>
 <translation id="6482749332252372425">Преземањето на <ph name="FILE_NAME" /> не успеа поради недостаток на меморија.</translation>
@@ -1131,6 +1136,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7857691613771368249">Прашувај кога да се зачувуваат датотеки</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
+<translation id="78707286264420418">На <ph name="PRODUCT_NAME" /> му е потребна дозвола за „Уреди во близина“ за да се поврзе со вашиот уред</translation>
 <translation id="7875915731392087153">Создајте е-пошта</translation>
 <translation id="7876243839304621966">Отстрани ги сите</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрочитана страница}one{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитана страница}other{Имате <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрочитани страници}}</translation>
@@ -1192,6 +1198,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8186512483418048923">Преостануваат <ph name="FILES" /> датотеки</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Остана 1 ден</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="8209050860603202033">отвори слика</translation>
 <translation id="8216351761227087153">Гледај</translation>
@@ -1210,6 +1217,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="829672787777123339">Се поврзуваме со уредот…</translation>
 <translation id="8310344678080805313">Стандардни картички</translation>
 <translation id="831192587911042850">Го додава тековниот веб-сајт на списокот со веб-сајтови што ги следите.</translation>
+<translation id="8319544457245040955">Дознајте за тема без да ја напуштите страницата. Изберете еден или повеќе зборови на страницата за да ги пребарате. За да го измените пребарувањето, погледнете ги резултатите и отворете ги во нова картичка.</translation>
 <translation id="8327155640814342956">За најдобро искуство при прелистувањето, отворете го за да го ажурирате Chrome</translation>
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8349013245300336738">Подреди по количина на искористен сообраќај</translation>

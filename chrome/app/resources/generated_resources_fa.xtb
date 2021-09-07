@@ -215,6 +215,7 @@
 <translation id="1218015446623563536">‏حذف Linux</translation>
 <translation id="1218839827383191197">‏<ph name="BEGIN_PARAGRAPH1" />خدمات مکان Google از منابعی مانند Wi-Fi، شبکه‌های تلفن همراه و حسگرها برای کمک به تخمین مکان این دستگاه استفاده می‌کند.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />با خاموش کردن تنظیم اصلی «مکان» در این دستگاه می‌توانید «مکان» را خاموش کنید. همچنین می‌توانید در تنظیمات مکان، استفاده از Wi-Fi، شبکه‌های تلفن همراه و حسگرها را برای مکان خاموش کنید.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219115285613502247">‏فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد. بارگیری بعداً انجام خواهد شد. تا آن موقع، گفتار برای پردازش به Google ارسال می‌شود.</translation>
 <translation id="122082903575839559">الگوریتم امضای گواهی</translation>
 <translation id="1221024147024329929">‏PKCS #1 MD2 با رمزگذاری RSA</translation>
 <translation id="1221825588892235038">فقط انتخاب</translation>
@@ -571,6 +572,7 @@
 <translation id="1602085790802918092">درحال شروع دستگاه مجازی</translation>
 <translation id="1603914832182249871">(ناشناس)</translation>
 <translation id="1604432177629086300">چاپ نشد چاپگر را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="1605744057217831567">دیدن همه داده‌ها و اجازه‌های سایت</translation>
 <translation id="1606077700029460857">تغییر تنظیمات موشواره</translation>
 <translation id="1607139524282324606">پاک کردن ورودی</translation>
 <translation id="1607499585984539560">کاربر به دامنه وابسته نیست</translation>
@@ -1344,6 +1346,7 @@
 <translation id="2364498172489649528">موفق</translation>
 <translation id="2365507699358342471">این سایت می‌تواند به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند.</translation>
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
+<translation id="236939127352773362">وقتی دستگاه‌ها در حال هم‌رسانی با اطراف باشند</translation>
 <translation id="2371076942591664043">پس از &amp;تکمیل باز شود</translation>
 <translation id="2373666622366160481">متناسب با اندازه کاغذ</translation>
 <translation id="2375406435414127095">اتصال به تلفن</translation>
@@ -2768,6 +2771,7 @@
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3882165008614329320">ویدیوی موجود از دوربین یا فایل</translation>
+<translation id="3883306461188700142">‏با صدایتان تایپ کنید. کلیدهای «جستجو + D» را فشار دهید، سپس صحبت کنید.</translation>
 <translation id="3884152383786131369">محتوای وبی که به چند زبان دردسترس است از اولین زبان پشتیبانی‌شده در این فهرست استفاده خواهد کرد. این اولویت‌ها با تنظیمات مرورگرتان همگام‌سازی می‌شود. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">به‌روزرسانی‌ها را سرپرستتان مدیریت می‌کند</translation>
 <translation id="3886446263141354045">درخواست شما برای دسترسی به این سایت برای <ph name="NAME" /> ارسال شده است</translation>
@@ -4994,6 +4998,7 @@
 <translation id="6344576354370880196">چاپگرهای ذخیره‌شده</translation>
 <translation id="6345418402353744910">وارد کردن نام کاربری و گذرواژه برای پراکسی <ph name="PROXY" /> الزامی است تا سرپرست بتواند شبکه‌تان را پیکربندی کند</translation>
 <translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
+<translation id="6347010704471250799">نمایش اعلان</translation>
 <translation id="6349101878882523185">نصب <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">‏منحنی بیضوی SECG مدل secp256r1 (به‌نام ANSI X9.62 prime256v1، ‏NIST P-256)</translation>
 <translation id="6355789186038748882">مرورگر آزمایشی (با کیفیت آلفا)! برخی از ویژگی‌ها ناقص هستند یا وجود ندارند. مشکلات را از این طریق گزارش کنید: «راهنمایی &gt; گزارش مشکل…».</translation>
@@ -5321,6 +5326,7 @@
 <translation id="6721972322305477112">&amp;فایل</translation>
 <translation id="672208878794563299">دفعه بعدی، این سایت دوباره سؤال می‌پرسد.</translation>
 <translation id="6723661294526996303">وارد کردن نشانک‌ها و تنظیمات...</translation>
+<translation id="6723839827191551955">کنترل رسانه‌ای که ارسال می‌کنید</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6725073593266469338">سرویس میانای کاربر</translation>
 <translation id="6725206449694821596">‏پروتکل چاپ اینترنتی (IPP)</translation>
@@ -6734,6 +6740,7 @@
 <translation id="819137301779081601">برای شروع تخصیص، کلید جدیدی را فشار دهید
 برای برداشتن تخصیص، کلید اختصاص‌یافته را فشار دهید</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را هم‌رسانی کند</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">اندازه روی دیسک</translation>
 <translation id="8198323535106903877"><ph name="NUMBER_OF_APPS" /> برنامه را برایتان نصب می‌کنیم</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>

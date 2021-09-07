@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
+<translation id="3156846309055100599">Се скенира страницата <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4244962993387259361">Потребен ви е слободен капацитет од најмалку 500 MB за да извршите тестирање на меморијата. За да ослободите простор, одете во „Поставки &gt; Управување со капацитетот“.</translation>
+<translation id="4258281355379922695">Латенција на HTTP</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
+<translation id="463791356324567266">Се откажува скенирањето…</translation>
 <translation id="4646949265910132906">Безбедна Wi-Fi врска</translation>
 <translation id="4654549501020883054">Менувај секојдневно</translation>
 <translation id="4665014895760275686">Производител</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Уште {0} обид}one{Уште {0} обид}other{Уште {0} обиди}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Скенирањето не можеше да се заврши</translation>
+<translation id="5502931783115429516">Android не функционира</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Се активира</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@
 <translation id="5701381305118179107">Центар</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> од <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Состојба на порталот</translation>
+<translation id="5784136236926853061">Висока латенција на HTTP</translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5849570051105887917">Код на оператор на почетна страница</translation>
@@ -349,6 +354,7 @@
 <translation id="7343649194310845056">Мрежни уреди</translation>
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
@@ -356,6 +362,7 @@
 <translation id="7490813197707563893">MAC-адреса</translation>
 <translation id="7497215489070763236">Сертификат ЦА на сервер</translation>
 <translation id="7502658306369382406">IPv6-адреса</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Дијагностички рутини</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4563926062592110512">ไคลเอ็นต์ที่ยกเลิกการเชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ได้รับการกำหนดค่าไม่ถูกต้อง โปรดเลือกเว็บเบราว์เซอร์เริ่มต้นรายการอื่นแล้วเปิดใช้การส่งต่อ URL อีกครั้ง</translation>
 <translation id="4635770493235256822">อุปกรณ์ระยะไกล</translation>
 <translation id="4660011489602794167">แสดงแป้นพิมพ์</translation>
 <translation id="4703799847237267011">เซสชัน Chromoting ของคุณได้สิ้นสุดลงแล้ว</translation>

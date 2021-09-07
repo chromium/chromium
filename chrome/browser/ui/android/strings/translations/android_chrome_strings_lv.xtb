@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome versija ir novecojusi.</translation>
 <translation id="1883903952484604915">Mani faili</translation>
 <translation id="189358972401248634">Citas valodas</translation>
+<translation id="1910950723001426294">Kopīgošanas opciju saraksts ir aizvērts.</translation>
 <translation id="1918175104945982129">Piekrišanas lietotāja saskarne Asistenta izmantošanai meklēšanā ar balsi (atvērta pusekrāna augstumā)</translation>
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1922362554271624559">Ieteiktās valodas</translation>
@@ -193,6 +194,7 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Norēķinu adrese</translation>
+<translation id="228704530595896923">Kopīgošanas opciju saraksts.</translation>
 <translation id="230115972905494466">Netika atrastas saderīgas ierīces.</translation>
 <translation id="230155349749732438">Lai izmantotu šo iestatījumu, jāieslēdz opcija <ph name="BEGIN_LINK" />Uzlabot meklēšanu un pārlūkošanu<ph name="END_LINK" />.</translation>
 <translation id="2318045970523081853">Pieskarieties, lai zvanītu</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox izstrāde joprojām tiek aktīvi turpināta, un šī tehnoloģi
 <translation id="4137746084635924146">Pašreizējā ierīces valoda</translation>
 <translation id="4141536112466364990">Chrome pamācības</translation>
 <translation id="4149994727733219643">Vienkāršots tīmekļa lapu skatījums</translation>
+<translation id="4162867837470729563">Kopīgošanas opciju saraksts ir atvērts pilna ekrāna augstumā.</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
 <translation id="4170011742729630528">Pakalpojums nav pieejams. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4179980317383591987">Izmantots: <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@ Konfidencialitātes smilškastes izmēģinājuma versijas joprojām tiek izstrā
 <translation id="6203593061661911168">Lejupielāde tiks sākta, kad būs izveidots savienojums ar Wi-Fi.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
+<translation id="6212786426849242805">Ļaut Google sistēmām izmantot arī lapas tekstu</translation>
 <translation id="6221633008163990886">Atbloķējiet, lai eksportētu paroles.</translation>
 <translation id="6232535412751077445">Iespējojot funkciju “Nesekot”, jūsu pārlūkošanas datplūsmā tiks iekļauts pieprasījums. Rezultāts būs atkarīgs no tā, vai vietne nodrošinās atbildi uz pieprasījumu un kā pieprasījums tiks interpretēts.
 
@@ -895,6 +899,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6459045781120991510">Aptaujas</translation>
 <translation id="6461962085415701688">Nevar atvērt failu.</translation>
 <translation id="6464977750820128603">Varat skatīt pārlūkā Chrome apmeklētās vietnes un iestatīt tām taimerus.\n\nGoogle saņem informāciju par vietnēm, kurām iestatāt taimerus, kā arī šo vietņu apmeklēšanas ilgumu. Šī informācija tiek izmantota, lai uzlabotu Digitālo labjutību.</translation>
+<translation id="6473086018775716761">Kopīgošanas opciju saraksts ir atvērts pusekrāna augstumā.</translation>
 <translation id="6475951671322991020">Lejupielādēt videoklipu</translation>
 <translation id="6477928892249167417">Šķiet, ka šīs vietnes jums ir svarīgas:</translation>
 <translation id="6482749332252372425">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo krātuvē nav pietiekami daudz vietas.</translation>
@@ -1131,6 +1136,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7857691613771368249">Vaicāt, kad saglabāt failus</translation>
 <translation id="7859988229622350291">Nekad netulkot</translation>
+<translation id="78707286264420418">Pārlūkam <ph name="PRODUCT_NAME" /> ir nepieciešama atļauja “Tuvējās ierīces”, lai varētu izveidot savienojumu ar jūsu ierīci.</translation>
 <translation id="7875915731392087153">Izveidojiet e-pasta ziņojumu.</translation>
 <translation id="7876243839304621966">Noņemt visu</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Jums ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> nelasīta lapa.}zero{Jums ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nelasītas lapas.}one{Jums ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nelasīta lapa.}other{Jums ir <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> nelasītas lapas.}}</translation>
@@ -1192,6 +1198,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8186512483418048923">Atlikuši faili: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Konfidencialitātes smilškaste</translation>
 <translation id="8190358571722158785">Atlikusi 1 diena</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jūsu ierīces<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8209050860603202033">Atvērt attēlu</translation>
 <translation id="8216351761227087153">Skatīties</translation>
@@ -1210,6 +1217,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="829672787777123339">Notiek savienojuma izveide ar jūsu ierīci…</translation>
 <translation id="8310344678080805313">Standarta cilnes</translation>
 <translation id="831192587911042850">Pašlaik atvērtā tīmekļa vietne tiek pievienota to tīmekļa vietņu sarakstam, kurām sekojat.</translation>
+<translation id="8319544457245040955">Uzziniet vairāk par kādu tēmu, neaizverot lapu. Atlasiet vienu vai vairākus vārdus lapā, lai tos meklētu. Lai rediģētu savu meklēšanas vaicājumu, skatiet rezultātus un atveriet tos jaunā cilnē.</translation>
 <translation id="8327155640814342956">Atveriet, lai uzlabotu pārlūkošanas ērtības, atjauninot pārlūku Chrome</translation>
 <translation id="834313815369870491">Nekad netulkot vietnes</translation>
 <translation id="8349013245300336738">Kārtot pēc izmantoto datu apjoma</translation>

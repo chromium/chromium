@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome er utdatert</translation>
 <translation id="1883903952484604915">Mine filer</translation>
 <translation id="189358972401248634">Andre språk</translation>
+<translation id="1910950723001426294">Listen over delingsalternativer er lukket.</translation>
 <translation id="1918175104945982129">UI for samtykke til talesøk med assistenten er åpnet i halv høyde</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1922362554271624559">Foreslåtte språk</translation>
@@ -193,6 +194,7 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2276696007612801991">Logg på Google-kontoen din for å sjekke passordene dine</translation>
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
+<translation id="228704530595896923">Liste over delingsalternativer.</translation>
 <translation id="230115972905494466">Fant ingen kompatible enheter</translation>
 <translation id="230155349749732438">For at denne innstillingen skal kunne brukes, må <ph name="BEGIN_LINK" />Gjør søking og surfing bedre<ph name="END_LINK" /> være påslått</translation>
 <translation id="2318045970523081853">Trykk for å ringe</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
 <translation id="4141536112466364990">Lær deg Chrome</translation>
 <translation id="4149994727733219643">Forenklet visning av nettsider</translation>
+<translation id="4162867837470729563">Listen over delingsalternativer er åpnet i full høyde.</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> brukt</translation>
@@ -846,6 +849,7 @@ Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjenge
 <translation id="6203593061661911168">Nedlastingen starter når du er tilkoblet Wi-Fi</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
+<translation id="6212786426849242805">La Google også vurdere noe av teksten på siden</translation>
 <translation id="6221633008163990886">Lås opp for å eksportere passordene dine</translation>
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
@@ -895,6 +899,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6459045781120991510">Undersøkelser</translation>
 <translation id="6461962085415701688">Kan ikke åpne filen</translation>
 <translation id="6464977750820128603">Du kan se nettstedene du besøker i Chrome, og angi tidtakere for dem.\n\nGoogle får informasjon om nettstedene du angir tidtakere for, og hvor lenge du besøker dem. Denne informasjonen brukes til å gjøre Digital balanse bedre.</translation>
+<translation id="6473086018775716761">Listen over delingsalternativer er åpnet i halv høyde.</translation>
 <translation id="6475951671322991020">Last ned videoen</translation>
 <translation id="6477928892249167417">Disse nettstedene ser ut til å være viktige for deg:</translation>
 <translation id="6482749332252372425">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av mangel på lagringsplass.</translation>
@@ -1131,6 +1136,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7857691613771368249">Spør når filer skal lagres</translation>
 <translation id="7859988229622350291">Oversett aldri</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> trenger tillatelsen Enheter i nærheten for å kunne koble til enheten din</translation>
 <translation id="7875915731392087153">Opprett e-post</translation>
 <translation id="7876243839304621966">Fjern alle</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ulest side}other{Du har <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> uleste sider}}</translation>
@@ -1192,6 +1198,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8186512483418048923"><ph name="FILES" /> filer gjenstår</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 dag igjen</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Enhetene dine<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8209050860603202033">Åpne bildet</translation>
 <translation id="8216351761227087153">Se</translation>
@@ -1210,6 +1217,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="829672787777123339">Kobler til enheten din …</translation>
 <translation id="8310344678080805313">Standardfaner</translation>
 <translation id="831192587911042850">Legger til det nåværende nettstedet på listen over nettsteder du følger.</translation>
+<translation id="8319544457245040955">Finn ut mer om emner uten å forlate siden. Merk ett eller flere ord på siden for å søke etter dem. For å redigere søket, se på resultatene og åpne dem i en ny fane.</translation>
 <translation id="8327155640814342956">For å få den beste surfeopplevelsen, åpne for å oppdatere Chrome</translation>
 <translation id="834313815369870491">Oversett aldri nettsteder</translation>
 <translation id="8349013245300336738">Sortér etter mengden data som er brukt</translation>

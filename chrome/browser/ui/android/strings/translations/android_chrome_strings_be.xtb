@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
+<translation id="1910950723001426294">Спіс варыянтаў абагульвання закрыты.</translation>
 <translation id="1918175104945982129">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку адкрыта на палову экрана</translation>
 <translation id="1919130412786645364">Дазволіць уваход ва ўліковы запіс Chrome</translation>
 <translation id="1922362554271624559">Прапанаваныя мовы</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">Для праверкі пароляў увайдзіце ва Уліковы запіс Google</translation>
 <translation id="2278052315791335171">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="SITE" /> не выдаліцца</translation>
 <translation id="2286841657746966508">Адрас для выстаўлення рахункаў</translation>
+<translation id="228704530595896923">Спіс варыянтаў абагульвання.</translation>
 <translation id="230115972905494466">Сумяшчальныя прылады не знойдзены</translation>
 <translation id="230155349749732438">Для выкарыстання гэтай налады трэба ўключыць параметр <ph name="BEGIN_LINK" />Паскорыць пошук і прагляд<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4137746084635924146">Бягучая мова прылады</translation>
 <translation id="4141536112466364990">Даведайцеся больш пра работу ў Chrome</translation>
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
+<translation id="4162867837470729563">Спіс варыянтаў абагульвання разгорнуты на ўвесь экран.</translation>
 <translation id="4165986682804962316">Налады сайта</translation>
 <translation id="4170011742729630528">Сэрвіс недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="4179980317383591987">Выкарыстана: <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6203593061661911168">Спампоўванне пачнецца пры падключэнні праз Wi-Fi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> – гэта не вы?</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
+<translation id="6212786426849242805">Дазволіць Google таксама ўлічваць кантэкст на старонцы</translation>
 <translation id="6221633008163990886">Каб экспартаваць паролі, трэба зняць блакіроўку</translation>
 <translation id="6232535412751077445">Калі функцыя "Не адсочваць" уключана, пры праглядзе старонак у інтэрнэце браўзер будзе адпраўляць адпаведны запыт. Сайты могуць апрацоўваць і інтэрпрэтаваць гэты запыт па-рознаму.
 
@@ -895,6 +899,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="6459045781120991510">Апытанні</translation>
 <translation id="6461962085415701688">Не ўдалося адкрыць файл</translation>
 <translation id="6464977750820128603">Вы можаце бачыць сайты, якія наведвалі ў Chrome, і задаваць для іх таймеры.\n\nGoogle атрымлівае інфармацыю пра сайты, для якіх вы задалі таймеры, і працягласць іх наведвання. Гэта інфармацыя выкарыстоўваецца для паляпшэння якасці лічбавага камфорту.</translation>
+<translation id="6473086018775716761">Спіс варыянтаў абагульвання разгорнуты на палову экрана.</translation>
 <translation id="6475951671322991020">Спампаваць відэа</translation>
 <translation id="6477928892249167417">Гэтыя сайты могуць быць важнымі для вас:</translation>
 <translation id="6482749332252372425">Не ўдалося спампаваць файл <ph name="FILE_NAME" /> з-за недахопу месца ў сховішчы.</translation>
@@ -1131,6 +1136,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7857691613771368249">Пытацца, калі захоўваць файлы</translation>
 <translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
+<translation id="78707286264420418">Каб браўзер <ph name="PRODUCT_NAME" /> мог падключыцца да прылады, трэба ўключыць дазвол "Прылады паблізу" ў праграме "Налады"</translation>
 <translation id="7875915731392087153">Стварыць ліст электроннай пошты</translation>
 <translation id="7876243839304621966">Выдаліць усе</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> непрачытаная старонка}one{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаная старонка}few{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаныя старонкі}many{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытаных старонак}other{У вас <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> непрачытанай старонкі}}</translation>
@@ -1192,6 +1198,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>
 <translation id="8216351761227087153">Глядзець</translation>
@@ -1210,6 +1217,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="829672787777123339">Ідзе падключэнне да вашай прылады…</translation>
 <translation id="8310344678080805313">Стандартныя ўкладкі</translation>
 <translation id="831192587911042850">Дадае бягучы вэб-сайт у спіс падпісак.</translation>
+<translation id="8319544457245040955">Шукайце дадатковую інфармацыю на розныя тэмы, не пакідаючы старонку. Выберыце для пошуку адно або некалькі слоў на старонцы. Калі вам трэба змяніць пошукавы запыт, адкрыйце вынікі ў новай укладцы.</translation>
 <translation id="8327155640814342956">Каб карыстацца найлепшымі функцыямі, адкрыйце і абнавіце Chrome</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>

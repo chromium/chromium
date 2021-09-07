@@ -931,6 +931,7 @@
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>
+<translation id="965477715979482472">영어(남아프리카공화국)</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="988685240266037636">이름이 '<ph name="FILE_NAME" />'인 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
 <translation id="992401651319295351">기회가 <ph name="RETRIES" />번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>

@@ -931,6 +931,7 @@
 <translation id="943972244133411984">แก้ไขโดย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
+<translation id="965477715979482472">อังกฤษ (แอฟริกาใต้)</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>
 <translation id="992401651319295351">ลองได้อีก <ph name="RETRIES" /> ครั้ง คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>

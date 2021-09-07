@@ -79,6 +79,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4512952200932940229">Bản quyền 2021 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="4513946894732546136">Phản hồi</translation>
 <translation id="4563926062592110512">Ứng dụng khách đã ngắt kết nối: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> không được thiết lập chính xác. Vui lòng chọn một trình duyệt web mặc định khác, sau đó bật lại tính năng chuyển tiếp URL.</translation>
 <translation id="4635770493235256822">Thiết bị từ xa</translation>
 <translation id="4660011489602794167">Hiện bàn phím</translation>
 <translation id="4703799847237267011">Phiên Kết nối từ xa trên Chrome của bạn đã kết thúc.</translation>

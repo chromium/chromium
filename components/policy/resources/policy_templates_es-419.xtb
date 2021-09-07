@@ -5204,7 +5204,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7375785904116479354">Si habilitas la política, se importará el motor de búsqueda predeterminado del navegador predeterminado anterior en la primera ejecución. Si inhabilitas la política o no la estableces, no se importará el motor de búsqueda predeterminado en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente al motor de búsqueda predeterminado estará marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="7382191643394429934">Permitir la impresión con y sin gráficos de fondo</translation>
 <translation id="7389872682701720082">Si habilitas esta opción, se ejecutarán siempre los complementos actualizados.
 
       Si no se habilita o no se configura esta opción, se solicitará permiso a los usuarios para ejecutar complementos que requieran autorización (estos complementos pueden comprometer la seguridad).</translation>

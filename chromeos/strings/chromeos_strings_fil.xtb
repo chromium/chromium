@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Data sa mobile</translation>
+<translation id="3156846309055100599">Sina-scan ang page <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">May na-detect na captive portal</translation>
 <translation id="3188257591659621405">Aking mga file</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4244962993387259361">Kailangan mo ng hindi bababa sa bakanteng 500 MB para magpatakbo ng pagsusuri sa Memory. Para magbakante ng espasyo, pumunta sa Mga Setting &gt; Pamamahala sa storage.</translation>
+<translation id="4258281355379922695">Latency ng HTTP</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sa <ph name="TOTAL_PAGE_NUMBER" />. Pindutin ang enter para kanselahin ang pag-print.</translation>
+<translation id="463791356324567266">Kinakansela ang pag-scan...</translation>
 <translation id="4646949265910132906">Secure na Koneksyon sa WiFi</translation>
 <translation id="4654549501020883054">Baguhin Araw-araw</translation>
 <translation id="4665014895760275686">Manufacturer</translation>
@@ -251,6 +254,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} pagsubok na lang ang natitira}one{{0} pagsubok na lang ang natitira}other{{0} na pagsubok na lang ang natitira}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Hindi makumpleto ang pag-scan</translation>
+<translation id="5502931783115429516">Hindi tumatakbo ang Android</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Ina-activate</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5701381305118179107">Gitna</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Status ng Portal</translation>
+<translation id="5784136236926853061">Mataas na latency ng HTTP</translation>
 <translation id="5832805196449965646">Magdagdag ng Tao</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5849570051105887917">Home provider code</translation>
@@ -349,6 +354,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
@@ -356,6 +362,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7490813197707563893">MAC address</translation>
 <translation id="7497215489070763236">CA certificate ng server</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Mga Diagnostic na Routine</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1883903952484604915">내 파일</translation>
 <translation id="189358972401248634">다른 언어</translation>
+<translation id="1910950723001426294">공유 옵션 목록이 닫혔습니다.</translation>
 <translation id="1918175104945982129">어시스턴트 음성 검색 동의 UI가 절반 높이로 열림</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1922362554271624559">추천 언어</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="2286841657746966508">결제주소</translation>
+<translation id="228704530595896923">공유 옵션 목록입니다.</translation>
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="230155349749732438">이 설정을 사용하려면 <ph name="BEGIN_LINK" />검색 및 탐색 기능 개선<ph name="END_LINK" />이 사용 설정되어 있어야 합니다.</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">기기의 현재 언어</translation>
 <translation id="4141536112466364990">Chrome 배우기</translation>
 <translation id="4149994727733219643">웹페이지 간단히 보기</translation>
+<translation id="4162867837470729563">공유 옵션 목록이 전체 높이로 열렸습니다.</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
 <translation id="4170011742729630528">서비스를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> 사용됨</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">Wi-Fi에 연결되면 다운로드가 시작됩니다.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
+<translation id="6212786426849242805">Google에서 페이지 텍스트 중 일부를 고려하도록 허용</translation>
 <translation id="6221633008163990886">비밀번호를 내보내려면 잠금 해제하세요</translation>
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">설문조사</translation>
 <translation id="6461962085415701688">파일을 열 수 없습니다</translation>
 <translation id="6464977750820128603">Chrome에서 내가 방문한 사이트를 보고 사이트에 타이머를 설정할 수 있습니다.\n\nGoogle에서는 타이머가 설정된 사이트와 사이트 방문 시간 정보를 수집합니다. 이 정보는 디지털 웰빙을 개선하는 데 사용됩니다.</translation>
+<translation id="6473086018775716761">공유 옵션 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6475951671322991020">동영상 다운로드</translation>
 <translation id="6477928892249167417">다음 사이트는 중요할 수도 있습니다.</translation>
 <translation id="6482749332252372425">저장공간이 부족하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">활동</translation>
 <translation id="7857691613771368249">파일을 언제 저장할지 확인</translation>
 <translation id="7859988229622350291">번역 안 함</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" />에서 기기에 연결하려면 근처 기기 권한이 필요합니다.</translation>
 <translation id="7875915731392087153">이메일 만들기</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />개 있습니다.}other{읽지 않은 페이지가 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" />개 있습니다.}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8189750580333936930">개인정보 보호 샌드박스</translation>
 <translation id="8190358571722158785">1일 남음</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8209050860603202033">이미지 열기</translation>
 <translation id="8216351761227087153">보기</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">기기에 연결 중…</translation>
 <translation id="8310344678080805313">일반 탭</translation>
 <translation id="831192587911042850">팔로우하는 웹사이트 목록에 현재 웹사이트를 추가하세요.</translation>
+<translation id="8319544457245040955">페이지에서 나가지 않고 주제에 관해 자세히 알아보세요. 페이지에서 하나 이상의 단어를 선택하여 검색합니다. 검색어를 수정하려면 검색결과를 확인한 후 새 탭에서 엽니다.</translation>
 <translation id="8327155640814342956">최고의 탐색 환경을 사용하려면 Chrome을 열고 업데이트하세요.</translation>
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8349013245300336738">사용된 데이터 양에 따라 정렬</translation>

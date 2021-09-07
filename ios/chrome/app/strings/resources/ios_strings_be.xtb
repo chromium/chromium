@@ -230,6 +230,7 @@
 <translation id="3184767182050912705">Разблакіраваць, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Дададзена ў закладкі</translation>
 <translation id="3224641773458703735">Каб экспартаваць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
+<translation id="3230318355092723906">Калі сінхранізацыя выключана, вы па-ранейшаму можаце праглядаць усе свае закладкі, гісторыю, паролі і іншыя налады на гэтай прыладзе. Зробленыя вамі змяненні не будуць сінхранізавацца з вашым уліковым запісам.</translation>
 <translation id="3240426699337459095">Спасылка скапіравана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> з <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
 <translation id="5988851877894965432">Адкрыць URL-адрасы ў Chrome</translation>
 <translation id="6012140227487808125">Ідзе шыфраванне…</translation>
+<translation id="6020800238007543967">Паказваць перадпрагляд спасылак</translation>
 <translation id="6021332621416007159">Адкрыць у праграме...</translation>
 <translation id="6036514205982097558">Усе вашы ўкладкі ў адным браўзеры</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@
 <translation id="6801927553864092214">Для прагляду вэб-старонак у прыватным рэжыме адкрыйце ўкладку інкогніта</translation>
 <translation id="6807889908376551050">Паказаць усе...</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
+<translation id="681450999322335505">Ваша арганізацыя выключыла сінхранізацыю.</translation>
 <translation id="6830804042318138535">Чытаць далей</translation>
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6842136130964845393">Каб не страціць доступ да сваіх захаваных пароляў, пацвердзіце сваю асобу</translation>

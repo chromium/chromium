@@ -79,6 +79,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4512952200932940229">Hak cipta 2021 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
 <translation id="4563926062592110512">Klien diputuskan sambungan: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> tidak dikonfigurasikan dengan betul. Sila pilih penyemak imbas web lalai yang lain, kemudian dayakan pemajuan URL sekali lagi.</translation>
 <translation id="4635770493235256822">Peranti jauh</translation>
 <translation id="4660011489602794167">Tunjukkan papan kekunci</translation>
 <translation id="4703799847237267011">Sesi Chromoting anda telah tamat.</translation>

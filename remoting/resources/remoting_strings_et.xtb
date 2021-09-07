@@ -79,6 +79,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4512952200932940229">Autoriõigus 2021 The Chromium Authors. Kõik õigused kaitstud.</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="4563926062592110512">Ühenduse katkestanud klient: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ei ole õigesti seadistatud. Valige mõni teine vaikebrauser ja lubage siis URL-i suunamine uuesti.</translation>
 <translation id="4635770493235256822">Kaugseadmed</translation>
 <translation id="4660011489602794167">Kuva klaviatuur</translation>
 <translation id="4703799847237267011">Teie rakenduse Chromoting seanss on lõppenud.</translation>

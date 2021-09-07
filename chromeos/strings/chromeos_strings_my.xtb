@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
+<translation id="3156846309055100599">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်…</translation>
 <translation id="315738237743207937">စတင်ဝင်ရန်စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">စကားဝှက်သည် <ph name="TIME" /> တွင် သက်တမ်းကုန်ပါမည်</translation>
 <translation id="4238516577297848345">ပရင့်ထုတ်ရန် ဖိုင်များ လုပ်ဆောင်မနေပါ</translation>
 <translation id="4244962993387259361">မှတ်ဉာဏ်စစ်ဆေးမှု လုပ်ဆောင်ရန် အနည်းဆုံး ၅၀၀ MB လွတ်နေရမည်။ နေရာလွတ်ပြုလုပ်ရန် ဆက်တင်များ &gt; ‘သိုလှောင်ခန်းစီမံခန့်ခွဲမှုစနစ်’ သို့ သွားပါ။</translation>
+<translation id="4258281355379922695">HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
+<translation id="463791356324567266">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်…</translation>
 <translation id="4646949265910132906">လုံခြုံသော WiFi ချိတ်ဆက်မှု</translation>
 <translation id="4654549501020883054">နေ့စဉ် ပြောင်းရန်</translation>
 <translation id="4665014895760275686">ထုတ်လုပ်သူ</translation>
@@ -250,6 +253,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />− <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">စကင်ဖတ်၍ မရပါ</translation>
+<translation id="5502931783115429516">Android မလုပ်ဆောင်တော့ပါ</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -257,6 +261,7 @@
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
 <translation id="5760715441271661976">စာမျက်နှာအခြေအနေ</translation>
+<translation id="5784136236926853061">HTTP တုံ့ပြန်ချိန် ကြာနေသည်</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
 <translation id="583281660410589416">မသိရ</translation>
 <translation id="5849570051105887917">ပင်မထောက်ပံ့သူကုဒ်</translation>
@@ -348,6 +353,7 @@
 <translation id="7343649194310845056">ကွန်ရက်ရှိ စက်များ</translation>
 <translation id="7359657277149375382">ဖိုင်အမျိုးအစား</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
@@ -355,6 +361,7 @@
 <translation id="7490813197707563893">MAC လိပ်စာ</translation>
 <translation id="7497215489070763236">ဆာဗာ CA အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">အမှားရှာဖွေမှု ပုံမှန်အစီအစဉ်များ</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

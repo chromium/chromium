@@ -214,6 +214,7 @@
 <translation id="1218015446623563536">Hapus Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi‑Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan Lokasi dengan menonaktifkan setelan Lokasi utama di perangkat ini. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi di setelan lokasi.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219115285613502247">Tidak dapat mendownload file ucapan bahasa <ph name="LANGUAGE" />. Download akan dicoba nanti. Untuk saat ini, ucapan akan dikirim ke Google untuk diproses.</translation>
 <translation id="122082903575839559">Algoritme Tanda Tangan Sertifikat</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 Dengan Enkripsi RSA</translation>
 <translation id="1221825588892235038">Khusus yang terpilih</translation>
@@ -573,6 +574,7 @@
 <translation id="1602085790802918092">Memulai mesin virtual</translation>
 <translation id="1603914832182249871">(Samaran)</translation>
 <translation id="1604432177629086300">Tidak dapat mencetak. Periksa printer dan coba lagi.</translation>
+<translation id="1605744057217831567">Lihat semua data situs dan izin</translation>
 <translation id="1606077700029460857">Ubah setelan mouse</translation>
 <translation id="1607139524282324606">Hapus entri</translation>
 <translation id="1607499585984539560">Pengguna tidak berafiliasi dengan domain</translation>
@@ -1347,6 +1349,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2364498172489649528">Lulus</translation>
 <translation id="2365507699358342471">Situs ini dapat melihat teks dan gambar yang disalin ke papan klip.</translation>
 <translation id="2367972762794486313">Tampilkan aplikasi</translation>
+<translation id="236939127352773362">Saat perangkat berbagi di sekitar</translation>
 <translation id="2371076942591664043">Buka setelah &amp;selesai</translation>
 <translation id="2373666622366160481">Paskan dengan kertas</translation>
 <translation id="2375406435414127095">Hubungkan ke ponsel Anda</translation>
@@ -2771,6 +2774,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3877075909000773256">Setelan Berbagi Langsung untuk perangkat <ph name="USER_NAME" />, berbagi menggunakan akun <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3882165008614329320">Video yang sudah ada dari kamera atau file</translation>
+<translation id="3883306461188700142">Mengetik menggunakan suara Anda. Tekan Penelusuran + D, lalu mulai bicara.</translation>
 <translation id="3884152383786131369">Konten web yang tersedia dalam beberapa bahasa akan menggunakan bahasa pertama yang didukung dari daftar ini. Preferensi ini akan disinkronkan dengan setelan browser Anda. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Update dikelola oleh administrator Anda</translation>
 <translation id="3886446263141354045">Permintaan Anda untuk mengakses situs ini telah dikirim ke <ph name="NAME" /></translation>
@@ -4997,6 +5001,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6344576354370880196">Printer tersimpan</translation>
 <translation id="6345418402353744910">Perlu nama pengguna dan sandi Anda untuk proxy <ph name="PROXY" /> agar admin dapat mengonfigurasi jaringan Anda</translation>
 <translation id="6345878117466430440">Tandai telah dibaca</translation>
+<translation id="6347010704471250799">Tampilkan notifikasi</translation>
 <translation id="6349101878882523185">Instal <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Kurva eliptis SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Browser eksperimental (kualitas alfa). Beberapa fitur mungkin tidak ada atau tidak lengkap. Laporkan masalah melalui: Bantuan &gt; "Laporkan masalah ...".</translation>
@@ -5324,6 +5329,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="6721972322305477112">&amp;Berkas</translation>
 <translation id="672208878794563299">Situs ini akan bertanya lagi lain kali.</translation>
 <translation id="6723661294526996303">Impor bookmark dan setelan...</translation>
+<translation id="6723839827191551955">Kontrol media yang Anda transmisikan</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6725073593266469338">UI service</translation>
 <translation id="6725206449694821596">Protokol Pencetakan Internet (IPP)</translation>
@@ -6737,6 +6743,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="819137301779081601">Tekan tombol akses baru untuk memulai penetapan
 Tekan tombol akses yang telah ditetapkan untuk menghapus penetapan</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> ingin membagikan konten layar Anda.</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Ukuran di disk</translation>
 <translation id="8198323535106903877">Kami akan menginstal <ph name="NUMBER_OF_APPS" /> aplikasi tersebut untuk Anda</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>

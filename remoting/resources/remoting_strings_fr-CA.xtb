@@ -109,6 +109,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="5750083143895808682">Connecté en tant que <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnexion</translation>
 <translation id="5810269635982033450">L'écran devient un pavé tactile</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> a demandé un accès afin de voir votre écran et de contrôler votre clavier ainsi que votre souris. Appuyez sur « <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> » si vous n'attendiez pas cette demande. Sinon, sélectionnez « <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> » pour autoriser la connexion lorsque vous êtes prêt.</translation>
 <translation id="5823658491130719298">Sur l'ordinateur auquel vous souhaitez accéder à distance, ouvrez Chrome et consultez <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Options d'affichage</translation>
 <translation id="6033507038939587647">Options du clavier</translation>

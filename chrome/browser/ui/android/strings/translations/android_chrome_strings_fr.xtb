@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Version de Chrome obsolète</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1910950723001426294">La liste des options de partage est fermée.</translation>
 <translation id="1918175104945982129">Interface d'autorisation pour la recherche vocale de l'Assistant ouverte à mi-hauteur</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1922362554271624559">Langues suggérées</translation>
@@ -193,6 +194,7 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
+<translation id="228704530595896923">Liste des options de partage.</translation>
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
 <translation id="230155349749732438">Pour utiliser ce paramètre, vous devez activer l'option <ph name="BEGIN_LINK" />Améliorer les recherches et la navigation<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox est encore en développement et n'est disponible que dans certa
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="4141536112466364990">Découvrez Chrome</translation>
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
+<translation id="4162867837470729563">Liste des options de partage ouverte à hauteur maximale.</translation>
 <translation id="4165986682804962316">Paramètres de site</translation>
 <translation id="4170011742729630528">Service indisponible. Veuillez réessayer plus tard.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> utilisé(s)</translation>
@@ -846,6 +849,7 @@ Les essais Privacy Sandbox sont encore en développement et ne sont disponibles
 <translation id="6203593061661911168">Le téléchargement commencera lorsque vous serez connecté au Wi-Fi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
+<translation id="6212786426849242805">Autoriser Google à aussi tenir compte d'une partie du texte de la page</translation>
 <translation id="6221633008163990886">Déverrouiller pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
@@ -895,6 +899,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6459045781120991510">Enquêtes</translation>
 <translation id="6461962085415701688">Impossible d'ouvrir le fichier</translation>
 <translation id="6464977750820128603">Vous pouvez voir les sites que vous avez consultés dans Chrome et définir des minuteurs pour ceux-ci.\n\nGoogle obtient des informations sur les sites pour lesquels vous définissez des minuteurs et peut déterminer le temps que vous passez sur ces derniers. Ces informations sont utilisées pour améliorer Bien-être numérique.</translation>
+<translation id="6473086018775716761">Liste des options de partage ouverte à mi-hauteur.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
 <translation id="6477928892249167417">Ces sites semblent être importants pour vous :</translation>
 <translation id="6482749332252372425">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'espace de stockage insuffisant.</translation>
@@ -1131,6 +1136,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7857691613771368249">Vous demander quand enregistrer les fichiers</translation>
 <translation id="7859988229622350291">Ne jamais traduire</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> a besoin de l'autorisation Appareils à proximité pour se connecter à votre appareil</translation>
 <translation id="7875915731392087153">Créer un e-mail</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page non lue}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page non lue}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages non lues}}</translation>
@@ -1192,6 +1198,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 jour restant</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8216351761227087153">Regarder</translation>
@@ -1210,6 +1217,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="829672787777123339">Connexion à votre appareil…</translation>
 <translation id="8310344678080805313">Onglets standards</translation>
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
+<translation id="8319544457245040955">Obtenez plus d'infos sur un sujet sans quitter la page. Sélectionnez un ou plusieurs mots sur celle-ci pour lancer une recherche. Pour modifier votre recherche, consultez les résultats et affichez-les dans un nouvel onglet.</translation>
 <translation id="8327155640814342956">Pour une expérience de navigation optimale, ouvrez pour mettre à jour Chrome</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
 <translation id="8349013245300336738">Trier en fonction de la quantité de données utilisées</translation>

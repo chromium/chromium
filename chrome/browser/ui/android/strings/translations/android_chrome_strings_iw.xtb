@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
 <translation id="189358972401248634">שפות אחרות</translation>
+<translation id="1910950723001426294">רשימת אפשרויות השיתוף סגורה.</translation>
 <translation id="1918175104945982129">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בחצי גובה</translation>
 <translation id="1919130412786645364">‏התרת כניסה אל Chrome</translation>
 <translation id="1922362554271624559">שפות מוצעות</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
 <translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">כתובת לחיוב</translation>
+<translation id="228704530595896923">רשימת אפשרויות השיתוף.</translation>
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="230155349749732438">כדי להשתמש בהגדרה זו, יש להפעיל את האפשרות <ph name="BEGIN_LINK" />שיפור של חיפושים וגלישה<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">יש להקיש כדי להתקשר</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">שפת המכשיר הנוכחית</translation>
 <translation id="4141536112466364990">‏הדרכות לשימוש ב-Chrome</translation>
 <translation id="4149994727733219643">תצוגה פשוטה של דפי אינטרנט</translation>
+<translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
 <translation id="4170011742729630528">השירות אינו זמין. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4179980317383591987">נעשה שימוש ב-<ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
+<translation id="6212786426849242805">‏החיפוש של Google יתבצע גם בחלק מהטקסט שמופיע בדף</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">סקרים</translation>
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
 <translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר טיימרים בשבילם.\n\n‏Google מקבלת מידע על האתרים שמוגדרים בשבילם טיימרים ומשך השהייה שלך באתרים האלה. המידע עוזר לשפר את 'שימוש חכם בדיגיטל'.</translation>
+<translation id="6473086018775716761">רשימת אפשרויות השיתוף נפתחה בחצי הגובה.</translation>
 <translation id="6475951671322991020">הורדת סרטון</translation>
 <translation id="6477928892249167417">נראה שהאתרים האלה חשובים לך:</translation>
 <translation id="6482749332252372425">הורדת <ph name="FILE_NAME" /> נכשלה מאחר שחסר נפח אחסון.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7857691613771368249">תוצג שאלה מתי יש לשמור קבצים</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
+<translation id="78707286264420418">ל-<ph name="PRODUCT_NAME" /> נדרשת 'הרשאת מכשירים בקרבת מקום' כדי להתחבר למכשיר שלך</translation>
 <translation id="7875915731392087153">הודעת אימייל חדשה</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{יש לך דף אחד (<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" />) שלא נקרא}two{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}many{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}other{יש לך <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> דפים שלא נקראו}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923">נותרו עוד <ph name="FILES" /> קבצים</translation>
 <translation id="8189750580333936930">ארגז חול לפרטיות</translation>
 <translation id="8190358571722158785">נותר יום אחד</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />המכשירים שלך<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8209050860603202033">פתיחת התמונה</translation>
 <translation id="8216351761227087153">צפייה</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
+<translation id="8319544457245040955">ניתן לקבל מידע על נושא מסוים מבלי לצאת מהדף. בוחרים מילה אחת או יותר בדף כדי לבצע חיפוש. כדי לערוך את החיפוש, מעיינים בתוצאות ופותחים אותן בכרטיסייה חדשה.</translation>
 <translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>

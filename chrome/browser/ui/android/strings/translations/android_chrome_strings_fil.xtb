@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
+<translation id="1910950723001426294">Nakasara ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="1918175104945982129">Nakabukas ang ui ng pahintulot ng paghahanap gamit ang boses ng Assistant nang kalahati ang taas</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
 <translation id="1922362554271624559">Mga iminumungkahing wika</translation>
@@ -193,6 +194,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
+<translation id="228704530595896923">Listahan ng mga opsyon sa pagbabahagi</translation>
 <translation id="230115972905494466">Walang nahanap na tugmang device</translation>
 <translation id="230155349749732438">Para magamit ang setting na ito, dapat naka-on ang <ph name="BEGIN_LINK" />Pahusayin ang mga paghahanap at pag-browse<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">I-tap para tumawag</translation>
@@ -504,6 +506,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="4137746084635924146">Kasalukuyang wika ng device</translation>
 <translation id="4141536112466364990">Matutunan ang Chrome</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
+<translation id="4162867837470729563">Nakabukas nang buo ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
 <translation id="4170011742729630528">Hindi available ang serbisyo; subukang muli sa ibang pagkakataon.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ang nagamit</translation>
@@ -846,6 +849,7 @@ Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available a
 <translation id="6203593061661911168">Magsisimula ang pag-download kapag nakakonekta sa Wi-Fi</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
+<translation id="6212786426849242805">Hayaang isaalang-alang din ng Google ang ilan sa text ng page</translation>
 <translation id="6221633008163990886">I-unlock upang i-export ang iyong mga password</translation>
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
@@ -895,6 +899,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6459045781120991510">Mga Survey</translation>
 <translation id="6461962085415701688">Hindi mabuksan ang file</translation>
 <translation id="6464977750820128603">Puwede mong makita ang mga site na binibisita mo sa Chrome at puwede kang magtakda ng mga timer para sa mga ito.\n\nKumukuha ng impormasyon ang Google tungkol sa mga site kung saan ka nagtakda ng mga timer at inaalam nito kung gaano mo katagal binisita ang mga ito. Ginagamit ang impormasyong ito para pahusayin ang Digital Wellness.</translation>
+<translation id="6473086018775716761">Nakabukas nang kalahati ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="6475951671322991020">I-download ang video</translation>
 <translation id="6477928892249167417">Mukhang mahalaga sa iyo ang mga site na ito:</translation>
 <translation id="6482749332252372425">Hindi na-download ang <ph name="FILE_NAME" /> dahil kulang ang espasyo sa storage.</translation>
@@ -1131,6 +1136,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7857691613771368249">Magtanong kung kailan magse-save ng mga file</translation>
 <translation id="7859988229622350291">Huwag isalin kailanman</translation>
+<translation id="78707286264420418">Nangangailangan ang <ph name="PRODUCT_NAME" /> ng Pahintulot sa mga kalapit na device para makakonekta sa iyong device</translation>
 <translation id="7875915731392087153">Gumawa ng email</translation>
 <translation id="7876243839304621966">Alisin lahat</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page na hindi pa nababasa}one{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page na hindi pa nababasa}other{Mayroon kang <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> na page na hindi pa nababasa}}</translation>
@@ -1192,6 +1198,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8186512483418048923"><ph name="FILES" /> (na) file ang natitira</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 araw na lang ang natitira</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ang iyong mga device<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8209050860603202033">Buksan ang larawan</translation>
 <translation id="8216351761227087153">Panoorin</translation>
@@ -1210,6 +1217,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="829672787777123339">Kumokonekta sa iyong device…</translation>
 <translation id="8310344678080805313">Mga karaniwang tab</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
+<translation id="8319544457245040955">Matuto tungkol sa isang paksa nang hindi umaalis sa page. Pumili ng isa o higit pang salita sa page para hanapin ang mga ito. Para i-edit ang iyong paghahanap, tingnan ang mga resulta at buksan ang mga ito sa isang bagong tab.</translation>
 <translation id="8327155640814342956">Para sa pinakamagandang karanasan sa pag-browse, buksan para i-update ang Chrome</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8349013245300336738">Pagbukud-bukurin ayon sa dami ng data na nagamit</translation>

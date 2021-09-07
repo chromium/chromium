@@ -230,6 +230,7 @@
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
+<translation id="3230318355092723906">同步功能關閉時，你仍然可以在這部裝置上查看自己的所有書籤、歷史記錄、密碼和其他設定，但你所做的變更將不會同步到帳戶。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
 <translation id="6012140227487808125">正在加密…</translation>
+<translation id="6020800238007543967">顯示連結預覽</translation>
 <translation id="6021332621416007159">在其他應用程式中開啟...</translation>
 <translation id="6036514205982097558">在同一個瀏覽器集中使用所有分頁</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
@@ -605,6 +607,7 @@
 <translation id="6801927553864092214">如要私密瀏覽，請開啟無痕式分頁</translation>
 <translation id="6807889908376551050">全部顯示…</translation>
 <translation id="681368974849482173">項目已建立</translation>
+<translation id="681450999322335505">貴機構已關閉同步功能。</translation>
 <translation id="6830804042318138535">瞭解詳情</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>

@@ -5131,7 +5131,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7375785904116479354">Wenn die Richtlinie aktiviert ist, wird die Standardsuchmaschine bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Standardsuchmaschine bei der ersten Ausführung nicht importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Standardsuchmaschine wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
-<translation id="7382191643394429934">Drucken mit und ohne Hintergrundgrafiken zulassen</translation>
 <translation id="7389872682701720082">Wenn Sie diese Einstellung aktivieren, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>

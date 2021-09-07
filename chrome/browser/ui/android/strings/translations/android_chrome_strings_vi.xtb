@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
+<translation id="1910950723001426294">Danh sách các lựa chọn chia sẻ đã đóng.</translation>
 <translation id="1918175104945982129">Giao diện người dùng cho phép sử dụng Trợ lý để tìm kiếm bằng giọng nói đã mở ở nửa dưới của màn hình</translation>
 <translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
 <translation id="1922362554271624559">Ngôn ngữ đề xuất</translation>
@@ -193,6 +194,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
+<translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
 <translation id="230155349749732438">Để sử dụng chế độ cài đặt này, bạn phải bật tùy chọn <ph name="BEGIN_LINK" />Cải thiện tính năng tìm kiếm và duyệt web<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
@@ -504,6 +506,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
 <translation id="4141536112466364990">Tìm hiểu Chrome</translation>
 <translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
+<translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
 <translation id="4179980317383591987">Đã dùng <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="6203593061661911168">Quá trình tải xuống sẽ bắt đầu khi có Wi-Fi</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>
+<translation id="6212786426849242805">Bạn cũng có thể cho phép Google xem xét một số văn bản của trang</translation>
 <translation id="6221633008163990886">Mở khóa để xuất mật khẩu của bạn</translation>
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 
@@ -895,6 +899,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6459045781120991510">Khảo sát</translation>
 <translation id="6461962085415701688">Không thể mở tệp</translation>
 <translation id="6464977750820128603">Bạn có thể xem các trang web mà mình truy cập trên Chrome và hẹn giờ cho các trang web này.\n\nGoogle thu thập thông tin về các trang web mà bạn đã hẹn giờ và khoảng thời gian bạn truy cập các trang web đó. Thông tin này dùng để cải thiện Digital Wellbeing.</translation>
+<translation id="6473086018775716761">Danh sách các lựa chọn chia sẻ đã được mở ở nửa dưới của màn hình.</translation>
 <translation id="6475951671322991020">Tải video xuống</translation>
 <translation id="6477928892249167417">Các trang web này có vẻ quan trọng đối với bạn:</translation>
 <translation id="6482749332252372425">Tải xuống <ph name="FILE_NAME" /> không thành công do thiếu dung lượng bộ nhớ.</translation>
@@ -1131,6 +1136,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7853202427316060426">Hoạt động</translation>
 <translation id="7857691613771368249">Hỏi thời điểm lưu tệp</translation>
 <translation id="7859988229622350291">Không bao giờ dịch</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> cần các quyền đối với Thiết bị ở gần để kết nối với thiết bị của bạn</translation>
 <translation id="7875915731392087153">Tạo email</translation>
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> trang}other{Bạn chưa đọc <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> trang}}</translation>
@@ -1192,6 +1198,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8186512483418048923">Còn lại <ph name="FILES" /> tệp</translation>
 <translation id="8189750580333936930">Hộp cát về quyền riêng tư</translation>
 <translation id="8190358571722158785">Còn 1 ngày</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Thiết bị của bạn<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8209050860603202033">Mở ảnh</translation>
 <translation id="8216351761227087153">Xem</translation>
@@ -1210,6 +1217,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>
 <translation id="8310344678080805313">Thẻ chuẩn</translation>
 <translation id="831192587911042850">Thêm trang web hiện tại vào danh sách các trang web bạn đang theo dõi.</translation>
+<translation id="8319544457245040955">Tìm hiểu về một chủ đề mà không cần rời khỏi trang. Bạn có thể tìm kiếm bằng cách chọn một hoặc nhiều từ trên trang. Để chỉnh sửa nội dung tìm kiếm của bạn, hãy xem và mở kết quả đó trong một thẻ mới.</translation>
 <translation id="8327155640814342956">Để có trải nghiệm duyệt web tuyệt vời nhất, hãy mở để cập nhật Chrome</translation>
 <translation id="834313815369870491">Không bao giờ dịch các trang web</translation>
 <translation id="8349013245300336738">Sắp xếp theo lượng dữ liệu đã dùng</translation>

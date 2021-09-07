@@ -5173,7 +5173,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7375785904116479354">Se il criterio viene impostato su Attivato, il motore di ricerca predefinito del precedente browser predefinito verrà importato alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, il motore di ricerca predefinito non verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo del motore di ricerca predefinito verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
-<translation id="7382191643394429934">Consenti la stampa con e senza immagini di sfondo</translation>
 <translation id="7389872682701720082">Se attivi questa impostazione, i plug-in non obsoleti verranno sempre eseguiti.
 
       Se questa impostazione è disattivata o non è configurata, agli utenti verrà chiesta l'autorizzazione di eseguire i plug-in per i quali è necessaria. Questi sono plug-in che possono compromettere la sicurezza.</translation>

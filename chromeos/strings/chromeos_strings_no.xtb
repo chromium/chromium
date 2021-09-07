@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Buffer</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4244962993387259361">Du må ha minst 500 MB ledig for å kjøre en minnetest. For å frigjøre plass, gå til Innstillinger &gt; Lagringsbehandling.</translation>
+<translation id="4258281355379922695">HTTP-tidsforsinkelse</translation>
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
+<translation id="463791356324567266">Avbryter skanningen …</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
 <translation id="4654549501020883054">Endre daglig</translation>
 <translation id="4665014895760275686">Produsent</translation>
@@ -251,6 +254,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøk igjen}other{{0} forsøk igjen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Kunne ikke fullføre skanningen</translation>
+<translation id="5502931783115429516">Android kjører ikke</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5701381305118179107">Midtstill</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Portaltilstand</translation>
+<translation id="5784136236926853061">Høy HTTP-tidsforsinkelse</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5849570051105887917">Kode for leverandøren for hjemmeenheten</translation>
@@ -349,6 +354,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>
 <translation id="7359657277149375382">Filtype</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
@@ -356,6 +362,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7490813197707563893">MAC-adresse</translation>
 <translation id="7497215489070763236">Tjenerens CA-sertifikat</translation>
 <translation id="7502658306369382406">IPv6-adresse</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

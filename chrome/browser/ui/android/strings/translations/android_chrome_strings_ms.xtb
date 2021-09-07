@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome sudah usang</translation>
 <translation id="1883903952484604915">Fail Saya</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
+<translation id="1910950723001426294">Senarai pilihan perkongsian ditutup.</translation>
 <translation id="1918175104945982129">UI persetujuan carian suara Assistant dibuka pada ketinggian separuh</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1922362554271624559">Bahasa yang dicadangkan</translation>
@@ -193,6 +194,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2276696007612801991">Log masuk ke akaun Google anda untuk menyemak kata laluan anda</translation>
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat pengebilan</translation>
+<translation id="228704530595896923">Senarai pilihan perkongsian.</translation>
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
 <translation id="230155349749732438">Untuk menggunakan tetapan ini <ph name="BEGIN_LINK" />Jadikan carian dan penyemakan imbas lebih baik<ph name="END_LINK" /> mesti dihidupkan</translation>
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
@@ -504,6 +506,7 @@ Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau terpilih. Bua
 <translation id="4137746084635924146">Bahasa peranti semasa</translation>
 <translation id="4141536112466364990">Ketahui tentang Chrome</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
+<translation id="4162867837470729563">Senarai pilihan perkongsian pada ketinggian penuh.</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
 <translation id="4170011742729630528">Perkhidmatan tidak tersedia; cuba lagi kemudian.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> digunakan</translation>
@@ -846,6 +849,7 @@ Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau ter
 <translation id="6203593061661911168">Muat turun akan bermula apabila menggunakan Wi-Fi</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
+<translation id="6212786426849242805">Biarkan Google mempertimbangkan beberapa teks halaman juga</translation>
 <translation id="6221633008163990886">Buka kunci untuk mengeksport kata laluan anda</translation>
 <translation id="6232535412751077445">Tindakan mendayakan "Jangan Kesan" bermaksud permintaan akan disertakan dengan trafik penyemakan imbas anda. Sebarang kesan bergantung pada sama ada tapak web memberi respons kepada permintaan dan cara permintaan ditafsirkan.
 
@@ -895,6 +899,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6459045781120991510">Tinjauan</translation>
 <translation id="6461962085415701688">Tidak dapat membuka fail</translation>
 <translation id="6464977750820128603">Anda dapat melihat tapak yang anda lawati dalam Chrome dan menetapkan pemasa untuk tapak tersebut.\n\nGoogle menerima maklumat tentang tapak yang pemasanya telah anda tetapkan dan tempoh anda berada di tapak itu. Maklumat ini digunakan untuk menambah baik Kesejahteraan Digital.</translation>
+<translation id="6473086018775716761">Senarai pilihan perkongsian dibuka pada ketinggian separuh.</translation>
 <translation id="6475951671322991020">Muat turun video</translation>
 <translation id="6477928892249167417">Tapak ini nampaknya penting kepada anda:</translation>
 <translation id="6482749332252372425">Muat turun <ph name="FILE_NAME" /> gagal kerana ruang storan tidak mencukupi.</translation>
@@ -1131,6 +1136,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7857691613771368249">Tanya masa untuk menyimpan fail</translation>
 <translation id="7859988229622350291">Jangan terjemah</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> memerlukan kebenaran Peranti berdekatan untuk menyambung kepada peranti anda</translation>
 <translation id="7875915731392087153">Buat e-mel</translation>
 <translation id="7876243839304621966">Buangkan semua</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> halaman belum dibaca}other{Anda mempunyai <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> halaman belum dibaca}}</translation>
@@ -1192,6 +1198,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="8186512483418048923"><ph name="FILES" /> fail lagi</translation>
 <translation id="8189750580333936930">Kotak Pasir Privasi</translation>
 <translation id="8190358571722158785">1 hari lagi</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Peranti anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8209050860603202033">Buka imej</translation>
 <translation id="8216351761227087153">Tonton</translation>
@@ -1210,6 +1217,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="829672787777123339">Menyambung kepada peranti anda…</translation>
 <translation id="8310344678080805313">Tab standard</translation>
 <translation id="831192587911042850">Menambahkan laman web semasa pada senarai laman web yang anda ikuti.</translation>
+<translation id="8319544457245040955">Ketahui tentang topik tanpa meninggalkan halaman. Pilih satu atau beberapa perkataan pada halaman untuk mencari perkataan tersebut. Untuk mengedit carian anda, lihat hasil carian dan buka hasil tersebut dalam tab baharu.</translation>
 <translation id="8327155640814342956">Untuk mendapatkan pengalaman penyemakan imbas yang terbaik, buka untuk mengemas kini Chrome</translation>
 <translation id="834313815369870491">Jangan terjemah laman</translation>
 <translation id="8349013245300336738">Isih mengikut jumlah data yang digunakan</translation>

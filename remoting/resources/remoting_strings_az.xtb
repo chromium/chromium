@@ -79,6 +79,7 @@ Bu icazəni vermək üçün aşağıda "<ph name="BUTTON_NAME" />" düyməsinə 
 <translation id="4512952200932940229">Copyright 2021 Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="4563926062592110512">Klient bağlantısı kəsildi: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> düzgün konfiqurasiya edilməyib. Fərqli bir defolt veb brauzer seçin və sonra URL yönləndirməsini yenidən aktiv edin.</translation>
 <translation id="4635770493235256822">Uzaqdan idarə edilən cihazlar</translation>
 <translation id="4660011489602794167">Klaviaturanı göstərin</translation>
 <translation id="4703799847237267011">Chromoting sessiyanız başa çatdı.</translation>

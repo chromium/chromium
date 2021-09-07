@@ -214,6 +214,7 @@
 <translation id="1218015446623563536">Smazat Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Služby určování polohy Google používají zdroje, jako jsou sítě Wi-Fi, mobilní sítě a senzory, pomocí kterých se snaží odhadnout polohu tohoto zařízení.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Určování polohy můžete vypnout tím, že v zařízení deaktivujete hlavní nastavení polohy. V nastavení polohy můžete také vypnout používání sítí Wi-Fi, mobilních sítí a senzorů k určování polohy.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219115285613502247">Řečové soubory pro jazyk <ph name="LANGUAGE" /> se nepodařilo stáhnout. Soubory zkusíme stáhnout později. Prozatím se řeč ke zpracování odesílá do Googlu.</translation>
 <translation id="122082903575839559">Algoritmus podpisu certifikátu</translation>
 <translation id="1221024147024329929">Šifrování PKCS #1 MD2 s RSA</translation>
 <translation id="1221825588892235038">Pouze výběr</translation>
@@ -572,6 +573,7 @@
 <translation id="1602085790802918092">Probíhá spouštění virtuálního počítače</translation>
 <translation id="1603914832182249871">(Anonymní režim)</translation>
 <translation id="1604432177629086300">Tisk se nezdařil. Zkontrolujte tiskárnu a zkuste to znovu.</translation>
+<translation id="1605744057217831567">Zobrazit veškerá data webů a oprávnění</translation>
 <translation id="1606077700029460857">Změnit nastavení myši</translation>
 <translation id="1607139524282324606">Vymazat položku</translation>
 <translation id="1607499585984539560">Uživatel není přidružen k doméně</translation>
@@ -1334,6 +1336,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2364498172489649528">V pořádku</translation>
 <translation id="2365507699358342471">Tato stránka má přístup k textu a obrázkům zkopírovaným do schránky.</translation>
 <translation id="2367972762794486313">Zobrazit aplikace</translation>
+<translation id="236939127352773362">Když zařízení v okolí sdílejí obsah</translation>
 <translation id="2371076942591664043">Po dokončení otevřít</translation>
 <translation id="2373666622366160481">Přizpůsobit papíru</translation>
 <translation id="2375406435414127095">Připojte se k telefonu</translation>
@@ -2757,6 +2760,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3877075909000773256">Nastavení sdílení nablízko pro zařízení uživatele <ph name="USER_EMAIL" />. Sdílení bude probíhat pod e‑mailem <ph name="USER_NAME" />.</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3882165008614329320">Existující video z fotoaparátu nebo soubor</translation>
+<translation id="3883306461188700142">Zadávejte text hlasově. Stiskněte Hledat + D a začněte mluvit.</translation>
 <translation id="3884152383786131369">U webového obsahu, který je k dispozici v několika jazycích, se použije první jazyk v seznamu. Tyto předvolby jsou synchronizovány s nastavením prohlížeče. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Aktualizace spravuje administrátor</translation>
 <translation id="3886446263141354045">Vaše žádost o přístup k tomuto webu byla odeslána uživateli <ph name="NAME" />.</translation>
@@ -4981,6 +4985,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6344576354370880196">Uložené tiskárny</translation>
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> vyžaduje zadání uživatelského jména a hesla, aby administrátor mohl nastavit síť</translation>
 <translation id="6345878117466430440">Označit jako přečtené</translation>
+<translation id="6347010704471250799">Zobrazit oznámení</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Eliptická křivka SECG secp256r1 (neboli ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Experimentální prohlížeč (verze alfa)! Některé funkce chybí nebo nejsou úplné. Problémy hlaste v sekci Nápověda &gt; Nahlásit problém…</translation>
@@ -5308,6 +5313,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6721972322305477112">&amp;Soubor</translation>
 <translation id="672208878794563299">Tento web se příště zeptá znovu.</translation>
 <translation id="6723661294526996303">Importovat záložky a nastavení...</translation>
+<translation id="6723839827191551955">Ovládejte odesílaná média</translation>
 <translation id="6723839937902243910">Napájení</translation>
 <translation id="6725073593266469338">Služba uživatelského rozhraní</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
@@ -6720,6 +6726,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="819137301779081601">Stisknutím nového přepínače zahájíte přiřazování.
 Stisknutím přiřazeného přepínače přiřazení odstraníte.</translation>
 <translation id="8192944472786724289">Aplikace <ph name="APP_NAME" /> chce sdílet obsah vaší obrazovky.</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zařízení<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Velikost na disku</translation>
 <translation id="8198323535106903877">Aplikace (<ph name="NUMBER_OF_APPS" />) se samy nainstalují</translation>
 <translation id="8198456017687137612">Odesílání karty</translation>

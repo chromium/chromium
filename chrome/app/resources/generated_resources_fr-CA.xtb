@@ -59,6 +59,7 @@
 <translation id="1059484610606223931">Protocole HTTPS</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="1060292118287751956">Détermine la fréquence à laquelle l'écran est actualisé</translation>
+<translation id="1061130374843955397">Bienvenue sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061904396131502319">C'est bientôt le moment de prendre une pause</translation>
 <translation id="1066613507389053689">Une mise à jour de Chrome OS est requise</translation>
 <translation id="1067048845568873861">Créé</translation>
@@ -2831,6 +2832,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3943582379552582368">&amp;Retour</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3945513714196326460">Essayez d'entrer un nom plus court</translation>
+<translation id="3948027458879361203">Modifier le nom d'hôte</translation>
 <translation id="3948116654032448504">&amp;Rechercher une image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> peut modifier les fichiers dans les dossiers suivants</translation>
 <translation id="394984172568887996">Importés d'Internet Explorer</translation>
@@ -6793,6 +6795,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution</translation>
     <ph name="BEGIN_PARAGRAPH4" />Si le paramètre supplémentaire enregistrant l'activité sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google. Apprenez-en davantage sur ces paramètres et sur la façon de les configurer à l'adresse families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Certificat client incorrect</translation>
 <translation id="827097179112817503">Afficher le bouton Accueil</translation>
+<translation id="8271268254812352141">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte. Personnalisez les langues de traduction dans la section <ph name="LINK_BEGIN" />Langues du site Web<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Parents, les prochaines étapes sont pour vous. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à l'enfant une fois que son compte aura été configuré.</translation>
 <translation id="8272443605911821513">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Autres outils ».</translation>
 <translation id="8274332263553132018">Diffuser un fichier</translation>

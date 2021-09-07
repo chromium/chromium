@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
 <translation id="189358972401248634">زبان‌های دیگر</translation>
+<translation id="1910950723001426294">فهرست گزینه‌های هم‌رسانی بسته است.</translation>
 <translation id="1918175104945982129">میانای کاربر رضایت برای جستجوی گفتاری «دستیار» تا نیمه باز شد</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
 <translation id="1922362554271624559">زبان‌های پیشنهادشده</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">‏برای بررسی گذرواژه‌هایتان، به سیستم حساب Google وارد شوید</translation>
 <translation id="2278052315791335171">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="SITE" /> نخواهد شد</translation>
 <translation id="2286841657746966508">آدرس ارسال صورتحساب</translation>
+<translation id="228704530595896923">فهرست گزینه‌های هم‌رسانی.</translation>
 <translation id="230115972905494466">هیچ دستگاه سازگاری پیدا نشد</translation>
 <translation id="230155349749732438">برای استفاده از این تنظیم، باید <ph name="BEGIN_LINK" />بهبود جستجو و مرور<ph name="END_LINK" /> روشن شود</translation>
 <translation id="2318045970523081853">برای برقراری تماس، ضربه بزنید.</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">زبان کنونی دستگاه</translation>
 <translation id="4141536112466364990">‏آشنایی با Chrome</translation>
 <translation id="4149994727733219643">نمای ساده‌شده برای صفحه‌های وب</translation>
+<translation id="4162867837470729563">فهرست گزینه‌های هم‌رسانی به‌صورت کامل باز شده است.</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
 <translation id="4170011742729630528">این سرویس در دسترس نیست؛ بعداً دوباره امتحان کنید.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> استفاده‌شده</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">‏بارگیری هنگام اتصال به Wi-Fi شروع خواهد شد</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
 <translation id="6211386937064921208">درحال پیش‌نمایش این صفحه</translation>
+<translation id="6212786426849242805">‏به Google اجازه داده شود بخشی‌از نوشتار صفحه را درنظر بگیرد</translation>
 <translation id="6221633008163990886">برای صادر کردن گذرواژه‌ها، قفل را باز کنید</translation>
 <translation id="6232535412751077445">فعال کردن «ردیابی نشود» به این معنی است که درخواستی به ترافیک مرور شما اضافه می‌شود. نتیجه به این بستگی دارد که وب‌سایت به درخواست‌ پاسخ بدهد یا نه و درخواست چگونه تفسیر شود.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">نظرسنجی‌ها</translation>
 <translation id="6461962085415701688">فایل باز نمی‌شود</translation>
 <translation id="6464977750820128603">‏می‌توانید سایت‌هایی را که در Chrome بازدید می‌کنید مشاهده کنید و تایمرهایی را برای آن‌ها تنظیم کنید.\n\n‏Google اطلاعاتی درباره سایت‌هایی که برای آن‌ها تایمر تنظیم می‌کنید و مدت زمانی که از آن‌ها بازدید می‌کنید، دریافت می‌کند. از این اطلاعات برای بهبود «آسایش دیجیتالی» استفاده می‌شود.</translation>
+<translation id="6473086018775716761">فهرست گزینه‌های هم‌رسانی به‌صورت نیمه باز شده است.</translation>
 <translation id="6475951671322991020">بارگیری ویدیو</translation>
 <translation id="6477928892249167417">به‌نظر می‌رسد این سایت‌ها برای شما مهم هستند:</translation>
 <translation id="6482749332252372425">به‌دلیل نبودن فضای ذخیره‌سازی، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7857691613771368249">هنگام ذخیره فایل‌ها سؤال شود</translation>
 <translation id="7859988229622350291">هرگز ترجمه نشود</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> برای اتصال به دستگاهتان به اجازه «دستگاه‌های اطراف» نیاز دارد</translation>
 <translation id="7875915731392087153">ایجاد ایمیل</translation>
 <translation id="7876243839304621966">حذف همه</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> صفحه خوانده‌نشده دارید}one{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه خوانده‌نشده دارید}other{<ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> صفحه خوانده‌نشده دارید}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> فایل باقی مانده است</translation>
 <translation id="8189750580333936930">جعبه ایمنی حریم‌خصوصی</translation>
 <translation id="8190358571722158785">۱ روز باقی‌مانده است</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="8209050860603202033">باز کردن تصویر</translation>
 <translation id="8216351761227087153">تماشا</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">درحال اتصال به دستگاه…</translation>
 <translation id="8310344678080805313">برگه‌های استاندارد</translation>
 <translation id="831192587911042850">وب‌سایت فعلی را به فهرست وب‌سایت‌هایی که دنبال می‌کنید اضافه می‌کند.</translation>
+<translation id="8319544457245040955">بدون ترک کردن صفحه، درباره موضوعات اطلاعات دریافت کنید. یک یا چند کلمه را در صفحه انتخاب کنید تا جستجویشان کنید. برای ویرایش جستجو، به نتایج نگاه کنید و آن‌ها را در برگه جدیدی باز کنید.</translation>
 <translation id="8327155640814342956">‏برای بهترین تجربه مرور، Chrome را به‌روزرسانی کنید</translation>
 <translation id="834313815369870491">سایت‌هایی که هرگز ترجمه نمی‌شوند</translation>
 <translation id="8349013245300336738">به‌ترتیب مقدار داده استفاده‌شده</translation>

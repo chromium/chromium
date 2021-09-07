@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome on aegunud</translation>
 <translation id="1883903952484604915">Minu failid</translation>
 <translation id="189358972401248634">Teised keeled</translation>
+<translation id="1910950723001426294">Jagamisvalikute loend on suletud.</translation>
 <translation id="1918175104945982129">Assistendi häälotsingu sisu kasutajaliides on avatud poolel kõrgusel</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
 <translation id="1922362554271624559">Soovitatud keeled</translation>
@@ -193,6 +194,7 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
+<translation id="228704530595896923">Jagamisvalikute loend.</translation>
 <translation id="230115972905494466">Ühilduvaid seadmeid ei leitud</translation>
 <translation id="230155349749732438">Selle seade kasutamiseks peab seade <ph name="BEGIN_LINK" />Otsingute ja sirvimise paremaks muutmine<ph name="END_LINK" /> olema sisse lülitatud</translation>
 <translation id="2318045970523081853">Puudutage helistamiseks</translation>
@@ -504,6 +506,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4137746084635924146">Seadme praegune keel</translation>
 <translation id="4141536112466364990">Õppige Chrome'i kasutama</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
+<translation id="4162867837470729563">Jagamisvalikute loend on avatud täiskõrgusele.</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
 <translation id="4170011742729630528">Teenus pole saadaval, proovige hiljem uuesti.</translation>
 <translation id="4179980317383591987">Kasutati <ph name="AMOUNT" /></translation>
@@ -846,6 +849,7 @@ Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval va
 <translation id="6203593061661911168">Allalaadimine algab, kui loodud on WiFi-ühendus</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
+<translation id="6212786426849242805">Google võtab arvesse ka osa lehe tekstist</translation>
 <translation id="6221633008163990886">Paroolide eksportimiseks avage seade</translation>
 <translation id="6232535412751077445">Kui lubate funktsiooni „Ära jälgi”, kaasatakse see taotlus teie sirvimisliiklusesse. Mõju oleneb sellest, kas veebisait reageerib taotlusele ja kuidas seda tõlgendatakse.
 
@@ -895,6 +899,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6459045781120991510">Küsitlused</translation>
 <translation id="6461962085415701688">Faili ei saa avada</translation>
 <translation id="6464977750820128603">Näete saite, mida Chrome'is külastate, ja saate nendele taimereid määrata.\n\nGoogle saab teavet saitide kohta, millele taimereid määrate, ja näeb, kui kaua neid külastate. Selle teabe abil muudetakse teenus Digitaalne heaolu paremaks.</translation>
+<translation id="6473086018775716761">Jagamisvalikute loend on avatud poolele kõrgusele.</translation>
 <translation id="6475951671322991020">Laadi video alla</translation>
 <translation id="6477928892249167417">Näib, et need saidid on teile olulised:</translation>
 <translation id="6482749332252372425">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus, kuna salvestusruumi on liiga vähe.</translation>
@@ -1131,6 +1136,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7857691613771368249">Küsi, millal failid salvestada</translation>
 <translation id="7859988229622350291">Ära kunagi tõlgi</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> vajab teie seadmega ühenduse loomiseks luba Läheduses olevad seadmed</translation>
 <translation id="7875915731392087153">Looge meil</translation>
 <translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> lugemata leht}other{Teil on <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> lugemata lehte}}</translation>
@@ -1192,6 +1198,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8186512483418048923"><ph name="FILES" /> faili on jään.</translation>
 <translation id="8189750580333936930">Privaatsuse liivakast</translation>
 <translation id="8190358571722158785">Jäänud on 1 päev</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Taasta</translation>
 <translation id="8209050860603202033">Ava kujutis</translation>
 <translation id="8216351761227087153">Esita</translation>
@@ -1210,6 +1217,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="829672787777123339">Teie seadmega ühendamine …</translation>
 <translation id="8310344678080805313">Tavapärased vahekaardid</translation>
 <translation id="831192587911042850">Lisab praeguse veebisaidi teie jälgitavate veebisaitide loendisse.</translation>
+<translation id="8319544457245040955">Vaadake teema kohta teavet lehelt lahkumata. Valige lehel üks või mitu sõna, et neid otsida. Oma otsingu muutmiseks vaadake tulemusi ja avage need uuel vahelehel.</translation>
 <translation id="8327155640814342956">Parima sirvimiskogemuse tagamiseks avage Chrome, et seda värskendada</translation>
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8349013245300336738">Sordi kasutatud andmemahu alusel</translation>

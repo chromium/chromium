@@ -5222,7 +5222,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7375785904116479354">Si se asigna el valor "Habilitada" a esta política, se importará el buscador predeterminado del anterior navegador predeterminado al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará el buscador predeterminado al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla del buscador predeterminado aparecerá marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="7382191643394429934">Permitir imprimir con gráficos de fondo y sin ellos</translation>
 <translation id="7389872682701720082">Si se habilita esta opción, se ejecutarán siempre los complementos que no estén desactualizados.
 
       Si se inhabilita esta opción o no se configura, se le pedirá permiso a los usuarios para ejecutar complementos que requieran autorización. Algunos complementos pueden comprometer la seguridad.</translation>

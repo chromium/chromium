@@ -230,6 +230,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3184767182050912705">Ava meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Järjehoidjatesse lisatud</translation>
 <translation id="3224641773458703735">Paroolide eksportimiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
+<translation id="3230318355092723906">Kui sünkroonimine on välja lülitatud, näete selles seadmes endiselt kõiki oma järjehoidjaid, ajalugu, paroole ja muid seadeid. Muudatuste tegemisel neid teie kontoga ei sünkroonita.</translation>
 <translation id="3240426699337459095">Link on kopeeritud</translation>
 <translation id="3244271242291266297">kk</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" />-st</translation>
@@ -500,6 +501,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5984222099446776634">Viimati külastatud</translation>
 <translation id="5988851877894965432">Avage URL-id Chrome'is</translation>
 <translation id="6012140227487808125">Krüpteerimine …</translation>
+<translation id="6020800238007543967">Kuva linkide eelvaated</translation>
 <translation id="6021332621416007159">Ava rakend. ...</translation>
 <translation id="6036514205982097558">Kõik teie vahelehed ühes brauseris</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6801927553864092214">Privaatselt sirvimiseks avage inkognito vaheleht</translation>
 <translation id="6807889908376551050">Kuva kõik ...</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
+<translation id="681450999322335505">Teie organisatsioon lülitas sünkroonimise välja.</translation>
 <translation id="6830804042318138535">Lisateave</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>

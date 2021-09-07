@@ -5194,7 +5194,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7375785904116479354">Se a política for definida como ativada, o mecanismo de pesquisa padrão será importado do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, o mecanismo de pesquisa padrão não será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção do mecanismo de pesquisa padrão estará marcada ou desmarcada de acordo com o valor da política.</translation>
-<translation id="7382191643394429934">Permitir a impressão com e sem gráficos de segundo plano</translation>
 <translation id="7389872682701720082">Se você ativar esta configuração, plug-ins que não estiverem obsoletos sempre serão executados.
 
       Se esta configuração estiver desativada ou não for definida, os usuários precisarão dar permissão para executar plug-ins que exigem autorização. Esses são plug-ins que podem comprometer a segurança.</translation>

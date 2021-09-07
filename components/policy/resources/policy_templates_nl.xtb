@@ -5135,7 +5135,6 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
 <translation id="7375785904116479354">Als je het beleid toepast, wordt de standaard zoekmachine van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, wordt de standaard zoekmachine niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor de standaard zoekmachine aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
-<translation id="7382191643394429934">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="7389872682701720082">Als je deze instelling aanzet, worden plug-ins altijd uitgevoerd als ze niet verouderd zijn.
 
       Als deze instelling is uitgezet of niet is ingesteld, wordt gebruikers om toestemming gevraagd voordat plug-ins worden uitgevoerd waarvoor toestemming is vereist. Dit zijn de plug-ins die een beveiligingsrisico kunnen vormen.</translation>

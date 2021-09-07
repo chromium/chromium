@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
+<translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
 <translation id="3188257591659621405">Fail saya</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Kata laluan tamat tempoh dalam <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Tiada tugas cetak yang sedang dijalankan</translation>
 <translation id="4244962993387259361">Anda memerlukan sekurang-kurangnya 500 MB ruang kosong untuk menjalankan ujian Memori. Untuk mengosongkan ruang, pergi ke Tetapan &gt; Pengurusan storan.</translation>
+<translation id="4258281355379922695">Kependaman HTTP</translation>
 <translation id="4289540628985791613">Gambaran keseluruhan</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
+<translation id="463791356324567266">Membatalkan pengimbasan...</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
 <translation id="4654549501020883054">Tukar Setiap Hari</translation>
 <translation id="4665014895760275686">Pengeluar</translation>
@@ -251,6 +254,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} percubaan lagi}other{{0} percubaan lagi}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Tidak dapat menyelesaikan pengimbasan</translation>
+<translation id="5502931783115429516">Android tidak berjalan</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Mengaktifkan</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,6 +262,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5701381305118179107">Tengah</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">Keadaan Portal</translation>
+<translation id="5784136236926853061">Kependaman HTTP tinggi</translation>
 <translation id="5832805196449965646">Tambah Orang</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5849570051105887917">Kod penyedia tempatan</translation>
@@ -349,6 +354,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7359657277149375382">Jenis fail</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Kependaman HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
 <translation id="7469648432129124067">Portal dikesan</translation>
@@ -356,6 +362,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7490813197707563893">Alamat MAC</translation>
 <translation id="7497215489070763236">Sijil CA pelayan</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Rutin Diagnostik</translation>
 <translation id="7561454561030345039">Tindakan ini diurus oleh pentadbir anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

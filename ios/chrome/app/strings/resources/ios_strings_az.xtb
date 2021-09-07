@@ -230,6 +230,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="3207960819495026254">Əlfəcinlənib</translation>
 <translation id="3224641773458703735">Parolları eksport etmək üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
+<translation id="3230318355092723906">Sinxronizasiya deaktiv olduqda, hələ də bu cihazda əlfəcin, tarixçə, parol və digər ayarları görə bilərsiniz. Dəyişiklik etsəniz, onlar hesabınızla sinxronizasiya edilməyəcək.</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> təklifdən <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
@@ -500,6 +501,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5984222099446776634">Son Ziyarət</translation>
 <translation id="5988851877894965432">Chrome'da keçidləri açın</translation>
 <translation id="6012140227487808125">Şifrələnir...</translation>
+<translation id="6020800238007543967">Keçid Önizləmələrini göstərin</translation>
 <translation id="6021332621416007159">Burada açın...</translation>
 <translation id="6036514205982097558">Bütün Tablarınız Bir Brauzerdə</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6801927553864092214">Məxfi axtarış etmək üçün Anonim tab açın</translation>
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
+<translation id="681450999322335505">Təşkilatınız sinxronizasiyanı deaktiv etdi.</translation>
 <translation id="6830804042318138535">Ətraflı Oxuyun</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>

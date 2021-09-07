@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome sürümü eski</translation>
 <translation id="1883903952484604915">Dosyalarım</translation>
 <translation id="189358972401248634">Diğer diller</translation>
+<translation id="1910950723001426294">Paylaşım seçenekleri listesi kapalı.</translation>
 <translation id="1918175104945982129">Asistan sesli arama izni kullanıcı arayüzü yarım yükseklikte açıldı</translation>
 <translation id="1919130412786645364">Chrome'da oturum açmaya izin verin</translation>
 <translation id="1922362554271624559">Önerilen diller</translation>
@@ -193,6 +194,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2276696007612801991">Şifrelerinizi kontrol etmek için Google hesabınızda oturum açın</translation>
 <translation id="2278052315791335171">Bu şifre silindiğinde <ph name="SITE" /> üzerindeki hesabınız silinmez</translation>
 <translation id="2286841657746966508">Fatura adresi</translation>
+<translation id="228704530595896923">Paylaşım seçenekleri listesi.</translation>
 <translation id="230115972905494466">Uyumlu cihaz bulunamadı</translation>
 <translation id="230155349749732438">Bu ayarın kullanılabilmesi için <ph name="BEGIN_LINK" />Aramaları ve göz atmayı daha iyi yap<ph name="END_LINK" /> seçeneğinin etkinleştirilmesi gerekir</translation>
 <translation id="2318045970523081853">Aramak için dokunun</translation>
@@ -504,6 +506,7 @@ Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performa
 <translation id="4137746084635924146">Mevcut cihaz dili</translation>
 <translation id="4141536112466364990">Chrome'u Öğrenin</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
+<translation id="4162867837470729563">Paylaşım seçenekleri listesi tam ekranda açıldı.</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
 <translation id="4170011742729630528">Hizmet kullanılamıyor, daha sonra tekrar deneyin.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> miktar</translation>
@@ -846,6 +849,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6203593061661911168">İndirme kablosuz bağlantı üzerinden başlatılacak</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
+<translation id="6212786426849242805">Google'ın sayfadaki metni de değerlendirmesine izin verin</translation>
 <translation id="6221633008163990886">Şifrelerinizi dışa aktarmak için kilit açılamadı</translation>
 <translation id="6232535412751077445">"Do Not Track" seçeneği etkinleştirildiğinde, göz atma trafiğinize bir istek eklenir. Her türlü etki, bir web sitesinin isteğe cevap verip vermemesine ve isteğin nasıl yorumlandığına bağlıdır.
 
@@ -895,6 +899,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6459045781120991510">Anketler</translation>
 <translation id="6461962085415701688">Dosya açılamıyor</translation>
 <translation id="6464977750820128603">Chrome'da ziyaret ettiğiniz siteleri görebilir ve bunlar için zamanlayıcı ayarlayabilirsiniz.\n\nGoogle, hangi siteler için zamanlayıcı ayarladığınız ve bu siteleri ne kadar süre boyunca ziyaret ettiğiniz konusunda bilgi alır. Bu bilgi, Dijital Denge'yi daha iyi hale getirmek için kullanılır.</translation>
+<translation id="6473086018775716761">Paylaşım seçenekleri listesi, ekranın yarısına kadar açıldı.</translation>
 <translation id="6475951671322991020">Videoyu indir</translation>
 <translation id="6477928892249167417">Bu sitelerin sizin için önemli olduğu anlaşılıyor:</translation>
 <translation id="6482749332252372425">Depolama alanı yetersiz olduğu için <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
@@ -1131,6 +1136,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="7853202427316060426">Etkinlik</translation>
 <translation id="7857691613771368249">Dosyaları kaydetme işleminin ne zaman yapılacağını sor</translation>
 <translation id="7859988229622350291">Asla çevirme</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> uygulamasının, cihazınıza bağlanabilmesi için Yakındaki cihazlar iznine ihtiyacı var</translation>
 <translation id="7875915731392087153">E-posta oluşturun</translation>
 <translation id="7876243839304621966">Tümünü kaldır</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Okunmamış <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> sayfanız var}other{Okunmamış <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> sayfanız var}}</translation>
@@ -1192,6 +1198,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8186512483418048923"><ph name="FILES" /> dosya kaldı</translation>
 <translation id="8189750580333936930">Özel Korumalı Alan</translation>
 <translation id="8190358571722158785">1 gün kaldı</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8209050860603202033">Resmi aç</translation>
 <translation id="8216351761227087153">İzle</translation>
@@ -1210,6 +1217,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="829672787777123339">Cihazınıza bağlanılıyor…</translation>
 <translation id="8310344678080805313">Standart sekmeler</translation>
 <translation id="831192587911042850">Mevcut web sitesini, takip ettiğiniz web sitelerinin listesine ekler.</translation>
+<translation id="8319544457245040955">Sayfadan ayrılmadan bir konu hakkında bilgi edinin. Sayfadan bir veya daha fazla kelime seçerek arama yapın. Aramanızı düzenlemek için sonuçlara bakıp bunları yeni sekmede açın.</translation>
 <translation id="8327155640814342956">Web'e en iyi göz atma deneyimi için Chrome'u açıp güncelleyin</translation>
 <translation id="834313815369870491">Siteleri asla çevirme</translation>
 <translation id="8349013245300336738">Kullanılan veri miktarına göre sırala</translation>
