@@ -126,15 +126,17 @@ def _RunAsOnWindowStationDesktop(command,
   create_flags = (
       win32process.CREATE_NEW_CONSOLE | win32process.CREATE_UNICODE_ENVIRONMENT)
 
-  saved_env = dict(os.environ)
-  os.environ.update(env)
+  if env:
+    saved_env = dict(os.environ)
+    os.environ.update(env)
   env_block = win32profile.CreateEnvironmentBlock(security_token, True)
   (process_handle, unused_thread, pid,
    unused_thread_id) = win32process.CreateProcessAsUser(
        security_token, None, command, None, None, 1,
        create_flags, env_block, cwd, si)
-  os.environ.clear()
-  os.environ.update(saved_env)
+  if env:
+    os.environ.clear()
+    os.environ.update(saved_env)
   pipes.CloseWriteHandles()
   if not process_handle:
     logging.error('Failed to create child process [%s] on [%s\\%s]', command,
@@ -241,7 +243,7 @@ def RunAsPidOnDeskstop(command,
     token_handle = win32security.OpenProcessToken(process_handle,
                                                   win32con.TOKEN_ALL_ACCESS)
     return _RunAsOnWindowStationDesktop(
-        command, security_token, window_station, desktop, env, cwd, timeout)
+        command, token_handle, window_station, desktop, env, cwd, timeout)
   except (pywintypes.error, ImpersonationError) as err:
     logging.error(err)
     return (None, None, None, None)
