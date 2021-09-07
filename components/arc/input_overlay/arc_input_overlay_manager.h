@@ -14,6 +14,7 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/ime/input_method.h"
 
 namespace content {
 class BrowserContext;
@@ -49,14 +50,22 @@ class ArcInputOverlayManager : public KeyedService,
 
   void OnWindowDestroying(aura::Window* window) override;
 
+  // KeyedService overrides:
+  void Shutdown() override;
+
  private:
   friend class ArcInputOverlayManagerTest;
+
+  class InputMethodObserver;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
   // TODO(cuicuiruan): replace it with map when class TouchInjector is ready.
   base::flat_set<aura::Window*> input_overlay_enabled_windows_;
+  bool is_text_input_active_ = false;
+  ui::InputMethod* input_method_ = nullptr;
+  std::unique_ptr<InputMethodObserver> input_method_observer_;
 
   void ReadData(const std::string& package_name,
                 aura::Window* top_level_window);

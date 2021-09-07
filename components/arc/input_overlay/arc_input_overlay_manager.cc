@@ -13,6 +13,9 @@
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/ime/input_method_observer.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace arc {
@@ -38,6 +41,32 @@ class ArcInputOverlayManagerFactory
 
 }  // namespace
 
+class ArcInputOverlayManager::InputMethodObserver
+    : public ui::InputMethodObserver {
+ public:
+  explicit InputMethodObserver(ArcInputOverlayManager* owner) : owner_(owner) {}
+  InputMethodObserver(const InputMethodObserver&) = delete;
+  InputMethodObserver& operator=(const InputMethodObserver&) = delete;
+  ~InputMethodObserver() override = default;
+
+  // ui::InputMethodObserver overrides:
+  void OnFocus() override {}
+  void OnBlur() override {}
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {}
+  void OnTextInputStateChanged(const ui::TextInputClient* client) override {
+    owner_->is_text_input_active_ =
+        client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE &&
+        client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NULL;
+  }
+  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {
+    owner_->input_method_ = nullptr;
+  }
+  void OnShowVirtualKeyboardIfEnabled() override {}
+
+ private:
+  ArcInputOverlayManager* const owner_;
+};
+
 // static
 ArcInputOverlayManager* ArcInputOverlayManager::GetForBrowserContext(
     content::BrowserContext* context) {
@@ -46,7 +75,8 @@ ArcInputOverlayManager* ArcInputOverlayManager::GetForBrowserContext(
 
 ArcInputOverlayManager::ArcInputOverlayManager(
     content::BrowserContext* browser_context,
-    ArcBridgeService* arc_bridge_service) {
+    ArcBridgeService* arc_bridge_service)
+    : input_method_observer_(std::make_unique<InputMethodObserver>(this)) {
   if (aura::Env::HasInstance())
     env_observation_.Observe(aura::Env::GetInstance());
 }
@@ -97,6 +127,13 @@ void ArcInputOverlayManager::OnWindowPropertyChanged(aura::Window* window,
     if (!package_name || package_name->empty())
       return;
     ReadData(*package_name, top_level_window);
+
+    // Add input method observer if it is not added.
+    if (!input_method_ && window->GetHost()) {
+      input_method_ = window->GetHost()->GetInputMethod();
+      if (input_method_)
+        input_method_->AddObserver(input_method_observer_.get());
+    }
   }
 }
 
@@ -106,6 +143,15 @@ void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
 
   if (window_observations_.IsObservingSource(window))
     window_observations_.RemoveObservation(window);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// KeyedService:
+void ArcInputOverlayManager::Shutdown() {
+  if (input_method_) {
+    input_method_->RemoveObserver(input_method_observer_.get());
+    input_method_ = nullptr;
+  }
 }
 
 }  // namespace arc
