@@ -74,12 +74,12 @@ void PartitionAddressSpace::Init() {
 
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
-  void* requested_address = reinterpret_cast<void*>(brp_pool_base_address_);
+  void* requested_address = reinterpret_cast<void*>(non_brp_pool_base_address_);
   char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
-      brp_pool_, requested_address, kSuperPageSize);
+      non_brp_pool_, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated in the beginning of "
-         "the BRPPool";
+         "the non-BRP pool";
 #endif  // PA_STARSCAN_USE_CARD_TABLE
 
   PA_DCHECK(reserved_base_address_ + properties.size == current);

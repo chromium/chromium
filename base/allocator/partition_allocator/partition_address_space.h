@@ -78,22 +78,29 @@ class BASE_EXPORT PartitionAddressSpace {
   static ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
     return non_brp_pool_;
   }
-  static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
 
-  static ALWAYS_INLINE constexpr uintptr_t BRPPoolBaseMask() {
-    return kBRPPoolBaseMask;
+  static ALWAYS_INLINE constexpr uintptr_t NonBRPPoolBaseMask() {
+    return kNonBRPPoolBaseMask;
   }
+
+  static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
 
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       const void* address) {
+    // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+    PA_DCHECK(!IsInBRPPool(address));
+#endif
     pool_handle pool = 0;
     uintptr_t base = 0;
     if (IsInNonBRPPool(address)) {
       pool = GetNonBRPPool();
       base = non_brp_pool_base_address_;
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInBRPPool(address)) {
       pool = GetBRPPool();
       base = brp_pool_base_address_;
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     } else {
       NOTREACHED();
     }
@@ -121,6 +128,11 @@ class BASE_EXPORT PartitionAddressSpace {
     return (reinterpret_cast<uintptr_t>(address) & kNonBRPPoolBaseMask) ==
            non_brp_pool_base_address_;
   }
+
+  static ALWAYS_INLINE uintptr_t NonBRPPoolBase() {
+    return non_brp_pool_base_address_;
+  }
+
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
@@ -132,14 +144,6 @@ class BASE_EXPORT PartitionAddressSpace {
     return reinterpret_cast<uintptr_t>(address) - brp_pool_base_address_;
   }
 
-  static ALWAYS_INLINE uintptr_t BRPPoolBase() {
-    return brp_pool_base_address_;
-  }
-
-  static ALWAYS_INLINE uintptr_t BRPPoolEnd() {
-    return brp_pool_base_address_ + kBRPPoolSize;
-  }
-
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
   PartitionAddressSpace(const PartitionAddressSpace&) = delete;
@@ -147,42 +151,33 @@ class BASE_EXPORT PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
-  // Partition Alloc Address Space
-  // Reserves 16GiB address space for one pool that supports BackupRefPtr and
-  // one that doesn't, 8GiB each.
-  // TODO(bartekn): Look into devices with 39-bit address space that have 256GiB
-  // user-mode space (most ARM64 Android devices as of 2021). Libraries loaded
-  // at random addresses may stand in the way of reserving a contiguous 24GiB
-  // region (even though we're requesting only 16GiB, AllocPages may under the
-  // covers reserve extra 8GiB to satisfy the alignment requirements).
+  // On 64-bit systems, GigaCage is split into two pools, one with allocations
+  // that have a BRP ref-count, and one with allocations that don't.
+  //   +----------------+ reserved_base_address_ (8GiB aligned)
+  //   |    non-BRP     |     == non_brp_pool_base_address_
+  //   |      pool      |
+  //   +----------------+ reserved_base_address_ + 8GiB
+  //   |      BRP       |     == brp_pool_base_address_
+  //   |      pool      |
+  //   +----------------+ reserved_base_address_ + 16GiB
   //
-  // +----------------+ reserved_base_address_ (8GiB aligned)
-  // |    non-BRP     |     == non_brp_pool_base_address_
-  // |      pool      |
-  // +----------------+ reserved_base_address_ + 8GiB
-  // |      BRP       |     == brp_pool_base_address_
-  // |      pool      |
-  // +----------------+ reserved_base_address_ + 16GiB
-  //
-  // NOTE! On 64-bit systems with BackupRefPtr enabled, the non-BRP pool must
-  // precede the BRP pool. This is to prevent a pointer immediately past a
-  // non-GigaCage allocation from falling into the BRP pool, thus triggering
-  // BackupRefPtr mechanism and likely crashing.
-
-  static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
-
   // Pool sizes have to be the power of two. Each pool will be aligned at its
   // own size boundary.
   //
-  // Due to the above restriction, the BRP pool has to be preceded by another
-  // pool. Alternatively it could be any region that guarantess to not have
-  // allocations extending to its very end, but it's just easier to have non-BRP
-  // pool there.
+  // NOTE! The BRP pool must be preceded by a reserved region, where allocations
+  // are forbidden. This is to prevent a pointer immediately past a non-GigaCage
+  // allocation from falling into the BRP pool, thus triggering BRP mechanism
+  // and likely crashing. One way to implement this is to place another
+  // PartitionAlloc pool right before, because trailing guard pages there will
+  // fulfill this guarantee. Alternatively, it could be any region that
+  // guarantess to not have allocations extending to its very end. But it's just
+  // easier to have non-BRP pool there.
   //
-  // Care has to be taken when choosing sizes, if more than 2 pools are needed.
-  // For example, with sizes [8GiB,4GiB,8GiB], it'd be impossible to align each
-  // pool at its own size boundary while keeping them next to each other.
-  // CalculateGigaCageProperties() has non-debug run-time checks to ensure that.
+  // If more than 2 consecutive pools are ever needed, care will have to be
+  // taken when choosing sizes. For example, for sizes [8GiB,4GiB,8GiB], it'd be
+  // impossible to align each pool at its own size boundary while keeping them
+  // next to each other. CalculateGigaCageProperties() has non-debug, run-time
+  // checks to assert that.
   static constexpr size_t kNonBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static constexpr size_t kTotalSize = kNonBRPPoolSize + kBRPPoolSize;
@@ -229,11 +224,15 @@ ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
-  // Currently even when BUILDFLAG(USE_BACKUP_REF_PTR) is off, BRP pool is used
-  // for non-BRP allocations, so we have to check both pools regardless of
-  // BUILDFLAG(USE_BACKUP_REF_PTR).
-  return internal::PartitionAddressSpace::IsInNonBRPPool(address) ||
-         internal::PartitionAddressSpace::IsInBRPPool(address);
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+  PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
+#endif
+  return internal::PartitionAddressSpace::IsInNonBRPPool(address)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+         || internal::PartitionAddressSpace::IsInBRPPool(address)
+#endif
+      ;
 }
 
 // Returns false for nullptr.

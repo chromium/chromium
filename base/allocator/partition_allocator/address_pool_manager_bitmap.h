@@ -11,6 +11,7 @@
 #include <limits>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/synchronization/lock.h"
@@ -112,7 +113,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 #else
     super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_add(
         1, std::memory_order_relaxed);
-#endif
+#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
   static void DecrementOutsideOfBRPPoolPtrRefCount(const void* address) {
@@ -127,7 +128,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
     super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_sub(
         1, std::memory_order_relaxed);
-#endif
+#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
   static bool IsAllowedSuperPageForBRPPool(const void* address) {
@@ -151,7 +152,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 #else
     return super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].load(
                std::memory_order_relaxed) == 0;
-#endif
+#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -166,7 +167,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;
-#endif
+#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
       super_page_refcount_map_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -176,11 +177,15 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
 // Returns false for nullptr.
 ALWAYS_INLINE bool IsManagedByPartitionAlloc(const void* address) {
-  // Currently even when BUILDFLAG(USE_BACKUP_REF_PTR) is off, BRP pool is used
-  // for non-BRP allocations, so we have to check both pools regardless of
-  // BUILDFLAG(USE_BACKUP_REF_PTR).
-  return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address) ||
-         internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+  PA_DCHECK(!internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address));
+#endif
+  return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+         || internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address)
+#endif
+      ;
 }
 
 // Returns false for nullptr.

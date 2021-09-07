@@ -428,13 +428,11 @@ struct BASE_EXPORT PartitionRoot {
     return TS_UNCHECKED_READ(max_size_of_allocated_bytes);
   }
 
-  internal::pool_handle ChooseGigaCagePool(bool is_direct_map) const {
+  internal::pool_handle ChooseGigaCagePool() const {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     return allow_ref_count ? internal::GetBRPPool() : internal::GetNonBRPPool();
 #else
-    // When BRP isn't used, all normal bucket allocations belong to the BRP pool
-    // and direct map allocations belong to non-BRP pool. PCScan requires this.
-    return is_direct_map ? internal::GetNonBRPPool() : internal::GetBRPPool();
+    return internal::GetNonBRPPool();
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 

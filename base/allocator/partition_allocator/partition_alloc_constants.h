@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -196,6 +195,10 @@ constexpr size_t kSuperPageSize = 1 << kSuperPageShift;
 constexpr size_t kSuperPageAlignment = kSuperPageSize;
 constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
+
+// GigaCage is split into two pools, one which supports BackupRefPtr (BRP) and
+// one that doesn't.
+constexpr size_t kNumPools = 2;
 #if defined(PA_HAS_64_BITS_POINTERS)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
 #else
@@ -203,10 +206,6 @@ constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
 constexpr size_t kMaxSuperPages = kPoolMaxSize / kSuperPageSize;
 
-constexpr size_t kNumPools = 2;
-
-// BRP stands for BackupRefPtr. GigaCage is split into pools, one which supports
-// BackupRefPtr and one that doesn't.
 static constexpr internal::pool_handle kNonBRPPoolHandle = 1;
 static constexpr internal::pool_handle kBRPPoolHandle = 2;
 

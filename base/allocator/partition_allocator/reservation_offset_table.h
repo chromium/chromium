@@ -10,6 +10,7 @@
 #include <limits>
 #include <tuple>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -164,7 +165,11 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
 #if DCHECK_IS_ON()
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_non_brp_pool = IsManagedByPartitionAllocNonBRPPool(address);
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+  PA_DCHECK(!is_in_brp_pool);
 #endif
+#endif  // DCHECK_IS_ON()
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   uint16_t* offset_ptr = ReservationOffsetPointer(ptr_as_uintptr);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);

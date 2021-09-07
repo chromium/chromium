@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/lazy_instance.h"
 

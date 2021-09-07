@@ -11,11 +11,13 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
@@ -322,15 +324,9 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
                                   size_t length) {
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  if (handle == kNonBRPPoolHandle) {
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
-    SetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
-  } else {
-    PA_DCHECK(handle == kBRPPoolHandle);
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  if (handle == kBRPPoolHandle) {
     PA_DCHECK(
         (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
 
@@ -361,31 +357,32 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
             AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
         (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
             AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
+  } else
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+  {
+    PA_DCHECK(handle == kNonBRPPoolHandle);
+    PA_DCHECK((length %
+               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    SetBitmap(
+        AddressPoolManagerBitmap::non_brp_pool_bits_,
+        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
   }
 }
 
 void AddressPoolManager::MarkUnused(pool_handle handle,
                                     const void* address,
                                     size_t length) {
+  // Address regions allocated for normal buckets are never released, so this
+  // function can only be called for direct map. However, do not DCHECK on
+  // IsManagedByDirectMap(address), because many tests test this function using
+  // small allocations.
+
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(address);
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
-  // Address regions allocated for normal buckets are never freed, so frequency
-  // of codepaths taken depends solely on which pool direct map allocations go
-  // to. In the USE_BACKUP_REF_PTR case, they usually go to BRP pool (except for
-  // aligned partition). Otherwise, they always go to non-BRP pool.
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  if (UNLIKELY(handle == kNonBRPPoolHandle)) {
-#else
-  if (LIKELY(handle == kNonBRPPoolHandle)) {
-#endif
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
-    ResetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
-  } else {
-    PA_DCHECK(handle == kBRPPoolHandle);
+  if (handle == kBRPPoolHandle) {
     PA_DCHECK(
         (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
 
@@ -398,6 +395,16 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
             AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap,
         (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
             AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
+  } else
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+  {
+    PA_DCHECK(handle == kNonBRPPoolHandle);
+    PA_DCHECK((length %
+               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    ResetBitmap(
+        AddressPoolManagerBitmap::non_brp_pool_bits_,
+        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
   }
 }
 

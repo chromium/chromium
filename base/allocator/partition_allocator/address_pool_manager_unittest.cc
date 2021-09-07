@@ -289,6 +289,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByNonBRPPool) {
   }
 }
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
   constexpr size_t kAllocCount = 4;
   // Totally (1+3+7+11) * 2MB = 44MB allocation
@@ -338,6 +339,8 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal

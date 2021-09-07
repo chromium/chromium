@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/partition_page.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -72,8 +73,7 @@ ALWAYS_INLINE void PartitionDirectUnmap(
   // expected to be very rare though, and likely preferable to holding the lock
   // while releasing the address space.
   ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-  UnmapNow(reservation_start, reservation_size,
-           root->ChooseGigaCagePool(/* is_direct_map= */ true));
+  UnmapNow(reservation_start, reservation_size, root->ChooseGigaCagePool());
 }
 
 template <bool thread_safe>
@@ -232,6 +232,9 @@ void UnmapNow(void* reservation_start,
               size_t reservation_size,
               pool_handle giga_cage_pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
+#if DCHECK_IS_ON()
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (giga_cage_pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Non-BRP pool doesn't have logic.
@@ -244,11 +247,14 @@ void UnmapNow(void* reservation_start,
             AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap
 #endif
         ));
-  } else {
+  } else
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+  {
     PA_DCHECK(giga_cage_pool == GetNonBRPPool());
     // Non-BRP pool doesn't need adjustment that BRP needs in 32-bit mode.
     PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(reservation_start));
   }
+#endif  // DCHECK_IS_ON()
 
   uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(reservation_start);
   PA_DCHECK((ptr_as_uintptr & kSuperPageOffsetMask) == 0);
