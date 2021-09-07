@@ -830,10 +830,24 @@ void NGBoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
         ObjectPainter(*child_fragment->GetLayoutObject())
             .PaintAllPhasesAtomically(paint_info);
       }
+    } else if (child_fragment->IsBlockInInline() &&
+               child_fragment->HasFloatingDescendantsForPaint()) {
+      PaintFloatingChildren(*child_fragment, paint_info);
     }
     DCHECK(child_fragment->IsInlineBox() || !cursor->Current().HasChildren());
     cursor->MoveToNext();
   }
+}
+
+void NGBoxFragmentPainter::PaintFloatingChildren(
+    const NGPhysicalFragment& container,
+    const PaintInfo& paint_info) {
+  DCHECK(container.HasFloatingDescendantsForPaint());
+
+  PaintInfo float_paint_info(paint_info);
+  if (paint_info.phase == PaintPhase::kFloat)
+    float_paint_info.phase = PaintPhase::kForeground;
+  PaintFloatingChildren(container, paint_info, float_paint_info);
 }
 
 void NGBoxFragmentPainter::PaintFloatingChildren(
@@ -942,11 +956,7 @@ void NGBoxFragmentPainter::PaintFloatingChildren(
 void NGBoxFragmentPainter::PaintFloats(const PaintInfo& paint_info) {
   DCHECK(PhysicalFragment().HasFloatingDescendantsForPaint() ||
          !PhysicalFragment().IsInlineFormattingContext());
-
-  PaintInfo float_paint_info(paint_info);
-  if (paint_info.phase == PaintPhase::kFloat)
-    float_paint_info.phase = PaintPhase::kForeground;
-  PaintFloatingChildren(PhysicalFragment(), paint_info, float_paint_info);
+  PaintFloatingChildren(PhysicalFragment(), paint_info);
 }
 
 void NGBoxFragmentPainter::PaintMask(const PaintInfo& paint_info,
