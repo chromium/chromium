@@ -1935,6 +1935,9 @@ extern const char kEnhancedProtectionPromoAndroidDescription[];
 extern const char kSafeBrowsingUseLocalBlacklistsV2Name[];
 extern const char kSafeBrowsingUseLocalBlacklistsV2Description[];
 
+extern const char kScrollCaptureName[];
+extern const char kScrollCaptureDescription[];
+
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];
 

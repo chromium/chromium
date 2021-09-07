@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.os.Build;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
@@ -73,6 +74,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureManager;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
@@ -150,6 +152,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
     private FindToolbarObserver mContinuousSearchFindToolbarObserver;
     private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
+    private @Nullable ScrollCaptureManager mScrollCaptureManager;
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final IntentRequestTracker mIntentRequestTracker;
@@ -379,6 +382,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCommerceSubscriptionsService = null;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && mScrollCaptureManager != null) {
+            mScrollCaptureManager.destroy();
+            mScrollCaptureManager = null;
+        }
+
         super.onDestroy();
     }
 
@@ -507,7 +515,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 PwaBottomSheetControllerFactory.createPwaBottomSheetController(mActivity);
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initContinuousSearchCoordinator();
-
+        initScrollCapture();
         initMerchantTrustSignals();
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
@@ -528,6 +536,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mWindowAndroid, getBottomSheetController(), mActivity.getWindow().getDecorView(),
                 MessageDispatcherProvider.from(mWindowAndroid), mActivityTabProvider,
                 mProfileSupplier, new MerchantTrustMetrics(), mIntentRequestTracker);
+    }
+
+    private void initScrollCapture() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SCROLL_CAPTURE)) {
+            return;
+        }
+
+        mScrollCaptureManager = new ScrollCaptureManager(mActivityTabProvider);
     }
 
     // Protected class methods
