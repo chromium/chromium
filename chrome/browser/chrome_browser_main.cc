@@ -1008,6 +1008,28 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 #endif
 
+  if (command_line->HasSwitch(switches::kProfileEmail) &&
+      !command_line->HasSwitch(switches::kProfileDirectory)) {
+    // Use GetSwitchValueNative() rather than GetSwitchValueASCII() to support
+    // non-ASCII email addresses.
+    base::CommandLine::StringType email_native =
+        command_line->GetSwitchValueNative(switches::kProfileEmail);
+    if (!email_native.empty()) {
+      std::string email;
+#if defined(OS_WIN)
+      email = base::WideToUTF8(email_native);
+#else
+      email = std::move(email_native);
+#endif
+      base::FilePath profile_dir =
+          browser_process_->profile_manager()->GetProfileDirForEmail(email);
+      if (!profile_dir.empty()) {
+        command_line->AppendSwitchPath(switches::kProfileDirectory,
+                                       profile_dir.BaseName());
+      }
+    }
+  }
+
   // ChromeOS needs ui::ResourceBundle::InitSharedInstance to be called before
   // this.
   browser_process_->PreCreateThreads(parsed_command_line());

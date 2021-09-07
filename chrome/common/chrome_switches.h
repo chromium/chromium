@@ -143,6 +143,7 @@ extern const char kPreinstalledWebAppsDir[];
 extern const char kPrivetIPv6Only[];
 extern const char kProductVersion[];
 extern const char kProfileDirectory[];
+extern const char kProfileEmail[];
 extern const char kProxyAutoDetect[];
 extern const char kProxyBypassList[];
 extern const char kProxyPacUrl[];

@@ -454,6 +454,12 @@ const char kProductVersion[]                = "product-version";
 // Selects directory of profile to associate with the first browser launched.
 const char kProfileDirectory[]              = "profile-directory";
 
+// Like kProfileDirectory, but selects the profile by email address. If the
+// email is not found in any existing profile, this switch has no effect. If
+// both kProfileDirectory and kProfileUserName are specified, kProfileDirectory
+// takes priority.
+const char kProfileEmail[] = "profile-email";
+
 // Forces proxy auto-detection.
 const char kProxyAutoDetect[]               = "proxy-auto-detect";
 

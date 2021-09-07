@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -3198,7 +3199,8 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
             FILE_PATH_LITERAL("New Profile 1")),
         profile_manager->user_data_dir().Append(
             FILE_PATH_LITERAL("New Profile 2"))};
-    for (const auto& profile_path : profile_paths) {
+    for (int i = 0; i < 2; ++i) {
+      const base::FilePath& profile_path = profile_paths[i];
       ASSERT_TRUE(profile_manager->GetProfile(profile_path));
       // Mark newly created profiles as active.
       ProfileAttributesEntry* entry =
@@ -3206,6 +3208,10 @@ class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
               .GetProfileAttributesWithPath(profile_path);
       ASSERT_NE(entry, nullptr);
       entry->SetActiveTimeToNow();
+      entry->SetAuthInfo(
+          base::StringPrintf("gaia_id_%i", i),
+          base::UTF8ToUTF16(base::StringPrintf("user%i@gmail.com", i)),
+          /*is_consented_primary_account=*/false);
     }
   }
 };
@@ -3314,6 +3320,14 @@ INSTANTIATE_TEST_SUITE_P(
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kProfileDirectory,
                            /*switch_value_ascii=*/"Custom Profile"},
+        // Skip the picker when a specific profile is requested by email.
+        ProfilePickerSetup{/*expected_to_show=*/false,
+                           /*switch_name=*/switches::kProfileEmail,
+                           /*switch_value_ascii=*/"user0@gmail.com"},
+        // Show the picker if the profile email is not found.
+        ProfilePickerSetup{/*expected_to_show=*/true,
+                           /*switch_name=*/switches::kProfileEmail,
+                           /*switch_value_ascii=*/"unknown@gmail.com"},
         // Skip the picker when a URL is provided on command-line (used by the
         // OS when Chrome is the default web browser) and use the last used
         // profile, instead.
@@ -3336,9 +3350,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*switch_name=*/absl::nullopt,
             /*switch_value_ascii=*/absl::nullopt,
             /*url_arg=*/absl::nullopt,
-            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart}
-
-        ));
+            /*shutdown_type=*/ProfilePickerSetup::ShutdownType::kRestart}));
 
 class GuestStartupBrowserCreatorPickerTest
     : public StartupBrowserCreatorPickerTestBase {

@@ -103,6 +103,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -843,6 +844,15 @@ base::FilePath ProfileManager::GetInitialProfileDir() {
 
 base::FilePath ProfileManager::GetLastUsedProfileDir() {
   return user_data_dir_.AppendASCII(GetLastUsedProfileBaseName());
+}
+
+base::FilePath ProfileManager::GetProfileDirForEmail(const std::string& email) {
+  for (const auto* entry :
+       GetProfileAttributesStorage().GetAllProfilesAttributes()) {
+    if (gaia::AreEmailsSame(base::UTF16ToUTF8(entry->GetUserName()), email))
+      return entry->GetPath();
+  }
+  return base::FilePath();
 }
 
 std::vector<Profile*> ProfileManager::GetLoadedProfiles() const {

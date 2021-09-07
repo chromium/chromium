@@ -161,6 +161,10 @@ class ProfileManager : public Profile::Delegate {
   // profile.
   base::FilePath GetLastUsedProfileDir();
 
+  // Returns the path of a profile with the requested account, or the empty
+  // path if none exists.
+  base::FilePath GetProfileDirForEmail(const std::string& email);
+
   // Returns created and fully initialized profiles. Note, profiles order is NOT
   // guaranteed to be related with the creation order.
   std::vector<Profile*> GetLoadedProfiles() const;
