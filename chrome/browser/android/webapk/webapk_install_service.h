@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -83,18 +82,8 @@ class WebApkInstallService : public KeyedService {
                    FinishCallback finish_callback);
 
  private:
-  // Observes the lifetime of a WebContents.
-  class LifetimeObserver : public content::WebContentsObserver {
-   public:
-    explicit LifetimeObserver(content::WebContents* web_contents)
-        : WebContentsObserver(web_contents) {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LifetimeObserver);
-  };
-
   // Called once the install/update completed or failed.
-  void OnFinishedInstall(std::unique_ptr<LifetimeObserver> observer,
+  void OnFinishedInstall(base::WeakPtr<content::WebContents> web_contents,
                          const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
                          bool is_priamry_icon_maskable,

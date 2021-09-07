@@ -15,6 +15,7 @@
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "components/webapps/browser/android/shortcut_info.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // static
@@ -50,14 +51,13 @@ void WebApkInstallService::InstallAsync(
   ShowInstallInProgressNotification(shortcut_info, primary_icon,
                                     is_primary_icon_maskable);
 
-  // We pass an observer which wraps the WebContents to the callback, since the
+  // We pass an weak ptr to a WebContents to the callback, since the
   // installation may take more than 10 seconds so there is a chance that the
   // WebContents has been destroyed before the install is finished.
-  auto observer = std::make_unique<LifetimeObserver>(web_contents);
   WebApkInstaller::InstallAsync(
       browser_context_, shortcut_info, primary_icon, is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(observer),
+                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
                      shortcut_info, primary_icon, is_primary_icon_maskable));
 }
 
@@ -69,7 +69,7 @@ void WebApkInstallService::UpdateAsync(
 }
 
 void WebApkInstallService::OnFinishedInstall(
-    std::unique_ptr<LifetimeObserver> observer,
+    base::WeakPtr<content::WebContents> web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable,
@@ -94,12 +94,11 @@ void WebApkInstallService::OnFinishedInstall(
   // happen if Play was busy with another install and this one is still queued
   // (and hence might succeed in the future).
   if (result == WebApkInstallResult::FAILURE) {
-    content::WebContents* web_contents = observer->web_contents();
     if (!web_contents)
       return;
 
     // TODO(https://crbug.com/861643): Support maskable icons here.
-    ShortcutHelper::AddToLauncherWithSkBitmap(web_contents, shortcut_info,
+    ShortcutHelper::AddToLauncherWithSkBitmap(web_contents.get(), shortcut_info,
                                               primary_icon,
                                               /*is_icon_maskable=*/false);
   }
