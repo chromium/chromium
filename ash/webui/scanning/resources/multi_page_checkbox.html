@@ -28,9 +28,15 @@
   <div slot="settings">
     <div id="checkboxDiv" on-click="onCheckboxClick_">
       <cr-checkbox class="no-label" checked="{{multiPageScanChecked}}"
-          disabled="[[disabled]]">
+          disabled="[[disabled]]"
+          aria-description="[[i18n('multiPageCheckboxText')]]">
+          <span part="label-container">
+            [[i18n('multiPageCheckboxAriaLabel')]]
+          </span>
       </cr-checkbox>
-      <span id="checkboxText">[[i18n('multiPageCheckboxText')]]</span>
+      <span id="checkboxText" aria-hidden="true">
+        [[i18n('multiPageCheckboxText')]]
+      </span>
     </div>
   </div>
 </scan-settings-section>

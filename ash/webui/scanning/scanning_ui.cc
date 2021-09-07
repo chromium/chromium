@@ -76,6 +76,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"multiPageCancelingScanningText",
        IDS_SCANNING_APP_MULTI_PAGE_CANCELING_SCANNING_TEXT},
+      {"multiPageCheckboxAriaLabel",
+       IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_ARIA_LABEL},
       {"multiPageCheckboxText", IDS_SCANNING_APP_MULTI_PAGE_CHECKBOX_TEXT},
       {"multiPageScanInstructionsText",
        IDS_SCANNING_APP_MULTI_PAGE_SCAN_INSTRUCTIONS_TEXT},
