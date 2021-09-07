@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.base.ThreadUtils.assertOnUiThread;
+
 /**
  * This factory returns an implementation for the backend. The factory itself is implemented
  * downstream, too.
@@ -18,7 +20,8 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return The shared {@link PasswordStoreAndroidBackendFactory} instance.
      */
     public static PasswordStoreAndroidBackendFactory getInstance() {
-        // TODO(crbug.com/1229654): Create new PasswordStoreAndroidBackendFactoryImpl().
+        assertOnUiThread();
+        if (sInstance == null) sInstance = new PasswordStoreAndroidBackendFactoryImpl();
         return sInstance;
     }
 
