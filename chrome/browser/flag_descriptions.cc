@@ -5136,6 +5136,11 @@ const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[] =
     "chrome://flags/#enable-migrate-default-chrome-app-to-web-apps-non-gsuite) "
     "are ignored for managed Chrome OS users unless this feature is enabled.";
 
+const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
+const char kDefaultCalculatorWebAppDescription[] =
+    "Enable default installing of the calculator PWA instead of the deprecated "
+    "chrome app.";
+
 const char kDefaultChatWebAppName[] = "Default Chat web app";
 const char kDefaultChatWebAppDescription[] =
     "Enables the Chat web app to be installed by default.";

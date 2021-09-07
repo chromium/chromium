@@ -2973,6 +2973,9 @@ extern const char kAllowDefaultWebAppMigrationForChromeOsManagedUsersName[];
 extern const char
     kAllowDefaultWebAppMigrationForChromeOsManagedUsersDescription[];
 
+extern const char kDefaultCalculatorWebAppName[];
+extern const char kDefaultCalculatorWebAppDescription[];
+
 extern const char kDefaultChatWebAppName[];
 extern const char kDefaultChatWebAppDescription[];
 

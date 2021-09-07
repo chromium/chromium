@@ -47652,6 +47652,7 @@ from previous Chrome versions.
   <int value="-1660884825" label="ReadLaterNewBadgePromo:enabled"/>
   <int value="-1656179450" label="EnableOmniboxRichEntities:enabled"/>
   <int value="-1655535052" label="enable-pointer-events"/>
+  <int value="-1655281250" label="DefaultCalculatorWebApp:enabled"/>
   <int value="-1654344175" label="disable-extension-info-dialog"/>
   <int value="-1653991213" label="CrossOriginIsolated:disabled"/>
   <int value="-1653838003" label="PauseBackgroundTabs:enabled"/>
@@ -51961,6 +51962,7 @@ from previous Chrome versions.
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
   <int value="1758262950"
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:disabled"/>
+  <int value="1759323272" label="DefaultCalculatorWebApp:disabled"/>
   <int value="1760946944" label="MacViewsAutofillPopup:disabled"/>
   <int value="1761920078"
       label="OverrideSimilarLanguagesForHrefTranslate:enabled"/>

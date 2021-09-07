@@ -49,6 +49,11 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite {
       base::FEATURE_DISABLED_BY_DEFAULT
 };
 
+// Enables installing the PWA version of the chrome os calculator instead of the
+// deprecated chrome app.
+const base::Feature kDefaultCalculatorWebApp{"DefaultCalculatorWebApp",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Whether to allow the MigrateDefaultChromeAppToWebAppsGSuite and
 // MigrateDefaultChromeAppToWebAppsNonGSuite flags for managed users.

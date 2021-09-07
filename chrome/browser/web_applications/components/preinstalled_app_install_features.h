@@ -18,6 +18,8 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
 
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
+extern const base::Feature kDefaultCalculatorWebApp;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
 
