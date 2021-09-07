@@ -53,6 +53,7 @@ void GetServiceWorkersCallback(
 
 }  // namespace
 
+// static
 void ServiceWorkerActivationObserver::SignalActivation(
     ServiceWorkerContextWrapper* context,
     base::OnceClosure callback) {
@@ -108,19 +109,13 @@ void AddServiceWorker(const std::string& origin,
       scope_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerContextWrapper::RegisterServiceWorker,
-                     base::Unretained(service_worker_context), js_url, key,
-                     options, base::BindOnce(&AddServiceWorkerCallback)));
+  service_worker_context->RegisterServiceWorker(
+      js_url, key, options, base::BindOnce(&AddServiceWorkerCallback));
 
   // Wait for its activation.
   base::RunLoop run_loop;
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerActivationObserver::SignalActivation,
-                     base::Unretained(service_worker_context),
-                     run_loop.QuitClosure()));
+  ServiceWorkerActivationObserver::SignalActivation(service_worker_context,
+                                                    run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -134,13 +129,9 @@ std::vector<StorageUsageInfo> GetServiceWorkers(
   std::vector<StorageUsageInfo> service_workers;
   base::RunLoop run_loop;
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::GetAllOriginsInfo,
-          base::Unretained(service_worker_context),
-          base::BindOnce(&GetServiceWorkersCallback, run_loop.QuitClosure(),
-                         base::Unretained(&service_workers))));
+  service_worker_context->GetAllOriginsInfo(
+      base::BindOnce(&GetServiceWorkersCallback, run_loop.QuitClosure(),
+                     base::Unretained(&service_workers)));
   run_loop.Run();
 
   return service_workers;
