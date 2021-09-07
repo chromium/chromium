@@ -427,7 +427,6 @@ bool EnumTraits<MojomComponentType, ProtoComponentType>::FromMojom(
       return true;
 
     case MojomComponentType::kComponentUnknown:
-    default:
       NOTREACHED();
       return false;
   }
@@ -449,16 +448,17 @@ EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::ToMojom(
     case rmad::ComponentsRepairState_ComponentRepairStatus::
         RMAD_REPAIR_STATUS_MISSING:
       return MojomComponentRepairState::kMissing;
-
     case rmad::ComponentsRepairState_ComponentRepairStatus::
         RMAD_REPAIR_STATUS_UNKNOWN:
+      return MojomComponentRepairState::kRepairUnknown;
+
     default:
       NOTREACHED();
       return MojomComponentRepairState::kRepairUnknown;
   }
   NOTREACHED();
   return MojomComponentRepairState::kRepairUnknown;
-}  // namespace mojo
+}
 
 // static
 bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
@@ -476,15 +476,18 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
       *out = rmad::ComponentsRepairState_ComponentRepairStatus::
           RMAD_REPAIR_STATUS_MISSING;
       return true;
-
     case MojomComponentRepairState::kRepairUnknown:
+      *out = rmad::ComponentsRepairState_ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_UNKNOWN;
+      return true;
+
     default:
       NOTREACHED();
       return false;
   }
   NOTREACHED();
   return false;
-}  // namespace mojo
+}
 
 // static
 MojomProvisioningStep
@@ -516,6 +519,7 @@ bool EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::FromMojom(
     case MojomProvisioningStep::kProvisioningComplete:
       *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE;
       return true;
+
     case MojomProvisioningStep::kProvisioningUnknown:
       NOTREACHED();
       return false;

@@ -257,6 +257,14 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
        {mojom::ComponentRepairStatus::kMissing,
         rmad::ComponentsRepairState::ComponentRepairStatus::
             RMAD_REPAIR_STATUS_MISSING}});
+  // RMAD_REPAIR_STATUS_UNKNOWN is used when components are first received from
+  // rmad to indicate that repair state has not been set.
+  EXPECT_EQ(static_cast<int32_t>(mojom::ComponentRepairStatus::kRepairUnknown),
+            0);
+  EXPECT_EQ(
+      static_cast<int32_t>(rmad::ComponentsRepairState::ComponentRepairStatus::
+                               RMAD_REPAIR_STATUS_UNKNOWN),
+      0);
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);
