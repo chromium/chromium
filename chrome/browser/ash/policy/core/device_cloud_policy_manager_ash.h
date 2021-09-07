@@ -19,6 +19,10 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
+namespace reporting {
+class UserAddedRemovedReporter;
+}  // namespace reporting
+
 namespace ash {
 namespace attestation {
 class AttestationPolicyObserver;
@@ -178,6 +182,10 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
   // Object that reports login/logout events to the server.
   std::unique_ptr<chromeos::reporting::LoginLogoutReporter>
       login_logout_reporter_;
+
+  // Object that reports user added/removed events to the server.
+  std::unique_ptr<reporting::UserAddedRemovedReporter>
+      user_added_removed_reporter_;
 
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

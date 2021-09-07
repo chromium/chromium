@@ -62,6 +62,10 @@ void UserEventReporterHelper::ReportEvent(
   report_queue_->Enqueue(record, priority, std::move(enqueue_cb));
 }
 
+bool UserEventReporterHelper::IsCurrentUserNew() const {
+  return user_manager::UserManager::Get()->IsCurrentUserNew();
+}
+
 // static
 policy::DMToken UserEventReporterHelper::GetDMToken() {
   policy::DMToken dm_token(policy::DMToken::Status::kEmpty, "");

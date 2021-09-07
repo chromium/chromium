@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_
+#define CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_
+
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_record.pb.h"
+#include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
+#include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/reporting/client/report_queue_provider.h"
+#include "components/reporting/proto/record_constants.pb.h"
+
+namespace reporting {
+
+// This class is used to report events when a user it added or removed to a
+// managed device. It will report this when the policy kReportDeviceUsers is
+// true. Unaffiliated users being added will be reported, but their email
+// will be omitted.
+class UserAddedRemovedReporter
+    : public policy::ManagedSessionService::Observer {
+ public:
+  // For use in testing only. Allows user to pass in a test helper.
+  explicit UserAddedRemovedReporter(
+      std::unique_ptr<UserEventReporterHelper> helper);
+  // For prod. Uses the default implementation of UserEventReporterTestHelper.
+  UserAddedRemovedReporter();
+
+  UserAddedRemovedReporter(const UserAddedRemovedReporter& other) = delete;
+  UserAddedRemovedReporter& operator=(const UserAddedRemovedReporter& other) =
+      delete;
+
+  ~UserAddedRemovedReporter() override;
+
+  // ManagedSessionService::Observer overrides.
+  // Check if login was to a new account.
+  void OnLogin(Profile* profile) override;
+
+ private:
+  std::unique_ptr<UserEventReporterHelper> helper_;
+
+  policy::ManagedSessionService managed_session_service_;
+
+  base::ScopedObservation<policy::ManagedSessionService,
+                          policy::ManagedSessionService::Observer>
+      managed_session_observation_{this};
+};
+}  // namespace reporting
+
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_

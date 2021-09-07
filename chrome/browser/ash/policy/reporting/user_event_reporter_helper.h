@@ -37,6 +37,8 @@ class UserEventReporterHelper {
   virtual void ReportEvent(const google::protobuf::MessageLite* record,
                            Priority priority);
 
+  virtual bool IsCurrentUserNew() const;
+
  private:
   // Returns the device DM token.
   static policy::DMToken GetDMToken();

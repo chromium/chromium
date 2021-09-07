@@ -74,6 +74,7 @@ source_set("chromeos") {
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":user_activity_event_proto",
+    ":user_added_removed_record_proto",
     ":user_charging_event_proto",
     "../ash/guest_os:guest_os_diagnostics_mojom",
     "//apps",
@@ -2363,6 +2364,8 @@ source_set("chromeos") {
     "../ash/policy/reporting/single_extension_install_event_log.cc",
     "../ash/policy/reporting/single_extension_install_event_log.h",
     "../ash/policy/reporting/single_install_event_log.h",
+    "../ash/policy/reporting/user_added_removed/user_added_removed_reporter.cc",
+    "../ash/policy/reporting/user_added_removed/user_added_removed_reporter.h",
     "../ash/policy/reporting/user_event_reporter_helper.cc",
     "../ash/policy/reporting/user_event_reporter_helper.h",
     "../ash/policy/rsu/lookup_key_uploader.cc",
@@ -4146,6 +4149,7 @@ source_set("unit_tests") {
     "../ash/policy/reporting/extension_install_event_logger_unittest.cc",
     "../ash/policy/reporting/install_event_log_util_unittest.cc",
     "../ash/policy/reporting/single_arc_app_install_event_log_unittest.cc",
+    "../ash/policy/reporting/user_added_removed/user_added_removed_reporter_unittest.cc",
     "../ash/policy/reporting/user_event_reporter_helper_unittest.cc",
     "../ash/policy/rsu/lookup_key_uploader_unittest.cc",
     "../ash/policy/scheduled_task_handler/test/device_scheduled_reboot_handler_unittest.cc",
@@ -4634,6 +4638,10 @@ proto_library("user_charging_event_proto") {
 
 proto_library("user_activity_event_proto") {
   sources = [ "../ash/power/ml/user_activity_event.proto" ]
+}
+
+proto_library("user_added_removed_record_proto") {
+  sources = [ "../ash/policy/reporting/user_added_removed/user_added_removed_record.proto" ]
 }
 
 proto_library("device_configuration_proto") {

@@ -1,0 +1,36 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+message User {
+  optional string email = 1;
+}
+
+enum UserRemovalReason { USER_REMOVAL_REASON_UNKNOWN = 0; }
+
+// To be reported when a user is added.
+message UserAddedEvent {}
+
+// To be reported when a user is removed
+message UserRemovedEvent {
+  optional UserRemovalReason reason = 1;
+}
+
+message UserAddedRemovedRecord {
+  // Seconds since epoch.
+  optional int64 event_timestamp_sec = 1;
+
+  // Omitted if the user is not affiliated.
+  optional User user = 2;
+
+  oneof event {
+    UserAddedEvent user_added_event = 3;
+    UserRemovedEvent user_removed_event = 4;
+  }
+}
