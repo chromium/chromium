@@ -67,7 +67,7 @@ enum class DefaultAppName {
   kShortcutCustomizationApp = 44,
   kShimlessRMAApp = 45,
   kOsFeedbackApp = 46,
-  kChromeCursive = 47,
+  kCursive = 47,
   kMediaAppAudio = 48,
 
   // Add any new values above this one, and update kMaxValue to the highest
@@ -212,7 +212,7 @@ namespace apps {
 void RecordAppLaunch(const std::string& app_id,
                      apps::mojom::LaunchSource launch_source) {
   if (app_id == web_app::kCursiveAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kChromeCursive, launch_source);
+    RecordDefaultAppLaunch(DefaultAppName::kCursive, launch_source);
   } else if (app_id == extension_misc::kCalculatorAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == extension_misc::kTextEditorAppId) {

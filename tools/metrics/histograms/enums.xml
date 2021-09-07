@@ -19186,7 +19186,7 @@ Called by update_debug_scenarios.py.-->
   <int value="43" label="PrintManagementApp"/>
   <int value="45" label="ShimlessRMAApp"/>
   <int value="46" label="OSFeedbackApp"/>
-  <int value="47" label="A4"/>
+  <int value="47" label="Cursive"/>
   <int value="48" label="Media App Audio"/>
 </enum>
 
