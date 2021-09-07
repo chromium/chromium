@@ -99,6 +99,10 @@ interface UtilWin {
                           bool is_pinned_to_taskbar,
                           bool is_pinned_to_taskbar_verb_check);
 
+  // Unpins all shortcuts in `shortcut_paths`.
+  UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)
+    => ();
+
   // Executes a select file operation that can be executed on a utility process.
   // |owner|:
   //   The HWND that owns the file dialog.

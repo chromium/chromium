@@ -5,6 +5,12 @@
 // TODO(crbug.com/1231621): Implement some/all of these once Fuchsia supports
 // them.
 
+#include <utility>
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/location.h"
+#include "base/task_runner.h"
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
@@ -62,10 +68,12 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
   NOTIMPLEMENTED();
 }
 
-bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
-                             const ShortcutInfo& shortcut_info) {
-  NOTIMPLEMENTED();
-  return false;
+void DeletePlatformShortcuts(const base::FilePath& web_app_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             DeleteShortcutsCallback callback) {
+  result_runner->PostTask(FROM_HERE,
+                          base::BindOnce(std::move(callback), false));
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

@@ -4,6 +4,13 @@
 
 #include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
+#include <utility>
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/location.h"
+#include "base/task_runner.h"
+
 namespace web_app {
 
 namespace internals {
@@ -19,9 +26,12 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   return true;
 }
 
-bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
-                             const ShortcutInfo& shortcut_info) {
-  return true;
+void DeletePlatformShortcuts(const base::FilePath& web_app_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             web_app::DeleteShortcutsCallback callback) {
+  result_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                                    /*shortcut_deleted=*/true));
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& web_app_path,

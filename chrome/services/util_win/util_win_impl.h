@@ -23,6 +23,8 @@ class UtilWinImpl : public chrome::mojom::UtilWin {
  private:
   // chrome::mojom::UtilWin:
   void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override;
+  void UnpinShortcuts(const std::vector<base::FilePath>& shortcut_paths,
+                      UnpinShortcutsCallback callback) override;
   void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
                              uint32_t owner,
                              const std::u16string& title,

@@ -73,17 +73,16 @@ void CreatePlatformShortcutsAndPostCallback(
 
 void DeletePlatformShortcutsAndPostCallback(
     const base::FilePath& shortcut_data_path,
-    CreateShortcutsCallback callback,
+    DeleteShortcutsCallback callback,
     const ShortcutInfo& shortcut_info) {
-  bool shortcut_deleted =
-      internals::DeletePlatformShortcuts(shortcut_data_path, shortcut_info);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), shortcut_deleted));
+  internals::DeletePlatformShortcuts(shortcut_data_path, shortcut_info,
+                                     content::GetUIThreadTaskRunner({}),
+                                     std::move(callback));
 }
 
 void DeleteMultiProfileShortcutsForAppAndPostCallback(
     const std::string& app_id,
-    CreateShortcutsCallback callback) {
+    DeleteShortcutsCallback callback) {
   internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));

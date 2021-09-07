@@ -4,15 +4,20 @@
 
 #include "chrome/browser/web_applications/components/web_app_shortcut_linux.h"
 
+#include <utility>
+
 #include <fcntl.h>
 #include <algorithm>
 
 #include "base/base_paths.h"
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/nix/xdg_util.h"
@@ -23,6 +28,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
@@ -704,11 +710,16 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
                                       shortcut_info.extension_id);
 }
 
-bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
-                             const ShortcutInfo& shortcut_info) {
+void DeletePlatformShortcuts(const base::FilePath& web_app_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             DeleteShortcutsCallback callback) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return DeleteDesktopShortcuts(env.get(), shortcut_info.profile_path,
-                                shortcut_info.extension_id);
+  result_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                DeleteDesktopShortcuts(
+                                    env.get(), shortcut_info.profile_path,
+                                    shortcut_info.extension_id)));
 }
 
 void UpdatePlatformShortcuts(const base::FilePath& /*web_app_path*/,

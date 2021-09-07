@@ -445,6 +445,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
+    expires_after="M99">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Indicates whether a connection error occured between the browser and the
+    shell handler process. This is usually caused by a crash in the utility
+    process. This is logged every time shortcuts are unpinned from the taskbar.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

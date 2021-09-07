@@ -41,6 +41,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
 #import "chrome/browser/mac/dock.h"
@@ -1398,8 +1399,10 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   return locations;
 }
 
-bool DeletePlatformShortcuts(const base::FilePath& app_data_path,
-                             const ShortcutInfo& shortcut_info) {
+void DeletePlatformShortcuts(const base::FilePath& app_data_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             DeleteShortcutsCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   const std::string bundle_id = GetBundleIdentifier(shortcut_info.extension_id,
@@ -1412,7 +1415,8 @@ bool DeletePlatformShortcuts(const base::FilePath& app_data_path,
     if (!base::DeletePathRecursively(bundle_info.bundle_path()))
       result = false;
   }
-  return result;
+  result_runner->PostTask(FROM_HERE,
+                          base::BindOnce(std::move(callback), result));
 }
 
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {

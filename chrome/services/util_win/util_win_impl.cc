@@ -243,6 +243,15 @@ void UtilWinImpl::IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) {
                           is_pinned_to_taskbar_verb_check);
 }
 
+void UtilWinImpl::UnpinShortcuts(
+    const std::vector<base::FilePath>& shortcut_paths,
+    UnpinShortcutsCallback callback) {
+  for (const auto& shortcut_path : shortcut_paths)
+    base::win::UnpinShortcutFromTaskbar(shortcut_path);
+
+  std::move(callback).Run();
+}
+
 void UtilWinImpl::CallExecuteSelectFile(
     ui::SelectFileDialog::Type type,
     uint32_t owner,

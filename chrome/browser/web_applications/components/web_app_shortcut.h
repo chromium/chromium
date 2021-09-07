@@ -202,11 +202,14 @@ void ScheduleDeleteMultiProfileShortcutsForApp(
     const std::string& app_id,
     DeleteShortcutsCallback callback);
 
-// Delete all the shortcuts we have added for this extension. This is the
-// platform specific implementation of the DeleteAllShortcuts function, and
-// is executed on the FILE thread.
-bool DeletePlatformShortcuts(const base::FilePath& shortcut_data_path,
-                             const ShortcutInfo& shortcut_info);
+// Delete all the shortcuts we have added for this extension, returning the
+// result via `callback` posted to `result_runner`. This is the platform
+// specific implementation of the DeleteAllShortcuts function, and is executed
+// on the FILE thread.
+void DeletePlatformShortcuts(const base::FilePath& shortcut_data_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             DeleteShortcutsCallback callback);
 
 // Delete the multi-profile (non-profile_scoped) shortcuts for the specified
 // app. This is the multi-profile complement of DeletePlatformShortcuts.

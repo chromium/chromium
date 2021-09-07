@@ -19,6 +19,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #import "chrome/common/mac/app_mode_common.h"
@@ -562,7 +563,11 @@ TEST_F(WebAppShortcutCreatorTest, DeleteShortcutsSingleProfile) {
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
   auto_login_util_mock_->ResetCounts();
-  internals::DeletePlatformShortcuts(app_data_dir_, *info_);
+
+  internals::DeletePlatformShortcuts(
+      app_data_dir_, *info_, task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing());
+
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 2);
   EXPECT_FALSE(base::PathExists(shim_path_));
   EXPECT_FALSE(base::PathExists(other_shim_path));
@@ -588,7 +593,9 @@ TEST_F(WebAppShortcutCreatorTest, DeleteShortcuts) {
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));
   auto_login_util_mock_->ResetCounts();
-  internals::DeletePlatformShortcuts(app_data_dir_, *info_);
+  internals::DeletePlatformShortcuts(
+      app_data_dir_, *info_, task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing());
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 0);
   EXPECT_TRUE(base::PathExists(shim_path_));
   EXPECT_TRUE(base::PathExists(other_shim_path));

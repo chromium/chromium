@@ -33,6 +33,9 @@ class CrashingUtilWinImpl : public chrome::mojom::UtilWin {
  private:
   // chrome::mojom::UtilWin:
   void IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) override {}
+  void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
+                      UnpinShortcutsCallback result_callback) override {}
+
   void CallExecuteSelectFile(ui::SelectFileDialog::Type type,
                              uint32_t owner,
                              const std::u16string& title,

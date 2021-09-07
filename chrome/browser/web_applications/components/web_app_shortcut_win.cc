@@ -9,8 +9,11 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
@@ -228,6 +231,16 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
   return success;
 }
 
+void DeleteShortcuts(std::vector<base::FilePath> all_shortcuts,
+                     web_app::DeleteShortcutsCallback result_callback) {
+  bool result = true;
+  for (const auto& shortcut : all_shortcuts) {
+    if (!base::DeleteFile(shortcut))
+      result = false;
+  }
+  std::move(result_callback).Run(result);
+}
+
 // Gets the directories with shortcuts for an app, and deletes the shortcuts.
 // This will search the standard locations for shortcuts named |title| that open
 // in the profile with |profile_path|.
@@ -237,14 +250,18 @@ bool CreateShortcutsInPaths(const base::FilePath& web_app_path,
 // |shortcut_paths| will be populated with a list of directories where shortcuts
 // for this app were found (and deleted). This will delete duplicate shortcuts,
 // but only return each path once, even if it contained multiple deleted
-// shortcuts. Both of these may be NULL.
-bool GetShortcutLocationsAndDeleteShortcuts(
+// shortcuts. It may be NULL.
+// `unpin_oop` will be true if the caller supports out-of-process shortcut
+// unpinning.
+// TODO(crbug.com/1171001) Remove this arg once all callers have been converted
+// to use oop shortcut unpinning.
+void GetShortcutLocationsAndDeleteShortcuts(
     const base::FilePath& web_app_path,
     const base::FilePath& profile_path,
     const std::u16string& title,
+    bool unpin_oop,
+    web_app::DeleteShortcutsCallback result_callback,
     std::vector<base::FilePath>* shortcut_paths) {
-  bool result = true;
-
   // Get all possible locations for shortcuts.
   ShortcutLocations all_shortcut_locations;
   all_shortcut_locations.in_quick_launch_bar = true;
@@ -269,12 +286,20 @@ bool GetShortcutLocationsAndDeleteShortcuts(
     all_shortcuts.insert(all_shortcuts.end(), shortcut_files.begin(),
                          shortcut_files.end());
   }
-  for (const auto& shortcut : all_shortcuts) {
-    base::win::UnpinShortcutFromTaskbar(shortcut);
-    if (!base::DeleteFile(shortcut))
-      result = false;
+  if (all_shortcuts.empty()) {
+    std::move(result_callback).Run(/*shortcut_deleted=*/true);
+    return;
   }
-  return result;
+  if (unpin_oop) {
+    shell_integration::win::UnpinShortcuts(
+        all_shortcuts, base::BindOnce(&DeleteShortcuts, all_shortcuts,
+                                      std::move(result_callback)));
+    return;
+  }
+  for (const auto& shortcut : all_shortcuts)
+    base::win::UnpinShortcutFromTaskbar(shortcut);
+
+  DeleteShortcuts(all_shortcuts, std::move(result_callback));
 }
 
 void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
@@ -464,22 +489,28 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
     // The app's title has changed. Delete all existing app shortcuts and
     // recreate them in any locations they already existed (but do not add them
     // to locations where they do not currently exist).
-    bool was_pinned_to_taskbar;
+    bool was_pinned_to_taskbar = false;
     // Determine if there is a link to this app in the taskbar pin directory.
     base::FilePath taskbar_pin_path;
+    // TODO(crbug.com/1171001) Consider switching to
+    // chrome::mojom::UtilWin::IsPinnedToTaskbar -- this code is missing
+    // shortcuts that are within base::DIR_IMPLICIT_APP_SHORTCUTS.
     if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pin_path)) {
       const std::vector<base::FilePath> taskbar_pin_files =
           FindAppShortcutsByProfileAndTitle(
               taskbar_pin_path, shortcut_info.profile_path, old_app_title);
       was_pinned_to_taskbar = !taskbar_pin_files.empty();
-    } else {
-      was_pinned_to_taskbar = false;
     }
-
     std::vector<base::FilePath> shortcut_paths;
-    GetShortcutLocationsAndDeleteShortcuts(web_app_path,
-                                           shortcut_info.profile_path,
-                                           old_app_title, &shortcut_paths);
+    // TODO((crbug.com/1171001) - Make this unpin out-of-process, which will
+    // require some refactoring. Or, much better, make it not unpin+delete,
+    // since on Win10, we can't repin at all. This may entail keeping track of
+    // the original app title, or finding existing shortcuts with something
+    // other than profile and title, as FindAppShortcutsByProfileAndTitle does.
+    // Or, simply renaming the shortcut files.
+    GetShortcutLocationsAndDeleteShortcuts(
+        web_app_path, shortcut_info.profile_path, old_app_title,
+        /*unpin_oop=*/false, base::DoNothing::Once<bool>(), &shortcut_paths);
     CreateShortcutsInPaths(web_app_path, shortcut_info, shortcut_paths,
                            SHORTCUT_CREATION_BY_USER, "", nullptr);
     // If the shortcut was pinned to the taskbar,
@@ -551,11 +582,11 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   return result;
 }
 
-bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
-                             const ShortcutInfo& shortcut_info) {
-  bool result = GetShortcutLocationsAndDeleteShortcuts(
-      web_app_path, shortcut_info.profile_path, shortcut_info.title, nullptr);
-
+void FinishDeletingPlatformShortcuts(
+    const base::FilePath& web_app_path,
+    scoped_refptr<base::TaskRunner> result_runner,
+    web_app::DeleteShortcutsCallback result_callback,
+    bool delete_result) {
   // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
   base::FilePath chrome_apps_dir;
   if (ShellUtil::GetShortcutPath(
@@ -564,27 +595,43 @@ bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
     if (base::IsDirectoryEmpty(chrome_apps_dir))
       base::DeleteFile(chrome_apps_dir);
   }
-
+  bool result = delete_result;
   // Delete downloaded shortcut icons for the web app.
   if (!DeleteShortcutsMenuIcons(web_app_path))
     result = false;
-  return result;
+  result_runner->PostTask(FROM_HERE,
+                          BindOnce(std::move(result_callback), result));
+}
+
+void DeletePlatformShortcuts(const base::FilePath& web_app_path,
+                             const ShortcutInfo& shortcut_info,
+                             scoped_refptr<base::TaskRunner> result_runner,
+                             DeleteShortcutsCallback callback) {
+  GetShortcutLocationsAndDeleteShortcuts(
+      web_app_path, shortcut_info.profile_path, shortcut_info.title,
+      /*unpin_oop=*/true,
+      base::BindOnce(&FinishDeletingPlatformShortcuts, web_app_path,
+                     std::move(result_runner), std::move(callback)),
+      nullptr);
+}
+
+void FinishDeletingAllShortcutsForProfile(bool result) {
+  // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
+  base::FilePath chrome_apps_dir;
+  if (ShellUtil::GetShortcutPath(
+          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
+          ShellUtil::CURRENT_USER, &chrome_apps_dir)) {
+    // This will fail if dir is not empty, so no need to check if it's empty.
+    base::DeleteFile(chrome_apps_dir);
+  }
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  GetShortcutLocationsAndDeleteShortcuts(base::FilePath(), profile_path,
-                                         std::u16string(), nullptr);
-
-  // If there are no more shortcuts in the Chrome Apps subdirectory, remove it.
-  base::FilePath chrome_apps_dir;
-  if (ShellUtil::GetShortcutPath(
-          ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-          ShellUtil::CURRENT_USER, &chrome_apps_dir)) {
-    if (base::IsDirectoryEmpty(chrome_apps_dir))
-      base::DeleteFile(chrome_apps_dir);
-  }
+  GetShortcutLocationsAndDeleteShortcuts(
+      base::FilePath(), profile_path, std::u16string(), /*unpin_oop=*/true,
+      base::BindOnce(&FinishDeletingAllShortcutsForProfile), nullptr);
 }
 
 std::vector<base::FilePath> GetShortcutPaths(

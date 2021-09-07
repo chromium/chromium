@@ -512,6 +512,75 @@ void IsPinnedToTaskbarHelper::OnIsPinnedToTaskbarResult(
   delete this;
 }
 
+// Helper class to unpin shortcuts from the taskbar. Hides the complexity of
+//  managing the lifetime of the connection to the Windows utility service.
+class UnpinShortcutsHelper {
+ public:
+  UnpinShortcutsHelper(const UnpinShortcutsHelper&) = delete;
+  UnpinShortcutsHelper& operator=(const UnpinShortcutsHelper&) = delete;
+
+  static void DoUnpin(const std::vector<base::FilePath>& shortcuts,
+                      base::OnceClosure completion_callback);
+
+ private:
+  static void RecordUnpinShortcutProcessError(bool error);
+
+  UnpinShortcutsHelper(const std::vector<base::FilePath>& shortcuts,
+                       base::OnceClosure completion_callback);
+
+  void OnConnectionError();
+  void OnUnpinShortcutResult();
+
+  mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
+
+  base::OnceClosure completion_callback_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
+// static
+void UnpinShortcutsHelper::RecordUnpinShortcutProcessError(bool error) {
+  base::UmaHistogramBoolean("Windows.UnpinShortcut.ProcessError", error);
+}
+
+// static
+void UnpinShortcutsHelper::DoUnpin(const std::vector<base::FilePath>& shortcuts,
+                                   base::OnceClosure completion_callback) {
+  // Self-deleting when the ShellHandler completes.
+  new UnpinShortcutsHelper(shortcuts, std::move(completion_callback));
+}
+
+UnpinShortcutsHelper::UnpinShortcutsHelper(
+    const std::vector<base::FilePath>& shortcuts,
+    base::OnceClosure completion_callback)
+    : remote_util_win_(LaunchUtilWinServiceInstance()),
+      completion_callback_(std::move(completion_callback)) {
+  DCHECK(completion_callback_);
+
+  // |remote_util_win_| owns the callbacks and is guaranteed to be destroyed
+  // before |this|, therefore making base::Unretained() safe to use.
+  remote_util_win_.set_disconnect_handler(base::BindOnce(
+      &UnpinShortcutsHelper::OnConnectionError, base::Unretained(this)));
+  remote_util_win_->UnpinShortcuts(
+      shortcuts, base::BindOnce(&UnpinShortcutsHelper::OnUnpinShortcutResult,
+                                base::Unretained(this)));
+}
+
+void UnpinShortcutsHelper::OnConnectionError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordUnpinShortcutProcessError(true);
+  std::move(completion_callback_).Run();
+  delete this;
+}
+
+void UnpinShortcutsHelper::OnUnpinShortcutResult() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RecordUnpinShortcutProcessError(false);
+  std::move(completion_callback_).Run();
+  delete this;
+}
+
 void MigrateChromeAndChromeProxyShortcuts(
     const base::FilePath& chrome_exe,
     const base::FilePath& chrome_proxy_path,
@@ -734,6 +803,11 @@ std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path) {
       std::wstring(),
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
       profile_path);
+}
+
+void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
+                    base::OnceClosure completion_callback) {
+  UnpinShortcutsHelper::DoUnpin(shortcuts, std::move(completion_callback));
 }
 
 void MigrateTaskbarPins(base::OnceClosure completion_callback) {
