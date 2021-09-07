@@ -2684,70 +2684,10 @@ class AXPosition {
 
   AXPositionInstance CreatePreviousFormatStartPosition(
       AXBoundaryBehavior boundary_behavior) const {
-    if (IsNullPosition())
-      return CreateNullPosition();
-
-    AXBoundaryType boundary_type = GetFormatStartBoundaryType();
-    if (boundary_type != AXBoundaryType::kNone) {
-      if (boundary_behavior == AXBoundaryBehavior::StopIfAlreadyAtBoundary ||
-          (boundary_behavior == AXBoundaryBehavior::StopAtLastAnchorBoundary &&
-           boundary_type == AXBoundaryType::kContentStart)) {
-        // In order to make equality checks simpler, affinity should be reset so
-        // that we would get consistent output from this function regardless of
-        // input affinity.
-        if (IsTextPosition())
-          return CloneWithDownstreamAffinity();
-        return Clone();
-      } else if (boundary_behavior == AXBoundaryBehavior::CrossBoundary &&
-                 boundary_type == AXBoundaryType::kContentStart) {
-        // If we're at a format boundary and there are no more text positions
-        // to traverse, return a null position for cross-boundary moves.
-        return CreateNullPosition();
-      }
-    }
-
-    AXPositionInstance tree_position =
-        AsTreePosition()->CreatePositionAtStartOfAnchor();
-    AXPositionInstance previous_tree_position =
-        tree_position->CreatePreviousLeafTreePosition(
-            base::BindRepeating(&AbortMoveAtRootBoundary));
-
-    // If moving to the start of the current anchor hasn't changed our position
-    // from the original position, we need to test the previous leaf tree
-    // position.
-    if (AtStartOfAnchor() &&
-        boundary_behavior != AXBoundaryBehavior::StopIfAlreadyAtBoundary) {
-      tree_position = std::move(previous_tree_position);
-      previous_tree_position = tree_position->CreatePreviousLeafTreePosition(
-          base::BindRepeating(&AbortMoveAtRootBoundary));
-    }
-
-    // The first position in the whole content is also a format start boundary,
-    // so we should not return NullPosition unless we started from that
-    // location.
-    while (boundary_type != AXBoundaryType::kContentStart &&
-           !previous_tree_position->IsNullPosition() &&
-           !tree_position->AtStartOfFormat()) {
-      tree_position = std::move(previous_tree_position);
-      previous_tree_position = tree_position->CreatePreviousLeafTreePosition(
-          base::BindRepeating(&AbortMoveAtRootBoundary));
-    }
-
-    // If the format boundary is in the same subtree, return a position rooted
-    // at the current position.
-    // This is necessary because we don't want to return any position that might
-    // be in the shadow DOM if the original position was not.
-    const AXNode* common_anchor = tree_position->LowestCommonAnchor(*this);
-    if (GetAnchor() == common_anchor) {
-      tree_position = tree_position->CreateAncestorPosition(
-          common_anchor, ax::mojom::MoveDirection::kBackward);
-    } else if (boundary_behavior == AXBoundaryBehavior::StopAtAnchorBoundary) {
-      return CreatePositionAtStartOfAnchor();
-    }
-
-    if (IsTextPosition())
-      return tree_position->AsTextPosition();
-    return tree_position;
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
   }
 
   AXPositionInstance CreateNextFormatEndPosition(

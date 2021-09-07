@@ -4782,6 +4782,8 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithNullPosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), static_text1_.id, 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
@@ -4833,6 +4835,8 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
 }
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTextPosition) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 2 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -12104,15 +12108,15 @@ INSTANTIATE_TEST_SUITE_P(
             "annotated_text=Line 1\nL<i>ne 2"},
         ExpandToEnclosingTextBoundaryTestParam{
             ax::mojom::TextBoundary::kFormat, AXRangeExpandBehavior::kLeftFirst,
-            "TextPosition anchor_id=4 text_offset=0 affinity=downstream "
-            "annotated_text=<L>ine 1\nLine 2",
             "TextPosition anchor_id=4 text_offset=6 affinity=downstream "
-            "annotated_text=Line 1<\n>Line 2"},
+            "annotated_text=Line 1<\n>Line 2",
+            "TextPosition anchor_id=4 text_offset=7 affinity=downstream "
+            "annotated_text=Line 1\n<L>ine 2"},
         ExpandToEnclosingTextBoundaryTestParam{
             ax::mojom::TextBoundary::kFormat,
             AXRangeExpandBehavior::kRightFirst,
-            "TextPosition anchor_id=4 text_offset=0 affinity=downstream "
-            "annotated_text=<L>ine 1\nLine 2",
+            "TextPosition anchor_id=4 text_offset=7 affinity=downstream "
+            "annotated_text=Line 1\n<L>ine 2",
             "TextPosition anchor_id=4 text_offset=13 affinity=downstream "
             "annotated_text=Line 1\nLine 2<>"},
         ExpandToEnclosingTextBoundaryTestParam{
