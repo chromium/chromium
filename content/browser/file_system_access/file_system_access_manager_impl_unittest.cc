@@ -215,7 +215,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         }));
     serialize_loop.Run();
 
-    manager_->DeserializeHandle(kTestStorageKey.origin(), serialized,
+    manager_->DeserializeHandle(kTestStorageKey, serialized,
                                 token_remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop resolve_loop;
     FileSystemAccessTransferTokenImpl* result;

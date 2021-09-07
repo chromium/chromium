@@ -35,6 +35,10 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 class FileSystemContext;
 class FileSystemOperationRunner;
@@ -127,7 +131,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       SerializeHandleCallback callback) override;
   void DeserializeHandle(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;

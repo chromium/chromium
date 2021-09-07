@@ -269,7 +269,7 @@ class MockFileSystemAccessContext
   }
 
   void DeserializeHandle(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<::blink::mojom::FileSystemAccessTransferToken>
           token) override {

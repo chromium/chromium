@@ -758,7 +758,7 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
 }
 
 void FileSystemAccessManagerImpl::DeserializeHandle(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     const std::vector<uint8_t>& bits,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token) {
   DCHECK(!bits.empty());
@@ -774,11 +774,8 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
     case FileSystemAccessHandleData::kSandboxed: {
       base::FilePath virtual_path =
           DeserializePath(data.sandboxed().virtual_path());
-      // TODO(https://crbug.com/1221308): replace StorageKey conversion below
-      // with the correct StorageKey - most likely from IndexedDB.
       storage::FileSystemURL url = context()->CreateCrackedFileSystemURL(
-          blink::StorageKey(origin), storage::kFileSystemTypeTemporary,
-          virtual_path);
+          storage_key, storage::kFileSystemTypeTemporary, virtual_path);
 
       auto permission_grant =
           base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
@@ -787,7 +784,8 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       // CreateTransferTokenImpl should be refactored to accept StorageKey as a
       // parameter instead of origin.
       CreateTransferTokenImpl(
-          url, origin, SharedHandleState(permission_grant, permission_grant),
+          url, storage_key.origin(),
+          SharedHandleState(permission_grant, permission_grant),
           data.handle_type() == FileSystemAccessHandleData::kDirectory
               ? HandleType::kDirectory
               : HandleType::kFile,
@@ -821,7 +819,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       // SharedHandleState for a directory even if the handle represents a
       // file.
       SharedHandleState handle_state = GetSharedHandleStateForPath(
-          root_path, origin,
+          root_path, storage_key.origin(),
           (is_directory || !relative_path.empty()) ? HandleType::kDirectory
                                                    : HandleType::kFile,
           FileSystemAccessPermissionContext::UserAction::kLoadFromStorage);
@@ -829,7 +827,7 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       // CreateTransferTokenImpl should be refactored to accept StorageKey as a
       // parameter instead of origin.
       CreateTransferTokenImpl(
-          child, origin, handle_state,
+          child, storage_key.origin(), handle_state,
           is_directory ? HandleType::kDirectory : HandleType::kFile,
           std::move(token));
       break;
