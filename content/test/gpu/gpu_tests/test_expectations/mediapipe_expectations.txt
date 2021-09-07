@@ -59,22 +59,12 @@
 # END TAG HEADER
 
 crbug.com/1206463 [ android android-nexus-5x ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ android android-pixel-4 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ chromeos chromeos-board-kevin ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ linux display-server-wayland intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ linux display-server-x intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
+crbug.com/1206463 [ linux display-server-x nvidia ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ linux display-server-x amd ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ win nvidia ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ mac apple-apple-m1 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
-
-crbug.com/1237347 [ android android-pixel-4 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
-crbug.com/1237347 [ android android-pixel-4 ] MediaPipe_mediapipe_style_black_and_white_test [ Failure ]
-crbug.com/1237347 [ android android-pixel-4 ] MediaPipe_mediapipe_style_complex_test [ Failure ]
-crbug.com/1237347 [ android android-pixel-4 ] MediaPipe_mediapipe_style_pencil_test [ Failure ]
-
-crbug.com/1237347 [ linux intel passthrough ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
-crbug.com/1237347 [ linux intel passthrough ] MediaPipe_mediapipe_style_black_and_white_test [ Failure ]
-crbug.com/1237347 [ linux intel passthrough ] MediaPipe_mediapipe_style_complex_test [ Failure ]
-crbug.com/1237347 [ linux intel passthrough ] MediaPipe_mediapipe_style_pencil_test [ Failure ]
-
-crbug.com/1237347 [ linux nvidia passthrough ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
-crbug.com/1237347 [ linux nvidia passthrough ] MediaPipe_mediapipe_style_black_and_white_test [ Failure ]
-crbug.com/1237347 [ linux nvidia passthrough ] MediaPipe_mediapipe_style_complex_test [ Failure ]
-crbug.com/1237347 [ linux nvidia passthrough ] MediaPipe_mediapipe_style_pencil_test [ Failure ]
+crbug.com/1233141 MediaPipe_mediapipe_style_black_and_white_test [ RetryOnFailure ]
