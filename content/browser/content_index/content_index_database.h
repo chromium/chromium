@@ -82,31 +82,11 @@ class CONTENT_EXPORT ContentIndexDatabase {
                            BlockedOriginsCannotRegisterContent);
   FRIEND_TEST_ALL_PREFIXES(ContentIndexDatabaseTest, UmaRecorded);
 
-  // public method service worker core thread counterparts.
-  void AddEntryOnCoreThread(
-      int64_t service_worker_registration_id,
-      const url::Origin& origin,
-      blink::mojom::ContentDescriptionPtr description,
-      const std::vector<SkBitmap>& icons,
-      const GURL& launch_url,
-      blink::mojom::ContentIndexService::AddCallback callback);
-  void DeleteEntryOnCoreThread(
+  void DeleteEntryImpl(
       int64_t service_worker_registration_id,
       const url::Origin& origin,
       const std::string& entry_id,
       blink::mojom::ContentIndexService::DeleteCallback callback);
-  void GetDescriptionsOnCoreThread(
-      int64_t service_worker_registration_id,
-      const url::Origin& origin,
-      blink::mojom::ContentIndexService::GetDescriptionsCallback callback);
-  void GetIconsOnCoreThread(int64_t service_worker_registration_id,
-                            const std::string& description_id,
-                            ContentIndexContext::GetIconsCallback callback);
-  void GetAllEntriesOnCoreThread(
-      ContentIndexContext::GetAllEntriesCallback callback);
-  void GetEntryOnCoreThread(int64_t service_worker_registration_id,
-                            const std::string& description_id,
-                            ContentIndexContext::GetEntryCallback callback);
 
   // Add Callbacks.
   void DidSerializeIcons(
@@ -194,8 +174,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
   base::flat_map<url::Origin, int> blocked_origins_;
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  base::WeakPtrFactory<ContentIndexDatabase> weak_ptr_factory_core_{this};
-  base::WeakPtrFactory<ContentIndexDatabase> weak_ptr_factory_ui_{this};
+  base::WeakPtrFactory<ContentIndexDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentIndexDatabase);
 };
