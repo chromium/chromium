@@ -179,14 +179,9 @@ OutputController::~OutputController() {
 bool OutputController::CreateStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   SendLogMessage("%s([state=%s])", __func__, StateToString(state_));
-  RecreateStreamWithTimingUMA(RecreateReason::INITIAL_STREAM);
+  RecreateStream(RecreateReason::INITIAL_STREAM);
   SendLogMessage("%s => (state=%s)", __func__, StateToString(state_));
   return state_ == kCreated;
-}
-
-void OutputController::RecreateStreamWithTimingUMA(
-    OutputController::RecreateReason reason) {
-  RecreateStream(reason);
 }
 
 void OutputController::RecreateStream(OutputController::RecreateReason reason) {
@@ -637,9 +632,7 @@ void OutputController::OnDeviceChange() {
   // crashes on OSX.  See http://crbug.com/158170.
 
   const bool restore_playback = (state_ == kPlaying);
-  // TODO(crbug.com/896484): This will also add a UMA timing measurement to
-  // "Media.AudioOutputController.ChangeTime" which maybe is not desired?
-  RecreateStreamWithTimingUMA(RecreateReason::DEVICE_CHANGE);
+  RecreateStream(RecreateReason::DEVICE_CHANGE);
   if (state_ == kCreated && restore_playback)
     StartStream();
 }

@@ -226,10 +226,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     base::OneShotTimer wedge_timer_;
   };
 
-  // Helper to call RecreateStream(), but with a scoped "CreateTime" UMA timing
-  // measurement surrounding the call.
-  void RecreateStreamWithTimingUMA(RecreateReason reason);
-
   // Closes the current stream and re-creates a new one via the AudioManager. If
   // reason is LOCAL_OUTPUT_TOGGLE, the new stream will be a fake one and UMA
   // counts will not be incremented.
