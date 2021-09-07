@@ -52,6 +52,10 @@ bool DisplayList::operator==(const DisplayList& other) const {
          current_id_ == other.current_id_;
 }
 
+bool DisplayList::operator!=(const DisplayList& other) const {
+  return !(*this == other);
+}
+
 void DisplayList::AddObserver(DisplayObserver* observer) {
   observers_.AddObserver(observer);
 }

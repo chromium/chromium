@@ -38,6 +38,7 @@ class DISPLAY_EXPORT DisplayList {
   DisplayList(const DisplayList& other);
   DisplayList& operator=(const DisplayList& other);
   bool operator==(const DisplayList& other) const;
+  bool operator!=(const DisplayList& other) const;
 
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
