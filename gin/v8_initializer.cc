@@ -288,9 +288,11 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     SetV8Flags("--no-opt");
   }
 
-  if (!base::FeatureList::IsEnabled(features::kV8FlushBytecode)) {
-    SetV8Flags("--no-flush-bytecode");
-  }
+  SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
+                         "--no-flush-bytecode");
+
+  SetV8FlagsIfOverridden(features::kV8FlushBaselineCode,
+                         "--flush-baseline-code", "--no-flush-baseline-code");
 
   if (base::FeatureList::IsEnabled(features::kV8OffThreadFinalization)) {
     SetV8Flags("--finalize-streaming-on-background");

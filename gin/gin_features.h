@@ -15,6 +15,7 @@ GIN_EXPORT extern const base::Feature kV8ArrayBufferCageReservationExperiment;
 GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
 GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
 GIN_EXPORT extern const base::Feature kV8FlushBytecode;
+GIN_EXPORT extern const base::Feature kV8FlushBaselineCode;
 GIN_EXPORT extern const base::Feature kV8FlushEmbeddedBlobICache;
 GIN_EXPORT extern const base::Feature kV8LazyFeedbackAllocation;
 GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;

@@ -15,6 +15,10 @@ const base::Feature kV8OptimizeJavascript{"V8OptimizeJavascript",
 const base::Feature kV8FlushBytecode{"V8FlushBytecode",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables flushing of baseline code in V8.
+const base::Feature kV8FlushBaselineCode{"V8FlushBaselineCode",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables finalizing streaming JS compilations on a background thread.
 const base::Feature kV8OffThreadFinalization{"V8OffThreadFinalization",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
