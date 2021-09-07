@@ -195,8 +195,6 @@ blink::PrerendererClient::client_
 blink::weakness_marking_test::EphemeronCallbacksCounter::count_holder_
 sql::recover::InnerPageDecoder::db_reader_
 sql::recover::LeafPageDecoder::db_reader_
-WTF::ListHashSet::head_
-WTF::ListHashSet::tail_
 
 # Populated manually - flexible array with non-trivial destruction
 blink::ShapeResultView::(anonymous struct)::alignment
