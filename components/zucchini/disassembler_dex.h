@@ -33,7 +33,7 @@ class DisassemblerDex : public Disassembler {
     kMethodId,
     // kClassDef,  // Unused
     kCallSiteId,
-    // kMethodHandle,  // Unused
+    kMethodHandle,
     kTypeList,
     kAnnotationSetRefList,
     kAnnotionSet,
@@ -82,6 +82,8 @@ class DisassemblerDex : public Disassembler {
     kAnnotationsDirectoryToParameterMethodId,
 
     kCodeToCallSiteId,  // kCallSiteId
+
+    kCodeToMethodHandle,  // kMethodHandle
 
     kProtoIdToParametersTypeList,  // kTypeList
     kClassDefToInterfacesTypeList,
@@ -220,6 +222,8 @@ class DisassemblerDex : public Disassembler {
                                                             offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToCallSiteId16(offset_t lo,
                                                               offset_t hi);
+  std::unique_ptr<ReferenceReader> MakeReadCodeToMethodHandle16(offset_t lo,
+                                                                offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToRelCode8(offset_t lo,
                                                           offset_t hi);
   std::unique_ptr<ReferenceReader> MakeReadCodeToRelCode16(offset_t lo,
@@ -239,6 +243,8 @@ class DisassemblerDex : public Disassembler {
   std::unique_ptr<ReferenceWriter> MakeWriteMethodId16(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteMethodId32(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteCallSiteId16(
+      MutableBufferView image);
+  std::unique_ptr<ReferenceWriter> MakeWriteMethodHandle16(
       MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteRelCode8(MutableBufferView image);
   std::unique_ptr<ReferenceWriter> MakeWriteRelCode16(MutableBufferView image);

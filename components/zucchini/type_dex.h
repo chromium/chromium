@@ -12,7 +12,7 @@ namespace dex {
 // Contains types that models DEX executable format data structures.
 // See https://source.android.com/devices/tech/dalvik/dex-format
 
-// The supported versions are 035, 037, and 038.
+// The supported versions are 035, 037, 038, and 039.
 
 enum class FormatId : uint8_t {
   b,  // 22b.
@@ -114,6 +114,8 @@ constexpr Instruction kByteCode[] = {
     {0xFB, 4, FormatId::c},
     {0xFC, 3, FormatId::c},
     {0xFD, 3, FormatId::c},
+    {0xFE, 2, FormatId::c},
+    {0xFF, 2, FormatId::c},
 };
 
 // Supported by MSVC, g++, and clang++. Ensures no gaps in packing.

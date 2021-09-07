@@ -844,10 +844,11 @@ bool ReadDexHeader(ConstBufferView image, ReadDexHeaderResults* opt_results) {
     dex_version = dex_version * 10 + (header->magic[i] - '0');
   }
 
-  // Only support DEX versions 35, 37, and 38.
-  // TODO(ckitagawa): Handle version 39.
-  if (dex_version != 35 && dex_version != 37 && dex_version != 38)
+  // Only support DEX versions 35, 37, 38, and 39
+  if (dex_version != 35 && dex_version != 37 && dex_version != 38 &&
+      dex_version != 39) {
     return false;
+  }
 
   if (header->file_size > image.size() ||
       header->file_size < sizeof(dex::HeaderItem) ||
@@ -960,6 +961,9 @@ std::vector<ReferenceGroup> DisassemblerDex::MakeReferenceGroups() const {
       {{2, TypeTag(kCodeToCallSiteId), PoolTag(kCallSiteId)},
        &DisassemblerDex::MakeReadCodeToCallSiteId16,
        &DisassemblerDex::MakeWriteCallSiteId16},
+      {{2, TypeTag(kCodeToMethodHandle), PoolTag(kMethodHandle)},
+       &DisassemblerDex::MakeReadCodeToMethodHandle16,
+       &DisassemblerDex::MakeWriteMethodHandle16},
       {{4, TypeTag(kProtoIdToParametersTypeList), PoolTag(kTypeList)},
        &DisassemblerDex::MakeReadProtoIdToParametersTypeList,
        &DisassemblerDex::MakeWriteAbs32},
@@ -1424,12 +1428,17 @@ std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToProtoId16(
     offset_t hi) {
   auto filter = base::BindRepeating(
       [](const InstructionParser::Value& value) -> offset_t {
-        if (value.instr->format == dex::FormatId::c &&
-            (value.instr->opcode == 0xFA ||   // invoke-polymorphic
-             value.instr->opcode == 0xFB)) {  // invoke-polymorphic/range
-          // HHHH from e.g, invoke-polymorphic {vC, vD, vE, vF, vG},
-          //   meth@BBBB, proto@HHHH
-          return value.instr_offset + 6;
+        if (value.instr->format == dex::FormatId::c) {
+          if (value.instr->opcode == 0xFA ||  // invoke-polymorphic
+              value.instr->opcode == 0xFB) {  // invoke-polymorphic/range
+            // HHHH from e.g, invoke-polymorphic {vC, vD, vE, vF, vG},
+            //   meth@BBBB, proto@HHHH
+            return value.instr_offset + 6;
+          }
+          if (value.instr->opcode == 0xFF) {  // const-method-type
+            // BBBB from e.g., const-method-type vAA, proto@BBBB
+            return value.instr_offset + 2;
+          }
         }
         return kInvalidOffset;
       });
@@ -1456,6 +1465,25 @@ std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToCallSiteId16(
   auto mapper =
       base::BindRepeating(ReadTargetIndex<uint16_t>, image_,
                           call_site_map_item_, sizeof(dex::CallSiteIdItem));
+  return std::make_unique<InstructionReferenceReader>(
+      image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
+}
+
+std::unique_ptr<ReferenceReader> DisassemblerDex::MakeReadCodeToMethodHandle16(
+    offset_t lo,
+    offset_t hi) {
+  auto filter = base::BindRepeating(
+      [](const InstructionParser::Value& value) -> offset_t {
+        if (value.instr->format == dex::FormatId::c &&
+            value.instr->opcode == 0xFE) {  // const-method-handle
+          // BBBB from e.g, const-method-handle vAA, method_handle@BBBB
+          return value.instr_offset + 2;
+        }
+        return kInvalidOffset;
+      });
+  auto mapper = base::BindRepeating(ReadTargetIndex<uint16_t>, image_,
+                                    method_handle_map_item_,
+                                    sizeof(dex::MethodHandleItem));
   return std::make_unique<InstructionReferenceReader>(
       image_, lo, hi, code_item_offsets_, std::move(filter), std::move(mapper));
 }
@@ -1663,6 +1691,14 @@ std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteCallSiteId16(
   auto writer =
       base::BindRepeating(WriteTargetIndex<uint16_t>, call_site_map_item_,
                           sizeof(dex::CallSiteIdItem));
+  return std::make_unique<ReferenceWriterAdaptor>(image, std::move(writer));
+}
+
+std::unique_ptr<ReferenceWriter> DisassemblerDex::MakeWriteMethodHandle16(
+    MutableBufferView image) {
+  auto writer =
+      base::BindRepeating(WriteTargetIndex<uint16_t>, method_handle_map_item_,
+                          sizeof(dex::MethodHandleItem));
   return std::make_unique<ReferenceWriterAdaptor>(image, std::move(writer));
 }
 
