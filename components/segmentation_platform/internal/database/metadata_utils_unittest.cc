@@ -325,9 +325,10 @@ TEST_F(MetadataUtilsTest, SetFeatureNameHashesFromName) {
 }
 
 TEST_F(MetadataUtilsTest, HasFreshResults) {
+  base::Time now = base::Time::Now();
   proto::SegmentInfo segment_info;
   // No result.
-  EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info));
+  EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info, now));
 
   auto* metadata = segment_info.mutable_model_metadata();
   metadata->set_result_time_to_live(1);
@@ -335,16 +336,16 @@ TEST_F(MetadataUtilsTest, HasFreshResults) {
 
   // Stale results.
   auto* prediction_result = segment_info.mutable_prediction_result();
-  base::Time result_time = base::Time::Now() - base::TimeDelta::FromDays(3);
+  base::Time result_time = now - base::TimeDelta::FromDays(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info));
+  EXPECT_FALSE(metadata_utils::HasFreshResults(segment_info, now));
 
   // Fresh results.
-  result_time = base::Time::Now() - base::TimeDelta::FromHours(2);
+  result_time = now - base::TimeDelta::FromHours(2);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_TRUE(metadata_utils::HasFreshResults(segment_info));
+  EXPECT_TRUE(metadata_utils::HasFreshResults(segment_info, now));
 }
 
 TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
@@ -352,22 +353,24 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
   auto* metadata = segment_info.mutable_model_metadata();
   metadata->set_result_time_to_live(7);
   metadata->set_time_unit(proto::TimeUnit::DAY);
+  base::Time now = base::Time::Now();
 
   // No result.
-  EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info));
+  EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 
   // Unexpired result.
   auto* prediction_result = segment_info.mutable_prediction_result();
   base::Time result_time = base::Time::Now() - base::TimeDelta::FromDays(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_FALSE(metadata_utils::HasExpiredOrUnavailableResult(segment_info));
+  EXPECT_FALSE(
+      metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 
   // Expired result.
   result_time = base::Time::Now() - base::TimeDelta::FromDays(30);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info));
+  EXPECT_TRUE(metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 }
 
 TEST_F(MetadataUtilsTest, GetTimeUnit) {

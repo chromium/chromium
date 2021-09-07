@@ -109,8 +109,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       histogram_signal_handler_.get());
 
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
-      segment_info_database_.get(), segmentation_result_prefs_.get(),
-      config_.get());
+      segment_info_database_.get(), signal_storage_config_.get(),
+      segmentation_result_prefs_.get(), config_.get(), clock);
 
   database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
       config_.get(), clock, segment_info_database_.get(),
@@ -186,7 +186,7 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
 
   model_execution_scheduler_ = std::make_unique<ModelExecutionSchedulerImpl>(
       segment_selector_.get(), segment_info_database_.get(),
-      signal_storage_config_.get(), model_execution_manager_.get());
+      signal_storage_config_.get(), model_execution_manager_.get(), clock_);
 
   signal_filter_processor_->OnSignalListUpdated();
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(

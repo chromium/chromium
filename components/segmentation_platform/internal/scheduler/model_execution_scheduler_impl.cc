@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -19,11 +20,13 @@ ModelExecutionSchedulerImpl::ModelExecutionSchedulerImpl(
     Observer* observer,
     SegmentInfoDatabase* segment_database,
     SignalStorageConfig* signal_storage_config,
-    ModelExecutionManager* model_execution_manager)
+    ModelExecutionManager* model_execution_manager,
+    base::Clock* clock)
     : observer_(observer),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
-      model_execution_manager_(model_execution_manager) {}
+      model_execution_manager_(model_execution_manager),
+      clock_(clock) {}
 
 ModelExecutionSchedulerImpl::~ModelExecutionSchedulerImpl() = default;
 
@@ -72,7 +75,7 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
   if (success) {
     segment_result.set_result(result.first);
     segment_result.set_timestamp_us(
-        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+        clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     stats::RecordModelScore(segment_id, result.first);
   }
 
@@ -104,12 +107,12 @@ bool ModelExecutionSchedulerImpl::ShouldExecuteSegment(
     bool expired_only,
     const proto::SegmentInfo& segment_info) {
   // Filter out the segments computed recently.
-  if (metadata_utils::HasFreshResults(segment_info))
+  if (metadata_utils::HasFreshResults(segment_info, clock_->Now()))
     return false;
 
   // Filter out the segments that aren't expired yet.
-  if (expired_only &&
-      !metadata_utils::HasExpiredOrUnavailableResult(segment_info)) {
+  if (expired_only && !metadata_utils::HasExpiredOrUnavailableResult(
+                          segment_info, clock_->Now())) {
     return false;
   }
 
