@@ -2166,11 +2166,11 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
-  const StateDiscoveryResult kExxpectedStateResult =
+  const StateDiscoveryResult kExpectedStateResult =
       StateDiscoveryResult::kFailure;
   const PsmExecutionResult kExpectedPsmExecutionResult =
       em::DeviceRegisterRequest::PSM_RESULT_ERROR;
-  EXPECT_EQ(GetStateDiscoveryResult(), kExxpectedStateResult);
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
   EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
   EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
 
@@ -2180,7 +2180,7 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   client()->Retry();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(GetStateDiscoveryResult(), kExxpectedStateResult);
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
   EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
   EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
   ExpectPsmHistograms(PsmResult::kServerError,
