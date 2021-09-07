@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
@@ -28,8 +27,7 @@ using ChangePaymentRequestDetailsCallback =
 
 // Handles the communication from the payment handler renderer process to the
 // merchant renderer process.
-class PaymentHandlerHost : public mojom::PaymentHandlerHost,
-                           public content::WebContentsObserver {
+class PaymentHandlerHost : public mojom::PaymentHandlerHost {
  public:
   // The interface to be implemented by the object that can communicate to the
   // merchant's renderer process.
@@ -147,6 +145,8 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost,
   // The identifier for the Payment Request object. Used for developer tools
   // logging.
   std::string payment_request_id_for_logs_;
+
+  base::WeakPtr<content::WebContents> web_contents_;
 
   base::WeakPtrFactory<PaymentHandlerHost> weak_ptr_factory_{this};
 
