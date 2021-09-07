@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -126,6 +127,7 @@ class CONTENT_EXPORT BackgroundFetchDelegate {
       const std::string& download_guid,
       const std::string& method,
       const GURL& url,
+      ::network::mojom::CredentialsMode credentials_mode,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const net::HttpRequestHeaders& headers,
       bool has_request_body) = 0;

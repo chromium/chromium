@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 #include "url/gurl.h"
 
@@ -15,6 +16,8 @@ namespace content {
 namespace {
 
 const char kAccessControlAllowOriginHeader[] = "access-control-allow-origin";
+const char kAccessControlAllowCredentialsHeader[] =
+    "access-control-allow-credentials";
 const char kAnyOriginValue[] = "*";
 
 // Parses the header list (including "any origin") value from a given response
@@ -67,20 +70,29 @@ BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
       response_header_map.find(kAccessControlAllowOriginHeader);
 
   if (access_control_allow_origin_iter != response_header_map.end()) {
-    bool access_control_allow_any_origin = false;
     std::set<url::Origin> access_control_allow_origins;
 
     if (ParseOriginListHeader(access_control_allow_origin_iter->second,
-                              &access_control_allow_any_origin,
+                              &access_control_allow_origin_any_,
                               &access_control_allow_origins)) {
-      access_control_allow_origin_ =
-          access_control_allow_any_origin ||
+      access_control_allow_origin_exact_ =
           access_control_allow_origins.count(source_origin) == 1;
     }
   }
 
-  // TODO(crbug.com/711354): Consider the Access-Control-Allow-Credentials
-  //                         header.
+  // Access-Control-Allow-Credentials checks. The header's values must be valid
+  // for it to not be completely discarded.
+  auto access_control_allow_credentials_iter =
+      response_header_map.find(kAccessControlAllowCredentialsHeader);
+  if (access_control_allow_credentials_iter != response_header_map.end()) {
+    access_control_allow_credentials_ =
+        base::ToLowerASCII(access_control_allow_credentials_iter->second) ==
+        "true";
+  }
+
+  include_credentials_ = request.fetch_request()->credentials_mode ==
+                         ::network::mojom::CredentialsMode::kInclude;
+
   // TODO(crbug.com/711354): Consider the Access-Control-Allow-Headers header.
   // TODO(crbug.com/711354): Consider the Access-Control-Allow-Methods header.
   // TODO(crbug.com/711354): Consider the Access-Control-Expose-Headers header.
@@ -89,12 +101,28 @@ BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
 BackgroundFetchCrossOriginFilter::~BackgroundFetchCrossOriginFilter() = default;
 
 bool BackgroundFetchCrossOriginFilter::CanPopulateBody() const {
-  // The body will be populated if:
-  //   (1) The source and the response share their origin.
-  //   (2) The Access-Control-Allow-Origin method allows any origin.
-  //   (3) The Access-Control-Allow-Origin method allows the source origin.
+  if (is_same_origin_) {
+    // Same origin requests are always OK.
+    return true;
+  }
 
-  return is_same_origin_ || access_control_allow_origin_;
+  // For cross-origin requests, the body will be populated if:
+
+  // (1) The Access-Control-Allow-Origin method allows the source origin / any
+  //     origin.
+  if (!access_control_allow_origin_exact_ &&
+      !access_control_allow_origin_any_) {
+    return false;
+  }
+
+  // (2) For requests with credentials, the Access-Control-Allow-Credentials is
+  //     set and the Access-Control-Allow-Origin contains the exact origin.
+  if (include_credentials_ && (!access_control_allow_credentials_ ||
+                               !access_control_allow_origin_exact_)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

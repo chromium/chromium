@@ -32,8 +32,19 @@ class CONTENT_EXPORT BackgroundFetchCrossOriginFilter {
   // Whether the response comes from the same origin as the requester.
   bool is_same_origin_ = false;
 
-  // Whether the Access-Control-Allow-Origin header includes the source origin.
-  bool access_control_allow_origin_ = false;
+  // Whether the Access-Control-Allow-Origin header includes the exact source
+  // origin.
+  bool access_control_allow_origin_exact_ = false;
+
+  // Whether the Access-Control-Allow-Origin header includes any source origin
+  // (*).
+  bool access_control_allow_origin_any_ = false;
+
+  // Whether the Access-Control-Allow-Credentials header is included.
+  bool access_control_allow_credentials_ = false;
+
+  // Whether credentials were included for cross-origin requests.
+  bool include_credentials_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchCrossOriginFilter);
 };
