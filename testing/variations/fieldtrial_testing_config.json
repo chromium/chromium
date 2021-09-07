@@ -1506,9 +1506,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledBentoBar",
+                    "name": "EnabledBothBentoBarAndOverviewButton",
                     "enable_features": [
-                        "BentoBar"
+                        "BentoBar",
+                        "OverviewButton"
                     ]
                 }
             ]
