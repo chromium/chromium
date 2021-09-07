@@ -35,8 +35,7 @@
 namespace ui {
 namespace {
 
-display::Display::Rotation WaylandTransformToRotation(
-    wl_output_transform transform) {
+display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
   switch (transform) {
     case WL_OUTPUT_TRANSFORM_NORMAL:
       return display::Display::ROTATE_0;
@@ -163,8 +162,7 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
 
   DCHECK_GE(transform, WL_OUTPUT_TRANSFORM_NORMAL);
   DCHECK_LE(transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
-  display::Display::Rotation rotation =
-      WaylandTransformToRotation(static_cast<wl_output_transform>(transform));
+  display::Display::Rotation rotation = WaylandTransformToRotation(transform);
   changed_display.set_rotation(rotation);
   changed_display.set_panel_rotation(rotation);
 
