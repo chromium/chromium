@@ -148,7 +148,7 @@ RendererTask* WebContentsTaskProvider::WebContentsEntry::GetTaskForFrame(
     return nullptr;
 
   // Only local roots are in the frame list.
-  if (!itr->second.frames.count(render_frame_host))
+  if (!itr->second.frames.count(FindLocalRoot(render_frame_host)))
     return nullptr;
 
   return itr->second.renderer_task.get();
