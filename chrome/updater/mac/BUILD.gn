@@ -11,6 +11,7 @@ import("//chrome/updater/branding.gni")
 group("mac") {
   deps = [
     ":browser_install_script",
+    ":ks_admin",
     ":updater_bundle",
     ":updater_install_script",
     "//chrome/updater/mac/signing",
@@ -19,6 +20,24 @@ group("mac") {
 
 tweak_info_plist("updater_plist") {
   info_plist = "Info.plist"
+}
+
+executable("ks_admin") {
+  output_name = "ksadmin"
+  sources = [
+    "ks_admin/ks_admin.h",
+    "ks_admin/ks_admin.mm",
+    "ks_admin/main.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
 }
 
 mac_app_bundle("updater_bundle") {
