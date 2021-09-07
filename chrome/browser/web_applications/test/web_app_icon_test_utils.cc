@@ -198,6 +198,19 @@ GeneratedIconsInfo::GeneratedIconsInfo(IconPurpose purpose,
 
 GeneratedIconsInfo::~GeneratedIconsInfo() = default;
 
+apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
+                              IconPurpose purpose,
+                              SquareSizePx size_px) {
+  apps::IconInfo apps_icon_info;
+
+  apps_icon_info.url =
+      icon_base_url.Resolve("icon-" + base::NumberToString(size_px) + ".png");
+  apps_icon_info.square_size_px = size_px;
+  apps_icon_info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
+
+  return apps_icon_info;
+}
+
 void AddIconsToWebApplicationInfo(
     WebApplicationInfo* web_application_info,
     const GURL& icons_base_url,
@@ -208,14 +221,11 @@ void AddIconsToWebApplicationInfo(
     std::map<SquareSizePx, SkBitmap> generated_bitmaps;
 
     for (size_t i = 0; i < info.sizes_px.size(); ++i) {
-      AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
-
-      apps::IconInfo apps_icon_info;
-      apps_icon_info.url = icons_base_url.Resolve(
-          "icon-" + base::NumberToString(info.sizes_px[i]) + ".png");
-      apps_icon_info.square_size_px = info.sizes_px[i];
-      apps_icon_info.purpose = ManifestPurposeToIconInfoPurpose(info.purpose);
+      apps::IconInfo apps_icon_info =
+          CreateIconInfo(icons_base_url, info.purpose, info.sizes_px[i]);
       web_application_info->icon_infos.push_back(std::move(apps_icon_info));
+
+      AddGeneratedIcon(&generated_bitmaps, info.sizes_px[i], info.colors[i]);
     }
 
     web_application_info->icon_bitmaps.SetBitmapsForPurpose(

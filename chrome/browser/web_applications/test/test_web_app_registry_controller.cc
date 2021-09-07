@@ -65,29 +65,21 @@ void TestWebAppRegistryController::UnregisterAll() {
 }
 
 void TestWebAppRegistryController::ApplySyncChanges_AddApps(
-    std::vector<GURL> apps_to_add) {
+    const std::vector<std::unique_ptr<WebApp>>& apps_server_state) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       sync_bridge().CreateMetadataChangeList();
   syncer::EntityChangeList entity_changes;
 
-  for (const GURL& app_url : apps_to_add) {
-    const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
-
-    auto web_app_server_data = std::make_unique<WebApp>(app_id);
-    web_app_server_data->SetName("WebApp name");
-    web_app_server_data->SetStartUrl(app_url);
-    web_app_server_data->SetUserDisplayMode(DisplayMode::kStandalone);
-
-    WebApp::SyncFallbackData sync_fallback_data;
-    sync_fallback_data.name = "WebApp sync data name";
-    sync_fallback_data.theme_color = SK_ColorWHITE;
-    web_app_server_data->SetSyncFallbackData(std::move(sync_fallback_data));
+  for (const std::unique_ptr<WebApp>& web_app_server_state :
+       apps_server_state) {
+    // Only fallback icon infos from SyncFallbackData are used.
+    DCHECK(web_app_server_state->icon_infos().empty());
 
     std::unique_ptr<syncer::EntityData> entity_data =
-        CreateSyncEntityData(*web_app_server_data);
+        CreateSyncEntityData(*web_app_server_state);
 
-    auto entity_change =
-        syncer::EntityChange::CreateAdd(app_id, std::move(*entity_data));
+    auto entity_change = syncer::EntityChange::CreateAdd(
+        web_app_server_state->app_id(), std::move(*entity_data));
     entity_changes.push_back(std::move(entity_change));
   }
 

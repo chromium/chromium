@@ -88,6 +88,10 @@ struct GeneratedIconsInfo {
   std::vector<SkColor> colors;
 };
 
+apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
+                              IconPurpose purpose,
+                              SquareSizePx size_px);
+
 void AddIconsToWebApplicationInfo(
     WebApplicationInfo* web_application_info,
     const GURL& icons_base_url,

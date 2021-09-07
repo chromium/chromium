@@ -41,7 +41,8 @@ class TestWebAppRegistryController : public SyncInstallDelegate {
   void UnregisterApp(const AppId& app_id);
   void UnregisterAll();
 
-  void ApplySyncChanges_AddApps(std::vector<GURL> apps_to_add);
+  void ApplySyncChanges_AddApps(
+      const std::vector<std::unique_ptr<WebApp>>& apps_server_state);
   void ApplySyncChanges_UpdateApps(
       const std::vector<std::unique_ptr<WebApp>>& apps_server_state);
   void ApplySyncChanges_DeleteApps(std::vector<AppId> app_ids_to_delete);

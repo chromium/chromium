@@ -330,17 +330,14 @@ class WebAppInstallManagerTest
   }
 
   InstallResult InstallWebAppFromInfo(
-      std::unique_ptr<WebApplicationInfo> web_application_info) {
-    const webapps::WebappInstallSource install_source =
-        AreSystemWebAppsSupported()
-            ? webapps::WebappInstallSource::SYSTEM_DEFAULT
-            : webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+      std::unique_ptr<WebApplicationInfo> web_application_info,
+      bool overwrite_existing_manifest_fields,
+      webapps::WebappInstallSource install_source) {
     InstallResult result;
     base::RunLoop run_loop;
     install_manager().InstallWebAppFromInfo(
-        std::move(web_application_info),
-        /*overwrite_existing_manifest_fields=*/false, ForInstallableSite::kYes,
-        install_source,
+        std::move(web_application_info), overwrite_existing_manifest_fields,
+        ForInstallableSite::kYes, install_source,
         base::BindLambdaForTesting(
             [&](const AppId& installed_app_id, InstallResultCode code) {
               result.app_id = installed_app_id;
@@ -979,7 +976,14 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   server_web_app_info->scope = url;
   server_web_app_info->title = u"Test web app";
 
-  InstallResult result = InstallWebAppFromInfo(std::move(server_web_app_info));
+  const webapps::WebappInstallSource install_source =
+      AreSystemWebAppsSupported()
+          ? webapps::WebappInstallSource::SYSTEM_DEFAULT
+          : webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON;
+
+  InstallResult result = InstallWebAppFromInfo(
+      std::move(server_web_app_info),
+      /*overwrite_existing_manifest_fields=*/false, install_source);
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
   EXPECT_EQ(expected_app_id, result.app_id);
 
@@ -1069,6 +1073,124 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   // because TestAcceptDialogCallback doesn't set open_as_window to true.
   EXPECT_EQ(DisplayMode::kBrowser,
             registrar().GetAppEffectiveDisplayMode(app_id));
+}
+
+TEST_P(WebAppInstallManagerTest_SyncOnly,
+       InstallWebAppFromWebAppStoreThenInstallFromSync) {
+  InitEmptyRegistrar();
+
+  const GURL start_url("https://example.com/path");
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+
+  // Reproduces `ApkWebAppInstaller` install parameters.
+  auto apk_web_application_info = std::make_unique<WebApplicationInfo>();
+  apk_web_application_info->start_url = start_url;
+  apk_web_application_info->scope = GURL("https://example.com/apk_scope");
+  apk_web_application_info->title = u"Name from APK";
+  apk_web_application_info->theme_color = SK_ColorWHITE;
+  apk_web_application_info->display_mode = DisplayMode::kStandalone;
+  apk_web_application_info->user_display_mode = DisplayMode::kStandalone;
+  AddGeneratedIcon(&apk_web_application_info->icon_bitmaps.any, icon_size::k128,
+                   SK_ColorYELLOW);
+
+  InstallResult result =
+      InstallWebAppFromInfo(std::move(apk_web_application_info),
+                            /*overwrite_existing_manifest_fields=*/false,
+                            webapps::WebappInstallSource::ARC);
+
+  EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
+  EXPECT_EQ(app_id, result.app_id);
+
+  const WebApp* web_app = registrar().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  EXPECT_TRUE(web_app->IsWebAppStoreInstalledApp());
+  EXPECT_FALSE(web_app->IsSynced());
+  EXPECT_FALSE(web_app->is_from_sync_and_pending_installation());
+
+  ASSERT_TRUE(web_app->theme_color().has_value());
+  EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());
+  EXPECT_EQ("Name from APK", web_app->name());
+  EXPECT_EQ("https://example.com/apk_scope", web_app->scope().spec());
+
+  ASSERT_TRUE(web_app->sync_fallback_data().theme_color.has_value());
+  EXPECT_EQ(SK_ColorWHITE, web_app->sync_fallback_data().theme_color.value());
+  EXPECT_EQ("Name from APK", web_app->sync_fallback_data().name);
+  EXPECT_EQ("https://example.com/apk_scope",
+            web_app->sync_fallback_data().scope.spec());
+
+  EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
+  EXPECT_EQ(DisplayMode::kStandalone, web_app->user_display_mode());
+
+  EXPECT_TRUE(web_app->icon_infos().empty());
+  EXPECT_TRUE(web_app->sync_fallback_data().icon_infos.empty());
+
+  EXPECT_EQ(SK_ColorYELLOW, IconManagerReadAppIconPixel(icon_manager(), app_id,
+                                                        icon_size::k128));
+
+  // Simulates the same web app arriving from sync.
+  {
+    auto synced_specifics_data = std::make_unique<WebApp>(app_id);
+    synced_specifics_data->SetStartUrl(start_url);
+
+    synced_specifics_data->AddSource(Source::kSync);
+    synced_specifics_data->SetUserDisplayMode(DisplayMode::kBrowser);
+    synced_specifics_data->SetName("Name From Sync");
+
+    WebApp::SyncFallbackData sync_fallback_data;
+    sync_fallback_data.name = "Name From Sync";
+    sync_fallback_data.theme_color = SK_ColorMAGENTA;
+    sync_fallback_data.scope = GURL("https://example.com/sync_scope");
+
+    apps::IconInfo apps_icon_info = CreateIconInfo(
+        /*icon_base_url=*/start_url, IconPurpose::MONOCHROME, icon_size::k64);
+    sync_fallback_data.icon_infos.push_back(std::move(apps_icon_info));
+
+    synced_specifics_data->SetSyncFallbackData(std::move(sync_fallback_data));
+
+    // `SyncInstallDelegate::InstallWebAppsAfterSync()` must not be called.
+    controller().SetInstallWebAppsAfterSyncDelegate(base::BindLambdaForTesting(
+        [&](std::vector<WebApp*> apps_to_install,
+            TestWebAppRegistryController::RepeatingInstallCallback callback) {
+          ADD_FAILURE();
+        }));
+
+    std::vector<std::unique_ptr<WebApp>> add_synced_apps_data;
+    add_synced_apps_data.push_back(std::move(synced_specifics_data));
+    controller().ApplySyncChanges_AddApps(add_synced_apps_data);
+  }
+
+  EXPECT_EQ(web_app, registrar().GetAppById(app_id));
+
+  EXPECT_TRUE(web_app->IsWebAppStoreInstalledApp());
+  EXPECT_TRUE(web_app->IsSynced());
+  EXPECT_FALSE(web_app->is_from_sync_and_pending_installation());
+
+  EXPECT_EQ(DisplayMode::kStandalone, web_app->display_mode());
+  EXPECT_EQ(DisplayMode::kBrowser, web_app->user_display_mode());
+
+  ASSERT_TRUE(web_app->theme_color().has_value());
+  EXPECT_EQ(SK_ColorWHITE, web_app->theme_color().value());
+  EXPECT_EQ("Name from APK", web_app->name());
+  EXPECT_EQ("https://example.com/apk_scope", web_app->scope().spec());
+
+  ASSERT_TRUE(web_app->sync_fallback_data().theme_color.has_value());
+  EXPECT_EQ(SK_ColorMAGENTA, web_app->sync_fallback_data().theme_color.value());
+  EXPECT_EQ("Name From Sync", web_app->sync_fallback_data().name);
+  EXPECT_EQ("https://example.com/sync_scope",
+            web_app->sync_fallback_data().scope.spec());
+
+  EXPECT_TRUE(web_app->icon_infos().empty());
+  ASSERT_EQ(1u, web_app->sync_fallback_data().icon_infos.size());
+
+  const apps::IconInfo& app_icon_info =
+      web_app->sync_fallback_data().icon_infos[0];
+  EXPECT_EQ(apps::IconInfo::Purpose::kMonochrome, app_icon_info.purpose);
+  EXPECT_EQ(icon_size::k64, app_icon_info.square_size_px);
+  EXPECT_EQ("https://example.com/icon-64.png", app_icon_info.url.spec());
+
+  EXPECT_EQ(SK_ColorYELLOW, IconManagerReadAppIconPixel(icon_manager(), app_id,
+                                                        icon_size::k128));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
