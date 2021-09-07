@@ -14,6 +14,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
+#include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
@@ -505,18 +506,18 @@ class ContentsContainerAnimation : public AppListFolderView::Animation,
 
 }  // namespace
 
-AppListFolderView::AppListFolderView(Delegate* delegate,
+AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
                                      AppsGridView* root_apps_grid_view,
                                      AppListModel* model,
                                      ContentsView* contents_view,
                                      AppListA11yAnnouncer* a11y_announcer,
                                      AppListViewDelegate* view_delegate)
-    : delegate_(delegate),
+    : folder_controller_(folder_controller),
       root_apps_grid_view_(root_apps_grid_view),
       a11y_announcer_(a11y_announcer),
       model_(model),
       view_delegate_(view_delegate) {
-  DCHECK(delegate_);
+  DCHECK(folder_controller_);
   DCHECK(root_apps_grid_view_);
   DCHECK(a11y_announcer_);
   DCHECK(view_delegate_);
@@ -764,7 +765,7 @@ void AppListFolderView::OnViewIsDeleting(views::View* view) {
   ResetState(/*restore_folder_item_view_state=*/false);
 
   if (!hidden_for_reparent)
-    delegate_->ShowApps(nullptr);
+    folder_controller_->ShowApps(nullptr);
 }
 
 void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
@@ -783,7 +784,7 @@ void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {
     // the container view to show the app list instead.
     // Pass nullptr to ShowApps() to avoid triggering animation from the deleted
     // folder.
-    delegate_->ShowApps(nullptr);
+    folder_controller_->ShowApps(nullptr);
   }
 }
 
@@ -935,7 +936,7 @@ void AppListFolderView::ReparentItem(
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
   root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
       original_drag_view, to_root_level_grid);
-  delegate_->ReparentFolderItemTransit(folder_item_);
+  folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
 
 void AppListFolderView::DispatchDragEventForReparent(
@@ -962,7 +963,7 @@ void AppListFolderView::DispatchEndDragEventForReparent(
   root_apps_grid_view_->EndDragFromReparentItemInRootLevel(
       folder_item_view_, events_forwarded_to_drag_drop_host, cancel_drag,
       std::move(drag_icon_proxy));
-  delegate_->ReparentDragEnded();
+  folder_controller_->ReparentDragEnded();
 
   // The view was not hidden in order to keeping receiving mouse events. Hide it
   // now as the reparenting ended.
@@ -990,7 +991,7 @@ void AppListFolderView::CloseFolderPage() {
   // `ShowApps()` may reset `folder_item_view_`.
   AppListItemView* view_to_focus = folder_item_view_;
 
-  delegate_->ShowApps(folder_item_);
+  folder_controller_->ShowApps(folder_item_);
 
   if (should_show_focus_ring_on_hide) {
     view_to_focus->RequestFocus();
@@ -1005,7 +1006,7 @@ bool AppListFolderView::IsOEMFolder() const {
 
 void AppListFolderView::HandleKeyboardReparent(AppListItemView* reparented_view,
                                                ui::KeyboardCode key_code) {
-  delegate_->ReparentFolderItemTransit(folder_item_);
+  folder_controller_->ReparentFolderItemTransit(folder_item_);
   root_apps_grid_view_->HandleKeyboardReparent(reparented_view,
                                                folder_item_view_, key_code);
 }

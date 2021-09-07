@@ -9,7 +9,6 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
-#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_page.h"
 #include "ash/ash_export.h"
 #include "base/callback_helpers.h"
@@ -20,6 +19,7 @@ namespace ash {
 
 class ApplicationDragAndDropHost;
 class AppListFolderItem;
+class AppListFolderView;
 class AppListModel;
 class ContentsView;
 class FolderBackgroundView;
@@ -31,8 +31,7 @@ class SuggestionChipContainerView;
 // app items, and a AppListFolderView to render the app items inside the
 // active folder.
 class ASH_EXPORT AppsContainerView : public AppListPage,
-                                     public AppListFolderController,
-                                     public AppListFolderView::Delegate {
+                                     public AppListFolderController {
  public:
   AppsContainerView(ContentsView* contents_view, AppListModel* model);
   ~AppsContainerView() override;
@@ -108,8 +107,6 @@ class ASH_EXPORT AppsContainerView : public AppListPage,
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view) override;
-
-  // AppListFolderView::Delegate:
   void ShowApps(AppListFolderItem* folder_item) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;

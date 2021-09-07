@@ -7,6 +7,7 @@
 
 namespace ash {
 
+class AppListFolderItem;
 class AppListItemView;
 
 // An interface used to abstract app list folder UI activation from
@@ -23,6 +24,18 @@ class AppListFolderController {
   // will be anchored at `folder_item_view`, and it will show the contents of
   // the associated folder item (`folder_item_view->item()`).
   virtual void ShowFolderForItemView(AppListItemView* folder_item_view) = 0;
+
+  // Shows the root level apps list. Called when the UI navigates back from
+  // a folder view with |folder_item|. If |folder_item| is nullptr skips
+  // animation.
+  virtual void ShowApps(AppListFolderItem* folder_item) = 0;
+
+  // Transits the UI from folder view to root level apps grid view when
+  // re-parenting a child item of |folder_item|.
+  virtual void ReparentFolderItemTransit(AppListFolderItem* folder_item) = 0;
+
+  // Notifies the container that a reparent drag has completed.
+  virtual void ReparentDragEnded() = 0;
 };
 
 }  // namespace ash

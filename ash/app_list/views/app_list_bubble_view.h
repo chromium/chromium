@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/app_list/views/app_list_folder_controller.h"
-#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ui/views/view.h"
@@ -21,6 +20,7 @@ class AppListBubbleAppsPage;
 class AppListBubbleAssistantPage;
 class AppListBubbleSearchPage;
 class AppListFolderItem;
+class AppListFolderView;
 class AppListViewDelegate;
 class FolderBackgroundView;
 class SearchBoxView;
@@ -31,8 +31,7 @@ class SearchBoxView;
 // to the system tray area.
 class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate,
-                                     public AppListFolderController,
-                                     public AppListFolderView::Delegate {
+                                     public AppListFolderController {
  public:
   AppListBubbleView(AppListViewDelegate* view_delegate,
                     ApplicationDragAndDropHost* drag_and_drop_host);
@@ -73,8 +72,6 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view) override;
-
-  // AppListFolderView::Delegate:
   void ShowApps(AppListFolderItem* folder_item) override;
   void ReparentFolderItemTransit(AppListFolderItem* folder_item) override;
   void ReparentDragEnded() override;

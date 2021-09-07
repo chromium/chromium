@@ -24,6 +24,7 @@
 namespace ash {
 
 class AppListA11yAnnouncer;
+class AppListFolderController;
 class AppListFolderItem;
 class AppListItemView;
 class AppListModel;
@@ -43,21 +44,7 @@ class ASH_EXPORT AppListFolderView : public views::View,
  public:
   METADATA_HEADER(AppListFolderView);
 
-  // The container that owns the AppListFolderView must implement this.
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-    // Shows the root level apps list. This is called when UI navigate back from
-    // a folder view with |folder_item|. If |folder_item| is nullptr skips
-    // animation.
-    virtual void ShowApps(AppListFolderItem* folder_item) = 0;
-    // Transits the UI from folder view to root level apps grid view when
-    // re-parenting a child item of |folder_item|.
-    virtual void ReparentFolderItemTransit(AppListFolderItem* folder_item) = 0;
-    // Notifies the container that a reparent drag has completed.
-    virtual void ReparentDragEnded() = 0;
-  };
-  AppListFolderView(Delegate* delegate,
+  AppListFolderView(AppListFolderController* folder_controller,
                     AppsGridView* root_apps_grid_view,
                     AppListModel* model,
                     ContentsView* contents_view,
@@ -189,8 +176,8 @@ class ASH_EXPORT AppListFolderView : public views::View,
   // false when resetting the folder state due to folder item view deletion.
   void ResetState(bool restore_folder_item_view_state);
 
-  // Delegate interface for the container.
-  Delegate* const delegate_;
+  // Controller interface implemented by the container for this view.
+  AppListFolderController* const folder_controller_;
 
   // The root (non-folder) apps grid view.
   AppsGridView* const root_apps_grid_view_;
