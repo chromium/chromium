@@ -54,12 +54,6 @@ class ServiceWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<ServiceWorkerHelper>;
 
-  // Enumerates all Service Worker instances on the service worker core thread.
-  void FetchServiceWorkerUsageInfoOnCoreThread(FetchCallback callback);
-
-  // Deletes Service Workers for an origin on the service worker core thread.
-  void DeleteServiceWorkersOnCoreThread(const url::Origin& origin);
-
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerHelper);
 };
 
