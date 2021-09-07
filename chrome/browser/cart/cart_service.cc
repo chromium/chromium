@@ -160,7 +160,7 @@ GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
   DCHECK(base_url.is_valid() && IsPartnerMerchant(base_url));
 
   if (kRbdUtmParam.Get()) {
-    return net::AppendQueryParameter(
+    return net::AppendOrReplaceQueryParameter(
         base_url, "utm_source",
         is_discount_enabled ? kRbdUtmTag : kNoRbdUtmTag);
   } else {
