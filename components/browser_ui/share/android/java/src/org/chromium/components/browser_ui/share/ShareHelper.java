@@ -386,16 +386,18 @@ public class ShareHelper {
             if (isFileShare) {
                 intent.setType(params.getFileContentType());
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final boolean hasAltText =
+                        params.getFileAltTexts() != null && !params.getFileAltTexts().isEmpty();
 
                 if (isMultipleFileShare) {
                     intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, params.getFileUris());
-                    if (!params.getFileAltTexts().isEmpty()) {
+                    if (hasAltText) {
                         intent.putStringArrayListExtra(
                                 EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts());
                     }
                 } else {
                     intent.putExtra(Intent.EXTRA_STREAM, params.getFileUris().get(0));
-                    if (!params.getFileAltTexts().isEmpty()) {
+                    if (hasAltText) {
                         intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getFileAltTexts().get(0));
                     }
                 }
