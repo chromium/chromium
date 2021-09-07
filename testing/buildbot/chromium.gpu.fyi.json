@@ -13054,7 +13054,6 @@
           "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
           "--flag-specific=skia-gl"
         ],
         "isolate_name": "blink_web_tests",
@@ -13135,7 +13134,6 @@
           "--skipped=always",
           "--driver-logging",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
           "--flag-specific=skia-vulkan-native"
         ],
         "isolate_name": "blink_web_tests",
@@ -13504,7 +13502,6 @@
           "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
           "--flag-specific=skia-gl"
         ],
         "isolate_name": "blink_web_tests",
@@ -13585,7 +13582,6 @@
           "--skipped=always",
           "--driver-logging",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
           "--flag-specific=skia-vulkan-native"
         ],
         "isolate_name": "blink_web_tests",
