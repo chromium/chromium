@@ -623,7 +623,11 @@ void ContentAutofillDriver::DidNavigateFrame(
     return;
   }
 
+  // The driver's RenderFrameHost may be used for the page we're navigating to.
+  // Therefore, we need to forget all forms of the page we're navigating from.
   submitted_forms_.clear();
+  if (autofill_router_)  // Can be nullptr only in tests.
+    autofill_router_->UnregisterDriver(this);
   autofill_manager_->Reset();
 }
 

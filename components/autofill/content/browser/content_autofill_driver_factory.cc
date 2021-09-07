@@ -43,7 +43,15 @@ const char ContentAutofillDriverFactory::
     kContentAutofillDriverFactoryWebContentsUserDataKey[] =
         "web_contents_autofill_driver_factory";
 
-ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
+ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
+  // There's a circular dependency: ~ContentAutofillDriverFactory() destroys
+  // ContentAutofillDriverFactory::router_ and afterwards calls
+  // ~AutofillDriverFactory(), which implicitly deletes all drivers and thus
+  // calls ~ContentAutofillDriver(), which again refers to
+  // ContentAutofillDriverFactory::router_. To resolve this, we explicitly
+  // delete all drivers here before destruction of |router_|.
+  DeleteAllAutofillDrivers();
+}
 
 // static
 void ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
@@ -162,10 +170,6 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
                 render_frame_host->GetLifecycleState());
       router_.HidePopup(driver);
     }
-    if (!render_frame_host->GetParent())
-      router_.Reset();
-    else
-      router_.UnregisterDriver(driver);
   }
   DeleteForKey(render_frame_host);
 }
@@ -198,13 +202,6 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
     ContentAutofillDriver* driver =
         DriverForFrame(navigation_handle->GetRenderFrameHost());
-    if (!navigation_handle->IsSameDocument() &&
-        !navigation_handle->IsServedFromBackForwardCache()) {
-      if (navigation_handle->IsInMainFrame())
-        router_.Reset();
-      else
-        router_.UnregisterDriver(driver);
-    }
     NavigationFinished(AutofillDriverFactory::HideUi(
         !navigation_handle->IsInPrerenderedMainFrame()));
     driver->DidNavigateFrame(navigation_handle);

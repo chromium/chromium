@@ -92,6 +92,13 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
 
   AFCHECK(driver, return );
 
+  if (!driver->render_frame_host()->GetParent()) {
+    form_forest_.Reset();
+    SetLastQueriedSource(nullptr);
+    SetLastQueriedTarget(nullptr);
+    return;
+  }
+
   for (const std::unique_ptr<internal::FormForest::FrameData>& frame :
        form_forest_.frame_datas()) {
     AFCHECK(frame, continue);
@@ -105,12 +112,6 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
     SetLastQueriedSource(nullptr);
   if (last_queried_target_ == driver)
     SetLastQueriedTarget(nullptr);
-}
-
-void ContentAutofillRouter::Reset() {
-  form_forest_.Reset();
-  SetLastQueriedSource(nullptr);
-  SetLastQueriedTarget(nullptr);
 }
 
 void ContentAutofillRouter::SetLastQueriedSource(

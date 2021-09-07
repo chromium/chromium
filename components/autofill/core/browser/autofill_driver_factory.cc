@@ -44,4 +44,8 @@ void AutofillDriverFactory::DeleteForKey(void* key) {
   driver_map_.erase(key);
 }
 
+void AutofillDriverFactory::DeleteAllAutofillDrivers() {
+  driver_map_.clear();
+}
+
 }  // namespace autofill

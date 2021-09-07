@@ -144,10 +144,9 @@ class ContentAutofillRouter {
 
   // Deletes all forms and fields related to |driver| (and this driver only).
   // Must be called whenever |driver| is destroyed.
+  // As a simple performance optimization, if |driver| is a main frame, the
+  // whole router is reset to the initial state.
   void UnregisterDriver(ContentAutofillDriver* driver);
-
-  // Resets the object to the initial state.
-  void Reset();
 
   // Returns the ContentAutofillDriver* for which AskForValuesToFill() was
   // called last.

@@ -54,6 +54,9 @@ class AutofillDriverFactory {
   // Deletes the AutofillDriver for |key|.
   void DeleteForKey(void* key);
 
+  // Deletes all AutofillDrivers.
+  void DeleteAllAutofillDrivers();
+
  private:
   AutofillClient* const client_;
 
