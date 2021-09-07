@@ -336,6 +336,8 @@ class FeedNetworkImpl::NetworkFetch {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response) {
     const network::mojom::URLResponseHead* loader_response_info =
         simple_loader_->ResponseInfo();
+    absl::optional<network::URLLoaderCompletionStatus> completion_status =
+        simple_loader_->CompletionStatus();
 
     NetworkResponseInfo response_info;
     response_info.status_code = simple_loader_->NetError();
@@ -346,14 +348,14 @@ class FeedNetworkImpl::NetworkFetch {
     response_info.was_signed_in = !access_token_.empty();
     response_info.loader_start_time_ticks = loader_only_start_ticks_;
     response_info.encoded_size_bytes =
-        loader_response_info ? loader_response_info->encoded_data_length : 0;
+        completion_status ? completion_status->encoded_data_length : 0;
 
     // If overriding the feed host, try to grab the Bless nonce. This is
     // strictly informational, and only displayed in snippets-internals.
-    if (allow_bless_auth_ && simple_loader_->ResponseInfo()) {
+    if (allow_bless_auth_ && loader_response_info) {
       size_t iter = 0;
       std::string value;
-      while (simple_loader_->ResponseInfo()->headers->EnumerateHeader(
+      while (loader_response_info->headers->EnumerateHeader(
           &iter, "www-authenticate", &value)) {
         size_t pos = value.find("nonce=\"");
         if (pos != std::string::npos) {
@@ -369,7 +371,7 @@ class FeedNetworkImpl::NetworkFetch {
     std::string response_body;
     if (response) {
       response_info.status_code =
-          simple_loader_->ResponseInfo()->headers->response_code();
+          loader_response_info->headers->response_code();
       response_info.response_body_bytes = response->size();
 
       response_body = std::move(*response);
