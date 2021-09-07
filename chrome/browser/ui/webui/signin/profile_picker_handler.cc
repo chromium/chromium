@@ -534,7 +534,7 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
 
 void ProfilePickerHandler::HandleCancelProfileSwitch(
     const base::ListValue* args) {
-  ProfilePicker::CancelSignIn();
+  ProfilePicker::CancelSignedInFlow();
 }
 
 void ProfilePickerHandler::OnProfileCreated(
@@ -722,9 +722,14 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
     // profile color. Generate a new profile color here.
     profile_color = GenerateNewProfileColor().color;
   }
-  ProfilePicker::SwitchToSignIn(
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  ProfilePicker::SwitchToDiceSignIn(
       profile_color, base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
                                     weak_factory_.GetWeakPtr()));
+#else
+  NOTIMPLEMENTED() << "Lacros/mirror flow is not implemented yet";
+#endif
 }
 
 void ProfilePickerHandler::OnLoadSigninFinished(bool success) {

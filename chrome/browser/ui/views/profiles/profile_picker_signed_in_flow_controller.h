@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_FLOW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_FLOW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
@@ -35,49 +35,30 @@ class ThemeProvider;
 
 // Class responsible for the sign-in profile creation flow (within
 // ProfilePickerView).
-class ProfilePickerSignInFlowController
+class ProfilePickerSignedInFlowController
     : public content::WebContentsDelegate,
-      public ChromeWebModalDialogManagerDelegate,
       public signin::IdentityManager::Observer {
  public:
   using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 
-  ProfilePickerSignInFlowController(
+  ProfilePickerSignedInFlowController(
       ProfilePickerWebContentsHost* host,
+      Profile* profile,
+      std::unique_ptr<content::WebContents> contents,
+      absl::optional<SkColor> profile_color,
       base::TimeDelta extended_account_info_timeout);
-  ~ProfilePickerSignInFlowController() override;
-  ProfilePickerSignInFlowController(const ProfilePickerSignInFlowController&) =
-      delete;
-  ProfilePickerSignInFlowController& operator=(
-      const ProfilePickerSignInFlowController&) = delete;
+  ~ProfilePickerSignedInFlowController() override;
+  ProfilePickerSignedInFlowController(
+      const ProfilePickerSignedInFlowController&) = delete;
+  ProfilePickerSignedInFlowController& operator=(
+      const ProfilePickerSignedInFlowController&) = delete;
 
-  // Initiates switching the flow to sign-in. When it is done,
-  // `switch_finished_callback` gets called. If a sign-in was in progress before
-  // in the lifetime of this class, it only switches the view to show the
-  // ongoing sign-in again (and updates color for the new profile to
-  // `profile_color`).
-  void SwitchToSignIn(absl::optional<SkColor> profile_color,
-                      base::OnceCallback<void(bool)> switch_finished_callback);
-
-  // Returns true if the user is not yet authenticated.
-  bool IsSigningIn() const;
-
-  // Reloads the sign-in page if applicable.
-  void ReloadSignInPage();
-
-  // Returns theme provider based on the sign-in profile or nullptr if the flow
-  // is not yet initialized.
-  const ui::ThemeProvider* GetThemeProvider() const;
+  // Inits the flow, must be called before any other calls below.
+  void Init(bool is_saml);
 
   // Getter of the path of profile which is displayed on the profile switch
   // screen. Returns an empty path if no such screen has been displayed.
   base::FilePath switch_profile_path() const { return switch_profile_path_; }
-
-  // Sign-in flow operations.
-  //
-  // All the following public functions can only be called after the flow gets
-  // initialized. The flow is initialized when the `switch_finished_callback`
-  // provided in SwitchToSignIn() gets called with success (true value).
 
   // Cancels the flow explicitly. This does not log any metrics, the caller
   // must take care of logging the outcome of the flow on its own.
@@ -106,26 +87,8 @@ class ProfilePickerSignInFlowController
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
-                      bool user_gesture,
-                      bool* was_blocked) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
-  void NavigationStateChanged(content::WebContents* source,
-                              content::InvalidateTypes changed_flags) override;
-
-  // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
 
   // IdentityManager::Observer:
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
 
   // Helper functions to deal with the lack of extended account info.
@@ -138,14 +101,8 @@ class ProfilePickerSignInFlowController
       EnterpriseProfileWelcomeUI::ScreenType type,
       base::OnceCallback<void(bool)> proceed_callback);
 
-  // Initializes the flow with the newly created profile.
-  void OnProfileCreated(
-      base::OnceCallback<void(bool)>& switch_finished_callback,
-      Profile* new_profile,
-      Profile::CreateStatus status);
-
-  // Returns whether the flow is initialized (i.e. whether `profile_` has been
-  // created).
+  // Returns whether the flow is initialized (i.e. whether `Init()` has been
+  // called).
   bool IsInitialized() const;
 
   // Returns the profile color, taking into account current policies.
@@ -209,8 +166,120 @@ class ProfilePickerSignInFlowController
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  base::WeakPtrFactory<ProfilePickerSignInFlowController> weak_ptr_factory_{
+  base::WeakPtrFactory<ProfilePickerSignedInFlowController> weak_ptr_factory_{
       this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_FLOW_CONTROLLER_H_
+// TODO(crbug.com/1227029): Move into a separate file.
+// Class responsible for the GAIA sign-in within profile creation flow.
+class ProfilePickerDiceSignInProvider
+    : public content::WebContentsDelegate,
+      public ChromeWebModalDialogManagerDelegate,
+      public signin::IdentityManager::Observer {
+ public:
+  // The callback returns the newly created profile and a valid WebContents
+  // instance within this profile. If `is_saml` is true, sign-in is not
+  // completed there yet. Otherwise, the newly created profile is properly
+  // signed-in, i.e. its IdentityManager has a (unconsented) primary account.
+  // If the flow gets canceled by closing the window, the callback never gets
+  // called.
+  // TODO(crbug.com/1240650): Properly support saml sign in so that the special
+  // casing is not needed here.
+  using SignedInCallback =
+      base::OnceCallback<void(Profile* profile,
+                              std::unique_ptr<content::WebContents>,
+                              bool is_saml)>;
+
+  explicit ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host);
+  ~ProfilePickerDiceSignInProvider() override;
+  ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
+      delete;
+  ProfilePickerDiceSignInProvider& operator=(
+      const ProfilePickerDiceSignInProvider&) = delete;
+
+  // Initiates switching the flow to sign-in (which is normally asynchronous).
+  // If a sign-in was in progress before in the lifetime of this class, it only
+  // (synchronously) switches the view to show the ongoing sign-in again. When
+  // the sign-in screen is displayed, `switch_finished_callback` gets called.
+  // When the sign-in finishes (if it ever happens), `signin_finished_callback`
+  // gets called.
+  void SwitchToSignIn(base::OnceCallback<void(bool)> switch_finished_callback,
+                      SignedInCallback signin_finished_callback);
+
+  // Reloads the sign-in page if applicable.
+  void ReloadSignInPage();
+
+  // Returns theme provider based on the sign-in profile or nullptr if the flow
+  // is not yet initialized.
+  const ui::ThemeProvider* GetThemeProvider() const;
+
+ private:
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override;
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const gfx::Rect& initial_rect,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  void NavigationStateChanged(content::WebContents* source,
+                              content::InvalidateTypes changed_flags) override;
+
+  // ChromeWebModalDialogManagerDelegate:
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+      override;
+
+  // IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
+  // Initializes the flow with the newly created profile.
+  void OnProfileCreated(
+      base::OnceCallback<void(bool)>& switch_finished_callback,
+      Profile* new_profile,
+      Profile::CreateStatus status);
+
+  // Finishes the sign-in (if there is a primary account with refresh tokens).
+  void FinishFlowIfSignedIn();
+
+  // Finishes the sign-in (if `is_saml` is true, it's due to SAML signin getting
+  // detected).
+  void FinishFlow(bool is_saml);
+
+  // Returns whether the flow is initialized (i.e. whether `profile_` has been
+  // created).
+  bool IsInitialized() const;
+
+  void OnSignInContentsFreedUp();
+
+  content::WebContents* contents() const { return contents_.get(); }
+
+  // The host object, must outlive this object.
+  ProfilePickerWebContentsHost* host_;
+  // Sign-in callback, valid until it's called.
+  SignedInCallback callback_;
+
+  Profile* profile_ = nullptr;
+
+  // Prevent |profile_| from being destroyed first.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
+
+  // The web contents backed by `profile`. This is used for displaying the
+  // sign-in flow.
+  std::unique_ptr<content::WebContents> contents_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+
+  base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_

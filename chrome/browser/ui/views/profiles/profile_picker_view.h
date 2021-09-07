@@ -23,7 +23,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
-class ProfilePickerSignInFlowController;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class ProfilePickerDiceSignInProvider;
+#endif
+
+class ProfilePickerSignedInFlowController;
 
 namespace base {
 class FilePath;
@@ -130,19 +134,38 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Creates and shows the dialog.
   void Init(Profile* system_profile);
 
-  // Switches the layout to the sign-in flow (and creates a new profile).
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Switches the layout to the sign-in screen (and creates a new profile).
   // absl::nullopt `profile_color` corresponds to the default theme.
-  void SwitchToSignIn(absl::optional<SkColor> profile_color,
-                      base::OnceCallback<void(bool)> switch_finished_callback);
-  // Cancel the sign-in flow and returns back to the main picker screen (if the
-  // original EntryPoint was to open the picker).
-  void CancelSignIn();
+  void SwitchToDiceSignIn(
+      absl::optional<SkColor> profile_color,
+      base::OnceCallback<void(bool)> switch_finished_callback);
 
   // Handles profile creation when forced sign-in is enabled.
-  void OnProfileForForcedSigninCreated(
+  void OnProfileForDiceForcedSigninCreated(
       base::OnceCallback<void(bool)>& switch_finished_callback,
       Profile* new_profile,
       Profile::CreateStatus status);
+
+  // Called when dice sign-in finishes.
+  void OnDiceSigninFinished(absl::optional<SkColor> profile_color,
+                            Profile* signed_in_profile,
+                            std::unique_ptr<content::WebContents> contents,
+                            bool is_saml);
+
+  // Checks whether the dice sign-in flow is in progress.
+  bool GetDiceSigningIn() const;
+#endif
+
+  // Switches the layout to setup the newly created `signed_in_profile`.
+  void SwitchToSignedInFlow(absl::optional<SkColor> profile_color,
+                            Profile* signed_in_profile,
+                            std::unique_ptr<content::WebContents> contents,
+                            bool is_saml);
+
+  // Cancel the signed-in profile setup and returns back to the main picker
+  // screen (if themoriginal EntryPoint was to open the picker).
+  void CancelSignedInFlow();
 
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -154,7 +177,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void OnThemeChanged() override;
+#endif
 
   // Builds the views hieararchy.
   void BuildLayout();
@@ -169,9 +194,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   void BackButtonPressed(const ui::Event& event);
   void NavigateBack();
-
-  // Checks whether the sign-in flow is in progress.
-  bool GetSigningIn() const;
 
   // Overrides the default timeout for waiting for extended account info for any
   // future signed-in profile creation flow.
@@ -226,7 +248,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // WebContents outlive this observer.
   std::unique_ptr<NavigationFinishedObserver> show_screen_finished_observer_;
 
-  std::unique_ptr<ProfilePickerSignInFlowController> sign_in_;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider_;
+#endif
+
+  std::unique_ptr<ProfilePickerSignedInFlowController> signed_in_flow_;
 
   // Delay used for a timeout, may be overridden by tests.
   base::TimeDelta extended_account_info_timeout_;
