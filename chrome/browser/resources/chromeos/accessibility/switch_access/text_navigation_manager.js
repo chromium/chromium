@@ -34,7 +34,7 @@ export class TextNavigationManager {
     /** @private {!EventHandler} */
     this.selectionListener_ = new EventHandler(
         [], chrome.automation.EventType.TEXT_SELECTION_CHANGED,
-        this.onNavChange_.bind(this));
+        () => this.onNavChange_());
 
     /**
      * Keeps track of when there's a selection in the current node.
@@ -50,7 +50,7 @@ export class TextNavigationManager {
 
     if (SwitchAccess.instance.improvedTextInputEnabled()) {
       chrome.clipboard.onClipboardDataChanged.addListener(
-          this.updateClipboardHasData_.bind(this));
+          () => this.updateClipboardHasData_());
     }
   }
 
