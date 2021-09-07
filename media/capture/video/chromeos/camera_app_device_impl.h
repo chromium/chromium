@@ -44,7 +44,7 @@ struct ReprocessTask {
   ReprocessTask(ReprocessTask&& other);
   ~ReprocessTask();
   cros::mojom::Effect effect;
-  cros::mojom::CameraAppDevice::SetReprocessOptionCallback callback;
+  base::OnceCallback<void(int32_t, media::mojom::BlobPtr)> callback;
   std::vector<cros::mojom::CameraMetadataEntryPtr> extra_metadata;
 };
 
@@ -128,8 +128,10 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   // cros::mojom::CameraAppDevice implementations.
   void GetCameraInfo(GetCameraInfoCallback callback) override;
-  void SetReprocessOption(cros::mojom::Effect effect,
-                          SetReprocessOptionCallback callback) override;
+  void SetReprocessOptions(
+      const std::vector<cros::mojom::Effect>& effects,
+      mojo::PendingRemote<cros::mojom::ReprocessResultListener> listener,
+      SetReprocessOptionsCallback callback) override;
   void SetFpsRange(const gfx::Range& fps_range,
                    SetFpsRangeCallback callback) override;
   void SetStillCaptureResolution(
@@ -168,7 +170,7 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       bool success,
       const std::vector<gfx::PointF>& corners);
 
-  void SetReprocessResultOnMojoThread(SetReprocessOptionCallback callback,
+  void SetReprocessResultOnMojoThread(cros::mojom::Effect effect,
                                       const int32_t status,
                                       media::mojom::BlobPtr blob);
 
@@ -192,6 +194,8 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   // The queue will be enqueued and dequeued from different threads.
   base::Lock reprocess_tasks_lock_;
   base::queue<ReprocessTask> reprocess_task_queue_
+      GUARDED_BY(reprocess_tasks_lock_);
+  mojo::Remote<cros::mojom::ReprocessResultListener> reprocess_listener_
       GUARDED_BY(reprocess_tasks_lock_);
 
   // It will be inserted and read from different threads.

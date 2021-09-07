@@ -126,7 +126,6 @@ void CameraAppDeviceImpl::ConsumeReprocessOptions(
   result_task_queue.push(std::move(still_capture_task));
 
   base::AutoLock lock(reprocess_tasks_lock_);
-
   while (!reprocess_task_queue_.empty()) {
     result_task_queue.push(std::move(reprocess_task_queue_.front()));
     reprocess_task_queue_.pop();
@@ -200,28 +199,32 @@ void CameraAppDeviceImpl::GetCameraInfo(GetCameraInfoCallback callback) {
   std::move(callback).Run(camera_info_.Clone());
 }
 
-void CameraAppDeviceImpl::SetReprocessOption(
-    cros::mojom::Effect effect,
-    SetReprocessOptionCallback reprocess_result_callback) {
+void CameraAppDeviceImpl::SetReprocessOptions(
+    const std::vector<cros::mojom::Effect>& effects,
+    mojo::PendingRemote<cros::mojom::ReprocessResultListener> listener,
+    SetReprocessOptionsCallback callback) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  ReprocessTask task;
-  task.effect = effect;
-  task.callback = media::BindToCurrentLoop(
-      base::BindOnce(&CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
-                     weak_ptr_factory_for_mojo_.GetWeakPtr(),
-                     std::move(reprocess_result_callback)));
-
-  if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
-    auto e = BuildMetadataEntry(
-        static_cast<cros::mojom::CameraMetadataTag>(kPortraitModeVendorKey),
-        int32_t{1});
-    task.extra_metadata.push_back(std::move(e));
-  }
-
   base::AutoLock lock(reprocess_tasks_lock_);
+  reprocess_listener_.reset();
+  reprocess_listener_.Bind(std::move(listener));
+  reprocess_task_queue_ = {};
+  for (const auto& effect : effects) {
+    ReprocessTask task;
+    task.effect = effect;
+    task.callback = media::BindToCurrentLoop(
+        base::BindOnce(&CameraAppDeviceImpl::SetReprocessResultOnMojoThread,
+                       weak_ptr_factory_for_mojo_.GetWeakPtr(), effect));
 
-  reprocess_task_queue_.push(std::move(task));
+    if (effect == cros::mojom::Effect::PORTRAIT_MODE) {
+      auto e = BuildMetadataEntry(
+          static_cast<cros::mojom::CameraMetadataTag>(kPortraitModeVendorKey),
+          1);
+      task.extra_metadata.push_back(std::move(e));
+    }
+    reprocess_task_queue_.push(std::move(task));
+  }
+  std::move(callback).Run();
 }
 
 void CameraAppDeviceImpl::SetFpsRange(const gfx::Range& fps_range,
@@ -461,12 +464,13 @@ void CameraAppDeviceImpl::OnDetectedDocumentCornersOnMojoThread(
 }
 
 void CameraAppDeviceImpl::SetReprocessResultOnMojoThread(
-    SetReprocessOptionCallback callback,
+    cros::mojom::Effect effect,
     const int32_t status,
     media::mojom::BlobPtr blob) {
   DCHECK(mojo_task_runner_->BelongsToCurrentThread());
 
-  std::move(callback).Run(status, std::move(blob));
+  base::AutoLock lock(reprocess_tasks_lock_);
+  reprocess_listener_->OnReprocessDone(effect, status, std::move(blob));
 }
 
 void CameraAppDeviceImpl::NotifyShutterDoneOnMojoThread() {

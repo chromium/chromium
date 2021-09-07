@@ -91,22 +91,13 @@ export class CrosImageCapture {
    *     containing promise of each blob result.
    */
   async takePhoto(photoSettings, photoEffects = []) {
-    /** @type {!Array<!Promise<!Blob>>} */
-    const takes = [];
     const deviceOperator = await DeviceOperator.getInstance();
     if (deviceOperator === null && photoEffects.length > 0) {
       throw new Error('Applying effects is not supported on this device');
     }
 
-    for (const effect of photoEffects) {
-      const take = (async () => {
-        const {data, mimeType} =
-            await deviceOperator.setReprocessOption(this.deviceId_, effect);
-        return new Blob([new Uint8Array(data)], {type: mimeType});
-      })();
-      takes.push(take);
-    }
-
+    const takes =
+        await deviceOperator.setReprocessOptions(this.deviceId_, photoEffects);
     if (deviceOperator !== null) {
       const onShutterDone = new WaitableEvent();
       const shutterObserver =

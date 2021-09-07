@@ -14,6 +14,7 @@ import {
   DocumentCornersObserverCallbackRouter,
   Effect,  // eslint-disable-line no-unused-vars
   GetCameraAppDeviceStatus,
+  ReprocessResultListenerCallbackRouter,
   ResultMetadataObserverCallbackRouter,
   StreamType,  // eslint-disable-line no-unused-vars
 } from '/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
@@ -542,24 +543,49 @@ export class DeviceOperator {
   }
 
   /**
-   * Sets reprocess option which is normally an effect to the video capture
+   * Sets reprocess options which are normally effects to the video capture
    * device before taking picture.
    * @param {string} deviceId The renderer-facing device id of the target camera
    *     which could be retrieved from MediaDeviceInfo.deviceId.
-   * @param {!Effect} effect The target reprocess option (effect)
-   *     that would be applied on the result.
-   * @return {!Promise<!MojoBlob>} The captured result with given
-   *     effect.
+   * @param {!Array<!Effect>} effects The target reprocess options
+   *     (effects) that would be applied on the result.
+   * @return {!Promise<!Array<Promise<!Blob>>>} Array of captured results with
+   *     given effect.
    * @throws {!Error} Thrown when the reprocess is failed or the device
    *     operation is not supported.
    */
-  async setReprocessOption(deviceId, effect) {
-    const device = await this.getDevice_(deviceId);
-    const {status, blob} = await device.setReprocessOption(effect);
-    if (blob === null || status !== 0) {
-      throw new Error('Set reprocess failed: ' + status);
+  async setReprocessOptions(deviceId, effects) {
+    const reprocessEvents = new Map;
+    const callbacks = [];
+    for (const effect of effects) {
+      const event = new WaitableEvent();
+      reprocessEvents.set(effect, event);
+      callbacks.push(event.wait());
     }
-    return blob;
+
+    const listenerCallbacksRouter =
+        wrapEndpoint(new ReprocessResultListenerCallbackRouter());
+    listenerCallbacksRouter.onReprocessDone.addListener(
+        (effect, status, blob) => {
+          const event = reprocessEvents.get(effect);
+          if (event === undefined) {
+            throw new Error(`Reprocess done with unexpected effect: ${effect}`);
+          }
+          if (blob === null || status !== 0) {
+            event.signal(new Error(`Set reprocess failed: ${status}`));
+          } else {
+            const {data, mimeType} = blob;
+            event.signal(new Blob([new Uint8Array(data)], {type: mimeType}));
+          }
+        });
+    const device = await this.getDevice_(deviceId);
+    await device.setReprocessOptions(
+        effects, listenerCallbacksRouter.$.bindNewPipeAndPassRemote());
+
+    Promise.allSettled(callbacks).then(() => {
+      closeEndpoint(listenerCallbacksRouter);
+    });
+    return callbacks;
   }
 
   /**
