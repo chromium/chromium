@@ -1278,6 +1278,9 @@ extern const char kSecurePaymentConfirmationDebugDescription[];
 extern const char kSendTabToSelfWhenSignedInName[];
 extern const char kSendTabToSelfWhenSignedInDescription[];
 
+extern const char kSendTabToSelfManageDevicesLinkName[];
+extern const char kSendTabToSelfManageDevicesLinkDescription[];
+
 extern const char kSendTabToSelfV2Name[];
 extern const char kSendTabToSelfV2Description[];
 

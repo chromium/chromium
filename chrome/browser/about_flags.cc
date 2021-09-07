@@ -7178,6 +7178,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfWhenSignedInDescription, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfWhenSignedIn)},
 
+    {"send-tab-to-self-manage-devices-link",
+     flag_descriptions::kSendTabToSelfManageDevicesLinkName,
+     flag_descriptions::kSendTabToSelfManageDevicesLinkDescription, kOsAll,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfManageDevicesLink)},
+
     {"send-tab-to-self-v2", flag_descriptions::kSendTabToSelfV2Name,
      flag_descriptions::kSendTabToSelfV2Description, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},

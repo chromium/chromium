@@ -47,6 +47,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/security_state/core/features.h"
+#import "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -789,6 +790,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultWebViewContextMenuName,
      flag_descriptions::kDefaultWebViewContextMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kDefaultWebViewContextMenu)},
+    {"send-tab-to-self-when-signed-in",
+     flag_descriptions::kSendTabToSelfWhenSignedInName,
+     flag_descriptions::kSendTabToSelfWhenSignedInDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfWhenSignedIn)},
+    {"send-tab-to-self-manage-devices-link",
+     flag_descriptions::kSendTabToSelfManageDevicesLinkName,
+     flag_descriptions::kSendTabToSelfManageDevicesLinkDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfManageDevicesLink)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

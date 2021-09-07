@@ -47058,6 +47058,7 @@ from previous Chrome versions.
       label="CrossOriginMediaPlaybackRequiresUserGesture:enabled"/>
   <int value="-2112601037" label="OmniboxRefinedFocusState:enabled"/>
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
+  <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
@@ -47471,6 +47472,7 @@ from previous Chrome versions.
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
+  <int value="-1810891359" label="SendTabToSelfManageDevicesLink:disabled"/>
   <int value="-1810294310" label="AndroidPaymentApps:enabled"/>
   <int value="-1809969509" label="FilesSinglePartitionFormat:disabled"/>
   <int value="-1809891158" label="WebAuthenticationCable:enabled"/>
