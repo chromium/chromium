@@ -284,6 +284,10 @@ class NetworkHealthProviderTest : public testing::Test {
     SetNetworkState(kWlan0DevicePath, shill::kStateOffline);
   }
 
+  void SetWifiPortal() {
+    SetNetworkState(kWlan0DevicePath, shill::kStatePortal);
+  }
+
   void SetWifiProperty(std::string property, base::Value value) {
     network_handler_test_helper_->SetServiceProperty(kWlan0DevicePath, property,
                                                      value);
@@ -978,6 +982,29 @@ TEST_F(NetworkHealthProviderTest, EthernetAndWifiOrderedCorrectly) {
   EXPECT_TRUE(list_observer.active_guid().empty());
   EXPECT_EQ(eth_guid, list_observer.observer_guids()[0]);
   EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+
+  // With WiFi in a portal state, it should be the active guid and
+  // Ethernet should be the second guid in the list of observer guids.
+  SetWifiPortal();
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(wifi_guid, list_observer.active_guid());
+  EXPECT_EQ(eth_guid, list_observer.observer_guids()[1]);
+
+  // With Ethernet online and WiFi in a portal state, Ethernet should
+  // be the active guid and WiFi should be the second guid in the list
+  // of observer guids.
+  SetEthernetOnline();
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(eth_guid, list_observer.active_guid());
+  EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);
+
+  // With Ethernet connected and WiFi in a portal state, WiFi should
+  // be the active guid and Ethernet should be the second guid in the list
+  // of observer guids.
+  SetEthernetConnected();
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(wifi_guid, list_observer.active_guid());
+  EXPECT_EQ(eth_guid, list_observer.observer_guids()[1]);
 }
 
 TEST_F(NetworkHealthProviderTest, NetworkingLog) {

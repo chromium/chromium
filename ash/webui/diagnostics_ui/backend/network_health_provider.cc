@@ -54,9 +54,9 @@ bool IsConnectedOrOnline(mojom::NetworkState state) {
   switch (state) {
     case mojom::NetworkState::kOnline:
     case mojom::NetworkState::kConnected:
+    case mojom::NetworkState::kPortal:
       return true;
     case mojom::NetworkState::kNotConnected:
-    case mojom::NetworkState::kPortal:
     case mojom::NetworkState::kConnecting:
       return false;
   }
@@ -262,8 +262,9 @@ void UpdateNetwork(
 int GetScoreForNetwork(const mojom::NetworkPtr& network) {
   static constexpr auto kNetworkStatePriorityMap =
       base::MakeFixedFlatMap<mojom::NetworkState, int>(
-          {{mojom::NetworkState::kOnline, 100},
-           {mojom::NetworkState::kConnected, 50}});
+          {{mojom::NetworkState::kOnline, 300},
+           {mojom::NetworkState::kPortal, 200},
+           {mojom::NetworkState::kConnected, 100}});
 
   static constexpr auto kNetworkTypePriorityMap =
       base::MakeFixedFlatMap<mojom::NetworkType, int>(
