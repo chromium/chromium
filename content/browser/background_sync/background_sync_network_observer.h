@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/browser/background_sync/background_sync.pb.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -69,6 +70,8 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   // Set true to ignore notifications coming from the NetworkConnectionTracker
   // (to prevent flakes in tests).
   static bool ignore_network_changes_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_{this};
 

@@ -21,136 +21,15 @@
 
 namespace content {
 
-class BackgroundSyncProxy::Core {
- public:
-  Core(const base::WeakPtr<BackgroundSyncProxy>& io_parent,
-       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-      : io_parent_(io_parent),
-        service_worker_context_(std::move(service_worker_context)),
-        weak_ptr_factory_(this) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-    DCHECK(service_worker_context_);
-  }
-
-  ~Core() { DCHECK_CURRENTLY_ON(BrowserThread::UI); }
-
-  base::WeakPtr<Core> GetWeakPtrOnCoreThread() {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  BrowserContext* browser_context() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!service_worker_context_)
-      return nullptr;
-
-    StoragePartitionImpl* storage_partition_impl =
-        service_worker_context_->storage_partition();
-    if (!storage_partition_impl)  // may be null in tests
-      return nullptr;
-
-    return storage_partition_impl->browser_context();
-  }
-
-  void ScheduleDelayedProcessing(blink::mojom::BackgroundSyncType sync_type,
-                                 base::TimeDelta delay,
-                                 base::OnceClosure delayed_task) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    if (!browser_context())
-      return;
-
-    auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
-    DCHECK(scheduler);
-    DCHECK(delay != base::TimeDelta::Max());
-
-    scheduler->ScheduleDelayedProcessing(
-        service_worker_context_->storage_partition(), sync_type, delay,
-        base::BindOnce(
-            [](base::OnceClosure delayed_task) {
-              RunOrPostTaskOnThread(FROM_HERE,
-                                    ServiceWorkerContext::GetCoreThreadId(),
-                                    std::move(delayed_task));
-            },
-            std::move(delayed_task)));
-  }
-
-  void CancelDelayedProcessing(blink::mojom::BackgroundSyncType sync_type) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    if (!browser_context())
-      return;
-
-    auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
-    DCHECK(scheduler);
-
-    scheduler->CancelDelayedProcessing(
-        service_worker_context_->storage_partition(), sync_type);
-  }
-
-  void SendSuspendedPeriodicSyncOrigins(
-      std::set<url::Origin> suspended_origins) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!browser_context())
-      return;
-
-    auto* controller = browser_context()->GetBackgroundSyncController();
-    DCHECK(controller);
-
-    controller->NoteSuspendedPeriodicSyncOrigins(std::move(suspended_origins));
-  }
-
-  void SendRegisteredPeriodicSyncOrigins(
-      std::set<url::Origin> registered_origins) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!browser_context())
-      return;
-
-    auto* controller = browser_context()->GetBackgroundSyncController();
-    DCHECK(controller);
-
-    controller->NoteRegisteredPeriodicSyncOrigins(
-        std::move(registered_origins));
-  }
-
-  void AddToTrackedOrigins(url::Origin origin) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!browser_context())
-      return;
-
-    auto* controller = browser_context()->GetBackgroundSyncController();
-    DCHECK(controller);
-
-    controller->AddToTrackedOrigins(origin);
-  }
-
-  void RemoveFromTrackedOrigins(url::Origin origin) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (!browser_context())
-      return;
-
-    auto* controller = browser_context()->GetBackgroundSyncController();
-    DCHECK(controller);
-
-    controller->RemoveFromTrackedOrigins(origin);
-  }
-
- private:
-  base::WeakPtr<BackgroundSyncProxy> io_parent_;
-  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
-};
-
 BackgroundSyncProxy::BackgroundSyncProxy(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : weak_ptr_factory_(this) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  DCHECK(service_worker_context);
-  ui_core_ = std::unique_ptr<Core, BrowserThread::DeleteOnUIThread>(new Core(
-      weak_ptr_factory_.GetWeakPtr(), std::move(service_worker_context)));
-  ui_core_weak_ptr_ = ui_core_->GetWeakPtrOnCoreThread();
+    : service_worker_context_(std::move(service_worker_context)) {
+  // This class lives on the UI thread. Check explicitly that it is on the UI
+  // thread in the constructor, and use the `sequence_checker_` in
+  // each method to check that it is on a single sequence (the UI thread).
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(service_worker_context_);
 }
 
 BackgroundSyncProxy::~BackgroundSyncProxy() = default;
@@ -159,58 +38,93 @@ void BackgroundSyncProxy::ScheduleDelayedProcessing(
     blink::mojom::BackgroundSyncType sync_type,
     base::TimeDelta delay,
     base::OnceClosure delayed_task) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Schedule Chrome wakeup.
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&Core::ScheduleDelayedProcessing, ui_core_weak_ptr_,
-                     sync_type, delay, std::move(delayed_task)));
+  if (!browser_context())
+    return;
+
+  auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
+  DCHECK(scheduler);
+  DCHECK(delay != base::TimeDelta::Max());
+
+  scheduler->ScheduleDelayedProcessing(
+      service_worker_context_->storage_partition(), sync_type, delay,
+      std::move(delayed_task));
 }
 
 void BackgroundSyncProxy::CancelDelayedProcessing(
     blink::mojom::BackgroundSyncType sync_type) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(&Core::CancelDelayedProcessing,
-                                       ui_core_weak_ptr_, sync_type));
+  if (!browser_context())
+    return;
+
+  auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
+  DCHECK(scheduler);
+
+  scheduler->CancelDelayedProcessing(
+      service_worker_context_->storage_partition(), sync_type);
 }
 
 void BackgroundSyncProxy::SendSuspendedPeriodicSyncOrigins(
     std::set<url::Origin> suspended_origins) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&Core::SendSuspendedPeriodicSyncOrigins, ui_core_weak_ptr_,
-                     std::move(suspended_origins)));
+  if (!browser_context())
+    return;
+
+  auto* controller = browser_context()->GetBackgroundSyncController();
+  DCHECK(controller);
+
+  controller->NoteSuspendedPeriodicSyncOrigins(std::move(suspended_origins));
 }
 
 void BackgroundSyncProxy::SendRegisteredPeriodicSyncOrigins(
     std::set<url::Origin> registered_origins) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!browser_context())
+    return;
 
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&Core::SendSuspendedPeriodicSyncOrigins, ui_core_weak_ptr_,
-                     std::move(registered_origins)));
+  auto* controller = browser_context()->GetBackgroundSyncController();
+  DCHECK(controller);
+
+  controller->NoteRegisteredPeriodicSyncOrigins(std::move(registered_origins));
 }
 
 void BackgroundSyncProxy::AddToTrackedOrigins(url::Origin origin) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context())
+    return;
 
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(&Core::AddToTrackedOrigins,
-                                       ui_core_weak_ptr_, std::move(origin)));
+  auto* controller = browser_context()->GetBackgroundSyncController();
+  DCHECK(controller);
+
+  controller->AddToTrackedOrigins(origin);
 }
 
 void BackgroundSyncProxy::RemoveFromTrackedOrigins(url::Origin origin) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!browser_context())
+    return;
 
-  RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                        base::BindOnce(&Core::RemoveFromTrackedOrigins,
-                                       ui_core_weak_ptr_, std::move(origin)));
+  auto* controller = browser_context()->GetBackgroundSyncController();
+  DCHECK(controller);
+
+  controller->RemoveFromTrackedOrigins(origin);
+}
+
+BrowserContext* BackgroundSyncProxy::browser_context() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!service_worker_context_)
+    return nullptr;
+
+  StoragePartitionImpl* storage_partition_impl =
+      service_worker_context_->storage_partition();
+  if (!storage_partition_impl)  // may be null in tests
+    return nullptr;
+
+  return storage_partition_impl->browser_context();
 }
 
 }  // namespace content
