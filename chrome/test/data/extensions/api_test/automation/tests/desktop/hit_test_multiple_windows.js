@@ -41,12 +41,18 @@ var allTests = [
           });
     });
 
-    const hitButton2 = await new Promise(
-        resolve => desktop.hitTestWithReply(
-            button2.location.left + 5, button2.location.top + 5, resolve));
+    let hitButton2;
+    while (!hitButton2 || hitButton2.name !== 'Click Me too') {
+      // Note that we keep hit testing until we get the right node here. In
+      // tests, where the machine is under a lot of load, it's rare but possible
+      // that we get the 'Click Me' button back as a hit test from the browser
+      // where not all windows have been updated yet.
+      hitButton2 = await new Promise(
+          resolve => desktop.hitTestWithReply(
+              button2.location.left + 5, button2.location.top + 5, resolve));
+    }
 
     // Note that the hit test might return either a static text or the button.
-    chrome.test.assertEq('Click Me too', hitButton2.name);
     chrome.test.assertTrue(
         hitButton2.role == chrome.automation.RoleType.BUTTON ||
         hitButton2.role == chrome.automation.RoleType.STATIC_TEXT);
