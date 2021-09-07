@@ -1071,6 +1071,13 @@ void NetworkContext::OnReportAdded(const net::ReportingReport* service_report) {
   }
 }
 
+void NetworkContext::OnReportUpdated(
+    const net::ReportingReport* service_report) {
+  for (const auto& observer : reporting_api_observers_) {
+    observer->OnReportUpdated(*service_report);
+  }
+}
+
 void NetworkContext::OnReportingObserverDisconnect(
     mojo::RemoteSetElementId /*mojo_id*/) {
   if (!reporting_api_observers_.size()) {

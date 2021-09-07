@@ -1,8 +1,6 @@
-Tests filtering of ReportingApiReportAdded events (Session 1).
+Tests ReportingApiReportAdded and ReportingApiReportUpdated events.
 
-Tests filtering of ReportingApiReportAdded events (Session 2).
-
-Session 1:
+Report added:
 {
     body : {
         blockedURL : inline
@@ -25,7 +23,30 @@ Session 1:
     timestamp : <number>
     type : csp-violation
 }
-Session 1:
+Report updated:
+{
+    body : {
+        blockedURL : inline
+        disposition : report
+        documentURL : <string>
+        effectiveDirective : script-src-elem
+        lineNumber : 9
+        originalPolicy : script-src 'none'; object-src 'none'; report-to csp
+        referrer : 
+        sample : 
+        sourceFile : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+        statusCode : 200
+    }
+    completedAttempts : 0
+    depth : 0
+    destination : csp
+    id : <string>
+    initiatorUrl : http://127.0.0.1:8000/inspector-protocol/network/resources/generate-report.php
+    status : Pending
+    timestamp : <number>
+    type : csp-violation
+}
+Report updated:
 {
     body : {
         blockedURL : inline

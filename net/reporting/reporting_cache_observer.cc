@@ -10,6 +10,8 @@ void ReportingCacheObserver::OnReportsUpdated() {}
 
 void ReportingCacheObserver::OnReportAdded(const ReportingReport* report) {}
 
+void ReportingCacheObserver::OnReportUpdated(const ReportingReport* report) {}
+
 void ReportingCacheObserver::OnClientsUpdated() {}
 
 void ReportingCacheObserver::OnEndpointsUpdated() {}

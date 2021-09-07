@@ -572,6 +572,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
       override;
   void OnReportAdded(const net::ReportingReport* service_report) override;
+  void OnReportUpdated(const net::ReportingReport* service_report) override;
   void OnReportingObserverDisconnect(mojo::RemoteSetElementId mojo_id);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 

@@ -59,6 +59,7 @@ class NET_EXPORT ReportingContext {
 
   void NotifyCachedReportsUpdated();
   void NotifyReportAdded(const ReportingReport* report);
+  void NotifyReportUpdated(const ReportingReport* report);
   void NotifyCachedClientsUpdated();
   void NotifyEndpointsUpdated();
 

@@ -1273,27 +1273,61 @@ Response NetworkHandler::Disable() {
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)
-void NetworkHandler::OnReportAdded(const net::ReportingReport& report) {
+
+namespace {
+
+String BuildReportStatus(const net::ReportingReport::Status status) {
+  switch (status) {
+    case net::ReportingReport::Status::QUEUED:
+      return protocol::Network::ReportStatusEnum::Queued;
+    case net::ReportingReport::Status::PENDING:
+      return protocol::Network::ReportStatusEnum::Pending;
+    case net::ReportingReport::Status::DOOMED:
+      return protocol::Network::ReportStatusEnum::MarkedForRemoval;
+    case net::ReportingReport::Status::SUCCESS:
+      return protocol::Network::ReportStatusEnum::Success;
+  }
+}
+
+}  // namespace
+
+std::unique_ptr<protocol::Network::ReportingApiReport>
+NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
   if (!host_) {
-    return;
+    return nullptr;
   }
   std::vector<GURL> reporting_filter_urls = ComputeReportingURLs(host_);
   auto iter = std::find(reporting_filter_urls.begin(),
                         reporting_filter_urls.end(), report.url);
   if (iter != reporting_filter_urls.end()) {
-    auto protocol_report =
-        protocol::Network::ReportingApiReport::Create()
-            .SetId(report.id.ToString())
-            .SetInitiatorUrl(report.url.spec())
-            .SetDestination(report.group)
-            .SetType(report.type)
-            .SetTimestamp(
-                (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
-            .SetDepth(report.depth)
-            .SetBody(protocol::DictionaryValue::cast(
-                protocol::toProtocolValue(report.body.get(), 1000)))
-            .Build();
+    return protocol::Network::ReportingApiReport::Create()
+        .SetId(report.id.ToString())
+        .SetInitiatorUrl(report.url.spec())
+        .SetDestination(report.group)
+        .SetType(report.type)
+        .SetTimestamp(
+            (report.queued - base::TimeTicks::UnixEpoch()).InSecondsF())
+        .SetDepth(report.depth)
+        .SetCompletedAttempts(report.attempts)
+        .SetBody(protocol::DictionaryValue::cast(
+            protocol::toProtocolValue(report.body.get(), 1000)))
+        .SetStatus(BuildReportStatus(report.status))
+        .Build();
+  }
+  return nullptr;
+}
+
+void NetworkHandler::OnReportAdded(const net::ReportingReport& report) {
+  auto protocol_report = BuildProtocolReport(report);
+  if (protocol_report) {
     frontend_->ReportingApiReportAdded(std::move(protocol_report));
+  }
+}
+
+void NetworkHandler::OnReportUpdated(const net::ReportingReport& report) {
+  auto protocol_report = BuildProtocolReport(report);
+  if (protocol_report) {
+    frontend_->ReportingApiReportUpdated(std::move(protocol_report));
   }
 }
 

@@ -46,4 +46,6 @@ struct ReportingApiReport {
 interface ReportingApiObserver {
   // Called whenever a report is added
   OnReportAdded(ReportingApiReport report);
+  // Called whenever a report is updated (status change or attempts incremented)
+  OnReportUpdated(ReportingApiReport report);
 };

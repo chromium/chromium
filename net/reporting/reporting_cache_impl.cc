@@ -130,6 +130,7 @@ std::vector<const ReportingReport*> ReportingCacheImpl::GetReportsToDeliver() {
     if (report->IsUploadPending())
       continue;
     report->status = ReportingReport::Status::PENDING;
+    context_->NotifyReportUpdated(report.get());
     reports_out.push_back(report.get());
   }
   return reports_out;
@@ -145,6 +146,7 @@ ReportingCacheImpl::GetReportsToDeliverForSource(
       if (report->IsUploadPending())
         continue;
       report->status = ReportingReport::Status::PENDING;
+      context_->NotifyReportUpdated(report.get());
       reports_out.push_back(report.get());
     }
   }
@@ -164,6 +166,7 @@ void ReportingCacheImpl::ClearReportsPending(
     } else {
       DCHECK_EQ(ReportingReport::Status::PENDING, it->get()->status);
       it->get()->status = ReportingReport::Status::QUEUED;
+      context_->NotifyReportUpdated(it->get());
     }
   }
 }
@@ -174,6 +177,7 @@ void ReportingCacheImpl::IncrementReportsAttempts(
     auto it = reports_.find(report);
     DCHECK(it != reports_.end());
     it->get()->attempts++;
+    context_->NotifyReportUpdated(it->get());
   }
 
   context_->NotifyCachedReportsUpdated();
@@ -226,15 +230,18 @@ void ReportingCacheImpl::RemoveReports(
       case ReportingReport::Status::DOOMED:
         if (delivery_success) {
           it->get()->status = ReportingReport::Status::SUCCESS;
+          context_->NotifyReportUpdated(it->get());
         }
         break;
       case ReportingReport::Status::PENDING:
         it->get()->status = delivery_success ? ReportingReport::Status::SUCCESS
                                              : ReportingReport::Status::DOOMED;
+        context_->NotifyReportUpdated(it->get());
         break;
       case ReportingReport::Status::QUEUED:
         it->get()->status = delivery_success ? ReportingReport::Status::SUCCESS
                                              : ReportingReport::Status::DOOMED;
+        context_->NotifyReportUpdated(it->get());
         reports_.erase(it);
         break;
       case ReportingReport::Status::SUCCESS:

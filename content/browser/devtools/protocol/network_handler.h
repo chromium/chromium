@@ -102,6 +102,7 @@ class NetworkHandler : public DevToolsDomainHandler,
 
 #if BUILDFLAG(ENABLE_REPORTING)
   void OnReportAdded(const net::ReportingReport& report) override;
+  void OnReportUpdated(const net::ReportingReport& report) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   Response EnableReportingApi(bool enable) override;
@@ -303,6 +304,8 @@ class NetworkHandler : public DevToolsDomainHandler,
       Response response,
       mojo::ScopedDataPipeConsumerHandle pipe,
       const std::string& mime_type);
+  std::unique_ptr<protocol::Network::ReportingApiReport> BuildProtocolReport(
+      const net::ReportingReport& report);
 
   // TODO(dgozman): Remove this.
   const std::string host_id_;

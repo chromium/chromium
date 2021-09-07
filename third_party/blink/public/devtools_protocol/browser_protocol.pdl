@@ -6133,11 +6133,18 @@ domain Network
       Network.TimeSinceEpoch timestamp
       # How many uploads deep the related request was.
       integer depth
+      # The number of delivery attempts made so far, not including an active attempt.
+      integer completedAttempts
       object body
+      ReportStatus status
 
   # Is sent whenever a new report is added.
   # And after 'enableReportingApi' for all existing reports.
   experimental event reportingApiReportAdded
+    parameters
+      ReportingApiReport report
+
+  experimental event reportingApiReportUpdated
     parameters
       ReportingApiReport report
 
