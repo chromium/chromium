@@ -1767,8 +1767,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   javascript_dialogs::AppModalDialogManager* js_dialog_manager =
       javascript_dialogs::AppModalDialogManager::GetInstance();
   std::u16string hosted_app_title = u"hosted_app";
-  EXPECT_EQ(hosted_app_title, js_dialog_manager->GetTitle(
-                                  tab, tab->GetLastCommittedURL().GetOrigin()));
+  EXPECT_EQ(hosted_app_title,
+            js_dialog_manager->GetTitle(
+                tab, tab->GetMainFrame()->GetLastCommittedOrigin()));
 
   GURL web_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(content::ExecuteScript(
@@ -1781,7 +1782,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, HostedAppAlerts) {
   EXPECT_EQ(nullptr, pm->GetExtensionForWebContents(new_tab));
   EXPECT_NE(hosted_app_title,
             js_dialog_manager->GetTitle(
-                new_tab, new_tab->GetLastCommittedURL().GetOrigin()));
+                new_tab, new_tab->GetMainFrame()->GetLastCommittedOrigin()));
 }
 
 }  // namespace extensions

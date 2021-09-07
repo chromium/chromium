@@ -21,8 +21,7 @@ namespace content {
 ShellJavaScriptDialogManager::ShellJavaScriptDialogManager()
     : should_proceed_on_beforeunload_(true), beforeunload_success_(true) {}
 
-ShellJavaScriptDialogManager::~ShellJavaScriptDialogManager() {
-}
+ShellJavaScriptDialogManager::~ShellJavaScriptDialogManager() = default;
 
 void ShellJavaScriptDialogManager::RunJavaScriptDialog(
     WebContents* web_contents,
@@ -48,7 +47,8 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
   }
 
   std::u16string new_message_text =
-      url_formatter::FormatUrl(render_frame_host->GetLastCommittedURL()) +
+      url_formatter::FormatUrl(
+          render_frame_host->GetLastCommittedOrigin().GetURL()) +
       u"\n\n" + message_text;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
