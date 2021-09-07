@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -106,7 +107,16 @@ const std::string TabStripUIBrowserTest::tab_query_js(
     "    .shadowRoot.querySelector('tabstrip-tab')"
     "    .shadowRoot.querySelector('#tab')");
 
-IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, ActivatingTabClosesEmbedder) {
+// https://crbug.com/1246369: Test is flaky on Linux/Windows, disabled for
+// investigation.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_ActivatingTabClosesEmbedder DISABLED_ActivatingTabClosesEmbedder
+#else
+#define MAYBE_ActivatingTabClosesEmbedder ActivatingTabClosesEmbedder
+#endif
+
+IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest,
+                       MAYBE_ActivatingTabClosesEmbedder) {
   const std::string activate_tab_js = tab_query_js + ".click()";
 
   EXPECT_CALL(mock_embedder_, CloseContainer()).Times(1);
