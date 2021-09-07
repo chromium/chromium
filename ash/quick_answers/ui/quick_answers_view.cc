@@ -489,6 +489,10 @@ void QuickAnswersView::AddSettingsButton() {
 
 void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
                                                View* container) {
+  // TODO(b/198811694): Refactor AssistantWebViewFactory.
+  if (!AssistantWebViewFactory::Get())
+    return;
+
   auto* phonetics_audio_view =
       container->AddChildView(std::make_unique<views::View>());
 
