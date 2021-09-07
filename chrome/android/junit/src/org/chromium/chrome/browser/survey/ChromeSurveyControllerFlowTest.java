@@ -23,6 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -58,8 +60,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -161,6 +167,8 @@ public class ChromeSurveyControllerFlowTest {
     Activity mActivity;
     @Mock
     MessageDispatcher mMessageDispatcher;
+    @Captor
+    ArgumentCaptor<PropertyModel> mMessagePropertyCaptor;
 
     private final TestSurveyController mTestSurveyController = new TestSurveyController();
 
@@ -350,7 +358,7 @@ public class ChromeSurveyControllerFlowTest {
         Assert.assertNotNull(mMessageDispatcher);
         mTestSurveyController.onDownloadSuccessRunnable.run();
         assertSurveyInfoBarShown(false);
-        verify(mMessageDispatcher).enqueueWindowScopedMessage(any(), eq(false));
+        assertSurveyMessagesEnqueued();
     }
 
     @Test
@@ -534,6 +542,85 @@ public class ChromeSurveyControllerFlowTest {
                 + "if hidden before minimum required visibility duration.");
     }
 
+    @Test
+    public void testMessages_Properties() {
+        presentMessages();
+
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+        Assert.assertEquals("Message identifier is different.", MessageIdentifier.CHROME_SURVEY,
+                messageModel.get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals("Message icon resource is different.", R.drawable.chrome_sync_logo,
+                messageModel.get(MessageBannerProperties.ICON_RESOURCE_ID));
+        Assert.assertEquals("Message icon tint is different.", MessageBannerProperties.TINT_NONE,
+                messageModel.get(MessageBannerProperties.ICON_TINT_COLOR));
+        Assert.assertEquals("Message title string is different.",
+                ApplicationProvider.getApplicationContext().getResources().getString(
+                        R.string.chrome_survey_message_title),
+                messageModel.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals("Message action button string is different.",
+                ApplicationProvider.getApplicationContext().getResources().getString(
+                        R.string.chrome_survey_message_button),
+                messageModel.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+
+        Assert.assertNotNull("Message primary action is null.",
+                messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION));
+        Assert.assertNotNull("Message dismissal action is null.",
+                messageModel.get(MessageBannerProperties.ON_DISMISSED));
+
+        messageModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
+        Assert.assertEquals("showSurvey should be called.", 1,
+                mTestSurveyController.showSurveyIfAvailableCallback.getCallCount());
+    }
+
+    @Test
+    public void testMessages_Dismiss_PrimaryAction() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+
+        messageModel.get(MessageBannerProperties.ON_DISMISSED)
+                .onResult(DismissReason.PRIMARY_ACTION);
+        assertInfoBarDisplayedRecorded();
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+    }
+
+    @Test
+    public void testMessages_Dismiss_Gesture() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+
+        messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.GESTURE);
+        assertInfoBarDisplayedRecorded();
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.CLOSE_BUTTON);
+    }
+
+    @Test
+    public void testMessages_Dismiss_Timer() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+
+        messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TIMER);
+        assertInfoBarDisplayedRecorded();
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.VISIBLE_INDIRECT);
+    }
+
+    // Inspired by crbug.com/1245624: When tab is destroyed, InfoBarDisplayed should not be
+    // recorded.
+    @Test
+    public void testMessages_Dismiss_Destroy() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+
+        Mockito.doReturn(true).when(mMockTab).isDestroyed();
+        Mockito.doReturn(true).when(mActivity).isDestroyed();
+        int[] dismissReasons = {DismissReason.TAB_DESTROYED, DismissReason.ACTIVITY_DESTROYED,
+                DismissReason.SCOPE_DESTROYED};
+        for (int reason : dismissReasons) {
+            messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(reason);
+            assertInfoBarDisplayedNotRecorded(
+                    "Messages destroyed should not directly result in close state recorded.");
+        }
+    }
+
     private void initializeChromeSurveyController() {
         ChromeSurveyController.initialize(
                 mMockModelSelector, mMockLifecycleDispatcher, mActivity, mMessageDispatcher);
@@ -554,6 +641,18 @@ public class ChromeSurveyControllerFlowTest {
         mockTabReady();
         mTestSurveyController.onDownloadSuccessRunnable.run();
         assertSurveyInfoBarShown(true);
+    }
+
+    private void presentMessages() {
+        ShadowChromeFeatureList.sEnableMessages = true;
+        setupTabMocks();
+        initializeChromeSurveyController();
+        assertCallbackAssignedInSurveyController();
+
+        // Verify the survey should be attempted to present on a valid tab.
+        mockTabReady();
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+        assertSurveyMessagesEnqueued();
     }
 
     private void mockTabReady() {
@@ -598,6 +697,12 @@ public class ChromeSurveyControllerFlowTest {
         }
     }
 
+    private void assertSurveyMessagesEnqueued() {
+        verify(mMessageDispatcher)
+                .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
+        Assert.assertNotNull("Message captor is null.", mMessagePropertyCaptor.getValue());
+    }
+
     private void assertInfoBarClosingStateRecorded(@InfoBarClosingState int state) {
         int count = ShadowRecordHistogram.getHistogramValueCountForTesting(
                 "Android.Survey.InfoBarClosingState", state);
@@ -635,6 +740,7 @@ public class ChromeSurveyControllerFlowTest {
 
     private static class TestSurveyController extends SurveyController {
         public final CallbackHelper downloadIfApplicableCallback = new CallbackHelper();
+        public final CallbackHelper showSurveyIfAvailableCallback = new CallbackHelper();
 
         @Nullable
         public Runnable onDownloadSuccessRunnable;
@@ -648,6 +754,13 @@ public class ChromeSurveyControllerFlowTest {
 
             onDownloadSuccessRunnable = onSuccessRunnable;
             onDownloadFailureRunnable = onFailureRunnable;
+        }
+
+        @Override
+        public void showSurveyIfAvailable(Activity activity, String siteId,
+                boolean showAsBottomSheet, int displayLogoResId,
+                @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+            showSurveyIfAvailableCallback.notifyCalled();
         }
     }
 }
