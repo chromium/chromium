@@ -130,6 +130,13 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   // cross-thread mutex is held.
   virtual void AssertCrossThreadMutexIsAcquiredForDebugging();
 
+  // No-op for same-thread attachmenets. For cross-thread attachments,
+  // calculates current buffered and seekable on the worker thread, then posts
+  // the results to the main thread to service media element queries of that
+  // information with latency and causality similar to app postMessage() from
+  // worker to main thread.
+  virtual void SendUpdatedInfoToMainThreadCache();
+
  protected:
   MediaSourceAttachmentSupplement();
   ~MediaSourceAttachmentSupplement() override;

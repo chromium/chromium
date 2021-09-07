@@ -60,6 +60,12 @@ class SkRefCnt;
 template <typename T>
 class sk_sp;
 
+namespace blink {
+// TODO(https://crbug.com/1247393): Move this and others to
+// blink/public/platform.
+class WebTimeRanges;
+}  // namespace blink
+
 namespace gfx {
 class ColorSpace;
 class Size;
@@ -385,6 +391,12 @@ struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
 template <>
 struct CrossThreadCopier<media::VideoTransformation>
     : public CrossThreadCopierPassThrough<media::VideoTransformation> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<blink::WebTimeRanges>
+    : public CrossThreadCopierByValuePassThrough<blink::WebTimeRanges> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

@@ -50,6 +50,13 @@ void MediaSourceAttachmentSupplement::
       << "This should only be called on a CrossThreadMediaSourceAttachment";
 }
 
+void MediaSourceAttachmentSupplement::SendUpdatedInfoToMainThreadCache() {
+  // No-op for the default implementation that is used by same-thread
+  // attachments. Cross-thread attachments will override this. Same-thread
+  // attachments will just directly calculate buffered and seekable when the
+  // media element needs that info.
+}
+
 // protected
 MediaSourceAttachmentSupplement::ExclusiveKey
 MediaSourceAttachmentSupplement::GetExclusiveKey() const {
