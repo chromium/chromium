@@ -515,7 +515,7 @@
   {
     "name": "block-insecure-private-network-requests",
     "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 101
   },
   {
     "name": "bluetooth-advertisement-monitoring",
