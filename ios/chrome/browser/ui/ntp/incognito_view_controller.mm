@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view.h"
+#import "ios/chrome/browser/ui/ntp/revamped_incognito_view.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -22,7 +23,7 @@
 @interface IncognitoViewController ()
 
 // The scrollview containing the actual views.
-@property(nonatomic, strong) IncognitoView* incognitoView;
+@property(nonatomic, strong) UIScrollView* incognitoView;
 
 @end
 
@@ -42,8 +43,14 @@
 - (void)viewDidLoad {
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 
-  self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
-                                                  URLLoader:_URLLoader];
+  if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
+    self.incognitoView =
+        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds];
+  } else {
+    self.incognitoView = [[IncognitoView alloc] initWithFrame:self.view.bounds
+                                                    URLLoader:_URLLoader];
+  }
+
   [self.incognitoView setAutoresizingMask:UIViewAutoresizingFlexibleHeight |
                                           UIViewAutoresizingFlexibleWidth];
   self.incognitoView.backgroundColor = [UIColor colorNamed:kBackgroundColor];

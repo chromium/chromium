@@ -42,6 +42,9 @@ extern const base::Feature kIncognitoAuthentication;
 // Enables the usage of dark mode color while in Incognito mode.
 extern const base::Feature kIncognitoBrandConsistencyForIOS;
 
+// Feature flag to enable revamped Incognito NTP page.
+extern const base::Feature kIncognitoNtpRevamp;
+
 // Feature flag that experiments with new location permissions user experiences.
 extern const base::Feature kLocationPermissionsPrompt;
 

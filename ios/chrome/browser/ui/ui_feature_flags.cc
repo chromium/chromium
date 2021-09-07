@@ -36,6 +36,9 @@ const base::Feature kIncognitoAuthentication{
 const base::Feature kIncognitoBrandConsistencyForIOS{
     "IncognitoBrandConsistencyForIOS", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kLocationPermissionsPrompt{
     "LocationPermissionsPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
 

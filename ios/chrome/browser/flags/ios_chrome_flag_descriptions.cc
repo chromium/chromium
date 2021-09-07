@@ -260,6 +260,10 @@ const char kIncognitoBrandConsistencyForIOSDescription[] =
     "When enabled, keeps Incognito UI consistent regardless of any selected "
     "theme.";
 
+const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
+const char kIncognitoNtpRevampDescription[] =
+    "When enabled, Incognito new tab page will have an updated UI.";
+
 const char kInfobarOverlayUIName[] = "Use OverlayPresenter for infobars";
 const char kInfobarOverlayUIDescription[] =
     "When enabled alongside the Infobar UI Reboot, infobars will be presented "

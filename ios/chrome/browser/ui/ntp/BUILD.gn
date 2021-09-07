@@ -112,6 +112,8 @@ source_set("ntp_internal") {
     "notification_promo_whats_new.mm",
     "ntp_tile_saver.h",
     "ntp_tile_saver.mm",
+    "revamped_incognito_view.h",
+    "revamped_incognito_view.mm",
   ]
   deps = [
     ":logo",

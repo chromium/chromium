@@ -231,6 +231,10 @@ extern const char kIncognitoAuthenticationDescription[];
 extern const char kIncognitoBrandConsistencyForIOSName[];
 extern const char kIncognitoBrandConsistencyForIOSDescription[];
 
+// Title and description for the flag to enable revamped Incognito NTP page.
+extern const char kIncognitoNtpRevampName[];
+extern const char kIncognitoNtpRevampDescription[];
+
 // Title and description for the flag to present the new UI Reboot on Infobars
 // using OverlayPresenter.
 extern const char kInfobarOverlayUIName[];
