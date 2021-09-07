@@ -202,7 +202,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
@@ -215,7 +215,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'win10',
+          'win10-20h2',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
@@ -3459,7 +3459,7 @@
           'gtest_tests': 'chromium_win_gtests',
         },
         'mixins': [
-          'win10',
+          'win10-20h2',
           'x86-64',
         ],
       },
@@ -6433,7 +6433,7 @@
         }
       },
       'win-bootstrap-tests': {
-        'mixins': ['win10'],
+        'mixins': ['win10-20h2'],
         'test_suites': {
           'gtest_tests': 'bootstrap_tests',
         }
