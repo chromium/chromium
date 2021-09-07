@@ -14,7 +14,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
-#include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -190,7 +189,21 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
                                    int32_t event_flags,
                                    apps::mojom::LaunchSource launch_source,
                                    apps::mojom::WindowInfoPtr window_info) {
-  NOTIMPLEMENTED();
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service) {
+    return;
+  }
+
+  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
+      std::move(launch_params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithFiles(
@@ -207,10 +220,7 @@ void AppServiceProxyLacros::LaunchAppWithFileUrls(
     apps::mojom::LaunchSource launch_source,
     const std::vector<GURL>& file_urls,
     const std::vector<std::string>& mime_types) {
-  LaunchAppWithIntent(
-      app_id, event_flags,
-      apps_util::CreateShareIntentFromFiles(file_urls, mime_types),
-      launch_source, MakeWindowInfo(display::kDefaultDisplayId));
+  NOTIMPLEMENTED();
 }
 
 void AppServiceProxyLacros::LaunchAppWithIntent(
@@ -219,7 +229,23 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::WindowInfoPtr window_info) {
-  NOTIMPLEMENTED();
+  CHECK(intent);
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service) {
+    return;
+  }
+
+  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  auto launch_params = crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = launch_source;
+  launch_params->intent = std::move(intent);
+  service->GetRemote<crosapi::mojom::AppServiceProxy>()->Launch(
+      std::move(launch_params));
 }
 
 void AppServiceProxyLacros::LaunchAppWithUrl(
@@ -429,12 +455,6 @@ apps::mojom::IntentFilterPtr AppServiceProxyLacros::FindBestMatchingFilter(
   return best_matching_intent_filter;
 }
 
-void AppServiceProxyLacros::RecordAppPlatformMetrics(
-    Profile* profile,
-    const apps::AppUpdate& update,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::LaunchContainer container) {}
-
 void AppServiceProxyLacros::FlushMojoCallsForTesting() {
   crosapi_receiver_.FlushForTesting();
 }
@@ -442,11 +462,6 @@ void AppServiceProxyLacros::FlushMojoCallsForTesting() {
 web_app::WebAppsPublisherHost*
 AppServiceProxyLacros::WebAppsPublisherHostForTesting() {
   return web_apps_publisher_host_.get();
-}
-
-bool AppServiceProxyLacros::MaybeShowLaunchPreventionDialog(
-    const apps::AppUpdate& update) {
-  return false;
 }
 
 void AppServiceProxyLacros::Shutdown() {

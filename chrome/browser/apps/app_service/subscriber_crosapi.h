@@ -60,6 +60,7 @@ class SubscriberCrosapi : public KeyedService,
   void RegisterAppServiceSubscriber(
       mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber)
       override;
+  void Launch(crosapi::mojom::LaunchParamsPtr launch_params) override;
 
   void OnSubscriberDisconnected();
 

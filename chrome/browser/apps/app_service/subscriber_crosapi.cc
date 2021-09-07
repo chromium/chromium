@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -110,6 +112,19 @@ void SubscriberCrosapi::RegisterAppServiceSubscriber(
   mojo::PendingRemote<apps::mojom::Subscriber> app_service_subscriber;
   receivers_.Add(this, app_service_subscriber.InitWithNewPipeAndPassReceiver());
   app_service->RegisterSubscriber(std::move(app_service_subscriber), nullptr);
+}
+
+void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  if (launch_params->intent.has_value()) {
+    proxy->LaunchAppWithIntent(launch_params->app_id, ui::EF_NONE,
+                               std::move(launch_params->intent.value()),
+                               launch_params->launch_source, nullptr);
+  } else {
+    proxy->Launch(launch_params->app_id, ui::EF_NONE,
+                  launch_params->launch_source, nullptr);
+  }
 }
 
 void SubscriberCrosapi::OnSubscriberDisconnected() {

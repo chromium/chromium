@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module crosapi.mojom;
 
@@ -119,6 +119,11 @@ interface AppServiceProxy {
   [MinVersion=8]
   RegisterAppServiceSubscriber@0(
       pending_remote<AppServiceSubscriber> subscriber);
+
+  // Launch the app with |params|. The params include |app_id|,
+  // |launch_source|, and optional |intent| at the moment.
+  [MinVersion=11]
+  Launch@1(LaunchParams params);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

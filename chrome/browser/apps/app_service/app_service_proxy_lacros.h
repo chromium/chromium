@@ -290,11 +290,6 @@ class AppServiceProxyLacros : public KeyedService,
 
   void AddAppIconSource(Profile* profile);
 
-  // Returns true if the app cannot be launched and a launch prevention dialog
-  // is shown to the user (e.g. the app is paused or blocked). Returns false
-  // otherwise (and the app can be launched).
-  bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update);
-
   // KeyedService overrides:
   void Shutdown() override;
 
@@ -310,11 +305,6 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::mojom::IntentFilterPtr FindBestMatchingFilter(
       const apps::mojom::IntentPtr& intent);
-
-  virtual void RecordAppPlatformMetrics(Profile* profile,
-                                        const apps::AppUpdate& update,
-                                        apps::mojom::LaunchSource launch_source,
-                                        apps::mojom::LaunchContainer container);
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
