@@ -20,7 +20,17 @@ namespace base {
 namespace debug {
 
 namespace {
+
 constexpr uint64_t kMaxOffset = std::numeric_limits<uint64_t>::max();
+
+// These numbers are suitable for most compilation units for chrome and
+// content_shell. If a compilation unit has bigger number of directories or
+// filenames, the additional directories/filenames will be ignored, and the
+// stack frames pointing to these directories/filenames will not get line
+// numbers. We can't set these numbers too big because they affect the size of
+// ProgramInfo which is allocated in the stack.
+constexpr int kMaxDirectories = 128;
+constexpr int kMaxFilenames = 512;
 
 // DWARF-4 line number program header, section 6.2.4
 struct ProgramInfo {
@@ -39,13 +49,13 @@ struct ProgramInfo {
 
   // Store the directories as offsets.
   int num_directories = 1;
-  uint64_t directory_offsets[256];
-  int directory_sizes[256];
+  uint64_t directory_offsets[kMaxDirectories];
+  int directory_sizes[kMaxDirectories];
 
   // Store the file number table offsets.
   mutable unsigned int num_filenames = 1;
-  mutable uint64_t filename_offsets[256];
-  mutable int filename_dirs[256];
+  mutable uint64_t filename_offsets[kMaxFilenames];
+  mutable uint8_t filename_dirs[kMaxFilenames];
 
   unsigned int OpcodeToAdvance(uint8_t adjusted_opcode) const {
     // Special opcodes advance line numbers by an amount based on line_range
@@ -216,12 +226,15 @@ void EvaluateLineNumberProgram(const int fd,
           program_info.filename_offsets[0] = program_info.filename_offsets[1];
           program_info.filename_dirs[0] = program_info.filename_dirs[1];
         }
-        info->module_filename_offset =
-            program_info.filename_offsets[registers->last_file];
 
-        int dir = program_info.filename_dirs[registers->last_file];
-        info->module_dir_offset = program_info.directory_offsets[dir];
-        info->dir_size = program_info.directory_sizes[dir];
+        if (registers->last_file < kMaxFilenames) {
+          info->module_filename_offset =
+              program_info.filename_offsets[registers->last_file];
+
+          uint8_t dir = program_info.filename_dirs[registers->last_file];
+          info->module_dir_offset = program_info.directory_offsets[dir];
+          info->dir_size = program_info.directory_sizes[dir];
+        }
       }
     }
   } on_commit(info, module_relative_pc, program_info);
@@ -287,22 +300,24 @@ void EvaluateLineNumberProgram(const int fd,
             case 3: {
               // DW_LNE_define_file
               //
-              // This should only get used if the filename table itself null.
+              // This should only get used if the filename table itself is null.
               // Record the module offset for the string and then drop the data.
-              int cur_filename = program_info.num_filenames++;
-
-              // Store the offset from the start of file and skip the data to
-              // save memory.
-              program_info.filename_offsets[cur_filename] =
-                  reader.position() - 1;
+              uint64_t filename_offset = reader.position();
               reader.ReadCString(program_info.end_offset, nullptr, 0);
 
               // dir index
               uint64_t value;
               if (!reader.ReadLeb128(value))
                 return;
-              program_info.filename_dirs[cur_filename] =
-                  static_cast<int>(value);
+              int cur_filename = program_info.num_filenames;
+              if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
+                ++program_info.num_filenames;
+                // Store the offset from the start of file and skip the data to
+                // save memory.
+                program_info.filename_offsets[cur_filename] = filename_offset;
+                program_info.filename_dirs[cur_filename] =
+                    static_cast<uint8_t>(value);
+              }
 
               // modification time
               if (!reader.ReadLeb128(value))
@@ -470,13 +485,18 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     }
 
     // Read in all of the filename.
-    int cur_dir = program_info->num_directories++;
-    program_info->directory_offsets[cur_dir] = reader->position() - 1;
-    program_info->directory_sizes[cur_dir] = 1;
+    int cur_dir = program_info->num_directories;
+    if (cur_dir < kMaxDirectories) {
+      ++program_info->num_directories;
+      // "-1" is because we have already read the first byte above.
+      program_info->directory_offsets[cur_dir] = reader->position() - 1;
+      program_info->directory_sizes[cur_dir] = 1;
+    }
     do {
       if (!reader->ReadInt8(cur))
         return false;
-      program_info->directory_sizes[cur_dir]++;
+      if (cur_dir < kMaxDirectories)
+        ++program_info->directory_sizes[cur_dir];
     } while (cur != '\0');
   }
 
@@ -494,10 +514,9 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
       break;
     }
 
-    // Read in all of the filename.
-    int cur_filename = program_info->num_filenames++;
-    program_info->filename_offsets[cur_filename] = reader->position() - 1;
-    program_info->filename_dirs[cur_filename] = 0;
+    // Read in all of the filename. "-1" is because we have already read the
+    // first byte of the filename above.
+    uint64_t filename_offset = reader->position() - 1;
     do {
       if (!reader->ReadInt8(cur))
         return false;
@@ -508,7 +527,12 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     // Dir index
     if (!reader->ReadLeb128(value))
       return false;
-    program_info->filename_dirs[cur_filename] = static_cast<int>(value);
+    int cur_filename = program_info->num_filenames;
+    if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
+      ++program_info->num_filenames;
+      program_info->filename_offsets[cur_filename] = filename_offset;
+      program_info->filename_dirs[cur_filename] = static_cast<uint8_t>(value);
+    }
 
     // Modification time
     if (!reader->ReadLeb128(value))
