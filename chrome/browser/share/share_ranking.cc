@@ -331,6 +331,7 @@ void ShareRanking::Clear(const base::Time& start, const base::Time& end) {
   // specified deletion interval. Instead, we forget all the ranking data
   // altogether whenever we're clearing any interval - this almost always
   // over-deletes, unfortunately.
+  ranking_.clear();
   db_->UpdateEntriesWithRemoveFilter(
       std::make_unique<BackingDb::KeyEntryVector>(),
       base::BindRepeating([](const std::string& key) -> bool { return true; }),
