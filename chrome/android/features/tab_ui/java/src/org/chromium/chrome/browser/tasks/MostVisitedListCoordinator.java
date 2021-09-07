@@ -96,7 +96,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         if (!mInitializationComplete
                 && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
                 && TabUiFeatureUtilities.supportInstantStart(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity))) {
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity)) {
             try {
                 List<Tile> tiles =
                         MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();

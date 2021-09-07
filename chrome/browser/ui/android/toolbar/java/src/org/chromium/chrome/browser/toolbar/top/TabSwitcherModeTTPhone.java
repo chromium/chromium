@@ -177,7 +177,7 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
         mVisiblityAnimator.start();
 
-        if (DeviceClassManager.enableAccessibilityLayout()) mVisiblityAnimator.end();
+        if (DeviceClassManager.enableAccessibilityLayout(getContext())) mVisiblityAnimator.end();
     }
 
     /**
@@ -320,7 +320,8 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
 
     private int getToolbarColorForCurrentState() {
         // TODO(huayinz): Split tab switcher background color from primary background color.
-        if (DeviceClassManager.enableAccessibilityLayout() || mIsGridTabSwitcherEnabled) {
+        if (DeviceClassManager.enableAccessibilityLayout(getContext())
+                || mIsGridTabSwitcherEnabled) {
             return ChromeColors.getPrimaryBackgroundColor(getContext(), mIsIncognito);
         }
 

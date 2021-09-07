@@ -364,7 +364,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
      */
     @Override
     public void showOverview(boolean animate) {
-        boolean useAccessibility = DeviceClassManager.enableAccessibilityLayout();
+        boolean useAccessibility = DeviceClassManager.enableAccessibilityLayout(mHost.getContext());
 
         boolean accessibilityIsVisible =
                 useAccessibility && getActiveLayout() == mOverviewListLayout;

@@ -735,7 +735,8 @@ public class StartSurfaceTest {
         }
         assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
 
-        boolean isInstantStart = TabUiFeatureUtilities.supportInstantStart(false);
+        boolean isInstantStart =
+                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity());
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         StartSurfaceConfiguration.getHistogramName(

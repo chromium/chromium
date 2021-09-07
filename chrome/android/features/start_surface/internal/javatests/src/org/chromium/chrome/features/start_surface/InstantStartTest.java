@@ -693,7 +693,8 @@ public class InstantStartTest {
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});
         mActivityTestRule.startMainActivityFromLauncher();
 
-        Assert.assertTrue(TabUiFeatureUtilities.supportInstantStart(false));
+        Assert.assertTrue(
+                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
@@ -716,12 +717,14 @@ public class InstantStartTest {
         // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
-        Assert.assertTrue(DeviceClassManager.enableAccessibilityLayout());
 
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});
         mActivityTestRule.startMainActivityFromLauncher();
+        Assert.assertTrue(
+                DeviceClassManager.enableAccessibilityLayout(mActivityTestRule.getActivity()));
 
-        Assert.assertFalse(TabUiFeatureUtilities.supportInstantStart(false));
+        Assert.assertFalse(
+                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         Assert.assertTrue(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
@@ -748,7 +751,8 @@ public class InstantStartTest {
         // make sure BaseSwitches.ENABLE_LOW_END_DEVICE_MODE can be applied.
         SysUtils.resetForTesting();
 
-        Assert.assertFalse(TabUiFeatureUtilities.supportInstantStart(false));
+        Assert.assertFalse(
+                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
     }
 
     @Test

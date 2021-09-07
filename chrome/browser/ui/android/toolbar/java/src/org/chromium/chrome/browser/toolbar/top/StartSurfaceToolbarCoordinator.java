@@ -100,7 +100,7 @@ public class StartSurfaceToolbarCoordinator {
                 isTabGroupsAndroidContinuationEnabled, userEducationHelper,
                 isIncognitoModeEnabledSupplier,
                 StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout());
+                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()));
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

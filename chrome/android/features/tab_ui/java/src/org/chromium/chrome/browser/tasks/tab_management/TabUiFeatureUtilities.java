@@ -137,7 +137,7 @@ public class TabUiFeatureUtilities {
             return false;
         }
 
-        return !DeviceClassManager.enableAccessibilityLayout()
+        return !DeviceClassManager.enableAccessibilityLayout(context)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)
                 && isTabManagementModuleSupported();
     }
@@ -187,8 +187,8 @@ public class TabUiFeatureUtilities {
     /**
      * @return Whether the instant start is supported.
      */
-    public static boolean supportInstantStart(boolean isTablet) {
-        return !DeviceClassManager.enableAccessibilityLayout()
+    public static boolean supportInstantStart(boolean isTablet, Context context) {
+        return !DeviceClassManager.enableAccessibilityLayout(context)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && !isTablet
                 && !SysUtils.isLowEndDevice();
     }
