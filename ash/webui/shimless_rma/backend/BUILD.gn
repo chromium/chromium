@@ -8,14 +8,20 @@ static_library("backend") {
   sources = [
     "shimless_rma_service.cc",
     "shimless_rma_service.h",
+    "version_updater.cc",
+    "version_updater.h",
   ]
 
   deps = [
     "//ash/public/cpp:cpp",
     "//ash/webui/shimless_rma/mojom",
+    "//chromeos/dbus",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/update_engine",
+    "//chromeos/dbus/update_engine:proto",
     "//chromeos/dbus/util",
+    "//chromeos/network:network",
     "//chromeos/services/network_config/public/mojom:mojom",
     "//components/qr_code_generator",
   ]
@@ -24,7 +30,10 @@ static_library("backend") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "shimless_rma_service_unittest.cc" ]
+  sources = [
+    "shimless_rma_service_unittest.cc",
+    "version_updater_unittest.cc",
+  ]
 
   deps = [
     ":backend",
@@ -35,6 +44,7 @@ source_set("unit_tests") {
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/update_engine:update_engine",
     "//chromeos/network:network",
     "//chromeos/network:test_support",
     "//chromeos/services/network_config/public/cpp:test_support",

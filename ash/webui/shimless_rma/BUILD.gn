@@ -19,6 +19,7 @@ static_library("shimless_rma") {
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shimless_rma/mojom",
     "//content/public/browser",
+    "//dbus",
     "//ui/chromeos/strings:strings_provider",
     "//ui/resources",
     "//ui/web_dialogs",
