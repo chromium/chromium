@@ -436,7 +436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Internals.SystemCrashCount" units="crashes"
-    expires_after="2021-10-20">
+    expires_after="2022-10-20">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
