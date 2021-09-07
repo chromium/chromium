@@ -57,6 +57,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   self.avatar = avatar;
 }
 
+- (void)setUIEnabled:(BOOL)UIEnabled {
+}
+
 @end
 
 class SigninScreenMediatorTest : public PlatformTest {

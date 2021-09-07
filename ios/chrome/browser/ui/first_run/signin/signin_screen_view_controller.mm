@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
@@ -30,6 +31,9 @@ const CGFloat kIdentityTopMargin = 16;
 // The string to be displayed in the "Cotinue" button to personalize it. Usually
 // the given name, or the email address if no given name.
 @property(nonatomic, copy) NSString* personalizedButtonPrompt;
+
+// Scrim displayed above the view when the UI is disabled.
+@property(nonatomic, strong) ActivityOverlayView* overlay;
 
 @end
 
@@ -105,6 +109,14 @@ const CGFloat kIdentityTopMargin = 16;
   return _identityControl;
 }
 
+- (ActivityOverlayView*)overlay {
+  if (!_overlay) {
+    _overlay = [[ActivityOverlayView alloc] init];
+    _overlay.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return _overlay;
+}
+
 #pragma mark - SignInScreenConsumer
 
 - (void)setSelectedIdentityUserName:(NSString*)userName
@@ -121,6 +133,16 @@ const CGFloat kIdentityTopMargin = 16;
 
 - (void)noIdentityAvailable {
   [self updateUIForIdentityAvailable:NO];
+}
+
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  if (UIEnabled) {
+    [self.overlay removeFromSuperview];
+  } else {
+    [self.view addSubview:self.overlay];
+    AddSameConstraints(self.view, self.overlay);
+    [self.overlay.indicator startAnimating];
+  }
 }
 
 #pragma mark - Private
