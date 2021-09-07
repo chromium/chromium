@@ -133,6 +133,7 @@ UIColor* BackgroundColor() {
 
 - (void)presentSuggestedPasswords:(NSArray<id<Credential>>*)suggested
                      allPasswords:(NSArray<id<Credential>>*)all
+                    showSearchBar:(BOOL)showSearchBar
             showNewPasswordOption:(BOOL)showNewPasswordOption {
   self.suggestedPasswords = suggested;
   self.allPasswords = all;
@@ -142,7 +143,7 @@ UIColor* BackgroundColor() {
 
   // Remove or add the search controller depending on whether there are
   // passwords to search.
-  if (self.allPasswords.count > 0) {
+  if (showSearchBar) {
     self.navigationItem.searchController = self.searchController;
   } else {
     if (self.navigationItem.searchController.isActive) {
