@@ -39,7 +39,7 @@ using ::testing::SaveArgPointee;
 em::PrintJobEvent CreateJobEvent(
     const std::string id,
     const std::string title,
-    reporting::error::Code status,
+    ::reporting::error::Code status,
     em::PrintJobEvent::PrintSettings::ColorMode color,
     em::PrintJobEvent::PrintSettings::DuplexMode duplex) {
   em::PrintJobEvent event;
@@ -105,7 +105,7 @@ print::PrintJobInfo CreateJobInfo(const std::string id,
 }
 
 em::PrintJobEvent JobEvent1() {
-  return CreateJobEvent("id1", "title1", reporting::error::OK,
+  return CreateJobEvent("id1", "title1", ::reporting::error::OK,
                         em::PrintJobEvent::PrintSettings::BLACK_AND_WHITE,
                         em::PrintJobEvent::PrintSettings::ONE_SIDED);
 }
@@ -117,7 +117,7 @@ print::PrintJobInfo JobInfo1() {
 }
 
 em::PrintJobEvent JobEvent2() {
-  return CreateJobEvent("id2", "title2", reporting::error::CANCELLED,
+  return CreateJobEvent("id2", "title2", ::reporting::error::CANCELLED,
                         em::PrintJobEvent::PrintSettings::COLOR,
                         em::PrintJobEvent::PrintSettings::TWO_SIDED_LONG_EDGE);
 }
@@ -129,7 +129,8 @@ print::PrintJobInfo JobInfo2() {
 }
 
 em::PrintJobEvent JobEvent3() {
-  return CreateJobEvent("id3", "title3", reporting::error::FAILED_PRECONDITION,
+  return CreateJobEvent("id3", "title3",
+                        ::reporting::error::FAILED_PRECONDITION,
                         em::PrintJobEvent::PrintSettings::BLACK_AND_WHITE,
                         em::PrintJobEvent::PrintSettings::TWO_SIDED_SHORT_EDGE);
 }
@@ -145,7 +146,7 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
   explicit PrintJobEventMatcher(const em::PrintJobEvent& event)
       : id_(event.job_configuration().id()),
         title_(event.job_configuration().title()),
-        status_(static_cast<reporting::error::Code>(
+        status_(static_cast<::reporting::error::Code>(
             event.job_configuration().status())),
         creation_timestamp_ms_(
             event.job_configuration().creation_timestamp_ms()),
@@ -252,7 +253,7 @@ class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
  private:
   std::string id_;
   std::string title_;
-  reporting::error::Code status_;
+  ::reporting::error::Code status_;
   uint64_t creation_timestamp_ms_;
   uint64_t completion_timestamp_ms_;
   uint32_t pages_;
@@ -290,11 +291,11 @@ class PrintJobReportingServiceTest : public ::testing::Test {
   }
 
   void SetReportQueue() {
-    auto report_queue = std::make_unique<reporting::MockReportQueue>();
+    auto report_queue = std::make_unique<::reporting::MockReportQueue>();
     EXPECT_CALL(*report_queue, AddRecord)
         .WillRepeatedly(
-            [this](base::StringPiece record, reporting::Priority priority,
-                   reporting::ReportQueue::EnqueueCallback callback) {
+            [this](base::StringPiece record, ::reporting::Priority priority,
+                   ::reporting::ReportQueue::EnqueueCallback callback) {
               em::PrintJobEvent event;
               event.ParseFromString(std::string(record));
               events_.push_back(event);
@@ -310,7 +311,7 @@ class PrintJobReportingServiceTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   std::unique_ptr<PrintJobReportingService> print_job_reporting_service_;
   std::vector<em::PrintJobEvent> events_;
-  std::vector<reporting::Priority> priorities_;
+  std::vector<::reporting::Priority> priorities_;
 };
 
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyDisabled) {
@@ -333,9 +334,9 @@ TEST_F(PrintJobReportingServiceTest, Enqueue) {
 
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[0], IsPrintJobEvent(JobEvent1()));
-  EXPECT_EQ(priorities_[0], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[0], ::reporting::Priority::SLOW_BATCH);
   EXPECT_THAT(events_[1], IsPrintJobEvent(JobEvent2()));
-  EXPECT_EQ(priorities_[1], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[1], ::reporting::Priority::SLOW_BATCH);
 }
 
 TEST_F(PrintJobReportingServiceTest, PendingPrintJobsEnqueue) {
@@ -351,15 +352,15 @@ TEST_F(PrintJobReportingServiceTest, PendingPrintJobsEnqueue) {
 
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[0], IsPrintJobEvent(JobEvent1()));
-  EXPECT_EQ(priorities_[0], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[0], ::reporting::Priority::SLOW_BATCH);
   EXPECT_THAT(events_[1], IsPrintJobEvent(JobEvent2()));
-  EXPECT_EQ(priorities_[1], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[1], ::reporting::Priority::SLOW_BATCH);
 
   print_job_reporting_service_->OnPrintJobFinished(JobInfo3());
 
   ASSERT_EQ(events_.size(), 3u);
   EXPECT_THAT(events_[2], IsPrintJobEvent(JobEvent3()));
-  EXPECT_EQ(priorities_[2], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[2], ::reporting::Priority::SLOW_BATCH);
 }
 
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
@@ -373,7 +374,7 @@ TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
 
   ASSERT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0], IsPrintJobEvent(JobEvent1()));
-  EXPECT_EQ(priorities_[0], reporting::Priority::SLOW_BATCH);
+  EXPECT_EQ(priorities_[0], ::reporting::Priority::SLOW_BATCH);
 }
 
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyDisabled) {

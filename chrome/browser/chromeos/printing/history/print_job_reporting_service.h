@@ -24,7 +24,7 @@ class PrintJobReportingService : public KeyedService,
 
   ~PrintJobReportingService() override = default;
 
-  virtual base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>)>
+  virtual base::OnceCallback<void(std::unique_ptr<::reporting::ReportQueue>)>
   GetReportQueueSetter() = 0;
 
   // PrintJobHistoryService::Observer:

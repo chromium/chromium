@@ -42,9 +42,9 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
         base::BindRepeating(&PrintJobReportingServiceImpl::UpdateShouldReport,
                             weak_factory_.GetWeakPtr()));
 
-    reporting::ReportQueueFactory::Create(dm_token_value,
-                                          reporting::Destination::PRINT_JOBS,
-                                          GetReportQueueSetter());
+    ::reporting::ReportQueueFactory::Create(
+        dm_token_value, ::reporting::Destination::PRINT_JOBS,
+        GetReportQueueSetter());
   }
 
   ~PrintJobReportingServiceImpl() override = default;
@@ -73,7 +73,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     }
   }
 
-  base::OnceCallback<void(std::unique_ptr<reporting::ReportQueue>)>
+  base::OnceCallback<void(std::unique_ptr<::reporting::ReportQueue>)>
   GetReportQueueSetter() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     return base::BindOnce(&PrintJobReportingServiceImpl::SetReportQueue,
@@ -91,7 +91,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     cros_settings_->GetBoolean(kReportDevicePrintJobs, &should_report_);
   }
 
-  void SetReportQueue(std::unique_ptr<reporting::ReportQueue> report_queue) {
+  void SetReportQueue(std::unique_ptr<::reporting::ReportQueue> report_queue) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     report_queue_ = std::move(report_queue);
     while (!pending_print_jobs_.empty()) {
@@ -102,7 +102,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
 
   void Enqueue(const em::PrintJobEvent& event) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    report_queue_->Enqueue(&event, reporting::Priority::SLOW_BATCH,
+    report_queue_->Enqueue(&event, ::reporting::Priority::SLOW_BATCH,
                            base::DoNothing());
   }
 
@@ -138,17 +138,17 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
     return print_job_event;
   }
 
-  static reporting::error::Code ConvertStatus(
+  static ::reporting::error::Code ConvertStatus(
       print::PrintJobInfo::PrintJobStatus status) {
     switch (status) {
       case print::PrintJobInfo::FAILED:
-        return reporting::error::FAILED_PRECONDITION;
+        return ::reporting::error::FAILED_PRECONDITION;
       case print::PrintJobInfo::CANCELED:
-        return reporting::error::CANCELLED;
+        return ::reporting::error::CANCELLED;
       case print::PrintJobInfo::PRINTED:
-        return reporting::error::OK;
+        return ::reporting::error::OK;
       default:
-        return reporting::error::UNKNOWN;
+        return ::reporting::error::UNKNOWN;
     }
   }
 
@@ -198,7 +198,7 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   base::CallbackListSubscription should_report_subscription_;
 
   // Report queue for print jobs
-  std::unique_ptr<reporting::ReportQueue> report_queue_;
+  std::unique_ptr<::reporting::ReportQueue> report_queue_;
 
   CrosSettings* const cros_settings_;
 
