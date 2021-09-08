@@ -1270,8 +1270,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   if (Element* element = GetElement()) {
     String value_text = SlowGetValueForControlIncludingContentEditable();
-    // TODO(nektar) Compute value for richly editable content on browser side.
-    if (HasRichlyEditableStyle(*GetNode()) || !value_text.IsNull()) {
+    if (!value_text.IsEmpty() || !IsRangeValueSupported()) {
+      // TODO(nektar) Once contenteditable values are computed on the browser
+      // side, only expose this when value text is non-empty.
       TruncateAndAddStringAttribute(node_data,
                                     ax::mojom::blink::StringAttribute::kValue,
                                     value_text.Utf8());

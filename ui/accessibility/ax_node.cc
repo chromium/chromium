@@ -1473,6 +1473,9 @@ std::string AXNode::GetTextForRangeValue() const {
   if (range_value.empty() &&
       GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
                         &numeric_value)) {
+    // This method of number to string conversion creates a localized string
+    // and avoids padding with extra zeros after the decimal point.
+    // For example, 3.5 is converted to "3.5" rather than "3.50000".
     return base::StringPrintf("%g", numeric_value);
   }
   return range_value;
