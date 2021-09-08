@@ -34,6 +34,9 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     // MediaSession's playback state is changed (crbug.com/1177661).
     kMediaSession = 10,
 
+    // MediaSession's service is used (crbug.com/1243599).
+    kMediaSessionService = 11,
+
     // New reasons should be accompanied by a comment as to why BackForwardCache
     // cannot be used in this case and a link to a bug to fix that if it is
     // fixable.
