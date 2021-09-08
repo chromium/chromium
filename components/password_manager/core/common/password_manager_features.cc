@@ -144,6 +144,12 @@ const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
 const base::Feature kUnifiedPasswordManagerAndroid{
     "UnifiedPasswordManagerAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Sends shadow traffic to Google Mobile Services for password storage. This
+// allows to check stability without switching away from the local storage as
+// source of truth.
+const base::Feature kUnifiedPasswordManagerShadowAndroid{
+    "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables support of sending votes on username first flow. The votes are sent
 // on single username forms and are based on user interaction with the save
 // prompt.
