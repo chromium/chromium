@@ -719,7 +719,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
     test_runner()->Install(this, spell_check_.get());
     accessibility_controller_.Install(frame);
     text_input_controller_.Install(frame);
-    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(frame);
+    GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(this);
     blink::WebTestingSupport::InjectInternalsObject(frame);
   }
   RenderFrameImpl::DidClearWindowObject();

@@ -1849,6 +1849,7 @@ void WebLocalFrameImpl::PrintPagesForTesting(
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
+  DCHECK(GetFrame());  // Not valid after the Frame is detached.
   GetFrame()->View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kSelection);
   return HasSelection() ? PixelSnappedIntRect(
@@ -1857,6 +1858,7 @@ gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
 }
 
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
+  DCHECK(GetFrame());  // Not valid after the Frame is detached.
   LocalFrameView* view = GetFrameView();
   return view->ConvertToRootFrame(IntPoint());
 }

@@ -41,6 +41,7 @@ class Arguments;
 
 namespace content {
 class TestRunner;
+class WebFrameTestProxy;
 
 // Key event location code introduced in DOM Level 3.
 // See also: http://www.w3.org/TR/DOM-Level-3-Events/#events-keyboardevents
@@ -57,7 +58,7 @@ class EventSender {
   virtual ~EventSender();
 
   void Reset();
-  void Install(blink::WebLocalFrame*);
+  void Install(WebFrameTestProxy*);
 
   void SetContextMenuData(const blink::ContextMenuData&);
 

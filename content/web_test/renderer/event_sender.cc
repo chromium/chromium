@@ -23,8 +23,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -547,11 +549,26 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   static gin::WrapperInfo kWrapperInfo;
 
   static void Install(base::WeakPtr<EventSender> sender,
-                      blink::WebLocalFrame* frame);
+                      WebFrameTestProxy* frame);
 
  private:
+  // Watches for the RenderFrame that the EventSenderBindings is attached to
+  // being destroyed.
+  class EventSenderBindingsRenderFrameObserver : public RenderFrameObserver {
+   public:
+    EventSenderBindingsRenderFrameObserver(EventSenderBindings* bindings,
+                                           RenderFrame* frame)
+        : RenderFrameObserver(frame), bindings_(bindings) {}
+
+    // RenderFrameObserver implementation.
+    void OnDestruct() override { bindings_->OnFrameDestroyed(); }
+
+   private:
+    EventSenderBindings* const bindings_;
+  };
+
   explicit EventSenderBindings(base::WeakPtr<EventSender> sender,
-                               blink::WebLocalFrame* frame);
+                               WebFrameTestProxy* frame);
   ~EventSenderBindings() override;
 
   // gin::Wrappable:
@@ -634,6 +651,12 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   void SetWmSysDeadChar(int sys_dead_char);
 #endif
 
+  // Is notified when the local root frame the EventSender is attached to is
+  // destroyed.
+  void OnFrameDestroyed() { sender_ = nullptr; }
+
+  EventSenderBindingsRenderFrameObserver frame_observer_;
+
   base::WeakPtr<EventSender> sender_;
   blink::WebLocalFrame* const frame_;
 
@@ -643,17 +666,20 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
 gin::WrapperInfo EventSenderBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 EventSenderBindings::EventSenderBindings(base::WeakPtr<EventSender> sender,
-                                         blink::WebLocalFrame* frame)
-    : sender_(sender), frame_(frame) {}
+                                         WebFrameTestProxy* frame)
+    : frame_observer_(this, frame),
+      sender_(sender),
+      frame_(frame->GetWebFrame()) {}
 
 EventSenderBindings::~EventSenderBindings() = default;
 
 // static
 void EventSenderBindings::Install(base::WeakPtr<EventSender> sender,
-                                  WebLocalFrame* frame) {
+                                  WebFrameTestProxy* frame) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
+  v8::Local<v8::Context> context =
+      frame->GetWebFrame()->MainWorldScriptContext();
   if (context.IsEmpty())
     return;
 
@@ -1231,7 +1257,7 @@ void EventSender::Reset() {
   touch_points_.clear();
 }
 
-void EventSender::Install(WebLocalFrame* frame) {
+void EventSender::Install(WebFrameTestProxy* frame) {
   EventSenderBindings::Install(weak_factory_.GetWeakPtr(), frame);
 }
 
