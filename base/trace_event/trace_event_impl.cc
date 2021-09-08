@@ -34,6 +34,13 @@ perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
   return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
 }
 
+#if defined(OS_WIN)
+template <>
+perfetto::ThreadTrack ConvertThreadId(const int& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
+}
+#endif  // defined(OS_WIN)
+
 }  // namespace legacy
 
 TraceTimestamp

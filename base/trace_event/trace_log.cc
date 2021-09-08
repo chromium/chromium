@@ -346,7 +346,8 @@ void OnAddLegacyTraceEvent(TraceEvent* trace_event,
     }
   }
   if (trace_event->thread_id() &&
-      trace_event->thread_id() != base::PlatformThread::CurrentId()) {
+      trace_event->thread_id() !=
+          static_cast<int>(base::PlatformThread::CurrentId())) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
         phase, category, trace_event->name(),
         perfetto::ThreadTrack::ForThread(trace_event->thread_id()), timestamp,
@@ -373,7 +374,8 @@ void OnUpdateLegacyTraceEventDuration(
   auto phase = TRACE_EVENT_PHASE_END;
   base::TimeTicks timestamp =
       explicit_timestamps ? now : TRACE_TIME_TICKS_NOW();
-  if (thread_id && thread_id != base::PlatformThread::CurrentId()) {
+  if (thread_id &&
+      thread_id != static_cast<int>(base::PlatformThread::CurrentId())) {
     PERFETTO_INTERNAL_LEGACY_EVENT_ON_TRACK(
         phase, category, name, perfetto::ThreadTrack::ForThread(thread_id),
         timestamp);
