@@ -324,6 +324,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[language::prefs::kForcedLanguages] =
       settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[::language::prefs::kAcceptLanguages] =
+      settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[translate::prefs::kPrefTranslateRecentTarget] =
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[translate::prefs::kPrefAlwaysTranslateList] =
@@ -788,9 +790,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
 #else
-  (*s_allowlist)[::language::prefs::kAcceptLanguages] =
-      settings_api::PrefType::PREF_TYPE_STRING;
-
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;

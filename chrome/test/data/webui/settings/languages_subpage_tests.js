@@ -34,10 +34,6 @@ suite('languages subpage', function() {
   /** @type {?LanguagesBrowserProxy} */
   let browserProxy = null;
 
-  // Enabled language pref name for the platform.
-  const languagesPref = isChromeOS ? 'settings.language.preferred_languages' :
-                                     'intl.accept_languages';
-
   // Initial value of enabled languages pref used in tests.
   const initialLanguages = 'en-US,sw';
 
@@ -181,7 +177,8 @@ suite('languages subpage', function() {
       cancelButton.click();
       return dialogClosedResolver.promise.then(function() {
         assertEquals(
-            initialLanguages, languageHelper.getPref(languagesPref).value);
+            initialLanguages,
+            languageHelper.getPref('intl.accept_languages').value);
       });
     });
 
@@ -211,7 +208,7 @@ suite('languages subpage', function() {
 
       assertEquals(
           initialLanguages + ',en,tk',
-          languageHelper.getPref(languagesPref).value);
+          languageHelper.getPref('intl.accept_languages').value);
 
       return dialogClosedResolver.promise;
     });
@@ -457,12 +454,14 @@ suite('languages subpage', function() {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          initialLanguages, languageHelper.getPref(languagesPref).value);
+          initialLanguages,
+          languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('remove last blocked language', function() {
       assertEquals(
-          initialLanguages, languageHelper.getPref(languagesPref).value);
+          initialLanguages,
+          languageHelper.getPref('intl.accept_languages').value);
       assertDeepEquals(
           ['en-US'], languageHelper.prefs.translate_blocked_languages.value);
 
@@ -504,7 +503,8 @@ suite('languages subpage', function() {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('en-US', languageHelper.getPref(languagesPref).value);
+      assertEquals(
+          'en-US', languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('move up/down buttons', function() {

@@ -54,11 +54,6 @@ const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 // </if>
 
-let preferredLanguagesPrefName = 'intl.accept_languages';
-// <if expr="chromeos">
-preferredLanguagesPrefName = 'settings.language.preferred_languages';
-// </if>
-
 /**
  * @typedef {{
  *   initialized: boolean,
@@ -207,7 +202,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
       'prospectiveUILanguageChanged_(prefs.intl.app_locale.value, languages)',
       // </if>
       'preferredLanguagesPrefChanged_(' +
-          'prefs.' + preferredLanguagesPrefName + '.value, languages)',
+          'prefs.intl.accept_languages.value, languages)',
       'preferredLanguagesPrefChanged_(' +
           'prefs.intl.forced_languages.value.*, languages)',
       'spellCheckDictionariesPrefChanged_(' +
@@ -710,7 +705,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase {
   getEnabledLanguageStates_(translateTarget, prospectiveUILanguage) {
     assert(CrSettingsPrefs.isInitialized);
 
-    const pref = this.getPref(preferredLanguagesPrefName);
+    const pref = this.getPref('intl.accept_languages');
     const enabledLanguageCodes = pref.value.split(',');
     const languagesForcedPref = this.getPref('intl.forced_languages');
     const spellCheckPref = this.getPref('spellcheck.dictionaries');

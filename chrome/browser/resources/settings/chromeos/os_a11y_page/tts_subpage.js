@@ -235,7 +235,7 @@ Polymer({
     // Build a map of language code to human-readable language and voice.
     const result = {};
     const languageCodeMap = {};
-    const pref = this.prefs.settings['language']['preferred_languages'];
+    const pref = this.prefs['intl']['accept_languages'];
     const preferredLangs = pref.value.split(',');
     voices.forEach(voice => {
       if (!result[voice.languageCode]) {

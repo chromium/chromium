@@ -56,14 +56,14 @@ suite('TextToSpeechSubpageTests', function() {
 
   function getDefaultPrefs() {
     return {
-      settings: {
-        language: {
-          preferred_languages: {
-            key: 'settings.language.preferred_languages',
-            type: chrome.settingsPrivate.PrefType.STRING,
-            value: '',
-          },
+      intl: {
+        accept_languages: {
+          key: 'intl.accept_languages',
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: '',
         },
+      },
+      settings: {
         tts: {
           lang_to_voice_name: {
             key: 'prefs.settings.tts.lang_to_voice_name',

@@ -35,9 +35,6 @@ suite('languages page', () => {
   /** @type {!settings.LanguagesMetricsProxy} */
   let metricsProxy;
 
-  // Enabled language pref name for the platform.
-  const languagesPref = 'settings.language.preferred_languages';
-
   // Initial value of enabled languages pref used in tests.
   const initialLanguages = 'en-US,sw';
 
@@ -152,7 +149,8 @@ suite('languages page', () => {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          initialLanguages, languageHelper.getPref(languagesPref).value);
+          initialLanguages,
+          languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('removes language when starting with 2 languages', () => {
@@ -173,7 +171,8 @@ suite('languages page', () => {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('en-US', languageHelper.getPref(languagesPref).value);
+      assertEquals(
+          'en-US', languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('the only translate blocked language is not removable', () => {
@@ -221,10 +220,11 @@ suite('languages page', () => {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('sw', languageHelper.getPref(languagesPref).value);
+      assertEquals('sw', languageHelper.getPref('intl.accept_languages').value);
     });
 
     test('single preferred language is not removable', () => {
+      languageHelper.setPrefValue('intl.accept_languages', 'sw');
       languageHelper.setPrefValue(
           'settings.language.preferred_languages', 'sw');
       Polymer.dom.flush();
@@ -501,6 +501,7 @@ suite('languages page', () => {
     test(
         'setting device language adds it to front of enabled language if not present',
         async () => {
+          languageHelper.setPrefValue('intl.accept_languages', 'en-US,sw');
           languageHelper.setPrefValue(
               'settings.language.preferred_languages', 'en-US,sw');
           // selects a language
@@ -511,14 +512,15 @@ suite('languages page', () => {
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUILanguage'));
-          assertTrue(
-              languageHelper.getPref('settings.language.preferred_languages')
-                  .value.startsWith('en-CA'));
+          assertTrue(languageHelper.getPref('intl.accept_languages')
+                         .value.startsWith('en-CA'));
         });
 
     test(
         'setting device language does not move already enabled language to front',
         async () => {
+          languageHelper.setPrefValue(
+              'intl.accept_languages', 'en-US,sw,en-CA');
           languageHelper.setPrefValue(
               'settings.language.preferred_languages', 'en-US,sw,en-CA');
           Polymer.dom.flush();
@@ -531,9 +533,8 @@ suite('languages page', () => {
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUILanguage'));
-          assertFalse(
-              languageHelper.getPref('settings.language.preferred_languages')
-                  .value.startsWith('en-CA'));
+          assertFalse(languageHelper.getPref('intl.accept_languages')
+                          .value.startsWith('en-CA'));
         });
 
     // Test that searching languages works whether the displayed or native

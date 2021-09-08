@@ -365,6 +365,7 @@ suite('input page', () => {
     });
 
     test('suggested input methods hidden when no languages is enabled', () => {
+      languageHelper.setPrefValue('intl.accept_languages', '');
       languageHelper.setPrefValue('settings.language.preferred_languages', '');
       Polymer.dom.flush();
 
@@ -376,6 +377,7 @@ suite('input page', () => {
 
     test('suggested input methods hidden when no input methods left', () => {
       const languageCode = 'sw';
+      languageHelper.setPrefValue('intl.accept_languages', languageCode);
       languageHelper.setPrefValue(
           'settings.language.preferred_languages', languageCode);
       languageHelper.getInputMethodsForLanguage(languageCode)

@@ -37,10 +37,6 @@ suite('languages page', function() {
   /** @type {?LanguagesBrowserProxy} */
   let browserProxy = null;
 
-  // Enabled language pref name for the platform.
-  const languagesPref = isChromeOS ? 'settings.language.preferred_languages' :
-                                     'intl.accept_languages';
-
   suiteSetup(function() {
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
@@ -224,7 +220,11 @@ suite('languages page', function() {
           ['en-US'], languageHelper.getPref('spellcheck.dictionaries').value);
 
       // Update supported languages to just 1 language should hide list.
-      languageHelper.setPrefValue(languagesPref, 'en-US');
+      languageHelper.setPrefValue('intl.accept_languages', 'en-US');
+      if (isChromeOS) {
+        languageHelper.setPrefValue(
+            'settings.language.preferred_languages', 'en-US');
+      }
       flush();
       assertTrue(list.hidden);
 
