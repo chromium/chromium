@@ -248,6 +248,9 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     }
     if (config.codec() != VideoCodec::kH264 &&
         config.codec() != VideoCodec::kVP9 &&
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
+        config.codec() != VideoCodec::kAV1 &&
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
         config.codec() != VideoCodec::kHEVC) {
       SetErrorState(
           base::StringPrintf("%s is not supported for encrypted content",
@@ -1082,8 +1085,10 @@ Status VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
-    auto accelerator =
-        std::make_unique<AV1VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
+    auto accelerator = std::make_unique<AV1VaapiVideoDecoderDelegate>(
+        this, vaapi_wrapper_, std::move(protected_update_cb),
+        cdm_context_ref_ ? cdm_context_ref_->GetCdmContext() : nullptr,
+        encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
     decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));

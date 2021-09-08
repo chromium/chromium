@@ -17,8 +17,13 @@ class ScopedVABuffer;
 class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
                                      public VaapiVideoDecoderDelegate {
  public:
-  AV1VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* const vaapi_dec,
-                               scoped_refptr<VaapiWrapper> vaapi_wrapper);
+  AV1VaapiVideoDecoderDelegate(
+      DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+      scoped_refptr<VaapiWrapper> vaapi_wrapper,
+      ProtectedSessionUpdateCB on_protected_session_update_cb =
+          base::DoNothing(),
+      CdmContext* cdm_context = nullptr,
+      EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted);
   ~AV1VaapiVideoDecoderDelegate() override;
   AV1VaapiVideoDecoderDelegate(const AV1VaapiVideoDecoderDelegate&) = delete;
   AV1VaapiVideoDecoderDelegate& operator=(const AV1VaapiVideoDecoderDelegate&) =
@@ -39,6 +44,7 @@ class AV1VaapiVideoDecoderDelegate : public AV1Decoder::AV1Accelerator,
  private:
   std::unique_ptr<ScopedVABuffer> picture_params_;
   std::vector<std::unique_ptr<ScopedVABuffer>> slice_params_;
+  std::unique_ptr<ScopedVABuffer> crypto_params_;
 };
 }  // namespace media
 #endif  // MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_DECODER_DELEGATE_H_

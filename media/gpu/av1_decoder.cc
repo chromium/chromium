@@ -378,7 +378,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       pic->set_colorspace(container_color_space_);
 
     pic->frame_header = frame_header;
-    pic->set_decrypt_config(std::move(decrypt_config_));
+    if (decrypt_config_)
+      pic->set_decrypt_config(decrypt_config_->Clone());
     const AV1Accelerator::Status status =
         DecodeAndOutputPicture(std::move(pic), parser_->tile_buffers());
     if (status == AV1Accelerator::Status::kFail)

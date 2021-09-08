@@ -145,7 +145,8 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
 
   DCHECK_EQ(protected_session_state_, ProtectedSessionState::kCreated);
 
-  if (encryption_scheme_ == EncryptionScheme::kCenc) {
+  const bool ctr = (encryption_scheme_ == EncryptionScheme::kCenc);
+  if (ctr) {
     crypto_params->encryption_type = full_sample
                                          ? VA_ENCRYPTION_TYPE_FULLSAMPLE_CTR
                                          : VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR;
@@ -214,38 +215,26 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
 
   crypto_params->num_segments += subsamples.size();
   if (decrypt_config_->HasPattern()) {
-    if (subsamples.size() != 1) {
-      LOG(ERROR) << "Need single subsample for encryption pattern";
-      protected_session_state_ = ProtectedSessionState::kFailed;
-      return protected_session_state_;
-    }
     crypto_params->blocks_stripe_encrypted =
         decrypt_config_->encryption_pattern()->crypt_byte_block();
     crypto_params->blocks_stripe_clear =
         decrypt_config_->encryption_pattern()->skip_byte_block();
+  }
+  size_t total_cypher_size = 0;
+  std::vector<uint8_t> iv(DecryptConfig::kDecryptionKeySize);
+  iv.assign(decrypt_config_->iv().begin(), decrypt_config_->iv().end());
+  for (const auto& entry : subsamples) {
     VAEncryptionSegmentInfo segment_info = {};
     segment_info.segment_start_offset = offset;
-    segment_info.init_byte_length = subsamples[0].clear_bytes;
-    segment_info.segment_length =
-        subsamples[0].clear_bytes + subsamples[0].cypher_bytes;
-    memcpy(segment_info.aes_cbc_iv_or_ctr, decrypt_config_->iv().data(),
+    segment_info.segment_length = entry.clear_bytes + entry.cypher_bytes;
+    memcpy(segment_info.aes_cbc_iv_or_ctr, iv.data(),
            DecryptConfig::kDecryptionKeySize);
-    segments->emplace_back(std::move(segment_info));
-  } else {
-    size_t total_cypher_size = 0;
-    std::vector<uint8_t> iv(DecryptConfig::kDecryptionKeySize);
-    iv.assign(decrypt_config_->iv().begin(), decrypt_config_->iv().end());
-    for (const auto& entry : subsamples) {
-      VAEncryptionSegmentInfo segment_info = {};
-      segment_info.segment_start_offset = offset;
-      segment_info.segment_length = entry.clear_bytes + entry.cypher_bytes;
+    if (ctr) {
       size_t partial_block_size =
           (DecryptConfig::kDecryptionKeySize -
            (total_cypher_size % DecryptConfig::kDecryptionKeySize)) %
           DecryptConfig::kDecryptionKeySize;
       segment_info.partial_aes_block_size = partial_block_size;
-      memcpy(segment_info.aes_cbc_iv_or_ctr, iv.data(),
-             DecryptConfig::kDecryptionKeySize);
       if (entry.cypher_bytes > partial_block_size) {
         // If we are finishing a block, increment the counter.
         if (partial_block_size)
@@ -258,10 +247,10 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
           ctr128_inc64(iv.data());
       }
       total_cypher_size += entry.cypher_bytes;
-      segment_info.init_byte_length = entry.clear_bytes;
-      offset += entry.clear_bytes + entry.cypher_bytes;
-      segments->emplace_back(std::move(segment_info));
     }
+    segment_info.init_byte_length = entry.clear_bytes;
+    offset += entry.clear_bytes + entry.cypher_bytes;
+    segments->emplace_back(std::move(segment_info));
   }
   memcpy(crypto_params->wrapped_decrypt_blob,
          hw_key_data_map_[decrypt_config_->key_id()].data(),

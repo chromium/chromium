@@ -835,8 +835,6 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
     required_attribs->push_back(
         {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_SUBSAMPLE_CTR});
-    required_attribs->push_back(
-        {VAConfigAttribDecProcessing, VA_DEC_PROCESSING});
   }
 #endif
 
