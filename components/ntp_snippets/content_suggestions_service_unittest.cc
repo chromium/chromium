@@ -86,9 +86,10 @@ class ContentSuggestionsServiceTest : public testing::Test {
   // returned by the service for the given |category|.
   void ExpectThatSuggestionsAre(Category category, std::vector<int> numbers) {
     std::vector<Category> categories = service()->GetCategories();
-    auto position = std::find(categories.begin(), categories.end(), category);
+    auto category_position =
+        std::find(categories.begin(), categories.end(), category);
     if (!numbers.empty()) {
-      EXPECT_NE(categories.end(), position);
+      EXPECT_NE(categories.end(), category_position);
     }
 
     for (const auto& suggestion :
@@ -96,11 +97,11 @@ class ContentSuggestionsServiceTest : public testing::Test {
       std::string id_within_category = suggestion.id().id_within_category();
       int id;
       ASSERT_TRUE(base::StringToInt(id_within_category, &id));
-      auto position = std::find(numbers.begin(), numbers.end(), id);
-      if (position == numbers.end()) {
+      auto number_position = std::find(numbers.begin(), numbers.end(), id);
+      if (number_position == numbers.end()) {
         ADD_FAILURE() << "Unexpected suggestion with ID " << id;
       } else {
-        numbers.erase(position);
+        numbers.erase(number_position);
       }
     }
     for (int number : numbers) {

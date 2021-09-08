@@ -292,12 +292,12 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
 
   const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
   dictionary_.reserve(dictionary.size());
-  int id = 0;
+  int token_id = 0;
   for (const auto& token_value : dictionary) {
     std::u16string token;
     token_value.GetAsString(&token);
-    dictionary_.insert({token, id});
-    ++id;
+    dictionary_.insert({token, token_id});
+    ++token_id;
   }
 
   if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {

@@ -1000,10 +1000,10 @@ void AutocompleteResult::MergeMatchesByProvider(ACMatches* old_matches,
   // "overwrite" the initial matches from that provider's previous results,
   // minimally disturbing the rest of the matches.
   size_t delta = old_matches->size() - new_matches.size();
-  for (auto i = old_matches->rbegin(); i != old_matches->rend() && delta > 0;
-       ++i) {
-    if (!HasMatchByDestination(*i, new_matches)) {
-      matches_.push_back(std::move(*i));
+  for (auto j = old_matches->rbegin(); j != old_matches->rend() && delta > 0;
+       ++j) {
+    if (!HasMatchByDestination(*j, new_matches)) {
+      matches_.push_back(std::move(*j));
       matches_.back().relevance =
           std::min(max_relevance, matches_.back().relevance);
       matches_.back().from_previous = true;

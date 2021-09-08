@@ -1341,8 +1341,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
       }
       if (!urls.empty()) {
         DVLOG(0) << "OptimizationGuide: Fetching for URLs: ";
-        for (const auto& url : urls) {
-          DVLOG(0) << "OptimizationGuide: URL: " << url;
+        for (const auto& optimization_guide_url : urls) {
+          DVLOG(0) << "OptimizationGuide: URL: " << optimization_guide_url;
         }
       }
     }

@@ -922,11 +922,13 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
 
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
-    std::u16string* keyword,
+    std::u16string* keyword_out,
     bool* is_keyword_hint) const {
   *is_keyword_hint = associated_keyword != nullptr;
-  keyword->assign(*is_keyword_hint ? associated_keyword->keyword :
-      GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+  keyword_out->assign(
+      *is_keyword_hint
+          ? associated_keyword->keyword
+          : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
 }
 
 std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(

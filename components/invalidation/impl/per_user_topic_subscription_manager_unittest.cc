@@ -262,9 +262,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldUpdateSubscribedTopics) {
       per_user_topic_subscription_manager->HaveAllRequestsFinishedForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }
@@ -609,16 +609,17 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Topics were disabled, check that they're not in the prefs.
   for (const auto& topic : disabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value = topics->FindKey(topic.first);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value =
+        subscribed_topics->FindKey(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
   }
 
   // Check that enable topics are still in the prefs.
   for (const auto& topic : enabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }
@@ -642,9 +643,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
             per_user_topic_subscription_manager->GetSubscribedTopicsForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
     ASSERT_TRUE(private_topic_value->is_string());
     EXPECT_EQ("old-token-topic", private_topic_value->GetString());
@@ -668,9 +669,9 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
             per_user_topic_subscription_manager->GetSubscribedTopicsForTest());
 
   for (const auto& topic : topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
     ASSERT_TRUE(private_topic_value->is_string());
     EXPECT_EQ("new-token-topic", private_topic_value->GetString());
@@ -704,16 +705,17 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // Topics should still be removed from prefs.
   for (const auto& topic : disabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value = topics->FindKey(topic.first);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value =
+        subscribed_topics->FindKey(topic.first);
     ASSERT_EQ(private_topic_value, nullptr);
   }
 
   // Check that enable topics are still in the prefs.
   for (const auto& topic : enabled_topics) {
-    const base::Value* topics = GetSubscribedTopics();
-    const base::Value* private_topic_value =
-        topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
+    const base::Value* subscribed_topics = GetSubscribedTopics();
+    const base::Value* private_topic_value = subscribed_topics->FindKeyOfType(
+        topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
   }
 }

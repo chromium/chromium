@@ -3272,13 +3272,13 @@ TEST_P(PasswordManagerTest, ReportMissingFormManager) {
     EXPECT_CALL(client_, GetMetricsRecorder())
         .WillRepeatedly(Return(metrics_recorder.get()));
 
-    for (const FormData& form_data : test_case.processed_form_data) {
+    for (const FormData& processed_form_data : test_case.processed_form_data) {
       switch (test_case.save_signal) {
         case MissingFormManagerTestCase::Signal::Automatic:
-          manager()->OnPasswordFormSubmitted(nullptr, form_data);
+          manager()->OnPasswordFormSubmitted(nullptr, processed_form_data);
           break;
         case MissingFormManagerTestCase::Signal::Manual:
-          manager()->OnInformAboutUserInput(nullptr, form_data);
+          manager()->OnInformAboutUserInput(nullptr, processed_form_data);
           break;
         case MissingFormManagerTestCase::Signal::None:
           break;

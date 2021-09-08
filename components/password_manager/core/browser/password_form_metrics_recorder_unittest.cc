@@ -65,9 +65,9 @@ void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,
     if (expected_count) {
       test_ukm_recorder->ExpectEntryMetric(entry, metric_name, value);
     } else {
-      const int64_t* value =
+      const int64_t* count =
           test_ukm_recorder->GetEntryMetric(entry, metric_name);
-      EXPECT_TRUE(value == nullptr || *value != expected_count);
+      EXPECT_TRUE(count == nullptr || *count != expected_count);
     }
   }
 }

@@ -240,7 +240,7 @@ ThreadProfilerConfiguration::Configuration
 ThreadProfilerConfiguration::GenerateConfiguration(
     metrics::CallStackProfileParams::Process process,
     const ThreadProfilerPlatformConfiguration& platform_configuration) {
-  if (process == metrics::CallStackProfileParams::BROWSER_PROCESS)
+  if (process == metrics::CallStackProfileParams::Process::kBrowser)
     return GenerateBrowserProcessConfiguration(platform_configuration);
 
   return GenerateChildProcessConfiguration(

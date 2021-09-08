@@ -400,18 +400,18 @@ struct AutocompleteMatch {
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match.  If this match represents a selected keyword, i.e.
-  // the UI should be "in keyword mode", |keyword| will be set to the keyword
-  // and |is_keyword_hint| will be set to false.  If this match has a non-NULL
-  // |associated_keyword|, i.e. we should show a "Press [tab] to search ___"
-  // hint and allow the user to toggle into keyword mode, |keyword| will be set
-  // to the associated keyword and |is_keyword_hint| will be set to true.  Note
-  // that only one of these states can be in effect at once.  In all other
-  // cases, |keyword| will be cleared, even when our member variable |keyword|
-  // is non-empty -- such as with non-substituting keywords or matches that
-  // represent searches using the default search engine.  See also
+  // the UI should be "in keyword mode", |keyword_out| will be set to the
+  // keyword and |is_keyword_hint| will be set to false.  If this match has a
+  // non-null |associated_keyword|, i.e. we should show a "Press [tab] to search
+  // ___" hint and allow the user to toggle into keyword mode, |keyword_out|
+  // will be set to the associated keyword and |is_keyword_hint| will be set to
+  // true.  Note that only one of these states can be in effect at once.  In all
+  // other cases, |keyword_out| will be cleared, even when our member variable
+  // |keyword| is non-empty -- such as with non-substituting keywords or matches
+  // that represent searches using the default search engine.  See also
   // GetSubstitutingExplicitlyInvokedKeyword().
   void GetKeywordUIState(TemplateURLService* template_url_service,
-                         std::u16string* keyword,
+                         std::u16string* keyword_out,
                          bool* is_keyword_hint) const;
 
   // Returns |keyword|, but only if it represents a substituting keyword that

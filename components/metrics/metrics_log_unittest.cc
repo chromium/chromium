@@ -148,7 +148,7 @@ TEST_F(MetricsLogTest, LogType) {
 TEST_F(MetricsLogTest, BasicRecord) {
   TestMetricsServiceClient client;
   client.set_version_string("bogus version");
-  const std::string kClientId = "totally bogus client ID";
+  const std::string kOtherClientId = "totally bogus client ID";
   TestingPrefServiceSimple prefs;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Clears existing command line flags and sets mock flags:
@@ -158,7 +158,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
   command_line->AppendSwitch("mock-flag-1");
   command_line->AppendSwitchASCII("mock-flag-2", "unused_value");
 
-  MetricsLog log(kClientId, 137, MetricsLog::ONGOING_LOG, &client);
+  MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client);
   log.CloseLog();
 
   std::string encoded;
@@ -177,7 +177,7 @@ TEST_F(MetricsLogTest, BasicRecord) {
   system_profile->set_app_version("bogus version");
   // Make sure |client_uuid| in the system profile is the unhashed client id
   // and is the same as the client id in |local_prefs|.
-  system_profile->set_client_uuid(kClientId);
+  system_profile->set_client_uuid(kOtherClientId);
   system_profile->set_channel(client.GetChannel());
   system_profile->set_application_locale(client.GetApplicationLocale());
   system_profile->set_brand_code(TestMetricsServiceClient::kBrandForTesting);

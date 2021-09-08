@@ -39,11 +39,11 @@ void CheckTableContent(sql::Database& db,
   for (const TableRow& row : expected_rows) {
     EXPECT_TRUE(table_check.Step());
     for (unsigned col = 0; col < row.size(); ++col) {
-      if (const int* value = absl::get_if<int>(&row[col])) {
-        EXPECT_EQ(*value, table_check.ColumnInt(col)) << col;
-      } else if (const std::string* value =
+      if (const int* int_value = absl::get_if<int>(&row[col])) {
+        EXPECT_EQ(*int_value, table_check.ColumnInt(col)) << col;
+      } else if (const std::string* string_value =
                      absl::get_if<std::string>(&row[col])) {
-        EXPECT_EQ(*value, table_check.ColumnString(col)) << col;
+        EXPECT_EQ(*string_value, table_check.ColumnString(col)) << col;
       } else {
         EXPECT_TRUE(false) << "Unknown type " << col;
       }

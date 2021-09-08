@@ -509,16 +509,16 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     ASSERT_EQ(class_strings.size(), match.contents_class.size())
         << description;
-    for (size_t i = 0; i < class_strings.size(); ++i) {
+    for (size_t j = 0; j < class_strings.size(); ++j) {
       std::vector<std::string> chunks = base::SplitString(
-          class_strings[i], ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+          class_strings[j], ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
       ASSERT_EQ(2U, chunks.size()) << description;
       size_t offset;
       EXPECT_TRUE(base::StringToSizeT(chunks[0], &offset)) << description;
-      EXPECT_EQ(offset, match.contents_class[i].offset) << description;
+      EXPECT_EQ(offset, match.contents_class[j].offset) << description;
       int style;
       EXPECT_TRUE(base::StringToInt(chunks[1], &style)) << description;
-      EXPECT_EQ(style, match.contents_class[i].style) << description;
+      EXPECT_EQ(style, match.contents_class[j].style) << description;
     }
   }
 }

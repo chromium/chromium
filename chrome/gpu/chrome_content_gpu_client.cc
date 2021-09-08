@@ -82,7 +82,7 @@ void ChromeContentGpuClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_task_runner) {
   io_task_runner->PostTask(
       FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                                metrics::CallStackProfileParams::IO_THREAD));
+                                metrics::CallStackProfileParams::Thread::kIo));
 }
 
 void ChromeContentGpuClient::PostCompositorThreadCreated(
@@ -90,7 +90,7 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ThreadProfiler::StartOnChildThread,
-                     metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+                     metrics::CallStackProfileParams::Thread::kCompositor));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

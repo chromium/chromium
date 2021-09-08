@@ -166,26 +166,28 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessEnableFraction) {
 #if defined(OS_ANDROID)
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::GPU_PROCESS));
+                     metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.4, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::RENDERER_PROCESS));
+                     metrics::CallStackProfileParams::Process::kRenderer));
+  EXPECT_EQ(0.0,
+            config()->GetChildProcessEnableFraction(
+                metrics::CallStackProfileParams::Process::kNetworkService));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS));
+                     metrics::CallStackProfileParams::Process::kUtility));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::UTILITY_PROCESS));
-  EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::UNKNOWN_PROCESS));
+                     metrics::CallStackProfileParams::Process::kUnknown));
 #else
   EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::GPU_PROCESS));
+                     metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.2, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::RENDERER_PROCESS));
-  EXPECT_EQ(1.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS));
+                     metrics::CallStackProfileParams::Process::kRenderer));
+  EXPECT_EQ(1.0,
+            config()->GetChildProcessEnableFraction(
+                metrics::CallStackProfileParams::Process::kNetworkService));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::UTILITY_PROCESS));
+                     metrics::CallStackProfileParams::Process::kUtility));
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
-                     metrics::CallStackProfileParams::UNKNOWN_PROCESS));
+                     metrics::CallStackProfileParams::Process::kUnknown));
 #endif
 }
 
@@ -193,46 +195,50 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              IsEnabledForThread) {
 #if defined(OS_ANDROID)
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::BROWSER_PROCESS,
-      metrics::CallStackProfileParams::MAIN_THREAD));
+      metrics::CallStackProfileParams::Process::kBrowser,
+      metrics::CallStackProfileParams::Thread::kMain));
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::BROWSER_PROCESS,
-      metrics::CallStackProfileParams::IO_THREAD));
+      metrics::CallStackProfileParams::Process::kBrowser,
+      metrics::CallStackProfileParams::Thread::kIo));
 
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::GPU_PROCESS,
-      metrics::CallStackProfileParams::MAIN_THREAD));
-  EXPECT_FALSE(
-      config()->IsEnabledForThread(metrics::CallStackProfileParams::GPU_PROCESS,
-                                   metrics::CallStackProfileParams::IO_THREAD));
+      metrics::CallStackProfileParams::Process::kGpu,
+      metrics::CallStackProfileParams::Thread::kMain));
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::GPU_PROCESS,
-      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+      metrics::CallStackProfileParams::Process::kGpu,
+      metrics::CallStackProfileParams::Thread::kIo));
+  EXPECT_FALSE(config()->IsEnabledForThread(
+      metrics::CallStackProfileParams::Process::kGpu,
+      metrics::CallStackProfileParams::Thread::kCompositor));
 
   EXPECT_TRUE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::RENDERER_PROCESS,
-      metrics::CallStackProfileParams::MAIN_THREAD));
+      metrics::CallStackProfileParams::Process::kRenderer,
+      metrics::CallStackProfileParams::Thread::kMain));
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::RENDERER_PROCESS,
-      metrics::CallStackProfileParams::IO_THREAD));
+      metrics::CallStackProfileParams::Process::kRenderer,
+      metrics::CallStackProfileParams::Thread::kIo));
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::RENDERER_PROCESS,
-      metrics::CallStackProfileParams::COMPOSITOR_THREAD));
+      metrics::CallStackProfileParams::Process::kRenderer,
+      metrics::CallStackProfileParams::Thread::kCompositor));
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::RENDERER_PROCESS,
-      metrics::CallStackProfileParams::SERVICE_WORKER_THREAD));
+      metrics::CallStackProfileParams::Process::kRenderer,
+      metrics::CallStackProfileParams::Thread::kServiceWorker));
 
   EXPECT_FALSE(config()->IsEnabledForThread(
-      metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS,
-      metrics::CallStackProfileParams::IO_THREAD));
+      metrics::CallStackProfileParams::Process::kNetworkService,
+      metrics::CallStackProfileParams::Thread::kIo));
 #else
   // Profiling should be enabled without restriction across all threads. Not all
   // these combinations actually make sense or are implemented in the code, but
   // iterating over all combinations is the simplest way to test.
-  for (int i = 0; i <= metrics::CallStackProfileParams::MAX_PROCESS; ++i) {
+  for (int i = 0;
+       i <= static_cast<int>(metrics::CallStackProfileParams::Process::kMax);
+       ++i) {
     const auto process =
         static_cast<metrics::CallStackProfileParams::Process>(i);
-    for (int j = 0; j <= metrics::CallStackProfileParams::MAX_THREAD; ++j) {
+    for (int j = 0;
+         j <= static_cast<int>(metrics::CallStackProfileParams::Thread::kMax);
+         ++j) {
       const auto thread =
           static_cast<metrics::CallStackProfileParams::Thread>(j);
       EXPECT_TRUE(config()->IsEnabledForThread(process, thread));

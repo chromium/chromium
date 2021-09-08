@@ -89,9 +89,9 @@ TEST_F(CallStackProfileMetricsProviderTest,
   // Receive a serialized profile.
   std::string contents;
   {
-    SampledProfile profile;
-    profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
-    profile.SerializeToString(&contents);
+    SampledProfile serialized_profile;
+    serialized_profile.set_trigger_event(SampledProfile::PERIODIC_COLLECTION);
+    serialized_profile.SerializeToString(&contents);
   }
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
       base::TimeTicks::Now(), std::move(contents));

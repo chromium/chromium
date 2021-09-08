@@ -131,15 +131,15 @@ struct FieldMatches {
             strings.begin(),
             strings.end(),
             String16Vector(),
-            [](String16Vector words, const std::string* string) {
+            [](String16Vector word_vec, const std::string* string) {
               if (string) {
                 const auto string_words =
                     SplitByColon(String16VectorFromString16(
                         base::UTF8ToUTF16(string->c_str()), false, nullptr));
-                words.insert(words.end(), string_words.begin(),
-                             string_words.end());
+                word_vec.insert(word_vec.end(), string_words.begin(),
+                                string_words.end());
               }
-              return words;
+              return word_vec;
             })),
         count(0) {}
 

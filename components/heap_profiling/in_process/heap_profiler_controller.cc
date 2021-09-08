@@ -113,9 +113,9 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
 
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
-      metrics::CallStackProfileParams::BROWSER_PROCESS,
-      metrics::CallStackProfileParams::UNKNOWN_THREAD,
-      metrics::CallStackProfileParams::PERIODIC_HEAP_COLLECTION);
+      metrics::CallStackProfileParams::Process::kBrowser,
+      metrics::CallStackProfileParams::Thread::kUnknown,
+      metrics::CallStackProfileParams::Trigger::kPeriodicHeapCollection);
   metrics::CallStackProfileBuilder profile_builder(params);
 
   heap_profiling::SampleMap merged_samples =

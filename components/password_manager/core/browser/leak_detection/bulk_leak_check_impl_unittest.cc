@@ -56,12 +56,12 @@ struct TestLeakDetectionRequest : LeakDetectionRequestInterface {
                         const std::string& access_token,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
-    this->encrypted_payload = std::move(payload.encrypted_payload);
-    this->callback = std::move(callback);
+    encrypted_payload = std::move(payload.encrypted_payload);
+    lookup_callback = std::move(callback);
   }
 
   std::string encrypted_payload;
-  LookupSingleLeakCallback callback;
+  LookupSingleLeakCallback lookup_callback;
 };
 
 // Helper struct for making a fake network request.
@@ -124,7 +124,7 @@ PayloadAndCallback BulkLeakCheckTest::ImitateNetworkRequest(
       kAccessToken, base::Time::Max());
 
   return {std::move(raw_request->encrypted_payload),
-          std::move(raw_request->callback)};
+          std::move(raw_request->lookup_callback)};
 }
 
 TEST_F(BulkLeakCheckTest, Create) {

@@ -300,9 +300,9 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, Roundtrip) {
 
   absl::optional<SkpResult> result = std::move(recording.value()).Deserialize();
   ASSERT_TRUE(result.has_value());
-  for (auto& content_id : ctx) {
-    EXPECT_TRUE(result->ctx.contains(content_id));
-    result->ctx.erase(content_id);
+  for (auto& id : ctx) {
+    EXPECT_TRUE(result->ctx.contains(id));
+    result->ctx.erase(id);
   }
   EXPECT_TRUE(result->ctx.empty());
 }

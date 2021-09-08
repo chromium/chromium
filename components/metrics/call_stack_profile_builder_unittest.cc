@@ -44,9 +44,9 @@ class TestModule : public base::ModuleCache::Module {
 };
 
 constexpr CallStackProfileParams kProfileParams = {
-    CallStackProfileParams::BROWSER_PROCESS,
-    CallStackProfileParams::MAIN_THREAD,
-    CallStackProfileParams::PROCESS_STARTUP};
+    CallStackProfileParams::Process::kBrowser,
+    CallStackProfileParams::Thread::kMain,
+    CallStackProfileParams::Trigger::kProcessStartup};
 
 class TestingCallStackProfileBuilder : public CallStackProfileBuilder {
  public:

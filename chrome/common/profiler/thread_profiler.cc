@@ -159,7 +159,7 @@ base::StackSamplingProfiler::UnwindersFactory CreateCoreUnwindersFactory() {
 
 const base::RepeatingClosure GetApplyPerSampleMetadataCallback(
     CallStackProfileParams::Process process) {
-  if (process != CallStackProfileParams::RENDERER_PROCESS)
+  if (process != CallStackProfileParams::Process::kRenderer)
     return base::RepeatingClosure();
   static const base::SampleMetadata process_backgrounded("ProcessBackgrounded");
   return base::BindRepeating(
@@ -251,8 +251,8 @@ std::unique_ptr<ThreadProfiler> ThreadProfiler::CreateAndStartOnMainThread() {
   bool is_single_process = command_line->HasSwitch(switches::kSingleProcess) ||
                            command_line->HasSwitch(switches::kInProcessGPU);
   DCHECK(!g_main_thread_instance || is_single_process);
-  auto instance =
-      base::WrapUnique(new ThreadProfiler(CallStackProfileParams::MAIN_THREAD));
+  auto instance = base::WrapUnique(
+      new ThreadProfiler(CallStackProfileParams::Thread::kMain));
   if (!g_main_thread_instance)
     g_main_thread_instance = instance.get();
   return instance;
@@ -307,7 +307,7 @@ void ThreadProfiler::SetCollectorForChildProcess(
   if (!ThreadProfilerConfiguration::Get()->IsProfilerEnabledForCurrentProcess())
     return;
 
-  DCHECK_NE(CallStackProfileParams::BROWSER_PROCESS,
+  DCHECK_NE(CallStackProfileParams::Process::kBrowser,
             GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
   CallStackProfileBuilder::SetParentProfileCollectorForChildProcess(
       std::move(collector));
@@ -351,8 +351,9 @@ ThreadProfiler::ThreadProfiler(
   startup_profiler_ = std::make_unique<StackSamplingProfiler>(
       base::GetSamplingProfilerCurrentThreadToken(), sampling_params,
       std::make_unique<CallStackProfileBuilder>(
-          CallStackProfileParams(process_, thread,
-                                 CallStackProfileParams::PROCESS_STARTUP),
+          CallStackProfileParams(
+              process_, thread,
+              CallStackProfileParams::Trigger::kProcessStartup),
           work_id_recorder_.get()),
       CreateCoreUnwindersFactory(),
       GetApplyPerSampleMetadataCallback(process_));
@@ -416,8 +417,9 @@ void ThreadProfiler::StartPeriodicSamplingCollection() {
       base::GetSamplingProfilerCurrentThreadToken(),
       ThreadProfilerConfiguration::Get()->GetSamplingParams(),
       std::make_unique<CallStackProfileBuilder>(
-          CallStackProfileParams(process_, thread_,
-                                 CallStackProfileParams::PERIODIC_COLLECTION),
+          CallStackProfileParams(
+              process_, thread_,
+              CallStackProfileParams::Trigger::kPeriodicCollection),
           work_id_recorder_.get(),
           base::BindOnce(&ThreadProfiler::OnPeriodicCollectionCompleted,
                          owning_thread_task_runner_,

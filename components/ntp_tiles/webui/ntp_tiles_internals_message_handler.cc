@@ -233,15 +233,15 @@ void NTPTilesInternalsMessageHandler::SendTiles(
     }
 
     base::Value icon_list(base::Value::Type::LIST);
-    for (const auto& entry : kIconTypesAndNames) {
+    for (const auto& type_and_name : kIconTypesAndNames) {
       auto it = result_map.find(
-          FaviconResultMap::key_type(tile.url, entry.type_enum));
+          FaviconResultMap::key_type(tile.url, type_and_name.type_enum));
 
       if (it != result_map.end()) {
         const favicon_base::FaviconRawBitmapResult& result = it->second;
         base::Value icon(base::Value::Type::DICTIONARY);
         icon.SetStringKey("url", result.icon_url.spec());
-        icon.SetStringKey("type", entry.type_name);
+        icon.SetStringKey("type", type_and_name.type_name);
         icon.SetBoolKey("onDemand", !result.fetched_because_of_page_visit);
         icon.SetIntKey("width", result.pixel_size.width());
         icon.SetIntKey("height", result.pixel_size.height());

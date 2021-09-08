@@ -250,8 +250,8 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
   return !password_value.empty() || !new_password_value.empty();
 }
 
-bool PasswordForm::IsInsecureCredential(InsecureType type) const {
-  return password_issues.find(type) != password_issues.end();
+bool PasswordForm::IsInsecureCredential(InsecureType insecure_type) const {
+  return password_issues.find(insecure_type) != password_issues.end();
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

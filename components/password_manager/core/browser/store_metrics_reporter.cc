@@ -77,11 +77,11 @@ void ReportNumberOfAccountsMetrics(
     bool custom_passphrase_sync_enabled,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
   base::flat_map<std::tuple<std::string, PasswordForm::Type, int>, int>
-      accounts_per_site;
+      accounts_per_site_map;
 
   for (const auto& form : forms) {
-    accounts_per_site[{form->signon_realm, form->type,
-                       form->blocked_by_user}]++;
+    accounts_per_site_map[{form->signon_realm, form->type,
+                           form->blocked_by_user}]++;
   }
 
   base::StringPiece store_suffix = GetMetricsSuffixForStore(is_account_store);
@@ -91,7 +91,7 @@ void ReportNumberOfAccountsMetrics(
   int total_user_created_accounts = 0;
   int total_generated_accounts = 0;
   int blocklisted_sites = 0;
-  for (const auto& pair : accounts_per_site) {
+  for (const auto& pair : accounts_per_site_map) {
     PasswordForm::Type password_type = std::get<1>(pair.first);
     int blocklisted = std::get<2>(pair.first);
     int accounts_per_site = pair.second;
