@@ -168,6 +168,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Login.PasswordChangeFlow" enum="LoginPasswordChangeFlow"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed in M96.
+  </obsolete>
   <owner>xiyuan@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
