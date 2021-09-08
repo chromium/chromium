@@ -31,6 +31,7 @@ BROWSER_TEST_SUITES = [
     'android_sync_integration_tests',
     'components_browsertests',
     'content_browsertests',
+    'hybrid_browsertest',
     'weblayer_browsertests',
 ]
 

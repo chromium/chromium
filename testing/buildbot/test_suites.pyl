@@ -328,6 +328,7 @@
         # generation script is merged with this one, this should be promoted from
         # the Android-specific section.
       },
+      'hybrid_browsertest': {},
       'mojo_test_apk': {},
       'ui_android_unittests': {},
       'webview_instrumentation_test_apk': {

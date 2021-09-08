@@ -953,6 +953,10 @@
     "label": "//fuchsia/http:http_service_tests",
     "type": "console_test_launcher",
   },
+  "hybrid_browsertest": {
+    "label": "//chrome/test:hybrid_browsertest",
+    "type": "windowed_test_launcher",
+  },
   "incremental_javac_junit_tests": {
     "label": "//build/android/test:incremental_javac_junit_tests",
     "type": "junit_test",

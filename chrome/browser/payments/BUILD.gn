@@ -54,10 +54,7 @@ source_set("browser_tests") {
   ]
 
   if (is_android) {
-    sources += [
-      "expandable_payment_handler_browsertest.cc",
-      "hybrid_request_skip_ui_browsertest.cc",
-    ]
+    sources += [ "expandable_payment_handler_browsertest.cc" ]
     deps += [ "//components/payments/content/android" ]
   }
 
@@ -80,6 +77,23 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [ "//ash/public/cpp/external_arc:external_arc" ]
+  }
+}
+
+if (is_android) {
+  source_set("hybrid_browsertest") {
+    testonly = true
+
+    sources = [ "hybrid_request_skip_ui_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test/payments:test_support",
+      "//components/payments/content/android",
+    ]
   }
 }
 
