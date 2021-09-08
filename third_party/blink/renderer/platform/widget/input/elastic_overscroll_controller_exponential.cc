@@ -3,14 +3,21 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_exponential.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
 namespace {
+#if defined(OS_ANDROID)
+constexpr double kRubberbandStiffness = 20;
+constexpr double kRubberbandAmplitude = 0.2f;
+constexpr double kRubberbandPeriod = 1.1f;
+#else
 constexpr double kRubberbandStiffness = 20;
 constexpr double kRubberbandAmplitude = 0.31f;
 constexpr double kRubberbandPeriod = 1.6f;
+#endif
 }  // namespace
 
 ElasticOverscrollControllerExponential::ElasticOverscrollControllerExponential(
