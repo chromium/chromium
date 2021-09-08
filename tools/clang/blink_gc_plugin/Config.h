@@ -145,12 +145,6 @@ class Config {
            name == "HeapHashCountedSet" || name == "HeapHashMap";
   }
 
-  static bool IsGCCollectionWithUnsafeIterator(llvm::StringRef name) {
-    if (!IsGCCollection(name))
-      return false;
-    return true;
-  }
-
   static bool IsHashMap(llvm::StringRef name) {
     return name == "HashMap" || name == "HeapHashMap";
   }
