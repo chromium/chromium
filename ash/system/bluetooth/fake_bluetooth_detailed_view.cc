@@ -20,8 +20,8 @@ views::View* FakeBluetoothDetailedView::GetAsView() {
   return nullptr;
 }
 
-void FakeBluetoothDetailedView::SetBluetoothToggleState(bool enabled) {
-  last_bluetooth_toggle_state_ = enabled;
+void FakeBluetoothDetailedView::UpdateBluetoothEnabledState(bool enabled) {
+  last_bluetooth_enabled_state_ = enabled;
 }
 
 BluetoothDeviceListItemView* FakeBluetoothDetailedView::AddDeviceListItem() {

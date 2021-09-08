@@ -71,7 +71,7 @@ class ASH_EXPORT BluetoothDetailedView {
   virtual views::View* GetAsView() = 0;
 
   // Updates the detailed view to reflect a Bluetooth state of |enabled|.
-  virtual void SetBluetoothToggleState(bool enabled) = 0;
+  virtual void UpdateBluetoothEnabledState(bool enabled) = 0;
 
   // Creates a targetable row for a single device within the device list. The
   // client is expected to configure the returned view themselves, and to use

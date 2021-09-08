@@ -12,6 +12,11 @@
 namespace chromeos {
 namespace bluetooth_config {
 
+// Returns |true| if the given Bluetooth state |system_state| is either enabled
+// or being enabled.
+bool IsBluetoothEnabledOrEnabling(
+    const mojom::BluetoothSystemState system_state);
+
 // Returns the nickname of the provided device if it is set, otherwise returns
 // the public device name.
 std::u16string GetPairedDeviceName(

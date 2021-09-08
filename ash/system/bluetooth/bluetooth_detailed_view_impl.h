@@ -9,8 +9,10 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "base/memory/weak_ptr.h"
 
 namespace views {
+class ToggleButton;
 class View;
 }  // namespace views
 
@@ -35,9 +37,16 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   ~BluetoothDetailedViewImpl() override;
 
  private:
+  friend class BluetoothDetailedViewTest;
+
+  // Used for testing. Starts at 1 because view IDs should not be 0.
+  enum class BluetoothDetailedViewChildId {
+    kToggleButton = 1,
+  };
+
   // BluetoothDetailedView:
   views::View* GetAsView() override;
-  void SetBluetoothToggleState(bool enabled) override;
+  void UpdateBluetoothEnabledState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& icon,
                                        int text_id) override;
@@ -47,8 +56,16 @@ class ASH_EXPORT BluetoothDetailedViewImpl : public BluetoothDetailedView,
   // views::View:
   const char* GetClassName() const override;
 
-  bool should_toggle_be_enabled_ = false;
+  // Creates and configures the Bluetooth toggle button and the settings button.
+  void CreateTitleRowButtons();
+
+  // Propagates user interaction with the Bluetooth toggle button.
+  void OnToggleClicked();
+
+  views::ToggleButton* toggle_ = nullptr;
   BluetoothDisabledDetailedView* disabled_view_ = nullptr;
+
+  base::WeakPtrFactory<BluetoothDetailedViewImpl> weak_factory_{this};
 };
 
 }  // namespace tray

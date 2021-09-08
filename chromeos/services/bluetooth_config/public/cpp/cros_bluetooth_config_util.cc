@@ -9,6 +9,12 @@
 namespace chromeos {
 namespace bluetooth_config {
 
+bool IsBluetoothEnabledOrEnabling(
+    const mojom::BluetoothSystemState system_state) {
+  return system_state == mojom::BluetoothSystemState::kEnabled ||
+         system_state == mojom::BluetoothSystemState::kEnabling;
+}
+
 std::u16string GetPairedDeviceName(
     const mojom::PairedBluetoothDeviceProperties* paired_device_properties) {
   if (paired_device_properties->nickname.has_value())

@@ -4,12 +4,15 @@
 
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "ash/system/bluetooth/bluetooth_disabled_detailed_view.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,26 +29,39 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
       TrayDetailedView(detailed_view_delegate) {
   DCHECK(ash::features::IsBluetoothRevampEnabled());
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
+  CreateTitleRowButtons();
   CreateScrollableList();
   AddScrollListSubHeader(kSystemMenuBluetoothPlusIcon,
                          IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIR_NEW_DEVICE);
   disabled_view_ =
       AddChildViewAt(new BluetoothDisabledDetailedView, GetIndexOf(scroller()));
+  UpdateBluetoothEnabledState(/*enabled=*/false);
 }
 
 BluetoothDetailedViewImpl::~BluetoothDetailedViewImpl() = default;
 
-void BluetoothDetailedViewImpl::SetBluetoothToggleState(bool enabled) {
-  if (enabled == should_toggle_be_enabled_)
-    return;
-  should_toggle_be_enabled_ = enabled;
-  disabled_view_->SetVisible(!should_toggle_be_enabled_);
-  scroller()->SetVisible(should_toggle_be_enabled_);
-  Layout();
-}
-
 views::View* BluetoothDetailedViewImpl::GetAsView() {
   return this;
+}
+
+void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
+  disabled_view_->SetVisible(!enabled);
+  device_list()->SetVisible(enabled);
+
+  const std::u16string toggle_tooltip =
+      enabled ? l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
+              : l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
+  toggle_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, toggle_tooltip));
+
+  // The toggle should already have animated to |enabled| unless it has become
+  // out of sync with the Bluetooth state, so just set it to the correct state.
+  if (toggle_->GetIsOn() != enabled)
+    toggle_->SetIsOn(enabled);
+
+  Layout();
 }
 
 BluetoothDeviceListItemView* BluetoothDetailedViewImpl::AddDeviceListItem() {
@@ -70,6 +86,36 @@ views::View* BluetoothDetailedViewImpl::device_list() {
 
 const char* BluetoothDetailedViewImpl::GetClassName() const {
   return "BluetoothDetailedViewImpl";
+}
+
+void BluetoothDetailedViewImpl::CreateTitleRowButtons() {
+  // TODO(crbug.com/1010321): Once we are able to determine whether we are
+  // authorized to turn Bluetooth on or off using the API we should update this
+  // to return early if not.
+
+  DCHECK(!toggle_);
+
+  tri_view()->SetContainerVisible(TriView::Container::END, /*visible=*/true);
+
+  std::unique_ptr<TrayToggleButton> toggle = std::make_unique<TrayToggleButton>(
+      base::BindRepeating(&BluetoothDetailedViewImpl::OnToggleClicked,
+                          weak_factory_.GetWeakPtr()),
+      IDS_ASH_STATUS_TRAY_BLUETOOTH);
+  toggle->SetID(static_cast<int>(BluetoothDetailedViewChildId::kToggleButton));
+
+  toggle_ = toggle.get();
+
+  tri_view()->AddView(TriView::Container::END, toggle.release());
+}
+
+void BluetoothDetailedViewImpl::OnToggleClicked() {
+  const bool toggle_state = toggle_->GetIsOn();
+  delegate()->OnToggleClicked(toggle_state);
+
+  // Avoid the situation where there is a delay between the toggle becoming
+  // enabled/disabled and Bluetooth becoming enabled/disabled by forcing the
+  // view state to match the toggle state.
+  UpdateBluetoothEnabledState(toggle_state);
 }
 
 }  // namespace tray

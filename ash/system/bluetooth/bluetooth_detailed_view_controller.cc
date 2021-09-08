@@ -8,10 +8,14 @@
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
 
 namespace ash {
+namespace {
+using chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling;
+}  // namespace
 
 BluetoothDetailedViewController::BluetoothDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
@@ -35,6 +39,7 @@ views::View* BluetoothDetailedViewController::CreateView() {
   view_ = bluetooth_detailed_view.get();
   device_list_controller_ = BluetoothDeviceListController::Factory::Create(
       bluetooth_detailed_view.get());
+  BluetoothEnabledStateChanged();
 
   // We are expected to return an unowned pointer that the caller is responsible
   // for deleting.
@@ -48,14 +53,34 @@ std::u16string BluetoothDetailedViewController::GetAccessibleName() const {
 
 void BluetoothDetailedViewController::OnPropertiesUpdated(
     chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr
-        properties) {}
+        properties) {
+  const bool has_bluetooth_enabled_state_changed =
+      system_state_ != properties->system_state;
+  system_state_ = properties->system_state;
 
-void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {}
+  if (has_bluetooth_enabled_state_changed)
+    BluetoothEnabledStateChanged();
+}
+
+void BluetoothDetailedViewController::OnToggleClicked(bool new_state) {
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(new_state);
+}
 
 void BluetoothDetailedViewController::OnPairNewDeviceRequested() {}
 
 void BluetoothDetailedViewController::OnDeviceListItemSelected(
     const chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr&
         device) {}
+
+void BluetoothDetailedViewController::BluetoothEnabledStateChanged() {
+  const bool bluetooth_enabled_state =
+      IsBluetoothEnabledOrEnabling(system_state_);
+  if (view_)
+    view_->UpdateBluetoothEnabledState(bluetooth_enabled_state);
+  if (device_list_controller_) {
+    device_list_controller_->UpdateBluetoothEnabledState(
+        bluetooth_enabled_state);
+  }
+}
 
 }  // namespace ash

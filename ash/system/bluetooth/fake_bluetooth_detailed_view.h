@@ -37,14 +37,14 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
     return notify_device_list_changed_call_count_;
   }
 
-  const absl::optional<bool>& last_bluetooth_toggle_state() const {
-    return last_bluetooth_toggle_state_;
+  const absl::optional<bool>& last_bluetooth_enabled_state() const {
+    return last_bluetooth_enabled_state_;
   }
 
  private:
   // BluetoothDetailedView:
   views::View* GetAsView() override;
-  void SetBluetoothToggleState(bool enabled) override;
+  void UpdateBluetoothEnabledState(bool enabled) override;
   BluetoothDeviceListItemView* AddDeviceListItem() override;
   ash::TriView* AddDeviceListSubHeader(const gfx::VectorIcon& /*icon*/,
                                        int /*text_id*/) override;
@@ -52,7 +52,7 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
   views::View* device_list() override;
 
   size_t notify_device_list_changed_call_count_ = 0;
-  absl::optional<bool> last_bluetooth_toggle_state_;
+  absl::optional<bool> last_bluetooth_enabled_state_;
   std::unique_ptr<views::ScrollView> device_list_;
 };
 
