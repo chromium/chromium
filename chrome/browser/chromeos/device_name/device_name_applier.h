@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_APPLIER_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_APPLIER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_H_
+#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_H_
 
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
@@ -25,4 +25,4 @@ class DeviceNameApplier {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_APPLIER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_APPLIER_H_

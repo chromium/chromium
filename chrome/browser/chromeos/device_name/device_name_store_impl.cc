@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name_store_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_store_impl.h"
 
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/device_name_applier_impl.h"
-#include "chrome/browser/chromeos/device_name_validator.h"
+#include "chrome/browser/chromeos/device_name/device_name_applier_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_validator.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

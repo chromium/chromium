@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name_store_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_store_impl.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/policy/handlers/fake_device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/chromeos/fake_device_name_applier.h"
+#include "chrome/browser/chromeos/device_name/fake_device_name_applier.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

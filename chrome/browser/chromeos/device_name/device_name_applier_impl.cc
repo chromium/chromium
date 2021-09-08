@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name_applier_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_applier_impl.h"
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -65,8 +65,7 @@ void DeviceNameApplierImpl::OnBluetoothAdapterSetNameSuccess() {
 void DeviceNameApplierImpl::OnBluetoothAdapterSetNameError() {
   retry_backoff_.InformOfRequest(/*succeeded=*/false);
   LOG(WARNING) << "Scheduling setting Bluetooth adapter name to retry in: "
-               << retry_backoff_.GetTimeUntilRelease()
-               << " seconds.";
+               << retry_backoff_.GetTimeUntilRelease() << " seconds.";
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

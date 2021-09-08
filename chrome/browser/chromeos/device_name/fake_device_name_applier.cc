@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/fake_device_name_applier.h"
+#include "chrome/browser/chromeos/device_name/fake_device_name_applier.h"
 
 namespace chromeos {
 

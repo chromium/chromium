@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/device_name_store.h"
+#include "chrome/browser/chromeos/device_name/device_name_store.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {

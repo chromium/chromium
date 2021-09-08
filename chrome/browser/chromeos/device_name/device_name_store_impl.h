@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_STORE_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_STORE_IMPL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
+#define CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_
 
-#include "chrome/browser/chromeos/device_name_store.h"
+#include "chrome/browser/chromeos/device_name/device_name_store.h"
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -102,4 +102,4 @@ class DeviceNameStoreImpl : public DeviceNameStore,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_STORE_IMPL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_DEVICE_NAME_DEVICE_NAME_STORE_IMPL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name_applier_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_applier_impl.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

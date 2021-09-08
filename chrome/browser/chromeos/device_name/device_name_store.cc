@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/device_name_store.h"
+#include "chrome/browser/chromeos/device_name/device_name_store.h"
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/chromeos/device_name_store_impl.h"
+#include "chrome/browser/chromeos/device_name/device_name_store_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
