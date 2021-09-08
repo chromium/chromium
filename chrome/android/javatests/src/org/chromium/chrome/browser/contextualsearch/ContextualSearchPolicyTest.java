@@ -10,6 +10,7 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -22,14 +23,20 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -58,6 +65,23 @@ public class ContextualSearchPolicyTest {
         MockitoAnnotations.initMocks(this);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mPolicy = new ContextualSearchPolicy(null, mMockServer));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Clear Prefs
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
+        });
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Clear Prefs
+            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
+            prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
+        });
     }
 
     /** Call on the UI thread to set up all the conditions needed for sending the URL. */
@@ -143,6 +167,58 @@ public class ContextualSearchPolicyTest {
             // Set default search engine back to default to prevent cross-talk from
             // this test which sets it to Yahoo
             TemplateUrlServiceFactory.get().setSearchEngine(defaultSearchEngine.getShortName());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsUserUndecided_NoMultilevelSettingsUI_Disable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mPolicy.isUserUndecided());
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(false);
+            Assert.assertFalse(mPolicy.isUserUndecided());
+            Assert.assertTrue(ContextualSearchPolicy.isContextualSearchDisabled());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsUserUndecided_NoMultilevelSettingsUI_Enable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mPolicy.isUserUndecided());
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(true);
+            Assert.assertFalse(mPolicy.isUserUndecided());
+            Assert.assertTrue(ContextualSearchPolicy.isContextualSearchEnabled());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsUserUndecided_MultilevelSettingsUI_Disable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mPolicy.isUserUndecided());
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(false);
+            Assert.assertFalse(mPolicy.isUserUndecided());
+            Assert.assertTrue(ContextualSearchPolicy.isContextualSearchUninitialized());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+    public void testIsUserUndecided_MultilevelSettingsUI_Enable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(mPolicy.isUserUndecided());
+            ContextualSearchPolicy.setContextualSearchPromoCardSelection(true);
+            Assert.assertFalse(mPolicy.isUserUndecided());
+            Assert.assertTrue(ContextualSearchPolicy.isContextualSearchEnabled());
         });
     }
 

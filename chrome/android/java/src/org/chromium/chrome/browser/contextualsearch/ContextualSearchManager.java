@@ -1969,10 +1969,10 @@ public class ContextualSearchManager
     }
 
     /**
-     * @param enabled Whether Contextual Search should be enabled.
+     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
      */
-    public static void setContextualSearchState(boolean enabled) {
-        ContextualSearchPolicy.setContextualSearchState(enabled);
+    public static void setContextualSearchPromoCardSelection(boolean enabled) {
+        ContextualSearchPolicy.setContextualSearchPromoCardSelection(enabled);
     }
 
     // Private helper functions

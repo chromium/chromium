@@ -282,11 +282,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_incognito` appears to be unused"/>
     <ignore regexp="The resource `R.string.quick_action_search_widget_message_no_voice_search` appears to be unused"/>
 
-    <!-- 3: TODO(crbug.com/1245175) Remove when new contextual search promo card is implemented. -->
-    <ignore regexp="The resource `R.string.contextual_search_promo_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.contextual_search_promo_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.contextual_search_turn_on_button` appears to be unused"/>
-
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>

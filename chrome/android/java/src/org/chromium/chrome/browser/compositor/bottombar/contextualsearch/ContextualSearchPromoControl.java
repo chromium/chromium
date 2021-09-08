@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchPromoHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -85,7 +86,10 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      */
     ContextualSearchPromoControl(OverlayPanel panel, ContextualSearchPromoHost host,
             Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        super(panel, R.layout.contextual_search_promo_view,
+        super(panel,
+                ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+                        ? R.layout.contextual_search_promo_view_revised
+                        : R.layout.contextual_search_promo_view,
                 R.id.contextual_search_promo, context, container, resourceLoader);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
@@ -347,7 +351,11 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                 (View ignored) -> ContextualSearchPromoControl.this.handleClickSettingsLink());
 
         promoText.setText(SpanApplier.applySpans(
-                view.getResources().getString(R.string.contextual_search_short_description),
+                view.getResources().getString(
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS)
+                                ? R.string.contextual_search_promo_description
+                                : R.string.contextual_search_short_description),
                 new SpanApplier.SpanInfo("<link>", "</link>", settingsLink)));
         promoText.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -370,7 +378,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     private void handlePromoChoice(boolean hasEnabled) {
         if (!mHasHandledChoice) {
             mHasHandledChoice = true;
-            ContextualSearchManager.setContextualSearchState(hasEnabled);
+            ContextualSearchManager.setContextualSearchPromoCardSelection(hasEnabled);
         }
     }
 
