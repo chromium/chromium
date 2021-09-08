@@ -38,6 +38,9 @@ namespace image_editor {
 // Color for the selection rectangle.
 static constexpr SkColor kColorSelectionRect = SkColorSetRGB(0xEE, 0xEE, 0xEE);
 
+// Minimum selection rect edge size to treat as a valid capture region.
+static constexpr int kMinimumValidSelectionEdgePixels = 30;
+
 ScreenshotFlow::ScreenshotFlow(content::WebContents* web_contents)
     : web_contents_(web_contents->GetWeakPtr()) {
   weak_this_ = weak_factory_.GetWeakPtr();
@@ -209,6 +212,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
       if (event->IsLeftMouseButton()) {
         capture_mode_ = CaptureMode::SELECTION_RECTANGLE;
         drag_start_ = location;
+        drag_end_ = location;
         event->SetHandled();
       }
       break;
@@ -224,7 +228,15 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
           capture_mode_ == CaptureMode::SELECTION_ELEMENT) {
         capture_mode_ = CaptureMode::NOT_CAPTURING;
         event->SetHandled();
-        CompleteCapture(gfx::BoundingRect(drag_start_, drag_end_));
+        gfx::Rect selection = gfx::BoundingRect(drag_start_, drag_end_);
+        drag_start_.SetPoint(0, 0);
+        drag_end_.SetPoint(0, 0);
+        if (selection.width() >= kMinimumValidSelectionEdgePixels &&
+            selection.height() >= kMinimumValidSelectionEdgePixels) {
+          CompleteCapture(selection);
+        } else {
+          RequestRepaint(gfx::Rect());
+        }
       }
       break;
     default:
