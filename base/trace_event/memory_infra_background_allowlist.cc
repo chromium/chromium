@@ -246,6 +246,8 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "net/url_request_context/mirroring/0x?/http_cache/memory_backend",
     "net/url_request_context/mirroring/0x?/http_cache/simple_backend",
     "net/url_request_context/mirroring/0x?/http_network_session",
+    "net/url_request_context/prefetch_proxy",
+    "net/url_request_context/prefetch_proxy/0x?",
     "net/url_request_context/proxy",
     "net/url_request_context/proxy/0x?",
     "net/url_request_context/proxy/0x?/cookie_monster",
