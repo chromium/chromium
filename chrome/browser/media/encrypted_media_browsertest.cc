@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_launcher_utils.h"
@@ -300,14 +301,19 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       command_line->AppendSwitch(switches::kDisableWebSecurity);
     }
 
+    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features = {
+        features::kChromeWhatsNewUI};
+
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     if (IsExternalClearKey(key_system)) {
       RegisterClearKeyCdm(command_line);
-      std::vector<base::Feature> enabled_features = {
-          media::kExternalClearKeyForTesting};
-      scoped_feature_list_.InitWithFeatures(enabled_features, {});
+      enabled_features.push_back(media::kExternalClearKeyForTesting);
     }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -567,125 +573,46 @@ INSTANTIATE_TEST_SUITE_P(MSE_Widevine,
                          Values(kWidevineKeySystem));
 #endif  // #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_AudioClearVideo_WebM \
-  DISABLED_Playback_AudioClearVideo_WebM
-#else
-#define MAYBE_Playback_AudioClearVideo_WebM Playback_AudioClearVideo_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_AudioClearVideo_WebM) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_AudioClearVideo_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-a.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoAudio_WebM DISABLED_Playback_VideoAudio_WebM
-#else
-#define MAYBE_Playback_VideoAudio_WebM Playback_VideoAudio_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_VideoAudio_WebM) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-av.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoClearAudio_WebM \
-  DISABLED_Playback_VideoClearAudio_WebM
-#else
-#define MAYBE_Playback_VideoClearAudio_WebM Playback_VideoClearAudio_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoClearAudio_WebM) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM) {
   TestSimplePlayback("bear-320x240-av_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VP9Video_WebM_Fullsample \
-  DISABLED_Playback_VP9Video_WebM_Fullsample
-#else
-#define MAYBE_Playback_VP9Video_WebM_Fullsample \
-  Playback_VP9Video_WebM_Fullsample
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VP9Video_WebM_Fullsample) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VP9Video_WebM_Fullsample) {
   TestSimplePlayback("bear-320x240-v-vp9_fullsample_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VP9Video_WebM_Subsample \
-  DISABLED_Playback_VP9Video_WebM_Subsample
-#else
-#define MAYBE_Playback_VP9Video_WebM_Subsample Playback_VP9Video_WebM_Subsample
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VP9Video_WebM_Subsample) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VP9Video_WebM_Subsample) {
   TestSimplePlayback("bear-320x240-v-vp9_subsample_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoAudio_WebM_Opus \
-  DISABLED_Playback_VideoAudio_WebM_Opus
-#else
-#define MAYBE_Playback_VideoAudio_WebM_Opus Playback_VideoAudio_WebM_Opus
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoAudio_WebM_Opus) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
-  DISABLED_Playback_VideoClearAudio_WebM_Opus
-#else
-#define MAYBE_Playback_VideoClearAudio_WebM_Opus \
-  Playback_VideoClearAudio_WebM_Opus
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoClearAudio_WebM_Opus) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoClearAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-v.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Multiple_VideoAudio_WebM \
-  DISABLED_Playback_Multiple_VideoAudio_WebM
-#else
-#define MAYBE_Playback_Multiple_VideoAudio_WebM \
-  Playback_Multiple_VideoAudio_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_Multiple_VideoAudio_WebM) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Multiple_VideoAudio_WebM) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "Playback_Multiple test requires playback.";
 
   TestMultiplePlayback("bear-320x240-av_enc-av.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_AudioOnly_MP4_FLAC DISABLED_Playback_AudioOnly_MP4_FLAC
-#else
-#define MAYBE_Playback_AudioOnly_MP4_FLAC Playback_AudioOnly_MP4_FLAC
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_AudioOnly_MP4_FLAC) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_FLAC) {
   TestSimplePlayback("bear-flac-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_AudioOnly_MP4_OPUS DISABLED_Playback_AudioOnly_MP4_OPUS
-#else
-#define MAYBE_Playback_AudioOnly_MP4_OPUS Playback_AudioOnly_MP4_OPUS
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_AudioOnly_MP4_OPUS) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_AudioOnly_MP4_OPUS) {
   TestSimplePlayback("bear-opus-cenc.mp4");
 }
 
@@ -695,118 +622,51 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
-  DISABLED_Playback_VideoOnly_WebM_VP9Profile2
-#else
-#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
-  Playback_VideoOnly_WebM_VP9Profile2
-#endif
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_WebM_VP9Profile2) {
+                       Playback_VideoOnly_WebM_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
-  DISABLED_Playback_VideoOnly_MP4_VP9Profile2
-#else
-#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
-  Playback_VideoOnly_MP4_VP9Profile2
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_MP4_VP9Profile2) {
+                       Playback_VideoOnly_MP4_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_WebM_AV1 DISABLED_Playback_VideoOnly_WebM_AV1
-#else
-#define MAYBE_Playback_VideoOnly_WebM_AV1 Playback_VideoOnly_WebM_AV1
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_Playback_VideoOnly_WebM_AV1) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  DISABLED_Playback_VideoOnly_WebM_AV1_10bit
-#else
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  Playback_VideoOnly_WebM_AV1_10bit
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_WebM_AV1_10bit) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_MP4_AV1 DISABLED_Playback_VideoOnly_MP4_AV1
-#else
-#define MAYBE_Playback_VideoOnly_MP4_AV1 Playback_VideoOnly_MP4_AV1
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_MP4_AV1) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
   TestSimplePlayback("bear-av1-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_MP4_AV1_10bit \
-  DISABLED_Playback_VideoOnly_MP4_AV1_10bit
-#else
-#define MAYBE_Playback_VideoOnly_MP4_AV1_10bit Playback_VideoOnly_MP4_AV1_10bit
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_MP4_AV1_10bit) {
+                       Playback_VideoOnly_MP4_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
 }
 
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_InvalidResponseKeyError DISABLED_InvalidResponseKeyError
-#else
-#define MAYBE_InvalidResponseKeyError InvalidResponseKeyError
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_InvalidResponseKeyError) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, InvalidResponseKeyError) {
   RunInvalidResponseTest();
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_ConfigChangeVideo_ClearToClear \
-  DISABLED_ConfigChangeVideo_ClearToClear
-#else
-#define MAYBE_ConfigChangeVideo_ClearToClear ConfigChangeVideo_ClearToClear
-#endif
 // This is not really an "encrypted" media test. Keep it here for completeness.
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_ConfigChangeVideo_ClearToClear) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "ConfigChange test requires video playback.";
 
   TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_ConfigChangeVideo_ClearToEncrypted \
-  DISABLED_ConfigChangeVideo_ClearToEncrypted
-#else
-#define MAYBE_ConfigChangeVideo_ClearToEncrypted \
-  ConfigChangeVideo_ClearToEncrypted
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_ConfigChangeVideo_ClearToEncrypted) {
+                       ConfigChangeVideo_ClearToEncrypted) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "ConfigChange test requires video playback.";
 
@@ -822,54 +682,28 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_CLEAR);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_ConfigChangeVideo_EncryptedToEncrypted \
-  DISABLED_ConfigChangeVideo_EncryptedToEncrypted
-#else
-#define MAYBE_ConfigChangeVideo_EncryptedToEncrypted \
-  ConfigChangeVideo_EncryptedToEncrypted
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_ConfigChangeVideo_EncryptedToEncrypted) {
+                       ConfigChangeVideo_EncryptedToEncrypted) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "ConfigChange test requires video playback.";
 
   TestConfigChange(ConfigChangeType::ENCRYPTED_TO_ENCRYPTED);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_FrameSizeChangeVideo DISABLED_FrameSizeChangeVideo
-#else
-#define MAYBE_FrameSizeChangeVideo FrameSizeChangeVideo
-#endif
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, MAYBE_FrameSizeChangeVideo) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, FrameSizeChangeVideo) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "FrameSizeChange test requires video playback.";
 
   TestFrameSizeChange();
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_PolicyCheck DISABLED_PolicyCheck
-#else
-#define MAYBE_PolicyCheck PolicyCheck
-#endif
 // Only use MSE since this is independent to the demuxer.
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_PolicyCheck) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, PolicyCheck) {
   TestPolicyCheck();
 }
 
 // Only use MSE since this is independent to the demuxer.
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_RemoveTemporarySession DISABLED_RemoveTemporarySession
-#else
-#define MAYBE_RemoveTemporarySession RemoveTemporarySession
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_RemoveTemporarySession) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, RemoveTemporarySession) {
   if (!IsPlayBackPossible(CurrentKeySystem()))
     GTEST_SKIP() << "RemoveTemporarySession test requires license server.";
 
@@ -878,14 +712,8 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_RemoveTemporarySession) {
                             query_params, media::kEndedTitle);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_EncryptedMediaDisabled DISABLED_EncryptedMediaDisabled
-#else
-#define MAYBE_EncryptedMediaDisabled EncryptedMediaDisabled
-#endif
 // Only use MSE since this is independent to the demuxer.
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_EncryptedMediaDisabled) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, EncryptedMediaDisabled) {
   DisableEncryptedMedia();
 
   // Clear Key key system is always supported.
@@ -901,103 +729,44 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_EncryptedMediaDisabled) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_MP4 DISABLED_Playback_VideoOnly_MP4
-#else
-#define MAYBE_Playback_VideoOnly_MP4 Playback_VideoOnly_MP4
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_Playback_VideoOnly_MP4) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4) {
   TestSimplePlayback("bear-640x360-v_frag-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_VideoOnly_MP4_MDAT DISABLED_Playback_VideoOnly_MP4_MDAT
-#else
-#define MAYBE_Playback_VideoOnly_MP4_MDAT Playback_VideoOnly_MP4_MDAT
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_MP4_MDAT) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_MDAT) {
   TestSimplePlayback("bear-640x360-v_frag-cenc-mdat.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Encryption_CBCS DISABLED_Playback_Encryption_CBCS
-#else
-#define MAYBE_Playback_Encryption_CBCS Playback_Encryption_CBCS
-#endif
-IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, MAYBE_Playback_Encryption_CBCS) {
+IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_Encryption_CBCS) {
   TestSimplePlayback("bear-640x360-v_frag-cbcs.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_EncryptedVideo_MP4_ClearAudio_WEBM \
-  DISABLED_Playback_EncryptedVideo_MP4_ClearAudio_WEBM
-#else
-#define MAYBE_Playback_EncryptedVideo_MP4_ClearAudio_WEBM \
-  Playback_EncryptedVideo_MP4_ClearAudio_WEBM
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_EncryptedVideo_MP4_ClearAudio_WEBM) {
+                       Playback_EncryptedVideo_MP4_ClearAudio_WEBM) {
   TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
                           "bear-320x240-audio-only.webm");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_ClearVideo_WEBM_EncryptedAudio_MP4 \
-  DISABLED_Playback_ClearVideo_WEBM_EncryptedAudio_MP4
-#else
-#define MAYBE_Playback_ClearVideo_WEBM_EncryptedAudio_MP4 \
-  Playback_ClearVideo_WEBM_EncryptedAudio_MP4
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_ClearVideo_WEBM_EncryptedAudio_MP4) {
+                       Playback_ClearVideo_WEBM_EncryptedAudio_MP4) {
   TestDifferentContainers("bear-320x240-video-only.webm",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4 \
-  DISABLED_Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4
-#else
-#define MAYBE_Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4 \
-  Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4) {
+                       Playback_EncryptedVideo_WEBM_EncryptedAudio_MP4) {
   TestDifferentContainers("bear-320x240-v_enc-v.webm",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC \
-  DISABLED_Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC
-#else
-#define MAYBE_Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC \
-  Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC) {
+                       Playback_EncryptedVideo_CBCS_EncryptedAudio_CENC) {
   TestDifferentContainers("bear-640x360-v_frag-cbcs.mp4",
                           "bear-640x360-a_frag-cenc.mp4");
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS \
-  DISABLED_Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS
-#else
-#define MAYBE_Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS \
-  Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS
-#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS) {
+                       Playback_EncryptedVideo_CENC_EncryptedAudio_CBCS) {
   TestDifferentContainers("bear-640x360-v_frag-cenc.mp4",
                           "bear-640x360-a_frag-cbcs.mp4");
 }
@@ -1012,20 +781,13 @@ static_assert(media::CheckSupportedCdmInterfaceVersions(10, 11),
 INSTANTIATE_TEST_SUITE_P(CDM_10, ECKEncryptedMediaTest, Values(10));
 INSTANTIATE_TEST_SUITE_P(CDM_11, ECKEncryptedMediaTest, Values(11));
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_InitializeCDMFail DISABLED_InitializeCDMFail
-#else
-#define MAYBE_InitializeCDMFail InitializeCDMFail
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_InitializeCDMFail) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, InitializeCDMFail) {
   TestNonPlaybackCases(kExternalClearKeyInitializeFailKeySystem,
                        kEmeNotSupportedError);
 }
 
 // TODO(1019187): Failing on win7.
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN)
 #define MAYBE_CDMCrashDuringDecode DISABLED_CDMCrashDuringDecode
 #else
 #define MAYBE_CDMCrashDuringDecode CDMCrashDuringDecode
@@ -1037,32 +799,17 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_CDMCrashDuringDecode) {
                        kEmeSessionClosedAndError);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_FileIOTest DISABLED_FileIOTest
-#else
-#define MAYBE_FileIOTest FileIOTest
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_FileIOTest) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, FileIOTest) {
   TestNonPlaybackCases(kExternalClearKeyFileIOTestKeySystem, kUnitTestSuccess);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_PlatformVerificationTest DISABLED_PlatformVerificationTest
-#else
-#define MAYBE_PlatformVerificationTest PlatformVerificationTest
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_PlatformVerificationTest) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, PlatformVerificationTest) {
   TestNonPlaybackCases(kExternalClearKeyPlatformVerificationTestKeySystem,
                        kUnitTestSuccess);
 }
 
 // Intermittent leaks on ASan/LSan runs: crbug.com/889923
 #if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
-#define MAYBE_MessageTypeTest DISABLED_MessageTypeTest
-#elif defined(OS_MAC)
-// TODO(https://crbug.com/1244450): Flaky on macOS
 #define MAYBE_MessageTypeTest DISABLED_MessageTypeTest
 #else
 #define MAYBE_MessageTypeTest MessageTypeTest
@@ -1083,35 +830,17 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MessageTypeTest) {
   EXPECT_EQ(3, num_received_message_types);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_LoadPersistentLicense DISABLED_LoadPersistentLicense
-#else
-#define MAYBE_LoadPersistentLicense LoadPersistentLicense
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_LoadPersistentLicense) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadPersistentLicense) {
   TestPlaybackCase(kExternalClearKeyKeySystem, kPersistentLicense,
                    media::kEndedTitle);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_LoadUnknownSession DISABLED_LoadUnknownSession
-#else
-#define MAYBE_LoadUnknownSession LoadUnknownSession
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_LoadUnknownSession) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadUnknownSession) {
   TestPlaybackCase(kExternalClearKeyKeySystem, kUnknownSession,
                    kEmeSessionNotFound);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_LoadSessionAfterClose DISABLED_LoadSessionAfterClose
-#else
-#define MAYBE_LoadSessionAfterClose LoadSessionAfterClose
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_LoadSessionAfterClose) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, LoadSessionAfterClose) {
   base::StringPairs query_params{{"keySystem", kExternalClearKeyKeySystem}};
   RunEncryptedMediaTestPage("eme_load_session_after_close_test.html",
                             kExternalClearKeyKeySystem, query_params,
@@ -1121,28 +850,13 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_LoadSessionAfterClose) {
 const char kExternalClearKeyDecryptOnlyKeySystem[] =
     "org.chromium.externalclearkey.decryptonly";
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_DecryptOnly_VideoAudio_WebM DISABLED_DecryptOnly_VideoAudio_WebM
-#else
-#define MAYBE_DecryptOnly_VideoAudio_WebM DecryptOnly_VideoAudio_WebM
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest,
-                       MAYBE_DecryptOnly_VideoAudio_WebM) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoAudio_WebM) {
   RunSimpleEncryptedMediaTest("bear-320x240-av_enc-av.webm",
                               kExternalClearKeyDecryptOnlyKeySystem,
                               SrcType::MSE);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_DecryptOnly_VideoOnly_MP4_VP9 \
-  DISABLED_DecryptOnly_VideoOnly_MP4_VP9
-#else
-#define MAYBE_DecryptOnly_VideoOnly_MP4_VP9 DecryptOnly_VideoOnly_MP4_VP9
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest,
-                       MAYBE_DecryptOnly_VideoOnly_MP4_VP9) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_VP9) {
   RunSimpleEncryptedMediaTest("bear-320x240-v_frag-vp9-cenc.mp4",
                               kExternalClearKeyDecryptOnlyKeySystem,
                               SrcType::MSE);
@@ -1150,15 +864,7 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest,
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_DecryptOnly_VideoOnly_MP4_CBCS \
-  DISABLED_DecryptOnly_VideoOnly_MP4_CBCS
-#else
-#define MAYBE_DecryptOnly_VideoOnly_MP4_CBCS DecryptOnly_VideoOnly_MP4_CBCS
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest,
-                       MAYBE_DecryptOnly_VideoOnly_MP4_CBCS) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, DecryptOnly_VideoOnly_MP4_CBCS) {
   // 'cbcs' decryption is only supported on CDM 10 or later as long as
   // the appropriate buildflag is enabled.
   std::string expected_result =
@@ -1169,51 +875,27 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest,
                         expected_result);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Encryption_CENC DISABLED_Playback_Encryption_CENC
-#else
-#define MAYBE_Playback_Encryption_CENC Playback_Encryption_CENC
-#endif
 // Encryption Scheme tests. ClearKey key system is covered in
 // content/browser/media/encrypted_media_browsertest.cc.
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_Playback_Encryption_CENC) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENC) {
   RunEncryptedMediaMultipleFileTest(
       kExternalClearKeyKeySystem, "bear-640x360-v_frag-cenc.mp4",
       "bear-640x360-a_frag-cenc.mp4", media::kEndedTitle);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Encryption_CBC1 DISABLED_Playback_Encryption_CBC1
-#else
-#define MAYBE_Playback_Encryption_CBC1 Playback_Encryption_CBC1
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_Playback_Encryption_CBC1) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBC1) {
   RunEncryptedMediaMultipleFileTest(kExternalClearKeyKeySystem,
                                     "bear-640x360-v_frag-cbc1.mp4",
                                     std::string(), media::kErrorTitle);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Encryption_CENS DISABLED_Playback_Encryption_CENS
-#else
-#define MAYBE_Playback_Encryption_CENS Playback_Encryption_CENS
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_Playback_Encryption_CENS) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CENS) {
   RunEncryptedMediaMultipleFileTest(kExternalClearKeyKeySystem,
                                     "bear-640x360-v_frag-cens.mp4",
                                     std::string(), media::kErrorTitle);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_Playback_Encryption_CBCS DISABLED_Playback_Encryption_CBCS
-#else
-#define MAYBE_Playback_Encryption_CBCS Playback_Encryption_CBCS
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_Playback_Encryption_CBCS) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, Playback_Encryption_CBCS) {
   // 'cbcs' decryption is only supported on CDM 10 or later as long as
   // the appropriate buildflag is enabled.
   std::string expected_result =
@@ -1232,29 +914,17 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, VerifyCdmHostTest) {
 }
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_StorageIdTest DISABLED_StorageIdTest
-#else
-#define MAYBE_StorageIdTest StorageIdTest
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_StorageIdTest) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, StorageIdTest) {
   TestNonPlaybackCases(kExternalClearKeyStorageIdTestKeySystem,
                        kUnitTestSuccess);
 }
 
-// TODO(crbug.com/1246289): Failing on Mac, flaky on Win.
 // TODO(crbug.com/902310): Times out in debug builds.
-#if defined(OS_WIN) || defined(OS_MAC)
-#define MAYBE_MultipleCdmTypes DISABLED_MultipleCdmTypes
-#else
 #ifdef NDEBUG
-#define MAYBE_MultipleCdmTypes MultipleCdmTypes
+#define MAYBE_MultipleCdmTypes MultipeCdmTypes
 #else
-#define MAYBE_MultipleCdmTypes DISABLED_MultipleCdmTypes
+#define MAYBE_MultipleCdmTypes DISABLED_MultipeCdmTypes
 #endif
-#endif
-
 IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaTest, MAYBE_MultipleCdmTypes) {
   base::StringPairs empty_query_params;
   RunMediaTestPage("multiple_cdm_types.html", empty_query_params,
@@ -1276,25 +946,11 @@ INSTANTIATE_TEST_SUITE_P(Capture_Browser,
                          ECKEncryptedMediaOutputProtectionTest,
                          Values("browser"));
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_BeforeMediaKeys DISABLED_BeforeMediaKeys
-#else
-#define MAYBE_BeforeMediaKeys BeforeMediaKeys
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
-                       MAYBE_BeforeMediaKeys) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest, BeforeMediaKeys) {
   TestOutputProtection(/*create_recorder_before_media_keys=*/true);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_AfterMediaKeys DISABLED_AfterMediaKeys
-#else
-#define MAYBE_AfterMediaKeys AfterMediaKeys
-#endif
-IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest,
-                       MAYBE_AfterMediaKeys) {
+IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaOutputProtectionTest, AfterMediaKeys) {
   TestOutputProtection(/*create_recorder_before_media_keys=*/false);
 }
 
@@ -1309,14 +965,7 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, FileIO) {
   TestNonPlaybackCases(kExternalClearKeyFileIOTestKeySystem, kUnitTestSuccess);
 }
 
-// TODO(https://crbug.com/1244450): Flaky on macOS
-#if defined(OS_MAC)
-#define MAYBE_LoadSessionAfterClose DISABLED_LoadSessionAfterClose
-#else
-#define MAYBE_LoadSessionAfterClose LoadSessionAfterClose
-#endif
-IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest,
-                       MAYBE_LoadSessionAfterClose) {
+IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
   // Loading a session should work in incognito mode.
   base::StringPairs query_params{{"keySystem", kExternalClearKeyKeySystem}};
   RunEncryptedMediaTestPage("eme_load_session_after_close_test.html",
