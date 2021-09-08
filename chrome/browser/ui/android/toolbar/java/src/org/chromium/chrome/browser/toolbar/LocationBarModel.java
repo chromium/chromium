@@ -569,7 +569,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         boolean useUpdatedConnectionSecurityIndicators = FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
-                && !useLockIconEnabled;
+                && !useLockIconEnabled && !(hasTab() && mTab.isCustomTab());
 
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, isSmallDevice,
                 skipIconForNeutralState, useUpdatedConnectionSecurityIndicators);
