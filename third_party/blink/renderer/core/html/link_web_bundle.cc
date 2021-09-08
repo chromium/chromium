@@ -70,6 +70,10 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
     request.SetRequestDestination(
         network::mojom::RequestDestination::kWebBundle);
     request.SetPriority(ResourceLoadPriority::kHigh);
+    // Skip the service worker for a short term solution.
+    // TODO(crbug.com/1240424): Figure out the ideal design of the service
+    // worker integration.
+    request.SetSkipServiceWorker(true);
 
     mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
         web_bundle_handle;

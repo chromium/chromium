@@ -966,6 +966,11 @@ void ResourceFetcher::AttachWebBundleTokenIfNeeded(
       ResourceRequestHead::WebBundleTokenParams(bundle->GetBundleUrl(),
                                                 bundle->WebBundleToken(),
                                                 mojo::NullRemote()));
+
+  // Skip the service worker for a short term solution.
+  // TODO(crbug.com/1240424): Figure out the ideal design of the service
+  // worker integration.
+  resource_request.SetSkipServiceWorker(true);
 }
 
 SubresourceWebBundleList*
