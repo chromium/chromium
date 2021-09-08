@@ -251,7 +251,9 @@ TEST_F(ReadingListStoreTest, ApplySyncChangesOneMerge) {
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
-  EXPECT_CALL(processor_, Put("http://unread.example.com/", _, _));
+  // ApplySyncChanges() must *not* result in any Put() calls - that would risk
+  // triggering ping-pong between two syncing devices.
+  EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
@@ -280,7 +282,9 @@ TEST_F(ReadingListStoreTest, ApplySyncChangesOneIgnored) {
   syncer::EntityData data;
   *data.specifics.mutable_reading_list() = *specifics;
 
-  EXPECT_CALL(processor_, Put("http://unread.example.com/", _, _));
+  // ApplySyncChanges() must *not* result in any Put() calls - that would risk
+  // triggering ping-pong between two syncing devices.
+  EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
