@@ -2009,6 +2009,8 @@ source_set("browser") {
     "webid/federated_auth_navigation_throttle.h",
     "webid/federated_auth_request_impl.cc",
     "webid/federated_auth_request_impl.h",
+    "webid/federated_auth_request_service.cc",
+    "webid/federated_auth_request_service.h",
     "webid/federated_auth_response_impl.cc",
     "webid/federated_auth_response_impl.h",
     "webid/flags.cc",

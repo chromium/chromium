@@ -14,9 +14,7 @@
 #include "base/macros.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service_base.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
@@ -27,38 +25,29 @@ class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
 class RenderFrameHost;
 
-// FederatedAuthRequestImpl handles mojo connections from the renderer to
-// fulfill WebID-related requests.
-//
-// In practice, it is owned and managed by a RenderFrameHost. It accomplishes
-// that via subclassing DocumentServiceBase, which observes the lifecycle of a
-// RenderFrameHost and manages its own memory.
-// Create() creates a self-managed instance of FederatedAuthRequestImpl and
-// binds it to the receiver.
-class CONTENT_EXPORT FederatedAuthRequestImpl
-    : public DocumentServiceBase<blink::mojom::FederatedAuthRequest> {
+// FederatedAuthRequestImpl contains the state machines for executing federated
+// authentication requests. This can be owned either by a
+// FederatedAuthRequestService, when the invocation is done from the renderer
+// via a mojo call, or by a FederatedAuthNavigationThrottle, when the
+// invocation is from an intercepted HTTP request.
+class CONTENT_EXPORT FederatedAuthRequestImpl {
  public:
-  static void Create(RenderFrameHost*,
-                     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
-
-  FederatedAuthRequestImpl(
-      RenderFrameHost*,
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
+  FederatedAuthRequestImpl(RenderFrameHost* host, const url::Origin& origin);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
 
-  ~FederatedAuthRequestImpl() override;
+  ~FederatedAuthRequestImpl();
 
-  // blink::mojom::FederatedAuthRequest:
-  void RequestIdToken(const GURL& provider,
-                      const std::string& client_id,
-                      const std::string& nonce,
-                      blink::mojom::RequestMode mode,
-                      bool prefer_auto_sign_in,
-                      RequestIdTokenCallback) override;
+  void RequestIdToken(
+      const GURL& provider,
+      const std::string& client_id,
+      const std::string& nonce,
+      blink::mojom::RequestMode mode,
+      bool prefer_auto_sign_in,
+      blink::mojom::FederatedAuthRequest::RequestIdTokenCallback);
   void Logout(std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
-              LogoutCallback) override;
+              blink::mojom::FederatedAuthRequest::LogoutCallback);
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
@@ -109,6 +98,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FederatedIdentitySharingPermissionContextDelegate*
   GetSharingPermissionContext();
 
+  RenderFrameHost* const render_frame_host_ = nullptr;
+  const url::Origin origin_;
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
@@ -158,10 +150,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // mediation flow.
   std::string account_id_;
   std::string id_token_;
-  RequestIdTokenCallback auth_request_callback_;
+  blink::mojom::FederatedAuthRequest::RequestIdTokenCallback
+      auth_request_callback_;
 
   base::queue<blink::mojom::LogoutRequestPtr> logout_requests_;
-  LogoutCallback logout_callback_;
+  blink::mojom::FederatedAuthRequest::LogoutCallback logout_callback_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };

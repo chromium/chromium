@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/test/mock_active_session_permission_delegate.h"
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
@@ -417,7 +418,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
   FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
     provider_ = provider;
-    auth_request_impl_ = std::make_unique<FederatedAuthRequestImpl>(
+    auth_request_service_ = std::make_unique<FederatedAuthRequestService>(
         main_rfh(), request_remote_.BindNewPipeAndPassReceiver());
     mock_request_manager_ =
         std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(
@@ -431,7 +432,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     mock_active_session_permission_delegate_ =
         std::make_unique<NiceMock<MockActiveSessionPermissionDelegate>>();
 
-    return *auth_request_impl_;
+    return *auth_request_service_->GetImplForTesting();
   }
 
   std::pair<RequestIdTokenStatus, absl::optional<std::string>>
@@ -439,9 +440,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                      const std::string& nonce,
                      blink::mojom::RequestMode mode,
                      bool prefer_auto_sign_in) {
-    auth_request_impl_->SetNetworkManagerForTests(
+    auth_request_service_->GetImplForTesting()->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
-    auth_request_impl_->SetDialogControllerForTests(
+    auth_request_service_->GetImplForTesting()->SetDialogControllerForTests(
         std::move(mock_dialog_controller_));
 
     AuthRequestCallbackHelper auth_helper;
@@ -454,10 +455,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
   LogoutStatus PerformLogoutRequest(
       std::vector<LogoutRequestPtr> logout_requests) {
-    auth_request_impl_->SetNetworkManagerForTests(
+    auth_request_service_->GetImplForTesting()->SetNetworkManagerForTests(
         std::move(mock_request_manager_));
-    auth_request_impl_->SetActiveSessionPermissionDelegateForTests(
-        mock_active_session_permission_delegate_.get());
+    auth_request_service_->GetImplForTesting()
+        ->SetActiveSessionPermissionDelegateForTests(
+            mock_active_session_permission_delegate_.get());
 
     LogoutRequestCallbackHelper logout_helper;
     request_remote_->Logout(std::move(logout_requests),
@@ -644,7 +646,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
-  std::unique_ptr<FederatedAuthRequestImpl> auth_request_impl_;
+  std::unique_ptr<FederatedAuthRequestService> auth_request_service_;
 
   std::unique_ptr<NiceMock<MockIdpNetworkRequestManager>> mock_request_manager_;
   std::unique_ptr<NiceMock<MockIdentityRequestDialogController>>

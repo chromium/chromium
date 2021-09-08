@@ -15,6 +15,7 @@
 #include "content/public/browser/federated_identity_active_session_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
@@ -44,10 +45,9 @@ std::string FormatRequestParams(const std::string& client_id,
 }
 }  // namespace
 
-FederatedAuthRequestImpl::FederatedAuthRequestImpl(
-    RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
-    : DocumentServiceBase(host, std::move(receiver)) {}
+FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHost* host,
+                                                   const url::Origin& origin)
+    : render_frame_host_(host), origin_(origin) {}
 
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
@@ -55,35 +55,13 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   CompleteRequest(RequestIdTokenStatus::kError, "");
 }
 
-// static
-void FederatedAuthRequestImpl::Create(
-    RenderFrameHost* host,
-    mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
-  DCHECK(host);
-
-  // TODO(kenrb): This should also be verified in the renderer process before
-  // the mojo method is invoked, causing the promise to be rejected.
-  // https://crbug.com/1141125
-  // It is safe to access host->GetLastCommittedOrigin during construction
-  // but DocumentServiceBase::origin() should be used thereafter.
-  if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
-    mojo::ReportBadMessage(
-        "navigator.id.get cannot be invoked from within cross-origin iframes.");
-    return;
-  }
-
-  // FederatedAuthRequestImpl owns itself. It will self-destruct when a mojo
-  // interface error occurs, the render frame host is deleted, or the render
-  // frame host navigates to a new document.
-  new FederatedAuthRequestImpl(host, std::move(receiver));
-}
-
-void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
-                                              const std::string& client_id,
-                                              const std::string& nonce,
-                                              RequestMode mode,
-                                              bool prefer_auto_sign_in,
-                                              RequestIdTokenCallback callback) {
+void FederatedAuthRequestImpl::RequestIdToken(
+    const GURL& provider,
+    const std::string& client_id,
+    const std::string& nonce,
+    RequestMode mode,
+    bool prefer_auto_sign_in,
+    blink::mojom::FederatedAuthRequest::RequestIdTokenCallback callback) {
   if (logout_callback_ || auth_request_callback_) {
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
     return;
@@ -110,7 +88,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   if (mode_ == RequestMode::kMediated ||
       (GetRequestPermissionContext() &&
        GetRequestPermissionContext()->HasRequestPermission(
-           origin(), url::Origin::Create(provider_)))) {
+           origin_, url::Origin::Create(provider_)))) {
     network_manager_->FetchIdpWellKnown(
         base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -121,7 +99,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   // Use the web contents of the page that initiated the WebID request (i.e.
   // the Relying Party) for showing the initial permission dialog.
   WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
+      WebContents::FromRenderFrameHost(render_frame_host_);
 
   request_dialog_controller_->ShowInitialPermissionDialog(
       web_contents, provider_,
@@ -138,7 +116,7 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
 // https://crbug.com/1200581
 void FederatedAuthRequestImpl::Logout(
     std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
-    LogoutCallback callback) {
+    blink::mojom::FederatedAuthRequest::LogoutCallback callback) {
   if (logout_callback_ || auth_request_callback_) {
     std::move(callback).Run(LogoutStatus::kErrorTooManyRequests);
     return;
@@ -156,7 +134,7 @@ void FederatedAuthRequestImpl::Logout(
   if (base::ranges::any_of(logout_requests, [](auto& request) {
         return !request->endpoint.is_valid();
       })) {
-    bad_message::ReceivedBadMessage(render_frame_host()->GetProcess(),
+    bad_message::ReceivedBadMessage(render_frame_host_->GetProcess(),
                                     bad_message::FARI_LOGOUT_BAD_ENDPOINT);
     CompleteLogoutRequest(LogoutStatus::kError);
     return;
@@ -166,7 +144,7 @@ void FederatedAuthRequestImpl::Logout(
     logout_requests_.push(std::move(request));
   }
 
-  network_manager_ = CreateNetworkManager(origin().GetURL());
+  network_manager_ = CreateNetworkManager(origin_.GetURL());
   if (!network_manager_) {
     CompleteLogoutRequest(LogoutStatus::kError);
     return;
@@ -276,7 +254,7 @@ void FederatedAuthRequestImpl::OnSigninApproved(
 
   if (GetRequestPermissionContext()) {
     GetRequestPermissionContext()->GrantRequestPermission(
-        origin(), url::Origin::Create(provider_));
+        origin_, url::Origin::Create(provider_));
   }
 
   network_manager_->FetchIdpWellKnown(
@@ -297,7 +275,7 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
         return;
       }
       WebContents* rp_web_contents =
-          WebContents::FromRenderFrameHost(render_frame_host());
+          WebContents::FromRenderFrameHost(render_frame_host_);
 
       DCHECK(!idp_web_contents_);
       idp_web_contents_ = CreateIdpWebContents();
@@ -372,11 +350,11 @@ void FederatedAuthRequestImpl::OnIdpPageClosed() {
   }
 
   WebContents* rp_web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host());
+      WebContents::FromRenderFrameHost(render_frame_host_);
 
   if (GetSharingPermissionContext() &&
       GetSharingPermissionContext()->HasSharingPermission(
-          url::Origin::Create(provider_), origin())) {
+          url::Origin::Create(provider_), origin_)) {
     CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
     return;
   }
@@ -397,7 +375,7 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
   if (GetSharingPermissionContext()) {
     // Grant sharing permission for RP/IDP pair without a specific account.
     GetSharingPermissionContext()->GrantSharingPermission(
-        url::Origin::Create(provider_), origin());
+        url::Origin::Create(provider_), origin_);
   }
 
   CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
@@ -417,7 +395,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     }
     case IdpNetworkRequestManager::AccountsResponse::kSuccess: {
       WebContents* rp_web_contents =
-          WebContents::FromRenderFrameHost(render_frame_host());
+          WebContents::FromRenderFrameHost(render_frame_host_);
       DCHECK(!idp_web_contents_);
 
       // Populate the accounts login state.
@@ -427,7 +405,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         // this account before.
         if (GetSharingPermissionContext() &&
             GetSharingPermissionContext()->HasSharingPermissionForAccount(
-                url::Origin::Create(provider_), origin(), account.sub)) {
+                url::Origin::Create(provider_), origin_, account.sub)) {
           login_state = LoginState::kSignIn;
         }
         account.login_state = login_state;
@@ -462,7 +440,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(
   // (which also implies the logout permission).
   if (GetRequestPermissionContext()) {
     GetRequestPermissionContext()->GrantRequestPermission(
-        origin(), url::Origin::Create(provider_));
+        origin_, url::Origin::Create(provider_));
   }
 
   account_id_ = account_id;
@@ -505,12 +483,12 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
         // https://crbug.com/1199088
         CHECK(!account_id_.empty());
         GetSharingPermissionContext()->GrantSharingPermissionForAccount(
-            url::Origin::Create(provider_), origin(), account_id_);
+            url::Origin::Create(provider_), origin_, account_id_);
       }
 
       if (GetActiveSessionPermissionContext()) {
         GetActiveSessionPermissionContext()->GrantActiveSession(
-            origin(), url::Origin::Create(provider_), account_id_);
+            origin_, url::Origin::Create(provider_), account_id_);
       }
 
       id_token_ = id_token;
@@ -533,13 +511,13 @@ void FederatedAuthRequestImpl::DispatchOneLogout() {
   }
 
   if (GetActiveSessionPermissionContext()->HasActiveSession(
-          endpoint_origin, origin(), account_id)) {
+          endpoint_origin, origin_, account_id)) {
     network_manager_->SendLogout(
         logout_request->endpoint,
         base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
     GetActiveSessionPermissionContext()->RevokeActiveSession(
-        endpoint_origin, origin(), account_id);
+        endpoint_origin, origin_, account_id);
   } else {
     if (logout_requests_.empty()) {
       CompleteLogoutRequest(LogoutStatus::kSuccess);
@@ -561,7 +539,7 @@ void FederatedAuthRequestImpl::OnLogoutCompleted() {
 
 std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
   auto idp_web_contents = content::WebContents::Create(
-      WebContents::CreateParams(render_frame_host()->GetBrowserContext()));
+      WebContents::CreateParams(render_frame_host_->GetBrowserContext()));
 
   // Store the callback on the provider web contents so that it can be
   // used later.
@@ -599,7 +577,7 @@ FederatedAuthRequestImpl::CreateNetworkManager(const GURL& provider) {
   if (mock_network_manager_)
     return std::move(mock_network_manager_);
 
-  return IdpNetworkRequestManager::Create(provider, render_frame_host());
+  return IdpNetworkRequestManager::Create(provider, render_frame_host_);
 }
 
 std::unique_ptr<IdentityRequestDialogController>
@@ -642,8 +620,7 @@ FederatedIdentityActiveSessionPermissionContextDelegate*
 FederatedAuthRequestImpl::GetActiveSessionPermissionContext() {
   if (!active_session_permission_delegate_) {
     active_session_permission_delegate_ =
-        render_frame_host()
-            ->GetBrowserContext()
+        render_frame_host_->GetBrowserContext()
             ->GetFederatedIdentityActiveSessionPermissionContext();
   }
   return active_session_permission_delegate_;
@@ -653,8 +630,7 @@ FederatedIdentityRequestPermissionContextDelegate*
 FederatedAuthRequestImpl::GetRequestPermissionContext() {
   if (!request_permission_delegate_) {
     request_permission_delegate_ =
-        render_frame_host()
-            ->GetBrowserContext()
+        render_frame_host_->GetBrowserContext()
             ->GetFederatedIdentityRequestPermissionContext();
   }
   return request_permission_delegate_;
@@ -664,8 +640,7 @@ FederatedIdentitySharingPermissionContextDelegate*
 FederatedAuthRequestImpl::GetSharingPermissionContext() {
   if (!sharing_permission_delegate_) {
     sharing_permission_delegate_ =
-        render_frame_host()
-            ->GetBrowserContext()
+        render_frame_host_->GetBrowserContext()
             ->GetFederatedIdentitySharingPermissionContext();
   }
   return sharing_permission_delegate_;
