@@ -472,8 +472,10 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
   def ProcessRegister(self, msg):
     """Handles a register request.
 
-    Checks the query for authorization and device identifier, registers the
-    device with the server and constructs a response.
+    Checks the query for authorization, device identifier and existence
+    of PSM execution fields (if their expected values have been set in
+    the config). Then, registers the device with the server and
+    constructs a response.
 
     Args:
       msg: The DeviceRegisterRequest message received from the client.
@@ -493,6 +495,23 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     if ('*' not in policy['managed_users'] and
         username not in policy['managed_users']):
       return (403, 'Unmanaged')
+
+    # Checks for PSM execution fields.
+
+    brand_machine_id = msg.brand_code + '_' + msg.machine_id
+    psm_result_dict = self.server.GetPolicies().get('psm_result', {})
+    psm_result = psm_result_dict.get(brand_machine_id, {})
+
+    for field in psm_result:
+      if not msg.HasField(field):
+        return (400, 'DeviceRegisterRequest must have all required '
+                'PSM execution fields')
+
+      # The casting is necessary because int64_t fields won't have the same
+      # equality otherwise.
+      if int(psm_result[field]) != int(getattr(msg, field)):
+        return (400, 'DeviceRegisterRequest must have all correct '
+                'PSM execution values')
 
     return self.RegisterDeviceAndSendResponse(msg, username)
 
