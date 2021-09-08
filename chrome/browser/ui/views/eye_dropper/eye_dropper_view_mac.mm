@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 #include "content/public/browser/render_frame_host.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "ui/base/ui_base_features.h"
 
 EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
     : listener_(listener) {
@@ -117,6 +118,10 @@ float EyeDropperView::GetDiameter() const {
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
+  if (!features::IsEyeDropperEnabled()) {
+    return nullptr;
+  }
+
   if (@available(macOS 10.15, *)) {
     return std::make_unique<EyeDropperViewMac>(listener);
   }

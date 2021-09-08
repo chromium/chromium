@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "ui/base/ui_base_features.h"
 
 namespace blink {
 
@@ -40,6 +41,12 @@ ScriptPromise EyeDropper::open(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "EyeDropper::open() requires user gesture.");
+    return ScriptPromise();
+  }
+
+  if (!features::IsEyeDropperEnabled()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "EyeDropper is not available.");
     return ScriptPromise();
   }
 
