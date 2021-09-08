@@ -162,6 +162,7 @@ source_set("unit_tests") {
   sources = [
     "client_side_model_loader_unittest.cc",
     "client_side_phishing_model_unittest.cc",
+    "user_population_unittest.cc",
     "web_api_handshake_checker_unittest.cc",
   ]
 
@@ -175,11 +176,14 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/browser:browser",
     "//components/safe_browsing/core/browser/db:test_database_manager",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
+    "//components/unified_consent",
     "//components/variations",
+    "//components/version_info",
     "//content/test:test_support",
     "//services/network:test_support",
     "//testing/gmock",
@@ -195,7 +199,6 @@ source_set("unit_tests") {
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-      "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
     ]
