@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -29,9 +30,6 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   // Creates a singleton instance.
   static CrashReporterBreadcrumbObserver& GetInstance();
 
-  // Sets breadcrumb events associated with the previous application session.
-  void SetPreviousSessionEvents(const std::vector<std::string>& events);
-
   // Starts collecting breadcrumb events logged to |breadcrumb_manager|.
   void ObserveBreadcrumbManager(BreadcrumbManager* breadcrumb_manager);
 
@@ -46,6 +44,11 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   void StopObservingBreadcrumbManagerService(
       BreadcrumbManagerKeyedService* breadcrumb_manager_service);
 
+  // Sets breadcrumb events associated with the previous application session.
+  // Note: this behaves the same as EventAdded(), but takes multiple events and
+  // adds them to the start of the breadcrumbs log.
+  void SetPreviousSessionEvents(const std::vector<std::string>& events);
+
  private:
   friend base::NoDestructor<CrashReporterBreadcrumbObserver>;
   friend class ::CrashReporterBreadcrumbObserverTest;
@@ -53,18 +56,17 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   CrashReporterBreadcrumbObserver();
   ~CrashReporterBreadcrumbObserver() override;
 
-  // Updates the breadcrumbs stored in the crash log.
-  void UpdateBreadcrumbEventsCrashKey();
-
   // BreadcrumbObserver:
   void EventAdded(BreadcrumbManager* manager,
                   const std::string& event) override;
 
-  // A string which stores the received breadcrumbs. It may be truncated to the
-  // maximum breadcrumbs string length (which aims to stay below the crash
-  // reporter's maximum string length) when a new event is added, in order to
-  // reduce overall memory usage.
-  std::string breadcrumbs_;
+  // Updates the breadcrumbs stored in the crash log.
+  void UpdateBreadcrumbEventsCrashKey();
+
+  // The full list of received breadcrumbs that will be sent to the crash
+  // report. Older events are at the front. A maximum size is enforced for
+  // privacy purposes, so old events may be removed when new events are added.
+  base::circular_deque<std::string> breadcrumbs_;
 
   // Tracks observed BreadcrumbManagers and stops observing them on destruction.
   base::ScopedMultiSourceObservation<BreadcrumbManager,
