@@ -120,6 +120,7 @@ class MetricsLogTest : public testing::Test {
 
     // Check for presence of fields set by a metrics provider.
     const SystemProfileProto::Hardware& hardware = system_profile.hardware();
+    EXPECT_EQ(hardware.hardware_class(), GetExpectedHardwareClass());
     EXPECT_TRUE(hardware.has_cpu());
     EXPECT_TRUE(hardware.cpu().has_vendor_name());
     EXPECT_TRUE(hardware.cpu().has_signature());

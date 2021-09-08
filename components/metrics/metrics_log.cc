@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstring>
 #include <string>
 
 #include "base/build_time.h"
@@ -21,6 +22,7 @@
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -244,7 +246,16 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
+#if defined(OS_IOS)
+  // Remove any trailing null characters.
+  // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
+  // iOS's implementation of HardwareModelName().
+  const std::string hardware_class = base::SysInfo::HardwareModelName();
+  hardware->set_hardware_class(
+      hardware_class.substr(0, strlen(hardware_class.c_str())));
+#else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
+#endif  // defined(OS_IOS)
 #if defined(OS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
