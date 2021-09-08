@@ -9411,6 +9411,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Top Level"/>
 </enum>
 
+<enum name="BooleanIsTransaction">
+  <int value="0" label="Not Transaction"/>
+  <int value="1" label="Is Transaction"/>
+</enum>
+
 <enum name="BooleanIsUseRelinker">
   <obsolete>
     Removed in 2019-07.

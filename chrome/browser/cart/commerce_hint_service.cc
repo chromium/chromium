@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
@@ -145,7 +146,7 @@ class CommerceHintObserverImpl
     DVLOG(1) << "Received OnFormSubmit in the browser process";
     if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
-    service_->OnFormSubmit(is_purchase);
+    service_->OnFormSubmit(binding_url_, is_purchase);
   }
 
  private:
@@ -242,7 +243,10 @@ void CommerceHintService::OnCartUpdated(
   service_->AddCart(proto.key(), validated_cart, std::move(proto));
 }
 
-void CommerceHintService::OnFormSubmit(bool is_purchase) {
+void CommerceHintService::OnFormSubmit(const GURL& navigation_url,
+                                       bool is_purchase) {
+  if (ShouldSkip(navigation_url))
+    return;
   uint8_t bytes[1];
   crypto::RandBytes(bytes);
   bool report_truth = bytes[0] & 0x1;
@@ -252,6 +256,7 @@ void CommerceHintService::OnFormSubmit(bool is_purchase) {
       ukm::GetSourceIdForWebContentsDocument(web_contents_))
       .SetIsTransaction(reported)
       .Record(ukm::UkmRecorder::Get());
+  base::UmaHistogramBoolean("Commerce.Carts.FormSubmitIsTransaction", reported);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)
