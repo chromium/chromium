@@ -83,6 +83,40 @@ bool ShouldHideStoragePermission(const std::string app_id) {
 #endif
 }
 
+// Returns a list of intent filters that support http/https given an app ID.
+std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
+    Profile* profile,
+    const std::string& app_id) {
+  std::vector<apps::mojom::IntentFilterPtr> intent_filters;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&intent_filters](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady) {
+          for (auto& filter : update.IntentFilters()) {
+            if (apps_util::IsSupportedLink(filter)) {
+              intent_filters.emplace_back(std::move(filter));
+            }
+          }
+        }
+      });
+  return intent_filters;
+}
+
+// Returns a list of URLs supported by an app given an app ID.
+std::vector<std::string> GetSupportedLinks(Profile* profile,
+                                           const std::string& app_id) {
+  std::set<std::string> supported_links;
+  auto intent_filters = GetSupportedLinkIntentFilters(profile, app_id);
+  for (auto& filter : intent_filters) {
+    for (const auto& link : apps_util::AppManagementGetSupportedLinks(filter)) {
+      supported_links.insert(link);
+    }
+  }
+
+  return std::vector<std::string>(supported_links.begin(),
+                                  supported_links.end());
+}
+
 }  // namespace
 
 AppManagementPageHandler::AppManagementPageHandler(
@@ -199,39 +233,18 @@ void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
 
 void AppManagementPageHandler::SetPreferredApp(const std::string& app_id,
                                                bool is_preferred_app) {
-  if (is_preferred_app &&
-      !preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id)) {
-    // Only deal with overlapping links if we actually changed the permission
-    // to true.
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->AppRegistryCache()
-        .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-          if (update.Readiness() == apps::mojom::Readiness::kReady) {
-            for (auto& filter : update.IntentFilters()) {
-              if (apps_util::IsSupportedLink(filter)) {
-                this->preferred_apps_list_.AddPreferredApp(update.AppId(),
-                                                           filter);
-              }
-            }
-          }
-        });
-  } else if (!is_preferred_app &&
-             preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id)) {
-    // If changed to false, remove all of the filters for that app.
-    // Only deal with overlapping links if we actually changed the permission
-    // to true.
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->AppRegistryCache()
-        .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-          if (update.Readiness() == apps::mojom::Readiness::kReady) {
-            for (auto& filter : update.IntentFilters()) {
-              if (apps_util::IsSupportedLink(filter)) {
-                this->preferred_apps_list_.DeletePreferredApp(update.AppId(),
-                                                              filter);
-              }
-            }
-          }
-        });
+  auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
+  bool is_preferred_app_for_supported_links =
+      preferred_apps_list_.IsPreferredAppForSupportedLinks(app_id);
+
+  if (is_preferred_app && !is_preferred_app_for_supported_links) {
+    for (auto& filter : intent_filters) {
+      this->preferred_apps_list_.AddPreferredApp(app_id, filter);
+    }
+  } else if (!is_preferred_app && is_preferred_app_for_supported_links) {
+    for (auto& filter : intent_filters) {
+      this->preferred_apps_list_.DeletePreferredApp(app_id, filter);
+    }
   }
 }
 
@@ -277,34 +290,9 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
       update.ShowInShelf() == apps::mojom::OptionalBool::kFalse ||
       ShouldHidePinToShelf(app->id);
   app->window_mode = update.WindowMode();
-  app->supported_links = GetSupportedLinksList(app->id);
+  app->supported_links = GetSupportedLinks(profile_, app->id);
 
   return app;
-}
-
-std::vector<std::string> AppManagementPageHandler::GetSupportedLinksList(
-    const std::string& app_id) {
-  std::vector<std::string> links;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [&links](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady) {
-          std::set<std::string> seen;
-          for (const auto& filter : update.IntentFilters()) {
-            if (apps_util::IsSupportedLink(filter)) {
-              for (const auto& link :
-                   apps_util::AppManagementGetSupportedLinks(filter)) {
-                // Add link to list if it hasn't already been seen.
-                if (seen.find(link) == seen.end()) {
-                  links.emplace_back(link);
-                  seen.insert(link);
-                }
-              }
-            }
-          }
-        }
-      });
-  return links;
 }
 
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {

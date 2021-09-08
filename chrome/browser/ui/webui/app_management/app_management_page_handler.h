@@ -48,7 +48,6 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);
-  std::vector<std::string> GetSupportedLinksList(const std::string& app_id);
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;
