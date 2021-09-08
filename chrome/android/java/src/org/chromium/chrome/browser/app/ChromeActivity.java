@@ -14,6 +14,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -353,6 +354,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * Control the tab-reparenting tasks.
      */
     private TabReparentingController mTabReparentingController;
+
+    /**
+     * Track whether {@link #mTabReparentingController} has prepared tab reparenting.
+     */
+    private boolean mIsTabReparentingPrepared;
 
     /**
      * Listen to display change and start tab-reparenting if necessary.
@@ -2176,6 +2182,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
         if (mConfig != null) {
+            if (mTabReparentingController != null && didChangeTabletMode()) {
+                onScreenLayoutSizeChange();
+            }
             // We only handle VR UI mode and UI mode night changes. Any other changes should follow
             // the default behavior of recreating the activity. Note that if UI mode night changes,
             // with or without other changes, we will still recreate() until we get a callback from
@@ -2796,8 +2805,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         assert mConfig
                 != null : "Can not determine the tablet mode when mConfig is not initialized";
         DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(this);
-        boolean isTablet = DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display))
-                >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+        int smallestWidth;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect bounds = getWindowManager().getMaximumWindowMetrics().getBounds();
+            smallestWidth = DisplayUtil.pxToDp(
+                    display, Math.min(bounds.right - bounds.left, bounds.bottom - bounds.top));
+        } else {
+            smallestWidth = DisplayUtil.pxToDp(display, DisplayUtil.getSmallestWidth(display));
+        }
+        boolean isTablet = smallestWidth >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         boolean wasTablet =
                 mConfig.smallestScreenWidthDp >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         return wasTablet != isTablet;
@@ -2807,8 +2823,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * Switch between phone and tablet mode and do the tab re-parenting in the meantime.
      */
     private void onScreenLayoutSizeChange() {
-        if (mTabReparentingController != null) {
+        if (mTabReparentingController != null && !mIsTabReparentingPrepared) {
             mTabReparentingController.prepareTabsForReparenting();
+            mIsTabReparentingPrepared = true;
             if (!isFinishing()) recreate();
         }
     }
