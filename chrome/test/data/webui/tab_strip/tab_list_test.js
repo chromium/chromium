@@ -888,7 +888,8 @@ suite('TabList', () => {
         testTabsApiProxy.getCallCount('setThumbnailTracked'), tabs.length);
   });
 
-  test('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
+  // Flaky on all platforms. https://crbug.com/1247687.
+  test.skip('ShouldDebounceThumbnailTrackerWhenScrollingFast', async () => {
     // Set tab widths such that 3 tabs fit in the viewport. This should reach a
     // state where the first 6 thumbnails are being tracked: 3 in the viewport
     // and 3 within the IntersectionObserver's rootMargin. The widths need to be
