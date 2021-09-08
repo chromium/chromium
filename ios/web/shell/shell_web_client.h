@@ -30,6 +30,7 @@ class ShellWebClient : public WebClient {
   void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
       mojo::GenericPendingReceiver receiver) override;
+  bool EnableLongPressUIContextMenu() const override;
 
   ShellBrowserState* browser_state() const;
 

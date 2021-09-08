@@ -5,14 +5,39 @@
 source_set("context_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "context_menu_utils.h",
+    "context_menu_utils.mm",
     "link_no_preview_view.h",
     "link_no_preview_view.mm",
     "link_no_preview_view_controller.h",
     "link_no_preview_view_controller.mm",
   ]
   deps = [
+    "//base",
+    "//components/url_formatter",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
+    "//ios/web/common:features",
+    "//ios/web/public/ui",
+    "//url",
   ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [
+    ":context_menu",
+    "//base",
+    "//base/test:test_support",
+    "//components/url_formatter",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//net",
+    "//testing/gtest",
+  ]
+
+  sources = [ "context_menu_utils_unittest.mm" ]
 }

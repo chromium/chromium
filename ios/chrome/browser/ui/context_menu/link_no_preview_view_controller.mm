@@ -10,11 +10,27 @@
 #error "This file requires ARC support."
 #endif
 
+@interface LinkNoPreviewViewController ()
+
+@property(nonatomic, copy) NSString* contextMenuTitle;
+@property(nonatomic, copy) NSString* subtitle;
+
+@end
+
 @implementation LinkNoPreviewViewController
 
+- (instancetype)initWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _contextMenuTitle = title;
+    _subtitle = subtitle;
+  }
+  return self;
+}
+
 - (void)loadView {
-  // TODO(crbug.com/1237933): Pass title and subtitle.
-  self.view = [[LinkNoPreviewView alloc] initWithTitle:nil subtitle:nil];
+  self.view = [[LinkNoPreviewView alloc] initWithTitle:self.contextMenuTitle
+                                              subtitle:self.subtitle];
 }
 
 - (void)viewDidLayoutSubviews {

@@ -88,6 +88,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#include "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
@@ -3421,8 +3422,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Truncate context meny titles that originate from URLs, leaving text titles
   // untruncated.
-  NSString* menuTitle = params.menu_title;
-  if (params.menu_title_origin != web::ContextMenuTitleOrigin::kImageTitle &&
+  NSString* menuTitle = GetContextMenuTitle(params);
+  if (!IsImageTitle(params) &&
       menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
     menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
         stringByAppendingString:kContextMenuEllipsis];
@@ -3880,13 +3881,18 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   }
 
-  // Truncate context meny titles that originate from URLs, leaving text titles
-  // untruncated.
-  NSString* menuTitle = params.menu_title;
-  if (params.menu_title_origin != web::ContextMenuTitleOrigin::kImageTitle &&
-      menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-    menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-        stringByAppendingString:kContextMenuEllipsis];
+  NSString* menuTitle = nil;
+  if (!base::FeatureList::IsEnabled(
+          web::features::kWebViewNativeContextMenuPhase2)) {
+    menuTitle = GetContextMenuTitle(params);
+
+    // Truncate context meny titles that originate from URLs, leaving text
+    // titles untruncated.
+    if (!IsImageTitle(params) &&
+        menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
+      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+          stringByAppendingString:kContextMenuEllipsis];
+    }
   }
 
   UIContextMenuActionProvider actionProvider =
@@ -3900,8 +3906,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             web::features::kWebViewNativeContextMenuPhase2)) {
       return nil;
     }
-    if (isLink)
-      return [[LinkNoPreviewViewController alloc] init];
+    if (isLink) {
+      NSString* title = GetContextMenuTitle(params);
+      NSString* subtitle = GetContextMenuSubtitle(params);
+      return [[LinkNoPreviewViewController alloc] initWithTitle:title
+                                                       subtitle:subtitle];
+    }
     return nil;
   };
   UIContextMenuConfiguration* configuration =

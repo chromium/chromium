@@ -11,6 +11,16 @@
 // destination is not displayed.
 @interface LinkNoPreviewViewController : UIViewController
 
+// Initializes with the |title| and |subtitle| to be displayed.
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTEXT_MENU_LINK_NO_PREVIEW_VIEW_CONTROLLER_H_

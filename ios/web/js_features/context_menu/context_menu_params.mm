@@ -12,7 +12,6 @@ namespace web {
 
 ContextMenuParams::ContextMenuParams()
     : is_main_frame(true),
-      menu_title_origin(ContextMenuTitleOrigin::kUnknown),
       referrer_policy(ReferrerPolicyDefault),
       location(CGPointZero) {}
 
