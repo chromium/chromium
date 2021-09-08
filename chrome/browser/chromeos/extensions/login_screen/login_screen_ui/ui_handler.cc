@@ -35,7 +35,7 @@ const char kErrorNoExistingWindow[] = "No open window to close.";
 const char kErrorNotOnLoginOrLockScreen[] =
     "Windows can only be created on the login and lock screen.";
 
-const char kExtensionNameImprivata[] = "Imprivata";
+const char kExtensionNameImprivata[] = "Imprivata OneSign";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
 const char kExtensionNameUnknown[] = "UNKNOWN EXTENSION";
 
