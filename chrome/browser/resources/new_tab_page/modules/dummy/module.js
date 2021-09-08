@@ -47,7 +47,7 @@ class DummyModuleElement extends mixinBehaviors
 
   /** @private */
   async initializeData_() {
-    const tileData = await FooProxy.getInstance().handler.getData();
+    const tileData = await FooProxy.getHandler().getData();
     this.tiles = tileData.data;
   }
 

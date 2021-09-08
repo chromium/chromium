@@ -10,22 +10,20 @@ import './photos.mojom-lite.js';
  * and receiving the browser response.
  */
 
-/** @type {PhotosProxy} */
-let instance = null;
+/** @type {?photos.mojom.PhotosHandlerRemote} */
+let handler = null;
 
 export class PhotosProxy {
-  /** @return {!PhotosProxy} */
-  static getInstance() {
-    return instance || (instance = new PhotosProxy());
+  /** @return {!photos.mojom.PhotosHandlerRemote} */
+  static getHandler() {
+    return handler || (handler = photos.mojom.PhotosHandler.getRemote());
   }
 
-  /** @param {PhotosProxy} newInstance */
-  static setInstance(newInstance) {
-    instance = newInstance;
+  /** @param {!photos.mojom.PhotosHandlerRemote} newHandler */
+  static setHandler(newHandler) {
+    handler = newHandler;
   }
 
-  constructor() {
-    /** @type {!photos.mojom.PhotosHandlerRemote} */
-    this.handler = photos.mojom.PhotosHandler.getRemote();
-  }
+  /** @private */
+  constructor() {}
 }

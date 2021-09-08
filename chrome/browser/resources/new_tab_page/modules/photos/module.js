@@ -40,7 +40,7 @@ customElements.define(PhotosModuleElement.is, PhotosModuleElement);
  * @return {!Promise<?PhotosModuleElement>}
  */
 async function createPhotosElement() {
-  const {memories} = await PhotosProxy.getInstance().handler.getMemories();
+  const {memories} = await PhotosProxy.getHandler().getMemories();
   if (memories.length === 0) {
     return null;
   }

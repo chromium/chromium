@@ -68,8 +68,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
     cartHandler = installMock(
-        chromeCart.mojom.CartHandlerRemote,
-        mock => ChromeCartProxy.setInstance({handler: mock}));
+        chromeCart.mojom.CartHandlerRemote, ChromeCartProxy.setHandler);
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
   });

@@ -8,18 +8,14 @@ import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
-  /** @type {!{handler: !TestBrowserProxy}} */
-  let testProxy;
+  /** @type {!TestBrowserProxy} */
+  let handler;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = {
-      handler: installMock(
-          foo.mojom.FooHandlerRemote,
-          mock => FooProxy.setInstance({handler: mock})),
-    };
-    testProxy.handler.setResultFor('getData', Promise.resolve({data: []}));
+    handler = installMock(foo.mojom.FooHandlerRemote, FooProxy.setHandler);
+    handler.setResultFor('getData', Promise.resolve({data: []}));
   });
 
   test('creates module with data', async () => {
@@ -41,7 +37,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
         imageUrl: 'baz.com',
       },
     ];
-    testProxy.handler.setResultFor('getData', Promise.resolve({data}));
+    handler.setResultFor('getData', Promise.resolve({data}));
     const module = await dummyDescriptor.initialize();
     document.body.append(module);
     module.$.tileList.render();

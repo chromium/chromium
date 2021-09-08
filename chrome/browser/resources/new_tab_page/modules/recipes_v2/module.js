@@ -31,9 +31,8 @@ customElements.define(RecipeModuleElement.is, RecipeModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
 async function createModule() {
-  const {task} =
-      await TaskModuleHandlerProxy.getInstance().handler.getPrimaryTask(
-          taskModule.mojom.TaskModuleType.kRecipe);
+  const {task} = await TaskModuleHandlerProxy.getHandler().getPrimaryTask(
+      taskModule.mojom.TaskModuleType.kRecipe);
   if (!task) {
     return null;
   }

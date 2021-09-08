@@ -7,17 +7,15 @@ import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageModulesRecipesV2ModuleTest', () => {
-  /** @type {!{handler: !TestBrowserProxy}} */
-  let testProxy;
+  /** @type {!TestBrowserProxy} */
+  let handler;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = {
-      handler: installMock(
-          taskModule.mojom.TaskModuleHandlerRemote,
-          mock => TaskModuleHandlerProxy.setInstance({handler: mock})),
-    };
+    handler = installMock(
+        taskModule.mojom.TaskModuleHandlerRemote,
+        TaskModuleHandlerProxy.setHandler);
   });
 
   test('module appears on render with recipes', async () => {
@@ -45,7 +43,7 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
         },
       ],
     };
-    testProxy.handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
+    handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
     const moduleElement = await recipeTasksV2Descriptor.initialize();
@@ -55,7 +53,7 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
     // Assert.
     const recipes =
         Array.from(moduleElement.shadowRoot.querySelectorAll('.recipe-item'));
-    assertEquals(1, testProxy.handler.getCallCount('getPrimaryTask'));
+    assertEquals(1, handler.getCallCount('getPrimaryTask'));
     assertEquals(3, recipes.length);
     assertEquals(
         'https://apricot.com/img.png', recipes[0].querySelector('img').autoSrc);
@@ -86,8 +84,7 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
 
   test('no module renders if no tasks available', async () => {
     // Arrange.
-    testProxy.handler.setResultFor(
-        'getPrimaryTask', Promise.resolve({task: null}));
+    handler.setResultFor('getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
     const moduleElement = await recipeTasksV2Descriptor.initialize();

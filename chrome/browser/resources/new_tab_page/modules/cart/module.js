@@ -173,13 +173,13 @@ class ChromeCartModuleElement extends mixinBehaviors
     const merchant = this.cartItems[this.currentMenuIndex_].merchant;
     const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
 
-    await ChromeCartProxy.getInstance().handler.hideCart(cartUrl);
+    await ChromeCartProxy.getHandler().hideCart(cartUrl);
 
     this.dismissedCartData_ = {
       message: loadTimeData.getStringF(
           'modulesCartCartMenuHideMerchantToastMessage', merchant),
       restoreCallback: async () => {
-        await ChromeCartProxy.getInstance().handler.restoreHiddenCart(cartUrl);
+        await ChromeCartProxy.getHandler().restoreHiddenCart(cartUrl);
       },
     };
     const isModuleVisible = await this.resetCartData_();
@@ -194,13 +194,13 @@ class ChromeCartModuleElement extends mixinBehaviors
     const merchant = this.cartItems[this.currentMenuIndex_].merchant;
     const cartUrl = this.cartItems[this.currentMenuIndex_].cartUrl;
 
-    await ChromeCartProxy.getInstance().handler.removeCart(cartUrl);
+    await ChromeCartProxy.getHandler().removeCart(cartUrl);
 
     this.dismissedCartData_ = {
       message: loadTimeData.getStringF(
           'modulesCartCartMenuRemoveMerchantToastMessage', merchant),
       restoreCallback: async () => {
-        await ChromeCartProxy.getInstance().handler.restoreRemovedCart(cartUrl);
+        await ChromeCartProxy.getHandler().restoreRemovedCart(cartUrl);
       },
     };
     const isModuleVisible = await this.resetCartData_();
@@ -225,8 +225,7 @@ class ChromeCartModuleElement extends mixinBehaviors
    * @private
    */
   async resetCartData_() {
-    const {carts} =
-        await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+    const {carts} = await ChromeCartProxy.getHandler().getMerchantCarts();
     this.cartItems = carts;
     const isModuleVisible = this.cartItems.length !== 0;
     if (!isModuleVisible && this.dismissedCartData_ !== null) {
@@ -241,7 +240,7 @@ class ChromeCartModuleElement extends mixinBehaviors
             await this.dismissedCartData_.restoreCallback();
             this.dismissedCartData_ = null;
             const {carts} =
-                await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+                await ChromeCartProxy.getHandler().getMerchantCarts();
             this.cartItems = carts;
           },
         },
@@ -254,7 +253,7 @@ class ChromeCartModuleElement extends mixinBehaviors
 
   /** @private */
   onDismissButtonClick_() {
-    ChromeCartProxy.getInstance().handler.hideCartModule();
+    ChromeCartProxy.getHandler().hideCartModule();
     this.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,
@@ -262,7 +261,7 @@ class ChromeCartModuleElement extends mixinBehaviors
         message:
             loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
         restoreCallback: () => {
-          ChromeCartProxy.getInstance().handler.restoreHiddenCartModule();
+          ChromeCartProxy.getHandler().restoreHiddenCartModule();
           chrome.metricsPrivate.recordUserAction(
               'NewTabPage.Carts.UndoHideModule');
         },
@@ -381,9 +380,8 @@ class ChromeCartModuleElement extends mixinBehaviors
     if (loadTimeData.getBoolean('ruleBasedDiscountEnabled') &&
         (e.shouldNavigate === undefined || e.shouldNavigate === false)) {
       e.preventDefault();
-      const {discountUrl} =
-          await ChromeCartProxy.getInstance().handler.getDiscountURL(
-              this.cartItems[index].cartUrl);
+      const {discountUrl} = await ChromeCartProxy.getHandler().getDiscountURL(
+          this.cartItems[index].cartUrl);
       this.set(`cartItems.${index}.cartUrl`, discountUrl);
       const cloneEvent = new PointerEvent(e.type, e);
       cloneEvent.shouldNavigate = true;
@@ -391,7 +389,7 @@ class ChromeCartModuleElement extends mixinBehaviors
           cloneEvent);
       return;
     }
-    ChromeCartProxy.getInstance().handler.prepareForNavigation(
+    ChromeCartProxy.getHandler().prepareForNavigation(
         this.cartItems[index].cartUrl, /*isNavigating=*/ true);
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     chrome.metricsPrivate.recordSmallCount('NewTabPage.Carts.ClickCart', index);
@@ -403,7 +401,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
-    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(false);
+    ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(false);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.RejectDiscountConsent');
   }
@@ -414,7 +412,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
-    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(true);
+    ChromeCartProxy.getHandler().onDiscountConsentAcknowledged(true);
     chrome.metricsPrivate.recordUserAction(
         'NewTabPage.Carts.AcceptDiscountConsent');
   }
@@ -427,7 +425,7 @@ class ChromeCartModuleElement extends mixinBehaviors
   /** @private */
   onCartItemContextMenuClick_(e) {
     const index = this.$.cartItemRepeat.indexForElement(e.target);
-    ChromeCartProxy.getInstance().handler.prepareForNavigation(
+    ChromeCartProxy.getHandler().prepareForNavigation(
         this.cartItems[index].cartUrl, /*isNavigating=*/ false);
   }
 }
@@ -440,13 +438,12 @@ async function createCartElement() {
   // whether welcome surface should show or not. Anything whose visibility
   // dependes on welcome surface (e.g. RBD consent) should check before
   // getWarmWelcomeVisible.
-  const {consentVisible} = await ChromeCartProxy.getInstance()
-                               .handler.getDiscountConsentCardVisible();
+  const {consentVisible} =
+      await ChromeCartProxy.getHandler().getDiscountConsentCardVisible();
 
   const {welcomeVisible} =
-      await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
-  const {carts} =
-      await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+      await ChromeCartProxy.getHandler().getWarmWelcomeVisible();
+  const {carts} = await ChromeCartProxy.getHandler().getMerchantCarts();
   chrome.metricsPrivate.recordSmallCount(
       'NewTabPage.Carts.CartCount', carts.length);
 
