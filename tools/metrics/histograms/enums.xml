@@ -77618,6 +77618,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     have WebContents without an associated renderer process - see
     https://crbug.com/840409).
   </int>
+  <int value="6" label="RefusedForPdfContent"/>
 </enum>
 
 <enum name="SpareWebContentsStatus">

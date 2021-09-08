@@ -139,7 +139,8 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       origin_isolation_request(init.origin_isolation_request_),
       origin(init.origin_),
       storage_partition_config(init.storage_partition_config_),
-      web_exposed_isolation_info(init.web_exposed_isolation_info_) {}
+      web_exposed_isolation_info(init.web_exposed_isolation_info_),
+      is_pdf(init.is_pdf_) {}
 
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
@@ -174,6 +175,11 @@ UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
   return *this;
 }
 
+UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
+  is_pdf_ = is_pdf;
+  return *this;
+}
+
 // static
 const GURL& SiteInstanceImpl::GetDefaultSiteURL() {
   struct DefaultSiteURL {
@@ -193,7 +199,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
                   false /* is_origin_keyed */, storage_partition_config,
                   web_exposed_isolation_info, false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */);
+                  false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 // static
@@ -211,7 +217,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
                   false /* is_origin_keyed */, storage_partition_config,
                   web_exposed_isolation_info, false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
-                  is_jit_disabled);
+                  is_jit_disabled, false /* is_pdf */);
 }
 
 // static
@@ -226,7 +232,7 @@ SiteInfo SiteInfo::CreateForGuest(BrowserContext* browser_context,
                                       /*is_site_url=*/true),
       WebExposedIsolationInfo::CreateNonIsolated(), true /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
-      false /* is_jit_disabled */);
+      false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 // static
@@ -255,6 +261,8 @@ SiteInfo SiteInfo::CreateInternal(
     bool compute_site_url) {
   GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
   GURL site_url = lock_url;
+
+  // TODO(crbug.com/1231763): PDF content should live in JIT-less processes.
   bool is_jitless = false;
   absl::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
@@ -303,7 +311,8 @@ SiteInfo SiteInfo::CreateInternal(
   return SiteInfo(site_url, lock_url, is_origin_keyed,
                   storage_partition_config.value(),
                   url_info.web_exposed_isolation_info, false /* is_guest */,
-                  does_site_request_dedicated_process_for_coop, is_jitless);
+                  does_site_request_dedicated_process_for_coop, is_jitless,
+                  url_info.is_pdf);
 }
 
 // static
@@ -325,7 +334,8 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           WebExposedIsolationInfo::CreateNonIsolated(),
           /*is_guest=*/false,
           /*does_site_request_dedicated_process_for_coop=*/false,
-          /*is_jit_disabled=*/false) {}
+          /*is_jit_disabled=*/false,
+          /*is_pdf=*/false) {}
 
 SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
@@ -334,7 +344,8 @@ SiteInfo::SiteInfo(const GURL& site_url,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
                    bool does_site_request_dedicated_process_for_coop,
-                   bool is_jit_disabled)
+                   bool is_jit_disabled,
+                   bool is_pdf)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       is_origin_keyed_(is_origin_keyed),
@@ -343,7 +354,8 @@ SiteInfo::SiteInfo(const GURL& site_url,
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),
-      is_jit_disabled_(is_jit_disabled) {}
+      is_jit_disabled_(is_jit_disabled),
+      is_pdf_(is_pdf) {}
 
 // static
 auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
@@ -358,7 +370,7 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
                   site_info.is_origin_keyed_,
                   site_info.storage_partition_config_,
                   site_info.web_exposed_isolation_info_, site_info.is_guest_,
-                  site_info.is_jit_disabled_);
+                  site_info.is_jit_disabled_, site_info.is_pdf_);
 }
 
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
@@ -377,7 +389,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       is_guest_ == other.is_guest_ &&
       does_site_request_dedicated_process_for_coop_ ==
           other.does_site_request_dedicated_process_for_coop_ &&
-      is_jit_disabled_ == other.is_jit_disabled_;
+      is_jit_disabled_ == other.is_jit_disabled_ && is_pdf_ == other.is_pdf_;
 
   if (is_match) {
     // If all the fields match, then the "same principal" subset must also
@@ -428,6 +440,9 @@ std::string SiteInfo::GetDebugString() const {
 
   if (is_jit_disabled_)
     debug_string += ", jitless";
+
+  if (is_pdf_)
+    debug_string += ", pdf";
 
   if (!storage_partition_config_.is_default()) {
     debug_string +=
@@ -1482,6 +1497,10 @@ bool SiteInstanceImpl::IsGuest() {
 
 bool SiteInstanceImpl::IsJitDisabled() {
   return site_info_.is_jit_disabled();
+}
+
+bool SiteInstanceImpl::IsPdf() {
+  return site_info_.is_pdf();
 }
 
 std::string SiteInstanceImpl::GetPartitionDomain(

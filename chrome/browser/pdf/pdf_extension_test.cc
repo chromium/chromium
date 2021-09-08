@@ -108,7 +108,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-shared.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -431,13 +430,8 @@ class PDFExtensionTestWithoutUnseasonedOverride
   }
 
   static bool IsUnseasonedPdfFrame(content::RenderFrameHost& frame) {
-    // TODO(crbug.com/1231763): This is a heuristic to identify which frame
-    // contains the in-process PDF plugin, but ideally we would have a stronger
-    // identification of frames that should contain PDF content.
-    if (frame.GetFrameOwnerElementType() !=
-        blink::mojom::FrameOwnerElementType::kEmbed) {
+    if (!frame.GetProcess()->IsPdf())
       return false;
-    }
 
     EXPECT_TRUE(frame.IsCrossProcessSubframe());
     return true;
@@ -1890,9 +1884,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
 
   EXPECT_EQ(pdf_frames[0]->GetLastCommittedOrigin(),
             frames[1]->GetLastCommittedOrigin());
-
-  // TODO(crbug.com/1231763): Isolate PDF content from HTML content.
-  EXPECT_EQ(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
+  EXPECT_NE(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

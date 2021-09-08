@@ -199,6 +199,10 @@ bool MockRenderProcessHost::IsJitDisabled() {
   return false;
 }
 
+bool MockRenderProcessHost::IsPdf() {
+  return false;
+}
+
 void MockRenderProcessHost::OnMediaStreamAdded() {}
 
 void MockRenderProcessHost::OnMediaStreamRemoved() {}

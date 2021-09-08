@@ -199,6 +199,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool GetIntersectsViewport() override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
+  bool IsPdf() override;
   StoragePartition* GetStoragePartition() override;
   bool Shutdown(int exit_code) override;
   bool ShutdownRequested() override;
@@ -414,7 +415,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kRefusedByEmbedder = 3,
     kSpareTaken = 4,
     kRefusedBySiteInstance = 5,
-    kMaxValue = kRefusedBySiteInstance
+    kRefusedForPdfContent = 6,
+    kMaxValue = kRefusedForPdfContent
   };
 
   static scoped_refptr<base::SingleThreadTaskRunner>
@@ -737,7 +739,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
     // Indicates whether JavaScript JIT will be disabled for the renderer
     // process hosted by this RenderProcessHost.
-    kJitDisabled = 1 << 1
+    kJitDisabled = 1 << 1,
+
+    // Indicates whether this RenderProcessHost is exclusively hosting PDF
+    // contents.
+    kPdf = 1 << 2,
   };
 
   // Use CreateRenderProcessHost() instead of calling this constructor

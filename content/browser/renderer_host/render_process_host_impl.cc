@@ -615,6 +615,8 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
         !site_instance->HasProcess() &&
         site_instance->CanAssociateWithSpareProcess();
 
+    bool hosts_pdf_content = site_instance->GetSiteInfo().is_pdf();
+
     // Get the StoragePartition for |site_instance|.  Note that this might be
     // different than the default StoragePartition for |browser_context|.
     StoragePartition* site_storage =
@@ -635,6 +637,8 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
       action = SpareProcessMaybeTakeAction::kRefusedByEmbedder;
     else if (!site_instance_allows_spare_usage)
       action = SpareProcessMaybeTakeAction::kRefusedBySiteInstance;
+    else if (hosts_pdf_content)
+      action = SpareProcessMaybeTakeAction::kRefusedForPdfContent;
     else
       action = SpareProcessMaybeTakeAction::kSpareTaken;
     UMA_HISTOGRAM_ENUMERATION(
@@ -646,7 +650,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
         browser_context == spare_render_process_host_->GetBrowserContext() &&
         spare_render_process_host_->InSameStoragePartition(site_storage) &&
         !site_instance->IsGuest() && embedder_allows_spare_usage &&
-        site_instance_allows_spare_usage) {
+        site_instance_allows_spare_usage && !hosts_pdf_content) {
       CHECK(spare_render_process_host_->HostHasNotBeenUsed());
 
       // If the spare process ends up getting killed, the spare manager should
@@ -1651,8 +1655,14 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
     }
   }
 
-  if (site_instance && site_instance->IsJitDisabled())
-    flags |= RenderProcessFlags::kJitDisabled;
+  if (site_instance) {
+    if (site_instance->IsJitDisabled()) {
+      flags |= RenderProcessFlags::kJitDisabled;
+    }
+    if (site_instance->IsPdf()) {
+      flags |= RenderProcessFlags::kPdf;
+    }
+  }
 
   return new RenderProcessHostImpl(browser_context, storage_partition_impl,
                                    flags);
@@ -3282,6 +3292,10 @@ bool RenderProcessHostImpl::IsJitDisabled() {
   return !!(flags_ & RenderProcessFlags::kJitDisabled);
 }
 
+bool RenderProcessHostImpl::IsPdf() {
+  return !!(flags_ & RenderProcessFlags::kPdf);
+}
+
 StoragePartition* RenderProcessHostImpl::GetStoragePartition() {
   return storage_partition_impl_;
 }
@@ -4217,6 +4231,10 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // If this process has a different JIT policy to the site then it can't be
   // reused.
   if (host->IsJitDisabled() != site_info.is_jit_disabled())
+    return false;
+
+  // PDF and non-PDF content cannot share processes.
+  if (host->IsPdf() != site_info.is_pdf())
     return false;
 
   // Check whether the given host and the intended site_info will be using the

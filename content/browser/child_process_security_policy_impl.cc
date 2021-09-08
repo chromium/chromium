@@ -180,7 +180,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       SiteInfo(GURL(), GURL(), false, storage_partition_config,
                web_exposed_isolation_info, /* is_guest */ false,
                /* does_site_request_dedicated_process_for_coop */ false,
-               /* is_jit_disabled */ false));
+               /* is_jit_disabled */ false, /* is_pdf */ false));
 }
 
 // static
@@ -242,6 +242,7 @@ bool ProcessLock::operator==(const ProcessLock& rhs) const {
     is_equal =
         site_info_->process_lock_url() == rhs.site_info_->process_lock_url() &&
         site_info_->is_origin_keyed() == rhs.site_info_->is_origin_keyed() &&
+        site_info_->is_pdf() == rhs.site_info_->is_pdf() &&
         (site_info_->web_exposed_isolation_info() ==
          rhs.site_info_->web_exposed_isolation_info());
   }
@@ -255,12 +256,14 @@ bool ProcessLock::operator!=(const ProcessLock& rhs) const {
 
 bool ProcessLock::operator<(const ProcessLock& rhs) const {
   const auto this_is_origin_keyed = is_origin_keyed();
+  const auto this_is_pdf = is_pdf();
   const auto this_web_exposed_isolation_info = web_exposed_isolation_info();
   const auto rhs_is_origin_keyed = is_origin_keyed();
+  const auto rhs_is_pdf = rhs.is_pdf();
   const auto rhs_web_exposed_isolation_info = web_exposed_isolation_info();
-  return std::tie(lock_url(), this_is_origin_keyed,
+  return std::tie(lock_url(), this_is_origin_keyed, this_is_pdf,
                   this_web_exposed_isolation_info) <
-         std::tie(rhs.lock_url(), rhs_is_origin_keyed,
+         std::tie(rhs.lock_url(), rhs_is_origin_keyed, rhs_is_pdf,
                   rhs_web_exposed_isolation_info);
 }
 
@@ -272,6 +275,9 @@ std::string ProcessLock::ToString() const {
 
     if (is_origin_keyed())
       ret += " origin-keyed";
+
+    if (is_pdf())
+      ret += " pdf";
 
     if (web_exposed_isolation_info().is_isolated()) {
       ret += " cross-origin-isolated";
@@ -1709,7 +1715,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
                         .WithStoragePartitionConfig(
                             actual_process_lock.storage_partition_config())
                         .WithWebExposedIsolationInfo(
-                            actual_process_lock.web_exposed_isolation_info())));
+                            actual_process_lock.web_exposed_isolation_info())
+                        .WithIsPdf(actual_process_lock.is_pdf())));
 
         if (actual_process_lock.is_locked_to_site()) {
           // Jail-style enforcement - a process with a lock can only access

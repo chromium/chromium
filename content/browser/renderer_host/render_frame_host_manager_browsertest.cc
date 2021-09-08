@@ -8618,7 +8618,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
           false /* does_site_request_dedicated_process_for_coop */,
-          false /* is_jit_disabled */)),
+          false /* is_jit_disabled */, false /* is_pdf */)),
       policy->GetProcessLock(process2->GetID()));
 
   // Ensure also that the foo.com process didn't change midway through the

@@ -2800,17 +2800,18 @@ UrlInfo NavigationRequest::GetUrlInfo() {
 
   // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
   if (GetWebBundleURL().is_valid()) {
-    return UrlInfo(
-        UrlInfoInit(GetURL())
-            .WithOriginIsolationRequest(isolation_request)
-            .WithOrigin(url::Origin::Resolve(
-                GetURL(), url::Origin::Create(GetWebBundleURL())))
-            .WithWebExposedIsolationInfo(web_exposed_isolation_info));
+    return UrlInfo(UrlInfoInit(GetURL())
+                       .WithOriginIsolationRequest(isolation_request)
+                       .WithOrigin(url::Origin::Resolve(
+                           GetURL(), url::Origin::Create(GetWebBundleURL())))
+                       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
+                       .WithIsPdf(is_pdf_));
   }
 
   return UrlInfo(UrlInfoInit(GetURL())
                      .WithOriginIsolationRequest(isolation_request)
-                     .WithWebExposedIsolationInfo(web_exposed_isolation_info));
+                     .WithWebExposedIsolationInfo(web_exposed_isolation_info)
+                     .WithIsPdf(is_pdf_));
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {

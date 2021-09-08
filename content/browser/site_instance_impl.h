@@ -132,6 +132,10 @@ struct CONTENT_EXPORT UrlInfo {
   // Cross-Origin-Embedder-Policy, and unlocks SharedArrayBuffer.
   WebExposedIsolationInfo web_exposed_isolation_info;
 
+  // Indicates that the URL directs to PDF content, which should be isolated
+  // from other types of content.
+  bool is_pdf;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -151,6 +155,7 @@ class CONTENT_EXPORT UrlInfoInit {
       absl::optional<StoragePartitionConfig> storage_partition_config);
   UrlInfoInit& WithWebExposedIsolationInfo(
       const WebExposedIsolationInfo& web_exposed_isolation_info);
+  UrlInfoInit& WithIsPdf(bool is_pdf);
 
  private:
   UrlInfoInit(UrlInfoInit&);
@@ -163,6 +168,7 @@ class CONTENT_EXPORT UrlInfoInit {
   url::Origin origin_;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   WebExposedIsolationInfo web_exposed_isolation_info_;
+  bool is_pdf_ = false;
 };  // class UrlInfoInit
 
 // SiteInfo represents the principal of a SiteInstance. All documents and
@@ -268,7 +274,8 @@ class CONTENT_EXPORT SiteInfo {
            const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest,
            bool does_site_request_dedicated_process_for_coop,
-           bool is_jit_disabled);
+           bool is_jit_disabled,
+           bool is_pdf);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -329,6 +336,7 @@ class CONTENT_EXPORT SiteInfo {
   bool is_guest() const { return is_guest_; }
   bool is_error_page() const;
   bool is_jit_disabled() const { return is_jit_disabled_; }
+  bool is_pdf() const { return is_pdf_; }
 
   // See comments on `does_site_request_dedicated_process_for_coop_` for more
   // details.
@@ -473,6 +481,9 @@ class CONTENT_EXPORT SiteInfo {
 
   // Indicates that JIT is disabled for this SiteInfo.
   bool is_jit_disabled_ = false;
+
+  // Indicates that this SiteInfo is for PDF content.
+  bool is_pdf_ = false;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
@@ -733,6 +744,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // Returns true if this SiteInstance is for a site that has JIT disabled.
   bool IsJitDisabled();
+
+  // Returns true if this SiteInstance is for a site that contains PDF contents.
+  bool IsPdf();
 
   // Set the web site that this SiteInstance is rendering pages for.
   // This includes the scheme and registered domain, but not the port.  If the

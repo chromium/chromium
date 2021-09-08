@@ -136,6 +136,9 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() && site_info_->is_origin_keyed();
   }
 
+  // Returns whether this ProcessLock is specific to PDF contents.
+  bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
+
   // Returns the StoragePartitionConfig that corresponds to the SiteInfo the
   // lock is used with.
   StoragePartitionConfig storage_partition_config() const {

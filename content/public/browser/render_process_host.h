@@ -203,6 +203,10 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // JIT disabled.
   virtual bool IsJitDisabled() = 0;
 
+  // Indicates whether the current RenderProcessHost exclusively hosts PDF
+  // content.
+  virtual bool IsPdf() = 0;
+
   // Returns the storage partition associated with this process.
   virtual StoragePartition* GetStoragePartition() = 0;
 
