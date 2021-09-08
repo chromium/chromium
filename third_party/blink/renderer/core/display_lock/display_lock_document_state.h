@@ -99,31 +99,64 @@ class CORE_EXPORT DisplayLockDocumentState final
       const Node* node,
       bool self_was_forced,
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
-  void EndNodeForcedScope(
+  void BeginRangeForcedScope(
+      const Range* range,
       DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
+  void EndForcedScope(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain);
 
   // Forces the lock on the given element, if it isn't yet forced but appears on
   // the ancestor chain for the forced element (which was set via
   // `BeginNodeForcedScope()`).
   void ForceLockIfNeeded(Element*);
 
-  class ForcedNodeInfo {
-    DISALLOW_NEW();
+  class ForcedInfo : public GarbageCollected<ForcedInfo> {
+   public:
+    explicit ForcedInfo(DisplayLockUtilities::ScopedForcedUpdate::Impl* chain)
+        : chain_(chain) {}
 
+    virtual void ForceLockIfNeeded(Element* new_locked_element) = 0;
+    DisplayLockUtilities::ScopedForcedUpdate::Impl* Chain() { return chain_; }
+
+    virtual void Trace(Visitor* visitor) const { visitor->Trace(chain_); }
+
+   private:
+    Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain_;
+  };
+
+  class ForcedNodeInfo : public ForcedInfo {
    public:
     ForcedNodeInfo(const Node* node,
                    bool self_forced,
                    DisplayLockUtilities::ScopedForcedUpdate::Impl* chain)
-        : node(node), self_forced(self_forced), chain(chain) {}
+        : ForcedInfo(chain), node_(node), self_forced_(self_forced) {}
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(node);
-      visitor->Trace(chain);
+    void ForceLockIfNeeded(Element* new_locked_element) override;
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(node_);
+      ForcedInfo::Trace(visitor);
     }
 
-    Member<const Node> node;
-    bool self_forced;
-    Member<DisplayLockUtilities::ScopedForcedUpdate::Impl> chain;
+   private:
+    Member<const Node> node_;
+    bool self_forced_;
+  };
+
+  class ForcedRangeInfo : public ForcedInfo {
+   public:
+    ForcedRangeInfo(const Range* range,
+                    DisplayLockUtilities::ScopedForcedUpdate::Impl* chain)
+        : ForcedInfo(chain), range_(range) {}
+
+    void ForceLockIfNeeded(Element* new_locked_element) override;
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(range_);
+      ForcedInfo::Trace(visitor);
+    }
+
+   private:
+    Member<const Range> range_;
   };
 
   void NotifyPrintingOrPreviewChanged();
@@ -153,7 +186,7 @@ class CORE_EXPORT DisplayLockDocumentState final
 
   // Contains all of the currently forced node infos, each of which represents
   // the node that caused the scope to be created.
-  HeapVector<ForcedNodeInfo> forced_node_info_;
+  VectorOf<ForcedInfo> forced_infos_;
 
   bool printing_ = false;
 

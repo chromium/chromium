@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/dom/range.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -1590,6 +1591,7 @@ void Range::expand(const String& unit, ExceptionState& exception_state) {
 }
 
 DOMRectList* Range::getClientRects() const {
+  DisplayLockUtilities::ScopedForcedUpdate force_locks(this);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   Vector<FloatQuad> quads;
@@ -1711,6 +1713,7 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
 }
 
 FloatRect Range::BoundingRect() const {
+  DisplayLockUtilities::ScopedForcedUpdate force_locks(this);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   Vector<FloatQuad> quads;

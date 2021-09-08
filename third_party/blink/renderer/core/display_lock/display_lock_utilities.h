@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -53,6 +54,8 @@ class CORE_EXPORT DisplayLockUtilities {
         DocumentUpdateReason reason);
     friend VisibleSelection
     FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated() const;
+    friend FloatRect Range::BoundingRect() const;
+    friend DOMRectList* Range::getClientRects() const;
 
     friend class DisplayLockContext;
 
@@ -61,12 +64,15 @@ class CORE_EXPORT DisplayLockUtilities {
 
     explicit ScopedForcedUpdate(const Node* node, bool include_self = false)
         : impl_(MakeGarbageCollected<Impl>(node, include_self)) {}
+    explicit ScopedForcedUpdate(const Range* range)
+        : impl_(MakeGarbageCollected<Impl>(range)) {}
 
     friend class DisplayLockDocumentState;
 
     class CORE_EXPORT Impl final : public GarbageCollected<Impl> {
      public:
       explicit Impl(const Node* node, bool include_self = false);
+      explicit Impl(const Range* range);
 
       // Adds another display-lock scope to this chain. Added when a new lock is
       // created in the ancestor chain of this chain's node.
