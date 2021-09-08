@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
@@ -34,8 +33,8 @@ namespace ui {
 class ScenicWindowDelegate;
 class ScenicWindowManager;
 
-class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
-                                             public InputEventSink {
+class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
+                                                   public InputEventSink {
  public:
   // Both |window_manager| and |delegate| must outlive the ScenicWindow.
   // |view_token| is passed to Scenic to attach the view to the view tree.
@@ -46,25 +45,14 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
                PlatformWindowInitProperties properties);
   ~ScenicWindow() override;
 
-  // Converts Scenic's rect-based representation of insets to gfx::Insets.
-  // Returns zero-width insets if |inset_from_min| and |inset_from_max| are
-  // uninitialized (indicating that no insets were provided from Scenic).
-  static gfx::Insets ConvertInsets(
-      float device_pixel_ratio,
-      const fuchsia::ui::gfx::ViewProperties& view_properties);
+  ScenicWindow(const ScenicWindow&) = delete;
+  ScenicWindow& operator=(const ScenicWindow&) = delete;
 
-  scenic::Session* scenic_session() { return &scenic_session_; }
-
-  // Embeds the View identified by |token| into the render node,
-  // causing its contents to be displayed in this window.
-  void AttachSurfaceView(fuchsia::ui::views::ViewHolderToken token);
-
-  // Returns a ViewRef associated with this window.
+  // Returns a ViewRef that may be used to refer to this window's View, when
+  // interacting with View-based services such as the SemanticsManager.
   fuchsia::ui::views::ViewRef CloneViewRef();
 
-  bool virtual_keyboard_enabled() const { return virtual_keyboard_enabled_; }
-
-  // PlatformWindow implementation.
+  // ui::PlatformWindow implementation.
   gfx::Rect GetBounds() const override;
   void SetBounds(const gfx::Rect& bounds) override;
   void SetTitle(const std::u16string& title) override;
@@ -94,28 +82,58 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
 
+  // Used by ScenicGpuHost to embed the View identified by |token| into the
+  // render node, causing its contents to be displayed in this window.
+  void AttachSurfaceView(fuchsia::ui::views::ViewHolderToken token);
+
+  // Used by OzoneScenicPlatform to determine whether to enable on-screen
+  // keyboard features when creating the InputMethod for the window.
+  bool is_virtual_keyboard_enabled() const {
+    return is_virtual_keyboard_enabled_;
+  }
+
  private:
+  // ui::InputEventSink implementation, used to scale input event locations
+  // according to the View's current device pixel ratio.
+  void DispatchEvent(ui::Event* event) override;
+
   // Callbacks for |scenic_session_|.
   void OnScenicError(zx_status_t status);
   void OnScenicEvents(std::vector<fuchsia::ui::scenic::Event> events);
 
   // Called from OnScenicEvents() to handle view properties and metrics changes.
-  void OnViewProperties(const fuchsia::ui::gfx::ViewProperties& properties);
-  void OnViewMetrics(const fuchsia::ui::gfx::Metrics& metrics);
   void OnViewAttachedChanged(bool is_view_attached);
+  void OnViewMetrics(const fuchsia::ui::gfx::Metrics& metrics);
+  void OnViewProperties(const fuchsia::ui::gfx::ViewProperties& properties);
 
-  // Called from OnScenicEvents() to handle input events.
+  // Called from OnScenicEvents() to handle focus change and input events.
   void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
 
-  // InputEventSink implementation.
-  void DispatchEvent(ui::Event* event) override;
-
+  // Sizes the Scenic nodes based on the View dimensions, and device pixel
+  // ratio, and signals the dimensions change to the window delegate.
   void UpdateSize();
+
+  // Attaches or detaches the root node to match the visibility and dimensions
+  // of the window's View. Returns true if the root node is currently visible.
+  bool UpdateRootNodeVisibility();
+
+  // Returns true if the View has zero-sized dimensions set.
+  bool is_zero_sized() const {
+    return view_properties_ && ((view_properties_->bounding_box.max.x ==
+                                 view_properties_->bounding_box.min.x) ||
+                                (view_properties_->bounding_box.max.y ==
+                                 view_properties_->bounding_box.min.y));
+  }
 
   ScenicWindowManager* const manager_;
   PlatformWindowDelegate* const delegate_;
   ScenicWindowDelegate* const scenic_window_delegate_;
   gfx::AcceleratedWidget const window_id_;
+
+  // Handle to a kernel object which identifies this window's View
+  // across the system. ViewRef consumers can access the handle by
+  // calling CloneViewRef().
+  const fuchsia::ui::views::ViewRef view_ref_;
 
   // Dispatches Scenic input events as Chrome ui::Events.
   InputEventDispatcher event_dispatcher_;
@@ -129,11 +147,6 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // Used for safely queueing Present() operations on |scenic_session_|.
   SafePresenter safe_presenter_;
 
-  // Handle to a kernel object which identifies this window's View
-  // across the system. ViewRef consumers can access the handle by
-  // calling CloneViewRef().
-  fuchsia::ui::views::ViewRef view_ref_;
-
   // The view resource in |scenic_session_|.
   scenic::View view_;
 
@@ -146,6 +159,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // Node in |scenic_session_| for rendering (hit testing disabled).
   scenic::EntityNode render_node_;
 
+  // Holds the View into which the GPU processes composites the window's
+  // contents.
   std::unique_ptr<scenic::ViewHolder> surface_view_holder_;
 
   // The scale between logical pixels and physical pixels, set based on the
@@ -164,17 +179,25 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // corresponding Scenic view.
   gfx::Rect bounds_;
 
+  // Holds the contents of the fuchsia.ui.gfx.Event.view_properties_changed
+  // most recently received for the View, if any.
   absl::optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
 
-  bool visible_ = false;
-  bool virtual_keyboard_enabled_ = false;
+  // False if the View for this window is detached from the View tree, in which
+  // case it is definitely not visible.
+  bool is_visible_ = false;
 
-  // Tracks if the View was previously hidden due to having a size of zero.
-  // If the View was previously zero sized, then we need to re-attach it to
-  // its parent before we change its size to non-zero; and vice versa.
-  bool previous_view_is_zero_sized_ = false;
+  // True if the View occupies the full screen.
+  bool is_fullscreen_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(ScenicWindow);
+  // True if the on-screen virtual keyboard is available for this window.
+  bool is_virtual_keyboard_enabled_ = false;
+
+  // True if the root node is attached to the View, to be rendered.
+  bool is_root_node_shown_ = false;
+
+  // True if |view_| is currently attached to a scene.
+  bool is_view_attached_ = false;
 };
 
 }  // namespace ui

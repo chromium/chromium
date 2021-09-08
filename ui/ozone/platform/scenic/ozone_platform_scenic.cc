@@ -134,7 +134,7 @@ class OzonePlatformScenic : public OzonePlatform,
       internal::InputMethodDelegate* delegate,
       gfx::AcceleratedWidget widget) override {
     return std::make_unique<InputMethodFuchsia>(
-        window_manager_->GetWindow(widget)->virtual_keyboard_enabled(),
+        window_manager_->GetWindow(widget)->is_virtual_keyboard_enabled(),
         delegate, window_manager_->GetWindow(widget)->CloneViewRef());
   }
 
