@@ -7,6 +7,11 @@
 #include "base/logging.h"
 
 namespace autofill_assistant {
+namespace {
+
+constexpr char kGoogleTtsEngineId[] = "com.google.android.tts";
+
+}  // namespace
 
 AutofillAssistantTtsController::AutofillAssistantTtsController(
     content::TtsController* tts_controller)
@@ -22,6 +27,9 @@ void AutofillAssistantTtsController::Speak(const std::string& message,
   tts_utterance->SetLang(locale);
   tts_utterance->SetShouldClearQueue(true);
   tts_utterance->SetEventDelegate(this);
+  // TtsController will use the default TTS engine if the Google TTS engine
+  // is not available.
+  tts_utterance->SetEngineId(kGoogleTtsEngineId);
 
   tts_controller_->SpeakOrEnqueue(std::move(tts_utterance));
 }

@@ -83,6 +83,7 @@ TEST_F(AutofillAssistantTtsControllerTest, SpeakMessage) {
       .WillOnce([](std::unique_ptr<content::TtsUtterance> utterance) {
         ASSERT_EQ(utterance->GetText(), "message");
         ASSERT_EQ(utterance->GetLang(), "locale");
+        ASSERT_EQ(utterance->GetEngineId(), "com.google.android.tts");
       });
 
   autofill_assistant_tts_controller_->Speak("message", "locale");
