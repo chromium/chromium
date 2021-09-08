@@ -31,19 +31,6 @@ void CodeCacheLoader::FetchFromCodeCache(mojom::CodeCacheType cache_type,
   }
 }
 
-void CodeCacheLoader::ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
-                                          const WebURL& url) {
-  if (code_cache_host_) {
-    code_cache_host_->ClearCodeCacheEntry(
-        cache_type, static_cast<GURL>(static_cast<KURL>(url)));
-  } else {
-    // TODO(mythria): This path is required for worklets currently. Once we
-    // update worker requests to go through WorkerHost remove this path.
-    Platform::Current()->ClearCodeCacheEntry(
-        cache_type, static_cast<GURL>(static_cast<KURL>(url)));
-  }
-}
-
 // static
 std::unique_ptr<WebCodeCacheLoader> WebCodeCacheLoader::Create(
     mojom::CodeCacheHost* code_cache_host) {

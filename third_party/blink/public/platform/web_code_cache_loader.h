@@ -29,9 +29,6 @@ class BLINK_PLATFORM_EXPORT WebCodeCacheLoader {
   virtual void FetchFromCodeCache(blink::mojom::CodeCacheType cache_type,
                                   const WebURL& url,
                                   FetchCodeCacheCallback) = 0;
-
-  virtual void ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
-                                   const WebURL& url) = 0;
 };
 
 }  // namespace blink
