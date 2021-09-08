@@ -463,7 +463,7 @@ void DedicatedWebTransportHttp3Client::OnHeadersComplete() {
 }
 
 void DedicatedWebTransportHttp3Client::OnConnectStreamClosed() {
-  error_.net_error = FAILED;
+  error_.net_error = ERR_FAILED;
   TransitionToState(FAILED);
 }
 
@@ -510,6 +510,7 @@ int DedicatedWebTransportHttp3Client::DoConfirmConnection() {
 
 void DedicatedWebTransportHttp3Client::TransitionToState(
     WebTransportState next_state) {
+  DCHECK_NE(state_, next_state);
   const WebTransportState last_state = state_;
   state_ = next_state;
   switch (next_state) {
@@ -528,7 +529,7 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
       break;
 
     case FAILED:
-      DCHECK_NE(error_.net_error, OK);
+      DCHECK_LT(error_.net_error, OK);
       if (error_.details.empty()) {
         error_.details = ErrorToString(error_.net_error);
       }
@@ -649,7 +650,10 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     return;
   }
 
-  TransitionToState(FAILED);
+  // `state_` can be FAILED when the stream associated with a WebTransport
+  // session is closed.
+  if (state_ != FAILED)
+    TransitionToState(FAILED);
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
