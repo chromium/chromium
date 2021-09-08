@@ -335,6 +335,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &reading_list::switches::kReadLater,
     &send_tab_to_self::kSendTabToSelfV2,
     &send_tab_to_self::kSendTabToSelfManageDevicesLink,
+    &send_tab_to_self::kSendTabToSelfWhenSignedIn,
     &signin::kMobileIdentityConsistencyPromos,
     &switches::kDeprecateMenagerieAPI,
     &switches::kForceStartupSigninPromo,

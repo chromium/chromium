@@ -94,24 +94,43 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         List<TargetDeviceInfo> targetDeviceList = new ArrayList<TargetDeviceInfo>();
         SendTabToSelfAndroidBridgeJni.get().getAllTargetDeviceInfos(mProfile, targetDeviceList);
 
-        if (!mIsSyncEnabled) {
-            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NotSyncing");
-            mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                    R.layout.send_tab_to_self_feature_unavailable_prompt, null);
-            mToolbarView.setVisibility(View.GONE);
-            enableSettingsButton();
-            return;
-        }
-
-        if (targetDeviceList.isEmpty()) {
-            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-            mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                    R.layout.send_tab_to_self_feature_unavailable_prompt, null);
-            mToolbarView.setVisibility(View.GONE);
-            TextView textView = mContentView.findViewById(R.id.enable_sync_text_field);
-            textView.setText(mContext.getResources().getString(
-                    R.string.sharing_hub_no_devices_available_text));
-            return;
+        // First check if sharing is unavailable, e.g. because there are no target devices. If so,
+        // show |sharingUnavailableView|, modulo adjusting the strings and the visibility of the
+        // settings button.
+        ViewGroup sharingUnavailableView = (ViewGroup) LayoutInflater.from(mContext).inflate(
+                R.layout.send_tab_to_self_feature_unavailable_prompt, null);
+        TextView title = sharingUnavailableView.findViewById(R.id.title);
+        TextView instructionsToEnable =
+                sharingUnavailableView.findViewById(R.id.instructions_to_enable);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_WHEN_SIGNED_IN)) {
+            if (targetDeviceList.isEmpty()) {
+                mContentView = sharingUnavailableView;
+                title.setText(R.string.send_tab_to_self_share_activity_title);
+                instructionsToEnable.setText(R.string.send_tab_to_self_when_signed_in_unavailable);
+                mToolbarView.setVisibility(View.GONE);
+                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
+                return;
+            }
+            // Sharing is available.
+        } else {
+            // Note the string below is more general than its "no_devices" name suggests.
+            title.setText(R.string.sharing_no_devices_available_title);
+            if (!mIsSyncEnabled) {
+                mContentView = sharingUnavailableView;
+                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
+                enableSettingsButton();
+                mToolbarView.setVisibility(View.GONE);
+                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NotSyncing");
+                return;
+            }
+            if (targetDeviceList.isEmpty()) {
+                mContentView = sharingUnavailableView;
+                instructionsToEnable.setText(R.string.sharing_hub_sync_disabled_text);
+                mToolbarView.setVisibility(View.GONE);
+                RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
+                return;
+            }
+            // Sharing is available.
         }
 
         mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
