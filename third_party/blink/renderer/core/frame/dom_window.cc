@@ -701,9 +701,7 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   // capabilities.  An explainer for the general delegation API is here:
   // https://github.com/mustaqahmed/capability-delegation
   bool delegate_payment_request = false;
-  if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
-          GetExecutionContext()) &&
-      LocalFrame::HasTransientUserActivation(source_frame) &&
+  if (LocalFrame::HasTransientUserActivation(source_frame) &&
       options->hasDelegate()) {
     Vector<String> capability_list;
     options->delegate().Split(' ', capability_list);
