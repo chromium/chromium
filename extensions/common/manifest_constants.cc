@@ -155,13 +155,6 @@ const char kUrlHandlerTitle[] = "title";
 const char kUsbPrinters[] = "usb_printers";
 const char kVersion[] = "version";
 const char kVersionName[] = "version_name";
-const char kWebAppLinkedShortcutItems[] = "web_app_linked_shortcut_items";
-const char kWebAppLinkedShortcutItemIcons[] = "shortcut_item_icons";
-const char kWebAppLinkedShortcutItemIconSize[] = "size";
-const char kWebAppLinkedShortcutItemIconURL[] = "url";
-const char kWebAppLinkedShortcutItemName[] = "name";
-const char kWebAppLinkedShortcutItemURL[] = "url";
-const char kWebAppShortcutIcons[] = "web_app_shortcut_icons";
 const char kWebURLs[] = "app.urls";
 const char kWebview[] = "webview";
 const char kWebviewAccessibleResources[] = "accessible_resources";
@@ -625,35 +618,6 @@ const char kInvalidWebAccessibleResourcesList[] =
     "Invalid value for 'web_accessible_resources'.";
 const char kInvalidWebAccessibleResource[] =
     "Invalid value for 'web_accessible_resources[*]'. *";
-const char kInvalidWebAppLinkedShortcutItem[] =
-    "Invalid 'web_app_linked_shortcut_item'. Must be a dictionary";
-const char kInvalidWebAppLinkedShortcutItems[] =
-    "Invalid 'web_app_linked_shortcut_items'. Must be an array";
-const char kInvalidWebAppLinkedShortcutItemsNotBookmarkApp[] =
-    "The 'web_app_linked_shortcut_items' manifest key is only supported for "
-    "Bookmark Apps.";
-const char kInvalidWebAppLinkedShortcutItemIcons[] =
-    "Invalid 'shortcut_item_icons'. Must be an array";
-const char kInvalidWebAppLinkedShortcutItemIcon[] =
-    "Invalid 'shortcut_item_icon'. Must be a dictionary";
-const char kInvalidWebAppLinkedShortcutItemIconSize[] =
-    "Invalid 'size' for 'shortcut_item_icon'. Must be an "
-    "integer";
-const char kInvalidWebAppLinkedShortcutItemIconUrl[] =
-    "Invalid 'url' for 'shortcut_item_icon'. Must be a "
-    "string that is a valid URL";
-const char kInvalidWebAppLinkedShortcutItemName[] =
-    "Invalid 'name' for 'web_app_linked_shortcut_item'. Must be a string.";
-const char kInvalidWebAppLinkedShortcutItemUrl[] =
-    "Invalid 'url' for 'web_app_linked_shortcut_item'. Must be a string that "
-    "is a valid URL";
-const char kInvalidWebAppShortcutItemIcons[] =
-    "Invalid value for web app shortcut item's icons. Must be a Dictionary.";
-const char kInvalidWebAppShortcutIcons[] =
-    "Invalid value for 'web_app_shortcut_icons'. Must be a Dictionary.";
-const char kInvalidWebAppShortcutIconsNotBookmarkApp[] =
-    "The 'web_app_shortcut_icons' manifest key is only supported for Bookmark "
-    "Apps.";
 const char kInvalidWebview[] =
     "Invalid value for 'webview'.";
 const char kInvalidWebviewAccessibleResourcesList[] =

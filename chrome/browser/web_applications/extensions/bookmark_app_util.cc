@@ -21,7 +21,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
-#include "extensions/common/manifest_handlers/web_app_shortcut_icons_handler.h"
 #include "url/gurl.h"
 
 namespace extensions {
