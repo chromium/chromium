@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
@@ -272,11 +273,6 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
-#endif
 
 using base::TimeDelta;
 using base::UserMetricsAction;
@@ -684,15 +680,12 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         AddChildView(std::make_unique<ContentsSeparator>());
   }
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (lens::features::kEnableSidePanelForLensRegionSearch.Get() ||
       lens::features::kEnableSidePanelForLensImageSearch.Get()) {
     lens_side_panel_ = AddChildView(std::make_unique<SidePanel>());
     lens_side_panel_controller_ =
         std::make_unique<lens::LensSidePanelController>(lens_side_panel_, this);
   }
-#endif
 
   if (browser_->is_type_normal() &&
       base::FeatureList::IsEnabled(features::kExtensionsSidePanel)) {

@@ -230,8 +230,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #endif
 
@@ -984,8 +983,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendCurrentExtensionItems();
   }
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
     if (IsLensRegionSearchEnabled()) {
@@ -3056,14 +3054,10 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 }
 
 bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
          search::DefaultSearchProviderIsGoogle(GetProfile()) &&
          GetPrefs(browser_context_)
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
-#else
-  return false;
-#endif
 }
 
 void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
@@ -3308,8 +3302,7 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 }
 
 void RenderViewContextMenu::ExecLensRegionSearch() {
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   if (!lens_region_search_controller_)
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(

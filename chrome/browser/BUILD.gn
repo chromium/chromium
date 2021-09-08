@@ -5637,7 +5637,7 @@ static_library("browser") {
     ]
   }
 
-  if ((is_win || is_linux || is_chromeos) && is_chrome_branded) {
+  if (is_win || is_linux || is_chromeos) {
     # TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
     deps += [ "//chrome/browser/lens/region_search" ]
   }

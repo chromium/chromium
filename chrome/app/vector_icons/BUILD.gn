@@ -238,7 +238,6 @@ aggregate_vector_icons("chrome_vector_icons") {
   if (is_chrome_branded) {
     sources += [
       "google_chrome/google_g_logo.icon",
-      "google_chrome/google_lens_full_logo.icon",
       "google_chrome/google_pay_logo.icon",
     ]
   }
