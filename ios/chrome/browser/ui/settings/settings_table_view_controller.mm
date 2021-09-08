@@ -570,13 +570,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     item = signinPromoItem;
   } else if (signin::IsSigninAllowed(_browserState->GetPrefs()) &&
              !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    AccountSignInItem* signInTextItem =
-        [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
-    signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-    signInTextItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
-
-    item = signInTextItem;
+    item = [self accountSignInItem];
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
@@ -662,12 +656,20 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
     _hasRecordedSigninImpression = YES;
   }
+  return [self accountSignInItem];
+}
+
+- (TableViewItem*)accountSignInItem {
   AccountSignInItem* signInTextItem =
       [[AccountSignInItem alloc] initWithType:SettingsItemTypeSignInButton];
   signInTextItem.accessibilityIdentifier = kSettingsSignInCellId;
-  signInTextItem.detailText =
-      l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
-
+  if (!HasManagedSyncDataType(_browserState)) {
+    signInTextItem.detailText =
+        l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE);
+  } else {
+    signInTextItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED);
+  }
   return signInTextItem;
 }
 

@@ -2326,6 +2326,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNC_ON" desc="The subtitle for the setting item of the signed in user when sync is on [iOS only]">
         Sync is on
       </message>
+      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE_SYNC_MANAGED" desc="The subtitle for the setting item of the signed in user when sync is managed by policies [iOS only]">
+        To sync and personalize across devices, turn on sync.
+      </message>
       <message name="IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_TITLE" desc="Alert title to display an error after a reauthentication, related to IDS_IOS_SIGN_TRUSTED_VAULT_ERROR_DIALOG_MESSAGE [iOS only]">
         Authentication Error
       </message>
