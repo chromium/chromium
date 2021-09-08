@@ -15,6 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/event_filtering_info.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -53,6 +54,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_origin_trials.h"
 
 namespace extensions {
 
@@ -78,9 +80,8 @@ bool IsPrefixedAPI(base::StringPiece api, base::StringPiece root_api) {
 // 'cast.streaming.session' and a reference of 'cast', this returns
 // 'cast.streaming'. If reference is empty, this simply returns the first layer;
 // so given 'app.runtime' and no reference, this returns 'app'.
-base::StringPiece GetFirstDifferentAPIName(
-    base::StringPiece api_name,
-    base::StringPiece reference) {
+base::StringPiece GetFirstDifferentAPIName(base::StringPiece api_name,
+                                           base::StringPiece reference) {
   base::StringPiece::size_type dot =
       api_name.find('.', reference.empty() ? 0 : reference.size() + 1);
   if (dot == base::StringPiece::npos)
@@ -123,9 +124,8 @@ v8::Local<v8::Object> GetOrCreateChrome(v8::Local<v8::Context> context) {
   v8::Local<v8::Object> chrome_object;
   if (chrome_value->IsUndefined()) {
     chrome_object = v8::Object::New(context->GetIsolate());
-    v8::Maybe<bool> success =
-        context->Global()->CreateDataProperty(context, chrome_string,
-                                              chrome_object);
+    v8::Maybe<bool> success = context->Global()->CreateDataProperty(
+        context, chrome_string, chrome_object);
     if (!success.IsJust() || !success.FromJust())
       return v8::Local<v8::Object>();
   } else if (chrome_value->IsObject()) {
@@ -366,8 +366,32 @@ bool IsRuntimeAvailableToContext(ScriptContext* context) {
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
     ExternallyConnectableInfo* info = static_cast<ExternallyConnectableInfo*>(
         extension->GetManifestData(manifest_keys::kExternallyConnectable));
-    if (info && info->matches.MatchesURL(context->url()))
+    if (!info) {
+      continue;
+    }
+    // Sites can only connect to the CryptoToken component extension if it has
+    // been enabled via feature flag or deprecation trial.
+    // TODO(1224886): Delete together with CryptoToken code.
+    if (extension->id() == extension_misc::kCryptotokenExtensionId) {
+      absl::optional<blink::WebDocument> opt_document;
+      if (context->web_frame()) {
+        opt_document = context->web_frame()->GetDocument();
+      }
+      const bool u2f_api_enabled =
+          base::FeatureList::IsEnabled(
+              extensions_features::kU2FSecurityKeyAPI) ||
+          (opt_document &&
+           blink::WebOriginTrials::isTrialEnabled(
+               &opt_document.value(),
+               blink::WebString::FromUTF8(
+                   extension_misc::kCryptotokenDeprecationTrialName)));
+      if (!u2f_api_enabled) {
+        continue;
+      }
+    }
+    if (info->matches.MatchesURL(context->url())) {
       return true;
+    }
   }
   return false;
 }
@@ -746,9 +770,8 @@ void NativeExtensionBindingsSystem::GetInternalAPI(
   std::string api_name = gin::V8ToString(isolate, info[0]);
   const Feature* feature = FeatureProvider::GetAPIFeature(api_name);
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
-  if (!feature ||
-      !script_context->IsAnyFeatureAvailableToContext(
-          *feature, CheckAliasStatus::NOT_ALLOWED)) {
+  if (!feature || !script_context->IsAnyFeatureAvailableToContext(
+                      *feature, CheckAliasStatus::NOT_ALLOWED)) {
     NOTREACHED();
     return;
   }
