@@ -86,7 +86,7 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile);
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType type,
                                 const GURL& url,
-                                apps::AppLaunchParams& params);
+                                const apps::AppLaunchParams& params);
 
 // Returns a browser that is hosting the given system app type and browser type,
 // or nullptr if not found.

@@ -203,7 +203,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType app_type,
                                 const GURL& url,
-                                apps::AppLaunchParams& params) {
+                                const apps::AppLaunchParams& params) {
   // Exit early if we can't create browser windows (e.g. when browser is
   // shutting down, or a wrong profile is given).
   if (Browser::GetCreationStatusForProfile(profile) !=
