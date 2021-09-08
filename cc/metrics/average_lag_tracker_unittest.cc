@@ -35,7 +35,7 @@ class AverageLagTrackerTest : public testing::Test {
                                  float delta,
                                  float predicted_delta = 0) {
     AverageLagTracker::EventInfo event_info(
-        0, delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
+        delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
         AverageLagTracker::EventType::ScrollBegin);
     event_info.finish_timestamp = frame_time;
     average_lag_tracker_->AddScrollEventInFrame(event_info);
@@ -46,7 +46,7 @@ class AverageLagTrackerTest : public testing::Test {
                                   float delta,
                                   float predicted_delta = 0) {
     AverageLagTracker::EventInfo event_info(
-        0, delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
+        delta, predicted_delta != 0 ? predicted_delta : delta, event_time,
         AverageLagTracker::EventType::ScrollUpdate);
     event_info.finish_timestamp = frame_time;
     average_lag_tracker_->AddScrollEventInFrame(event_info);

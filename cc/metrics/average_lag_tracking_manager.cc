@@ -45,12 +45,12 @@ void AverageLagTrackingManager::CollectScrollEventsFromFrame(
         &event_timestamp);
     DCHECK(found_event);
 
-    event_infos.emplace_back(
-        latency_info.trace_id(), latency_info.scroll_update_delta(),
-        latency_info.predicted_scroll_update_delta(), event_timestamp,
-        found_scroll_begin == true
-            ? AverageLagTracker::EventType::ScrollBegin
-            : AverageLagTracker::EventType::ScrollUpdate);
+    event_infos.emplace_back(latency_info.scroll_update_delta(),
+                             latency_info.predicted_scroll_update_delta(),
+                             event_timestamp,
+                             found_scroll_begin == true
+                                 ? AverageLagTracker::EventType::ScrollBegin
+                                 : AverageLagTracker::EventType::ScrollUpdate);
   }
 
   if (event_infos.size() > 0)
@@ -77,12 +77,11 @@ void AverageLagTrackingManager::DidPresentCompositorFrame(
   if (!frame_details.presentation_feedback.failed()) {
     DCHECK(!frame_details.swap_timings.is_null());
 
-    // Sorts data by trace_id because |infos| can be in non-asceding order
-    // (ascending order of trace_id/time is required by AverageLagTracker).
+    // AverageLagTracker expects events' info to be in ascending order.
     std::sort(infos.begin(), infos.end(),
               [](const AverageLagTracker::EventInfo& a,
                  const AverageLagTracker::EventInfo& b) {
-                return a.trace_id < b.trace_id;
+                return a.event_timestamp < b.event_timestamp;
               });
 
     for (AverageLagTracker::EventInfo& info : infos) {
