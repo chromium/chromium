@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

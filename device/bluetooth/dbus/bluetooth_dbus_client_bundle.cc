@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_advertisement_monitor_manager_client.h"

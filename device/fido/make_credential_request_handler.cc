@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_authenticator.h"

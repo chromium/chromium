@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
