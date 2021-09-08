@@ -45,7 +45,7 @@ std::unique_ptr<base::ListValue> VideoCodecProfilesToValue(
     const std::vector<media::VideoCodecProfile>& profiles) {
   auto list = std::make_unique<base::ListValue>();
   for (const auto& profile : profiles)
-    list->AppendString(media::GetProfileName(profile));
+    list->Append(media::GetProfileName(profile));
   return list;
 }
 
@@ -55,7 +55,7 @@ std::unique_ptr<base::DictionaryValue> CdmCapabilityToValue(
 
   auto audio_codec_list = std::make_unique<base::ListValue>();
   for (const auto& audio_codec : cdm_capability.audio_codecs)
-    audio_codec_list->AppendString(media::GetCodecName(audio_codec));
+    audio_codec_list->Append(media::GetCodecName(audio_codec));
   dict->SetList("Audio Codecs", std::move(audio_codec_list));
 
   auto video_codec_dict = std::make_unique<base::DictionaryValue>();
@@ -68,14 +68,14 @@ std::unique_ptr<base::DictionaryValue> CdmCapabilityToValue(
 
   auto encryption_scheme_list = std::make_unique<base::ListValue>();
   for (const auto& encryption_scheme : cdm_capability.encryption_schemes) {
-    encryption_scheme_list->AppendString(
+    encryption_scheme_list->Append(
         media::GetEncryptionSchemeName(encryption_scheme));
   }
   dict->SetList("Encryption Schemes", std::move(encryption_scheme_list));
 
   auto session_type_list = std::make_unique<base::ListValue>();
   for (const auto& session_type : cdm_capability.session_types)
-    session_type_list->AppendString(GetCdmSessionTypeName(session_type));
+    session_type_list->Append(GetCdmSessionTypeName(session_type));
   dict->SetList("Session Types", std::move(session_type_list));
 
   return dict;

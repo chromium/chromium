@@ -806,10 +806,6 @@ class BASE_EXPORT ListValue : public Value {
   explicit ListValue(span<const Value> in_list);
   explicit ListValue(ListStorage&& in_list) noexcept;
 
-  // Returns the number of Values in this list.
-  // DEPRECATED, use `GetList()::size()` instead.
-  size_t GetSize() const { return list().size(); }
-
   // Sets the list item at the given index to be the Value specified by
   // the value given.  If the index beyond the current end of the list, null
   // Values will be used to pad out the list.
@@ -843,11 +839,6 @@ class BASE_EXPORT ListValue : public Value {
   // Appends a Value to the end of the list.
   // DEPRECATED, use `Value::Append()` instead.
   void Append(std::unique_ptr<Value> in_value);
-
-  // Convenience forms of Append.
-  // DEPRECATED, use `Value::Append()` instead.
-  void AppendString(StringPiece in_value);
-  void AppendString(const std::u16string& in_value);
 
   // Swaps contents with the `other` list.
   // DEPRECATED, use `GetList()::swap()` instead.
