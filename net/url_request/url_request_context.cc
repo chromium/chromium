@@ -144,9 +144,6 @@ bool URLRequestContext::OnMemoryDump(
                   url_requests_->size());
   HttpTransactionFactory* transaction_factory = http_transaction_factory();
   if (transaction_factory) {
-    HttpNetworkSession* network_session = transaction_factory->GetSession();
-    if (network_session)
-      network_session->DumpMemoryStats(pmd, dump->absolute_name());
     HttpCache* http_cache = transaction_factory->GetCache();
     if (http_cache)
       http_cache->DumpMemoryStats(pmd, dump->absolute_name());

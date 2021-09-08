@@ -13,9 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_usage_estimator.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -556,20 +553,6 @@ void SpdySessionPool::RemoveRequestForSpdySession(SpdySessionRequest* request) {
 
   DCHECK(base::Contains(iter->second.request_set, request));
   RemoveRequestInternal(iter, iter->second.request_set.find(request));
-}
-
-// TODO(crbug.com/1239513): Consider removing this method.
-void SpdySessionPool::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_dump_absolute_name) const {
-  if (sessions_.empty())
-    return;
-  base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump(base::StringPrintf(
-          "%s/spdy_session_pool", parent_dump_absolute_name.c_str()));
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                  sessions_.size());
 }
 
 SpdySessionPool::RequestInfoForKey::RequestInfoForKey() = default;

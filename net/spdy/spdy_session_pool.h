@@ -36,12 +36,6 @@
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
-
 namespace net {
 
 class ClientSocketHandle;
@@ -303,9 +297,6 @@ class NET_EXPORT SpdySessionPool
   // they will not be used to service new streams. Does not close any existing
   // streams.
   void OnSSLConfigForServerChanged(const HostPortPair& server) override;
-
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_dump_absolute_name) const;
 
   void set_network_quality_estimator(
       NetworkQualityEstimator* network_quality_estimator) {

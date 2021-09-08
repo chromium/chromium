@@ -16,9 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_request_args.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/dns/host_resolver.h"
@@ -372,28 +369,6 @@ void HttpNetworkSession::GetSSLConfig(SSLConfig* server_config,
   server_config->ignore_certificate_errors = params_.ignore_certificate_errors;
   *proxy_config = *server_config;
   server_config->early_data_enabled = params_.enable_early_data;
-}
-
-void HttpNetworkSession::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  std::string name = base::StringPrintf("net/http_network_session_0x%" PRIxPTR,
-                                        reinterpret_cast<uintptr_t>(this));
-  base::trace_event::MemoryAllocatorDump* http_network_session_dump =
-      pmd->GetAllocatorDump(name);
-  if (http_network_session_dump == nullptr) {
-    http_network_session_dump = pmd->CreateAllocatorDump(name);
-    spdy_session_pool_.DumpMemoryStats(
-        pmd, http_network_session_dump->absolute_name());
-  }
-
-  // Create an empty row under parent's dump so size can be attributed correctly
-  // if |this| is shared between URLRequestContexts.
-  base::trace_event::MemoryAllocatorDump* empty_row_dump =
-      pmd->CreateAllocatorDump(base::StringPrintf(
-          "%s/http_network_session", parent_absolute_name.c_str()));
-  pmd->AddOwnershipEdge(empty_row_dump->guid(),
-                        http_network_session_dump->guid());
 }
 
 bool HttpNetworkSession::IsQuicEnabled() const {

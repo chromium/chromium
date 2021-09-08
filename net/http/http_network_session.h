@@ -39,9 +39,6 @@
 
 namespace base {
 class Value;
-namespace trace_event {
-class ProcessMemoryDump;
-}
 }
 
 namespace net {
@@ -277,11 +274,6 @@ class NET_EXPORT HttpNetworkSession {
 
   // Populates |server_config| and |proxy_config| based on this session.
   void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
   // Evaluates if QUIC is enabled for new streams.
   bool IsQuicEnabled() const;
