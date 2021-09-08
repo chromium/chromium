@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -105,6 +106,13 @@ std::string GenerateAbstractAddress() {
                       sizeof(kArcVmBootNotificationServerAddressPrefix) - 1);
   return address.append("-" +
                         base::GUID::GenerateRandomV4().AsLowercaseString());
+}
+
+// TODO(yusukes): Remove this once crosvm becomes 64 bit binary on ARM.
+int GetVmMemorySize(int vm_ram_mib) {
+  const int vm_ram_max_mib =
+      (sizeof(uintptr_t) == 4) ? 3500 : std::numeric_limits<int>::max();
+  return std::min(vm_ram_max_mib, vm_ram_mib);
 }
 
 // A debugd client that can fail to start Concierge.
@@ -1931,7 +1939,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledBig) {
   feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
   base::SystemMemoryInfoKB info;
   ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
-  const uint32_t total_mib = info.total / 1024;
+  const uint32_t total_mib = GetVmMemorySize(info.total / 1024);
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
@@ -1948,7 +1956,7 @@ TEST_F(ArcVmClientAdapterTest, ArcVmMemorySizeEnabledSmall) {
   feature_list.InitAndEnableFeatureWithParameters(kVmMemorySize, params);
   base::SystemMemoryInfoKB info;
   ASSERT_TRUE(base::GetSystemMemoryInfo(&info));
-  const uint32_t total_mib = info.total / 1024;
+  const uint32_t total_mib = GetVmMemorySize(info.total / 1024);
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
   StartMiniArcWithParams(true, std::move(start_params));
