@@ -43,10 +43,10 @@ KURL GetStoredBaseUrl(const ReferrerScriptInfo& referrer_info,
 
 bool ReferrerScriptInfo::IsDefaultValue(
     const KURL& script_origin_resource_name) const {
-  // TODO(https://crbug.com/1235205): `referrer_policy_` should be checked.
   return GetStoredBaseUrl(*this, script_origin_resource_name).IsNull() &&
          credentials_mode_ == network::mojom::CredentialsMode::kSameOrigin &&
-         nonce_.IsEmpty() && parser_state_ == kNotParserInserted;
+         nonce_.IsEmpty() && parser_state_ == kNotParserInserted &&
+         referrer_policy_ == network::mojom::ReferrerPolicy::kDefault;
 }
 
 ReferrerScriptInfo ReferrerScriptInfo::FromV8HostDefinedOptions(
