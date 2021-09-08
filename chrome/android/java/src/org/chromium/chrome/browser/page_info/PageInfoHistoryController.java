@@ -176,7 +176,12 @@ public class PageInfoHistoryController
     public void onItemRemoved(HistoryItem item) {
         mMainController.recordAction(PageInfoAction.PAGE_INFO_HISTORY_ENTRY_REMOVED);
         mDataIsStale = true;
-        return;
+        if (mContentManager.getItemCount() == 0) {
+            // Do the update right away if there are no entries left.
+            mLastVisitedTimestamp = 0;
+            setupHistoryRow();
+            mMainController.exitSubpage();
+        }
     }
 
     // HistoryContentManager.Observer

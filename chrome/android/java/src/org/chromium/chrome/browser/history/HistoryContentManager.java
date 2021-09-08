@@ -428,10 +428,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param item The item that has been removed.
      */
     public void onItemRemoved(HistoryItem item) {
-        mObserver.onItemRemoved(item);
         mHistoryAdapter.markItemForRemoval(item);
         mHistoryAdapter.removeItems();
         announceItemRemoved(item);
+        mObserver.onItemRemoved(item);
     }
 
     void announceItemRemoved(HistoryItem item) {
