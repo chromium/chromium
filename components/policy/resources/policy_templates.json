@@ -24976,8 +24976,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*'],
-      'supported_on': ['chrome_os:94-'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -25004,8 +25003,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*'],
-      'supported_on': ['chrome_os:94-'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -25032,8 +25030,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*'],
-      'supported_on': ['chrome_os:94-'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -25062,8 +25059,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*'],
-      'supported_on': ['chrome_os:94-'],
+      'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
