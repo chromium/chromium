@@ -104,6 +104,8 @@ std::unique_ptr<TrustStoreWin> CreateTrustStoreWin() {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
 
   if (!AddToStore(root_store.get(), kMultiRootDByD) ||
       !AddToStore(intermediate_store.get(), kMultiRootCByD) ||
@@ -112,7 +114,8 @@ std::unique_ptr<TrustStoreWin> CreateTrustStoreWin() {
     return nullptr;
   }
   return TrustStoreWin::CreateForTesting(std::move(root_store),
-                                         std::move(intermediate_store));
+                                         std::move(intermediate_store),
+                                         std::move(disallowed_store));
 }
 
 TEST(TrustStoreWin, GetTrust) {
@@ -158,6 +161,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
 
   ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
                                            szOID_PKIX_KP_SERVER_AUTH));
@@ -171,7 +176,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKU) {
       intermediate_store.get(), kMultiRootCByD, szOID_PKIX_KP_SERVER_AUTH));
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(std::move(root_store),
-                                      std::move(intermediate_store));
+                                      std::move(intermediate_store),
+                                      std::move(disallowed_store));
 
   constexpr struct TestData {
     base::StringPiece file_name;
@@ -209,6 +215,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
 
   ASSERT_TRUE(AddToStoreWithEKURestriction(root_store.get(), kMultiRootDByD,
                                            szOID_PKIX_KP_CLIENT_AUTH));
@@ -222,7 +230,8 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
       intermediate_store.get(), kMultiRootCByD, szOID_PKIX_KP_SERVER_AUTH));
   std::unique_ptr<TrustStoreWin> trust_store_win =
       TrustStoreWin::CreateForTesting(std::move(root_store),
-                                      std::move(intermediate_store));
+                                      std::move(intermediate_store),
+                                      std::move(disallowed_store));
 
   constexpr struct TestData {
     base::StringPiece file_name;
@@ -232,6 +241,47 @@ TEST(TrustStoreWin, GetTrustRestrictedEKUDuplicateCerts) {
       // Root cert with no EKU usages but is also an intermediate cert that is
       // allowed for server auth, so we let it be used for path building.
       {kMultiRootCByD, CertificateTrustType::UNSPECIFIED},
+  };
+  for (const auto& test_data : kTestData) {
+    SCOPED_TRACE(test_data.file_name);
+    auto parsed_cert = ParseCertFromFile(test_data.file_name);
+    ASSERT_TRUE(parsed_cert);
+    CertificateTrust trust =
+        trust_store_win->GetTrust(parsed_cert.get(), nullptr);
+    EXPECT_EQ(test_data.expected_result, trust.type);
+  }
+}
+
+// Test that disallowed certs with the right EKU settings will be
+// distrusted.
+TEST(TrustStoreWin, GetTrustDisallowedCerts) {
+  crypto::ScopedHCERTSTORE root_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+
+  AddToStore(root_store.get(), kMultiRootDByD);
+  AddToStore(root_store.get(), kMultiRootEByE);
+  ASSERT_TRUE(AddToStoreWithEKURestriction(
+      disallowed_store.get(), kMultiRootDByD, szOID_PKIX_KP_CLIENT_AUTH));
+  AddToStore(disallowed_store.get(), kMultiRootEByE);
+
+  std::unique_ptr<TrustStoreWin> trust_store_win =
+      TrustStoreWin::CreateForTesting(std::move(root_store),
+                                      std::move(intermediate_store),
+                                      std::move(disallowed_store));
+
+  constexpr struct TestData {
+    base::StringPiece file_name;
+    CertificateTrustType expected_result;
+  } kTestData[] = {
+      // dByD in root, also in distrusted but without szOID_PKIX_KP_SERVER_AUTH
+      // set.
+      {kMultiRootDByD, CertificateTrustType::TRUSTED_ANCHOR},
+      // dByD in root, also in distrusted with szOID_PKIX_KP_SERVER_AUTH set.
+      {kMultiRootEByE, CertificateTrustType::DISTRUSTED},
   };
   for (const auto& test_data : kTestData) {
     SCOPED_TRACE(test_data.file_name);

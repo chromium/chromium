@@ -86,10 +86,17 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE all_certs_store(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_cert_store(
+      CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   if (!root_cert_store.get() || !intermediate_cert_store.get() ||
-      !all_certs_store.get()) {
+      !all_certs_store.get() || !disallowed_cert_store.get()) {
     return nullptr;
   }
+
+  // Add intermediate and root cert stores to the all_cert_store collection so
+  // SyncGetIssuersOf will find them. disallowed_cert_store is not added
+  // because the certs are distrusted; making them non-findable in
+  // SyncGetIssuersOf helps us fail path-building faster.
   if (!CertAddStoreToCollection(all_certs_store.get(),
                                 intermediate_cert_store.get(),
                                 /*dwUpdateFlags=*/0, /*dwPriority=*/0)) {
@@ -130,18 +137,36 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::Create() {
                                    CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
                                    L"CA");
 
-  return base::WrapUnique(new TrustStoreWin(std::move(root_cert_store),
-                                            std::move(intermediate_cert_store),
-                                            std::move(all_certs_store)));
+  // Grab the user-added disallowed certs.
+  GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+                                   CERT_SYSTEM_STORE_LOCAL_MACHINE,
+                                   L"Disallowed");
+  GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+                                   CERT_SYSTEM_STORE_LOCAL_MACHINE_GROUP_POLICY,
+                                   L"Disallowed");
+  GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+                                   CERT_SYSTEM_STORE_LOCAL_MACHINE_ENTERPRISE,
+                                   L"Disallowed");
+  GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+                                   CERT_SYSTEM_STORE_CURRENT_USER,
+                                   L"Disallowed");
+  GatherEnterpriseCertsForLocation(disallowed_cert_store.get(),
+                                   CERT_SYSTEM_STORE_CURRENT_USER_GROUP_POLICY,
+                                   L"Disallowed");
+
+  return base::WrapUnique(new TrustStoreWin(
+      std::move(root_cert_store), std::move(intermediate_cert_store),
+      std::move(disallowed_cert_store), std::move(all_certs_store)));
 }
 
 std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
     crypto::ScopedHCERTSTORE root_cert_store,
-    crypto::ScopedHCERTSTORE intermediate_cert_store) {
+    crypto::ScopedHCERTSTORE intermediate_cert_store,
+    crypto::ScopedHCERTSTORE disallowed_cert_store) {
   crypto::ScopedHCERTSTORE all_certs_store(
       CertOpenStore(CERT_STORE_PROV_COLLECTION, 0, NULL, 0, nullptr));
   if (!root_cert_store.get() || !intermediate_cert_store.get() ||
-      !all_certs_store.get()) {
+      !all_certs_store.get() || !disallowed_cert_store.get()) {
     return nullptr;
   }
 
@@ -155,9 +180,9 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
     return nullptr;
   }
 
-  return base::WrapUnique(new TrustStoreWin(std::move(root_cert_store),
-                                            std::move(intermediate_cert_store),
-                                            std::move(all_certs_store)));
+  return base::WrapUnique(new TrustStoreWin(
+      std::move(root_cert_store), std::move(intermediate_cert_store),
+      std::move(disallowed_cert_store), std::move(all_certs_store)));
 }
 
 // all_certs_store should be a combination of root_cert_store and
@@ -165,10 +190,12 @@ std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
 // that all the error checking can happen outside of the constructor.
 TrustStoreWin::TrustStoreWin(crypto::ScopedHCERTSTORE root_cert_store,
                              crypto::ScopedHCERTSTORE intermediate_cert_store,
+                             crypto::ScopedHCERTSTORE disallowed_cert_store,
                              crypto::ScopedHCERTSTORE all_certs_store)
     : root_cert_store_(std::move(root_cert_store)),
       intermediate_cert_store_(std::move(intermediate_cert_store)),
-      all_certs_store_(std::move(all_certs_store)) {}
+      all_certs_store_(std::move(all_certs_store)),
+      disallowed_cert_store_(std::move(disallowed_cert_store)) {}
 
 TrustStoreWin::~TrustStoreWin() = default;
 
@@ -213,10 +240,11 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // building to try the next path.
 //
 // Put differently:
+//   - If a certificate is in the Disallowed store and usable for EKU, then
+//     it's affirmatively distrusted/revoked. This is checked first and
+//     overrides everything else.
 //   - If a certificate is in the ROOT store, and usable for an EKU,
 //     then it's trusted.
-//   - If a certificate is in the Disallowed store, then it's affirmatively
-//     distrusted/revoked.
 //   - If a certificate is in the root store, and lacks the EKU, but in
 //     the intermediate store, and has the EKU, then continue path
 //     building, but don't treat it as trusted (aka Unspecified)
@@ -232,8 +260,6 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // is usable for TLS server auth. Similar logic applies for certificates in
 // the intermediate store (only return unspecified if and only if all instances
 // of the certificate found are usable for TLS server auth).
-//
-// TODO(https://crbug.com/1239258): look in the Disallowed store.
 CertificateTrust TrustStoreWin::GetTrust(
     const ParsedCertificate* cert,
     base::SupportsUserData* debug_data) const {
@@ -244,6 +270,18 @@ CertificateTrust TrustStoreWin::GetTrust(
   cert_hash_blob.pbData = cert_hash.data();
 
   PCCERT_CONTEXT cert_from_store = nullptr;
+
+  // Check Disallowed store first.
+  while ((cert_from_store = CertFindCertificateInStore(
+              disallowed_cert_store_.get(), X509_ASN_ENCODING, 0,
+              CERT_FIND_SHA1_HASH, &cert_hash_blob, cert_from_store))) {
+    base::span<const uint8_t> cert_from_store_span = base::make_span(
+        cert_from_store->pbCertEncoded, cert_from_store->cbCertEncoded);
+    if (base::ranges::equal(cert_span, cert_from_store_span) &&
+        IsCertTrustedForServerAuth(cert_from_store)) {
+      return CertificateTrust::ForDistrusted();
+    }
+  }
 
   bool root_found = false;
   bool root_is_trusted = true;

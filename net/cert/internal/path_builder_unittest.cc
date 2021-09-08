@@ -612,6 +612,8 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
 
   AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
                                szOID_PKIX_KP_SERVER_AUTH);
@@ -622,7 +624,8 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinOnlyFindTrustedTLSPath) {
   AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
 
   std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
-      std::move(root_store), std::move(intermediate_store));
+      std::move(root_store), std::move(intermediate_store),
+      std::move(disallowed_store));
 
   CertPathBuilder path_builder(
       b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,
@@ -657,12 +660,15 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
   crypto::ScopedHCERTSTORE intermediate_store(CertOpenStore(
       CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
+  crypto::ScopedHCERTSTORE disallowed_store(CertOpenStore(
+      CERT_STORE_PROV_MEMORY, X509_ASN_ENCODING, NULL, 0, nullptr));
 
   AddToStoreWithEKURestriction(root_store.get(), d_by_d_,
                                szOID_PKIX_KP_SERVER_AUTH);
   AddToStoreWithEKURestriction(intermediate_store.get(), c_by_d_, nullptr);
   std::unique_ptr<TrustStoreWin> trust_store = TrustStoreWin::CreateForTesting(
-      std::move(root_store), std::move(intermediate_store));
+      std::move(root_store), std::move(intermediate_store),
+      std::move(disallowed_store));
 
   CertPathBuilder path_builder(
       b_by_c_, trust_store.get(), &delegate_, time_, KeyPurpose::ANY_EKU,

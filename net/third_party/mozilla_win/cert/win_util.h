@@ -15,7 +15,10 @@ namespace net {
 // Loads the enterprise roots at the registry location corresponding to the
 // given location flag into the passed in cert_store collection. See
 // https://docs.microsoft.com/en-us/windows/win32/seccrypto/system-store-locations
-// for definitions of supported locations.
+// and
+// https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.x509certificates.storename?view=net-5.0
+// for definitions of supported locations (yes the two docs might be
+// inconsistent).
 //
 // Silently fail for errors loading the enterprise roots at the location.
 void GatherEnterpriseCertsForLocation(HCERTSTORE cert_store,

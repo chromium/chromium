@@ -34,7 +34,8 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
   // root_cert_store) for locating certificates during `SyncGetIssuersOf`.
   static std::unique_ptr<TrustStoreWin> CreateForTesting(
       crypto::ScopedHCERTSTORE root_cert_store,
-      crypto::ScopedHCERTSTORE intermediate_cert_store);
+      crypto::ScopedHCERTSTORE intermediate_cert_store,
+      crypto::ScopedHCERTSTORE disallowed_cert_store);
 
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
@@ -45,6 +46,7 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
  private:
   TrustStoreWin(crypto::ScopedHCERTSTORE root_cert_store,
                 crypto::ScopedHCERTSTORE intermediate_cert_store,
+                crypto::ScopedHCERTSTORE disallowed_cert_store,
                 crypto::ScopedHCERTSTORE all_certs_store);
 
   // Cert Collection containing all user-added trust anchors.
@@ -55,6 +57,9 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
 
   // Cert Collection for searching via SyncGetIssuersOf()
   crypto::ScopedHCERTSTORE all_certs_store_;
+
+  // Cert Collection for all disallowed certs.
+  crypto::ScopedHCERTSTORE disallowed_cert_store_;
 };
 
 }  // namespace net
