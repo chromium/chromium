@@ -770,6 +770,19 @@ void RecordRefreshTokenRevokedFromSource(
   UMA_HISTOGRAM_ENUMERATION("Signin.RefreshTokenRevoked.Source", source);
 }
 
+void RecordSigninAccountType(bool is_signin_and_sync, bool is_managed_account) {
+  SigninAccountType account_type = is_managed_account
+                                       ? SigninAccountType::kManaged
+                                       : SigninAccountType::kRegular;
+  if (is_signin_and_sync) {
+    base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",
+                                  account_type);
+  } else {
+    base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
+                                  account_type);
+  }
+}
+
 // --------------------------------------------------------------
 // User actions
 // --------------------------------------------------------------

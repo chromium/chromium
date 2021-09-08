@@ -356,7 +356,12 @@ enum AuthenticationState {
 - (void)completeSignInWithSuccess:(BOOL)success {
   DCHECK(_signInCompletion)
       << "|completeSignInWithSuccess| should not be called twice.";
-  _signInCompletion(success);
+  if (success) {
+    bool isManagedAccount = _identityToSignInHostedDomain.length > 0;
+    signin_metrics::RecordSigninAccountType(_shouldStartSync, isManagedAccount);
+  }
+  if (_signInCompletion)
+    _signInCompletion(success);
   _signInCompletion = nil;
   [self continueSignin];
 }
