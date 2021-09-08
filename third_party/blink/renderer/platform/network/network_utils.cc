@@ -62,10 +62,6 @@ String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
     const KURL& url,
     const String& method) {
-  // The following code contains duplication of GetInfoFromDataURL() and
-  // WebURLLoaderImpl::PopulateURLResponse() in
-  // content/child/web_url_loader_impl.cc. Merge them once content/child is
-  // moved to platform/.
   std::string utf8_mime_type;
   std::string utf8_charset;
   std::string data_string;
