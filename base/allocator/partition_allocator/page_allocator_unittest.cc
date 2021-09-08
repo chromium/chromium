@@ -13,9 +13,9 @@
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/tagging.h"
+#include "base/notreached.h"
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "build/build_config.h"
 #if defined(OS_ANDROID)
 #include "base/debug/proc_maps_linux.h"
@@ -242,7 +242,7 @@ TEST(PartitionAllocPageAllocatorTest,
               "");  // Should crash with SIGILL.
   FreePages(buffer, PageAllocationGranularity());
 #else
-  PA_NOTREACHED();
+  NOTREACHED();
 #endif
 }
 
@@ -298,7 +298,7 @@ TEST(PartitionAllocPageAllocatorTest,
             parent_tagging_mode);
   FreePages(buffer, PageAllocationGranularity());
 #else
-  PA_NOTREACHED();
+  NOTREACHED();
 #endif
 }
 
@@ -351,7 +351,7 @@ TEST(PartitionAllocPageAllocatorTest,
   EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
             parent_tagging_mode);
 #else
-  PA_NOTREACHED();
+  NOTREACHED();
 #endif
 }
 

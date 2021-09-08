@@ -45,7 +45,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/partition_bucket_lookup.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
@@ -1591,7 +1590,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
       // PartitionExcessiveAllocationSize).
       internal::PartitionExcessiveAllocationSize(requested_size);
       // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
-      PA_NOTREACHED();
+      NOTREACHED();
     }
   }
 

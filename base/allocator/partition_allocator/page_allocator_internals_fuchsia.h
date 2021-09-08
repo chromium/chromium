@@ -17,8 +17,8 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/notreached.h"
 
 namespace base {
 
@@ -55,7 +55,7 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
     case PageReadWriteExecute:
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     default:
-      PA_NOTREACHED();
+      NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return 0;

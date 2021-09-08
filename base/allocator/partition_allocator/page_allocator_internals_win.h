@@ -8,7 +8,7 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/notreached.h"
 
 namespace base {
 
@@ -29,7 +29,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageReadWriteExecute:
       return PAGE_EXECUTE_READWRITE;
     default:
-      PA_NOTREACHED();
+      NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return PAGE_NOACCESS;
