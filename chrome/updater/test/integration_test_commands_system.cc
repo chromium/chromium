@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
@@ -110,6 +111,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                {Param("app_id", app_id)});
   }
 
+  void ExpectAppVersion(const std::string& app_id,
+                        const base::Version& version) const override {
+    RunCommand("expect_app_version", {Param("app_id", app_id),
+                                      Param("version", version.GetString())});
+  }
+
   void SetActive(const std::string& app_id) const override {
     updater::test::SetActive(kUpdaterScope, app_id);
   }
@@ -117,6 +124,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunWake(int expected_exit_code) const override {
     RunCommand("run_wake",
                {Param("exit_code", base::NumberToString(expected_exit_code))});
+  }
+
+  void Update(const std::string& app_id) const override {
+    RunCommand("update", {Param("app_id", app_id)});
   }
 
   void RegisterApp(const std::string& app_id) const override {

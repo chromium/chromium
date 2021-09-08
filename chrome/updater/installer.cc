@@ -146,9 +146,6 @@ Installer::Result Installer::InstallHelper(
   if (!manifest_version.IsValid())
     return Result(update_client::InstallError::INVALID_VERSION);
 
-  if (pv_.CompareTo(manifest_version) > 0)
-    return Result(update_client::InstallError::VERSION_NOT_UPGRADED);
-
   const absl::optional<base::FilePath> app_install_dir =
       GetAppInstallDir(updater_scope_, app_id_);
   if (!app_install_dir)

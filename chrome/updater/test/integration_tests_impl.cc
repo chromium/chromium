@@ -135,6 +135,17 @@ void RunWake(UpdaterScope scope, int expected_exit_code) {
   EXPECT_EQ(exit_code, expected_exit_code);
 }
 
+void Update(const std::string& app_id) {
+  // CreateUpdateService implicitly relies on GetUpdaterScope.
+  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  base::RunLoop loop;
+  update_service->Update(
+      app_id, UpdateService::Priority::kForeground, base::DoNothing(),
+      base::BindOnce(base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
+  loop.Run();
+}
+
 void SetupFakeUpdaterPrefs(const base::Version& version) {
   scoped_refptr<GlobalPrefs> global_prefs =
       CreateGlobalPrefs(GetUpdaterScope());
@@ -202,6 +213,14 @@ void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id) {
       base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")).value(),
             persisted_data->GetExistenceCheckerPath(app_id).value());
+}
+
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version) {
+  EXPECT_EQ(version, base::MakeRefCounted<PersistedData>(
+                         CreateGlobalPrefs(scope)->GetPrefService())
+                         ->GetProductVersion(app_id));
 }
 
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {

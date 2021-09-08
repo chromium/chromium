@@ -91,6 +91,11 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectAppUnregisteredExistenceCheckerPath(app_id);
   }
 
+  void ExpectAppVersion(const std::string& app_id,
+                        const base::Version& version) const override {
+    updater::test::ExpectAppVersion(kUpdaterScope, app_id, version);
+  }
+
   void SetActive(const std::string& app_id) const override {
     updater::test::SetActive(kUpdaterScope, app_id);
   }
@@ -105,6 +110,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void RunWake(int exit_code) const override {
     updater::test::RunWake(kUpdaterScope, exit_code);
+  }
+
+  void Update(const std::string& app_id) const override {
+    updater::test::Update(app_id);
   }
 
   void RegisterApp(const std::string& app_id) const override {

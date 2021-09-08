@@ -22,6 +22,7 @@
 #include "base/test/test_suite.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/app/app.h"
@@ -108,6 +109,18 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
+// Overload for Version switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Version&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(base::Version(flag), std::move(args)...);
+      }));
+}
+
 template <typename Arg, typename... RemainingArgs>
 base::RepeatingCallback<bool(RemainingArgs...)> WithArg(
     Arg arg,
@@ -171,6 +184,9 @@ void AppTestHelper::FirstTaskRun() {
     {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
     {"expect_app_unregistered_existence_checker_path",
      WithSwitch("app_id", Wrap(&ExpectAppUnregisteredExistenceCheckerPath))},
+    {"expect_app_version",
+     WithSwitch("version", WithSwitch("app_id", WithSystemScope(
+                                                    Wrap(&ExpectAppVersion))))},
     {"expect_candidate_uninstalled",
      WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
     {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
@@ -186,6 +202,7 @@ void AppTestHelper::FirstTaskRun() {
     {"install", WithSystemScope(Wrap(&Install))},
     {"print_log", WithSystemScope(Wrap(&PrintLog))},
     {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+    {"update", WithSwitch("app_id", Wrap(&Update))},
     {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
     {"set_existence_checker_path",
      WithSwitch("path", WithSwitch("app_id", Wrap(&SetExistenceCheckerPath)))},

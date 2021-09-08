@@ -79,6 +79,9 @@ void Uninstall(UpdaterScope scope);
 // `exit_code`. The server should exit a few seconds after.
 void RunWake(UpdaterScope scope, int exit_code);
 
+// Invokes the active instance's UpdateService::Update (via RPC) for an app.
+void Update(const std::string& app_id);
+
 // Runs the command and waits for it to exit or time out.
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 
@@ -122,6 +125,10 @@ void SetExistenceCheckerPath(const std::string& app_id,
 void SetServerStarts(int value);
 
 void ExpectAppUnregisteredExistenceCheckerPath(const std::string& app_id);
+
+void ExpectAppVersion(UpdaterScope scope,
+                      const std::string& app_id,
+                      const base::Version& version);
 
 void RegisterApp(const std::string& app_id);
 
