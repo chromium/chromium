@@ -123,8 +123,8 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   std::u16string inferred_name_;
   std::u16string card_label_;
 
-  // Whether we need to request users to fill in more info
-  bool promo_continue_;
+  // Whether we need to request users to fill in more info.
+  bool request_more_info_ = false;
   int expiration_date_year_;
   int expiration_date_month_;
 

@@ -94,15 +94,18 @@ void SaveCardMessageControllerAndroid::Show(
   }
 
   // Client won't request both name and expiration date at the same time.
-  promo_continue_ = options.should_request_name_from_user ||
-                    options.should_request_expiration_date_from_user;
+  request_more_info_ = options.should_request_name_from_user ||
+                       options.should_request_expiration_date_from_user;
+
+  // Show "continue" when uploading no matter if more info is requested, because
+  // legal terms must be displayed in dialogs when uploading.
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
-      promo_continue_
+      request_more_info_ || is_upload_
           ? (messages::UseFollowupButtonTextForSaveCardMessage()
                  ? IDS_AUTOFILL_MOBILE_SAVE_CARD_TO_CLOUD_PROMPT_SAVE_FOLLOW_UP
                  : IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE)
           : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
-  if (is_upload_ && !promo_continue_) {
+  if (is_upload_ && !request_more_info_) {
     expiration_date_year_ = card.expiration_year();
     expiration_date_month_ = card.expiration_month();
   }
@@ -158,7 +161,7 @@ void SaveCardMessageControllerAndroid::DismissMessage() {
 
 void SaveCardMessageControllerAndroid::MaybeShowDialog() {
   reprompt_required_ = false;
-  if (is_upload_ && !promo_continue_) {
+  if (is_upload_ && !request_more_info_) {
     // If we already know all the info, confirm the date to show  other info
     // such as legal terms, and then run callback after user confirms.
     ConfirmDate(expiration_date_month_, expiration_date_year_);

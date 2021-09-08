@@ -16,7 +16,9 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -185,6 +187,8 @@ TEST_F(SaveCardMessageControllerAndroidTest, DismissOnPrimaryButtonClickLocal) {
       mock_local_callback_receiver;
   base::HistogramTester histogram_tester;
   EnqueueMessage({}, mock_local_callback_receiver.Get(), {});
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT),
+            GetMessageWrapper()->GetPrimaryButtonText());
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kShown, 1);
   EXPECT_CALL(mock_local_callback_receiver, Run(AutofillClient::ACCEPTED));
   TriggerPrimaryButtonClick();
@@ -203,6 +207,8 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   AutofillClient::SaveCreditCardOptions options;
   options.from_dynamic_change_form = true;
   EnqueueMessage({}, mock_local_callback_receiver.Get(), options);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT),
+            GetMessageWrapper()->GetPrimaryButtonText());
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kShown, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromDynamicChangeForm"}),
@@ -225,6 +231,8 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   AutofillClient::SaveCreditCardOptions options;
   options.has_non_focusable_field = true;
   EnqueueMessage({}, mock_local_callback_receiver.Get(), options);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT),
+            GetMessageWrapper()->GetPrimaryButtonText());
   histogram_tester.ExpectBucketCount(kLocalPrefix, MessageMetrics::kShown, 1);
   histogram_tester.ExpectBucketCount(
       base::StrCat({kLocalPrefix, ".FromNonFocusableForm"}),
@@ -281,6 +289,22 @@ TEST_F(SaveCardMessageControllerAndroidTest,
   AutofillClient::SaveCreditCardOptions options;
   options.should_request_expiration_date_from_user = true;
   EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
+  TriggerPrimaryButtonClick();
+  EXPECT_TRUE(IsDateConfirmed());
+  DismissMessage();
+}
+
+TEST_F(SaveCardMessageControllerAndroidTest,
+       DismissOnPrimaryButtonClickWithoutRequestingExtraInfo) {
+  base::MockOnceCallback<void(AutofillClient::SaveCardOfferUserDecision,
+                              const AutofillClient::UserProvidedCardDetails&)>
+      mock_upload_callback_receiver;
+  AutofillClient::SaveCreditCardOptions options;
+  EnqueueMessage(mock_upload_callback_receiver.Get(), {}, options);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE),
+            GetMessageWrapper()->GetPrimaryButtonText());
   TriggerPrimaryButtonClick();
   EXPECT_TRUE(IsDateConfirmed());
   DismissMessage();
