@@ -340,7 +340,7 @@ void RenderWidgetHostViewAndroid::InitAsPopup(
 void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   RenderFrameHostImpl* frame_host =
-      RenderViewHostImpl::From(host())->GetMainFrame();
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
   if (frame_host && frame_host->ShouldVirtualKeyboardOverlayContent()) {
     float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
     frame_host->NotifyVirtualKeyboardOverlayRect(
@@ -350,7 +350,7 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
   RenderFrameHostImpl* frame_host =
-      RenderViewHostImpl::From(host())->GetMainFrame();
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
   return frame_host && frame_host->ShouldVirtualKeyboardOverlayContent();
 }
 
@@ -1053,9 +1053,13 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
 
 void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
   // Move to front only if we are the primary page (we don't want to receive
-  // events in the Prerender). GetMainFrame() may be null in tests.
-  if (view_.parent() && RenderViewHostImpl::From(host())->GetMainFrame() &&
-      RenderViewHostImpl::From(host())->GetMainFrame()->GetLifecycleState() ==
+  // events in the Prerender). GetMainRenderFrameHost() may be null in
+  // tests.
+  if (view_.parent() &&
+      RenderViewHostImpl::From(host())->GetMainRenderFrameHost() &&
+      RenderViewHostImpl::From(host())
+              ->GetMainRenderFrameHost()
+              ->GetLifecycleState() ==
           RenderFrameHost::LifecycleState::kActive) {
     view_.parent()->MoveToFront(&view_);
   }
@@ -1241,7 +1245,7 @@ void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     // redundant copies.
     if (!in_sync_copy_contents_) {
       RenderFrameHostImpl* frame_host =
-          RenderViewHostImpl::From(host())->GetMainFrame();
+          RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
       if (frame_host && last_render_frame_metadata_) {
         // Update our |root_scroll_offset|, as changes to this value do not
         // trigger a new RenderFrameMetadata, and it may be out of date. This

@@ -11568,7 +11568,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // main frame should've been updated to the RFH from the back navigation.
   EXPECT_EQ(popup_contents->GetMainFrame()->render_view_host(), rvh);
   EXPECT_TRUE(rvh->is_active());
-  EXPECT_EQ(rvh->GetMainFrame(), popup_contents->GetMainFrame());
+  EXPECT_EQ(rvh->GetMainRenderFrameHost(), popup_contents->GetMainFrame());
 }
 
 // Check that when A opens a new window with B which embeds an A subframe, the

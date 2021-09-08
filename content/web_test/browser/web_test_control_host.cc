@@ -1073,7 +1073,7 @@ void WebTestControlHost::RenderViewHostChanged(RenderViewHost* old_host,
   // Notifies the main frame of |old_host| that it is deactivated while it's
   // kept alive in back-forward cache.
   RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(old_host);
-  GetWebTestRenderFrameRemote(rvhi->GetMainFrame())->OnDeactivated();
+  GetWebTestRenderFrameRemote(rvhi->GetMainRenderFrameHost())->OnDeactivated();
 }
 
 void WebTestControlHost::RenderViewDeleted(RenderViewHost* render_view_host) {

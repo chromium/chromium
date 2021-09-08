@@ -177,8 +177,11 @@ class CONTENT_EXPORT RenderViewHostImpl
   // the renderer process for this view now exist.
   void RenderViewCreated(RenderFrameHostImpl* local_main_frame);
 
-  // Returns the main frame for this render view.
-  RenderFrameHostImpl* GetMainFrame();
+  // Returns the main RenderFrameHostImpl associated with this RenderViewHost or
+  // null if it doesn't exist. It's null if the main frame is represented in
+  // this RenderViewHost by RenderFrameProxyHost (from Blink perspective,
+  // blink::Page's main blink::Frame is remote).
+  RenderFrameHostImpl* GetMainRenderFrameHost();
 
   // Returns the `AgentSchedulingGroupHost` this view is associated with (via
   // the widget).

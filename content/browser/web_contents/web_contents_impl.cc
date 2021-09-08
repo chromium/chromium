@@ -7041,7 +7041,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   }
 
   auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
-  DCHECK(IsInPrimaryMainFrame(rvh_impl->GetMainFrame()))
+  DCHECK(IsInPrimaryMainFrame(rvh_impl->GetMainRenderFrameHost()))
       << "GetRenderViewHost() must belong to the primary frame tree";
 
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
@@ -7853,7 +7853,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
-  if (!rvh_impl->GetMainFrame() && proxy_host) {
+  if (!rvh_impl->GetMainRenderFrameHost() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
         proxy_host->frame_tree_node()
             ->current_frame_host()

@@ -1667,16 +1667,18 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // speculative frame host is destroyed, so this condition would never be
   // matched for a speculative RFH that needs to be destroyed.
   //
-  // Directly comparing against |RenderViewHostImpl::GetMainFrame()| still has
-  // one additional subtlety though: |GetMainFrame()| can sometimes return a
-  // speculative RFH! For subframes, this obviously does not matter: a subframe
-  // will always pass the condition |render_view_host_->GetMainFrame() != this|.
-  // However, it turns out that a speculative main frame being deleted will
-  // *always* pass this condition as well: a speculative RFH being deleted will
-  // *always* first be unassociated from its corresponding RFHM. Thus, it
-  // follows that |GetMainFrame()| will never return the speculative main frame
-  // being deleted, since it must have already been unset.
-  if (was_created && render_view_host_->GetMainFrame() != this) {
+  // Directly comparing against
+  // |RenderViewHostImpl::GetMainRenderFrameHost()| still has one
+  // additional subtlety though: |GetMainRenderFrameHost()| can sometimes
+  // return a speculative RFH! For subframes, this obviously does not matter: a
+  // subframe will always pass the condition
+  // |render_view_host_->GetMainRenderFrameHost() != this|. However, it
+  // turns out that a speculative main frame being deleted will *always* pass
+  // this condition as well: a speculative RFH being deleted will *always* first
+  // be unassociated from its corresponding RFHM. Thus, it follows that
+  // |GetMainRenderFrameHost()| will never return the speculative main
+  // frame being deleted, since it must have already been unset.
+  if (was_created && render_view_host_->GetMainRenderFrameHost() != this) {
     CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
           lifecycle_state() == LifecycleStateImpl::kPrerendering ||
           lifecycle_state() == LifecycleStateImpl::kSpeculative);

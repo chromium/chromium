@@ -642,7 +642,7 @@ void RenderViewHostImpl::RenderViewCreated(
   }
 }
 
-RenderFrameHostImpl* RenderViewHostImpl::GetMainFrame() {
+RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
   // If the RenderViewHost is active, it should always have a main frame
   // RenderFrameHostImpl. If it is inactive, it could've been created for a
   // speculative main frame navigation, in which case it will transition to
@@ -674,12 +674,13 @@ void RenderViewHostImpl::ClosePage() {
     // RenderViewHosts that have been swapped out.
 #if !defined(OS_ANDROID)
     static_cast<HostZoomMapImpl*>(
-        HostZoomMap::Get(GetMainFrame()->GetSiteInstance()))
+        HostZoomMap::Get(GetMainRenderFrameHost()->GetSiteInstance()))
         ->WillCloseRenderView(GetProcess()->GetID(), GetRoutingID());
 #endif
 
-    GetMainFrame()->GetAssociatedLocalMainFrame()->ClosePage(base::BindOnce(
-        &RenderViewHostImpl::OnPageClosed, weak_factory_.GetWeakPtr()));
+    GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->ClosePage(
+        base::BindOnce(&RenderViewHostImpl::OnPageClosed,
+                       weak_factory_.GetWeakPtr()));
   } else {
     // This RenderViewHost doesn't have a live renderer, so just skip the close
     // event and close the page.
@@ -696,7 +697,7 @@ void RenderViewHostImpl::ClosePageIgnoringUnloadEvents() {
 }
 
 void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
-  GetMainFrame()->GetAssociatedLocalMainFrame()->ZoomToFindInPageRect(
+  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->ZoomToFindInPageRect(
       rect_to_zoom);
 }
 
@@ -738,13 +739,14 @@ void RenderViewHostImpl::RenderWidgetLostFocus() {
 }
 
 void RenderViewHostImpl::SetInitialFocus(bool reverse) {
-  GetMainFrame()->GetAssociatedLocalMainFrame()->SetInitialFocus(reverse);
+  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->SetInitialFocus(
+      reverse);
 }
 
 void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
                                               const gfx::Rect& rect) {
-  GetMainFrame()->GetAssociatedLocalMainFrame()->AnimateDoubleTapZoom(point,
-                                                                      rect);
+  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->AnimateDoubleTapZoom(
+      point, rect);
 }
 
 bool RenderViewHostImpl::SuddenTerminationAllowed() {
@@ -753,7 +755,7 @@ bool RenderViewHostImpl::SuddenTerminationAllowed() {
   // the dialog.
   return sudden_termination_allowed_ ||
          delegate_->IsJavaScriptDialogShowing() ||
-         GetMainFrame()->BeforeUnloadTimedOut();
+         GetMainRenderFrameHost()->BeforeUnloadTimedOut();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -832,7 +834,7 @@ void RenderViewHostImpl::OnHardwareConfigurationChanged() {
 
 void RenderViewHostImpl::EnablePreferredSizeMode() {
   if (is_active()) {
-    GetMainFrame()
+    GetMainRenderFrameHost()
         ->GetAssociatedLocalMainFrame()
         ->EnablePreferredSizeChangedMode();
   }
@@ -848,8 +850,8 @@ void RenderViewHostImpl::ExecutePluginActionAtLocation(
           gfx::PointF(location.x(), location.y()));
   gfx::Point local_location(local_location_f.x(), local_location_f.y());
 
-  GetMainFrame()->GetAssociatedLocalMainFrame()->PluginActionAt(local_location,
-                                                                plugin_action);
+  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->PluginActionAt(
+      local_location, plugin_action);
 }
 
 void RenderViewHostImpl::PostRenderViewReady() {
@@ -876,7 +878,7 @@ void RenderViewHostImpl::ClosePageTimeout() {
 std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
   if (!is_active())
     return {};
-  RenderFrameHostImpl* rfh = GetMainFrame();
+  RenderFrameHostImpl* rfh = GetMainRenderFrameHost();
   if (!rfh || !rfh->IsActive())
     return {};
   FrameTreeNode* root = rfh->frame_tree_node();
