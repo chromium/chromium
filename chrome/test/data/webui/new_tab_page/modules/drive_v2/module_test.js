@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 import {$$, DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
+  /** @type {!{handler: !TestBrowserProxy}} */
   let testProxy;
 
   setup(() => {
     PolymerTest.clearBody();
-    testProxy = TestBrowserProxy.fromClass(DriveProxy);
-    testProxy.handler =
-        TestBrowserProxy.fromClass(drive.mojom.DriveHandlerRemote);
-    DriveProxy.setInstance(testProxy);
+    testProxy = {
+      handler: installMock(
+          drive.mojom.DriveHandlerRemote,
+          mock => DriveProxy.setInstance({handler: mock})),
+    };
   });
 
   test('module appears on render', async () => {

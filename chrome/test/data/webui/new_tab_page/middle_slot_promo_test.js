@@ -6,33 +6,27 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {$$, BrowserCommandProxy, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let newTabPageHandler;
 
-  /**
-   * @implements {CommandHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let promoBrowserCommandHandler;
 
   setup(() => {
     PolymerTest.clearBody();
-    newTabPageHandler =
-        TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    NewTabPageProxy.setInstance(
-        newTabPageHandler, new newTabPage.mojom.PageCallbackRouter());
+    newTabPageHandler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
 
-    promoBrowserCommandHandler =
-        TestBrowserProxy.fromClass(CommandHandlerRemote);
-    const promoBrowserCommandTestProxy = BrowserCommandProxy.getInstance();
-    promoBrowserCommandTestProxy.handler = promoBrowserCommandHandler;
+    promoBrowserCommandHandler = installMock(
+        CommandHandlerRemote,
+        mock => BrowserCommandProxy.setInstance({handler: mock}));
   });
 
   /**

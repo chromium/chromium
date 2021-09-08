@@ -5,15 +5,12 @@
 import {$$, ChromeCartProxy, chromeCartV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {assertNotStyle} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle, installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
-  /**
-   * @implements {ChromeCartProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!{handler: !TestBrowserProxy}} */
   let testProxy;
 
   /** @type {MetricsTracker} */
@@ -22,10 +19,11 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = TestBrowserProxy.fromClass(ChromeCartProxy);
-    testProxy.handler =
-        TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
-    ChromeCartProxy.setInstance(testProxy);
+    testProxy = {
+      handler: installMock(
+          chromeCart.mojom.CartHandlerRemote,
+          mock => ChromeCartProxy.setInstance({handler: mock})),
+    };
     metrics = fakeMetricsPrivate();
     // Not show welcome surface by default.
     testProxy.handler.setResultFor(

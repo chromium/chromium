@@ -3,17 +3,22 @@
 // found in the LICENSE file.
 
 import {dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
+  /** @type {!{handler: !TestBrowserProxy}} */
   let testProxy;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = FooProxy.getInstance();
-    testProxy.handler = TestBrowserProxy.fromClass(foo.mojom.FooHandlerRemote);
+    testProxy = {
+      handler: installMock(
+          foo.mojom.FooHandlerRemote,
+          mock => FooProxy.setInstance({handler: mock})),
+    };
     testProxy.handler.setResultFor('getData', Promise.resolve({data: []}));
   });
 

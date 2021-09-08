@@ -8,21 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
-import {assertNotStyle, assertStyle, createMock} from '../test_support.js';
-
-/** @return {!TestBrowserProxy} */
-function installMockHandler() {
-  const {mock, callTracker} = createMock(newTabPage.mojom.PageHandlerRemote);
-  NewTabPageProxy.setInstance(mock, new newTabPage.mojom.PageCallbackRouter());
-  return callTracker;
-}
-
-/** @return {!TestBrowserProxy} */
-function installMockModuleRegistry() {
-  const {mock, callTracker} = createMock(ModuleRegistry);
-  ModuleRegistry.setInstance(mock);
-  return callTracker;
-}
+import {assertNotStyle, assertStyle, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
   /** @type {!TestBrowserProxy} */
@@ -40,8 +26,11 @@ suite('NewTabPageModulesModulesTest', () => {
   setup(async () => {
     document.body.innerHTML = '';
     metrics = fakeMetricsPrivate();
-    handler = installMockHandler();
-    moduleRegistry = installMockModuleRegistry();
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
+    moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
   });

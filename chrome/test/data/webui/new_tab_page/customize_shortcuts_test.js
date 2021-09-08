@@ -3,25 +3,25 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
+
 import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageCustomizeShortcutsTest', () => {
   /** @type {!CustomizeShortcutsElement} */
   let customizeShortcuts;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-    NewTabPageProxy.setInstance(handler, callbackRouter);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
   });
 
   /**

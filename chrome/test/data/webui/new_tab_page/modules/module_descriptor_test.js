@@ -5,13 +5,11 @@
 import {ModuleDescriptor, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageModulesModuleDescriptorTest', () => {
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
   /** @type {MetricsTracker} */
@@ -23,8 +21,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
       navigationStartTime: 0.0,
     });
     metrics = fakeMetricsPrivate();
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
-    WindowProxy.setInstance(windowProxy);
+    windowProxy = installMock(WindowProxy);
   });
 
   test('instantiate module with data', async () => {

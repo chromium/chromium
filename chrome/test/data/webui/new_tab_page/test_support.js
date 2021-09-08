@@ -71,6 +71,19 @@ export function createMock(clazz) {
   return {mock: new Proxy({}, handler), callTracker};
 }
 
+/**
+ * @param {!typeof T} clazz
+ * @param {!function(!T)=} installer
+ * @return {!TestBrowserProxy}
+ * @template T
+ */
+export function installMock(clazz, installer) {
+  installer = installer || clazz.setInstance;
+  const {mock, callTracker} = createMock(clazz);
+  installer(mock);
+  return callTracker;
+}
+
 /** @return {!newTabPage.mojom.Theme} */
 export function createTheme() {
   const mostVisited = {

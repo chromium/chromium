@@ -3,23 +3,20 @@
 // found in the LICENSE file.
 
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageDoodleShareDialogTest', () => {
   /** @type {!DoodleShareDialogElement} */
   let doodleShareDialog;
 
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
-    WindowProxy.setInstance(windowProxy);
+    windowProxy = installMock(WindowProxy);
 
     doodleShareDialog = document.createElement('ntp-doodle-share-dialog');
     document.body.appendChild(doodleShareDialog);

@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 import {recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 suite('NewTabPageModulesRecipesV2ModuleTest', () => {
+  /** @type {!{handler: !TestBrowserProxy}} */
   let testProxy;
+
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = TestBrowserProxy.fromClass(TaskModuleHandlerProxy);
-    testProxy.handler =
-        TestBrowserProxy.fromClass(taskModule.mojom.TaskModuleHandlerRemote);
-    TaskModuleHandlerProxy.setInstance(testProxy);
+    testProxy = {
+      handler: installMock(
+          taskModule.mojom.TaskModuleHandlerRemote,
+          mock => TaskModuleHandlerProxy.setInstance({handler: mock})),
+    };
   });
 
   test('module appears on render with recipes', async () => {

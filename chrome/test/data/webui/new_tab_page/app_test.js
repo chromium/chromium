@@ -8,7 +8,7 @@ import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {assertNotStyle, assertStyle, createMock, createTheme} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle, assertStyle, createTheme, installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
@@ -19,31 +19,22 @@ suite('NewTabPageAppTest', () => {
   /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  /** @type {!newTabPage.mojom.PageHandlerRemote} */
   let callbackRouterRemote;
 
-  /** @type {MetricsTracker} */
+  /** @type {!MetricsTracker} */
   let metrics;
 
-  /**
-   * @implements {ModuleRegistry}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let moduleRegistry;
 
-  /**
-   * @implements {BackgroundManager}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let backgroundManager;
 
-  /** @type {PromiseResolver} */
+  /** @type {!PromiseResolver} */
   let moduleResolver;
 
   /** @type {URL} */
@@ -52,10 +43,11 @@ suite('NewTabPageAppTest', () => {
   setup(async () => {
     PolymerTest.clearBody();
 
-    let mockWindowProxy;
-    ({mock: mockWindowProxy, callTracker: windowProxy} =
-         createMock(WindowProxy));
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    windowProxy = installMock(WindowProxy);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -74,19 +66,15 @@ suite('NewTabPageAppTest', () => {
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
-    WindowProxy.setInstance(mockWindowProxy);
-    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-    NewTabPageProxy.setInstance(handler, callbackRouter);
-    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
-    backgroundManager = TestBrowserProxy.fromClass(BackgroundManager);
+    callbackRouterRemote = NewTabPageProxy.getInstance()
+                               .callbackRouter.$.bindNewPipeAndPassRemote();
+    backgroundManager = installMock(BackgroundManager);
     backgroundManager.setResultFor(
         'getBackgroundImageLoadTime', Promise.resolve(0));
-    BackgroundManager.setInstance(backgroundManager);
-    moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
+    moduleRegistry = installMock(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
-    ModuleRegistry.setInstance(moduleRegistry);
     metrics = fakeMetricsPrivate();
 
     app = document.createElement('ntp-app');
@@ -406,9 +394,9 @@ suite('NewTabPageAppTest', () => {
   });
 
   test('can show promo with browser command', async () => {
-    const promoBrowserCommandHandler =
-        TestBrowserProxy.fromClass(CommandHandlerRemote);
-    BrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
+    const promoBrowserCommandHandler = installMock(
+        CommandHandlerRemote,
+        mock => BrowserCommandProxy.getInstance().handler = mock);
     promoBrowserCommandHandler.setResultFor(
         'canExecuteCommand', Promise.resolve({canExecute: true}));
 
@@ -437,9 +425,9 @@ suite('NewTabPageAppTest', () => {
   });
 
   test('executes promo browser command', async () => {
-    const promoBrowserCommandHandler =
-        TestBrowserProxy.fromClass(CommandHandlerRemote);
-    BrowserCommandProxy.getInstance().handler = promoBrowserCommandHandler;
+    const promoBrowserCommandHandler = installMock(
+        CommandHandlerRemote,
+        mock => BrowserCommandProxy.getInstance().handler = mock);
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve({commandExecuted: true}));
 

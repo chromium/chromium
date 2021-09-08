@@ -85,12 +85,12 @@ class TestRealboxBrowserProxy extends TestBrowserProxy {
  * @return {TestBrowserProxy}
  */
 export function createTestProxy() {
-  const testProxy = TestBrowserProxy.fromClass(RealboxBrowserProxy);
-  testProxy.callbackRouter = new realbox.mojom.PageCallbackRouter();
-  testProxy.callbackRouterRemote =
-      testProxy.callbackRouter.$.bindNewPipeAndPassRemote();
-  testProxy.handler = new TestRealboxBrowserProxy();
-  return testProxy;
+  const callbackRouter = new realbox.mojom.PageCallbackRouter();
+  return {
+    callbackRouter,
+    callbackRouterRemote: callbackRouter.$.bindNewPipeAndPassRemote(),
+    handler: new TestRealboxBrowserProxy(),
+  };
 }
 
 /**

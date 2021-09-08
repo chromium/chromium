@@ -3,23 +3,22 @@
 // found in the LICENSE file.
 
 import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesTaskModuleTest', () => {
-  /**
-   * @implements {TaskModuleHandlerProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!{handler: !TestBrowserProxy}} */
   let testProxy;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = TestBrowserProxy.fromClass(TaskModuleHandlerProxy);
-    testProxy.handler =
-        TestBrowserProxy.fromClass(taskModule.mojom.TaskModuleHandlerRemote);
-    TaskModuleHandlerProxy.setInstance(testProxy);
+    testProxy = {
+      handler: installMock(
+          taskModule.mojom.TaskModuleHandlerRemote,
+          mock => TaskModuleHandlerProxy.setInstance({handler: mock})),
+    };
   });
 
   test('creates no module if no task', async () => {

@@ -5,6 +5,7 @@
 import 'chrome://new-tab-page/lazy_load.js';
 
 import {BackgroundSelectionType, CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
@@ -12,16 +13,16 @@ suite('NewTabPageCustomizeDialogTest', () => {
   /** @type {!CustomizeDialogElement} */
   let customizeDialog;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -32,8 +33,6 @@ suite('NewTabPageCustomizeDialogTest', () => {
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
-    NewTabPageProxy.setInstance(
-        handler, new newTabPage.mojom.PageCallbackRouter());
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);

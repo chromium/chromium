@@ -5,7 +5,7 @@
 import {$$, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {assertNotStyle, assertStyle, keydown} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle, assertStyle, installMock, keydown} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 
@@ -81,16 +81,10 @@ function createImageDoodle(width, height) {
 }
 
 suite('NewTabPageLogoTest', () => {
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
-  /**
-   * @implements {newTabPage.mojom.PageHandlerRemote}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let handler;
 
   async function createLogo(doodle = null) {
@@ -107,17 +101,17 @@ suite('NewTabPageLogoTest', () => {
   setup(() => {
     PolymerTest.clearBody();
 
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('createIframeSrc', '');
-    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler = installMock(
+        newTabPage.mojom.PageHandlerRemote,
+        mock => NewTabPageProxy.setInstance(
+            mock, new newTabPage.mojom.PageCallbackRouter()));
     handler.setResultFor('onDoodleImageRendered', Promise.resolve({
       imageClickParams: '',
       interactionLogUrl: null,
       shareId: '',
     }));
-    WindowProxy.setInstance(windowProxy);
-    NewTabPageProxy.setInstance(
-        handler, new newTabPage.mojom.PageCallbackRouter());
   });
 
   [true, false].forEach(dark => {
