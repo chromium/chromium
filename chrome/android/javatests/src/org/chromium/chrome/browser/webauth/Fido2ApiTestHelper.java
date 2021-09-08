@@ -41,6 +41,7 @@ import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
+import org.chromium.url.internal.mojom.Origin;
 import org.chromium.url.mojom.Url;
 
 import java.io.ByteArrayOutputStream;
@@ -521,6 +522,10 @@ public class Fido2ApiTestHelper {
         options.instrument.displayName = "MaxPay";
         options.instrument.icon = new Url();
         options.instrument.icon.url = "https://www.google.com/icon.png";
+        options.payeeOrigin = new Origin();
+        options.payeeOrigin.scheme = "https";
+        options.payeeOrigin.host = "test.example";
+        options.payeeOrigin.port = 443;
         return options;
     }
 
