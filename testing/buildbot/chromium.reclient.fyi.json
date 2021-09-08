@@ -5,5 +5,10 @@
     "additional_compile_targets": [
       "all"
     ]
+  },
+  "Linux Builder Re-Client Test": {
+    "additional_compile_targets": [
+      "all"
+    ]
   }
 }

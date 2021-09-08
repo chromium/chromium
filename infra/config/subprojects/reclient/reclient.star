@@ -67,6 +67,20 @@ def fyi_reclient_staging_builder(
         **kwargs
     )
 
+def fyi_reclient_test_builder(
+        *,
+        name,
+        **kwargs):
+    return fyi_reclient_staging_builder(
+        name = name,
+        reclient_instance = "goma-foundry-experiments",
+        **kwargs
+    )
+
 fyi_reclient_staging_builder(
     name = "Linux Builder Re-Client Staging",
+)
+
+fyi_reclient_test_builder(
+    name = "Linux Builder Re-Client Test",
 )
