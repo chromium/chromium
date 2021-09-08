@@ -19,7 +19,7 @@ constexpr char kPhotosScope[] =
     "https://www.googleapis.com/auth/photos.firstparty.readonly";
 constexpr char kPhotosImgScope[] =
     "https://www.googleapis.com/auth/photos.image.readonly";
-// Maximum accepted size of an ItemSuggest response. 1MB.
+// Maximum accepted size of an API response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 const char server_url[] =
     "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
@@ -73,26 +73,32 @@ PhotosService::PhotosService(
 
 void PhotosService::GetMemories(GetMemoriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  callbacks_.push_back(std::move(callback));
+  if (callbacks_.size() > 1) {
+    return;
+  }
+
   signin::ScopeSet scopes;
   scopes.insert(kPhotosScope);
   scopes.insert(kPhotosImgScope);
-  // TODO(crbug.com/1230867): Handle multiple in-flight requests
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "ntp_photos_module", identity_manager_, scopes,
       base::BindOnce(&PhotosService::OnTokenReceived,
-                     weak_factory_.GetWeakPtr(), std::move(callback)),
+                     weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       signin::ConsentLevel::kSync);
 }
 
-void PhotosService::OnTokenReceived(GetMemoriesCallback callback,
-                                    GoogleServiceAuthError error,
+void PhotosService::OnTokenReceived(GoogleServiceAuthError error,
                                     signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   token_fetcher_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
-    std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    }
+    callbacks_.clear();
     return;
   }
 
@@ -118,12 +124,11 @@ void PhotosService::OnTokenReceived(GetMemoriesCallback callback,
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&PhotosService::OnJsonReceived, weak_factory_.GetWeakPtr(),
-                     std::move(callback), token_info.token),
+                     token_info.token),
       kMaxResponseSize);
 }
 
 void PhotosService::OnJsonReceived(
-    GetMemoriesCallback callback,
     const std::string& token,
     const std::unique_ptr<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -132,27 +137,35 @@ void PhotosService::OnJsonReceived(
   url_loader_.reset();
 
   if (net_error != net::OK || !response_body) {
-    std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    }
+    callbacks_.clear();
     return;
   }
+
   data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(&PhotosService::OnJsonParsed, weak_factory_.GetWeakPtr(),
-                     std::move(callback), token));
+      *response_body, base::BindOnce(&PhotosService::OnJsonParsed,
+                                     weak_factory_.GetWeakPtr(), token));
 }
 
 void PhotosService::OnJsonParsed(
-    GetMemoriesCallback callback,
     const std::string& token,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
-    std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    }
+    callbacks_.clear();
     return;
   }
 
   auto* memories = result.value->FindListPath("bundle");
   if (!memories) {
-    std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    for (auto& callback : callbacks_) {
+      std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
+    }
+    callbacks_.clear();
     return;
   }
   std::vector<photos::mojom::MemoryPtr> memory_list;
@@ -168,5 +181,8 @@ void PhotosService::OnJsonParsed(
 
     memory_list.push_back(std::move(mojo_memory));
   }
-  std::move(callback).Run(std::move(memory_list));
+  for (auto& callback : callbacks_) {
+    std::move(callback).Run(mojo::Clone(memory_list));
+  }
+  callbacks_.clear();
 }

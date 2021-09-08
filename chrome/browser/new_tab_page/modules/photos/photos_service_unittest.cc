@@ -100,6 +100,81 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ("key2", actual_memories.at(1)->id);
 }
 
+TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
+  std::vector<photos::mojom::MemoryPtr> response1;
+  std::vector<photos::mojom::MemoryPtr> response2;
+  std::vector<photos::mojom::MemoryPtr> response3;
+  std::vector<photos::mojom::MemoryPtr> response4;
+
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback1;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback2;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback3;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback4;
+  EXPECT_CALL(callback1, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            response1 = std::move(memories);
+          }));
+  EXPECT_CALL(callback2, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            response2 = std::move(memories);
+          }));
+  EXPECT_CALL(callback3, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            response3 = std::move(memories);
+          }));
+  EXPECT_CALL(callback4, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            response4 = std::move(memories);
+          }));
+  service_->GetMemories(callback1.Get());
+  service_->GetMemories(callback2.Get());
+  service_->GetMemories(callback3.Get());
+  service_->GetMemories(callback4.Get());
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
+      "read_reminiscing_content",
+      R"(
+        {
+          "bundle": [
+            {
+              "bundleKey": "key1",
+              "title": {
+                "header": "Title 1",
+                "subheader": "Something something 1"
+              }
+            }
+          ]
+        }
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+
+  EXPECT_EQ(1u, response1.size());
+  EXPECT_EQ(1u, response2.size());
+  EXPECT_EQ(1u, response3.size());
+  EXPECT_EQ(1u, response4.size());
+  EXPECT_EQ("Title 1", response1.at(0)->title);
+  EXPECT_EQ("key1", response1.at(0)->id);
+  EXPECT_EQ("Title 1", response2.at(0)->title);
+  EXPECT_EQ("key1", response2.at(0)->id);
+  EXPECT_EQ("Title 1", response3.at(0)->title);
+  EXPECT_EQ("key1", response3.at(0)->id);
+  EXPECT_EQ("Title 1", response4.at(0)->title);
+  EXPECT_EQ("key1", response4.at(0)->id);
+}
+
 TEST_F(PhotosServiceTest, PassesNoDataOnAuthError) {
   bool empty_response = false;
   base::MockCallback<PhotosService::GetMemoriesCallback> callback;

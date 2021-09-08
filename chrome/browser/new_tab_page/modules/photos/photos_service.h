@@ -36,14 +36,11 @@ class PhotosService : public KeyedService {
   void GetMemories(GetMemoriesCallback callback);
 
  private:
-  void OnTokenReceived(GetMemoriesCallback callback,
-                       GoogleServiceAuthError error,
+  void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnJsonReceived(GetMemoriesCallback callback,
-                      const std::string& token,
+  void OnJsonReceived(const std::string& token,
                       const std::unique_ptr<std::string> json_response);
-  void OnJsonParsed(GetMemoriesCallback callback,
-                    const std::string& token,
+  void OnJsonParsed(const std::string& token,
                     data_decoder::DataDecoder::ValueOrError result);
 
   // Used for fetching OAuth2 access tokens. Only non-null when a token
@@ -51,6 +48,7 @@ class PhotosService : public KeyedService {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::vector<GetMemoriesCallback> callbacks_;
   signin::IdentityManager* identity_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PhotosService> weak_factory_{this};
