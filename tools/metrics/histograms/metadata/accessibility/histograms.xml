@@ -1709,9 +1709,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Event" enum="TextToSpeechEvent"
-    expires_after="2021-09-19">
-  <owner>dmazzoni@chromium.org</owner>
+    expires_after="2022-05-10">
   <owner>dtseng@chromium.org</owner>
+  <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Events fired by the text-to-speech engine when speaking an utterance.
@@ -1719,8 +1719,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.FromExtensionAPI"
-    enum="TextToSpeechFromExtensionAPI" expires_after="2022-01-23">
-  <owner>dmazzoni@chromium.org</owner>
+    enum="TextToSpeechFromExtensionAPI" expires_after="2022-05-10">
+  <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <summary>
     Indicates if an utterance spoken via synthesized text-to-speech was
