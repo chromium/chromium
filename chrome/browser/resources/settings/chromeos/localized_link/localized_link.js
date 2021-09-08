@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview 'settings-localized-link' takes a localized string that
+ * @fileoverview 'localized-link' takes a localized string that
  * contains up to one anchor tag, and labels the string contained within the
  * anchor tag with the entire localized string. The string should not be bound
  * by element tags. The string should not contain any elements other than the
@@ -27,7 +27,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 Polymer({
   _template: html`{__html_template__}`,
-  is: 'settings-localized-link',
+  is: 'localized-link',
 
   properties: {
     /**
@@ -102,7 +102,7 @@ Polymer({
       }
 
       // Only text and <a> nodes are allowed.
-      assertNotReached('settings-localized-link has invalid node types');
+      assertNotReached('localized-link has invalid node types');
     });
 
     const anchorTags = tempEl.getElementsByTagName('a');
@@ -114,7 +114,7 @@ Polymer({
 
     assert(
         anchorTags.length === 1,
-        'settings-localized-link should contain exactly one anchor tag');
+        'localized-link should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
     anchorTag.tabIndex = this.linkDisabled ? -1 : 0;

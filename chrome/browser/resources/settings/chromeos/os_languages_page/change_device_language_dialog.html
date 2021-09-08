@@ -71,10 +71,10 @@
     <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
       <div slot="title">$i18n{changeDeviceLanguageDialogTitle}</div>
       <div id="dialogBody" slot="body" scrollable>
-        <settings-localized-link class="padded"
+        <localized-link class="padded"
             localized-string="[[i18nAdvanced(
                 'changeDeviceLanguageDialogDescription')]]">
-        </settings-localized-link>
+        </localized-link>
         <cr-search-field label="$i18n{searchLanguages}"
             id="search" on-search-changed="onSearchChanged_"
             clear-label="$i18n{clearSearch}" on-keydown="onKeydown_" autofocus>

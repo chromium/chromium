@@ -222,8 +222,8 @@ cr.define('settings_reset_page', function() {
           await openDialogWithESimWarning();
 
           const dialog = resetPage.$$('os-settings-powerwash-dialog');
-          const mobileSettingsLink = dialog.$$('settings-localized-link')
-                                         .shadowRoot.querySelector('a');
+          const mobileSettingsLink =
+              dialog.$$('localized-link').shadowRoot.querySelector('a');
           assertTrue(!!mobileSettingsLink);
 
           mobileSettingsLink.click();

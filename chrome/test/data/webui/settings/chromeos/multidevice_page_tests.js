@@ -449,12 +449,12 @@ suite('Multidevice', function() {
   test('Nearby description shown before onboarding is completed', async () => {
     setNearbyShareDisallowedByPolicy(false);
     assertTrue(test_util.isChildVisible(
-        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
 
     setNearbyShareIsOnboardingComplete(true);
     assertFalse(test_util.isChildVisible(
-        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
     assertEquals(
         multidevicePage.$$('#nearbyShareSecondary').textContent.trim(), 'Off');
@@ -464,14 +464,14 @@ suite('Multidevice', function() {
     setNearbyShareDisallowedByPolicy(false);
     setNearbyShareIsOnboardingComplete(true);
     assertFalse(test_util.isChildVisible(
-        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
     assertEquals(
         multidevicePage.$$('#nearbyShareSecondary').textContent.trim(), 'Off');
 
     setNearbyShareDisallowedByPolicy(true);
     assertTrue(test_util.isChildVisible(
-        multidevicePage, '#nearbyShareSecondary > settings-localized-link',
+        multidevicePage, '#nearbyShareSecondary > localized-link',
         /*checkLightDom=*/ false));
   });
 

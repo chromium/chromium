@@ -169,7 +169,7 @@ suite('CellularNetworksList', function() {
         await flushAsync();
         const esimNoNetworkAnchor =
             cellularNetworkList.$$('#eSimNoNetworkFound')
-                .querySelector('settings-localized-link')
+                .querySelector('localized-link')
                 .shadowRoot.querySelector('a');
         assertTrue(!!esimNoNetworkAnchor);
 
@@ -233,7 +233,7 @@ suite('CellularNetworksList', function() {
     eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
     assertFalse(!!eSimNetworkList);
     const esimNoNetworkAnchor = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                    .querySelector('settings-localized-link')
+                                    .querySelector('localized-link')
                                     .shadowRoot.querySelector('a');
     assertTrue(!!esimNoNetworkAnchor);
   });
@@ -405,7 +405,7 @@ suite('CellularNetworksList', function() {
     await flushAsync();
 
     const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
-                                  .querySelector('settings-localized-link');
+                                  .querySelector('localized-link');
     assertFalse(esimLocalizedLink.linkDisabled);
 
     cellularNetworkList.cellularDeviceState = {

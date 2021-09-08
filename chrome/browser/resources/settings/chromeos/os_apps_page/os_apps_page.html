@@ -31,7 +31,7 @@
 <dom-module id="os-settings-apps-page">
   <template>
   <style include="settings-shared">
-    #appManagement, 
+    #appManagement,
     #appNotifications {
         border-bottom: var(--cr-separator-line);
     }
@@ -60,9 +60,9 @@
             <div class="start settings-box-text">
               $i18n{androidAppsPageLabel}
               <div class="secondary" id="secondaryText">
-                <settings-localized-link
+                <localized-link
                     localized-string="[[i18nAdvanced('androidAppsSubtext')]]">
-                </settings-localized-link>
+                </localized-link>
               </div>
             </div>
             <cr-policy-pref-indicator pref="[[prefs.arc.enabled]]"

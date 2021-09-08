@@ -486,7 +486,7 @@ Polymer({
   /**
    * Builds the html for the help text, applying the appropriate aria labels,
    * and setting the href of the link. This function is largely
-   * copied from getAriaLabelledContent_ in <settings-localized-link>, which
+   * copied from getAriaLabelledContent_ in <localized-link>, which
    * can't be used directly because this isn't part of settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
    * @return {string}

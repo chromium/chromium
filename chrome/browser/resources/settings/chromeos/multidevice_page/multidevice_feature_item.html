@@ -57,11 +57,11 @@
         <div id="item-text-container" class="middle" aria-hidden="true">
           <div id="featureName">[[getFeatureName(feature)]]</div>
           <slot name="feature-summary">
-            <settings-localized-link
+            <localized-link
                 class="secondary"
                 id="featureSecondary"
                 localized-string="[[getFeatureSummaryHtml(feature)]]">
-            </settings-localized-link>
+            </localized-link>
           </slot>
         </div>
         <template is="dom-if"

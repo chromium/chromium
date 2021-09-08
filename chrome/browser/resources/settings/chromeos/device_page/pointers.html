@@ -96,12 +96,12 @@
         <div class="settings-box" id="mouseReverseScrollRow"
              on-click="onMouseReverseScrollRowClicked_">
           <div class="start settings-box-text">
-            <settings-localized-link
+            <localized-link
                 on-click="onLearnMoreLinkClicked_"
                 id="enableMouseReverseScrollingLabel"
                 localized-string="$i18n{mouseReverseScroll}"
                 link-url="$i18n{naturalScrollLearnMoreLink}">
-            </settings-localized-link>
+            </localized-link>
           </div>
           <cr-toggle id="mouseReverseScroll"
               checked="{{prefs.settings.mouse.reverse_scroll.value}}"
@@ -210,12 +210,12 @@
         <div class="settings-box" id="reverseScrollRow"
              on-click="onTouchpadReverseScrollRowClicked_">
           <div class="start settings-box-text">
-            <settings-localized-link
+            <localized-link
                 on-click="onLearnMoreLinkClicked_"
                 id="enableReverseScrollingLabel"
                 localized-string="$i18n{touchPadScrollLabel}"
                 link-url="$i18n{naturalScrollLearnMoreLink}">
-            </settings-localized-link>
+            </localized-link>
           </div>
           <cr-toggle id="enableReverseScrollingToggle"
               checked="{{prefs.settings.touchpad.natural_scroll.value}}"

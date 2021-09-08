@@ -13,8 +13,8 @@ suite('localized_link', function() {
   let localizedStringWithLink;
 
   function GetLocalizedStringWithLinkElementHtml(localizedString, linkUrl) {
-    return `<settings-localized-link localized-string="${localizedString}"` +
-        ` link-url="${linkUrl}"></settings-localized-link>`;
+    return `<localized-link localized-string="${localizedString}"` +
+        ` link-url="${linkUrl}"></localized-link>`;
   }
 
   function flushAsync() {
@@ -26,8 +26,7 @@ suite('localized_link', function() {
   test('LinkFirst', function() {
     document.body.innerHTML =
         GetLocalizedStringWithLinkElementHtml(`<a>first link</a>then text`, ``);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0 id1" tabindex="0">first link</a>` +
@@ -37,8 +36,7 @@ suite('localized_link', function() {
   test('TextLinkText', function() {
     document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
         `first text <a>then link</a> then more text`, ``);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text </span>` +
@@ -49,8 +47,7 @@ suite('localized_link', function() {
   test('LinkLast', function() {
     document.body.innerHTML =
         GetLocalizedStringWithLinkElementHtml(`first text<a>then link</a>`, ``);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<span id="id0" aria-hidden="true">first text</span>` +
@@ -60,8 +57,7 @@ suite('localized_link', function() {
   test('PopulatedLink', function() {
     document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
         `<a>populated link</a>`, `http://google.com`);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a id="id0" aria-labelledby="id0" tabindex="0" ` +
@@ -71,8 +67,7 @@ suite('localized_link', function() {
   test('PrepopulatedLink', function() {
     document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
         `<a href='http://google.com'>pre-populated link</a>`, ``);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `<a href="http://google.com" id="id0" aria-labelledby="id0" tabindex="0">` +
@@ -82,8 +77,7 @@ suite('localized_link', function() {
   test('NoLinkPresent', function() {
     document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
         `No anchor tags in this sentence.`, ``);
-    localizedStringWithLink =
-        document.body.querySelector('settings-localized-link');
+    localizedStringWithLink = document.body.querySelector('localized-link');
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `No anchor tags in this sentence.`);
@@ -94,8 +88,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
 
     return flushAsync().then(async () => {
-      const localizedLink =
-        document.body.querySelector('settings-localized-link');
+      const localizedLink = document.body.querySelector('localized-link');
       assertTrue(!!localizedLink);
       const anchorTag = localizedLink.$$('a');
       assertTrue(!!anchorTag);
@@ -112,8 +105,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
 
     await flushAsync();
-    const localizedLink =
-        document.body.querySelector('settings-localized-link');
+    const localizedLink = document.body.querySelector('localized-link');
     assertTrue(!!localizedLink);
     const anchorTag = localizedLink.$$('a');
     assertTrue(!!anchorTag);
@@ -128,8 +120,7 @@ suite('localized_link', function() {
         `Text with a <a href='#'>link</a>`, ``);
     await flushAsync();
 
-    const localizedLink =
-        document.body.querySelector('settings-localized-link');
+    const localizedLink = document.body.querySelector('localized-link');
     localizedLink.linkDisabled = true;
     const localizedLinkPromise =
         test_util.eventToPromise('link-clicked', localizedLink);

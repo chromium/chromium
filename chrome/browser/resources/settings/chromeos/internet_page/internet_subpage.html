@@ -183,12 +183,12 @@
     </template>
 
     <!-- Text shown if no networks exist. -->
-    <settings-localized-link
+    <localized-link
         class="no-networks"
         hidden="[[hideNoNetworksMessage_(networkStateList_, deviceState)]]"
         localized-string=
             "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
-    </settings-localized-link>
+    </localized-link>
 
     <template is="dom-if" if="[[isShowingVpn_]]">
       <!-- Third party VPNs. -->

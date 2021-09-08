@@ -26,17 +26,16 @@
       }
     </style>
     <div class="permission-section-header">
-      <settings-localized-link id="heading" class="header-text"
+      <localized-link id="heading" class="header-text"
           on-link-clicked="launchDialog_"
           localized-string="$i18n{appManagementIntentSettingsTitle}">
-      </settings-localized-link>
+      </localized-link>
     </div>
     <template is="dom-if" if="[[disabled_]]">
       <div id="explanation-text">
         <iron-icon id="info-icon" icon="cr:info-outline"></iron-icon>
-        <settings-localized-link
-          localized-string="[[getDisabledExplanation_(app)]]">
-        </settings-localized-link>
+        <localized-link localized-string="[[getDisabledExplanation_(app)]]">
+        </localized-link>
       </div>
     </template>
     <div class="list-frame">

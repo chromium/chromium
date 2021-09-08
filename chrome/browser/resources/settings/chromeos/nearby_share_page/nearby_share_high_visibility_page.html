@@ -89,10 +89,10 @@
           <template is="dom-if" if="[[!getErrorTitle_(errorState_)]]">
             <iron-icon id="infoIcon" icon="nearby20:info"></iron-icon>
             <div id="helpText">
-              <settings-localized-link
+              <localized-link
                   localized-string="$i18n{nearbyShareHighVisibilityHelpText}"
                   link-url="$i18n{nearbyShareLearnMoreLink}">
-              </settings-localized-link>
+              </localized-link>
             </div>
           </template>
           <template is="dom-if" if="[[getErrorTitle_(errorState_)]]">
@@ -105,10 +105,10 @@
                 [[getErrorTitle_(errorState_)]]
               </div>
               <div id="errorDescription" aria-hidden="true">
-                <settings-localized-link
+                <localized-link
                     localized-string="[[getErrorDescription_(errorState_)]]"
                     link-url="$i18n{nearbyShareLearnMoreLink}">
-                </settings-localized-link>
+                </localized-link>
               </div>
             </div>
           </template>

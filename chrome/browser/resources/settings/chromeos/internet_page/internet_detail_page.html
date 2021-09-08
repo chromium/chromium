@@ -160,9 +160,9 @@
               [[messagesDividerClass_('synced', managedProperties_,
                   globalPolicy, managedNetworkAvailable,
                   isSecondaryUser_, isWifiSyncEnabled_)]]">
-      <settings-localized-link
-        localized-string="[[syncedString_(managedProperties_)]]">
-      </settings-localized-link>
+      <localized-link
+          localized-string="[[syncedString_(managedProperties_)]]">
+      </localized-link>
   </div>
 </template>
 <!-- End of NOTICES section -->
@@ -341,7 +341,7 @@
           </div>
           <template is="dom-if" if="[[showScanningSpinner_(
               managedProperties_, deviceState_)]]">
-            <paper-spinner-lite active 
+            <paper-spinner-lite active
                 title="$i18n{mobileNetworkScanningLabel}">
             </paper-spinner-lite>
           </template>

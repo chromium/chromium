@@ -1,10 +1,10 @@
 <style include="settings-shared"></style>
 <div class="settings-box first">
   <div class="start">
-     <settings-localized-link
+     <localized-link
          localized-string="$i18n{smbSharesLearnMoreLabel}"
          link-url="$i18n{smbSharesLearnMoreURL}">
-     </settings-localized-link>
+     </localized-link>
   </div>
   <template is="dom-if" if="[[!prefs.network_file_shares.allowed.value]]"
       restamp>

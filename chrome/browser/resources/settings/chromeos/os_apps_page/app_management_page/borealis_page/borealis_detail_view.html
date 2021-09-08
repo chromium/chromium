@@ -3,7 +3,7 @@
     --iron-icon-fill-color: var(--secondary-text-color);
     padding-inline-end: var(--row-item-icon-padding);
   }
-  settings-localized-link {
+  localized-link {
     color: var(--secondary-text-color);
     white-space: pre-line;
   }
@@ -25,18 +25,18 @@
           <iron-icon id="icon" icon="cr:help-outline"></iron-icon>
           <template is="dom-if" if="[[isMainApp_(app_.*)]]" restamp>
             <!-- TODO(b/194640944): Add link to borealis learn more page -->
-            <settings-localized-link
+            <localized-link
                 id="main-link"
                 localized-string="$i18n{borealisMainPermissionText}"
                 link-url=https://www.youtube.com/watch?v=dQw4w9WgXcQ>
-            </settings-localized-link>
+            </localized-link>
           </template>
           <template is="dom-if" if="[[!isMainApp_(app_.*)]]" restamp>
-            <settings-localized-link
+            <localized-link
                 id="borealis-link"
                 localized-string="$i18n{borealisAppPermissionText}"
                 on-link-clicked="onBorealisLinkClicked_">
-            </settings-localized-link>
+            </localized-link>
           </template>
         </div>
       </div>
