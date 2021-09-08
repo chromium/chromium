@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -25,6 +27,8 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -104,6 +108,12 @@ class ClipboardHostImplTest : public RenderViewHostTestHarness {
     SetContents(CreateTestWebContents());
     ClipboardHostImpl::Create(web_contents()->GetMainFrame(),
                               remote_.BindNewPipeAndPassReceiver());
+  }
+
+  bool IsFormatAvailable(ui::ClipboardFormatType type) {
+    return system_clipboard()->IsFormatAvailable(
+        type, ui::ClipboardBuffer::kCopyPaste,
+        /* data_dst=*/nullptr);
   }
 
   mojo::Remote<blink::mojom::ClipboardHost>& mojo_clipboard() {
@@ -257,6 +267,44 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_IsObsolete) {
   EXPECT_TRUE(request.IsObsolete(
       request.time() + ClipboardHostImpl::kIsPasteContentAllowedRequestTooOld +
       base::TimeDelta::FromMicroseconds(1)));
+}
+
+TEST_F(ClipboardHostImplTest, ReadAvailableTypes_TextUriList) {
+  std::vector<std::u16string> types;
+
+  // If clipboard contains files, only 'text/uri-list' should be available.
+  // We exclude others like 'text/plain' which contin the full file path on some
+  // platforms (http://crbug.com/1214108).
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteFilenames("file:///test/file");
+    writer.WriteText(u"text");
+  }
+  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::FilenamesType()));
+  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::PlainTextType()));
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_EQ(std::vector<std::u16string>({u"text/uri-list"}), types);
+
+  // If clipboard doesn't contain files, but custom data contains
+  // 'text/uri-list', all other types should still be available since CrOS
+  // FilesApp in particular sets types such as 'fs/sources' in addition to
+  // 'text/uri-list' as custom types (http://crbug.com/1241671).
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"text");
+    base::flat_map<std::u16string, std::u16string> custom_data;
+    custom_data[u"text/uri-list"] = u"data";
+    base::Pickle pickle;
+    ui::WriteCustomDataToPickle(custom_data, &pickle);
+    writer.WritePickledData(pickle,
+                            ui::ClipboardFormatType::WebCustomDataType());
+  }
+  EXPECT_FALSE(IsFormatAvailable(ui::ClipboardFormatType::FilenamesType()));
+  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::WebCustomDataType()));
+  EXPECT_TRUE(IsFormatAvailable(ui::ClipboardFormatType::PlainTextType()));
+  mojo_clipboard()->ReadAvailableTypes(ui::ClipboardBuffer::kCopyPaste, &types);
+  EXPECT_TRUE(base::Contains(types, u"text/plain"));
+  EXPECT_TRUE(base::Contains(types, u"text/uri-list"));
 }
 
 class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
