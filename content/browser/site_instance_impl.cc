@@ -262,10 +262,8 @@ SiteInfo SiteInfo::CreateInternal(
   GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
   GURL site_url = lock_url;
 
-  // PDF content should live in JIT-less processes because it is inherently less
-  // trusted.
-  bool is_jitless = url_info.is_pdf;
-
+  // TODO(crbug.com/1231763): PDF content should live in JIT-less processes.
+  bool is_jitless = false;
   absl::optional<StoragePartitionConfig> storage_partition_config =
       url_info.storage_partition_config;
 
@@ -276,9 +274,8 @@ SiteInfo SiteInfo::CreateInternal(
 
     BrowserContext* browser_context =
         isolation_context.browser_or_resource_context().ToBrowserContext();
-    is_jitless =
-        is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
-                          browser_context, lock_url);
+    is_jitless = GetContentClient()->browser()->IsJitDisabledForSite(
+        browser_context, lock_url);
 
     if (!storage_partition_config.has_value()) {
       storage_partition_config =
