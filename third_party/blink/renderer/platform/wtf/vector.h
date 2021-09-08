@@ -88,10 +88,18 @@ class Deque;
   } else {                                                                   \
     ANNOTATE_CHANGE_SIZE(buffer, capacity, old_size, new_size)               \
   }
+#define MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer, capacity, size) \
+  if (Allocator::kIsGarbageCollected && Allocator::IsIncrementalMarking()) { \
+    ANNOTATE_NEW_BUFFER(buffer, capacity, capacity);                         \
+  } else {                                                                   \
+    ANNOTATE_NEW_BUFFER(buffer, capacity, size)                              \
+  }
 #else
 #define MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, buffer, capacity, \
                                            old_size, new_size)          \
   ANNOTATE_CHANGE_SIZE(buffer, capacity, old_size, new_size)
+#define MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer, capacity, size) \
+  ANNOTATE_NEW_BUFFER(buffer, capacity, size)
 #endif  // defined(ADDRESS_SANITIZER)
 
 template <bool needsDestruction, typename T>
@@ -628,7 +636,7 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
       succeeded = true;
     }
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, capacity_, size_);
 #endif
     return succeeded;
   }
@@ -756,7 +764,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       succeeded = true;
     }
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
-    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, capacity_, size_);
 #endif
     return succeeded;
   }
@@ -870,7 +878,8 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       AsAtomicPtr(&other.buffer_)
           ->store(other.InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
-      ANNOTATE_NEW_BUFFER(other.buffer_, inlineCapacity, other.size_);
+      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, other.buffer_,
+                                        inlineCapacity, other.size_);
       Allocator::BackingWriteBarrier(&buffer_);
     } else if (!this_source_begin &&
                other_source_begin) {  // Their buffer is inline, ours is not.
@@ -880,7 +889,8 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
       AsAtomicPtr(&other.buffer_)->store(Buffer(), std::memory_order_relaxed);
       AsAtomicPtr(&buffer_)->store(InlineBuffer(), std::memory_order_relaxed);
       std::swap(size_, other.size_);
-      ANNOTATE_NEW_BUFFER(buffer_, inlineCapacity, size_);
+      MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, buffer_, inlineCapacity,
+                                        size_);
       Allocator::BackingWriteBarrier(&other.buffer_);
     } else {  // Both buffers are inline.
       DCHECK(this_source_begin);
@@ -1834,7 +1844,7 @@ inline void Vector<T, inlineCapacity, Allocator>::ReserveInitialCapacity(
   if (initial_capacity > INLINE_CAPACITY) {
     ANNOTATE_DELETE_BUFFER(begin(), capacity(), size_);
     Base::AllocateBuffer(initial_capacity);
-    ANNOTATE_NEW_BUFFER(begin(), capacity(), size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
   }
 }
 
@@ -1865,7 +1875,7 @@ void Vector<T, inlineCapacity, Allocator>::ShrinkCapacity(
   Base::ResetBufferPointer();
 #ifdef ANNOTATE_CONTIGUOUS_CONTAINER
   if (old_buffer != begin()) {
-    ANNOTATE_NEW_BUFFER(begin(), capacity(), size_);
+    MARKING_AWARE_ANNOTATE_NEW_BUFFER(Allocator, begin(), capacity(), size_);
     ANNOTATE_DELETE_BUFFER(old_buffer, old_capacity, size_);
   }
 #endif
@@ -2147,6 +2157,10 @@ void TraceInlinedBuffer(VisitorDispatcher visitor,
                         const T* buffer_begin,
                         size_t capacity) {
   const T* buffer_end = buffer_begin + capacity;
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+  // Vector can trace unused slots (which are already zeroed out).
+  ANNOTATE_CHANGE_SIZE(buffer_begin, capacity, 0, capacity);
+#endif  // ANNOTATE_CONTIGUOUS_CONTAINER
   for (const T* buffer_entry = buffer_begin; buffer_entry != buffer_end;
        buffer_entry++) {
     Allocator::template Trace<T, VectorTraits<T>>(visitor, *buffer_entry);
