@@ -234,6 +234,7 @@ void ConversionManagerImpl::ClearData(
     base::Time delete_end,
     base::RepeatingCallback<bool(const url::Origin&)> filter,
     base::OnceClosure done) {
+  sent_reports_.clear();
   conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter))
       .Then(std::move(done));

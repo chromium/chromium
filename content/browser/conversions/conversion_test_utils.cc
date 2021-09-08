@@ -194,6 +194,7 @@ void TestConversionManager::ClearData(
     base::OnceClosure done) {
   impressions_.clear();
   reports_.clear();
+  sent_reports_.clear();
   std::move(done).Run();
 }
 

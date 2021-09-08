@@ -339,13 +339,18 @@ IN_PROC_BROWSER_TEST_F(ConversionInternalsWebUiBrowserTest,
       /*report_time=*/base::Time::Now(), /*priority=*/7,
       ConversionReport::Id(1));
   manager.SetReportsForWebUI({report});
+  manager.SetSentReportsForWebUI(
+      {SentReportInfo(report, SentReportInfo::Status::kSent,
+                      /*http_response_code=*/200)});
   OverrideWebUIConversionManager(&manager);
 
+  // Verify both rows get rendered.
   std::string wait_script = R"(
     let table = document.getElementById("report-table-body");
     let obs = new MutationObserver(() => {
-      if (table.children.length === 1 &&
-          table.children[0].children[4].innerText === "7") {
+      if (table.children.length === 2 &&
+          table.children[0].children[4].innerText === "7" &&
+          table.children[1].children[5].innerText === "Sent: HTTP 200") {
         document.title = $1;
       }
     });

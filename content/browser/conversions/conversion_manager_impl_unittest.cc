@@ -492,6 +492,22 @@ TEST_F(ConversionManagerImplTest, ClearData) {
   }
 }
 
+TEST_F(ConversionManagerImplTest, ClearData_ClearsSentReports) {
+  test_reporter_->ShouldRunReportSentCallbacks(true);
+
+  conversion_manager_->HandleImpression(
+      ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  conversion_manager_->HandleConversion(DefaultConversion());
+
+  task_environment_.FastForwardBy(kFirstReportingWindow -
+                                  kConversionManagerQueueReportsInterval);
+  EXPECT_FALSE(conversion_manager_->GetSentReportsForWebUI().empty());
+
+  conversion_manager_->ClearData(clock().Now(), clock().Now(),
+                                 base::NullCallback(), base::DoNothing());
+  EXPECT_TRUE(conversion_manager_->GetSentReportsForWebUI().empty());
+}
+
 TEST_F(ConversionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   conversion_manager_->HandleImpression(
       ImpressionBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
