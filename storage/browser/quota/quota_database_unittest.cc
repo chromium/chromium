@@ -119,7 +119,8 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
           // clang-format off
           "INSERT INTO buckets("
               "id,"
-              "origin,"
+              "storage_key,"
+              "host,"
               "type,"
               "name,"
               "use_count,"
@@ -127,7 +128,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "last_modified,"
               "expiration,"
               "quota) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(
@@ -136,11 +137,12 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
 
       statement.BindInt64(0, entry.bucket_id.value());
       statement.BindString(1, entry.storage_key.Serialize());
-      statement.BindInt(2, static_cast<int>(entry.type));
-      statement.BindString(3, entry.name);
-      statement.BindInt(4, entry.use_count);
-      statement.BindTime(5, entry.last_accessed);
-      statement.BindTime(6, entry.last_modified);
+      statement.BindString(2, entry.storage_key.origin().host());
+      statement.BindInt(3, static_cast<int>(entry.type));
+      statement.BindString(4, entry.name);
+      statement.BindInt(5, entry.use_count);
+      statement.BindTime(6, entry.last_accessed);
+      statement.BindTime(7, entry.last_modified);
       EXPECT_TRUE(statement.Run());
     }
     quota_database->Commit();
@@ -262,6 +264,45 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
                    bucket_name, kPerm);
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
+}
+
+TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(LazyOpen(&db, LazyOpenMode::kCreateIfNotFound));
+
+  QuotaErrorOr<BucketInfo> temp_example_bucket1 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("https://example.com/"), "default",
+      kTemp);
+  QuotaErrorOr<BucketInfo> temp_example_bucket2 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://example.com:123/"),
+      "default", kTemp);
+  QuotaErrorOr<BucketInfo> perm_google_bucket1 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://google.com/"), "default",
+      kPerm);
+  QuotaErrorOr<BucketInfo> temp_google_bucket2 = db.CreateBucketForTesting(
+      StorageKey::CreateFromStringForTesting("http://google.com:123/"),
+      "default", kTemp);
+
+  QuotaErrorOr<std::set<BucketInfo>> result =
+      db.GetBucketsForHost("example.com", kTemp);
+  ASSERT_TRUE(result.ok());
+  ASSERT_EQ(result->size(), 2U);
+  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket1.value()));
+  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket2.value()));
+
+  result = db.GetBucketsForHost("example.com", kPerm);
+  ASSERT_TRUE(result.ok());
+  ASSERT_EQ(result->size(), 0U);
+
+  result = db.GetBucketsForHost("google.com", kPerm);
+  ASSERT_TRUE(result.ok());
+  ASSERT_EQ(result->size(), 1U);
+  EXPECT_TRUE(base::Contains(result.value(), perm_google_bucket1.value()));
+
+  result = db.GetBucketsForHost("google.com", kTemp);
+  ASSERT_TRUE(result.ok());
+  ASSERT_EQ(result->size(), 1U);
+  EXPECT_TRUE(base::Contains(result.value(), temp_google_bucket2.value()));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {

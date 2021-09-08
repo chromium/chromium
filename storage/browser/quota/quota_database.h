@@ -121,6 +121,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                      const std::string& bucket_name,
                                      blink::mojom::StorageType storage_type);
 
+  // Retrieves all buckets for `host` and `type`. Returns a QuotaError if the
+  // operation has failed.
+  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
+      const std::string& host,
+      blink::mojom::StorageType type);
+
   // TODO(crbug.com/1202167): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
   bool SetStorageKeyLastAccessTime(const blink::StorageKey& storage_key,
