@@ -1370,6 +1370,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC" desc="Title of the button to sign out and turn off sync. [iOS only]">
         Sign Out and Turn Off Sync
       </message>
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
+        You can only sign in with accounts that are approved by your administrator. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL" desc="The title of the Advanced section of the Settings page.  [Length: 20em] [iOS only]">
         Advanced
       </message>

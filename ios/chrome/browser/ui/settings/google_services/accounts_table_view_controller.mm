@@ -14,6 +14,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -68,6 +69,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Sign in item.
   ItemTypeSignInHeader,
   ItemTypeAddAccount,
+  // Indication that some restricted accoints were removed from the list.
+  ItemTypeRestrictedAccountsFooter,
   // Provides sign out items used only for non-managed accounts.
   ItemTypeSignOut,
   // Detailed description of the actions taken by sign out, e.g. turning off
@@ -261,6 +264,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self addAccountItem]
       toSectionWithIdentifier:SectionIdentifierAccounts];
 
+  if (self.accountManagerService->HasRestrictedIdentities()) {
+    [model setFooter:[self restrictedIdentitiesFooterItem]
+        forSectionWithIdentifier:SectionIdentifierAccounts];
+  }
+
   // Sign out section.
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
   [model addItem:[self signOutItem]
@@ -283,6 +291,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
       initWithType:ItemTypeSignOutSyncingFooter];
   footer.text = l10n_util::GetNSString(
       IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
+  return footer;
+}
+
+- (TableViewLinkHeaderFooterItem*)restrictedIdentitiesFooterItem {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeRestrictedAccountsFooter];
+  footer.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES);
+  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
   return footer;
 }
 
@@ -325,6 +342,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return item;
 }
 
+#pragma mark - UITableViewDataSource
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  switch (sectionIdentifier) {
+    case SectionIdentifierAccounts: {
+      // Might be a different type of footer.
+      TableViewLinkHeaderFooterView* linkView =
+          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+      linkView.delegate = self;
+    } break;
+    default:
+      break;
+  }
+  return view;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -363,6 +400,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
+    case ItemTypeRestrictedAccountsFooter:
       NOTREACHED();
       break;
   }
