@@ -292,7 +292,9 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
 void LayoutText::WillBeDestroyed() {
   NOT_DESTROYED();
 
-  GetSecureTextTimers().Take(this);
+  if (SecureTextTimer* timer = GetSecureTextTimers().Take(this))
+    timer->Stop();
+
   GetSelectionDisplayItemClientMap().erase(this);
 
   if (node_id_ != kInvalidDOMNodeId) {
