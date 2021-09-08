@@ -31,6 +31,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
+    expires_after="2022-05-04">
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <summary>
+    The UI surface that started any share attempt. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.ClickToCallAppsToShow" units="apps"
     expires_after="2021-10-25">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->

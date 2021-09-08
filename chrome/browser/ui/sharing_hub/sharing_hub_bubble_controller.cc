@@ -31,6 +31,22 @@ namespace sharing_hub {
 
 namespace {
 
+// The source from which the sharing hub was launched from.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with ShareSourceDesktop
+// in src/tools/metrics/histograms/enums.xml.
+enum class ShareSourceDesktop {
+  kUnknown = 0,
+  kOmniboxSharingHub = 1,
+  kMaxValue = kOmniboxSharingHub,
+};
+
+const char kAnyShareStarted[] = "Sharing.AnyShareStartedDesktop";
+
+void LogShareSourceDesktop(ShareSourceDesktop source) {
+  UMA_HISTOGRAM_ENUMERATION(kAnyShareStarted, source);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Result of the CrOS sharesheet, i.e. whether the user selects a share target
 // after opening the sharesheet.
@@ -96,6 +112,7 @@ void SharingHubBubbleController::ShowBubble() {
 #else
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents_, this, true);
+  LogShareSourceDesktop(ShareSourceDesktop::kOmniboxSharingHub);
 #endif
 }
 
