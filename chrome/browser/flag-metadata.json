@@ -317,20 +317,25 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 96
+    "expiry_milestone": 98
   },
   {
     "name": "assistant-intent-page-url",
     "owners": [
-      "jds",
-      "chrome-language@google.com"
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
     ],
-    "expiry_milestone": 94
+    "expiry_milestone": 98
   },
   {
     "name": "assistant-intent-translate-info",
-    "owners": [ "jds", "chrome-language@google.com" ],
-    "expiry_milestone": 94
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 98
   },
   {
     "name": "audio-url",
@@ -4129,8 +4134,12 @@
   },
   {
     "name": "omnibox-assistant-voice-search",
-    "owners": [ "wylieb", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 98
   },
   {
     "name": "omnibox-bookmark-paths",
@@ -5422,8 +5431,8 @@
   },
   {
     "name": "toolbar-mic-iph-android",
-    "owners": [ "basiaz@google.com", "chrome-voice" ],
-    "expiry_milestone": 95
+    "owners": [ "basiaz@google.com", "chrome-voice@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "top-chrome-touch-ui",
@@ -5451,8 +5460,12 @@
   },
   {
     "name": "translate-assist-content",
-    "owners": [ "jds", "basiaz@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 94
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 98
   },
   {
     "name": "translate-force-trigger-on-english",
@@ -5461,8 +5474,12 @@
   },
   {
     "name": "translate-intent",
-    "owners": [ "jds", "basiaz@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 94
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 98
   },
   {
     "name": "treat-unsafe-downloads-as-active-content",
@@ -5673,8 +5690,12 @@
   },
   {
     "name": "voice-button-in-top-toolbar",
-    "owners": [ "jds", "chrome-language@google.com" ],
-    "expiry_milestone": 93
+    "owners": [
+      "jds@google.com",
+      "basiaz@google.com",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 98
   },
   {
     "name": "wait-threshold-seconds-for-capabilities-api",
