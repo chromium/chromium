@@ -254,6 +254,10 @@ blink::WebScopedVirtualTimePauser StorageArea::CreateWebScopedVirtualTimePauser(
       ->CreateWebScopedVirtualTimePauser(name, duration);
 }
 
+const LocalDOMWindow* StorageArea::GetDOMWindow() {
+  return DomWindow();
+}
+
 void StorageArea::OnDocumentActivatedForPrerendering() {
   StorageNamespace* storage_namespace =
       StorageNamespace::From(DomWindow()->GetFrame()->GetPage());
@@ -263,7 +267,7 @@ void StorageArea::OnDocumentActivatedForPrerendering() {
   // Swap out the session storage state used within prerendering, and replace it
   // with the normal session storage state. For more details:
   // https://docs.google.com/document/d/1I5Hr8I20-C1GBr4tAXdm0U8a1RDUKHt4n7WcH4fxiSE/edit?usp=sharing
-  cached_area_ = storage_namespace->GetCachedArea(DomWindow()->GetStorageKey());
+  cached_area_ = storage_namespace->GetCachedArea(DomWindow());
   cached_area_->RegisterSource(this);
 }
 

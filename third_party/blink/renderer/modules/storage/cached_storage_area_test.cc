@@ -8,9 +8,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
-#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -22,13 +25,17 @@ using ::testing::UnorderedElementsAre;
 
 class CachedStorageAreaTest : public testing::Test {
  public:
-  const BlinkStorageKey kStorageKey =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage/");
   const String kKey = "key";
   const String kValue = "value";
   const String kValue2 = "another value";
-  const KURL kPageUrl = KURL("http://dom_storage/page");
-  const KURL kPageUrl2 = KURL("http://dom_storage/other_page");
+  const std::string kRootString = "http://dom_storage/";
+  const KURL kRootUrl = KURL(kRootString.c_str());
+  const BlinkStorageKey kRootStorageKey =
+      BlinkStorageKey::CreateFromStringForTesting(kRootString.c_str());
+  const std::string kPageString = "http://dom_storage/page";
+  const KURL kPageUrl = KURL(kPageString.c_str());
+  const std::string kPageString2 = "http://dom_storage/other_page";
+  const KURL kPageUrl2 = KURL(kPageString2.c_str());
   const String kRemoteSourceId = "1234";
   const String kRemoteSource = kPageUrl2.GetString() + "\n" + kRemoteSourceId;
 
@@ -36,16 +43,39 @@ class CachedStorageAreaTest : public testing::Test {
     const CachedStorageArea::AreaType area_type =
         IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                            : CachedStorageArea::AreaType::kLocalStorage;
+    test::ScopedMockedURLLoad scoped_mocked_url_load_root(
+        kRootUrl, test::CoreTestDataPath("foo.html"));
+    LocalDOMWindow* local_dom_window_root =
+        To<LocalDOMWindow>(web_view_helper_root_.InitializeAndLoad(kRootString)
+                               ->GetPage()
+                               ->MainFrame()
+                               ->DomWindow());
     cached_area_ = base::MakeRefCounted<CachedStorageArea>(
-        area_type, kStorageKey,
+        area_type, kRootStorageKey, local_dom_window_root,
         scheduler::GetSingleThreadTaskRunnerForTesting(), nullptr,
         /*is_session_storage_for_prerendering=*/false);
     cached_area_->SetRemoteAreaForTesting(
         mock_storage_area_.GetInterfaceRemote());
-    source_area_ = MakeGarbageCollected<FakeAreaSource>(kPageUrl);
+    test::ScopedMockedURLLoad scoped_mocked_url_load(
+        kPageUrl, test::CoreTestDataPath("foo.html"));
+    LocalDOMWindow* local_dom_window =
+        To<LocalDOMWindow>(web_view_helper_.InitializeAndLoad(kPageString)
+                               ->GetPage()
+                               ->MainFrame()
+                               ->DomWindow());
+    source_area_ =
+        MakeGarbageCollected<FakeAreaSource>(kPageUrl, local_dom_window);
     source_area_id_ = cached_area_->RegisterSource(source_area_);
     source_ = kPageUrl.GetString() + "\n" + source_area_id_;
-    source_area2_ = MakeGarbageCollected<FakeAreaSource>(kPageUrl2);
+    test::ScopedMockedURLLoad scoped_mocked_url_load2(
+        kPageUrl2, test::CoreTestDataPath("foo.html"));
+    LocalDOMWindow* local_dom_window2 =
+        To<LocalDOMWindow>(web_view_helper2_.InitializeAndLoad(kPageString2)
+                               ->GetPage()
+                               ->MainFrame()
+                               ->DomWindow());
+    source_area2_ =
+        MakeGarbageCollected<FakeAreaSource>(kPageUrl2, local_dom_window2);
     cached_area_->RegisterSource(source_area2_);
   }
 
@@ -121,6 +151,9 @@ class CachedStorageAreaTest : public testing::Test {
   scoped_refptr<CachedStorageArea> cached_area_;
   String source_area_id_;
   String source_;
+  frame_test_helpers::WebViewHelper web_view_helper_root_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
+  frame_test_helpers::WebViewHelper web_view_helper2_;
 };
 
 class CachedStorageAreaTestWithParam

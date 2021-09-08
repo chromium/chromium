@@ -226,7 +226,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
     storage_area = StorageArea::CreateForInspectorAgent(
         frame->DomWindow(),
         StorageController::GetInstance()->GetLocalStorageArea(
-            frame->DomWindow()->GetStorageKey()),
+            frame->DomWindow()),
         StorageArea::StorageType::kLocalStorage);
     return Response::Success();
   }
@@ -242,8 +242,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
   DCHECK(session_namespace->IsSessionStorage());
 
   storage_area = StorageArea::CreateForInspectorAgent(
-      frame->DomWindow(),
-      session_namespace->GetCachedArea(frame->DomWindow()->GetStorageKey()),
+      frame->DomWindow(), session_namespace->GetCachedArea(frame->DomWindow()),
       StorageArea::StorageType::kSessionStorage);
   return Response::Success();
 }

@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
@@ -68,7 +69,7 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
-    const BlinkStorageKey& storage_key,
+    const LocalDOMWindow* local_dom_window,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -81,7 +82,7 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  auto cache_it = cached_areas_.find(&storage_key);
+  auto cache_it = cached_areas_.find(&local_dom_window->GetStorageKey());
   if (cache_it != cached_areas_.end()) {
     metric = cache_it->value->HasOneRef() ? CacheMetrics::kHit
                                           : CacheMetrics::kUnused;
@@ -101,21 +102,24 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   result = base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      storage_key, controller_->TaskRunner(), this,
+      local_dom_window->GetStorageKey(), local_dom_window,
+      controller_->TaskRunner(), this,
       /*is_session_storage_for_prerendering=*/false, std::move(storage_area));
-  cached_areas_.insert(std::make_unique<const BlinkStorageKey>(storage_key),
+  cached_areas_.insert(std::make_unique<const BlinkStorageKey>(
+                           local_dom_window->GetStorageKey()),
                        result);
   return result;
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::CreateCachedAreaForPrerender(
-    const BlinkStorageKey& storage_key,
+    const LocalDOMWindow* local_dom_window,
     mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
   DCHECK((IsSessionStorage()));
   return base::MakeRefCounted<CachedStorageArea>(
       IsSessionStorage() ? CachedStorageArea::AreaType::kSessionStorage
                          : CachedStorageArea::AreaType::kLocalStorage,
-      storage_key, controller_->TaskRunner(), this,
+      local_dom_window->GetStorageKey(), local_dom_window,
+      controller_->TaskRunner(), this,
       /*is_session_storage_for_prerendering=*/true, std::move(storage_area));
 }
 
@@ -214,16 +218,17 @@ void StorageNamespace::DidDispatchStorageEvent(
 }
 
 void StorageNamespace::BindStorageArea(
-    const BlinkStorageKey& storage_key,
+    const LocalDOMWindow& local_dom_window,
     mojo::PendingReceiver<mojom::blink::StorageArea> receiver) {
   if (IsSessionStorage()) {
     controller_->dom_storage()->BindSessionStorageArea(
         // TODO(https://crbug.com/1212808) Refactor and pass FrameID as well.
-        storage_key.GetSecurityOrigin(), namespace_id_, std::move(receiver));
+        local_dom_window.GetSecurityOrigin(), namespace_id_,
+        std::move(receiver));
   } else {
     controller_->dom_storage()->OpenLocalStorage(
         // TODO(https://crbug.com/1212808) Refactor and pass FrameID as well.
-        storage_key.GetSecurityOrigin(), std::move(receiver));
+        local_dom_window.GetSecurityOrigin(), std::move(receiver));
   }
 }
 

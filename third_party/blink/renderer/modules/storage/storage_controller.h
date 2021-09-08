@@ -24,9 +24,9 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
-class BlinkStorageKey;
 class CachedStorageArea;
 class InspectorDOMStorageAgent;
+class LocalDOMWindow;
 class LocalFrame;
 class StorageNamespace;
 
@@ -79,7 +79,7 @@ class MODULES_EXPORT StorageController : public mojom::blink::DomStorageClient {
   // LocalStorage:
 
   scoped_refptr<CachedStorageArea> GetLocalStorageArea(
-      const BlinkStorageKey& storage_key,
+      const LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area = {});
   void AddLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);
   void RemoveLocalStorageInspectorStorageAgent(InspectorDOMStorageAgent* agent);

@@ -46,6 +46,7 @@
 namespace blink {
 
 class CachedStorageArea;
+class LocalDOMWindow;
 class InspectorDOMStorageAgent;
 class StorageController;
 
@@ -75,11 +76,11 @@ class MODULES_EXPORT StorageNamespace final
 
   // |storage_area| is ignored here if a cached namespace already exists.
   scoped_refptr<CachedStorageArea> GetCachedArea(
-      const BlinkStorageKey& storage_key,
+      const LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   scoped_refptr<CachedStorageArea> CreateCachedAreaForPrerender(
-      const BlinkStorageKey& storage_key,
+      const LocalDOMWindow* local_dom_window,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
   void EvictSessionStorageCachedData();
@@ -110,7 +111,7 @@ class MODULES_EXPORT StorageNamespace final
   // Called by areas in `cached_areas_` to bind/rebind their StorageArea
   // interface.
   void BindStorageArea(
-      const BlinkStorageKey& storage_key,
+      const LocalDOMWindow& local_dom_window,
       mojo::PendingReceiver<mojom::blink::StorageArea> receiver);
 
   // If this StorageNamespace was previously connected to the backend, this

@@ -23,6 +23,8 @@
 
 namespace blink {
 
+class LocalDOMWindow;
+
 // An in-process implementation of LocalStorage using a LevelDB Mojo service.
 // Maintains a complete cache of the BlinkStorageKey's Map of key/value pairs
 // for fast access. The cache is primed on first access and changes are written
@@ -53,6 +55,7 @@ class MODULES_EXPORT CachedStorageArea
     virtual blink::WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
         const char* name,
         WebScopedVirtualTimePauser::VirtualTaskDuration duration) = 0;
+    virtual const LocalDOMWindow* GetDOMWindow() = 0;
   };
 
   enum class AreaType {
@@ -63,6 +66,7 @@ class MODULES_EXPORT CachedStorageArea
   CachedStorageArea(
       AreaType type,
       const BlinkStorageKey& storage_key,
+      const LocalDOMWindow* local_dom_window,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_runner,
       StorageNamespace* storage_namespace,
       bool is_session_storage_for_prerendering,
@@ -129,8 +133,11 @@ class MODULES_EXPORT CachedStorageArea
     String old_value;
   };
 
+  const LocalDOMWindow* GetBestCurrentDOMWindow();
+
   void BindStorageArea(
-      mojo::PendingRemote<mojom::blink::StorageArea> new_area = {});
+      mojo::PendingRemote<mojom::blink::StorageArea> new_area = {},
+      const LocalDOMWindow* local_dom_window = nullptr);
 
   // mojom::blink::StorageAreaObserver:
   void KeyChanged(const Vector<uint8_t>& key,

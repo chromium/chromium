@@ -17,11 +17,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/modules/storage/testing/fake_area_source.h"
 #include "third_party/blink/renderer/modules/storage/testing/mock_storage_area.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 
@@ -56,17 +59,27 @@ class MockDomStorage : public mojom::blink::DomStorage {
 }  // namespace
 
 TEST(StorageControllerTest, CacheLimit) {
-  const BlinkStorageKey kStorageKey =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage1/");
-  const BlinkStorageKey kStorageKey2 =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage2/");
-  const BlinkStorageKey kStorageKey3 =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage3/");
   const String kKey("key");
   const String kValue("value");
-  const KURL kPageUrl("http://dom_storage/page");
+  const std::string kRootString = "http://dom_storage/page";
+  const KURL kRootUrl = KURL(kRootString.c_str());
+  const std::string kPageString = "http://dom_storage1/";
+  const KURL kPageUrl = KURL(kPageString.c_str());
+  const std::string kPageString2 = "http://dom_storage2/";
+  const KURL kPageUrl2 = KURL(kPageString2.c_str());
+  const std::string kPageString3 = "http://dom_storage3/";
+  const KURL kPageUrl3 = KURL(kPageString3.c_str());
+
+  test::ScopedMockedURLLoad scoped_mocked_url_load_root(
+      kRootUrl, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper_root;
+  LocalDOMWindow* local_dom_window_root =
+      To<LocalDOMWindow>(web_view_helper_root.InitializeAndLoad(kRootString)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
   Persistent<FakeAreaSource> source_area =
-      MakeGarbageCollected<FakeAreaSource>(kPageUrl);
+      MakeGarbageCollected<FakeAreaSource>(kRootUrl, local_dom_window_root);
 
   StorageController::DomStorageConnection connection;
   PostCrossThreadTask(
@@ -82,7 +95,15 @@ TEST(StorageControllerTest, CacheLimit) {
                                scheduler::GetSingleThreadTaskRunnerForTesting(),
                                kTestCacheLimit);
 
-  auto cached_area1 = controller.GetLocalStorageArea(kStorageKey);
+  test::ScopedMockedURLLoad scoped_mocked_url_load(
+      kPageUrl, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper;
+  LocalDOMWindow* local_dom_window =
+      To<LocalDOMWindow>(web_view_helper.InitializeAndLoad(kPageString)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
+  auto cached_area1 = controller.GetLocalStorageArea(local_dom_window);
   cached_area1->RegisterSource(source_area);
   cached_area1->SetItem(kKey, kValue, source_area);
   const auto* area1_ptr = cached_area1.get();
@@ -91,35 +112,60 @@ TEST(StorageControllerTest, CacheLimit) {
   EXPECT_EQ(expected_total, controller.TotalCacheSize());
   cached_area1 = nullptr;
 
-  auto cached_area2 = controller.GetLocalStorageArea(kStorageKey2);
+  test::ScopedMockedURLLoad scoped_mocked_url_load2(
+      kPageUrl2, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper2;
+  LocalDOMWindow* local_dom_window2 =
+      To<LocalDOMWindow>(web_view_helper2.InitializeAndLoad(kPageString2)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
+  auto cached_area2 = controller.GetLocalStorageArea(local_dom_window2);
   cached_area2->RegisterSource(source_area);
   cached_area2->SetItem(kKey, kValue, source_area);
-  // Area for kStorageKey should still be alive.
+  // Area for local_dom_window should still be alive.
   EXPECT_EQ(2 * cached_area2->quota_used(), controller.TotalCacheSize());
-  EXPECT_EQ(area1_ptr, controller.GetLocalStorageArea(kStorageKey));
+  EXPECT_EQ(area1_ptr, controller.GetLocalStorageArea(local_dom_window));
 
+  test::ScopedMockedURLLoad scoped_mocked_url_load3(
+      kPageUrl3, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper3;
+  LocalDOMWindow* local_dom_window3 =
+      To<LocalDOMWindow>(web_view_helper3.InitializeAndLoad(kPageString3)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
   String long_value(Vector<UChar>(kTestCacheLimit, 'a'));
   cached_area2->SetItem(kKey, long_value, source_area);
   // Cache is cleared when a new area is opened.
-  auto cached_area3 = controller.GetLocalStorageArea(kStorageKey3);
+  auto cached_area3 = controller.GetLocalStorageArea(local_dom_window3);
   EXPECT_EQ(cached_area2->quota_used(), controller.TotalCacheSize());
 }
 
 TEST(StorageControllerTest, CacheLimitSessionStorage) {
   const String kNamespace1 = WTF::CreateCanonicalUUIDString();
   const String kNamespace2 = WTF::CreateCanonicalUUIDString();
-  const BlinkStorageKey kStorageKey =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage1/");
-  const BlinkStorageKey kStorageKey2 =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage2/");
-  const BlinkStorageKey kStorageKey3 =
-      BlinkStorageKey::CreateFromStringForTesting("http://dom_storage3/");
   const String kKey("key");
   const String kValue("value");
-  const KURL kPageUrl("http://dom_storage/page");
+  const std::string kRootString = "http://dom_storage/page";
+  const KURL kRootUrl = KURL(kRootString.c_str());
+  const std::string kPageString = "http://dom_storage1/";
+  const KURL kPageUrl = KURL(kPageString.c_str());
+  const std::string kPageString2 = "http://dom_storage2/";
+  const KURL kPageUrl2 = KURL(kPageString2.c_str());
+  const std::string kPageString3 = "http://dom_storage3/";
+  const KURL kPageUrl3 = KURL(kPageString3.c_str());
 
+  test::ScopedMockedURLLoad scoped_mocked_url_load_root(
+      kRootUrl, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper_root;
+  LocalDOMWindow* local_dom_window_root =
+      To<LocalDOMWindow>(web_view_helper_root.InitializeAndLoad(kRootString)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
   Persistent<FakeAreaSource> source_area =
-      MakeGarbageCollected<FakeAreaSource>(kPageUrl);
+      MakeGarbageCollected<FakeAreaSource>(kRootUrl, local_dom_window_root);
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
 
@@ -143,7 +189,15 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
   StorageNamespace* ns1 = controller.CreateSessionStorageNamespace(kNamespace1);
   StorageNamespace* ns2 = controller.CreateSessionStorageNamespace(kNamespace2);
 
-  auto cached_area1 = ns1->GetCachedArea(kStorageKey);
+  test::ScopedMockedURLLoad scoped_mocked_url_load(
+      kPageUrl, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper;
+  LocalDOMWindow* local_dom_window =
+      To<LocalDOMWindow>(web_view_helper.InitializeAndLoad(kPageString)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
+  auto cached_area1 = ns1->GetCachedArea(local_dom_window);
   cached_area1->RegisterSource(source_area);
   cached_area1->SetItem(kKey, kValue, source_area);
   const auto* area1_ptr = cached_area1.get();
@@ -152,17 +206,33 @@ TEST(StorageControllerTest, CacheLimitSessionStorage) {
   EXPECT_EQ(expected_total, controller.TotalCacheSize());
   cached_area1 = nullptr;
 
-  auto cached_area2 = ns2->GetCachedArea(kStorageKey2);
+  test::ScopedMockedURLLoad scoped_mocked_url_load2(
+      kPageUrl2, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper2;
+  LocalDOMWindow* local_dom_window2 =
+      To<LocalDOMWindow>(web_view_helper2.InitializeAndLoad(kPageString2)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
+  auto cached_area2 = ns2->GetCachedArea(local_dom_window2);
   cached_area2->RegisterSource(source_area);
   cached_area2->SetItem(kKey, kValue, source_area);
-  // Area for kStorageKey should still be alive.
+  // Area for local_dom_window should still be alive.
   EXPECT_EQ(2 * cached_area2->quota_used(), controller.TotalCacheSize());
-  EXPECT_EQ(area1_ptr, ns1->GetCachedArea(kStorageKey));
+  EXPECT_EQ(area1_ptr, ns1->GetCachedArea(local_dom_window));
 
+  test::ScopedMockedURLLoad scoped_mocked_url_load3(
+      kPageUrl3, test::CoreTestDataPath("foo.html"));
+  frame_test_helpers::WebViewHelper web_view_helper3;
+  LocalDOMWindow* local_dom_window3 =
+      To<LocalDOMWindow>(web_view_helper3.InitializeAndLoad(kPageString3)
+                             ->GetPage()
+                             ->MainFrame()
+                             ->DomWindow());
   String long_value(Vector<UChar>(kTestCacheLimit, 'a'));
   cached_area2->SetItem(kKey, long_value, source_area);
   // Cache is cleared when a new area is opened.
-  auto cached_area3 = ns1->GetCachedArea(kStorageKey3);
+  auto cached_area3 = ns1->GetCachedArea(local_dom_window3);
   EXPECT_EQ(cached_area2->quota_used(), controller.TotalCacheSize());
 
   int32_t opens = 0;
