@@ -72,7 +72,11 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   // This method will avoid this class to be garbage collected, as soon as
   // HasPendingActivity returns true.
   bool HasPendingActivity() const final {
-    return !dirty_rect_for_commit_.isEmpty();
+    if (!Host())
+      return false;
+    DCHECK(Host()->IsOffscreenCanvas());
+    return static_cast<OffscreenCanvas*>(Host())->HasPlaceholderCanvas() &&
+           !dirty_rect_for_commit_.isEmpty();
   }
 
   String font() const;

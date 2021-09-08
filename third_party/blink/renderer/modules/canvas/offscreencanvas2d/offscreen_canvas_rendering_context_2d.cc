@@ -182,8 +182,8 @@ bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider()
 
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
-  // TODO(aaronhk) use Host() instead of offscreenCanvasForBinding() here
-  return offscreenCanvasForBinding()->GetOrCreateResourceProvider();
+  DCHECK(Host() && Host()->IsOffscreenCanvas());
+  return static_cast<OffscreenCanvas*>(Host())->GetOrCreateResourceProvider();
 }
 
 CanvasResourceProvider*
