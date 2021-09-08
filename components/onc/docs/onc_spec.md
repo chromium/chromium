@@ -818,7 +818,7 @@ L2TP over IPsec with pre-shared key:
 
 * **CompLZO**
     * (optional, defaults to *adaptive*) - **string**
-    * DEPRECATED, use **Compress** with *lzo* option instead.
+    * DEPRECATED, use **CompressionAlgorithm** with *lzo* option instead.
     * Decides to fast LZO compression with *true*
       and *false* as other values.
 
@@ -827,7 +827,7 @@ L2TP over IPsec with pre-shared key:
     * DEPRECATED, do not use.
     * Disables adaptive compression.
 
-* **Compress**
+* **CompressionAlgorithm**
     * (optional, defaults to *None*) - **string**
     * Specifies the compression algorithm to be used.
     * Allowed values are:
