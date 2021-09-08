@@ -581,7 +581,7 @@ viz_source_set("unit_tests") {
     "transitions/transferable_resource_tracker_unittest.cc",
   ]
 
-  if (enable_gl_backend_tests) {
+  if (enable_gl_renderer_tests) {
     sources += [
       "display/gl_renderer_copier_pixeltest.cc",
       "display/gl_renderer_copier_unittest.cc",

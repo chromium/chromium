@@ -1782,12 +1782,15 @@ class VideoRendererPixelHiLoTest
   bool IsHighbit() const { return std::get<1>(GetParam()); }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    VideoRendererPixelHiLoTest,
-    testing::Combine(testing::Values(RendererType::kGL, RendererType::kSkiaGL),
-                     testing::Bool()),
-    cc::PrintTupleToStringParamName());
+INSTANTIATE_TEST_SUITE_P(,
+                         VideoRendererPixelHiLoTest,
+                         testing::Combine(testing::Values(
+#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
+                                              RendererType::kGL,
+#endif
+                                              RendererType::kSkiaGL),
+                                          testing::Bool()),
+                         cc::PrintTupleToStringParamName());
 
 TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   gfx::Rect rect(this->device_viewport_size_);

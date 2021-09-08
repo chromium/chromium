@@ -10,6 +10,10 @@ import("//testing/test.gni")
 # that code path.
 enable_gl_backend_tests = !is_fuchsia
 
+# Controls if GLRenderer related tests should be built and run. Platforms where
+# GLRenderer is no longer used (other than Linux) can stop running tests for it.
+enable_gl_renderer_tests = enable_gl_backend_tests && !is_android && !is_win
+
 # TODO(samans): Support more configurations.
 # CFI issue: https://crbug.com/967819
 # LSAN issue: https://crbug.com/971357
