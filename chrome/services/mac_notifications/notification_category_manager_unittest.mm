@@ -33,7 +33,8 @@ class NotificationCategoryManagerTest : public testing::Test {
   ~NotificationCategoryManagerTest() override = default;
 
  protected:
-  NSSet<NSString*>* GetCategoryIds() API_AVAILABLE(macos(10.14)) {
+  API_AVAILABLE(macos(10.14))
+  NSSet<NSString*>* GetCategoryIds() {
     NSSet<UNNotificationCategory*>* categories =
         [fake_notification_center_ categories];
     NSMutableSet<NSString*>* category_ids =
@@ -42,6 +43,25 @@ class NotificationCategoryManagerTest : public testing::Test {
       [category_ids addObject:[category identifier]];
     }
     return category_ids;
+  }
+
+  API_AVAILABLE(macos(10.14))
+  base::scoped_nsobject<FakeUNNotification> CreateNotification(
+      NSString* identifier,
+      UNNotificationCategory* category) {
+    UNMutableNotificationContent* content =
+        [[UNMutableNotificationContent alloc] init];
+    content.categoryIdentifier = [category identifier];
+
+    UNNotificationRequest* request =
+        [UNNotificationRequest requestWithIdentifier:identifier
+                                             content:content
+                                             trigger:nil];
+
+    base::scoped_nsobject<FakeUNNotification> notification(
+        [[FakeUNNotification alloc] init]);
+    [notification setRequest:request];
+    return notification;
   }
 
   API_AVAILABLE(macos(10.14))
@@ -410,6 +430,50 @@ TEST_F(NotificationCategoryManagerTest, ReleaseAllCategories) {
     // Release all categories and expect them to be gone.
     manager_->ReleaseAllCategories();
     EXPECT_EQ(0u, [[fake_notification_center_ categories] count]);
+  }
+}
+
+TEST_F(NotificationCategoryManagerTest, InitializeExistingCategories) {
+  if (@available(macOS 10.14, *)) {
+    NotificationCategoryManager::CategoryKey category_key(
+        {{{u"Action", u"Reply"}}, /*settings_button=*/true});
+    UNNotificationCategory* category_ns =
+        NotificationCategoryManager::CreateCategory(category_key);
+    base::scoped_nsobject<FakeUNNotification> notfication =
+        CreateNotification(@"identifier1", category_ns);
+    auto* notification_ns = static_cast<UNNotification*>(notfication.get());
+
+    base::scoped_nsobject<NSArray<UNNotification*>> notifications(
+        [[NSArray alloc] initWithArray:@[ notification_ns ]]);
+    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories(
+        [[NSSet alloc] initWithArray:@[ category_ns ]]);
+
+    manager_->InitializeExistingCategories(std::move(notifications),
+                                           std::move(categories));
+
+    // Check that we did indeed initialize internal state.
+    ASSERT_EQ(1u, manager_->buttons_category_map_.size());
+    ASSERT_EQ(1u, manager_->buttons_category_map_.count(category_key));
+    ASSERT_EQ(1, manager_->buttons_category_map_[category_key].second);
+    ASSERT_EQ(1u, manager_->notification_id_buttons_map_.size());
+    ASSERT_EQ(1u, manager_->notification_id_buttons_map_.count("identifier1"));
+
+    // Asking for the same category should return the existing one.
+    NSString* category_id = manager_->GetOrCreateCategory(
+        "identifier2", category_key.first, category_key.second);
+    EXPECT_NSEQ([category_ns identifier], category_id);
+
+    // We should now have both notification ids mapping to the same category.
+    ASSERT_EQ(1u, manager_->buttons_category_map_.size());
+    ASSERT_EQ(1u, manager_->buttons_category_map_.count(category_key));
+    ASSERT_EQ(2, manager_->buttons_category_map_[category_key].second);
+    ASSERT_EQ(2u, manager_->notification_id_buttons_map_.size());
+    ASSERT_EQ(1u, manager_->notification_id_buttons_map_.count("identifier1"));
+    ASSERT_EQ(1u, manager_->notification_id_buttons_map_.count("identifier2"));
+    EXPECT_EQ(category_key,
+              manager_->notification_id_buttons_map_["identifier1"]);
+    EXPECT_EQ(category_key,
+              manager_->notification_id_buttons_map_["identifier2"]);
   }
 }
 

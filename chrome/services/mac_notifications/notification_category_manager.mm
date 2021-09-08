@@ -33,6 +33,20 @@ UNNotificationAction* CreateAction(
                    options:UNNotificationActionOptionNone];
 }
 
+API_AVAILABLE(macos(10.14))
+NotificationCategoryManager::Button GetButtonFromAction(
+    UNNotificationAction* action) {
+  std::u16string title = base::SysNSStringToUTF16([action title]);
+  absl::optional<std::u16string> placeholder;
+
+  if ([action isKindOfClass:[UNTextInputNotificationAction class]]) {
+    auto* text_action = static_cast<UNTextInputNotificationAction*>(action);
+    placeholder = base::SysNSStringToUTF16([text_action textInputPlaceholder]);
+  }
+
+  return {title, placeholder};
+}
+
 }  // namespace
 
 NotificationCategoryManager::NotificationCategoryManager(
@@ -40,6 +54,48 @@ NotificationCategoryManager::NotificationCategoryManager(
     : notification_center_([notification_center retain]) {}
 
 NotificationCategoryManager::~NotificationCategoryManager() = default;
+
+void NotificationCategoryManager::InitializeExistingCategories(
+    base::scoped_nsobject<NSArray<UNNotification*>> notifications,
+    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories) {
+  base::flat_map<std::string, base::scoped_nsobject<UNNotificationCategory>>
+      category_map;
+
+  // Setup map from category ID to category for faster lookup.
+  for (UNNotificationCategory* category in categories.get()) {
+    std::string category_id = base::SysNSStringToUTF8([category identifier]);
+    category_map.emplace(category_id, [category retain]);
+  }
+
+  // Setup links from notifications to categories and count how many times each
+  // category is used.
+  for (UNNotification* notification in notifications.get()) {
+    std::string notification_id =
+        base::SysNSStringToUTF8([[notification request] identifier]);
+    std::string category_id = base::SysNSStringToUTF8(
+        [[[notification request] content] categoryIdentifier]);
+
+    if (notification_id_buttons_map_.count(notification_id))
+      continue;
+
+    auto entry = category_map.find(category_id);
+    if (entry == category_map.end())
+      continue;
+
+    // Link |notification_id| to |category_key|.
+    auto category_key = GetCategoryKey(entry->second.get());
+    notification_id_buttons_map_.emplace(notification_id, category_key);
+
+    // Increment refcount for |category_key|.
+    auto existing = buttons_category_map_.find(category_key);
+    if (existing != buttons_category_map_.end()) {
+      ++existing->second.second;
+    } else {
+      CategoryEntry category_entry(entry->second, /*refcount=*/1);
+      buttons_category_map_.emplace(category_key, std::move(category_entry));
+    }
+  }
+}
 
 NSString* NotificationCategoryManager::GetOrCreateCategory(
     const std::string& notification_id,
@@ -61,7 +117,7 @@ NSString* NotificationCategoryManager::GetOrCreateCategory(
   }
 
   // Create a new category with the given buttons.
-  UNNotificationCategory* category = CreateCategory(buttons, settings_button);
+  UNNotificationCategory* category = CreateCategory(category_key);
   CategoryEntry category_entry([category retain], /*refcount=*/1);
   buttons_category_map_.emplace(category_key, std::move(category_entry));
 
@@ -118,8 +174,9 @@ void NotificationCategoryManager::UpdateNotificationCenterCategories() {
 }
 
 UNNotificationCategory* NotificationCategoryManager::CreateCategory(
-    const NotificationCategoryManager::Buttons& buttons,
-    bool settings_button) {
+    const CategoryKey& key) {
+  const NotificationCategoryManager::Buttons& buttons = key.first;
+  bool settings_button = key.second;
   NSMutableArray* buttons_array = [NSMutableArray arrayWithCapacity:4];
 
   UNNotificationAction* close_button = [UNNotificationAction
@@ -185,6 +242,24 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   }
 
   return category;
+}
+
+NotificationCategoryManager::CategoryKey
+NotificationCategoryManager::GetCategoryKey(UNNotificationCategory* category) {
+  Buttons buttons;
+  bool settings_button = false;
+
+  for (UNNotificationAction* action in [category actions]) {
+    NSString* identifier = [action identifier];
+    if ([kNotificationSettingsButtonTag isEqualToString:identifier]) {
+      settings_button = true;
+    } else if ([kNotificationButtonOne isEqualToString:identifier] ||
+               [kNotificationButtonTwo isEqualToString:identifier]) {
+      buttons.push_back(GetButtonFromAction(action));
+    }
+  }
+
+  return std::make_pair(std::move(buttons), settings_button);
 }
 
 }  // namespace mac_notifications

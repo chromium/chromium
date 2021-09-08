@@ -102,7 +102,7 @@ MacNotificationServiceUN::MacNotificationServiceUN(
     mojo::PendingReceiver<mojom::MacNotificationService> service,
     mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
     UNUserNotificationCenter* notification_center)
-    : binding_(this, std::move(service)),
+    : binding_(this),
       action_handler_(std::move(handler)),
       notification_center_([notification_center retain]),
       category_manager_(notification_center) {
@@ -116,6 +116,15 @@ MacNotificationServiceUN::MacNotificationServiceUN(
   RequestPermission();
   // Schedule a timer to regularly check for any closed notifications.
   ScheduleSynchronizeNotifications();
+  // Initialize currently displayed notifications as we might have been
+  // restarted after a crash and want to continue managing shown notifications.
+  // Only bind the mojo receiver after initialization is done to ensure we have
+  // all required state available before handling mojo messages.
+  InitializeDeliveredNotifications(base::BindOnce(
+      [](mojo::Receiver<mojom::MacNotificationService>* receiver,
+         mojo::PendingReceiver<mojom::MacNotificationService>
+             pending_receiver) { receiver->Bind(std::move(pending_receiver)); },
+      base::Unretained(&binding_), std::move(service)));
 }
 
 MacNotificationServiceUN::~MacNotificationServiceUN() {
@@ -323,6 +332,48 @@ void MacNotificationServiceUN::RequestPermission() {
 
   [notification_center_ requestAuthorizationWithOptions:authOptions
                                       completionHandler:resultHandler];
+}
+
+void MacNotificationServiceUN::InitializeDeliveredNotifications(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  __block auto do_initialize = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(
+          &MacNotificationServiceUN::DoInitializeDeliveredNotifications,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+
+  [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
+                            NSArray<UNNotification*>* _Nonnull notifications) {
+    [notification_center_
+        getNotificationCategoriesWithCompletionHandler:^(
+            NSSet<UNNotificationCategory*>* _Nonnull categories) {
+          std::move(do_initialize)
+              .Run(base::scoped_nsobject<NSArray<UNNotification*>>(
+                       [notifications retain]),
+                   base::scoped_nsobject<NSSet<UNNotificationCategory*>>(
+                       [categories retain]));
+        }];
+  }];
+}
+
+void MacNotificationServiceUN::DoInitializeDeliveredNotifications(
+    base::OnceClosure callback,
+    base::scoped_nsobject<NSArray<UNNotification*>> notifications,
+    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (UNNotification* notification in notifications.get()) {
+    auto meta = mac_notifications::GetMacNotificationMetadata(
+        [[[notification request] content] userInfo]);
+    std::string notification_id = DeriveMacNotificationId(meta->id);
+    delivered_notifications_[notification_id] = std::move(meta);
+  }
+
+  category_manager_.InitializeExistingCategories(std::move(notifications),
+                                                 std::move(categories));
+
+  std::move(callback).Run();
 }
 
 void MacNotificationServiceUN::ScheduleSynchronizeNotifications() {

@@ -60,6 +60,19 @@ class MacNotificationServiceUNTest : public testing::Test {
       [[[mock_notification_center_ expect] ignoringNonObjectArgs]
           requestAuthorizationWithOptions:0
                         completionHandler:[OCMArg any]];
+
+      // We also synchronize displayed notifications and categories.
+      [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+        __unsafe_unretained void (^callback)(NSArray* _Nonnull notifications);
+        [invocation getArgument:&callback atIndex:2];
+        callback(@[]);
+      }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+      [[[mock_notification_center_ expect] andDo:^(NSInvocation* invocation) {
+        __unsafe_unretained void (^callback)(NSArray* _Nonnull categories);
+        [invocation getArgument:&callback atIndex:2];
+        callback(@[]);
+      }] getNotificationCategoriesWithCompletionHandler:[OCMArg any]];
+
       service_ = std::make_unique<MacNotificationServiceUN>(
           service_remote_.BindNewPipeAndPassReceiver(),
           handler_receiver_.BindNewPipeAndPassRemote(),
@@ -101,7 +114,9 @@ class MacNotificationServiceUNTest : public testing::Test {
   base::scoped_nsobject<FakeUNNotification> CreateNotification(
       const std::string& notification_id,
       const std::string& profile_id,
-      bool incognito) {
+      bool incognito,
+      bool display = true,
+      const std::string& category_id = "") {
     NSString* identifier = base::SysUTF8ToNSString(
         DeriveMacNotificationId(mojom::NotificationIdentifier::New(
             notification_id,
@@ -110,13 +125,12 @@ class MacNotificationServiceUNTest : public testing::Test {
     UNMutableNotificationContent* content =
         [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
-
       kNotificationId : base::SysUTF8ToNSString(notification_id),
-
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
-
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
     };
+    if (!category_id.empty())
+      content.categoryIdentifier = base::SysUTF8ToNSString(category_id);
 
     UNNotificationRequest* request =
         [UNNotificationRequest requestWithIdentifier:identifier
@@ -129,7 +143,8 @@ class MacNotificationServiceUNTest : public testing::Test {
 
     // Also call the |service_remote_| to setup the new notification. This will
     // make sure that any internal state is updated as well.
-    DisplayNotificationSync(notification_id, profile_id, incognito);
+    if (display)
+      DisplayNotificationSync(notification_id, profile_id, incognito);
 
     return notification;
   }
@@ -157,11 +172,12 @@ class MacNotificationServiceUNTest : public testing::Test {
     return notifications;
   }
 
-  std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
-      mojom::ProfileIdentifierPtr profile) {
+  static std::vector<mojom::NotificationIdentifierPtr>
+  GetDisplayedNotificationsSync(mojom::MacNotificationService* service,
+                                mojom::ProfileIdentifierPtr profile) {
     base::RunLoop run_loop;
     std::vector<mojom::NotificationIdentifierPtr> displayed;
-    service_remote_->GetDisplayedNotifications(
+    service->GetDisplayedNotifications(
         std::move(profile),
         base::BindLambdaForTesting(
             [&](std::vector<mojom::NotificationIdentifierPtr> notifications) {
@@ -170,6 +186,12 @@ class MacNotificationServiceUNTest : public testing::Test {
             }));
     run_loop.Run();
     return displayed;
+  }
+
+  std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
+      mojom::ProfileIdentifierPtr profile) {
+    return GetDisplayedNotificationsSync(service_remote_.get(),
+                                         std::move(profile));
   }
 
   API_AVAILABLE(macos(10.14))
@@ -216,9 +238,16 @@ class MacNotificationServiceUNTest : public testing::Test {
   }
 
   // Creates a new service and destroys it immediately. This is used to test any
-  // metrics logged during construction of the service.
+  // metrics logged during construction of the service. Tests can optionally
+  // pass in an |on_create| callback to do further checks before the service is
+  // destroyed.
   API_AVAILABLE(macos(10.14))
-  void CreateAndDestroyService(UNNotificationRequestPermissionResult result) {
+  void CreateAndDestroyService(
+      UNNotificationRequestPermissionResult result,
+      NSArray<UNNotification*>* notifications = nil,
+      NSArray<UNNotificationCategory*>* categories = nil,
+      base::OnceCallback<void(MacNotificationServiceUN*)> on_create =
+          base::NullCallback()) {
     id mock_notification_center =
         [OCMockObject mockForClass:[UNUserNotificationCenter class]];
     MockNotificationActionHandler mock_handler;
@@ -229,6 +258,16 @@ class MacNotificationServiceUNTest : public testing::Test {
     [[mock_notification_center expect] setDelegate:[OCMArg any]];
     [[mock_notification_center expect]
         getNotificationSettingsWithCompletionHandler:[OCMArg any]];
+    [[[mock_notification_center stub] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSArray* _Nonnull notifications);
+      [invocation getArgument:&callback atIndex:2];
+      callback(notifications ? notifications : @[]);
+    }] getDeliveredNotificationsWithCompletionHandler:[OCMArg any]];
+    [[[mock_notification_center stub] andDo:^(NSInvocation* invocation) {
+      __unsafe_unretained void (^callback)(NSArray* _Nonnull categories);
+      [invocation getArgument:&callback atIndex:2];
+      callback(categories ? categories : @[]);
+    }] getNotificationCategoriesWithCompletionHandler:[OCMArg any]];
 
     [[[[mock_notification_center expect]
         ignoringNonObjectArgs] andDo:^(NSInvocation* invocation) {
@@ -248,6 +287,8 @@ class MacNotificationServiceUNTest : public testing::Test {
     auto service = std::make_unique<MacNotificationServiceUN>(
         service_remote.BindNewPipeAndPassReceiver(),
         handler_receiver.BindNewPipeAndPassRemote(), mock_notification_center);
+    if (on_create)
+      std::move(on_create).Run(service.get());
 
     [[mock_notification_center expect] setDelegate:[OCMArg any]];
     service.reset();
@@ -508,6 +549,33 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
     }
 
     [mainBundleMock stopMocking];
+  }
+}
+
+TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
+  if (@available(macOS 10.14, *)) {
+    // Create an existing notification with a category that exist before
+    // creating a new service.
+    UNNotificationCategory* category_ns =
+        NotificationCategoryManager::CreateCategory(
+            {{{u"Action", /*reply=*/absl::nullopt}}, /*settings_button=*/true});
+    std::string category_id = base::SysNSStringToUTF8(category_ns.identifier);
+    base::scoped_nsobject<FakeUNNotification> notification =
+        CreateNotification("notificationId", "profileId",
+                           /*incognito=*/false, /*display=*/false, category_id);
+    auto notification_ns = static_cast<UNNotification*>(notification.get());
+
+    // Expect the service to initialize internal state based on the existing
+    // notifications and categories.
+    CreateAndDestroyService(
+        UNNotificationRequestPermissionResult::kPermissionGranted,
+        @[ notification_ns ], @[ category_ns ],
+        base::BindOnce([](MacNotificationServiceUN* service) {
+          auto notifications =
+              GetDisplayedNotificationsSync(service, /*profile=*/nullptr);
+          ASSERT_EQ(1u, notifications.size());
+          EXPECT_EQ("notificationId", notifications[0]->id);
+        }));
   }
 }
 

@@ -58,6 +58,14 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   // to accept permissions if not granted or denied already.
   void RequestPermission();
 
+  // Initializes the |delivered_notifications_| with notifications currently
+  // shown in the macOS notification center.
+  void InitializeDeliveredNotifications(base::OnceClosure callback);
+  void DoInitializeDeliveredNotifications(
+      base::OnceClosure callback,
+      base::scoped_nsobject<NSArray<UNNotification*>> notifications,
+      base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories);
+
   // Called regularly while we think that notifications are on screen to detect
   // when they get closed.
   void ScheduleSynchronizeNotifications();
