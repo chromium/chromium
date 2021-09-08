@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<link rel="author" href="mailto:jarhar@chromium.org">
+<link rel="help" href="http://crbug.com/1247417">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="content-visibility:hidden">
+  <input id=image1 type=image src="resources/dice.png">
+</div>
+
+<div style="content-visibility:hidden">
+  <input id=image2 type=image src="resources/dice.png">
+</div>
+
+<script>
+test(() => {
+  assert_not_equals(image1.width, 0, 'width');
+  assert_not_equals(image2.height, 0, 'height');
+}, `<input type=image> should return nonzero values for width and height in a c-v:hidden subtree.`);
+</script>
