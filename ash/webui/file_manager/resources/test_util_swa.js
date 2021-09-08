@@ -8,7 +8,6 @@
 // directly load the Files.app's test_util_base.js due to its dependencies on
 // Chrome APIs not available in SWAs.
 
-import {SWA_FILES_APP_URL} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/url_constants.js';
 import {test} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/test_util.js';
 import {ScriptLoader} from './script_loader.js'
 
@@ -51,28 +50,29 @@ test.swaTestMessageListener = (request) => {
   });
 };
 
-test.swaLoadTestUtils = async () => {
+let testUtilsLoaded = false;
+
+test.swaLoadTestUtils = async (sendResults=true) => {
   const scriptUrl = './runtime_loaded_test_util_swa.js';
   let result = false;
   try {
     console.log('Loading ' + scriptUrl);
     await new ScriptLoader(scriptUrl, {type: 'module'}).load();
+    testUtilsLoaded = true;
     result = true;
   } finally {
-    window.domAutomationController.send(result);
+    if (sendResults) {
+      window.domAutomationController.send(result);
+    }
   }
 
   return result;
 };
 
-test.getSwaAppId = () => {
-  // FIXME: Implement the appId for SWA.
-  let appId = window.appState && window.appState.currentDirectoryURL;
-  if (!appId) {
-    appId = SWA_FILES_APP_URL.toString();
+test.getSwaAppId = async () => {
+  if (!testUtilsLoaded) {
+    await test.swaLoadTestUtils(false);
   }
 
-  appId = appId.replace('filesystem:', '');
-
-  window.domAutomationController.send(appId);
+  window.domAutomationController.send(String(window.appID));
 };

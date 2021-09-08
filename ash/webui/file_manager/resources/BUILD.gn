@@ -37,6 +37,8 @@ js_library("main_js") {
     "script_loader.js",
   ]
   deps = [ "//ash/webui/file_manager/mojom:mojom_webui_js" ]
+
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
 files_app_path =

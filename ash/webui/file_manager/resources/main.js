@@ -14,6 +14,7 @@ import './crt0.js';
  */
 import {BrowserProxy} from './browser_proxy.js'
 import {ScriptLoader} from './script_loader.js'
+import {promisify} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/api.js';
 import {VolumeManagerImpl} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/volume_manager_impl.js';
 import 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/metrics_start.js';
 import {background} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/background.js';
@@ -43,6 +44,9 @@ class FileManagerApp {
    * the files app foreground scripts.
    */
   async run() {
+    const win = await promisify(chrome.windows.getCurrent);
+    window.appID = win.id;
+
     await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
 
     // Temporarily remove window.cr.webUI* while the foreground script loads.

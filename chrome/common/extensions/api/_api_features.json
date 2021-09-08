@@ -974,7 +974,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
-      "chrome://tab-strip.top-chrome/*"
+      "chrome://tab-strip.top-chrome/*",
+      "chrome://file-manager/*"
     ]
   }, {
     "channel": "stable",
