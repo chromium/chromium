@@ -50,17 +50,16 @@ constexpr Fourcc::Value kPreferredRenderableFourccs[] = {
 };
 
 // Picks the preferred compositor renderable format from |candidates|, if any.
-// If |preferred_fourcc| is provided and considered renderable, it returns that.
-// Otherwise, it goes through |kPreferredRenderableFourccs| until it finds one
-// that's in |candidates|. If it can't find a renderable format in |candidates|,
-// it returns absl::nullopt.
+// If |preferred_fourcc| is provided, contained in |candidates|, and considered
+// renderable, it returns that. Otherwise, it goes through
+// |kPreferredRenderableFourccs| until it finds one that's in |candidates|. If
+// it can't find a renderable format in |candidates|, it returns absl::nullopt.
 absl::optional<Fourcc> PickRenderableFourcc(
     const std::vector<Fourcc>& candidates,
     absl::optional<Fourcc> preferred_fourcc) {
-  if (preferred_fourcc) {
-    DCHECK(base::Contains(candidates, preferred_fourcc));
+  if (preferred_fourcc && base::Contains(candidates, *preferred_fourcc)) {
     for (const auto value : kPreferredRenderableFourccs) {
-      if (Fourcc(value) == preferred_fourcc)
+      if (Fourcc(value) == *preferred_fourcc)
         return preferred_fourcc;
     }
   }
