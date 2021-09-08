@@ -315,7 +315,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Clear the texture using a render pass.
-    wgpu::RenderPassColorAttachmentDescriptor color_desc = {};
+    wgpu::RenderPassColorAttachment color_desc = {};
     color_desc.view = texture.CreateView();
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
