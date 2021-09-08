@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +46,7 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
@@ -55,6 +57,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -217,10 +221,18 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     }
 
     @Override
-    public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView) {
-        final Tab tab = TabUtils.fromWebContents(mWebContents);
-        return new PageInfoHistoryController(mainController, rowView, this, () -> { return tab; });
+    public Collection<PageInfoSubpageController> createAdditionalRowViews(
+            PageInfoMainController mainController, ViewGroup rowWrapper) {
+        Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
+            final Tab tab = TabUtils.fromWebContents(mWebContents);
+            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
+            rowWrapper.addView(historyRow);
+            controllers.add(new PageInfoHistoryController(
+                    mainController, historyRow, this, () -> { return tab; }));
+        }
+        return controllers;
     }
 
     /**

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,6 @@ import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
-import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -35,6 +35,8 @@ import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
 import org.chromium.weblayer_private.settings.WebLayerSiteSettingsDelegate;
+
+import java.util.Collection;
 
 /**
  * WebLayer's customization of PageInfoControllerDelegate.
@@ -103,8 +105,8 @@ public class PageInfoControllerDelegateImpl extends PageInfoControllerDelegate {
      */
     @Override
     @Nullable
-    public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView) {
+    public Collection<PageInfoSubpageController> createAdditionalRowViews(
+            PageInfoMainController mainController, ViewGroup rowWrapper) {
         return null;
     }
 

@@ -33,6 +33,8 @@ import java.util.Date;
  */
 public class PageInfoHistoryController
         implements PageInfoSubpageController, HistoryContentManager.Observer {
+    public static final int HISTORY_ROW_ID = View.generateViewId();
+
     private static HistoryProvider sProviderForTests;
     /** Clock to use so we can mock time in tests. */
     public interface Clock {

@@ -55,6 +55,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -125,8 +126,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     // The controller for the cookies section of the page info.
     private PageInfoCookiesController mCookiesController;
 
-    // The controller for the history portions of page info.
-    private PageInfoSubpageController mHistoryController;
+    // Additional controllers defined by the delegate.
+    private Collection<PageInfoSubpageController> mAdditionalControllers;
 
     // Dialog which is opened when clicking on forget site button.
     private Dialog mForgetSiteDialog;
@@ -254,12 +255,10 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 this, mView.getPermissionsRowView(), mDelegate, highlightedPermission);
         mCookiesController =
                 new PageInfoCookiesController(this, mView.getCookiesRowView(), mDelegate);
-        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
-            mHistoryController = mDelegate.createHistoryController(this, mView.getHistoryRowView());
-            // TODO(crbug.com/1173154): Setup forget this site button after history delete is
-            // implemented.
-            // setupForgetSiteButton(mView.getForgetSiteButton());
-        }
+        mAdditionalControllers = mDelegate.createAdditionalRowViews(this, mView.getRowWrapper());
+        // TODO(crbug.com/1173154): Setup forget this site button after history delete is
+        // implemented.
+        // setupForgetSiteButton(mView.getForgetSiteButton());
 
         mPermissionParamsListBuilder = new PermissionParamsListBuilder(mContext, mWindowAndroid);
         mNativePageInfoController = PageInfoControllerJni.get().init(this, mWebContents);
@@ -341,7 +340,12 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         recordAction(PageInfoAction.PAGE_INFO_FORGET_SITE_CLEARED);
         if (mCookiesController != null) mCookiesController.clearData();
         if (mPermissionsController != null) mPermissionsController.clearData();
-        if (mHistoryController != null) mHistoryController.clearData();
+
+        if (mAdditionalControllers != null) {
+            for (PageInfoSubpageController controller : mAdditionalControllers) {
+                controller.clearData();
+            }
+        }
     }
 
     /**

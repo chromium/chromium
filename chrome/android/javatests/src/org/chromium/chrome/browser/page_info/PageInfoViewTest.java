@@ -529,7 +529,7 @@ public class PageInfoViewTest {
         loadUrlAndOpenPageInfo(
                 mTestServerRule.getServer().getURLWithHostName("www.example.com", "/"));
         onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
-        onView(withId(R.id.page_info_history_row)).perform(click());
+        onView(withId(PageInfoHistoryController.HISTORY_ROW_ID)).perform(click());
         onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_HistorySubpage");
     }
@@ -730,7 +730,7 @@ public class PageInfoViewTest {
             };
         });
         onViewWaiting(allOf(withText(containsString("Last visited")), isDisplayed()));
-        onView(withId(R.id.page_info_history_row)).perform(click());
+        onView(withId(PageInfoHistoryController.HISTORY_ROW_ID)).perform(click());
         onViewWaiting(allOf(withText(containsString("Jun 4, 2021")), isDisplayed()));
         int callCount = onDidStartNavigationHelper.getCallCount();
         onView(withText("www.example.com")).perform(click());
