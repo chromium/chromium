@@ -108,10 +108,11 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
 // implementation of |internals::CreatePlatformShortcuts|. So we avoid creating
 // shortcuts twice here.
 #if !defined(OS_MAC)
-  std::string app_name = registrar_->GetAppShortName(app_id);
-  const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
-  if (file_handlers)
-    RegisterFileHandlersWithOs(app_id, app_name, profile_, *file_handlers);
+  const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
+  if (file_handlers) {
+    RegisterFileHandlersWithOs(app_id, registrar_->GetAppShortName(app_id),
+                               profile_, *file_handlers);
+  }
 #endif
 }
 
@@ -129,7 +130,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
   const apps::FileHandlers* file_handlers = GetAllFileHandlers(app_id);
 
   if (!ShouldRegisterFileHandlersWithOs() || !file_handlers ||
-      file_handlers->empty() || disable_os_integration_for_testing_) {
+      disable_os_integration_for_testing_) {
     // This bool signals if there was not an error. Exiting early here is WAI,
     // so this is a success.
     std::move(callback).Run(true);
@@ -283,7 +284,9 @@ int WebAppFileHandlerManager::CleanupAfterOriginTrials() {
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
     const AppId& app_id) {
   const WebApp* web_app = registrar_->GetAppById(app_id);
-  return web_app ? &web_app->file_handlers() : nullptr;
+  return web_app && !web_app->file_handlers().empty()
+             ? &web_app->file_handlers()
+             : nullptr;
 }
 
 const absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(

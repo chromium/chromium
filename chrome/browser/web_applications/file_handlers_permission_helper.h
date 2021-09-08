@@ -47,6 +47,9 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   FileHandlerUpdateAction WillUpdateApp(const AppId app_id,
                                         const WebApplicationInfo& web_app_info);
 
+  // Checks if file handling permission is blocked in settings.
+  bool IsPermissionBlocked(const GURL& scope);
+
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -58,9 +61,6 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
 
  private:
-  // Checks if file handling permission is blocked in settings.
-  bool IsPermissionBlocked(const GURL& scope);
-
   // Resets the FILE_HANDLING content setting permission if `web_app_info` is
   // asking for more file handling types than were previously granted to the
   // app's origin. Returns the new content setting, which will be either

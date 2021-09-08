@@ -150,14 +150,12 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
                                 const apps::FileHandlers& file_handlers) {
-  if (!file_handlers.empty()) {
-    RegisterMimeTypesOnLinuxCallback callback =
-        GetRegisterMimeTypesCallbackForTesting()                   // IN-TEST
-            ? std::move(GetRegisterMimeTypesCallbackForTesting())  // IN-TEST
-            : base::BindOnce(&DoRegisterMimeTypes);
-    RegisterMimeTypesOnLinux(app_id, profile, file_handlers,
-                             std::move(callback));
-  }
+  DCHECK(!file_handlers.empty());
+  RegisterMimeTypesOnLinuxCallback callback =
+      GetRegisterMimeTypesCallbackForTesting()                   // IN-TEST
+          ? std::move(GetRegisterMimeTypesCallbackForTesting())  // IN-TEST
+          : base::BindOnce(&DoRegisterMimeTypes);
+  RegisterMimeTypesOnLinux(app_id, profile, file_handlers, std::move(callback));
 
   UpdateFileHandlerRegistrationInOs(app_id, profile, base::DoNothing());
 }

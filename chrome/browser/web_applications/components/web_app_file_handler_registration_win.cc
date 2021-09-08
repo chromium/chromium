@@ -66,8 +66,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
                                 Profile* profile,
                                 const apps::FileHandlers& file_handlers) {
-  if (file_handlers.empty())
-    return;
+  DCHECK(!file_handlers.empty());
 
   std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());

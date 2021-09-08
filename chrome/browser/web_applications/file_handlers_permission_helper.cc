@@ -96,6 +96,15 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
   return FileHandlerUpdateAction::kUpdate;
 }
 
+bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
+  permissions::PermissionManager* permission_manager =
+      PermissionManagerFactory::GetForProfile(finalizer_->profile());
+  permissions::PermissionResult status =
+      permission_manager->GetPermissionStatus(
+          ContentSettingsType::FILE_HANDLING, scope, scope);
+  return status.content_setting == CONTENT_SETTING_BLOCK;
+}
+
 void FileHandlersPermissionHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -137,15 +146,6 @@ void FileHandlersPermissionHelper::OnWebAppWillBeUninstalled(
   // the permission.
   PermissionManagerFactory::GetForProfile(finalizer_->profile())
       ->ResetPermission(content::PermissionType::FILE_HANDLING, origin, origin);
-}
-
-bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(finalizer_->profile());
-  permissions::PermissionResult status =
-      permission_manager->GetPermissionStatus(
-          ContentSettingsType::FILE_HANDLING, scope, scope);
-  return status.content_setting == CONTENT_SETTING_BLOCK;
 }
 
 ContentSetting FileHandlersPermissionHelper::MaybeResetPermission(

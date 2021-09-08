@@ -557,6 +557,8 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
     std::unique_ptr<WebApp> web_app,
     CommitCallback commit_callback) {
   SetWebAppManifestFields(web_app_info, *web_app);
+  web_app->SetFileHandlerPermissionBlocked(
+      file_handlers_helper_->IsPermissionBlocked(web_app->scope()));
 
   AppId app_id = web_app->app_id();
 
