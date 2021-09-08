@@ -3232,16 +3232,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // The policy to apply to private network requests issued by the last
   // committed document. Set to a default value until a document commits for the
   // first time. The default value depends on whether the
-  // BlockInsecurePrivateNetworkRequests feature is enabled, see constructor.
+  // |BlockInsecurePrivateNetworkRequests| feature is enabled, see constructor.
   //
   // This property normally depends on the last committed origin and the state
   // of |ContentBrowserClient| at the time the navigation committed. Due to the
   // fact that this is based on the origin computed by the browser process in
   // |NavigationRequest|, whereas |last_commited_origin_| is computed by the
-  // renderer process (see crbug.com/888079), there can be discrepancies.
-  // Notably, in the case of an `about:blank` document, this policy is inherited
-  // from the initiator document, whereas the origin is inherited (incorrectly)
-  // from the parent document.
+  // renderer process (see crbug.com/888079), there can be rare discrepancies.
   //
   // TODO(https://crbug.com/888079): Simplify the above comment when the
   // behavior it explains is fixed.
