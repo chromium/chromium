@@ -57,7 +57,7 @@ bool TextElementTiming::CanReportElements() const {
 }
 
 void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
-  Node* node = DOMNodeIds::NodeForId(record.node_id);
+  Node* node = record.node_;
   if (!node || node->IsInShadowTree())
     return;
 

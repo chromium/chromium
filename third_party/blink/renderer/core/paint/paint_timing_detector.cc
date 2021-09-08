@@ -367,7 +367,7 @@ void PaintTimingDetector::UpdateLargestContentfulPaintCandidate() {
   // user input or no content show up on the page.
   // * Record.paint_time == 0 means there is an image but the image is still
   // loading. The perf API should wait until the paint-time is available.
-  base::WeakPtr<TextRecord> largest_text_record = nullptr;
+  const TextRecord* largest_text_record = nullptr;
   const ImageRecord* largest_image_record = nullptr;
   if (auto* text_timing_detector = GetTextPaintTimingDetector()) {
     if (text_timing_detector->IsRecordingLargestTextPaint()) {

@@ -23,7 +23,7 @@ LargestContentfulPaintCalculator::LargestContentfulPaintCalculator(
     : window_performance_(window_performance) {}
 
 void LargestContentfulPaintCalculator::UpdateLargestContentPaintIfNeeded(
-    base::WeakPtr<TextRecord> largest_text,
+    const TextRecord* largest_text,
     const ImageRecord* largest_image) {
   uint64_t text_size = largest_text ? largest_text->first_size : 0u;
   uint64_t image_size = largest_image ? largest_image->first_size : 0u;
@@ -35,7 +35,7 @@ void LargestContentfulPaintCalculator::UpdateLargestContentPaintIfNeeded(
   } else {
     if (text_size > largest_reported_size_ &&
         largest_text->paint_time > base::TimeTicks()) {
-      UpdateLargestContentfulText(largest_text);
+      UpdateLargestContentfulText(*largest_text);
     }
   }
 }
@@ -84,29 +84,27 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
 }
 
 void LargestContentfulPaintCalculator::UpdateLargestContentfulText(
-    base::WeakPtr<TextRecord> largest_text) {
+    const TextRecord& largest_text) {
   DCHECK(window_performance_);
-  DCHECK(largest_text);
-  Node* text_node = DOMNodeIds::NodeForId(largest_text->node_id);
-  // |text_node| could be null and |largest_text| should be ignored in this
+  // |node_| could be null and |largest_text| should be ignored in this
   // case. This can happen when the largest-text gets removed too fast and does
   // not get to be reported here.
-  if (!text_node)
+  if (!largest_text.node_)
     return;
-
-  largest_reported_size_ = largest_text->first_size;
+  Node* text_node = largest_text.node_;
+  largest_reported_size_ = largest_text.first_size;
   // Do not expose element attribution from shadow trees.
   Element* text_element =
       text_node->IsInShadowTree() ? nullptr : To<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
   window_performance_->OnLargestContentfulPaintUpdated(
-      largest_text->paint_time, largest_text->first_size, base::TimeTicks(),
+      largest_text.paint_time, largest_text.first_size, base::TimeTicks(),
       text_id, g_empty_string, text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,
-                                     largest_text->paint_time, "data",
+                                     largest_text.paint_time, "data",
                                      TextCandidateTraceData(largest_text),
                                      "frame", ToTraceValue(window->GetFrame()));
   }
@@ -118,11 +116,12 @@ void LargestContentfulPaintCalculator::Trace(Visitor* visitor) const {
 
 std::unique_ptr<TracedValue>
 LargestContentfulPaintCalculator::TextCandidateTraceData(
-    base::WeakPtr<TextRecord> largest_text) {
+    const TextRecord& largest_text) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("type", "text");
-  value->SetInteger("nodeId", static_cast<int>(largest_text->node_id));
-  value->SetInteger("size", static_cast<int>(largest_text->first_size));
+  value->SetInteger(
+      "nodeId", static_cast<int>(DOMNodeIds::IdForNode(largest_text.node_)));
+  value->SetInteger("size", static_cast<int>(largest_text.first_size));
   value->SetInteger("candidateIndex", ++count_candidates_);
   auto* window = window_performance_->DomWindow();
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());

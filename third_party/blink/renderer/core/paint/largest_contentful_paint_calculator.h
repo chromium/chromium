@@ -23,7 +23,7 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   LargestContentfulPaintCalculator& operator=(
       const LargestContentfulPaintCalculator&) = delete;
 
-  void UpdateLargestContentPaintIfNeeded(base::WeakPtr<TextRecord> largest_text,
+  void UpdateLargestContentPaintIfNeeded(const TextRecord* largest_text,
                                          const ImageRecord* largest_image);
 
   void Trace(Visitor* visitor) const;
@@ -32,10 +32,10 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   friend class LargestContentfulPaintCalculatorTest;
 
   void UpdateLargestContentfulImage(const ImageRecord* largest_image);
-  void UpdateLargestContentfulText(base::WeakPtr<TextRecord> largest_text);
+  void UpdateLargestContentfulText(const TextRecord& largest_text);
 
   std::unique_ptr<TracedValue> TextCandidateTraceData(
-      base::WeakPtr<TextRecord> largest_text);
+      const TextRecord& largest_text);
   std::unique_ptr<TracedValue> ImageCandidateTraceData(
       const ImageRecord* largest_image);
 
