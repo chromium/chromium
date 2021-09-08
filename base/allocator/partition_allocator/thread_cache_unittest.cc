@@ -348,9 +348,10 @@ TEST_F(PartitionAllocThreadCacheTest, ThreadCacheReclaimedWhenThreadExits) {
     root_->Free(ptr);
 }
 
-// On Android with PartitionAlloc as malloc, we have extra thread caches being
-// created, causing this test to fail.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
+// On Android and macOS with PartitionAlloc as malloc, we have extra thread
+// caches being created, causing this test to fail.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    (defined(OS_ANDROID) || defined(OS_APPLE))
 #define MAYBE_ThreadCacheRegistry DISABLED_ThreadCacheRegistry
 #else
 #define MAYBE_ThreadCacheRegistry ThreadCacheRegistry
