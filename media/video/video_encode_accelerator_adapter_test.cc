@@ -217,7 +217,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializeAfterFirstFrame) {
 TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(640, 480);
-  options.temporal_layers = 3;
+  options.scalability_mode = SVCScalabilityMode::kL1T3;
   int outputs_count = 0;
   auto pixel_format = PIXEL_FORMAT_I420;
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(

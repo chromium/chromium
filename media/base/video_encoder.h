@@ -10,6 +10,7 @@
 #include "media/base/bitrate.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,10 +55,9 @@ class MEDIA_EXPORT VideoEncoder {
 
     absl::optional<int> keyframe_interval = 10000;
 
-    // Requested number of SVC temporal layers.
-    int temporal_layers = 1;
-
     LatencyMode latency_mode = LatencyMode::Realtime;
+
+    absl::optional<SVCScalabilityMode> scalability_mode;
 
     // Only used for H264 encoding.
     AvcOptions avc;

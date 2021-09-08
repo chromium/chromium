@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -128,10 +129,11 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   config->g_w = opts.frame_size.width();
   config->g_h = opts.frame_size.height();
 
-  switch (opts.temporal_layers) {
-    case 1:
-      break;
-    case 2:
+  if (!opts.scalability_mode)
+    return Status();
+
+  switch (opts.scalability_mode.value()) {
+    case SVCScalabilityMode::kL1T2:
       // Frame Pattern:
       // Layer Index 0: |0| |2| |4| |6| |8|
       // Layer Index 1: | |1| |3| |5| |7| |
@@ -150,7 +152,7 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
       config->temporal_layering_mode = VP9E_TEMPORAL_LAYERING_MODE_0101;
       config->g_error_resilient = VPX_ERROR_RESILIENT_DEFAULT;
       break;
-    case 3:
+    case SVCScalabilityMode::kL1T3:
       // Frame Pattern:
       // Layer Index 0: |0| | | |4| | | |8| |  |  |12|
       // Layer Index 1: | | |2| | | |6| | | |10|  |  |

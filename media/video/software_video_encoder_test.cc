@@ -45,7 +45,7 @@ struct SwVideoTestParams {
   VideoCodec codec;
   VideoCodecProfile profile;
   VideoPixelFormat pixel_format;
-  int temporal_layers = 1;
+  absl::optional<SVCScalabilityMode> scalability_mode;
 };
 
 class SoftwareVideoEncoderTest
@@ -433,7 +433,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   options.frame_size = gfx::Size(320, 200);
   options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
-  options.temporal_layers = GetParam().temporal_layers;
+  options.scalability_mode = GetParam().scalability_mode;
   if (codec_ == VideoCodec::kH264)
     options.avc.produce_annexb = true;
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
@@ -470,12 +470,27 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   RunUntilIdle();
   EXPECT_EQ(chunks.size(), total_frames_count);
 
+  int num_temporal_layers = 1;
+  if (options.scalability_mode) {
+    switch (options.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
+    }
+  }
   // Try decoding saved outputs dropping varying number of layers
   // and check that decoded frames indeed match the pattern:
   // Layer Index 0: |0| | | |4| | | |8| |  |  |12|
   // Layer Index 1: | | |2| | | |6| | | |10|  |  |
   // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
-  for (int max_layer = 0; max_layer < options.temporal_layers; max_layer++) {
+  for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
     std::vector<scoped_refptr<VideoFrame>> decoded_frames;
     VideoDecoder::OutputCB decoder_output_cb =
         base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
@@ -493,8 +508,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
     }
     DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
 
-    int rate_decimator =
-        (1 << (options.temporal_layers - 1)) / (1 << max_layer);
+    int rate_decimator = (1 << (num_temporal_layers - 1)) / (1 << max_layer);
     ASSERT_EQ(decoded_frames.size(),
               size_t{total_frames_count / rate_decimator});
     for (auto i = 0u; i < decoded_frames.size(); i++) {
@@ -658,10 +672,13 @@ TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
 
 std::string PrintTestParams(
     const testing::TestParamInfo<SwVideoTestParams>& info) {
-  auto result = GetCodecName(info.param.codec) + "__" +
-                GetProfileName(info.param.profile) + "__" +
-                VideoPixelFormatToString(info.param.pixel_format) + "__" +
-                base::NumberToString(info.param.temporal_layers);
+  auto result =
+      GetCodecName(info.param.codec) + "__" +
+      GetProfileName(info.param.profile) + "__" +
+      VideoPixelFormatToString(info.param.pixel_format) + "__" +
+      (info.param.scalability_mode
+           ? GetScalabilityModeName(info.param.scalability_mode.value())
+           : "");
 
   // GTest doesn't like spaces, but profile names have spaces, so we need
   // to replace them with underscores.
@@ -688,9 +705,11 @@ INSTANTIATE_TEST_SUITE_P(H264Generic,
                          PrintTestParams);
 
 SwVideoTestParams kH264SVCParams[] = {
-    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 1},
-    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 2},
-    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, 3}};
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T2},
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3}};
 
 INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,
                          SVCVideoEncoderTest,
@@ -711,12 +730,16 @@ INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          PrintTestParams);
 
 SwVideoTestParams kVpxSVCParams[] = {
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 1},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 2},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, 3},
-    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 1},
-    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 2},
-    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, 3}};
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T2},
+    {VideoCodec::kVP9, VP9PROFILE_PROFILE0, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420, absl::nullopt},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T2},
+    {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3}};
 
 INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
                          SVCVideoEncoderTest,

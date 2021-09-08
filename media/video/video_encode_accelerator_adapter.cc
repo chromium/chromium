@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -50,14 +51,28 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
       VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
                                      initial_framerate, opts.keyframe_interval);
 
-  if (opts.temporal_layers > 1) {
+  size_t num_temporal_layers = 1;
+  if (opts.scalability_mode) {
+    switch (opts.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(opts.scalability_mode.value());
+    }
+  }
+  if (num_temporal_layers > 1) {
     VideoEncodeAccelerator::Config::SpatialLayer layer;
     layer.width = opts.frame_size.width();
     layer.height = opts.frame_size.height();
     layer.bitrate_bps = config.bitrate.target();
     if (initial_framerate.has_value())
       layer.framerate = initial_framerate.value();
-    layer.num_of_temporal_layers = opts.temporal_layers;
+    layer.num_of_temporal_layers = num_temporal_layers;
     config.spatial_layers.push_back(layer);
   }
 

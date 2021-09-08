@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -24,6 +25,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/mime_util.h"
 #include "media/base/offloading_video_encoder.h"
+#include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
@@ -107,10 +109,6 @@ bool IsAcceleratedConfigurationSupported(
   if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled())
     return false;
 
-  // No support for temporal SVC in accelerated encoders yet.
-  if (options.temporal_layers > 1)
-    return false;
-
   auto supported_profiles =
       gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles().value_or(
           media::VideoEncodeAccelerator::SupportedProfiles());
@@ -137,6 +135,12 @@ bool IsAcceleratedConfigurationSupported(
         supported_profile.max_framerate_denominator;
     if (options.framerate.has_value() &&
         options.framerate.value() > max_supported_framerate) {
+      continue;
+    }
+
+    if (options.scalability_mode &&
+        !base::Contains(supported_profile.scalability_modes,
+                        options.scalability_mode)) {
       continue;
     }
 
@@ -215,9 +219,9 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
   // https://w3c.github.io/webrtc-svc/
   if (config->hasScalabilityMode()) {
     if (config->scalabilityMode() == "L1T2") {
-      result->options.temporal_layers = 2;
+      result->options.scalability_mode = media::SVCScalabilityMode::kL1T2;
     } else if (config->scalabilityMode() == "L1T3") {
-      result->options.temporal_layers = 3;
+      result->options.scalability_mode = media::SVCScalabilityMode::kL1T3;
     } else {
       exception_state.ThrowTypeError("Unsupported scalabilityMode.");
       return nullptr;
@@ -817,7 +821,7 @@ void VideoEncoder::CallOutputCallback(
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
 
   auto* metadata = EncodedVideoChunkMetadata::Create();
-  if (active_config->options.temporal_layers > 0)
+  if (active_config->options.scalability_mode.has_value())
     metadata->setTemporalLayerId(output.temporal_id);
 
   if (first_output_after_configure_ || codec_desc.has_value()) {
