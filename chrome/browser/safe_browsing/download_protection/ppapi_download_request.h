@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -43,7 +44,7 @@ class PPAPIDownloadRequest;
 //
 // PPAPIDownloadRequest objects are owned by the DownloadProtectionService
 // indicated by |service|.
-class PPAPIDownloadRequest {
+class PPAPIDownloadRequest : public content::WebContentsObserver {
  public:
   // The outcome of the request. These values are used for UMA. New values
   // should only be added at the end.
@@ -70,7 +71,7 @@ class PPAPIDownloadRequest {
       DownloadProtectionService* service,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
 
-  ~PPAPIDownloadRequest();
+  ~PPAPIDownloadRequest() override;
 
   // Start the process of checking the download request. The callback passed as
   // the |callback| parameter to the constructor will be invoked with the result
@@ -88,6 +89,9 @@ class PPAPIDownloadRequest {
 
   // Returns the URL that will be used for download requests.
   static GURL GetDownloadRequestUrl();
+
+  // WebContentsObserver implementation
+  void WebContentsDestroyed() override;
 
  private:
   static const char kDownloadRequestUrl[];
