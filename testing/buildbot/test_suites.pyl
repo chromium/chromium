@@ -512,9 +512,9 @@
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
-        'resultdb': {
-          'enable': False,
-        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
       },
       'variations_smoke_tests': {
         'isolate_name': 'variations_smoke_tests',
@@ -568,9 +568,9 @@
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
-        'resultdb': {
-          'enable': False,
-        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
       },
     },
 
@@ -579,9 +579,9 @@
         'merge': {
           'script': '//tools/perf/process_perf_results.py',
         },
-        'resultdb': {
-          'enable': False,
-        },
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
         'args': [
           '--platform=android',
         ],

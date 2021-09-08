@@ -1696,7 +1696,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -1744,7 +1745,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3637,7 +3639,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3666,7 +3669,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3696,7 +3700,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -3725,7 +3730,8 @@
         },
         "name": "chrome_sizes",
         "resultdb": {
-          "enable": false
+          "enable": true,
+          "has_native_resultdb_integration": true
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
