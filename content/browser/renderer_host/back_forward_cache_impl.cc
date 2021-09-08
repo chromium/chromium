@@ -1178,15 +1178,6 @@ bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {
       kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange);
 }
 
-bool BackForwardCacheImpl::IsMediaSessionPlaybackStateChangedAllowed() {
-  return base::FeatureList::IsEnabled(
-      kBackForwardCacheMediaSessionPlaybackStateChange);
-}
-
-bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
-  return base::FeatureList::IsEnabled(kBackForwardCacheMediaSessionService);
-}
-
 bool BackForwardCache::DisabledReason::operator<(
     const DisabledReason& other) const {
   return std::tie(source, id) < std::tie(other.source, other.id);

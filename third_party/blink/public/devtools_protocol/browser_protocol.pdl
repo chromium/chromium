@@ -7935,7 +7935,6 @@ domain Page
       ContentWebBluetooth
       ContentWebUSB
       ContentMediaSession
-      ContentMediaSessionService
       EmbedderPopupBlockerTabHelper
       EmbedderSafeBrowsingTriggeredPopupBlocker
       EmbedderSafeBrowsingThreatDetails

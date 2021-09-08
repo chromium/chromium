@@ -64,7 +64,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/idle_test_utils.h"
-#include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -11413,83 +11412,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // The page is not restored due to the playback.
   auto reason = BackForwardCacheDisable::DisabledReason(
       BackForwardCacheDisable::DisabledReasonId::kMediaSession);
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kDisableForRenderFrameHostCalled},
-                    {}, {}, {reason}, FROM_HERE);
-}
-
-class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(kBackForwardCacheMediaSessionPlaybackStateChange,
-                              "", "");
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  void PlayVideoNavigateAndGoBack() {
-    MediaSession* media_session = MediaSession::Get(shell()->web_contents());
-    ASSERT_TRUE(media_session);
-
-    content::MediaStartStopObserver start_observer(
-        shell()->web_contents(), MediaStartStopObserver::Type::kStart);
-    EXPECT_TRUE(ExecJs(current_frame_host(),
-                       "document.querySelector('#long-video').play();"));
-    start_observer.Wait();
-
-    content::MediaStartStopObserver stop_observer(
-        shell()->web_contents(), MediaStartStopObserver::Type::kStop);
-    media_session->Suspend(MediaSession::SuspendType::kSystem);
-    stop_observer.Wait();
-
-    // Navigate away.
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-    // Go back.
-    web_contents()->GetController().GoBack();
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
-    CacheWhenMediaSessionServiceIsNotUsed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page using MediaSession.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL(
-                   "a.test", "/media/session/media-session.html")));
-
-  // Play the media once, but without setting any callbacks to the MediaSession.
-  // In this case, a MediaSession service is not used.
-  PlayVideoNavigateAndGoBack();
-
-  // The page is restored since a MediaSession service is not used.
-  ExpectRestored(FROM_HERE);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
-    DontCacheWhenMediaSessionServiceIsUsed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page using MediaSession.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL(
-                   "a.test", "/media/session/media-session.html")));
-  RenderFrameHostWrapper rfh_a(current_frame_host());
-  // Register a callback explicitly to use a MediaSession service.
-  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
-    navigator.mediaSession.setActionHandler('play', () => {});
-  )"));
-
-  PlayVideoNavigateAndGoBack();
-
-  // The page is not restored since a MediaSession service is used.
-  auto reason = BackForwardCacheDisable::DisabledReason(
-      BackForwardCacheDisable::DisabledReasonId::kMediaSessionService);
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                          kDisableForRenderFrameHostCalled},
                     {}, {}, {reason}, FROM_HERE);
