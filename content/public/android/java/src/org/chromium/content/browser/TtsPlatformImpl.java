@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.LocaleUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -188,8 +189,10 @@ class TtsPlatformImpl {
             if (!isInitialized()) {
                 return false;
             }
-            if (!TextUtils.equals(lang, mCurrentLanguage)) {
-                mTextToSpeech.setLanguage(new Locale(lang));
+            if (lang == null) {
+                mCurrentLanguage = null;
+            } else if (!TextUtils.equals(lang, mCurrentLanguage)) {
+                mTextToSpeech.setLanguage(LocaleUtils.forLanguageTag(lang.replace("_", "-")));
                 mCurrentLanguage = lang;
             }
 
