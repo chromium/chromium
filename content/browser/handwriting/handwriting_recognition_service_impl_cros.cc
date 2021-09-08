@@ -108,6 +108,11 @@ void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizerSupport(
 void CrOSHandwritingRecognitionServiceImpl::QueryHandwritingRecognizer(
     handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
     QueryHandwritingRecognizerCallback callback) {
+  if (!IsCrOSLibHandwritingRootfsEnabled()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   std::move(callback).Run(CrOSHandwritingRecognizerImpl::GetModelDescriptor(
       std::move(model_constraint)));
 }
