@@ -7,6 +7,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/full_restore/full_restore_service.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,8 @@ bool FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(
   if (!::full_restore::features::IsFullRestoreEnabled())
     return false;
 
-  if (chrome::IsRunningInForcedAppMode())
+  if (chrome::IsRunningInForcedAppMode() ||
+      ash::DemoSession::IsDeviceInDemoMode())
     return false;
 
   // No service for non-regular user profile, or ephemeral user profile, system
