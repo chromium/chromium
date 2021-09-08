@@ -2621,6 +2621,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="4097556069183835428">Si se le asigna el valor "none", la lupa se desactiva.
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, la lupa estará desactivada inicialmente, pero los usuarios podrán activarla en cualquier momento.</translation>
+<translation id="4098920079809952737">Permitir imprimir con gráficos de fondo y sin ellos</translation>
 <translation id="410068710490553233">Permite iniciar sesión en más cuentas de Google</translation>
 <translation id="4101282687722389021">Marca de tiempo UTC de la última vez que se actualizó esta entrada. Enviada como cadena porque la marca de tiempo no cabe en un número entero.</translation>
 <translation id="4103289232974211388">Redirigir al proveedor de identidad SAML después de la confirmación del usuario</translation>
