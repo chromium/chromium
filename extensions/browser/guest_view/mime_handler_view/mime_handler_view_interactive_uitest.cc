@@ -101,7 +101,7 @@ class MimeHandlerViewTest : public ExtensionApiTest {
     ASSERT_TRUE(extension);
 
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     if (!catcher.GetNextResult())
       FAIL() << catcher.message();
@@ -163,8 +163,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_EscapeExitsFullscreen) {
   // Set observer to watch for fullscreen.
   FullscreenNotificationObserver fullscreen_waiter(browser());
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/testFullscreenEscape.csv"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/testFullscreenEscape.csv")));
 
   // Make sure we have a guestviewmanager.
   auto* embedder_contents = browser()->tab_strip_model()->GetWebContentsAt(0);

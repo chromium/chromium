@@ -4671,7 +4671,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   GetNewTabWithTestPasswordManagerClient();
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");

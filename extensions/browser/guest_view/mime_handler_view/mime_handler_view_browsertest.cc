@@ -128,7 +128,7 @@ class MimeHandlerViewTest : public extensions::ExtensionApiTest {
 
     extensions::ResultCatcher catcher;
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     if (!catcher.GetNextResult())
       FAIL() << catcher.message();
@@ -172,7 +172,8 @@ class UserActivationUpdateWaiter {
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, Embedded) {
   RunTest("test_embedded.html");
   // Sanity check. Navigate the page and verify the guest goes away.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   auto* gv_manager = GetGuestViewManager();
   gv_manager->WaitForAllGuestsDeleted();
   EXPECT_EQ(1U, gv_manager->num_guests_created());
@@ -288,9 +289,9 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
       base::BindRepeating(&TestMimeHandlerViewGuest::Create));
   const extensions::Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("a.com", "/test_object_with_frame.html"));
+      embedded_test_server()->GetURL("a.com", "/test_object_with_frame.html")));
   auto* main_frame =
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetMainFrame();
   auto url_with_beforeunload =
@@ -401,7 +402,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, BeforeUnload_NoDialog) {
   // Try to navigate away from the page. If the beforeunload listener is
   // triggered and a dialog is shown, this navigation will never complete,
   // causing the test to timeout and fail.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, BeforeUnload_ShowDialog) {
@@ -434,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
   // is still suppressed here because of lack of user activation.  As a result,
   // the following navigation away from the page works fine.  If a beforeunload
   // dialog were shown, this navigation would fail, causing the test to timeout.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 }
 
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
@@ -511,9 +514,9 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, ActivatePostMessageSupportOnce) {
 // HTMLPlugInElement::PluginWrapper is called for a plugin with no node document
 // frame, the renderer does not crash (see https://966371).
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, AdoptNodeInOnLoadDoesNotCrash) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/adopt_node_in_onload_no_crash.html"));
+      embedded_test_server()->GetURL("/adopt_node_in_onload_no_crash.html")));
   // Run some JavaScript in embedder and make sure it is not crashed.
   ASSERT_TRUE(content::ExecJs(GetEmbedderWebContents(), "true"));
 }
@@ -528,8 +531,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   const extensions::Extension* extension = LoadTestExtension();
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/test_sandboxed_frame.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test_sandboxed_frame.html")));
 
   auto* guest_view_manager = GetGuestViewManager();
   // The page contains three <iframes> where two are sandboxed. The expectation
@@ -576,8 +579,8 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, RejectPointLock) {
   auto* extension = LoadTestExtension();
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/test_embedded.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test_embedded.html")));
 
   auto* guest_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
   // Make sure the load has started, before waiting for it to stop.
