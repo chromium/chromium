@@ -330,8 +330,8 @@ function addPeerConnection(data) {
   // Show deprecation notices as a list.
   // Note: data.rtcConfiguration is not in JSON format and may
   // not be defined in tests.
+  const deprecationNotices = document.createElement('ul');
   if (data.rtcConfiguration) {
-    const deprecationNotices = document.createElement('ul');
     deprecationNotices.className = 'peerconnection-deprecations';
     if (data.rtcConfiguration.indexOf('extmapAllowMixed: false') !== -1) {
       // Hard deprecation, setting "false" will no longer work.
@@ -354,8 +354,25 @@ function addPeerConnection(data) {
         'M93. See https://www.chromestatus.com/feature/5823036655665152 ' +
         'for more details.');
     }
-    peerConnectionElement.appendChild(deprecationNotices);
   }
+  if (data.constraints) {
+    if (data.constraints.indexOf('enableDtlsSrtp:') !== -1) {
+      if (data.constraints.indexOf('enableDtlsSrtp: {exact: false}') !== -1) {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "false" value for this constraint, which is ' +
+          'interpreted as an attempt to use the deprecated "SDES" key ' +
+          'negotiation method. This functionality will be removed; use a ' +
+          'service that supports DTLS key negotiation instead.');
+      } else {
+        appendChildWithText(deprecationNotices, 'li',
+          'The constraint "DtlsSrtpKeyAgreement" will be removed. You have ' +
+          'specified a "true" value for this constraint, which has no ' +
+          'effect, but you can remove this constraint for tidiness.');
+      }
+    }
+  }
+  peerConnectionElement.appendChild(deprecationNotices);
 
   return peerConnectionElement;
 }
