@@ -6,7 +6,6 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #include "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
@@ -37,10 +36,7 @@ namespace web {
 class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
  protected:
   WebFramesManagerJavaScriptFeatureTest()
-      : user_content_controller_([[WKUserContentController alloc] init]),
-        router_([[CRWWKScriptMessageRouter alloc]
-            initWithUserContentController:user_content_controller_]),
-        web_view_(OCMClassMock([WKWebView class])),
+      : web_view_(OCMClassMock([WKWebView class])),
         main_frame_(web::FakeWebFrame::Create(kMainFakeFrameId,
                                               /*is_main_frame=*/true,
                                               GURL("https://www.main.test"))),
@@ -51,8 +47,8 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
                                            /*is_main_frame=*/false,
                                            GURL("https://www.frame2.test"))) {}
 
-  // Sends a JS message of a newly loaded web frame to |router_| which will
-  // dispatch it to |frames_manager_|.
+  // Mocks a JS message to notify the WebFramesManagerJavaScriptFeature
+  // associated with GetBrowserState() of a new |web_frame|.
   void SendFrameBecameAvailableMessage(const FakeWebFrame* web_frame) {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
@@ -86,8 +82,8 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
         ->FrameAvailableMessageReceived(message);
   }
 
-  // Sends a JS message of a newly unloaded web frame to |router_| which will
-  // dispatch it to |frames_manager_|.
+  // Mocks a JS message to notify the WebFramesManagerJavaScriptFeature
+  // associated with GetBrowserState() of a removed |web_frame|.
   void SendFrameBecameUnavailableMessage(const FakeWebFrame* web_frame) {
     // Mock WKSecurityOrigin.
     WKSecurityOrigin* security_origin = OCMClassMock([WKSecurityOrigin class]);
@@ -128,8 +124,6 @@ class WebFramesManagerJavaScriptFeatureTest : public WebTestWithWebState {
         ->SetAssociatedWebViewForWebState(web_view_, web_state());
   }
 
-  WKUserContentController* user_content_controller_ = nil;
-  CRWWKScriptMessageRouter* router_ = nil;
   WKWebView* web_view_ = nil;
   std::unique_ptr<const FakeWebFrame> main_frame_;
   std::unique_ptr<const FakeWebFrame> frame_1_;

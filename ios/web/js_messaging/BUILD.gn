@@ -29,8 +29,6 @@ source_set("js_messaging") {
   sources = [
     "crw_js_window_id_manager.h",
     "crw_js_window_id_manager.mm",
-    "crw_wk_script_message_router.h",
-    "crw_wk_script_message_router.mm",
     "page_script_util.h",
     "page_script_util.mm",
     "script_command_java_script_feature.h",
@@ -166,7 +164,6 @@ source_set("unittests") {
 
   sources = [
     "crw_js_window_id_manager_unittest.mm",
-    "crw_wk_script_message_router_unittest.mm",
     "java_script_content_world_unittest.mm",
     "java_script_feature_manager_unittest.mm",
     "java_script_feature_unittest.mm",

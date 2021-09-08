@@ -15,7 +15,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "ios/web/common/features.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/page_script_util.h"
@@ -174,18 +173,6 @@ WKWebViewConfigurationProvider::GetWebViewConfiguration() {
   return [configuration_ copy];
 }
 
-CRWWKScriptMessageRouter*
-WKWebViewConfigurationProvider::GetScriptMessageRouter() {
-  DCHECK([NSThread isMainThread]);
-  if (!router_) {
-    WKUserContentController* userContentController =
-        [GetWebViewConfiguration() userContentController];
-    router_ = [[CRWWKScriptMessageRouter alloc]
-        initWithUserContentController:userContentController];
-  }
-  return router_;
-}
-
 WKContentRuleListProvider*
 WKWebViewConfigurationProvider::GetContentRuleListProvider() {
   return content_rule_list_provider_.get();
@@ -226,7 +213,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
 void WKWebViewConfigurationProvider::Purge() {
   DCHECK([NSThread isMainThread]);
   configuration_ = nil;
-  router_ = nil;
 }
 
 void WKWebViewConfigurationProvider::AddObserver(

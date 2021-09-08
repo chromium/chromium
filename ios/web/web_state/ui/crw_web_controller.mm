@@ -27,7 +27,6 @@
 #include "ios/web/history_state_util.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_messaging/crw_js_window_id_manager.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #include "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/js_messaging/web_view_web_state_map.h"
@@ -411,16 +410,12 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
   self.webViewNavigationObserver.webView = nil;
 
-  CRWWKScriptMessageRouter* messageRouter =
-      [self webViewConfigurationProvider].GetScriptMessageRouter();
-
   web::WebViewWebStateMap::FromBrowserState(
       self.webStateImpl->GetBrowserState())
       ->SetAssociatedWebViewForWebState(webView, self.webStateImpl);
 
   if (_webView) {
     self.webStateImpl->RemoveAllWebFrames();
-    [messageRouter removeAllScriptMessageHandlersForWebView:_webView];
 
     [_webView stopLoading];
     [_webView removeFromSuperview];

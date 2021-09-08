@@ -5,7 +5,6 @@
 #include "ios/web/js_messaging/web_frames_manager_impl.h"
 
 #import "base/strings/string_number_conversions.h"
-#import "ios/web/js_messaging/crw_wk_script_message_router.h"
 #include "ios/web/js_messaging/web_frame_impl.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -20,15 +19,14 @@ namespace web {
 
 class WebFramesManagerImplTest : public WebTestWithWebState {
  protected:
-  // Sends a JS message of a newly loaded web frame to |router_| which will
-  // dispatch it to |frames_manager_|.
+  // Notifies |web_state()| of a newly available |web_frame|.
   void SendFrameBecameAvailableMessage(std::unique_ptr<WebFrame> web_frame) {
     WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
     web_state_impl->WebFrameBecameAvailable(std::move(web_frame));
   }
 
-  // Sends a JS message of a newly unloaded web frame to |router_| which will
-  // dispatch it to |frames_manager_|.
+  // Notifies |web_state()| that the web frame with |frame_id| will become
+  // unavailable.
   void SendFrameBecameUnavailableMessage(const std::string& frame_id) {
     WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state());
     web_state_impl->WebFrameBecameUnavailable(frame_id);
