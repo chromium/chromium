@@ -86,6 +86,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -4312,12 +4313,14 @@ class MockPrerenderPasswordManagerDriver
         .WillByDefault(
             [this](const std::vector<autofill::FormData>& form_data) {
               impl_->PasswordFormsParsed(form_data);
+              RemoveWaitType(WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_PARSED);
             });
     ON_CALL(*this, PasswordFormsRendered)
         .WillByDefault(
             [this](const std::vector<autofill::FormData>& visible_form_data,
                    bool load_completed) {
               impl_->PasswordFormsRendered(visible_form_data, load_completed);
+              RemoveWaitType(WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_RENDERED);
             });
     ON_CALL(*this, PasswordFormSubmitted)
         .WillByDefault([this](const autofill::FormData& form_data) {
@@ -4376,7 +4379,28 @@ class MockPrerenderPasswordManagerDriver
             });
   }
 
+  void WaitForPasswordFormParsedAndRendered() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    wait_type_ = WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_PARSED |
+                 WAIT_FOR_PASSWORD_FORMS::WAIT_FOR_RENDERED;
+    run_loop.Run();
+  }
+
  private:
+  enum WAIT_FOR_PASSWORD_FORMS {
+    WAIT_FOR_NOTHING = 0,
+    WAIT_FOR_PARSED = 1 << 0,    // Waits for PasswordFormsParsed().
+    WAIT_FOR_RENDERED = 1 << 1,  // Waits for PasswordFormsRendered().
+  };
+
+  void RemoveWaitType(uint32_t arrived) {
+    wait_type_ &= ~arrived;
+    if (wait_type_ == WAIT_FOR_NOTHING && quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+  base::OnceClosure quit_closure_;
+  uint32_t wait_type_ = WAIT_FOR_NOTHING;
   autofill::mojom::PasswordManagerDriver* impl_ = nullptr;
 };
 
@@ -4450,10 +4474,12 @@ class PasswordManagerPrerenderBrowserTest : public PasswordManagerBrowserTest {
 
   void SendKey(::ui::KeyboardCode key,
                content::RenderFrameHost* render_frame_host) {
-    content::NativeWebKeyboardEvent event(
+    blink::WebKeyboardEvent web_event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
+
+    content::NativeWebKeyboardEvent event(web_event, gfx::NativeView());
     event.windows_key_code = key;
     render_frame_host->GetRenderWidgetHost()->ForwardKeyboardEvent(event);
   }
@@ -4640,16 +4666,47 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
 // Tests that RenderWidgetHost::InputEventObserver is updated with the
 // RenderFrameHost that NavigationHandle has when the RenderFrameHost is
 // activated from the prerendering.
-// Flaky on Mac. https://crbug.com/1242366.
-#if defined(OS_MAC)
-#define MAYBE_InputWorksAfterPrerenderActivation \
-  DISABLED_InputWorksAfterPrerenderActivation
-#else
-#define MAYBE_InputWorksAfterPrerenderActivation \
-  InputWorksAfterPrerenderActivation
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
-                       MAYBE_InputWorksAfterPrerenderActivation) {
+                       InputWorksAfterPrerenderActivation) {
+  GetNewTabWithTestPasswordManagerClient();
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+
+  auto prerender_url =
+      embedded_test_server()->GetURL("/password/password_form.html");
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* render_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // Makes sure that the page is activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Sets to ignore mouse events. Otherwise, OnInputEvent() could be called
+  // multiple times if the mouse cursor is over on the test window during
+  // testing.
+  web_contents()->GetMainFrame()->GetRenderWidgetHost()->AddMouseEventCallback(
+      base::BindRepeating(
+          [](const blink::WebMouseEvent& event) { return true; }));
+
+  EXPECT_CALL(
+      *static_cast<TestPasswordManagerClient*>(
+          ChromePasswordManagerClient::FromWebContents(web_contents())),
+      OnInputEvent(IsKeyEvent(blink::WebInputEvent::Type::kRawKeyDown)));
+  // Sends a key event.
+  SendKey(::ui::VKEY_DOWN, render_frame_host);
+}
+
+// Tests that Mojo messages in prerendering are deferred from the render to
+// the PasswordManagerDriver until activation.
+IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
+                       MojoDeferringInPrerender) {
   GetNewTabWithTestPasswordManagerClient();
   MockPrerenderPasswordManagerDriverInjector injector(web_contents());
 
@@ -4676,22 +4733,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   // Makes sure that the page is activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
 
-  base::RunLoop().RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(mock);
-
-  // Sets to ignore mouse events. Otherwise, OnInputEvent() could be called
-  // multiple times if the mouse cursor is over on the test window during
-  // testing.
-  web_contents()->GetMainFrame()->GetRenderWidgetHost()->AddMouseEventCallback(
-      base::BindRepeating(
-          [](const blink::WebMouseEvent& event) { return true; }));
-
-  EXPECT_CALL(
-      *static_cast<TestPasswordManagerClient*>(
-          ChromePasswordManagerClient::FromWebContents(web_contents())),
-      OnInputEvent(IsKeyEvent(blink::WebInputEvent::Type::kRawKeyDown)));
-  // Sends a key event.
-  SendKey(::ui::VKEY_DOWN, render_frame_host);
+  mock->WaitForPasswordFormParsedAndRendered();
 }
 
 }  // namespace
