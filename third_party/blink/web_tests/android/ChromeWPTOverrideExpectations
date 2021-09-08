@@ -1002,7 +1002,6 @@ crbug.com/1050754 external/wpt/html/interaction/focus/the-autofocus-attribute/sk
 crbug.com/1050754 external/wpt/html/interaction/focus/the-autofocus-attribute/supported-elements.html [ Crash Pass ]
 crbug.com/1050754 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Crash Failure ]
 crbug.com/1050754 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-percentage-block-size.html [ Crash Pass ]
-crbug.com/1050754 external/wpt/html/semantics/document-metadata/the-link-element/stylesheet-not-removed-until-next-stylesheet-loads.html [ Pass ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/src_object_blob.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-mutable-fragment.html [ Timeout ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-mode-disabled.html [ Timeout ]

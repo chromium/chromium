@@ -1099,7 +1099,6 @@ crbug.com/1050754 external/wpt/html/rendering/non-replaced-elements/the-fieldset
 crbug.com/1050754 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-percentage-block-size.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-align.html [ Failure ]
 crbug.com/1050754 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-sans-fieldset-display.html [ Failure ]
-crbug.com/1050754 external/wpt/html/semantics/document-metadata/the-link-element/stylesheet-not-removed-until-next-stylesheet-loads.html [ Pass ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-currentSrc.html [ Pass ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/src_object_blob.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-mutable-fragment.html [ Timeout ]
