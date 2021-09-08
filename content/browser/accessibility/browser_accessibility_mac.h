@@ -11,6 +11,12 @@
 
 @class BrowserAccessibilityCocoa;
 
+namespace ui {
+
+class AXPlatformNodeMac;
+
+}  // namespace ui
+
 namespace content {
 
 #if __OBJC__
@@ -48,11 +54,21 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
 
   BrowserAccessibilityMac();
 
+  // Creates platform and cocoa node if not yet created.
+  void CreatePlatformNodes();
+
+  // Creates new cocoa node.
+  void CreatePlatformCocoaNode();
+
   // Allows access to the BrowserAccessibilityCocoa which wraps this.
   // BrowserAccessibility.
   // We own this object until our manager calls ReleaseReference;
   // thereafter, the cocoa object owns us.
   BrowserAccessibilityCocoa* browser_accessibility_cocoa_;
+
+  // Manager of the native cocoa node. We own this object.
+  ui::AXPlatformNodeMac* platform_node_;
+
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityMac);
 };
 

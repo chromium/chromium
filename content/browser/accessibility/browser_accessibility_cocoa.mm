@@ -918,8 +918,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   dict = nil;
 }
 
-- (instancetype)initWithObject:(BrowserAccessibility*)accessibility {
-  if ((self = [super init])) {
+- (instancetype)initWithObject:(BrowserAccessibility*)accessibility
+              withPlatformNode:(ui::AXPlatformNodeMac*)platform_node {
+  if ((self = [super initWithNode:platform_node])) {
     _owner = accessibility;
     _needsToUpdateChildren = true;
     _gettingChildren = false;
@@ -932,8 +933,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return;
 
   _owner = nullptr;
-  NSAccessibilityPostNotification(
-      self, NSAccessibilityUIElementDestroyedNotification);
+  [super detach];
 }
 
 - (NSString*)accessKey {

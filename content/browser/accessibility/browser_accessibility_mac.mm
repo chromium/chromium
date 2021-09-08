@@ -19,16 +19,12 @@ BrowserAccessibility* BrowserAccessibility::Create() {
 }
 
 BrowserAccessibilityMac::BrowserAccessibilityMac()
-    : browser_accessibility_cocoa_(NULL) {}
+    : browser_accessibility_cocoa_(nullptr), platform_node_(nullptr) {}
 
 BrowserAccessibilityMac::~BrowserAccessibilityMac() {
-  // Detach this object from |browser_accessibility_cocoa_| so it
-  // no longer has a pointer to this object.
-  [browser_accessibility_cocoa_ detach];
-
-  // Now, release it - but at this point, other processes may have a
-  // reference to the cocoa object.
-  [browser_accessibility_cocoa_ release];
+  if (platform_node_) {
+    platform_node_->Destroy();
+  }
 }
 
 void BrowserAccessibilityMac::OnDataChanged() {
@@ -39,17 +35,22 @@ void BrowserAccessibilityMac::OnDataChanged() {
     return;
   }
 
-  // We take ownership of the Cocoa object here.
-  browser_accessibility_cocoa_ =
-      [[BrowserAccessibilityCocoa alloc] initWithObject:this];
+  CreatePlatformNodes();
 }
 
 // Replace a native object and refocus if it had focus.
 // This will force VoiceOver to re-announce it, and refresh Braille output.
 void BrowserAccessibilityMac::ReplaceNativeObject() {
-  BrowserAccessibilityCocoa* old_native_obj = browser_accessibility_cocoa_;
-  browser_accessibility_cocoa_ =
-      [[BrowserAccessibilityCocoa alloc] initWithObject:this];
+  // The old native wrapper kungu death grip: keep the object alive until we
+  // set up everything for the new native wrapper.
+  base::scoped_nsobject<BrowserAccessibilityCocoa> old_native_obj(
+      [browser_accessibility_cocoa_ retain]);
+
+  if (browser_accessibility_cocoa_) {
+    CreatePlatformCocoaNode();
+  } else {
+    CreatePlatformNodes();
+  }
 
   // Replace child in parent.
   BrowserAccessibility* parent = PlatformGetParent();
@@ -74,14 +75,12 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
         NSAccessibilityFocusedUIElementChangedNotification);
   }
 
-  // Destroy after a delay so that VO is securely on the new focus first,
-  // otherwise the focus event will not be announced.
+  // Postprone the old native wrapper destruction. It will be destroyed after
+  // a delay so that VO is securely on the new focus first (otherwise the focus
+  // event will not be announced).
   // We use 1000ms; however, this magic number isn't necessary to avoid
   // use-after-free or anything scary like that. The worst case scenario if this
-  // gets destroyed, too early is that VoiceOver announces the wrong thing once.
-  base::scoped_nsobject<BrowserAccessibilityCocoa> retained_destroyed_node(
-      [old_native_obj retain]);
-
+  // gets destroyed too early is that VoiceOver announces the wrong thing once.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
@@ -92,7 +91,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
               [destroyed release];
             }
           },
-          std::move(retained_destroyed_node)),
+          std::move(old_native_obj)),
       base::TimeDelta::FromMilliseconds(1000));
 }
 
@@ -171,6 +170,27 @@ BrowserAccessibility* BrowserAccessibilityMac::PlatformGetPreviousSibling()
     }
   }
   return BrowserAccessibility::PlatformGetPreviousSibling();
+}
+
+void BrowserAccessibilityMac::CreatePlatformNodes() {
+  DCHECK(!platform_node_);
+  DCHECK(!browser_accessibility_cocoa_);
+
+  platform_node_ =
+      static_cast<ui::AXPlatformNodeMac*>(ui::AXPlatformNode::Create(this));
+
+  CreatePlatformCocoaNode();
+}
+
+void BrowserAccessibilityMac::CreatePlatformCocoaNode() {
+  DCHECK(platform_node_);
+
+  browser_accessibility_cocoa_ =
+      [[BrowserAccessibilityCocoa alloc] initWithObject:this
+                                       withPlatformNode:platform_node_];
+
+  // platform_node_ take ownership of the Cocoa object here
+  platform_node_->TakeNodeCocoa(browser_accessibility_cocoa_);
 }
 
 const BrowserAccessibilityCocoa* ToBrowserAccessibilityCocoa(

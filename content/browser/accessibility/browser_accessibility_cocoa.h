@@ -82,7 +82,8 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 
 // This creates a cocoa browser accessibility object around
 // the cross platform BrowserAccessibility object, which can't be nullptr.
-- (instancetype)initWithObject:(content::BrowserAccessibility*)accessibility;
+- (instancetype)initWithObject:(content::BrowserAccessibility*)accessibility
+              withPlatformNode:(ui::AXPlatformNodeMac*)platform_node;
 
 // Clear this object's pointer to the wrapped BrowserAccessibility object
 // because the wrapped object has been deleted, but this object may
