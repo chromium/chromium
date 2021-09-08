@@ -575,6 +575,12 @@ LayerAnimationSequence* LayerAnimator::RemoveAnimation(
     }
   }
 
+  // Do not continue and attempt to start other sequences if the delegate is
+  // nullptr.
+  // TODO(crbug.com/1247769): Guard other uses of delegate_ in this class.
+  if (!delegate())
+    return to_return.release();
+
   if (!to_return.get() || !to_return->waiting_for_group_start() ||
       !to_return->IsFirstElementThreaded(delegate_))
     return to_return.release();
