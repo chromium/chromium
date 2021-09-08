@@ -324,6 +324,30 @@ export let fakeWifiNetwork = {
 };
 
 /** @type {!Network} */
+export let fakeWifiNetworkDisabled = {
+  state: NetworkState.kDisabled,
+  type: NetworkType.kWiFi,
+  typeProperties: {
+    wifi: {
+      signalStrength: 65,
+      frequency: 5745,
+      bssid: '44:07:0b:06:2d:85',
+      ssid: 'Dial Up',
+      security: SecurityType.kNone,
+    },
+  },
+  observerGuid: 'wifiGuidDisabled',
+  name: 'Dial Up',
+  macAddress: '84:C5:A6:30:3F:31',
+  ipConfig: {
+    ipAddress: '192.168.86.197',
+    gateway: '192.168.86.1',
+    nameServers: ['192.168.86.1'],
+    routingPrefix: 24,
+  },
+};
+
+/** @type {!Network} */
 export let fakeWifiNetworkNoNameServers = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,

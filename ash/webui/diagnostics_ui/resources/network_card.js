@@ -114,14 +114,12 @@ Polymer({
     window.open('https://support.google.com/chromebook?p=diagnostics_');
   },
 
-  /** @protected */
+  /**
+   * @protected
+   * @return {string}
+   */
   getNetworkCardTitle_() {
-    var title = this.networkType_;
-    if (this.networkState_) {
-      title = title + ' (' + this.networkState_ + ')';
-    }
-
-    return title;
+    return `${this.networkType_} (${this.networkState_})`;
   },
 
   /** @protected */

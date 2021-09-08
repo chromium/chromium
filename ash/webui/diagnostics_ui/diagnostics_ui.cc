@@ -152,6 +152,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"networkSsidLabel", IDS_ONC_WIFI_SSID},
       {"networkStateConnectedText", IDS_NETWORK_HEALTH_STATE_CONNECTED},
       {"networkStateConnectingText", IDS_NETWORK_HEALTH_STATE_CONNECTING},
+      {"networkStateDisabledText", IDS_NETWORK_HEALTH_STATE_DISABLED},
       {"networkStateNotConnectedText", IDS_NETWORK_HEALTH_STATE_NOT_CONNECTED},
       {"networkStateOnlineText", IDS_NETWORK_HEALTH_STATE_ONLINE},
       {"networkStatePortalText", IDS_NETWORK_HEALTH_STATE_PORTAL},

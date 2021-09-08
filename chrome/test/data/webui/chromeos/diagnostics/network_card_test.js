@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -42,6 +42,7 @@ export function networkCardTestSuite() {
     assertFalse(!!networkCardElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
     provider.setFakeNetworkState('wifiGuid', [fakeWifiNetwork]);
+    provider.setFakeNetworkState('wifiGuidDisabled', [fakeWifiNetworkDisabled]);
     provider.setFakeNetworkState('cellularGuid', [fakeCellularNetwork]);
     provider.setFakeNetworkState('ethernetGuid', [fakeEthernetNetwork]);
     provider.setFakeNetworkState(
@@ -71,6 +72,14 @@ export function networkCardTestSuite() {
       dx_utils.assertElementContainsText(
           networkCardElement.$$('#cardTitle'), 'Wi-Fi (Connected)');
       assertFalse(isVisible(getTroubleConnectingElement()));
+    });
+  });
+
+  test('CardTitleWiFiDisabledInitializedCorrectly', () => {
+    return initializeNetworkCard('wifiGuidDisabled').then(() => {
+      dx_utils.assertElementContainsText(
+          networkCardElement.$$('#cardTitle'), 'Wi-Fi (Disabled)');
+      assertTrue(isVisible(getTroubleConnectingElement()));
     });
   });
 
