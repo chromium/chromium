@@ -1642,6 +1642,7 @@ static_library("ui") {
       "//components/media_router/common/mojom:media_router",
       "//components/network_session_configurator/common",
       "//components/page_load_metrics/browser",
+      "//components/paint_preview/buildflags",
       "//components/performance_manager:site_data_proto",
       "//components/reading_list/features:flags",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
