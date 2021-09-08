@@ -2418,7 +2418,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, UserScriptDownload) {
 }
 
 // Test to make sure auto-open works.
-IN_PROC_BROWSER_TEST_F(DownloadTest, AutoOpenByUser) {
+// High flake rate; https://crbug.com/1247392.
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenByUser) {
   base::FilePath file(FILE_PATH_LITERAL("download-autoopen.txt"));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5547,7 +5548,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, HiddenDownload) {
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, AutoOpenClosesShelf) {
+// High flake rate; https://crbug.com/1247392.
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenClosesShelf) {
   base::FilePath file(FILE_PATH_LITERAL("download-autoopen.txt"));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
