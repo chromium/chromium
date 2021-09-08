@@ -1054,6 +1054,10 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType issue_type) {
     case AttributionReportingIssueType::kAttributionTriggerDataTooLarge:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionTriggerDataTooLarge;
+    case AttributionReportingIssueType::
+        kAttributionEventSourceTriggerDataTooLarge:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionEventSourceTriggerDataTooLarge;
   }
 }
 

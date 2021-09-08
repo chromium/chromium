@@ -228,6 +228,7 @@ void ReportSameSiteCookieIssue(
 
 enum class AttributionReportingIssueType {
   kAttributionTriggerDataTooLarge,
+  kAttributionEventSourceTriggerDataTooLarge,
 };
 
 void ReportAttributionReportingIssue(

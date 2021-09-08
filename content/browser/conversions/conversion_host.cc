@@ -299,6 +299,17 @@ void ConversionHost::RegisterConversion(
         base::NumberToString(conversion->conversion_data));
   }
 
+  if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
+          conversion->event_source_trigger_data,
+          StorableImpression::SourceType::kEvent)) {
+    devtools_instrumentation::ReportAttributionReportingIssue(
+        render_frame_host,
+        devtools_instrumentation::AttributionReportingIssueType::
+            kAttributionEventSourceTriggerDataTooLarge,
+        conversion->devtools_request_id,
+        base::NumberToString(conversion->event_source_trigger_data));
+  }
+
   StorableConversion storable_conversion(
       conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
           conversion->conversion_data,
