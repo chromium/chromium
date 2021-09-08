@@ -3195,6 +3195,8 @@ static_library("ui") {
         "views/profiles/profile_customization_bubble_sync_controller.h",
         "views/profiles/profile_customization_bubble_view.cc",
         "views/profiles/profile_customization_bubble_view.h",
+        "views/profiles/profile_picker_dice_sign_in_provider.cc",
+        "views/profiles/profile_picker_dice_sign_in_provider.h",
         "views/sync/dice_bubble_sync_promo_view.cc",
         "views/sync/dice_bubble_sync_promo_view.h",
         "views/sync/dice_signin_button_view.cc",
