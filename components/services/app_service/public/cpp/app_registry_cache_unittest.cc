@@ -543,10 +543,13 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitialized) {
   EXPECT_EQ(apps::mojom::AppType::kArc, observer1.app_type());
   EXPECT_EQ(1, observer1.count());
   EXPECT_EQ(3, observer1.app_count());
+  EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 
+  // New observers should not have OnAppTypeInitialized called.
   InitializedObserver observer2(&cache);
-  EXPECT_EQ(apps::mojom::AppType::kArc, observer2.app_type());
-  EXPECT_EQ(1, observer2.count());
+  EXPECT_EQ(apps::mojom::AppType::kUnknown, observer2.app_type());
+  EXPECT_EQ(0, observer2.count());
+  EXPECT_EQ(1u, cache.GetInitializedAppTypes().size());
   EXPECT_TRUE(cache.IsAppTypeInitialized(apps::mojom::AppType::kArc));
 }

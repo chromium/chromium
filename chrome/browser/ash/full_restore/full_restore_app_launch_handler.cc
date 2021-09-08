@@ -72,6 +72,10 @@ void FullRestoreAppLaunchHandler::LaunchBrowserWhenReady(
       auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile())
                          ->AppRegistryCache();
       Observe(cache);
+
+      for (const auto app_type : cache->GetInitializedAppTypes()) {
+        OnAppTypeInitialized(app_type);
+      }
     }
 
     LaunchBrowserForFirstRunFullRestore();

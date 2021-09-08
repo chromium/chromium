@@ -709,8 +709,6 @@ void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
   if (should_record_metrics_on_new_day_) {
     RecordAppsCount(app_type);
   }
-
-  initialized_app_types.insert(app_type);
 }
 
 void AppPlatformMetrics::OnAppRegistryCacheWillBeDestroyed(
@@ -735,7 +733,7 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   InstallTime install_time =
-      base::Contains(initialized_app_types, update.AppType())
+      app_registry_cache_.IsAppTypeInitialized(update.AppType())
           ? InstallTime::kRunning
           : InstallTime::kInit;
   RecordAppsInstallUkm(update, install_time);
@@ -1213,6 +1211,8 @@ void AppPlatformMetrics::RecordAppReadinessStatus(
     const apps::AppUpdate& update) {
   std::string histogram_name = kAppPreviousReadinessStatus;
   auto readiness = update.PriorReadiness();
+  const std::set<apps::mojom::AppType>& initialized_app_types =
+      app_registry_cache_.GetInitializedAppTypes();
   if (update.AppId() == extension_misc::kFilesManagerAppId) {
     histogram_name += "FileManager";
     if (!base::Contains(initialized_app_types,
