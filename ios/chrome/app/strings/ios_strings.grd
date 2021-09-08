@@ -390,7 +390,7 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BLOCK_POPUPS" desc="Title for the view and option in Settings for blocking pop-ups. [Length: 15em] [iOS only]">
         Block Pop-ups
       </message>
-      <message name="IDS_IOS_SHOW_LINK_PREVIEWS" desc="Title for the view and option in Settings for showing link previews. [Length: 15em] [iOS only]">
+      <message name="IDS_IOS_SHOW_LINK_PREVIEWS" desc="Title for the view and option in Settings for showing link previews. [Length: unlimited] [iOS only]" meaning="Title for the Chrome Settings option for showing link previews. [Length: unlimited]">
         Show Link Previews
       </message>
       <message name="IDS_IOS_BLUETOOTH_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's bluetooth capabilities.">
