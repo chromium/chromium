@@ -37,6 +37,8 @@ class EventBase {
     Metric(uint64_t name_hash, MetricType type);
     ~Metric();
 
+    bool operator==(const Metric& other) const;
+
     // First 8 bytes of the MD5 hash of the metric name, as defined in
     // structured.xml. This is calculated by
     // tools/metrics/structured/codegen.py.
@@ -52,8 +54,6 @@ class EventBase {
     std::string hmac_value;
     int64_t int_value;
     std::string string_value;
-
-    bool operator==(const Metric& other) const;
   };
 
   // Finalizes the event and sends it for recording. After this call, the event

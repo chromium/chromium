@@ -13,15 +13,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::AllOf;
-using testing::Eq;
-using testing::Property;
-using testing::UnorderedElementsAre;
-
 namespace metrics {
 namespace structured {
 
 namespace {
+
+using testing::AllOf;
+using testing::Eq;
+using testing::Property;
+using testing::UnorderedElementsAre;
 
 // These project, event, and metric names are used for testing. This test metric
 // is defined in //tools/metrics/structured/structured.xml. The constants below
@@ -51,7 +51,7 @@ constexpr EventType kProjectOneEventType =
 
 }  // namespace
 
-TEST(EventBaseTest, FromEventWithValidators) {
+TEST(EventBaseTest, FromEventConvertsValidEventToEventBase) {
   const std::string kHmacValue = "hmac-value";
   const std::string kLongValue = "12345";  // No long in base::Value.
 
@@ -71,9 +71,8 @@ TEST(EventBaseTest, FromEventWithValidators) {
   auto event_base = EventBase::FromEvent(test_event);
   ASSERT_TRUE(event_base.has_value());
 
-  auto event_base_value = event_base.value();
   EXPECT_THAT(
-      event_base_value,
+      event_base.value(),
       AllOf(
           Property(&EventBase::project_name_hash, Eq(kProjectOneHash)),
           Property(&EventBase::name_hash, Eq(kEventOneHash)),
@@ -84,7 +83,7 @@ TEST(EventBaseTest, FromEventWithValidators) {
                    UnorderedElementsAre(expected_metric1, expected_metric2))));
 }
 
-TEST(EventBaseTest, FromEventWithInvalidMetricName) {
+TEST(EventBaseTest, FromEventWithInvalidMetricNameIsEmpty) {
   const std::string kHmacValue = "hmac-value";
 
   Event test_event(kProjectOneName, kEventOneName);
@@ -95,7 +94,7 @@ TEST(EventBaseTest, FromEventWithInvalidMetricName) {
   ASSERT_FALSE(event_base.has_value());
 }
 
-TEST(EventBaseTest, FromEventWithInvalidEventName) {
+TEST(EventBaseTest, FromEventWithInvalidEventNameIsEmpty) {
   const std::string kHmacValue = "hmac-value";
 
   Event test_event(kProjectOneName, "fake-event-name");
@@ -106,7 +105,7 @@ TEST(EventBaseTest, FromEventWithInvalidEventName) {
   ASSERT_FALSE(event_base.has_value());
 }
 
-TEST(EventBaseTest, FromEventWithInvalidMetricType) {
+TEST(EventBaseTest, FromEventWithInvalidMetricTypeIsEmpty) {
   const double kDoubleValue = 123.45;
 
   Event test_event(kProjectOneName, kEventOneName);

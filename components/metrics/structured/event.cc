@@ -26,6 +26,7 @@ bool Event::MetricValue::operator==(const Event::MetricValue& rhs) const {
 
 Event::MetricValue::~MetricValue() = default;
 
+Event::Event() = default;
 Event::Event(const std::string& project_name, const std::string& event_name)
     : project_name_(project_name), event_name_(event_name) {}
 
@@ -44,7 +45,6 @@ Event& Event::operator=(Event&& other) {
   return *this;
 }
 
-Event::Event() = default;
 Event::~Event() = default;
 
 const std::string& Event::project_name() const {
