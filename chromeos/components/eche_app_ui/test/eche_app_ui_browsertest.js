@@ -55,7 +55,7 @@ TEST_F('EcheAppUIBrowserTest', 'HasChromeSchemeURL', () => {
 // terminated, e.g., due to webui performing bad IPC such as network requests
 // (failure detected in content/public/test/no_renderer_crashes_assertion.cc).
 // Flaky. See crbug.com/1242355,
-TEST_F('EcheAppUIBrowserTest', 'DISABLED_GuestCanLoad', async () => {
+TEST_F('EcheAppUIBrowserTest', 'GuestCanLoad', async () => {
   const guest = queryIFrame();
 
   assertEquals(document.location.origin, HOST_ORIGIN);
