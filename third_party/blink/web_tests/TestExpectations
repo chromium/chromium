@@ -6065,6 +6065,9 @@ crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
 # WebTransport tests should eventually run when the WebTransport WPT server is added.
 crbug.com/1201569 external/wpt/webtransport/* [ Skip ]
 crbug.com/1201569 external/wpt/webtransport/idlharness.any.html [ Pass ]
+crbug.com/1201569 external/wpt/webtransport/idlharness.any.serviceworker.html [ Pass ]
+crbug.com/1201569 external/wpt/webtransport/idlharness.any.sharedworker.html [ Pass ]
+crbug.com/1201569 external/wpt/webtransport/idlharness.any.worker.html [ Pass ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 

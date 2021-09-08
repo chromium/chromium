@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 68 tests; 43 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL idl_test setup promise_test: Unhandled rejection with value: object "SyntaxError: Failed to construct 'WebTransport': The URL's scheme must be 'https'. 'quic-transport' is not allowed."
+Found 68 tests; 57 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
 PASS idl_test validation
 PASS WebTransport includes UnidirectionalStreamsTransport: member names are unique
 PASS DatagramDuplexStream interface: existence and properties of interface object
@@ -24,27 +24,27 @@ PASS WebTransport interface: attribute closed
 PASS WebTransport interface: operation close(optional WebTransportCloseInfo)
 FAIL WebTransport interface: attribute onstatechange assert_true: The prototype object must have a property "onstatechange" expected true got false
 FAIL WebTransport interface: attribute maxDatagramSize assert_true: The prototype object must have a property "maxDatagramSize" expected true got false
-FAIL WebTransport interface: attribute datagrams assert_true: The prototype object must have a property "datagrams" expected true got false
+PASS WebTransport interface: attribute datagrams
 PASS WebTransport interface: operation createBidirectionalStream()
 PASS WebTransport interface: attribute incomingBidirectionalStreams
 PASS WebTransport interface: operation createUnidirectionalStream(optional SendStreamParameters)
 PASS WebTransport interface: attribute incomingUnidirectionalStreams
-FAIL WebTransport must be primary interface of webTransport assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL Stringification of webTransport assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "getStats()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "state" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "ready" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "closed" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "close(optional WebTransportCloseInfo)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: calling close(optional WebTransportCloseInfo) on webTransport with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "onstatechange" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "maxDatagramSize" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "datagrams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "createBidirectionalStream()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "incomingBidirectionalStreams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "createUnidirectionalStream(optional SendStreamParameters)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: calling createUnidirectionalStream(optional SendStreamParameters) on webTransport with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
-FAIL WebTransport interface: webTransport must inherit property "incomingUnidirectionalStreams" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: webTransport is not defined"
+PASS WebTransport must be primary interface of webTransport
+PASS Stringification of webTransport
+FAIL WebTransport interface: webTransport must inherit property "getStats()" with the proper type assert_inherits: property "getStats" not found in prototype chain
+FAIL WebTransport interface: webTransport must inherit property "state" with the proper type assert_inherits: property "state" not found in prototype chain
+PASS WebTransport interface: webTransport must inherit property "ready" with the proper type
+PASS WebTransport interface: webTransport must inherit property "closed" with the proper type
+PASS WebTransport interface: webTransport must inherit property "close(optional WebTransportCloseInfo)" with the proper type
+PASS WebTransport interface: calling close(optional WebTransportCloseInfo) on webTransport with too few arguments must throw TypeError
+FAIL WebTransport interface: webTransport must inherit property "onstatechange" with the proper type assert_inherits: property "onstatechange" not found in prototype chain
+FAIL WebTransport interface: webTransport must inherit property "maxDatagramSize" with the proper type assert_inherits: property "maxDatagramSize" not found in prototype chain
+PASS WebTransport interface: webTransport must inherit property "datagrams" with the proper type
+PASS WebTransport interface: webTransport must inherit property "createBidirectionalStream()" with the proper type
+PASS WebTransport interface: webTransport must inherit property "incomingBidirectionalStreams" with the proper type
+PASS WebTransport interface: webTransport must inherit property "createUnidirectionalStream(optional SendStreamParameters)" with the proper type
+PASS WebTransport interface: calling createUnidirectionalStream(optional SendStreamParameters) on webTransport with too few arguments must throw TypeError
+PASS WebTransport interface: webTransport must inherit property "incomingUnidirectionalStreams" with the proper type
 PASS SendStream interface: existence and properties of interface object
 PASS SendStream interface object length
 PASS SendStream interface object name
