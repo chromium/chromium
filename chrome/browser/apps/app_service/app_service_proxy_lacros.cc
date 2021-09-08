@@ -114,6 +114,18 @@ void AppServiceProxyLacros::Initialize() {
     return;
   }
 
+  crosapi_app_service_proxy_version_ =
+      service->GetInterfaceVersion(crosapi::mojom::AppServiceProxy::Uuid_);
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kRegisterAppServiceSubscriberMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support RegisterAppServiceSubscriber().";
+    return;
+  }
+
   service->GetRemote<crosapi::mojom::AppServiceProxy>()
       ->RegisterAppServiceSubscriber(
           crosapi_receiver_.BindNewPipeAndPassRemote());
@@ -199,6 +211,15 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
     return;
   }
 
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support Launch().";
+    return;
+  }
+
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
@@ -237,6 +258,15 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   }
 
   if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    return;
+  }
+
+  if (crosapi_app_service_proxy_version_ <
+      int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+              kLaunchMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << crosapi_app_service_proxy_version_
+                 << " does not support Launch().";
     return;
   }
 

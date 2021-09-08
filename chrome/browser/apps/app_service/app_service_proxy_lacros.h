@@ -335,6 +335,7 @@ class AppServiceProxyLacros : public KeyedService,
 
   std::unique_ptr<web_app::WebAppsPublisherHost> web_apps_publisher_host_;
   mojo::Receiver<crosapi::mojom::AppServiceSubscriber> crosapi_receiver_{this};
+  int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
 };
