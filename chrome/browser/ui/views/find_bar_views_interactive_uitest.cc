@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // First we navigate to any page.
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Show the Find bar.
   browser()->GetFindBarController()->Show();

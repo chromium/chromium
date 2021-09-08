@@ -685,7 +685,8 @@ class SystemProxyCredentialsReuseBrowserTest
     login_observer.Register(content::Source<content::NavigationController>(
         &GetWebContents()->GetController()));
     WindowedAuthNeededObserver auth_needed(&GetWebContents()->GetController());
-    ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html")));
     auth_needed.Wait();
     WindowedAuthSuppliedObserver auth_supplied(
         &GetWebContents()->GetController());
@@ -749,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyCredentialsReuseBrowserTest,
       LoginState::LOGGED_IN_ACTIVE,
       LoginState::LOGGED_IN_USER_PUBLIC_ACCOUNT_MANAGED);
   SetPolicyCredentials(kProxyUsername, kProxyPassword);
-  ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetServerUrl("/simple.html")));
   CheckEntryInHttpAuthCache("Basic", kProxyUsername, kProxyPassword);
 }
 

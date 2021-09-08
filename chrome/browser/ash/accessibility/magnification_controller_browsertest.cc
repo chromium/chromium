@@ -170,8 +170,8 @@ class FullscreenMagnifierControllerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        MAYBE_FollowFocusOnWebButtonContained) {
   DCHECK(IsMagnifierEnabled());
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent)));
+  ASSERT_NO_FATAL_FAILURE(EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kTestHtmlContent))));
 
   // Move magnifier window to contain the button.
   const gfx::Rect button_bounds = GetControlBoundsInRoot("test_button");

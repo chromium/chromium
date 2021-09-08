@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorNavigationThrottleTest,
   std::string url = chromeos::kChromeUIUntrustedProjectorAppUrl;
   GURL gurl(url);
 
-  ui_test_utils::NavigateToURL(browser(), gurl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   web_app::FlushSystemWebAppLaunchesForTesting(profile());
 
   Browser* app_browser =

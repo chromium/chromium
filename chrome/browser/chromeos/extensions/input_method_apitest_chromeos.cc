@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
   GURL test_url = ui_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
       base::FilePath("test_page.html"));
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_TRUE(RunExtensionTest("input_method/typing")) << message_;
 }

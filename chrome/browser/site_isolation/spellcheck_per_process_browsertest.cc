@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

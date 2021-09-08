@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkDelegateBrowserTest, AccessToFile) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(net::ERR_ACCESS_DENIED, observer.last_net_error_code());
 }
 
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkDelegateBrowserTest, AccessToSymlink) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(net::ERR_ACCESS_DENIED, observer.last_net_error_code());
 }
 

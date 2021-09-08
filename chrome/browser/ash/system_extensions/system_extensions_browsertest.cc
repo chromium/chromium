@@ -100,21 +100,23 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, ExtensionInstalled) {
                                      kTestSystemExtensionId);
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
   {
-    ui_test_utils::NavigateToURL(browser(), GURL(kTestSystemExtensionIndexURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(kTestSystemExtensionIndexURL)));
     EXPECT_EQ(u"SystemExtension", tab->GetTitle());
   }
   {
     // Check that navigating to non-existing resources doesn't crash the
     // browser.
-    ui_test_utils::NavigateToURL(browser(), GURL(kTestSystemExtensionWrongURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(kTestSystemExtensionWrongURL)));
     content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
     EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
   }
   {
     // Check that navigating to a directory, like the root directory, doesn't
     // crash the browser.
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL(kTestSystemExtensionEmptyPathURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(kTestSystemExtensionEmptyPathURL)));
     content::NavigationEntry* entry = tab->GetController().GetVisibleEntry();
     EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
   }

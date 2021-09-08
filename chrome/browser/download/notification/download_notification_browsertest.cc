@@ -315,8 +315,8 @@ class DownloadNotificationTestBase
     content::DownloadTestObserverTerminal download_terminal_observer(
         GetDownloadManager(browser()), wait_count,
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-    ui_test_utils::NavigateToURL(
-        browser(), GURL(SlowDownloadInterceptor::kFinishDownloadUrl));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(SlowDownloadInterceptor::kFinishDownloadUrl)));
     download_terminal_observer.WaitForFinished();
   }
 
@@ -412,7 +412,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     // Starts a download.
     content::DownloadTestObserverInProgress download_in_progress_observer(
         GetDownloadManager(browser), /*wait_count=*/1u);
-    ui_test_utils::NavigateToURL(browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     download_in_progress_observer.WaitForFinished();
 
     // Confirms that a download is started.
@@ -482,8 +482,8 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     content::DownloadTestObserverInterrupted download_interrupted_observer(
         GetDownloadManager(browser()), 1u, /* wait_count */
         content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-    ui_test_utils::NavigateToURL(
-        browser(), GURL(SlowDownloadInterceptor::kErrorDownloadUrl));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(SlowDownloadInterceptor::kErrorDownloadUrl)));
     download_interrupted_observer.WaitForFinished();
   }
 
@@ -784,7 +784,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadMultipleFiles) {
   GURL url2(SlowDownloadInterceptor::kKnownSizeUrl);
 
   // Starts the 1st download.
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadMultipleFiles) {
   download::DownloadItem* download1 = downloads[0];
 
   // Starts the 2nd download.
-  ui_test_utils::NavigateToURL(browser(), url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
 
   // Starts the second download.
   GURL url(SlowDownloadInterceptor::kKnownSizeUrl);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -1022,8 +1022,8 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   content::DownloadTestObserverTerminal download_terminal_observer(
       GetDownloadManager(incognito_browser()), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-  ui_test_utils::NavigateToURL(
-      incognito_browser(), GURL(SlowDownloadInterceptor::kFinishDownloadUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(), GURL(SlowDownloadInterceptor::kFinishDownloadUrl)));
   download_terminal_observer.WaitForFinished();
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_COMPLETE_TITLE),
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   GURL url_normal(SlowDownloadInterceptor::kKnownSizeUrl);
 
   // Starts the incognito download.
-  ui_test_utils::NavigateToURL(incognito_browser(), url_incognito);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser(), url_incognito));
   WaitForDownloadNotification(incognito_browser());
   auto incognito_notifications =
       incognito_display_service_->GetDisplayedNotificationsForType(
@@ -1074,7 +1074,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   download::DownloadItem* download_incognito = downloads[0];
 
   // Starts the normal download.
-  ui_test_utils::NavigateToURL(browser(), url_normal);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_normal));
   WaitForDownloadNotification();
   auto normal_notifications = GetDownloadNotifications();
   ASSERT_EQ(1u, normal_notifications.size());
@@ -1234,7 +1234,7 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
       std::make_unique<NotificationDisplayServiceTester>(profile2);
 
   // First user starts a download.
-  ui_test_utils::NavigateToURL(browser1, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   }
 
   // Second user starts a download.
-  ui_test_utils::NavigateToURL(browser2, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -1290,7 +1290,7 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   ASSERT_EQ(1u, downloads.size());
 
   // Second user starts another download.
-  ui_test_utils::NavigateToURL(browser2, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
   // If holding space in-progress downloads integration is enabled, the
   // notification is expected to have been suppressed.
@@ -1351,10 +1351,10 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
   content::DownloadTestObserverTerminal download_terminal_observer2(
       GetDownloadManager(browser2), 2u /* wait_count */,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
-  ui_test_utils::NavigateToURL(
-      browser1, GURL(SlowDownloadInterceptor::kFinishDownloadUrl));
-  ui_test_utils::NavigateToURL(
-      browser2, GURL(SlowDownloadInterceptor::kFinishDownloadUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser1, GURL(SlowDownloadInterceptor::kFinishDownloadUrl)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser2, GURL(SlowDownloadInterceptor::kFinishDownloadUrl)));
   download_terminal_observer.WaitForFinished();
   download_terminal_observer2.WaitForFinished();
 

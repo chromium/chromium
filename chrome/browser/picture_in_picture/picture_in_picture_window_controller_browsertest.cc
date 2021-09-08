@@ -1357,7 +1357,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureWindowSizePage));
-  ui_test_utils::NavigateToURL(browser(), test_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

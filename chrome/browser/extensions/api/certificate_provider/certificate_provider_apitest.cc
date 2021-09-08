@@ -327,8 +327,8 @@ class CertificateProviderApiMockedExtensionTest
 
     extension_path_ = test_data_dir_.AppendASCII("certificate_provider");
     extension_ = LoadExtension(extension_path_);
-    ui_test_utils::NavigateToURL(browser(),
-                                 extension_->GetResourceURL("basic.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension_->GetResourceURL("basic.html")));
 
     extension_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -519,8 +519,8 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   }
 
   void NavigateTo(const std::string& test_page_file_name) {
-    ui_test_utils::NavigateToURL(
-        browser(), extension_->GetResourceURL(test_page_file_name));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension_->GetResourceURL(test_page_file_name)));
   }
 
   ash::RequestPinView* GetActivePinDialogView() {

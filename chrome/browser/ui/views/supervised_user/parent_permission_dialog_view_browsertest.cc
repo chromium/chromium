@@ -604,7 +604,7 @@ class ExtensionManagementApiTestSupervised
     extensions::ResultCatcher catcher;
     GURL url = test_extension->GetResourceURL(page_url);
     DCHECK(url.is_valid());
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (catcher.GetNextResult())
       return true;
     if (error_message)

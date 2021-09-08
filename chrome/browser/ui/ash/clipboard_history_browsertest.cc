@@ -857,8 +857,8 @@ class ClipboardHistoryBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
                        DISABLED_VerifyHTMLRendering) {
   // Load the web page which contains images and text.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/image-and-text.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/image-and-text.html")));
 
   // Select one part of the web page. Wait until the selection region updates.
   // Then copy the selected part to clipboard.

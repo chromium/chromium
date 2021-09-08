@@ -105,8 +105,8 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/webshare/index.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/webshare/index.html")));
 
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingShareServiceBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/webshare/index.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

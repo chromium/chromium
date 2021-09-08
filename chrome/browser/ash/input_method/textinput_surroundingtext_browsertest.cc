@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textarea.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
   content::WebContents* tab =
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textarea.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
   content::WebContents* tab =
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("textarea_with_preset_text.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
   content::WebContents* tab =

@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, AshBrowserWindow) {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
 
   auto instance_keys = app_service_proxy_->InstanceRegistry().GetInstanceKeys(
       extension_misc::kChromeAppId);

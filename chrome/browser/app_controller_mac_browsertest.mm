@@ -1510,7 +1510,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
 
   // Test that navigating to a URL updates the handoff URL.
   GURL test_url1 = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), test_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url1));
   EXPECT_EQ(g_handoff_url, test_url1);
 
   // Test that opening a new tab updates the handoff URL.
@@ -1561,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerHandoffBrowserTest, TestHandoffURLs) {
   EXPECT_EQ(g_handoff_url, GURL());
 
   // Navigate the current tab in the incognito window.
-  ui_test_utils::NavigateToURL(browser3, test_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser3, test_url1));
   EXPECT_EQ(g_handoff_url, GURL());
 
   // Activate the original browser window.

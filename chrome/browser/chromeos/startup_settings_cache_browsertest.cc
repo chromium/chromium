@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, RendererLocale) {
   const char kHTML[] =
       "<html><body><form><input type='file'></form></body></html>";
   GURL url(std::string("data:text/html,") + kHTML);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The localized button label in the renderer is in Spanish.
   WaitForAccessibilityTreeToContainNodeWithName(

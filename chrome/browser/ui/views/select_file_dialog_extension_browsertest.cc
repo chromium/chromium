@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, FileInputElement) {
 
   // Navigate the browser to the file input element test page.
   const GURL url = embedded_test_server()->GetURL("/file_input/element.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(url, web_contents->GetLastCommittedURL());

@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
 
   // Add a single tab.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(), -1, true);
@@ -2102,14 +2102,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   EXPECT_NE(second_profile_browser_one, second_profile_browser_two);
 
   // Navigate the tab in each browser to a unique URL we can later reidentify.
-  ui_test_utils::NavigateToURL(first_profile_browser_one,
-                               GURL("data:,profile 1 browser 1"));
-  ui_test_utils::NavigateToURL(first_profile_browser_two,
-                               GURL("data:,profile 1 browser 2"));
-  ui_test_utils::NavigateToURL(second_profile_browser_one,
-                               GURL("data:,profile 2 browser 1"));
-  ui_test_utils::NavigateToURL(second_profile_browser_two,
-                               GURL("data:,profile 2 browser 2"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(first_profile_browser_one,
+                                           GURL("data:,profile 1 browser 1")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(first_profile_browser_two,
+                                           GURL("data:,profile 1 browser 2")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(second_profile_browser_one,
+                                           GURL("data:,profile 2 browser 1")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(second_profile_browser_two,
+                                           GURL("data:,profile 2 browser 2")));
 
   // Double-check preconditions.
   ProfileManager* profile_manager = g_browser_process->profile_manager();

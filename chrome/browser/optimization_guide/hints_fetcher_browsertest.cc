@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
             1);
   GURL initial_url =
       GetURLWithGoogleHost(origin_server_.get(), "/iframe_blank.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   histogram_tester->ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", net::HTTP_OK, 1);

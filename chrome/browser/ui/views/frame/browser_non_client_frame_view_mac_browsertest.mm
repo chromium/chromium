@@ -457,8 +457,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewMacWindowControlsOverlayTest,
 
   // Validate that the draggable region is reset on navigation and the point is
   // no longer draggable.
-  ui_test_utils::NavigateToURL(browser_view_->browser(),
-                               GURL("http://example.test/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_view_->browser(),
+                                           GURL("http://example.test/")));
   EXPECT_NE(frame_view_->NonClientHitTest(kPoint), HTCAPTION);
   EXPECT_TRUE(browser_view_->ShouldDescendIntoChildForEventHandling(
       browser_view_->GetWidget()->GetNativeView(), kPoint));

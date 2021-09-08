@@ -93,9 +93,9 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
     touch_ = CGPointMake(0.5, 0.5);
 
     // Ensure that the navigation stack is not empty.
-    ui_test_utils::NavigateToURL(browser(), url1_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
     ASSERT_EQ(url1_, GetWebContents()->GetURL());
-    ui_test_utils::NavigateToURL(browser(), url2_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
     ASSERT_EQ(url2_, GetWebContents()->GetURL());
 
     mock_clock_.Advance(base::TimeDelta::FromMilliseconds(100));
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
   if (!IsHistorySwipingSupported())
     return;
 
-  ui_test_utils::NavigateToURL(browser(), url_iframe_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_iframe_));
   ASSERT_EQ(url_iframe_, GetWebContents()->GetURL());
 
   content::InputEventAckWaiter wheel_end_ack_waiter(
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
   GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
-  ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior));
   ASSERT_EQ(url_overscroll_behavior, GetWebContents()->GetURL());
 
   QueueBeginningEvents(1, 0);

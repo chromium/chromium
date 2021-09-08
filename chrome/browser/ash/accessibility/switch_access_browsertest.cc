@@ -204,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
   // Load a webpage with a text box.
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html;charset=utf-8,<input type=text id=in>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,<input type=text id=in>")));
 
   // Put focus in the text box.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_TAB);
@@ -228,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with two groups of controls.
-  ui_test_utils::NavigateToURL(browser(), GURL(R"HTML(data:text/html,
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(R"HTML(data:text/html,
       <div role="group" aria-label="Top">
         <button autofocus>Northwest</button>
         <button>Northeast</button>
@@ -237,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
         <button>Southwest</button>
         <button>Southeast</button>
       </div>
-      )HTML"));
+      )HTML")));
 
   // Wait for switch access to focus on the first button.
   WaitForFocusRing("primary", "button", "Northwest");
@@ -279,9 +280,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html,<input autofocus aria-label=MyTextField>"));
+      GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
 
   // Wait for switch access to focus on the text field.
   WaitForFocusRing("primary", "textField", "MyTextField");
@@ -335,9 +336,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html,<input autofocus aria-label=MyTextField>"));
+      GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
 
   // Wait for switch access to focus on the text field.
   WaitForFocusRing("primary", "textField", "MyTextField");
@@ -369,10 +370,10 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
-           "style='width: 800px; height: 800px;'>"));
+           "style='width: 800px; height: 800px;'>")));
 
   // Wait for switch access to focus on the checkbox.
   WaitForFocusRing("primary", "checkBox", "checkbox");
@@ -402,10 +403,10 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
                      {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
-           "style='width: 800px; height: 800px;'>"));
+           "style='width: 800px; height: 800px;'>")));
 
   // Wait for switch access to focus on the checkbox.
   WaitForFocusRing("primary", "checkBox", "checkbox");

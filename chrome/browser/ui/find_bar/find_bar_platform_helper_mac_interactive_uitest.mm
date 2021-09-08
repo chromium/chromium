@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_NE(nullptr, find_bar_controller);
 
   GURL url = GetURL(kSimple);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   const std::u16string empty_string;
   find_bar_controller->SetText(empty_string);
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                         ->GetMatchCountText());
 
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   chrome::Find(browser());
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_T, false,
@@ -194,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                                               false, false, false));
 
   Browser* browser_incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(browser_incognito, GURL("data:text/plain,bar"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_incognito,
+                                           GURL("data:text/plain,bar")));
 
   ASSERT_TRUE(chrome::ExecuteCommand(browser_incognito, IDC_FIND_NEXT));
   content::WebContents* web_contents_incognito =
@@ -216,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_NE(nullptr, find_bar_controller);
 
   GURL url = GetURL(kSimple);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* first_active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -238,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
                                               false, false, false));
 
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_NE(first_active_web_contents,
             browser()->tab_strip_model()->GetActiveWebContents());
 

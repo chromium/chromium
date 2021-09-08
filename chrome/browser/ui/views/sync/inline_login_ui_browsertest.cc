@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   signin_url = net::AppendQueryParameter(
       signin_url, credential_provider::kShowTosSwitch, "1");
 
-  ui_test_utils::NavigateToURL(browser(), signin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
 
   WaitUntilUIReady(browser());
 
@@ -942,7 +942,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   signin_url = net::AppendQueryParameter(
       signin_url, credential_provider::kShowTosSwitch, "1");
 
-  ui_test_utils::NavigateToURL(browser(), signin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   WaitUntilUIReady(browser());
 
   // Expected gaia endpoint to load.

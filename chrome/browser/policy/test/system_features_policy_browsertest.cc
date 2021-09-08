@@ -57,7 +57,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                                bool using_navigation_throttle) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     if (using_navigation_throttle) {
       content::WaitForLoadStopWithoutSuccessCheck(web_contents);
     } else {

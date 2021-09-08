@@ -407,7 +407,7 @@ class LockIconPolicyTest : public policy::PolicyTest {
 
   void NavigateAndExpectIcon(const GURL& url,
                              const gfx::VectorIcon& expected_vector_icon) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
         expected_vector_icon, gfx::kFaviconSize, gfx::kPlaceholderColor);
     gfx::ImageSkia icon =

@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("ime_enable_disable_test.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
   content::WebContents* tab =
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest, FocusOnLoadTest) {
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_load.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_content_js.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT, helper.GetTextInputType());
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_with_mouse_click.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("focus_input_on_anothor_focus.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textinput.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textinput.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, helper.GetTextInputType());
 
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("content_editable.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("all_input_node.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_TextInputStateChangedTest,
   GURL base_url = ui_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("all_input_node.html")));
-  ui_test_utils::NavigateToURL(browser(), base_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), base_url));
   content::WebContents* base_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 

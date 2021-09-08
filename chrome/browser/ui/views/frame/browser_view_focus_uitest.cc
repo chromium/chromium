@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, BrowsersRememberFocus) {
   ASSERT_TRUE(browser2);
   chrome::AddTabAt(browser2, GURL(), -1, true);
   browser2->window()->Show();
-  ui_test_utils::NavigateToURL(browser2, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, url));
 
   gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();
   BrowserView* browser_view2 = BrowserView::GetBrowserViewForBrowser(browser2);

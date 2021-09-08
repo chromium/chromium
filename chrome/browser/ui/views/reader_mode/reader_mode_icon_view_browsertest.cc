@@ -146,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewPrerenderBrowserTest,
   EXPECT_FALSE(is_visible_before_navigation);
 
   // The icon should be hidden on pages that aren't distillable.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_secure()->GetURL(kNonArticlePath));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_secure()->GetURL(kNonArticlePath)));
   observer.WaitForResult(expected_result);
   const bool is_visible_on_non_distillable_page =
       reader_mode_icon_->GetVisible();

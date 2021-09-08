@@ -143,7 +143,8 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -225,7 +226,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -297,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -305,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -345,7 +349,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -353,7 +358,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -394,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -402,7 +409,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -443,7 +451,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -451,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -488,7 +498,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   DlpContentManager* manager = helper_.GetContentManager();
-  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -548,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   // Set up mock report queue and mock rules manager.
   SetupReporting();
-  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -678,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
                     DlpRulesManager::Level::kBlock, /*times=*/2);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -722,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
                     DlpRulesManager::Level::kReport, /*times=*/2);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -750,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarn) {
   // Set up mock rules manager.
   SetupDlpRulesManager();
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

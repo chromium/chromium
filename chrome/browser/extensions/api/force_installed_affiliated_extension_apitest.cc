@@ -107,7 +107,7 @@ void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
   SetCustomArg(custom_arg);
 
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser, GURL(page_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(page_url)));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

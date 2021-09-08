@@ -284,7 +284,7 @@ void GeolocationBrowserTest::Initialize(InitializationOptions options) {
   }
   ASSERT_TRUE(current_browser_);
   if (options != INITIALIZATION_OFFTHERECORD)
-    ui_test_utils::NavigateToURL(current_browser_, GetTestURL());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(current_browser_, GetTestURL()));
 
   // By default the main frame is used for JavaScript execution.
   SetFrameForScriptExecution("");

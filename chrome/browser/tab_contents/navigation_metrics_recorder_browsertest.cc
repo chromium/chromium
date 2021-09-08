@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderPrerenderBrowserTest,
   base::HistogramTester histograms;
 
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   histograms.ExpectTotalCount("Navigation.MainFrame.SiteEngagementLevel", 1);
 
   // Load a prerender page and prerendering should not increase the total count.

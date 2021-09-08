@@ -202,7 +202,7 @@ class TabClosingObserver : public TabStripModelObserver {
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
                        SendAccessRequestOnBlockedURL) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -340,14 +340,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest,
                        NavigateFromBlockedPageToBlockedPage) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
   GURL test_url2("http://www.a.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url2));
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
   EXPECT_EQ(test_url2, tab->GetVisibleURL());
@@ -373,14 +373,14 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
 
-  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
 
   // Navigate to it and check that we don't get an interstitial.
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
   // Navigate to a blocked page and go back on the interstitial.
   GURL blocked_url("http://www.new-example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
 
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
   ASSERT_EQ(0, web_contents->GetController().GetCurrentEntryIndex());
 
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_FALSE(ShownPageIsInterstitial(browser()));
 
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
   GURL test_url("http://www.example.com/simple.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

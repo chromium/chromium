@@ -5627,8 +5627,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSubresourceWebBundlesBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
       rules, "test_extension", {URLPattern::kAllUrlsPattern}));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
 
   // In the current implementation, extensions can't redirect requests to
   // Subresource WebBundles.

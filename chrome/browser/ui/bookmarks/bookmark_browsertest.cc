@@ -460,7 +460,7 @@ class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
 IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
                        PrerenderingShouldNotUpdateStarredState) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
   GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");

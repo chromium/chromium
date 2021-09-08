@@ -1691,7 +1691,7 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
     }
 
     // Navigate main window to a jit-disabled.com app URL.
-    ui_test_utils::NavigateToURL(browser(), jit_disabled_app_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), jit_disabled_app_url));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(jit_disabled_app_url, web_contents->GetLastCommittedURL());
@@ -1704,7 +1704,7 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
     // Navigate main window to a jit-enabled.com app URL.
     GURL jit_enabled_app_url(
         embedded_test_server()->GetURL("jit-enabled.com", "/title2.html"));
-    ui_test_utils::NavigateToURL(browser(), jit_enabled_app_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), jit_enabled_app_url));
     web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(jit_enabled_app_url, web_contents->GetLastCommittedURL());
     site_instance = web_contents->GetMainFrame()->GetSiteInstance();

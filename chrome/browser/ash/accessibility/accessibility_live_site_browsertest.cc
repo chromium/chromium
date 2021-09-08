@@ -39,7 +39,8 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
     aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
     generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLiveSiteTest,
 
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDocsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleDocsUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::EnableAccessibilityForWebContents(web_contents);

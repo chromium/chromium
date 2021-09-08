@@ -100,7 +100,7 @@ class ProjectorClientTest : public InProcessBrowserTest {
   void VerifyUrlValid(const char* url) {
     GURL gurl(url);
     EXPECT_TRUE(gurl.is_valid());
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_EQ(tab->GetController().GetLastCommittedEntry()->GetPageType(),

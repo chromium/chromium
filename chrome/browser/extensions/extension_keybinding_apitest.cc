@@ -959,8 +959,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, ChromeOSConversions) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(RunExtensionTest("keybinding/chromeos_conversions")) << message_;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
 

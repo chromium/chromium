@@ -497,7 +497,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
 // program (another Chrome tab in this case) is not launched to handle the
 // navigation. This is a regression test for crbug.com/963133.
 IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, ExternalProgramNotLaunched) {
-  ui_test_utils::NavigateToURL(browser(), GURL("mailto:bob@example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("mailto:bob@example.com")));
 
   // If an external program (Chrome) was launched, it will result in a second
   // tab being opened.

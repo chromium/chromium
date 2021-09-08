@@ -90,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(PrintJobFinishedEventDispatcherApiTest,
 
   ResultCatcher catcher;
   Browser* const new_browser = CreateBrowser(profile());
-  ui_test_utils::NavigateToURL(
-      new_browser, extension->GetResourceURL("on_print_job_finished.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      new_browser, extension->GetResourceURL("on_print_job_finished.html")));
 
   std::unique_ptr<chromeos::CupsPrintJob> print_job =
       std::make_unique<chromeos::CupsPrintJob>(

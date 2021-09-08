@@ -200,7 +200,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
     GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("textinput")),
         base::FilePath(FILE_PATH_LITERAL("simple_textarea.html")));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     content::WebContents* tab =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -565,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kAssistPersonalInfoEnabled, false);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "my name is ");
 
   histogram_tester.ExpectUniqueSample(
@@ -583,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
                                       AssistiveType::kPersonalName, 0);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "my name is ");
 
   histogram_tester.ExpectUniqueSample(
@@ -655,7 +657,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed, false);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
 
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
@@ -668,7 +671,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
 
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
@@ -679,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                        EmojiSuggestionDisabledReasonkUrlOrAppNotAllowed) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
 
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
@@ -1185,7 +1190,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
                        PersonalInfoSuggestionDisabledReasonkFeatureFlagOff) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "my name is ");
 
   histogram_tester.ExpectUniqueSample(
@@ -1200,7 +1206,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
       ->get_emoji_suggester_for_testing()
       ->LoadEmojiMapForTesting(kEmojiData);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "happy ");
 
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",

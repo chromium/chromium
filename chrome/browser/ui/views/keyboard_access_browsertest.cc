@@ -184,7 +184,8 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
                                                 bool focus_omnibox) {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
 
   // The initial tab index should be 0.
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
@@ -269,7 +270,8 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
 void KeyboardAccessTest::TestSystemMenuWithKeyboard() {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
@@ -318,7 +320,8 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
 void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
   // Navigate to a page in the first tab, which makes sure that focus is
   // set to the browser window.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://version/"),
@@ -361,7 +364,8 @@ void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
 #endif
 
 void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
 
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
@@ -485,8 +489,9 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
 #if defined(OS_WIN)  // These keys are Windows-only.
 IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
   // Navigate to create some history.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/"));
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://about/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://about/")));
 
   std::u16string before_back;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &before_back));

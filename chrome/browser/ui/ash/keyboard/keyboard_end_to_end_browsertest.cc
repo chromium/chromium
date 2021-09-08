@@ -81,7 +81,7 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     GURL test_url = ui_test_utils::GetTestUrl(
         base::FilePath("chromeos/virtual_keyboard"), test_file_);
-    ui_test_utils::NavigateToURL(browser(), test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents_);
 

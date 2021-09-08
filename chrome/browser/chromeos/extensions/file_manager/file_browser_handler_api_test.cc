@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, EndToEnd) {
   extensions::ResultCatcher catcher;
 
   GURL url = extension->GetResourceURL("test.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
 

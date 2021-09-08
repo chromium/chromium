@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPageLoadMetricsObserverPrerenderBrowserTest,
   base::HistogramTester histogram_tester;
 
   GURL initial_url = embedded_test_server()->GetURL("/redirect_to_index.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Load a prerender page and prerendering should not increase the total count.
   GURL prerender_url = embedded_test_server()->GetURL("/index.html");

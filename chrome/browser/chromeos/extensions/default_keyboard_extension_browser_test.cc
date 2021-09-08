@@ -70,7 +70,7 @@ void DefaultKeyboardExtensionBrowserTest::SetUpCommandLine(
 void DefaultKeyboardExtensionBrowserTest::RunTest(
     const base::FilePath& file,
     const DefaultKeyboardExtensionBrowserTestConfig& config) {
-  ui_test_utils::NavigateToURL(browser(), GURL(config.url_));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(config.url_)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL(
           "chromeos/virtual_keyboard/default_extension/end_to_end_test.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Press 'a' on keyboard.
   base::FilePath path = ui_test_utils::GetTestFilePath(

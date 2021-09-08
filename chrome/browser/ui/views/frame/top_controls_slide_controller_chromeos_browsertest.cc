@@ -353,7 +353,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   }
 
   void NavigateActiveTabToUrl(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     auto* active_contents = browser_view()->GetActiveWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(active_contents));
     SynchronizeBrowserWithRenderer(active_contents);
@@ -690,7 +690,8 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Add a tab containing a local NTP page. NTP pages are not permitted to hide
   // top-chrome with scrolling.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // Navigate to our test page that has a long vertical content which we can use

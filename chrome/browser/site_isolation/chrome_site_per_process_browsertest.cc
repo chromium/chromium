@@ -1520,7 +1520,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest, TestInitialDSFForOOPIF) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   content::ProxyDSFObserver observer;
-  ui_test_utils::NavigateToURL(browser_on_secondary_display, main_url);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser_on_secondary_display, main_url));
   observer.WaitForOneProxyHostCreation();
 
   EXPECT_EQ(1u, observer.num_creations());

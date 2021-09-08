@@ -5817,8 +5817,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, NewCertificateAuthority) {
   ASSERT_TRUE(https_server_.Start());
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/ssl/google.html")));
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 
   std::unique_ptr<CertificateManagerModel> model;
@@ -5852,8 +5852,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestNoCert, NewCertificateAuthority) {
 
   content::FlushNetworkServiceInstanceForTesting();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/ssl/google.html")));
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(tab));
 }
 
@@ -5991,8 +5991,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestCustomCACerts,
   // The certificate that is trusted in |profile_2_| should not be respected in
   // browsers that belong to |profile_1_|.
   Browser* browser_for_profile_1 = CreateBrowser(profile_1_);
-  ui_test_utils::NavigateToURL(browser_for_profile_1,
-                               https_server_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_1, https_server_.GetURL("/ssl/google.html")));
   WebContents* tab_for_profile_1 =
       browser_for_profile_1->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab_for_profile_1);
@@ -6003,8 +6003,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITestCustomCACerts,
   // The certificate that is trusted in |profile_2_| should be respected in
   // browsers that belong to |profile_2_|.
   Browser* browser_for_profile_2 = CreateBrowser(profile_2_);
-  ui_test_utils::NavigateToURL(browser_for_profile_2,
-                               https_server_.GetURL("/ssl/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser_for_profile_2, https_server_.GetURL("/ssl/google.html")));
   WebContents* tab_for_profile_2 =
       browser_for_profile_2->tab_strip_model()->GetActiveWebContents();
   ssl_test_util::CheckAuthenticatedState(tab_for_profile_2, AuthState::NONE);

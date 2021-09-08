@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, CommandKeyEvents) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, EditorKeyBindings) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusMenuBarByAltKey) {
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   GURL url = embedded_test_server()->GetURL(kTestingPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(ClickOnView(VIEW_ID_TAB_CONTAINER));
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));

@@ -89,9 +89,9 @@ IN_PROC_BROWSER_TEST_F(AutofillAccessibilityWinBrowserTest,
                        MAYBE_AutofillPopupControllerFor) {
   content::AccessibilityNotificationWaiter waiter(
       GetWebContents(), ui::kAXModeComplete, ax::mojom::Event::kLoadComplete);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/accessibility/input_datalist.html"));
+      embedded_test_server()->GetURL("/accessibility/input_datalist.html")));
   waiter.WaitForNotification();
 
   base::win::ScopedVariant result_variant;

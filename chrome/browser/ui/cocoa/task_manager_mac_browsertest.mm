@@ -206,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, SelectionConsistency) {
   chrome::ShowTaskManager(browser());
 
   // Set up a total of three tabs in different processes.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,

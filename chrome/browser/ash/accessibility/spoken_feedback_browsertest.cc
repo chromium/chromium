@@ -171,9 +171,9 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
 
 void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<button "
+                        "autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
 }
@@ -369,8 +369,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_TypeInOmnibox) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html;charset=utf-8,<p>unused</p>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<p>unused</p>")));
   });
 
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_L); });
@@ -747,9 +747,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<button "
+                        "autofocus>Click me</button>")));
   });
 
   sm_.ExpectSpeech("Click me");
@@ -775,9 +775,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
 // Verify that enable chromeVox won't end overview.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableChromeVoxOnOverviewMode) {
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<button "
+                        "autofocus>Click me</button>")));
   });
 
   sm_.Call([this]() {
@@ -798,9 +798,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxFindInPage) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<button "
+                        "autofocus>Click me</button>")));
   });
 
   sm_.ExpectSpeech("Click me");
@@ -823,10 +823,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,"
-                                      "<h1>Title</h1>"
-                                      "<button autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,"
+                        "<h1>Title</h1>"
+                        "<button autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
 
@@ -851,9 +851,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html;charset=utf-8,<button "
-                                      "autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html;charset=utf-8,<button "
+                        "autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
 
@@ -1128,7 +1128,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNextTabRecovery) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL("data:text/html;charset=utf-8,"
                         "<button id='b1' autofocus>11</button>"
                         "<button>22</button>"
@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNextTabRecovery) {
                         "  document.getElementById('console').innerText = "
                         "'button lost focus';"
                         "});"
-                        "</script>"));
+                        "</script>")));
   });
   sm_.ExpectSpeech("Button");
 
@@ -1171,8 +1171,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        MoveByCharacterPhoneticSpeechAndHints) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html,<button autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<button autofocus>Click me</button>")));
   });
   sm_.ExpectSpeech("Click me");
   sm_.ExpectSpeech("Button");
@@ -1234,8 +1234,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html,<button autofocus>Click me</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<button autofocus>Click me</button>")));
   });
 
   sm_.ExpectSpeech("Click me");
@@ -1266,9 +1266,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SmartStickyMode) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html,<p>start</p><input "
-                                      "autofocus type='text'><p>end</p>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<p>start</p><input "
+                        "autofocus type='text'><p>end</p>")));
   });
 
   // The input is autofocused.
@@ -1447,8 +1447,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html,<button autofocus>Testing</button>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<button autofocus>Testing</button>")));
   });
   sm_.Call([this]() {
     SendKeyPressWithSearch(ui::VKEY_O);
@@ -1473,9 +1473,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   EnableChromeVox();
   sm_.Call([this]() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL("data:text/html,<input autofocus "
-                                      "type='text' value='Foo'></input>"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<input autofocus "
+                        "type='text' value='Foo'></input>")));
   });
 
   // The input is autofocused.

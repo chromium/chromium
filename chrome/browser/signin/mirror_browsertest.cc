@@ -225,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
       old_browser_client = content::SetBrowserClientForTesting(&browser_client);
 
     // Navigate to first url.
-    ui_test_utils::NavigateToURL(browser(), test_case.original_url);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), test_case.original_url));
 
     if (test_case.inject_header)
       content::SetBrowserClientForTesting(old_browser_client);

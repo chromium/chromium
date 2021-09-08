@@ -119,7 +119,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
   std::string ExecuteShare(const std::string& script) {
     const GURL url = embedded_test_server()->GetURL("/webshare/index.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::WebContents* const contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     return content::EvalJs(contents, script).ExtractString();

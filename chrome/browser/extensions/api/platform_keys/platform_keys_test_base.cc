@@ -199,7 +199,7 @@ bool PlatformKeysTestBase::TestExtension(const std::string& page_url) {
   Browser* const browser = CreateBrowser(profile());
 
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser, GURL(page_url));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, GURL(page_url)));
 
   if (!catcher.GetNextResult()) {
     message_ = catcher.message();

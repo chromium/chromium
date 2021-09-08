@@ -79,7 +79,7 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   WebContents* OpenTestPageInNewTab(const std::string& test_url) {
     chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
     GURL url = embedded_test_server()->GetURL(test_url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 

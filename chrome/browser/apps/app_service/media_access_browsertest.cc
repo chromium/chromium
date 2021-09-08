@@ -146,7 +146,7 @@ class MediaAccessExtensionAppsTest : public extensions::PlatformAppBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
                        RequestAccessingForChromeInTabs) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
 
   content::WebContents* web_content1 = GetWebContents();
   // Request accessing the camera for |web_content1|.
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
       AccessingMicrophone(browser()->profile(), extension_misc::kChromeAppId));
 
   AddBlankTabAndShow(browser());
-  ui_test_utils::NavigateToURL(browser(), GetUrl2());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));
   content::WebContents* web_content2 = GetWebContents();
   // Request accessing the microphone for |web_content2|.
   MediaRequestChangeForWebContent(
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
   ASSERT_NE(browser(), browser1);
 
   AddBlankTabAndShow(browser1);
-  ui_test_utils::NavigateToURL(browser1, GetUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GetUrl1()));
   content::WebContents* web_content1 =
       browser1->tab_strip_model()->GetActiveWebContents();
   int render_process_id1 = web_content1->GetMainFrame()->GetProcess()->GetID();
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
       AccessingMicrophone(browser()->profile(), extension_misc::kChromeAppId));
 
   AddBlankTabAndShow(browser1);
-  ui_test_utils::NavigateToURL(browser1, GetUrl2());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GetUrl2()));
   content::WebContents* web_content2 =
       browser1->tab_strip_model()->GetActiveWebContents();
   int render_process_id2 = web_content2->GetMainFrame()->GetProcess()->GetID();
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
   // Navigate to the app's launch URL.
   auto url = extensions::AppLaunchInfo::GetLaunchWebURL(extension);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* web_content1 =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
   EXPECT_TRUE(AccessingMicrophone(browser()->profile(), extension->id()));
 
   AddBlankTabAndShow(browser());
-  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   content::WebContents* web_content2 = GetWebContents();
 
   // Request accessing the camera for |web_content2|.
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, TwoApps) {
 
   // Navigate to Url1, and check |app_id1| is not accessing the camera or the
   // microphone, because it has been removed.
-  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
   auto* web_content3 = GetWebContents();
   MediaRequestChangeForWebContent(
       web_content3, GetUrl1(),
@@ -654,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, TwoApps) {
 
   // Navigate to Url2, and check |app_id2| is accessing the camera and the
   // microphone.
-  ui_test_utils::NavigateToURL(browser(), GetUrl2());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));
   auto* web_content4 = GetWebContents();
   MediaRequestChangeForWebContent(
       web_content4, GetUrl2(),

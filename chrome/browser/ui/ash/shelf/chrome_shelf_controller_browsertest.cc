@@ -1177,8 +1177,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
   PinAppWithIDToShelf(extension->id());
 
   // Navigate to the app's launch URL.
-  ui_test_utils::NavigateToURL(
-      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(extension));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(extension)));
 
   // When an app shportcut exists, the window shelf ID should point to the app
   // shortcut.
@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
   const GURL app_url = GetSecureAppURL();
   const web_app::AppId web_app_id = InstallWebApp(app_url);
 
-  ui_test_utils::NavigateToURL(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   int browser_index = GetIndexOfShelfItemType(ash::TYPE_BROWSER_SHORTCUT);
   ash::ShelfID browser_id = shelf_model()->items()[browser_index].id;
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
   PinAppWithIDToShelf(web_app_id);
 
   // Navigate to the app's launch URL.
-  ui_test_utils::NavigateToURL(browser(), app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   // When an app shportcut exists, the window shelf ID should point to the app
   // shortcut.
@@ -1246,9 +1246,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(),
-      GURL(embedded_test_server()->GetURL("/banners/manifest_test_page.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL(
+                     "/banners/manifest_test_page.html"))));
 
   // Install PWA.
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
@@ -1443,13 +1443,13 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, Navigation) {
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Navigate away.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("http://www.example.com/path0/bar.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("http://www.example.com/path0/bar.html")));
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(shortcut_id)->status);
 
   // Navigate back.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("http://www.example.com/path1/foo.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("http://www.example.com/path1/foo.html")));
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
 }
 
@@ -2234,8 +2234,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   ASSERT_TRUE(app_browser);
 
   // After navigating away in the app, we should still be active.
-  ui_test_utils::NavigateToURL(app_browser,
-                               GURL("http://www.foo.com/bar.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      app_browser, GURL("http://www.foo.com/bar.html")));
   // Make sure the navigation was entirely performed.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(id)->status);
@@ -2313,8 +2313,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
             shelf_model()->ItemByID(web_app_shelf_id)->status);
 
   // Navigate to the app's launch URLs in two tabs.
-  ui_test_utils::NavigateToURL(
-      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app)));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), web_app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB, 0);
 
@@ -2365,8 +2365,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
             shelf_model()->ItemByID(web_app_shelf_id)->status);
 
   // Navigate to the app's launch URLs in two tabs.
-  ui_test_utils::NavigateToURL(
-      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app)));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), web_app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB, 0);
 

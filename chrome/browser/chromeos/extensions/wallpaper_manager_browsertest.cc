@@ -80,7 +80,7 @@ class WallpaperManagerJsTest : public InProcessBrowserTest {
         base::FilePath(
             FILE_PATH_LITERAL("chromeos/wallpaper_manager/unit_tests")),
         file);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

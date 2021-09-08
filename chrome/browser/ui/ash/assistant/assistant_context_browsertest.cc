@@ -61,7 +61,7 @@ class AssistantContextBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::AssistantTree> GetAssistantStructure(
       const std::string& html) {
     GURL url("data:text/html," + html);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
     AssistantStructureWaiter waiter;

@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, CleanFilenameFromPageTitle) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_FALSE(base::PathExists(full_file_name));
   GURL url = embedded_test_server()->GetURL("/save_page/c.htm");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   SavePackageFilePicker::SetShouldPromptUser(false);
   base::RunLoop run_loop;
@@ -974,7 +974,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveUnauthorizedResource) {
 // Save a file and confirm that the file is correctly quarantined.
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveURLQuarantine) {
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "test", 1, &dir,

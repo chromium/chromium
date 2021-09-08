@@ -273,12 +273,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 
   GURL allowed_url = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/simple.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   GURL blocked_url = embedded_test_server()->GetURL(
       kExampleHost2, "/supervised_user/simple.html");
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
@@ -291,7 +291,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   // Both iframes (from allowed host iframe1.com as well as from blocked host
@@ -315,7 +316,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
   const GURL kFamiliesDotGoogleDotComUrl =
       GURL("https://families.google.com/families");
 
-  ui_test_utils::NavigateToURL(browser(), kFamiliesDotGoogleDotComUrl);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kFamiliesDotGoogleDotComUrl));
 
   // Get the top level WebContents.
   content::WebContents* contents =
@@ -464,7 +466,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockSubFrame) {
   BlockHost(kIframeHost2);
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   // The first iframe's source is |kIframeHost1| and it is not blocked. It will
@@ -495,7 +498,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   auto blocked = GetBlockedFrames();
@@ -539,7 +543,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, TestBackButton) {
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   auto blocked = GetBlockedFrames();
@@ -571,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
   auto blocked = GetBlockedFrames();
@@ -604,7 +610,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
@@ -617,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 
   GURL blocked_url = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
   auto blocked_frames = GetBlockedFrames();
@@ -636,10 +643,10 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   // Navigate to another allowed url.
   GURL allowed_url = embedded_test_server()->GetURL(
       kExampleHost2, "/supervised_user/with_iframes.html");
-  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
 
   // Navigate back to the blocked url.
@@ -692,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   GURL allowed_url = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/with_iframes_same_domain.html");
 
-  ui_test_utils::NavigateToURL(browser(), allowed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 
   auto blocked_frames = GetBlockedFrames();
@@ -717,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleNotSupervisedTest,
 
   GURL blocked_url = embedded_test_server()->GetURL(
       kExampleHost, "/supervised_user/simple.html");
-  ui_test_utils::NavigateToURL(browser(), blocked_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
   // Even though the URL is marked as blocked, the load should go through, since
   // the user isn't supervised.
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));

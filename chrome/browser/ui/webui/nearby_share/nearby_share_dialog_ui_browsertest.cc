@@ -51,7 +51,7 @@ class NearbyShareDialogUITest : public InProcessBrowserTest {
  protected:
   content::WebContents* GetWebContentsForNearbyShareHost() const {
     GURL kUrl(content::GetWebUIURL(chrome::kChromeUINearbyShareHost));
-    ui_test_utils::NavigateToURL(browser(), kUrl);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     EXPECT_TRUE(web_contents);

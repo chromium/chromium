@@ -210,9 +210,9 @@ IN_PROC_BROWSER_TEST_F(NavigationAccessibilityTest,
                        DISABLED_TestNavigateToNewUrl) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("data:text/html;charset=utf-8,"
-                                    "<head><title>First Page</title></head>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html;charset=utf-8,"
+                      "<head><title>First Page</title></head>")));
 
   chrome::ExecuteCommand(browser(), IDC_FOCUS_LOCATION);
 

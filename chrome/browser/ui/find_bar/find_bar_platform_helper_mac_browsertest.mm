@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
 //    remain in the findbar and the old find results to remain highlighted.
 IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacTest,
                        FindBarUpdatedFromPasteboard) {
-  ui_test_utils::NavigateToURL(browser(), GetURL(kSimple));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetURL(kSimple)));
 
   FindBarController* find_bar_controller = browser()->GetFindBarController();
   ASSERT_NE(nullptr, find_bar_controller);

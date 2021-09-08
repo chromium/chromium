@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
   Browser* const new_browser = CreateBrowser(profile());
   SetCustomArg(kTitle);
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(
-      new_browser, extension->GetResourceURL("get_print_jobs.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      new_browser, extension->GetResourceURL("get_print_jobs.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

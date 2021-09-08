@@ -230,7 +230,7 @@ void FileManagerJsTestBase::RunTestURL(const std::string& file) {
 }
 
 void FileManagerJsTestBase::RunTestImpl(const GURL& url) {
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);

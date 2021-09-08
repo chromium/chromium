@@ -290,10 +290,10 @@ IN_PROC_BROWSER_TEST_F(HangoutServicesBrowserTest,
   // This runs the end-to-end JavaScript test for the Hangout Services
   // component extension, which uses the webrtcAudioPrivate API among
   // others.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server().GetURL("any-subdomain.google.com",
-                            "/extensions/hangout_services_test.html"));
+                            "/extensions/hangout_services_test.html")));
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   WaitUntilAudioIsPlaying(tab);
