@@ -251,8 +251,7 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScript) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason,
-                  ReferrerScriptInfo::CreateNoReferencingScript())
+                  no_cache_reason, ReferrerScriptInfo())
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -289,8 +288,7 @@ TEST_F(ScriptStreamingTest, DISABLED_CompilingStreamedScriptWithParseError) {
   EXPECT_FALSE(V8ScriptRunner::CompileScript(
                    scope.GetScriptState(), source_code,
                    SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                   no_cache_reason,
-                   ReferrerScriptInfo::CreateNoReferencingScript())
+                   no_cache_reason, ReferrerScriptInfo())
                    .ToLocal(&script));
   EXPECT_TRUE(try_catch.HasCaught());
 }
@@ -445,8 +443,7 @@ TEST_F(ScriptStreamingTest, DISABLED_ScriptsWithSmallFirstChunk) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason,
-                  ReferrerScriptInfo::CreateNoReferencingScript())
+                  no_cache_reason, ReferrerScriptInfo())
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -482,8 +479,7 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingChanges) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason,
-                  ReferrerScriptInfo::CreateNoReferencingScript())
+                  no_cache_reason, ReferrerScriptInfo())
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
@@ -520,8 +516,7 @@ TEST_F(ScriptStreamingTest, DISABLED_EncodingFromBOM) {
   EXPECT_TRUE(V8ScriptRunner::CompileScript(
                   scope.GetScriptState(), source_code,
                   SanitizeScriptErrors::kDoNotSanitize, compile_options,
-                  no_cache_reason,
-                  ReferrerScriptInfo::CreateNoReferencingScript())
+                  no_cache_reason, ReferrerScriptInfo())
                   .ToLocal(&script));
   EXPECT_FALSE(try_catch.HasCaught());
 }
