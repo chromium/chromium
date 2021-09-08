@@ -227,7 +227,9 @@ class ASH_EXPORT AppListControllerImpl
   bool IsAssistantAllowedAndEnabled() const override;
   bool ShouldShowSuggestedContentInfo() const override;
   void MarkSuggestedContentInfoDismissed() override;
-  void OnStateTransitionAnimationCompleted(AppListViewState state) override;
+  void OnStateTransitionAnimationCompleted(
+      AppListViewState state,
+      bool was_animation_interrupted) override;
   void OnViewStateChanged(AppListViewState state) override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override;
@@ -579,6 +581,9 @@ class ASH_EXPORT AppListControllerImpl
   // Responsible for recording smoothness related UMA stats for home screen
   // animations.
   absl::optional<ui::ThroughputTracker> smoothness_tracker_;
+
+  // Used for closing the Assistant ui in the asynchronous way.
+  base::ScopedClosureRunner close_assistant_ui_runner_;
 
   base::ScopedObservation<SplitViewController, SplitViewObserver>
       split_view_observation_{this};

@@ -23,18 +23,21 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
+#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/test_ime_controller_client.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/public/cpp/window_properties.h"
@@ -66,6 +69,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/test/widget_animation_waiter.h"
 
 namespace ash {
 
@@ -1341,6 +1345,110 @@ TEST_F(AppListControllerImplAppListBubbleTest, EnteringTabletModeClosesBubble) {
   EnableTabletMode();
 
   EXPECT_FALSE(controller->bubble_presenter_for_test()->IsShowing());
+}
+
+class AppListControllerWithAssistantTest : public AppListControllerImplTest {
+ public:
+  AppListControllerWithAssistantTest()
+      : assistant_test_api_(AssistantTestApi::Create()) {}
+  AppListControllerWithAssistantTest(
+      const AppListControllerWithAssistantTest&) = delete;
+  AppListControllerWithAssistantTest& operator=(
+      const AppListControllerWithAssistantTest&) = delete;
+  ~AppListControllerWithAssistantTest() override = default;
+
+  // AppListControllerImplTest:
+  void SetUp() override {
+    AppListControllerImplTest::SetUp();
+
+    assistant_test_api_->SetAssistantEnabled(true);
+    assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(
+        chromeos::assistant::AssistantAllowedState::ALLOWED);
+    assistant_test_api_->GetAssistantState()->NotifyStatusChanged(
+        chromeos::assistant::AssistantStatus::READY);
+    assistant_test_api_->WaitUntilIdle();
+  }
+
+ protected:
+  void ToggleAssistantUiWithAccelerator() {
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_A,
+                       ui::EventFlags::EF_COMMAND_DOWN);
+    EXPECT_TRUE(assistant_test_api_->IsVisible());
+  }
+
+  AssistantVisibility GetAssistantVisibility() const {
+    return AssistantUiController::Get()->GetModel()->visibility();
+  }
+
+  std::unique_ptr<AssistantTestApi> assistant_test_api_;
+};
+
+// Verifies the scenario that the Assistant shortcut is triggered when the the
+// app list close animation is running.
+TEST_F(AppListControllerWithAssistantTest,
+       TriggerAssistantKeyWhenAppListClosing) {
+  // Show the Assistant and verify the app list state.
+  ToggleAssistantUiWithAccelerator();
+  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
+  EXPECT_TRUE(AssistantUiController::Get()->HasShownOnboarding());
+  EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
+
+  assistant_test_api_->input_text_field()->SetText(u"xyz");
+  EXPECT_EQ(u"xyz", assistant_test_api_->input_text_field()->GetText());
+
+  {
+    // Enable animation with non-zero duration.
+    ui::ScopedAnimationDurationScaleMode non_zero_duration(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+    // Press the search key.
+    PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);
+    EXPECT_EQ(AssistantVisibility::kClosing, GetAssistantVisibility());
+
+    // Toggle the Assistant ui and wait for app list animation to finish.
+    views::WidgetAnimationWaiter waiter(GetAppListView()->GetWidget());
+    ToggleAssistantUiWithAccelerator();
+    waiter.WaitForAnimation();
+  }
+
+  // Verify that the Assistant ui is visible. In addition, the text in the
+  // textfield does not change.
+  EXPECT_TRUE(assistant_test_api_->IsVisible());
+  EXPECT_EQ(u"xyz", assistant_test_api_->input_text_field()->GetText());
+  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
+  EXPECT_EQ(AssistantVisibility::kVisible, GetAssistantVisibility());
+
+  // Press the search key to close the app list.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);
+  EXPECT_EQ(AppListViewState::kClosed, GetAppListView()->app_list_state());
+
+  // Toggle the Assistant ui. The text input field should be cleared.
+  ToggleAssistantUiWithAccelerator();
+  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
+  EXPECT_TRUE(assistant_test_api_->input_text_field()->GetText().empty());
+}
+
+// Verifies the scenario that the search key is triggered when the the app list
+// close animation is running.
+TEST_F(AppListControllerWithAssistantTest, TriggerSearchKeyWhenAppListClosing) {
+  ToggleAssistantUiWithAccelerator();
+  EXPECT_EQ(AppListViewState::kHalf, GetAppListView()->app_list_state());
+
+  // Enable animation with non-zero duration.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Press the search key to close the app list.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);
+  EXPECT_EQ(AssistantVisibility::kClosing, GetAssistantVisibility());
+
+  // Press the search key to reshow the app list.
+  views::WidgetAnimationWaiter waiter(GetAppListView()->GetWidget());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_COMMAND);
+  waiter.WaitForAnimation();
+
+  // The Assistant should be closed.
+  EXPECT_EQ(AssistantVisibility::kClosed, GetAssistantVisibility());
 }
 
 class AppListSortTest : public AppListControllerImplTest {

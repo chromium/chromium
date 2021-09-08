@@ -104,7 +104,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool ShouldShowSuggestedContentInfo() const override;
   void MarkSuggestedContentInfoDismissed() override;
   void OnStateTransitionAnimationCompleted(
-      ash::AppListViewState state) override;
+      AppListViewState state,
+      bool was_animation_interrupted) override;
   void OnViewStateChanged(AppListViewState state) override;
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;

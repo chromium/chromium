@@ -283,8 +283,6 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
   }
 
-  AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
-
   controller_->ViewClosing();
 
   OnVisibilityWillChange(GetTargetVisibility(), GetDisplayId());

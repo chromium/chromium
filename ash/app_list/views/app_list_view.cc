@@ -248,6 +248,20 @@ float ComputeSubpixelOffset(const display::Display& display, float value) {
 
 }  // namespace
 
+// AppListView::ScopedContentsResetDisabler ------------------------------------
+
+AppListView::ScopedContentsResetDisabler::ScopedContentsResetDisabler(
+    AppListView* view)
+    : view_(view) {
+  DCHECK(!view_->disable_contents_reset_when_showing_);
+  view_->disable_contents_reset_when_showing_ = true;
+}
+
+AppListView::ScopedContentsResetDisabler::~ScopedContentsResetDisabler() {
+  DCHECK(view_->disable_contents_reset_when_showing_);
+  view_->disable_contents_reset_when_showing_ = false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AppListView::StateAnimationMetricsReporter
 
@@ -812,9 +826,11 @@ void AppListView::Show(AppListViewState preferred_state, bool is_side_shelf) {
 
   UpdateWidget();
 
-  app_list_main_view_->contents_view()->ResetForShow();
-  if (!delegate_->IsInTabletMode())
-    SelectInitialAppsPage();
+  if (!disable_contents_reset_when_showing_) {
+    app_list_main_view_->contents_view()->ResetForShow();
+    if (!delegate_->IsInTabletMode())
+      SelectInitialAppsPage();
+  }
 
   SetState(preferred_state);
 
@@ -2257,14 +2273,14 @@ void AppListView::OnBoundsAnimationCompleted(AppListViewState target_state) {
     animation_observer->OnImplicitAnimationsCompleted();
 
   // Layout if the animation was completed.
-  if (!was_animation_interrupted) {
+  if (!was_animation_interrupted)
     Layout();
 
-    // NOTE: `target_state` may not match `app_list_state_` if
-    // `OnBoundsAnimationCompleted()` gets called synchronously - for example,
-    // for state changes during drag, and with side shelf.
-    delegate_->OnStateTransitionAnimationCompleted(target_state);
-  }
+  // NOTE: `target_state` may not match `app_list_state_` if
+  // `OnBoundsAnimationCompleted()` gets called synchronously - for example,
+  // for state changes during drag, and with side shelf.
+  delegate_->OnStateTransitionAnimationCompleted(target_state,
+                                                 was_animation_interrupted);
 }
 
 gfx::Rect AppListView::GetItemScreenBoundsInFirstGridPage(

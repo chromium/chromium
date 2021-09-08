@@ -124,6 +124,9 @@ class ScopedShowUi {
       case AssistantVisibility::kVisible:
         // No action necessary.
         return;
+      case AssistantVisibility::kClosing:
+        // No action necessary.
+        return;
     }
   }
 

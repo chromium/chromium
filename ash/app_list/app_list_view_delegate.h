@@ -180,8 +180,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Called when the app list view state is updated.
   virtual void OnViewStateChanged(AppListViewState state) = 0;
 
-  // Called when the app list view animation is completed.
-  virtual void OnStateTransitionAnimationCompleted(AppListViewState state) = 0;
+  // Called when the app list state transition animation is completed.
+  virtual void OnStateTransitionAnimationCompleted(
+      AppListViewState state,
+      bool was_animation_interrupted) = 0;
 
   // Fills the given AppLaunchedMetricParams with info known by the delegate.
   virtual void GetAppLaunchedMetricParams(

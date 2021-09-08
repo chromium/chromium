@@ -98,6 +98,22 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     AppListView* const view_;
   };
 
+  // Used to prevent the app list contents from being reset when the app list
+  // shows. Only one instance can exist at a time. This class is useful when:
+  // (1) the app list close animation is reversed, and
+  // (2) the contents before the close animation starts should be kept.
+  class ScopedContentsResetDisabler {
+   public:
+    explicit ScopedContentsResetDisabler(AppListView* view);
+    ScopedContentsResetDisabler(const ScopedContentsResetDisabler&) = delete;
+    ScopedContentsResetDisabler& operator=(const ScopedContentsResetDisabler&) =
+        delete;
+    ~ScopedContentsResetDisabler();
+
+   private:
+    AppListView* const view_;
+  };
+
   // Number of the size of shelf. Used to determine the opacity of items in the
   // app list during dragging.
   static constexpr float kNumOfShelfSize = 2.0;
@@ -609,6 +625,9 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Used for announcing accessibility alerts.
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
+
+  // If true, the contents view is not reset when showing the app list.
+  bool disable_contents_reset_when_showing_ = false;
 
   // Records the presentation time for app launcher dragging.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;

@@ -193,7 +193,8 @@ void AppListTestViewDelegate::MarkSuggestedContentInfoDismissed() {
 }
 
 void AppListTestViewDelegate::OnStateTransitionAnimationCompleted(
-    ash::AppListViewState state) {}
+    AppListViewState state,
+    bool was_animation_interrupted) {}
 
 void AppListTestViewDelegate::OnViewStateChanged(AppListViewState state) {}
 

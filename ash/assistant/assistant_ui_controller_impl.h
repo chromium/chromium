@@ -57,9 +57,10 @@ class ASH_EXPORT AssistantUiControllerImpl
   int GetNumberOfSessionsWhereOnboardingShown() const override;
   bool HasShownOnboarding() const override;
   void ShowUi(AssistantEntryPoint entry_point) override;
-  void CloseUi(AssistantExitPoint exit_point) override;
   void ToggleUi(absl::optional<AssistantEntryPoint> entry_point,
                 absl::optional<AssistantExitPoint> exit_point) override;
+  absl::optional<base::ScopedClosureRunner> CloseUi(
+      AssistantExitPoint exit_point) override;
 
   // AssistantInteractionModelObserver:
   void OnInputModalityChanged(InputModality input_modality) override;
@@ -112,6 +113,9 @@ class ASH_EXPORT AssistantUiControllerImpl
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_controller_observation_{this};
+
+  base::WeakPtrFactory<AssistantUiControllerImpl>
+      weak_factory_for_delayed_visibility_changes_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantUiControllerImpl);
 };

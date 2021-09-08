@@ -273,15 +273,20 @@ void AssistantDialogPlate::OnUiVisibilityChanged(
     AssistantVisibility old_visibility,
     absl::optional<AssistantEntryPoint> entry_point,
     absl::optional<AssistantExitPoint> exit_point) {
-  if (new_visibility == AssistantVisibility::kVisible) {
-    UpdateModalityVisibility();
-    UpdateKeyboardVisibility();
-  } else {
-    // When the Assistant UI is no longer visible we need to clear the dialog
-    // plate so that text does not persist across Assistant launches.
-    textfield_->SetText(std::u16string());
-
-    HideKeyboardIfEnabled();
+  switch (new_visibility) {
+    case AssistantVisibility::kVisible:
+      UpdateModalityVisibility();
+      UpdateKeyboardVisibility();
+      break;
+    case AssistantVisibility::kClosed:
+      // When the Assistant UI is no longer visible we need to clear the dialog
+      // plate so that text does not persist across Assistant launches.
+      textfield_->SetText(std::u16string());
+      HideKeyboardIfEnabled();
+      break;
+    case AssistantVisibility::kClosing:
+      // No action.
+      break;
   }
 }
 

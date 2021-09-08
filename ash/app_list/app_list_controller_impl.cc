@@ -1165,17 +1165,34 @@ void AppListControllerImpl::OnUiVisibilityChanged(
     AssistantVisibility old_visibility,
     absl::optional<AssistantEntryPoint> entry_point,
     absl::optional<AssistantExitPoint> exit_point) {
+  const bool is_old_visibility_closing =
+      (old_visibility == AssistantVisibility::kClosing);
+
   switch (new_visibility) {
     case AssistantVisibility::kVisible:
-      if (!IsVisible()) {
+      if (!IsVisible() || is_old_visibility_closing) {
+        absl::optional<AppListView::ScopedContentsResetDisabler> disabler;
+        if (is_old_visibility_closing) {
+          // Avoid resetting the contents view when the transition to close the
+          // Assistant ui is going to be reversed.
+          disabler.emplace(fullscreen_presenter_->GetView());
+
+          // Reset `close_assistant_ui_runner_` because the Assistant ui is
+          // going to show.
+          DCHECK(close_assistant_ui_runner_);
+          IgnoreResult(close_assistant_ui_runner_.Release());
+        }
+
         Show(GetDisplayIdToShowAppListOn(), kAssistantEntryPoint,
              base::TimeTicks());
       }
       if (ShouldShowAppListBubble()) {
         bubble_presenter_->ShowEmbeddedAssistantUI();
       } else {
-        if (!fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
+        if (!fullscreen_presenter_->IsShowingEmbeddedAssistantUI() ||
+            is_old_visibility_closing) {
           fullscreen_presenter_->ShowEmbeddedAssistantUI(true);
+        }
 
         // Make sure that app list views are visible - they might get hidden
         // during session startup, and the app list visibility might not have
@@ -1223,6 +1240,8 @@ void AppListControllerImpl::OnUiVisibilityChanged(
             exit_point == AssistantExitPoint::kScreenshot);
         DismissAppList();
       }
+      break;
+    case AssistantVisibility::kClosing:
       break;
   }
 }
@@ -1638,9 +1657,15 @@ void AppListControllerImpl::MarkSuggestedContentInfoDismissed() {
 }
 
 void AppListControllerImpl::OnStateTransitionAnimationCompleted(
-    AppListViewState state) {
-  if (!state_transition_animation_callback_.is_null())
+    AppListViewState state,
+    bool was_animation_interrupted) {
+  if (!was_animation_interrupted &&
+      !state_transition_animation_callback_.is_null()) {
     state_transition_animation_callback_.Run(state);
+  }
+
+  if (close_assistant_ui_runner_)
+    close_assistant_ui_runner_.RunAndReset();
 }
 
 void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
@@ -1650,6 +1675,22 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
 
   for (auto& observer : observers_)
     observer.OnViewStateChanged(state);
+
+  // Close the Assistant in asynchronous way if the app list is going to be
+  // closed while the Assistant is visible. If the app list close animation is
+  // not reversed, `close_assistant_ui_runner_` runs at the end of the animation
+  // to actually close the Assistant.
+  const bool is_assistant_ui_visible =
+      (AssistantUiController::Get()->GetModel()->visibility() ==
+       AssistantVisibility::kVisible);
+  if (state == AppListViewState::kClosed && is_assistant_ui_visible) {
+    absl::optional<base::ScopedClosureRunner> runner =
+        AssistantUiController::Get()->CloseUi(
+            AssistantExitPoint::kLauncherClose);
+    DCHECK(runner);
+    DCHECK(!close_assistant_ui_runner_);
+    close_assistant_ui_runner_.ReplaceClosure(runner->Release());
+  }
 }
 
 int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,
