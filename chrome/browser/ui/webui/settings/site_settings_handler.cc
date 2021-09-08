@@ -165,6 +165,9 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
 }
 
 base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return base::flat_set<std::string>();
+
   std::vector<std::string> origins;
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
