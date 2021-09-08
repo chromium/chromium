@@ -12,6 +12,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
 namespace weblayer {
 
@@ -43,26 +44,7 @@ WebLayerClientSideDetectionServiceDelegate::GetSafeBrowsingURLLoaderFactory() {
 
 safe_browsing::ChromeUserPopulation
 WebLayerClientSideDetectionServiceDelegate::GetUserPopulation() {
-  safe_browsing::ChromeUserPopulation population;
-  if (safe_browsing::IsEnhancedProtectionEnabled(*GetPrefs())) {
-    population.set_user_population(
-        safe_browsing::ChromeUserPopulation::ENHANCED_PROTECTION);
-  } else if (safe_browsing::IsExtendedReportingEnabled(*GetPrefs())) {
-    population.set_user_population(
-        safe_browsing::ChromeUserPopulation::EXTENDED_REPORTING);
-  } else if (safe_browsing::IsSafeBrowsingEnabled(*GetPrefs())) {
-    population.set_user_population(
-        safe_browsing::ChromeUserPopulation::SAFE_BROWSING);
-  }
-
-  population.set_profile_management_status(
-      safe_browsing::ChromeUserPopulation::UNAVAILABLE);
-  population.set_is_mbb_enabled(GetPrefs()->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
-  population.set_is_incognito(browser_context_->IsOffTheRecord());
-  population.set_is_history_sync_enabled(false);
-
-  return population;
+  return GetUserPopulationForBrowserContext(browser_context_);
 }
 
 }  // namespace weblayer

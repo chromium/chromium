@@ -659,6 +659,8 @@ source_set("weblayer_lib_base") {
       "browser/safe_browsing/weblayer_safe_browsing_tab_observer_delegate.h",
       "browser/safe_browsing/weblayer_ui_manager_delegate.cc",
       "browser/safe_browsing/weblayer_ui_manager_delegate.h",
+      "browser/safe_browsing/weblayer_user_population_helper.cc",
+      "browser/safe_browsing/weblayer_user_population_helper.h",
       "browser/tab_callback_proxy.cc",
       "browser/tab_callback_proxy.h",
       "browser/translate_compact_infobar.cc",

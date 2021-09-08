@@ -17,6 +17,7 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
@@ -52,29 +53,7 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   return new safe_browsing::RealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForBrowserContext(context),
-      base::BindRepeating(
-          [](content::BrowserContext* context) {
-            safe_browsing::ChromeUserPopulation user_population;
-
-            PrefService* pref_service =
-                static_cast<BrowserContextImpl*>(context)->pref_service();
-            user_population.set_user_population(
-                safe_browsing::IsEnhancedProtectionEnabled(*pref_service)
-                    ? safe_browsing::ChromeUserPopulation::ENHANCED_PROTECTION
-                    : safe_browsing::IsExtendedReportingEnabled(*pref_service)
-                          ? safe_browsing::ChromeUserPopulation::
-                                EXTENDED_REPORTING
-                          : safe_browsing::ChromeUserPopulation::SAFE_BROWSING);
-
-            user_population.set_profile_management_status(
-                safe_browsing::GetProfileManagementStatus(nullptr));
-            user_population.set_is_history_sync_enabled(false);
-            user_population.set_is_under_advanced_protection(false);
-            user_population.set_is_incognito(
-                static_cast<BrowserContextImpl*>(context)->IsOffTheRecord());
-            return user_population;
-          },
-          context),
+      base::BindRepeating(&GetUserPopulationForBrowserContext, context),
       static_cast<BrowserContextImpl*>(context)->pref_service(),
       std::make_unique<SafeBrowsingTokenFetcherImpl>(base::BindRepeating(
           &ProfileImpl::access_token_fetch_delegate,
