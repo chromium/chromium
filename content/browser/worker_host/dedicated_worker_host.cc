@@ -546,10 +546,19 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
 void DedicatedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host) {
+    // The ancestor frame may have already been closed. In that case, the worker
+    // will soon be terminated too, so abort the connection.
+    receiver.ResetWithReason(0, "The parent frame has already been gone.");
+    return;
+  }
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
-          worker_process_host_->GetID(), /*frame=*/nullptr,
-          GetStorageKey().origin(), isolation_info_.network_isolation_key()),
+          worker_process_host_->GetID(),
+          ancestor_render_frame_host->GetWeakPtr(), GetStorageKey().origin(),
+          isolation_info_.network_isolation_key()),
       std::move(receiver));
 }
 

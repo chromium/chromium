@@ -1579,16 +1579,24 @@ class ExtensionWebRequestApiWebTransportTest
   }
 
  protected:
+  bool RunTest(const char* page_url) {
+    return RunExtensionTest("webrequest", {.page_url = page_url});
+  }
+
   content::WebTransportSimpleTestServer server_;
 };
 
 // Test that the webRequest events are dispatched for the WebTransport
 // handshake.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest, Main) {
+  ASSERT_TRUE(RunTest("test_webtransport.html")) << message_;
+}
+
+// Test that the webRequest events are dispatched for the WebTransport
+// handshake in a dedicated worker.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiWebTransportTest,
-                       WebTransportConnectionEstablished) {
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_webtransport.html"}))
-      << message_;
+                       DedicaterWorker) {
+  ASSERT_TRUE(RunTest("test_webtransport_dedicated_worker.html")) << message_;
 }
 
 // TODO(crbug.com/1240935): Add test for this OnBeforeRequest reject case.

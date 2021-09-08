@@ -5,9 +5,9 @@
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab(
       [
-        // Tries to open a WebTransport session and the connection will be
+        // Tries to open a WebTransport session and the session will be
         // established.
-        async function connectionEstablished() {
+        async function sessionEstablished() {
           const url = `https://localhost:${testWebTransportPort}/echo`;
           expect(
               [
@@ -33,18 +33,15 @@ chrome.tabs.getCurrent(function(tab) {
               {urls: ['https://*/*']},  // filter
               ['blocking']              // extraInfoSpec
           );
-          const transport = new WebTransport(url);
           const done = chrome.test.callbackAdded();
-          await transport.ready.catch((e) => {
-            chrome.test.fail('Ready rejected: ${e}');
-          });
+          await expectSessionEstablished(url);
           done();
         },
 
         // Tries to open a WebTransport session, with an onBeforeRequest
         // blocking handler that cancels the request. The connection will not be
         // established.
-        async function handshakeRequestCancelled() {
+        async function blockedByOnBeforeRequest() {
           const url = `https://localhost:${testWebTransportPort}/echo`;
 
           expect(
@@ -79,17 +76,9 @@ chrome.tabs.getCurrent(function(tab) {
               {urls: ['https://*/*']},  // filter
               ['blocking']              // extraInfoSpec
           );
-          const transport = new WebTransport(url);
           const done = chrome.test.callbackAdded();
-          try {
-            await transport.ready;
-            chrome.test.fail('Ready should be rejected.');
-          } catch (e) {
-            // TODO(crbug.com/1240935): Consider showing error.
-            // This is filtered by InterceptingHandshakeClient.
-            chrome.test.assertEq({}, e);
-            done();
-          }
+          await expectSessionFailed(url);
+          done();
         },
 
         // Tries to open a WebTransport session with invalid request.
