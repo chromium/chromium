@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
+#include "components/variations/service/variations_field_trial_creator.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // test setup.
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.LoadSafeSeed.Result", LoadSeedResult::kSuccess, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Variations.SafeMode.FellBackToSafeMode2", true, 1);
+  histogram_tester_.ExpectUniqueSample("Variations.SeedUsage",
+                                       SeedUsage::kSafeSeedUsed, 1);
 
   // Verify that there is a field trial associated with the sole test seed
   // study, |kTestSeedStudyName|.
@@ -117,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // test setup.
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.LoadSafeSeed.Result", LoadSeedResult::kSuccess, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Variations.SafeMode.FellBackToSafeMode2", true, 1);
+  histogram_tester_.ExpectUniqueSample("Variations.SeedUsage",
+                                       SeedUsage::kSafeSeedUsed, 1);
 
   // Verify that there is a field trial associated with the sole test seed
   // study, |kTestSeedStudyName|.
@@ -143,13 +144,11 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, DoNotTriggerSafeMode) {
   histogram_tester_.ExpectUniqueSample(
       "Variations.SafeMode.Streak.FetchFailures", 24, 1);
 
-  // Verify that Chrome applied the latest seed.
+  // Verify that Chrome applied the regular seed.
   histogram_tester_.ExpectUniqueSample("Variations.SeedLoadResult",
                                        LoadSeedResult::kSuccess, 1);
-
-  // Verify that Chrome did not fall back to a safe seed.
-  histogram_tester_.ExpectUniqueSample(
-      "Variations.SafeMode.FellBackToSafeMode2", false, 1);
+  histogram_tester_.ExpectUniqueSample("Variations.SeedUsage",
+                                       SeedUsage::kRegularSeedUsed, 1);
 }
 
 }  // namespace variations

@@ -28,6 +28,25 @@ class MetricsStateManager;
 
 namespace variations {
 
+// Denotes whether Chrome used a variations seed. Also captures (a) the kind of
+// seed and (b) the conditions under which the seed was used or failed to be
+// used. Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SeedUsage {
+  kRegularSeedUsed = 0,
+  kExpiredRegularSeedNotUsed = 1,
+  kCorruptedSeedNotUsed = 2,
+  kSafeSeedUsed = 3,
+  kExpiredSafeSeedNotUsed = 4,
+  kCorruptedSafeSeedNotUsed = 5,
+  kRegularSeedUsedAfterEmptySafeSeedLoaded = 6,
+  kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded = 7,
+  kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded = 8,
+  kMaxValue = kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded,
+};
+
 // Denotes a variations seed's expiry state. Exposed for testing.
 //
 // These values are persisted to logs. Entries should not be renumbered and

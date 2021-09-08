@@ -97,6 +97,11 @@ void RecordSeedFreshness(base::TimeDelta seed_age) {
                               1, base::TimeDelta::FromDays(30).InMinutes(), 50);
 }
 
+// Records details about Chrome's attempt to apply a variations seed.
+void RecordVariationsSeedUsage(SeedUsage usage) {
+  base::UmaHistogramEnumeration("Variations.SeedUsage", usage);
+}
+
 // If an invalid command-line to force field trials was specified, exit the
 // browser with a helpful error message, so that the user can correct their
 // mistake.
@@ -501,37 +506,56 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
                                 client_filterable_state->policy_restriction);
 
   VariationsSeed seed;
-  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
-  if (run_in_safe_mode) {
+  bool should_run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode();
+  bool run_in_safe_mode = should_run_in_safe_mode;
+  if (should_run_in_safe_mode) {
     LoadSeedResult result =
         GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get());
-    if (result == LoadSeedResult::kSuccess &&
-        HasSeedExpired(/*is_safe_seed=*/true)) {
-      return false;
-    }
-    if (result != LoadSeedResult::kSuccess &&
-        result != LoadSeedResult::kEmpty) {
-      // If Chrome should run in safe mode but the safe seed is corrupted or has
-      // an invalid signature, then fall back to the client-side defaults.
-      return false;
-    }
-    if (result == LoadSeedResult::kEmpty) {
+    if (result == LoadSeedResult::kSuccess) {
+      if (HasSeedExpired(/*is_safe_seed=*/true)) {
+        RecordVariationsSeedUsage(SeedUsage::kExpiredSafeSeedNotUsed);
+        return false;
+      }
+      RecordVariationsSeedUsage(SeedUsage::kSafeSeedUsed);
+      run_in_safe_mode = true;  // This line is a no-op. Added for clarity.
+    } else if (result == LoadSeedResult::kEmpty) {
       // If the safe seed is empty, attempt to run with the most recent seed
       // instead of falling back to client-side defaults.
       run_in_safe_mode = false;
+    } else {
+      // If Chrome should run in safe mode but the safe seed is corrupted or has
+      // an invalid signature, then fall back to the client-side defaults.
+      RecordVariationsSeedUsage(SeedUsage::kCorruptedSafeSeedNotUsed);
+      return false;
     }
   }
 
   std::string seed_data;
   std::string base64_seed_signature;
-  if (!run_in_safe_mode &&
-      (!GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature) ||
-       HasSeedExpired(/*is_safe_seed=*/false))) {
-    return false;
+  if (!run_in_safe_mode) {
+    SeedUsage seed_usage;
+    if (GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature)) {
+      if (HasSeedExpired(/*is_safe_seed=*/false)) {
+        seed_usage =
+            should_run_in_safe_mode
+                ? SeedUsage::kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded
+                : SeedUsage::kExpiredRegularSeedNotUsed;
+        RecordVariationsSeedUsage(seed_usage);
+        return false;
+      }
+      seed_usage = should_run_in_safe_mode
+                       ? SeedUsage::kRegularSeedUsedAfterEmptySafeSeedLoaded
+                       : SeedUsage::kRegularSeedUsed;
+      RecordVariationsSeedUsage(seed_usage);
+    } else {  // The seed was not successfully loaded.
+      seed_usage =
+          should_run_in_safe_mode
+              ? SeedUsage::kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded
+              : SeedUsage::kCorruptedSeedNotUsed;
+      RecordVariationsSeedUsage(seed_usage);
+      return false;
+    }
   }
-
-  UMA_HISTOGRAM_BOOLEAN("Variations.SafeMode.FellBackToSafeMode2",
-                        run_in_safe_mode);
 
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider

@@ -281,7 +281,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.SafeMode.FellBackToSafeMode2"
-    enum="BooleanSafeMode" expires_after="2022-02-13">
+    enum="BooleanSafeMode" expires_after="2021-08-29">
+  <obsolete>
+    Replaced by Variations.SeedUsage in September 2021, M95.
+  </obsolete>
   <owner>isherman@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -526,6 +529,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the result of storing the variations seed that was received from the
     server. Also logs the types of data received (gzip, delta, etc).
+  </summary>
+</histogram>
+
+<histogram name="Variations.SeedUsage" enum="VariationsSeedUsage"
+    expires_after="2021-12-07">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Captures details about Chrome's attempt to use a VariationsSeed, e.g.
+    whether Chrome used a safe seed. Recorded once during Chrome startup after
+    attempting to load a seed and before field trials are created.
   </summary>
 </histogram>
 
