@@ -56,7 +56,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/drop_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/window.h"
@@ -195,43 +194,6 @@ TabStripUI* GetTabStripUI(content::WebContents* web_contents) {
              ? webui->GetController()->template GetAs<TabStripUI>()
              : nullptr;
 }
-
-class WebUITabStripWebView : public views::WebView {
- public:
-  METADATA_HEADER(WebUITabStripWebView);
-  explicit WebUITabStripWebView(content::BrowserContext* context)
-      : views::WebView(context) {}
-
-  // content::WebContentsDelegate:
-  bool CanDragEnter(content::WebContents* source,
-                    const content::DropData& data,
-                    blink::DragOperationsMask operations_allowed) override {
-    // TODO(crbug.com/1032592): Prevent dragging across Chromium instances.
-    if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabIdDataType)) !=
-        data.custom_data.end()) {
-      int tab_id;
-      bool found_tab_id = base::StringToInt(
-          data.custom_data.at(base::ASCIIToUTF16(kWebUITabIdDataType)),
-          &tab_id);
-      return found_tab_id && extensions::ExtensionTabUtil::GetTabById(
-                                 tab_id, GetBrowserContext(), false, nullptr);
-    }
-
-    if (data.custom_data.find(base::ASCIIToUTF16(kWebUITabGroupIdDataType)) !=
-        data.custom_data.end()) {
-      std::string group_id = base::UTF16ToUTF8(
-          data.custom_data.at(base::ASCIIToUTF16(kWebUITabGroupIdDataType)));
-      Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
-          Profile::FromBrowserContext(GetBrowserContext()), group_id);
-      return found_browser != nullptr;
-    }
-
-    return false;
-  }
-};
-
-BEGIN_METADATA(WebUITabStripWebView, views::WebView)
-END_METADATA
 
 class WebUINewTabButton : public ToolbarButton {
  public:
@@ -482,7 +444,7 @@ WebUITabStripContainerView::WebUITabStripContainerView(
     views::View* omnibox)
     : browser_view_(browser_view),
       web_view_(AddChildView(
-          std::make_unique<WebUITabStripWebView>(browser_view_->GetProfile()))),
+          std::make_unique<views::WebView>(browser_view_->GetProfile()))),
       top_container_(top_container),
       tab_contents_container_(tab_contents_container),
       auto_closer_(std::make_unique<AutoCloser>(

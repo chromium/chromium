@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -586,6 +587,66 @@ TEST_F(TabStripUIHandlerTest, RemoveTabIfInvalidContextMenu) {
   EXPECT_EQ(extensions::ExtensionTabUtil::GetTabId(
                 new_browser->tab_strip_model()->GetWebContentsAt(0)),
             call_data.arg2()->GetInt());
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabStripUIHandlerTest, PreventsInvalidTabDrags) {
+  content::DropData empty_drop_data;
+  EXPECT_FALSE(handler()->CanDragEnter(nullptr, empty_drop_data,
+                                       blink::kDragOperationMove));
+
+  content::DropData invalid_drop_data;
+  invalid_drop_data.custom_data.insert(
+      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType), u"3000"));
+  EXPECT_FALSE(handler()->CanDragEnter(nullptr, invalid_drop_data,
+                                       blink::kDragOperationMove));
+
+  AddTab(browser(), GURL("http://foo"));
+  int valid_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+  content::DropData valid_drop_data;
+  valid_drop_data.custom_data.insert(
+      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType),
+                     base::NumberToString16(valid_tab_id)));
+  EXPECT_TRUE(handler()->CanDragEnter(nullptr, valid_drop_data,
+                                      blink::kDragOperationMove));
+}
+
+TEST_F(TabStripUIHandlerTest, PreventsInvalidGroupDrags) {
+  content::DropData invalid_drop_data;
+  invalid_drop_data.custom_data.insert(std::make_pair(
+      base::ASCIIToUTF16(kWebUITabGroupIdDataType), u"not a real group"));
+  EXPECT_FALSE(handler()->CanDragEnter(nullptr, invalid_drop_data,
+                                       blink::kDragOperationMove));
+
+  AddTab(browser(), GURL("http://foo"));
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  content::DropData valid_drop_data;
+  valid_drop_data.custom_data.insert(
+      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
+                     base::ASCIIToUTF16(group_id.ToString())));
+  EXPECT_TRUE(handler()->CanDragEnter(nullptr, valid_drop_data,
+                                      blink::kDragOperationMove));
+
+  // Another group from a different profile.
+  std::unique_ptr<BrowserWindow> new_window(
+      std::make_unique<TestBrowserWindow>());
+  std::unique_ptr<Browser> new_browser = CreateBrowser(
+      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://foo"));
+
+  tab_groups::TabGroupId new_group_id =
+      new_browser.get()->tab_strip_model()->AddToNewGroup({0});
+  content::DropData different_profile_drop_data;
+  different_profile_drop_data.custom_data.insert(
+      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
+                     base::ASCIIToUTF16(new_group_id.ToString())));
+  EXPECT_FALSE(handler()->CanDragEnter(nullptr, different_profile_drop_data,
+                                       blink::kDragOperationMove));
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();

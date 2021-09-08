@@ -52,6 +52,9 @@ class TabStripUIHandler : public content::WebUIMessageHandler,
   // content::WebContentsDelegate:
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) override;
+  bool CanDragEnter(content::WebContents* source,
+                    const content::DropData& data,
+                    blink::DragOperationsMask operations_allowed) override;
 
  protected:
   // content::WebUIMessageHandler:
