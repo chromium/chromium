@@ -16,6 +16,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
@@ -243,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(CorsFileOriginBrowserTest, AccessToAnotherFileUrl) {
 
 // TODO(lukasza, nasko): https://crbug.com/981018: Enable this test on Macs
 // after understanding what makes it flakily fail on the mac-rel trybot.
-#if defined(OS_MAC)
+// Also flaky on Lacros: https://crbug.com/1247748.
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_UniversalAccessFromFileUrls DISABLED_UniversalAccessFromFileUrls
 #else
 #define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls
