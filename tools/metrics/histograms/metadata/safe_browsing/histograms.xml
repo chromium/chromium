@@ -1929,7 +1929,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.NewFileNameExists.{NewFileNames}"
-    enum="Boolean" expires_after="2021-09-09">
+    enum="Boolean" expires_after="2022-09-09">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1942,7 +1942,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.OldFileNameExists.{OldFileNames}"
-    enum="Boolean" expires_after="2021-09-09">
+    enum="Boolean" expires_after="2022-09-09">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1955,7 +1955,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.OldFileNameInUse.{OldFileNames}"
-    enum="Boolean" expires_after="2021-09-09">
+    enum="Boolean" expires_after="2022-09-09">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -1968,7 +1968,7 @@ and applied correctly. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.RenameStatus.{NewFileNames}"
-    enum="PlatformFileError" expires_after="2021-09-09">
+    enum="PlatformFileError" expires_after="2022-09-09">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
