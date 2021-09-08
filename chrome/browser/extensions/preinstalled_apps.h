@@ -14,7 +14,7 @@
 class Profile;
 
 namespace base {
-class Value;
+class DictionaryValue;
 }
 
 namespace user_prefs {
@@ -52,7 +52,7 @@ class Provider : public extensions::ExternalProviderImpl {
 
   // ExternalProviderImpl overrides:
   void VisitRegisteredExtension() override;
-  void SetPrefs(std::unique_ptr<base::Value> prefs) override;
+  void SetPrefs(std::unique_ptr<base::DictionaryValue> prefs) override;
 
   static bool DidPerformNewInstallationForProfile(Profile* profile);
 
