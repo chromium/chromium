@@ -6321,6 +6321,54 @@ TEST_F(PersistentDesksBarTest, DisplayMetricsChanged) {
             GetBarWidget()->GetWindowBoundsInScreen().width());
 }
 
+// Tests bento bar's state on the pref `kBentoBarEnabled` changes. And its value
+// should be independent among users.
+TEST_F(PersistentDesksBarTest, UpdateBarStateOnPrefChanges) {
+  const char kUser1[] = "user1@test.com";
+  const char kUser2[] = "user2@test.com";
+  const AccountId kUserAccount1 = AccountId::FromUserEmail(kUser1);
+  const AccountId kUserAccount2 = AccountId::FromUserEmail(kUser2);
+
+  TestSessionControllerClient* session_controller =
+      GetSessionControllerClient();
+  // Setup 2 users.
+  session_controller->AddUserSession(kUser1, user_manager::USER_TYPE_REGULAR,
+                                     /*provide_pref_service=*/false);
+  session_controller->AddUserSession(kUser2, user_manager::USER_TYPE_REGULAR,
+                                     /*provide_pref_service=*/false);
+
+  auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(user_1_prefs->registry(), /*for_test=*/true);
+  auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();
+  RegisterUserProfilePrefs(user_2_prefs->registry(), /*for_test=*/true);
+  session_controller->SetUserPrefService(kUserAccount1,
+                                         std::move(user_1_prefs));
+  session_controller->SetUserPrefService(kUserAccount2,
+                                         std::move(user_2_prefs));
+
+  session_controller->SwitchActiveUser(kUserAccount1);
+  session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
+  auto* bar_controller = Shell::Get()->persistent_desks_bar_controller();
+  // Toggling to hide the bar for user1.
+  NewDesk();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(bar_controller->IsEnabled());
+  bar_controller->ToggleEnabledState();
+  EXPECT_FALSE(GetBarWidget());
+  EXPECT_FALSE(bar_controller->IsEnabled());
+
+  // Toggling to hide the bar for user1 should not affect user2. The bar should
+  // still visible for user2.
+  session_controller->SwitchActiveUser(kUserAccount2);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(bar_controller->IsEnabled());
+
+  // Switching back to user1. The bar should still be hidden.
+  session_controller->SwitchActiveUser(kUserAccount1);
+  EXPECT_FALSE(GetBarWidget());
+  EXPECT_FALSE(bar_controller->IsEnabled());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
