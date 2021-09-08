@@ -91,6 +91,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -266,17 +267,9 @@
 
 namespace blink {
 
-static int g_frame_count = 0;
-
 namespace {
 
-HeapVector<ScriptSourceCode> CreateSourcesVector(
-    const WebScriptSource* sources_in,
-    unsigned num_sources) {
-  HeapVector<ScriptSourceCode> sources;
-  sources.Append(sources_in, num_sources);
-  return sources;
-}
+static int g_frame_count = 0;
 
 }  // namespace
 
@@ -972,9 +965,9 @@ void WebLocalFrameImpl::RequestExecuteScriptAndReturnValue(
     WebScriptExecutionCallback* callback) {
   DCHECK(GetFrame());
 
-  RequestExecuteScriptImpl(
-      &DOMWrapperWorld::MainWorld(), CreateSourcesVector(&source, 1),
-      user_gesture, kSynchronous, callback, BackForwardCacheAware::kAllow);
+  RequestExecuteScript(DOMWrapperWorld::kMainWorldId,
+                       base::make_span(&source, 1), user_gesture, kSynchronous,
+                       callback, BackForwardCacheAware::kAllow);
 }
 
 void WebLocalFrameImpl::RequestExecuteV8Function(
@@ -1002,36 +995,27 @@ void WebLocalFrameImpl::RequestExecuteScriptInIsolatedWorld(
   CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
   CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
 
-  scoped_refptr<DOMWrapperWorld> isolated_world =
-      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
-
-  RequestExecuteScriptImpl(
-      std::move(isolated_world), CreateSourcesVector(sources_in, num_sources),
-      user_gesture, option, callback, back_forward_cache_aware);
+  RequestExecuteScript(world_id, base::make_span(sources_in, num_sources),
+                       user_gesture, option, callback,
+                       back_forward_cache_aware);
 }
 
-void WebLocalFrameImpl::RequestExecuteScriptInMainWorld(
-    const WebScriptSource* sources_in,
-    unsigned num_sources,
-    bool user_gesture,
-    ScriptExecutionType option,
-    WebScriptExecutionCallback* callback,
-    BackForwardCacheAware back_forward_cache_aware) {
-  DCHECK(GetFrame());
-  RequestExecuteScriptImpl(&DOMWrapperWorld::MainWorld(),
-                           CreateSourcesVector(sources_in, num_sources),
-                           user_gesture, option, callback,
-                           back_forward_cache_aware);
-}
-
-void WebLocalFrameImpl::RequestExecuteScriptImpl(
-    scoped_refptr<DOMWrapperWorld> world,
-    const HeapVector<ScriptSourceCode>& sources,
+void WebLocalFrameImpl::RequestExecuteScript(
+    int32_t world_id,
+    base::span<const WebScriptSource> sources,
     bool user_gesture,
     ScriptExecutionType execution_type,
     WebScriptExecutionCallback* callback,
     BackForwardCacheAware back_forward_cache_aware) {
   DCHECK(GetFrame());
+
+  scoped_refptr<DOMWrapperWorld> world;
+  if (world_id == DOMWrapperWorld::kMainWorldId) {
+    world = &DOMWrapperWorld::MainWorld();
+  } else {
+    world =
+        DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(GetFrame()), world_id);
+  }
 
   if (back_forward_cache_aware == BackForwardCacheAware::kPossiblyDisallow) {
     GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
@@ -1039,8 +1023,11 @@ void WebLocalFrameImpl::RequestExecuteScriptImpl(
         {SchedulingPolicy::DisableBackForwardCache()});
   }
 
+  HeapVector<ScriptSourceCode> script_sources;
+  script_sources.Append(sources.data(),
+                        base::checked_cast<wtf_size_t>(sources.size()));
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      GetFrame()->DomWindow(), std::move(world), sources, user_gesture,
+      GetFrame()->DomWindow(), std::move(world), script_sources, user_gesture,
       callback);
   switch (execution_type) {
     case kAsynchronousBlockingOnload:

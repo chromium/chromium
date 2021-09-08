@@ -349,22 +349,20 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           : blink::WebLocalFrame::kSynchronous;
 
   mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
+  static constexpr int32_t kMainWorldId = 0;
+  int32_t world_id = kMainWorldId;
   if (execution_world == mojom::ExecutionWorld::kIsolated) {
-    int world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
+    world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
     if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
         log_activity_) {
       DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
     }
-    render_frame_->GetWebFrame()->RequestExecuteScriptInIsolatedWorld(
-        world_id, &sources.front(), sources.size(), is_user_gesture,
-        execution_option, callback.release(),
-        blink::BackForwardCacheAware::kPossiblyDisallow);
   } else {
     DCHECK_EQ(mojom::ExecutionWorld::kMain, execution_world);
-    render_frame_->GetWebFrame()->RequestExecuteScriptInMainWorld(
-        &sources.front(), sources.size(), is_user_gesture, execution_option,
-        callback.release(), blink::BackForwardCacheAware::kPossiblyDisallow);
   }
+  render_frame_->GetWebFrame()->RequestExecuteScript(
+      world_id, sources, is_user_gesture, execution_option, callback.release(),
+      blink::BackForwardCacheAware::kPossiblyDisallow);
 }
 
 void ScriptInjection::OnJsInjectionCompleted(

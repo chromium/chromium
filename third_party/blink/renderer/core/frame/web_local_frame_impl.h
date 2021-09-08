@@ -76,7 +76,6 @@ class HTMLPortalElement;
 class IntSize;
 class LocalFrameClientImpl;
 class ResourceError;
-class ScriptSourceCode;
 class ScrollableArea;
 class TextFinder;
 class WebAssociatedURLLoader;
@@ -193,9 +192,9 @@ class CORE_EXPORT WebLocalFrameImpl final
       ScriptExecutionType,
       WebScriptExecutionCallback*,
       BackForwardCacheAware back_forward_cache_aware) override;
-  void RequestExecuteScriptInMainWorld(
-      const WebScriptSource* source_in,
-      unsigned num_sources,
+  void RequestExecuteScript(
+      int32_t world_id,
+      base::span<const WebScriptSource> sources,
       bool user_gesture,
       ScriptExecutionType,
       WebScriptExecutionCallback*,
@@ -580,13 +579,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   void ShowDeferredContextMenu(
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
       const UntrustworthyContextMenuParams& params);
-
-  void RequestExecuteScriptImpl(scoped_refptr<DOMWrapperWorld> world,
-                                const HeapVector<ScriptSourceCode>& sources,
-                                bool user_gesture,
-                                ScriptExecutionType execution_type,
-                                WebScriptExecutionCallback* callback,
-                                BackForwardCacheAware back_forward_cache_aware);
 
   WebLocalFrameClient* client_;
 

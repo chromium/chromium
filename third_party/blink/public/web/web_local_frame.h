@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -376,7 +377,7 @@ class WebLocalFrame : public WebFrame {
   // Executes script in the context of the current page and returns the value
   // that the script evaluated to with callback. Script execution can be
   // suspend.
-  // DEPRECATED: Prefer requestExecuteScriptInIsolatedWorld().
+  // DEPRECATED: Prefer RequestExecuteScript().
   virtual void RequestExecuteScriptAndReturnValue(
       const WebScriptSource&,
       bool user_gesture,
@@ -402,6 +403,7 @@ class WebLocalFrame : public WebFrame {
 
   // worldID must be > 0 (as 0 represents the main world).
   // worldID must be < kEmbedderWorldIdLimit, high number used internally.
+  // DEPRECATED: Prefer RequestExecuteScript().
   virtual void RequestExecuteScriptInIsolatedWorld(
       int32_t world_id,
       const WebScriptSource* source_in,
@@ -412,16 +414,14 @@ class WebLocalFrame : public WebFrame {
       BackForwardCacheAware) = 0;
 
   // Executes the script in the main world of the page.
-  // TODO(devlin): Introduce a single RequestExecuteScript() function with these
-  // options that takes in a world ID that allows the main world? Then, we can
-  // combine this, RequestExecuteScriptInIsolatedWorld(), and
-  // RequestExecuteScriptAndReturnValue().
-  virtual void RequestExecuteScriptInMainWorld(const WebScriptSource* source_in,
-                                               unsigned num_sources,
-                                               bool user_gesture,
-                                               ScriptExecutionType,
-                                               WebScriptExecutionCallback*,
-                                               BackForwardCacheAware) = 0;
+  // Use a `world_id` of 0 to execute in the main world; `world_id`
+  // must be < kEmbedderWorldIdLimit.
+  virtual void RequestExecuteScript(int32_t world_id,
+                                    base::span<const WebScriptSource> sources,
+                                    bool user_gesture,
+                                    ScriptExecutionType,
+                                    WebScriptExecutionCallback*,
+                                    BackForwardCacheAware) = 0;
 
   // Logs to the console associated with this frame. If |discard_duplicates| is
   // set, the message will only be added if it is unique (i.e. has not been
