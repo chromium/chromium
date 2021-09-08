@@ -76,6 +76,7 @@ class CORE_EXPORT NGLineBreaker {
   // Returns true if this item has edge and may have non-zero inline size.
   static bool ComputeOpenTagResult(const NGInlineItem&,
                                    const NGConstraintSpace&,
+                                   bool is_in_svg_text,
                                    NGInlineItemResult*);
 
   // This enum is private, except for |WhitespaceStateForTesting()|. See

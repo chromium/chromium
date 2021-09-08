@@ -167,7 +167,8 @@ void NGInlineLayoutAlgorithm::RebuildBoxStates(
                                 quirks_mode_, &line_box);
   for (const NGInlineItem* item : open_items) {
     NGInlineItemResult item_result;
-    NGLineBreaker::ComputeOpenTagResult(*item, ConstraintSpace(), &item_result);
+    NGLineBreaker::ComputeOpenTagResult(*item, ConstraintSpace(),
+                                        Node().IsSvgText(), &item_result);
     HandleOpenTag(*item, item_result, &line_box, box_states);
   }
 }
