@@ -117,6 +117,11 @@ WebEngineBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+WebEngineBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService*
 WebEngineBrowserContext::GetPushMessagingService() {
   return nullptr;

@@ -74,8 +74,6 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/notifications/platform_notification_service_factory.h"
-#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/performance_manager/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/chrome_content_browser_client_performance_manager_part.h"
@@ -603,7 +601,6 @@ using content::RenderFrameHost;
 using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
-using message_center::NotifierId;
 
 #if defined(OS_POSIX)
 using content::PosixFileDescriptorInfo;
@@ -2998,14 +2995,6 @@ content::FeatureObserverClient*
 ChromeContentBrowserClient::GetFeatureObserverClient() {
   return ChromeBrowserMainExtraPartsPerformanceManager::GetInstance()
       ->GetFeatureObserverClient();
-}
-
-content::PlatformNotificationService*
-ChromeContentBrowserClient::GetPlatformNotificationService(
-    content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  return PlatformNotificationServiceFactory::GetForProfile(profile);
 }
 
 bool ChromeContentBrowserClient::CanCreateWindow(

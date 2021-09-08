@@ -90,6 +90,7 @@ class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class PermissionController;
 class PermissionControllerDelegate;
+class PlatformNotificationService;
 class PushMessagingService;
 class ResourceContext;
 class SharedCorsOriginAccessList;
@@ -334,6 +335,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Returns a special storage policy implementation, or nullptr.
   virtual storage::SpecialStoragePolicy* GetSpecialStoragePolicy() = 0;
+
+  // Returns the platform notification service, capable of displaying Web
+  // Notifications to the user. The embedder can return a nullptr if they don't
+  // support this functionality. Must be called on the UI thread.
+  virtual PlatformNotificationService* GetPlatformNotificationService() = 0;
 
   // Returns a push messaging service. The embedder owns the service, and is
   // responsible for ensuring that it outlives RenderProcessHost. It's valid to

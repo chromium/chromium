@@ -841,6 +841,11 @@ content::BrowserPluginGuestManager* TestingProfile::GetGuestManager() {
 #endif
 }
 
+content::PlatformNotificationService*
+TestingProfile::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService* TestingProfile::GetPushMessagingService() {
   return nullptr;
 }

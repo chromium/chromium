@@ -36,7 +36,6 @@ class FakeBluetoothChooserFactory;
 class FakeBluetoothDelegate;
 class MockBadgeService;
 class MockClipboardHost;
-class MockPlatformNotificationService;
 class WebTestBrowserContext;
 
 class WebTestContentBrowserClient : public ShellContentBrowserClient {
@@ -71,8 +70,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
       PictureInPictureWindowController* controller) override;
-  PlatformNotificationService* GetPlatformNotificationService(
-      content::BrowserContext* browser_context) override;
   bool CanCreateWindow(content::RenderFrameHost* opener,
                        const GURL& opener_url,
                        const GURL& opener_top_level_frame_url,
@@ -146,8 +143,6 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
       int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
-  std::unique_ptr<MockPlatformNotificationService>
-      mock_platform_notification_service_;
   bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 

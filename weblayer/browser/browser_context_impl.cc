@@ -184,6 +184,11 @@ storage::SpecialStoragePolicy* BrowserContextImpl::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+BrowserContextImpl::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService* BrowserContextImpl::GetPushMessagingService() {
   return nullptr;
 }

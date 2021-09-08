@@ -213,6 +213,11 @@ HeadlessBrowserContextImpl::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+HeadlessBrowserContextImpl::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService*
 HeadlessBrowserContextImpl::GetPushMessagingService() {
   return nullptr;

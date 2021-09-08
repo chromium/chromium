@@ -112,6 +112,11 @@ storage::SpecialStoragePolicy* CastBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+CastBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService* CastBrowserContext::GetPushMessagingService() {
   return nullptr;
 }

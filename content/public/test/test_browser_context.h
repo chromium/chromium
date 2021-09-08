@@ -36,6 +36,8 @@ class TestBrowserContext : public BrowserContext {
   void SetSpecialStoragePolicy(storage::SpecialStoragePolicy* policy);
   void SetPermissionControllerDelegate(
       std::unique_ptr<PermissionControllerDelegate> delegate);
+  void SetPlatformNotificationService(
+      std::unique_ptr<PlatformNotificationService> service);
 
   // Allow clients to make this an incognito context.
   void set_is_off_the_record(bool is_off_the_record) {
@@ -53,6 +55,7 @@ class TestBrowserContext : public BrowserContext {
   ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  PlatformNotificationService* GetPlatformNotificationService() override;
   PushMessagingService* GetPushMessagingService() override;
   StorageNotificationService* GetStorageNotificationService() override;
   SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -70,6 +73,7 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<MockSSLHostStateDelegate> ssl_host_state_delegate_;
   std::unique_ptr<PermissionControllerDelegate> permission_controller_delegate_;
   std::unique_ptr<MockBackgroundSyncController> background_sync_controller_;
+  std::unique_ptr<PlatformNotificationService> platform_notification_service_;
   bool is_off_the_record_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestBrowserContext);

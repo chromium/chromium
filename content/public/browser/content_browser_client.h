@@ -217,7 +217,6 @@ class NavigationThrottle;
 class NavigationUIData;
 class OverlayWindow;
 class PictureInPictureWindowController;
-class PlatformNotificationService;
 class QuotaPermissionContext;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -907,13 +906,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // threads are destroyed.  Its interface will always be called from the same
   // sequence.
   virtual FeatureObserverClient* GetFeatureObserverClient();
-
-  // Returns the platform notification service, capable of displaying Web
-  // Notifications to the user. The embedder can return a nullptr if they don't
-  // support this functionality. Must be called on the UI thread.
-  // TODO(knollr): move this to the BrowserContext.
-  virtual PlatformNotificationService* GetPlatformNotificationService(
-      BrowserContext* browser_context);
 
   // Returns true if the given page is allowed to open a window of the given
   // type. If true is returned, |no_javascript_access| will indicate whether

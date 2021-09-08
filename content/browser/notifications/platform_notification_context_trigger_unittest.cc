@@ -19,7 +19,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_platform_notification_service.h"
-#include "content/test/test_content_browser_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -33,22 +32,6 @@ namespace {
 // Fake Service Worker registration id to use in tests requiring one.
 const int64_t kFakeServiceWorkerRegistrationId = 42;
 
-class NotificationBrowserClient : public TestContentBrowserClient {
- public:
-  explicit NotificationBrowserClient(BrowserContext* browser_context)
-      : platform_notification_service_(
-            std::make_unique<MockPlatformNotificationService>(
-                browser_context)) {}
-
-  PlatformNotificationService* GetPlatformNotificationService(
-      BrowserContext* browser_context) override {
-    return platform_notification_service_.get();
-  }
-
- private:
-  std::unique_ptr<PlatformNotificationService> platform_notification_service_;
-};
-
 }  // namespace
 
 class PlatformNotificationContextTriggerTest : public ::testing::Test {
@@ -56,9 +39,9 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
   PlatformNotificationContextTriggerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        notification_browser_client_(&browser_context_),
         success_(false) {
-    SetBrowserClientForTesting(&notification_browser_client_);
+    browser_context_.SetPlatformNotificationService(
+        std::make_unique<MockPlatformNotificationService>(&browser_context_));
   }
 
   void SetUp() override {
@@ -114,13 +97,12 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
     return success_;
   }
 
-  // Gets the currently displayed notifications from
-  // |notification_browser_client_| synchronously.
+  // Gets the currently displayed notifications from |browser_context_|
+  // synchronously.
   std::set<std::string> GetDisplayedNotifications() {
     std::set<std::string> displayed_notification_ids;
     base::RunLoop run_loop;
-    notification_browser_client_
-        .GetPlatformNotificationService(&browser_context_)
+    browser_context_.GetPlatformNotificationService()
         ->GetDisplayedNotifications(base::BindLambdaForTesting(
             [&](std::set<std::string> notification_ids, bool supports_sync) {
               displayed_notification_ids = std::move(notification_ids);
@@ -140,7 +122,6 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestBrowserContext browser_context_;
-  NotificationBrowserClient notification_browser_client_;
   scoped_refptr<PlatformNotificationContextImpl> platform_notification_context_;
 
   // Returns the next persistent notification id for tests.

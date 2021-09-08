@@ -36,6 +36,8 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -449,6 +451,12 @@ OffTheRecordProfileImpl::GetSpecialStoragePolicy() {
 #else
   return NULL;
 #endif
+}
+
+content::PlatformNotificationService*
+OffTheRecordProfileImpl::GetPlatformNotificationService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return PlatformNotificationServiceFactory::GetForProfile(this);
 }
 
 content::PushMessagingService*

@@ -325,8 +325,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       std::unique_ptr<content::ClientCertificateDelegate> delegate) override;
   content::MediaObserver* GetMediaObserver() override;
   content::FeatureObserverClient* GetFeatureObserverClient() override;
-  content::PlatformNotificationService* GetPlatformNotificationService(
-      content::BrowserContext* browser_context) override;
   bool CanCreateWindow(content::RenderFrameHost* opener,
                        const GURL& opener_url,
                        const GURL& opener_top_level_frame_url,

@@ -1634,7 +1634,7 @@ void WebTestControlHost::SimulateWebNotificationClick(
     const absl::optional<std::u16string>& reply) {
   auto* client = WebTestContentBrowserClient::Get();
   auto* context = client->GetWebTestBrowserContext();
-  auto* service = client->GetPlatformNotificationService(context);
+  auto* service = context->GetPlatformNotificationService();
   static_cast<MockPlatformNotificationService*>(service)->SimulateClick(
       title,
       action_index == std::numeric_limits<int32_t>::min()
@@ -1647,7 +1647,7 @@ void WebTestControlHost::SimulateWebNotificationClose(const std::string& title,
                                                       bool by_user) {
   auto* client = WebTestContentBrowserClient::Get();
   auto* context = client->GetWebTestBrowserContext();
-  auto* service = client->GetPlatformNotificationService(context);
+  auto* service = context->GetPlatformNotificationService();
   static_cast<MockPlatformNotificationService*>(service)->SimulateClose(
       title, by_user);
 }

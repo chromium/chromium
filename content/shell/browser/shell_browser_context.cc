@@ -140,6 +140,11 @@ storage::SpecialStoragePolicy* ShellBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+PlatformNotificationService*
+ShellBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 PushMessagingService* ShellBrowserContext::GetPushMessagingService() {
   return nullptr;
 }

@@ -37,7 +37,6 @@
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "content/test/mock_badge_service.h"
 #include "content/test/mock_clipboard_host.h"
-#include "content/test/mock_platform_notification_service.h"
 #include "content/web_test/browser/fake_bluetooth_chooser.h"
 #include "content/web_test/browser/fake_bluetooth_chooser_factory.h"
 #include "content/web_test/browser/fake_bluetooth_delegate.h"
@@ -426,17 +425,6 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
   for (const std::string& s : origins_to_isolate)
     result.push_back(url::Origin::Create(GURL(s)));
   return result;
-}
-
-PlatformNotificationService*
-WebTestContentBrowserClient::GetPlatformNotificationService(
-    content::BrowserContext* browser_context) {
-  if (!mock_platform_notification_service_) {
-    mock_platform_notification_service_ =
-        std::make_unique<MockPlatformNotificationService>(browser_context);
-  }
-
-  return mock_platform_notification_service_.get();
 }
 
 bool WebTestContentBrowserClient::CanCreateWindow(

@@ -544,12 +544,6 @@ FeatureObserverClient* ContentBrowserClient::GetFeatureObserverClient() {
   return nullptr;
 }
 
-PlatformNotificationService*
-ContentBrowserClient::GetPlatformNotificationService(
-    BrowserContext* browser_context) {
-  return nullptr;
-}
-
 bool ContentBrowserClient::CanCreateWindow(
     RenderFrameHost* opener,
     const GURL& opener_url,

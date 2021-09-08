@@ -396,6 +396,11 @@ storage::SpecialStoragePolicy* AwBrowserContext::GetSpecialStoragePolicy() {
   return NULL;
 }
 
+content::PlatformNotificationService*
+AwBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService* AwBrowserContext::GetPushMessagingService() {
   // TODO(johnme): Support push messaging in WebView.
   return NULL;

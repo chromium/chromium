@@ -53,6 +53,7 @@ class ShellBrowserContext : public BrowserContext {
   ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  PlatformNotificationService* GetPlatformNotificationService() override;
   PushMessagingService* GetPushMessagingService() override;
   StorageNotificationService* GetStorageNotificationService() override;
   SSLHostStateDelegate* GetSSLHostStateDelegate() override;

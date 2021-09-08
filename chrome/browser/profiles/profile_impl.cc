@@ -68,6 +68,8 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/media/media_device_id_salt.h"
+#include "chrome/browser/notifications/platform_notification_service_factory.h"
+#include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -1324,6 +1326,12 @@ storage::SpecialStoragePolicy* ProfileImpl::GetSpecialStoragePolicy() {
 #else
   return NULL;
 #endif
+}
+
+content::PlatformNotificationService*
+ProfileImpl::GetPlatformNotificationService() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return PlatformNotificationServiceFactory::GetForProfile(this);
 }
 
 content::PushMessagingService* ProfileImpl::GetPushMessagingService() {

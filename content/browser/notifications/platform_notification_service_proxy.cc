@@ -10,9 +10,9 @@
 #include "base/check_op.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/content_client.h"
@@ -25,9 +25,8 @@ PlatformNotificationServiceProxy::PlatformNotificationServiceProxy(
     BrowserContext* browser_context)
     : service_worker_context_(service_worker_context),
       browser_context_(browser_context),
-      notification_service_(
-          GetContentClient()->browser()->GetPlatformNotificationService(
-              browser_context)) {}
+      notification_service_(browser_context->GetPlatformNotificationService()) {
+}
 
 PlatformNotificationServiceProxy::~PlatformNotificationServiceProxy() = default;
 

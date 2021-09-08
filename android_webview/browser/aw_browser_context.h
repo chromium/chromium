@@ -92,6 +92,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
