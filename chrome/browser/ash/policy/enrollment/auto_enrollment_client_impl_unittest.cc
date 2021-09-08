@@ -2199,6 +2199,9 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
+// PSM is enabled to test initial enrollment case extensively only.
+// Note that: PSM is running only for initial enrollment, and Hash dance for FRE
+// use case.
 INSTANTIATE_TEST_SUITE_P(
     Psm,
     PsmHelperTest,
