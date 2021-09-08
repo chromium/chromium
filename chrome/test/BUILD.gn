@@ -9181,11 +9181,16 @@ if (!is_android && !is_fuchsia) {
     }
   }
 
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  # The Chrome Enterprise File System Connector requires Google API keys,
+  # and only works on Google Chrome branded builds.
+  # The connectors file system interactive tests are not supported on
+  # ASH and LaCros.
+  if (is_chrome_branded && !is_chromeos_ash && !is_chromeos_lacros) {
     test("enterprise_connector_file_system_interactive_tests") {
       use_xvfb = use_xvfb_in_this_config
       sources = [
         "../browser/enterprise/connectors/file_system/box_captured_sites_interactive_uitest.cc",
+        "//chrome/browser/enterprise/connectors/internal/enterprise_connectors_interactive_uittest_test_accounts.h",
         "base/interactive_test_utils.cc",
         "base/interactive_test_utils.h",
         "base/interactive_test_utils_views.cc",
