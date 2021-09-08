@@ -581,6 +581,9 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     if (engage_vpp) {
       auto blit_surface = ExecuteBlitSurface(*source_surface,
                                              frame.visible_rect(), encode_size);
+      if (!blit_surface)
+        return false;
+
       input_surfaces->push_back(std::move(blit_surface));
     } else {
       input_surfaces->emplace_back(source_surface);
@@ -601,6 +604,8 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
     DCHECK(!!reconstructed_surfaces->back());
   }
 
+  DCHECK(!base::Contains(*input_surfaces, nullptr));
+  DCHECK(!base::Contains(*reconstructed_surfaces, nullptr));
   return true;
 }
 
