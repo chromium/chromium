@@ -46,9 +46,6 @@ class TestCodeCacheLoader : public WebCodeCacheLoader {
     process_request_.Run(std::move(callback));
   }
 
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
-                           const WebURL& url) override {}
-
  private:
   ProcessCodeCacheRequestCallback process_request_;
 };

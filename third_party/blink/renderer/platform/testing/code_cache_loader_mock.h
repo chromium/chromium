@@ -46,8 +46,6 @@ class CodeCacheLoaderMock : public WebCodeCacheLoader {
       blink::mojom::CodeCacheType cache_type,
       const WebURL& url,
       WebCodeCacheLoader::FetchCodeCacheCallback callback) override;
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
-                           const WebURL& url) override;
 
  private:
   scoped_refptr<Controller> controller_;
