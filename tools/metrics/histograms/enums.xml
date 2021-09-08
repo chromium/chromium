@@ -50727,6 +50727,7 @@ from previous Chrome versions.
   <int value="747847237" label="PhysicalWeb:enabled"/>
   <int value="749312701" label="ChromeOSAccountManager:disabled"/>
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>
+  <int value="749994865" label="MessagesForAndroidSyncError:enabled"/>
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
@@ -51587,6 +51588,7 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionsFromClipboard:disabled"/>
   <int value="1442798825" label="enable-quic"/>
   <int value="1442830837" label="MemoryAblation:disabled"/>
+  <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
   <int value="1446066818" label="WebRtcAnalogAgcClippingControl:enabled"/>
   <int value="1446349255" label="ArcEnableUsap:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
@@ -55506,6 +55508,7 @@ Called by update_use_counter_css.py.-->
   <int value="14" label="PermissionUpdate"/>
   <int value="15" label="AdsBlocked"/>
   <int value="16" label="DownloadProgress"/>
+  <int value="17" label="SyncError"/>
 </enum>
 
 <enum name="MessageLoopProblems">

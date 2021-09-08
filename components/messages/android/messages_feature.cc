@@ -51,6 +51,9 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<bool> kMessagesForAndroidSaveCard_UseGPayIcon{
     &kMessagesForAndroidSaveCard, "save_card_message_use_gpay_icon", true};
 
+const base::Feature kMessagesForAndroidSyncError{
+    "MessagesForAndroidSyncError", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMessagesForAndroidUpdatePassword{
     "MessagesForAndroidUpdatePassword", base::FEATURE_DISABLED_BY_DEFAULT};
 

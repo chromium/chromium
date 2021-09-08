@@ -87,6 +87,7 @@ enum class MessageIdentifier {
   PERMISSION_UPDATE = 14,
   ADS_BLOCKED = 15,
   DOWNLOAD_PROGRESS = 16,
+  SYNC_ERROR = 17,
 
   // Insert new values before this line.
   COUNT

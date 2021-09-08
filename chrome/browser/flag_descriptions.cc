@@ -3214,6 +3214,10 @@ extern const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 extern const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
 
+const char kMessagesForAndroidSyncErrorName[] = "Sync Error Messages UI";
+const char kMessagesForAndroidSyncErrorDescription[] =
+    "When enabled, sync error prompt will use the new Messages UI.";
+
 const char kMessagesForAndroidUpdatePasswordName[] =
     "Update password Messages UI";
 const char kMessagesForAndroidUpdatePasswordDescription[] =

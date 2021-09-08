@@ -99,6 +99,8 @@ public class MessagesMetrics {
                 return "AdsBlocked";
             case MessageIdentifier.DOWNLOAD_PROGRESS:
                 return "DownloadProgress";
+            case MessageIdentifier.SYNC_ERROR:
+                return "SyncError";
             default:
                 return "Unknown";
         }

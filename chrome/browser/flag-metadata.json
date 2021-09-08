@@ -3869,6 +3869,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "messages-for-android-sync-error",
+    "owners": [ "pavely", "lazzzis" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "messages-for-android-update-password",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 99
