@@ -92,14 +92,31 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
 
 namespace {
 
+using GridItems = NGGridLayoutAlgorithm::GridItems;
+using GridItemData = NGGridLayoutAlgorithm::GridItemData;
+using GridItemIndices = NGGridLayoutAlgorithm::GridItemIndices;
+using SetGeometry = NGGridLayoutAlgorithm::SetGeometry;
+
+LayoutUnit ComputeSetSpanSize(const SetGeometry& set_geometry,
+                              const GridItemIndices& set_indices) {
+  const LayoutUnit start_offset = set_geometry.sets[set_indices.begin].offset;
+  const LayoutUnit end_offset = set_geometry.sets[set_indices.end].offset;
+  DCHECK_GE(end_offset, start_offset);
+
+  // The size of a set span is the end offset minus the start offset and gutter
+  // size. It is floored at zero so that the size is not negative when the
+  // gutter size is greater than the difference between the offsets.
+  return (end_offset - start_offset - set_geometry.gutter_size)
+      .ClampNegativeToZero();
+}
+
 bool MayChangeOrthogonalItemContributions(
-    const NGGridLayoutAlgorithm::SetGeometry& old_row_geometry,
-    const NGGridLayoutAlgorithm::SetGeometry& new_row_geometry,
-    const NGGridLayoutAlgorithm::GridItems& grid_items,
+    const SetGeometry& old_row_geometry,
+    const SetGeometry& new_row_geometry,
+    const GridItems& grid_items,
     const WritingMode container_writing_mode) {
-  auto GridItemRowSpanSize =
-      [](const NGGridLayoutAlgorithm::GridItemData& grid_item,
-         const NGGridLayoutAlgorithm::SetGeometry& set_geometry) -> LayoutUnit {
+  auto GridItemRowSpanSize = [](const GridItemData& grid_item,
+                                const SetGeometry& set_geometry) -> LayoutUnit {
     const auto& set_indices = grid_item.SetIndices(kForRows);
     const wtf_size_t last_indefinite_index =
         set_geometry.last_indefinite_indices.IsEmpty()
@@ -108,9 +125,7 @@ bool MayChangeOrthogonalItemContributions(
 
     DCHECK(last_indefinite_index == kNotFound ||
            last_indefinite_index < set_indices.begin);
-    return set_geometry.sets[set_indices.end].offset -
-           set_geometry.sets[set_indices.begin].offset -
-           set_geometry.gutter_size;
+    return ComputeSetSpanSize(set_geometry, set_indices);
   };
 
   for (const auto& grid_item : grid_items.item_data) {
@@ -1179,9 +1194,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             // as represented by the sum of those grid tracks’ max track sizing
             // functions plus any intervening fixed gutters.
             LayoutUnit spanned_tracks_definite_max_size =
-                set_geometry.sets[set_indices.end].offset -
-                set_geometry.sets[set_indices.begin].offset -
-                set_geometry.gutter_size;
+                ComputeSetSpanSize(set_geometry, set_indices);
             DCHECK_GE(spanned_tracks_definite_max_size, 0);
 
             const LayoutUnit border_padding_sum =
@@ -1876,14 +1889,12 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
                                   ? grid_available_size_.inline_size
                                   : grid_available_size_.block_size;
 
-  LayoutUnit set_offset = (track_direction == kForColumns)
-                              ? BorderScrollbarPadding().inline_start
-                              : BorderScrollbarPadding().block_start;
-
-  SetGeometry set_geometry;
-  set_geometry.gutter_size = GridGap(track_direction);
-  set_geometry.sets.ReserveInitialCapacity(set_count);
-  set_geometry.sets.emplace_back(set_offset, /* track_count */ kNotFound);
+  TrackGeometry track_geometry;
+  track_geometry.start_offset = (track_direction == kForColumns)
+                                    ? BorderScrollbarPadding().inline_start
+                                    : BorderScrollbarPadding().block_start;
+  track_geometry.gutter_size = GridGap(track_direction);
+  SetGeometry set_geometry(track_geometry, set_count);
 
   // The initial last indefinite index is always kNotFound.
   wtf_size_t last_indefinite_index = kNotFound;
@@ -1921,8 +1932,9 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
       // For the purposes of our "base" row set geometry, we only use any
       // definite max track sizing functions. We will use this value later to
       // measure orthogonal (or %-block-size) grid item contributions.
-      set_offset += (fixed_max_breadth + set_geometry.gutter_size) *
-                    current_set.TrackCount();
+      track_geometry.start_offset +=
+          (fixed_max_breadth + set_geometry.gutter_size) *
+          current_set.TrackCount();
     } else {
       // An intrinsic or flexible sizing function: Use an initial growth limit
       // of infinity.
@@ -1945,7 +1957,8 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
       current_set.InitBaseSize(LayoutUnit());
     }
 
-    set_geometry.sets.emplace_back(set_offset, current_set.TrackCount());
+    set_geometry.sets.emplace_back(track_geometry.start_offset,
+                                   current_set.TrackCount());
     set_geometry.last_indefinite_indices.emplace_back(last_indefinite_index);
   }
 
@@ -2971,15 +2984,9 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 
 namespace {
 
-// Contains the information about where the grid tracks start, and the
-// gutter-size between them, taking into account the content alignment
-// properties.
-struct TrackAlignmentGeometry {
-  LayoutUnit start_offset;
-  LayoutUnit gutter_size;
-};
+using TrackGeometry = NGGridLayoutAlgorithm::TrackGeometry;
 
-TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
+TrackGeometry ComputeFirstTrackInCollectionGeometry(
     const ComputedStyle& style,
     const StyleContentAlignmentData& content_alignment,
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
@@ -3000,7 +3007,7 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
                : free_space;
   };
   // The default alignment, perform adjustments on top of this.
-  TrackAlignmentGeometry geometry = {start_border_scrollbar_padding, grid_gap};
+  TrackGeometry geometry = {start_border_scrollbar_padding, grid_gap};
 
   // If we have an indefinite |available_size| we can't perform any alignment,
   // just return the default alignment.
@@ -3097,30 +3104,25 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeSetGeometry(
   const LayoutUnit available_size = track_collection.IsForColumns()
                                         ? grid_available_size_.inline_size
                                         : grid_available_size_.block_size;
-  const TrackAlignmentGeometry track_alignment_geometry =
+  TrackGeometry track_geometry =
       track_collection.IsForColumns()
-          ? ComputeTrackAlignmentGeometry(Style(), Style().JustifyContent(),
-                                          track_collection, available_size,
-                                          BorderScrollbarPadding().inline_start,
-                                          GridGap(kForColumns))
-          : ComputeTrackAlignmentGeometry(Style(), Style().AlignContent(),
-                                          track_collection, available_size,
-                                          BorderScrollbarPadding().block_start,
-                                          GridGap(kForRows));
-
-  const wtf_size_t set_count = track_collection.SetCount() + 1;
-  LayoutUnit set_offset = track_alignment_geometry.start_offset;
-
-  SetGeometry set_geometry;
-  set_geometry.gutter_size = track_alignment_geometry.gutter_size;
-  set_geometry.sets.ReserveInitialCapacity(set_count);
-  set_geometry.sets.emplace_back(set_offset, /* track_count */ kNotFound);
+          ? ComputeFirstTrackInCollectionGeometry(
+                Style(), Style().JustifyContent(), track_collection,
+                available_size, BorderScrollbarPadding().inline_start,
+                GridGap(kForColumns))
+          : ComputeFirstTrackInCollectionGeometry(
+                Style(), Style().AlignContent(), track_collection,
+                available_size, BorderScrollbarPadding().block_start,
+                GridGap(kForRows));
+  SetGeometry set_geometry(track_geometry, track_collection.SetCount() + 1);
 
   for (auto set_iterator = track_collection.GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
     const auto& set = set_iterator.CurrentSet();
-    set_offset += set.BaseSize() + set.TrackCount() * set_geometry.gutter_size;
-    set_geometry.sets.emplace_back(set_offset, set.TrackCount());
+    track_geometry.start_offset +=
+        set.BaseSize() + set.TrackCount() * set_geometry.gutter_size;
+    set_geometry.sets.emplace_back(track_geometry.start_offset,
+                                   set.TrackCount());
   }
   return set_geometry;
 }
@@ -3549,6 +3551,35 @@ LogicalRect NGGridLayoutAlgorithm::ComputeContainingGridAreaRect(
 
 namespace {
 
+Vector<std::div_t> ComputeTrackSizesInRange(
+    const NGGridLayoutAlgorithm::SetGeometry& set_geometry,
+    const wtf_size_t range_starting_set_index,
+    const wtf_size_t range_set_count) {
+  Vector<std::div_t> track_sizes;
+  track_sizes.ReserveInitialCapacity(range_set_count);
+  const wtf_size_t ending_set_index =
+      range_starting_set_index + range_set_count;
+
+  for (wtf_size_t set_index = range_starting_set_index;
+       set_index < ending_set_index; ++set_index) {
+    // Set information is stored as offsets. To determine the size of a single
+    // track in a givent set, first determine the total size the set takes up
+    // by finding the difference between the offsets and subtracting the gutter
+    // size for each track in the set.
+    const wtf_size_t set_track_count =
+        set_geometry.sets[set_index + 1].track_count;
+    DCHECK_GE(set_track_count, 1u);
+    LayoutUnit set_size = set_geometry.sets[set_index + 1].offset -
+                          set_geometry.sets[set_index].offset -
+                          set_geometry.gutter_size * set_track_count;
+
+    // Once we have determined the size of the set, we can find the size of a
+    // given track by dividing the |set_size| by the |set_track_count|.
+    track_sizes.emplace_back(std::div(set_size.RawValue(), set_track_count));
+  }
+  return track_sizes;
+}
+
 // For out of flow items that are located in the middle of a range, computes
 // the extra offset relative to the start of its containing range.
 LayoutUnit ComputeTrackOffsetInRange(
@@ -3561,9 +3592,8 @@ LayoutUnit ComputeTrackOffsetInRange(
 
   // To compute the index offset, we have to determine the size of the
   // tracks within the grid item's span.
-  Vector<std::div_t> track_sizes =
-      NGGridLayoutAlgorithm::ComputeTrackSizesInRange(
-          set_geometry, range_starting_set_index, range_set_count);
+  Vector<std::div_t> track_sizes = ComputeTrackSizesInRange(
+      set_geometry, range_starting_set_index, range_set_count);
 
   // Calculate how many sets there are from the start of the range to the
   // |offset_in_range|. This division can produce a remainder, which would
@@ -3691,43 +3721,26 @@ void NGGridLayoutAlgorithm::ComputeGridItemOffsetAndSize(
   DCHECK(start_offset && size);
   DCHECK_EQ(grid_item.item_type, ItemType::kInGridFlow);
 
-  wtf_size_t start_index, end_index;
-  if (track_direction == kForColumns) {
-    start_index = grid_item.column_set_indices.begin;
-    end_index = grid_item.column_set_indices.end;
-  } else {
-    start_index = grid_item.row_set_indices.begin;
-    end_index = grid_item.row_set_indices.end;
-  }
-  DCHECK_LT(end_index, set_geometry.sets.size());
-  DCHECK_LT(start_index, end_index);
+  const auto& set_indices = grid_item.SetIndices(track_direction);
+  DCHECK_LT(set_indices.end, set_geometry.sets.size());
+  DCHECK_LT(set_indices.begin, set_indices.end);
 
-  *start_offset = set_geometry.sets[start_index].offset;
+  *start_offset = set_geometry.sets[set_indices.begin].offset;
   *size = kIndefiniteSize;
 
-  // If we are measuring a grid item we might not yet have determined the
-  // final used sizes for all sets; |last_indefinite_index| is the last set
-  // which has an indefinite used size, if |start_index| is greater, then all
-  // the sets between it and |end_index| are definite.
+  // If we are measuring a grid item we might not yet have determined the final
+  // used sizes for all sets; |last_indefinite_index| is the last set which has
+  // an indefinite used size, if |set_indices.begin| is greater, then all the
+  // sets between it and |set_indices.end| are definite.
   const wtf_size_t last_indefinite_index =
       set_geometry.last_indefinite_indices.IsEmpty()
           ? kNotFound
-          : set_geometry.last_indefinite_indices[end_index];
+          : set_geometry.last_indefinite_indices[set_indices.end];
   if (last_indefinite_index == kNotFound ||
-      start_index > last_indefinite_index) {
-    // If we have run into the max LayoutUnit, the size calculation won't work,
-    // collapse all sizes from here on.
-    if (start_offset->MightBeSaturated() ||
-        set_geometry.sets[end_index].offset.MightBeSaturated() ||
-        set_geometry.gutter_size.MightBeSaturated()) {
+      set_indices.begin > last_indefinite_index) {
+    *size = ComputeSetSpanSize(set_geometry, set_indices);
+    if (size->MightBeSaturated())
       *size = LayoutUnit();
-    } else {
-      *size = set_geometry.sets[end_index].offset - *start_offset -
-              set_geometry.gutter_size;
-
-      if (size->MightBeSaturated())
-        *size = LayoutUnit();
-    }
   }
   DCHECK(!size->MightBeSaturated());
   DCHECK(*size >= 0 || *size == kIndefiniteSize);
@@ -3794,36 +3807,6 @@ void NGGridLayoutAlgorithm::ComputeOutOfFlowOffsetAndSize(
   }
 
   DCHECK(*size >= 0 || *size == kIndefiniteSize);
-}
-
-// static
-Vector<std::div_t> NGGridLayoutAlgorithm::ComputeTrackSizesInRange(
-    const SetGeometry& set_geometry,
-    wtf_size_t range_starting_set_index,
-    wtf_size_t range_set_count) {
-  Vector<std::div_t> track_sizes;
-  track_sizes.ReserveInitialCapacity(range_set_count);
-  const wtf_size_t ending_set_index =
-      range_starting_set_index + range_set_count;
-
-  for (wtf_size_t set_index = range_starting_set_index;
-       set_index < ending_set_index; ++set_index) {
-    // Set information is stored as offsets. To determine the size of a single
-    // track in a givent set, first determine the total size the set takes up
-    // by finding the difference between the offsets and subtracting the gutter
-    // size for each track in the set.
-    const wtf_size_t set_track_count =
-        set_geometry.sets[set_index + 1].track_count;
-    DCHECK_GE(set_track_count, 1u);
-    LayoutUnit set_size = set_geometry.sets[set_index + 1].offset -
-                          set_geometry.sets[set_index].offset -
-                          set_geometry.gutter_size * set_track_count;
-
-    // Once we have determined the size of the set, we can find the size of a
-    // given track by dividing the |set_size| by the |set_track_count|.
-    track_sizes.emplace_back(std::div(set_size.RawValue(), set_track_count));
-  }
-  return track_sizes;
 }
 
 NGGridData::TrackCollectionGeometry NGGridLayoutAlgorithm::ConvertSetGeometry(

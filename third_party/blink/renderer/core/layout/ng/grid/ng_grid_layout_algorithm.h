@@ -211,6 +211,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     Vector<wtf_size_t> reordered_item_indices;
   };
 
+  // Contains the information about the start offset of the tracks, as well as
+  // the gutter size between them, for a given direction.
+  struct TrackGeometry {
+    LayoutUnit start_offset;
+    LayoutUnit gutter_size;
+  };
+
   // Represents the offsets for the sets, and the gutter-size.
   //
   // Initially we only know some of the set sizes - others will be indefinite.
@@ -238,7 +245,16 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   //    "start <= sets[end].last_indefinite_index"
   struct SetGeometry {
     SetGeometry() = default;
-    SetGeometry(const Vector<SetOffsetData>& sets, LayoutUnit gutter_size)
+
+    SetGeometry(const TrackGeometry track_alignment_geometry,
+                const wtf_size_t set_count)
+        : gutter_size(track_alignment_geometry.gutter_size) {
+      sets.ReserveInitialCapacity(set_count);
+      sets.emplace_back(track_alignment_geometry.start_offset,
+                        /* track_count */ kNotFound);
+    }
+
+    SetGeometry(const Vector<SetOffsetData>& sets, const LayoutUnit gutter_size)
         : sets(sets), gutter_size(gutter_size) {}
 
     LayoutUnit FinalGutterSize() const {
@@ -301,12 +317,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGBoxStrut& borders,
       const LogicalSize& border_box_size,
       const LayoutUnit block_size);
-
-  // Helper that computes tracks sizes in a given range.
-  static Vector<std::div_t> ComputeTrackSizesInRange(
-      const SetGeometry& set_geometry,
-      wtf_size_t range_starting_set_index,
-      wtf_size_t range_set_count);
 
  private:
   friend class NGGridLayoutAlgorithmTest;
