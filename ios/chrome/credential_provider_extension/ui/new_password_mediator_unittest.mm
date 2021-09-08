@@ -45,6 +45,10 @@
   self.alertedSaveFailed = YES;
 }
 
+- (void)passwordSaved {
+  // No-op.
+}
+
 @end
 
 // Fake implementation of ASCredentialProviderExtensionContext so tests can

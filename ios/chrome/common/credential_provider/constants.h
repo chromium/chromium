@@ -43,4 +43,15 @@ extern NSString* const kUserDefaultsCredentialProviderFirstTimeSyncCompleted;
 // given consent for the credential provider extension.
 extern NSString* const kUserDefaultsCredentialProviderConsentVerified;
 
+// Values of the UMA IOS.CredentialExtension.PasswordCreated. Must be kept up to
+// date with IOSCredentialProviderPasswordCreated in enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class CPEPasswordCreated {
+  kPasswordManuallyEntered = 0,
+  kPasswordSuggested = 1,
+  kPasswordSuggestedAndChanged = 2,
+  kMaxValue = kPasswordSuggestedAndChanged,
+};
+
 #endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_CONSTANTS_H_

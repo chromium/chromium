@@ -38,6 +38,7 @@
 #include "ios/chrome/browser/widget_kit/features.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
+#import "ios/chrome/common/credential_provider/constants.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -56,6 +57,12 @@ namespace {
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
 
+// Histograms fired in extensions that need to be re-fired from the main app.
+const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {{
+    @"IOS.CredentialExtension.PasswordCreated",
+    static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
+}};
+
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.
 base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
@@ -71,9 +78,12 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
   NSDate* date = [NSDate dateWithTimeIntervalSince1970:time_since_1970];
   return base::TimeDelta::FromSecondsD(-date.timeIntervalSinceNow);
 }
+}  // namespace
 
-// Send histograms reporting the usage of notification center metrics.
-void RecordWidgetUsage() {
+namespace metrics_mediator {
+NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
+
+void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
   using base::SysNSStringToUTF8;
 
   // Dictionary containing the respective metric for each NSUserDefault's key.
@@ -123,12 +133,24 @@ void RecordWidgetUsage() {
       }
     }
   }
-}
-}  // namespace
 
-namespace metrics_mediator {
-NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
-}  // namespace metrics_mediator_constants
+  for (const HistogramNameCountPair& pair : histograms) {
+    int maxSamples = pair.buckets;
+    // Check each possible bucket to see if it has any events to emit.
+    for (int bucket = 0; bucket < maxSamples; ++bucket) {
+      NSString* key = app_group::HistogramCountKey(pair.name, bucket);
+      int count = [shared_defaults integerForKey:key];
+      if (count != 0) {
+        [shared_defaults setInteger:0 forKey:key];
+        std::string histogramName = SysNSStringToUTF8(pair.name);
+        for (int emitCount = 0; emitCount < count; ++emitCount) {
+          base::UmaHistogramExactLinear(histogramName, bucket, maxSamples + 1);
+        }
+      }
+    }
+  }
+}
+}  // namespace metrics_mediator
 
 using metrics_mediator::kAppEnteredBackgroundDateKey;
 
@@ -364,7 +386,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   } else {
     app_group::main_app::DisableMetrics();
   }
-  RecordWidgetUsage();
+  metrics_mediator::RecordWidgetUsage(kHistogramsFromExtension);
 }
 
 - (void)processCrashReportsPresentAtStartup {

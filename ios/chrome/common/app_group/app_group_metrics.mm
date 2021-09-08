@@ -59,6 +59,10 @@ NSString* const kCredentialExtensionKeychainSavePasswordFailureCount =
 NSString* const kCredentialExtensionSaveCredentialFailureCount =
     @"CredentialExtensionSaveCredentialFailureCount";
 
+NSString* HistogramCountKey(NSString* histogram, int bucket) {
+  return [NSString stringWithFormat:@"%@.%i", histogram, bucket];
+}
+
 // To avoid collision between session_ids from chrome or external
 // components, the session ID is offset depending on the application.
 int AppGroupSessionID(int session_id, AppGroupApplications application) {

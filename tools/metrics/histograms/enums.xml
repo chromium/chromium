@@ -43627,6 +43627,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Store Busy"/>
 </enum>
 
+<enum name="IOSCredentialProviderPasswordCreated">
+  <int value="0" label="Password Manually Added"/>
+  <int value="1" label="Password Suggested"/>
+  <int value="2" label="Password Suggested and Manually Changed"/>
+</enum>
+
 <enum name="IOSDefaultBrowserFullscreenPromoAction">
   <int value="0" label="Action Button"/>
   <int value="1" label="Cancel"/>

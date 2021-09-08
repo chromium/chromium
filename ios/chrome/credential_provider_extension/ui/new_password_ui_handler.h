@@ -18,6 +18,9 @@
 // Asks the UI to alert the user that the saving process failed.
 - (void)alertSavePasswordFailed;
 
+// Informs the UI that a credential was successfully saved.
+- (void)passwordSaved;
+
 @end
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_NEW_PASSWORD_UI_HANDLER_H_
