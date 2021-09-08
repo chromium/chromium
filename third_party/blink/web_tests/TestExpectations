@@ -6895,3 +6895,5 @@ crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-websql.j
 # Sheriff 2021-09-08
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Crash Pass Failure ]
 crbug.com/1233826 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-after-load.https.html [ Crash Pass Failure ]
+crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Pass Crash ]
+crbug.com/1247758 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-color-over-pattern.html [ Pass Crash ]
