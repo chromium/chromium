@@ -74,9 +74,10 @@ class CalendarDateCellView : public views::LabelButton {
                                      : secondary_text_color);
   }
 
-  // Draws the background for 'today'.
+  // Draws the background for 'today'. If today is a grayed out date, which is
+  // shown in its previous/next month, we won't draw this background.
   void OnPaintBackground(gfx::Canvas* canvas) override {
-    if (!calendar_utils::IsToday(date_))
+    if (!calendar_utils::IsToday(date_) || grayed_out_)
       return;
 
     const AshColorProvider* color_provider = AshColorProvider::Get();
