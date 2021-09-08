@@ -307,6 +307,9 @@ bool File::DeleteOnClose(bool delete_on_close) {
 File::Error File::OSErrorToFileError(DWORD last_error) {
   switch (last_error) {
     case ERROR_SHARING_VIOLATION:
+    case ERROR_UNABLE_TO_REMOVE_REPLACED:  // ReplaceFile failure cases.
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
       return FILE_ERROR_IN_USE;
     case ERROR_ALREADY_EXISTS:
     case ERROR_FILE_EXISTS:
@@ -315,6 +318,7 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
     case ERROR_PATH_NOT_FOUND:
       return FILE_ERROR_NOT_FOUND;
     case ERROR_ACCESS_DENIED:
+    case ERROR_LOCK_VIOLATION:
       return FILE_ERROR_ACCESS_DENIED;
     case ERROR_TOO_MANY_OPEN_FILES:
       return FILE_ERROR_TOO_MANY_OPENED;
@@ -327,12 +331,14 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
       return FILE_ERROR_NO_SPACE;
     case ERROR_USER_MAPPED_FILE:
       return FILE_ERROR_INVALID_OPERATION;
-    case ERROR_NOT_READY:
-    case ERROR_SECTOR_NOT_FOUND:
-    case ERROR_DEV_NOT_EXIST:
+    case ERROR_NOT_READY:         // The device is not ready.
+    case ERROR_SECTOR_NOT_FOUND:  // The drive cannot find the sector requested.
+    case ERROR_GEN_FAILURE:       // A device ... is not functioning.
+    case ERROR_DEV_NOT_EXIST:  // Net resource or device is no longer available.
     case ERROR_IO_DEVICE:
-    case ERROR_FILE_CORRUPT:
-    case ERROR_DISK_CORRUPT:
+    case ERROR_DISK_OPERATION_FAILED:
+    case ERROR_FILE_CORRUPT:  // File or directory is corrupted and unreadable.
+    case ERROR_DISK_CORRUPT:  // The disk structure is corrupted and unreadable.
       return FILE_ERROR_IO;
     default:
       UmaHistogramSparse("PlatformFile.UnknownErrors.Windows", last_error);

@@ -90901,7 +90901,12 @@ Called by update_scheduler_enums.py.-->
   <int value="999" label="SWAPERROR"/>
   <int value="1011" label="ERROR_CANTOPEN"/>
   <int value="1117" label="ERROR_IO_DEVICE"/>
+  <int value="1127" label="DISK_OPERATION_FAILED"/>
+  <int value="1175" label="UNABLE_TO_REMOVE_REPLACED"/>
+  <int value="1176" label="UNABLE_TO_MOVE_REPLACEMENT"/>
+  <int value="1177" label="UNABLE_TO_MOVE_REPLACEMENT_2"/>
   <int value="1223" label="ERROR_CANCELLED"/>
+  <int value="1296" label="CONTENT_BLOCKED"/>
   <int value="1346" label="ERROR_BAD_IMPERSONATION_LEVEL"/>
   <int value="1392" label="ERROR_FILE_CORRUPT"/>
   <int value="1393" label="ERROR_DISK_CORRUPT"/>
@@ -90915,6 +90920,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1784" label="INVALID_USER_BUFFER"/>
   <int value="1816" label="NOT_ENOUGH_QUOTA"/>
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="1920" label="CANT_ACCESS_FILE"/>
   <int value="6000" label="ERROR_ENCRYPTION_FAILED"/>
   <int value="6001" label="ERROR_DECRYPTION_FAILED"/>
   <int value="7041" label="ERROR_CTX_CONSOLE_DISCONNECT"/>
