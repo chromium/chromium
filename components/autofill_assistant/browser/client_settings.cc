@@ -156,6 +156,18 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
       message_mode = proto.slow_warning_settings().message_mode();
     }
   }
+  if (!proto.display_strings_locale().empty()) {
+    if (display_strings_locale != proto.display_strings_locale()) {
+      display_strings.clear();
+    }
+    display_strings_locale = proto.display_strings_locale();
+    for (const ClientSettingsProto::DisplayString& display_string :
+         proto.display_strings()) {
+      display_strings[display_string.id()] = display_string.value();
+    }
+  } else if (!proto.display_strings().empty()) {
+    VLOG(1) << "Rejecting new display strings: no locale provided";
+  }
   // Test only settings.
   if (proto.has_integration_test_settings()) {
     integration_test_settings = proto.integration_test_settings();

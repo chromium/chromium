@@ -193,7 +193,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
-// Next ID: 22
+// Next ID: 24
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -313,6 +313,58 @@ message ClientSettingsProto {
     optional MessageMode message_mode = 12;
   }
   optional SlowWarningSettings slow_warning_settings = 21;
+
+  // Strings that are needed for Chrome Client UI.
+  enum DisplayStringId {
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because of a user action.
+    GIVE_UP = 0;
+
+    // Text label shown next to an UNDO button when user action indicate they
+    // want to continue on their own.
+    MAYBE_GIVE_UP = 1;
+
+    // Text label that is shown when autofill assistant cannot help anymore,
+    // because something went wrong.
+    DEFAULT_ERROR = 2;
+
+    // Text on the payment request primary button to confirm payment information
+    PAYMENT_INFO_CONFIRM = 3;
+
+    // Generic label for a button to continue to the next screen.
+    CONTINUE_BUTTON = 4;
+
+    // Text label that is shown when stopping the Autofill Assistant.
+    STOPPED = 5;
+
+    // Option shown in the menu when clicking the Autofill Assistant profile
+    // icon. Clicking this option will open a feedback sharing dialog.
+    SEND_FEEDBACK = 6;
+
+    // A generic term for Close on buttons and menus.
+    CLOSE = 7;
+
+    // Title for Chrome's Settings.
+    SETTINGS = 8;
+  }
+
+  // A Chrome display string along with its ID. This is used to create a map of
+  // display strings below.
+  message DisplayString {
+    optional DisplayStringId id = 1;
+    optional string value = 2;
+  }
+  // A map of display strings keyed by the ID. Note that the locale of these
+  // strings must be provided in |display_strings_locale|. These strings are
+  // ignored if locale is not provided.
+  repeated DisplayString display_strings = 22;
+
+  // The locale of |display_strings|. If |display_strings_locale| is not
+  // provided, we ignore |display_strings|. When locale
+  // is updated/switched to a new locale, we replace the set of
+  // |display_strings|, even if empty. The provided locale should be in BCP 47
+  // format, e.g. "en-US".
+  optional string display_strings_locale = 23;
 
   reserved 8 to 11;
 }

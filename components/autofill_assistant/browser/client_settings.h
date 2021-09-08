@@ -26,6 +26,14 @@ struct ClientSettings {
 
   void UpdateFromProto(const ClientSettingsProto& proto);
 
+  // Map of current display strings, if sent by the backend.
+  std::map<ClientSettingsProto::DisplayStringId, std::string> display_strings;
+
+  // The locale of |display_strings|. If not specified, the client will display
+  // strings in the current client locale. The locale follows the BCP 47 format,
+  // e.g. "en-US".
+  std::string display_strings_locale;
+
   // Time between two periodic script precondition checks.
   base::TimeDelta periodic_script_check_interval =
       base::TimeDelta::FromSeconds(1);
