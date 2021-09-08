@@ -1121,7 +1121,7 @@ void LayoutBlock::RemovePositionedObjects(
     return;
 
   HeapVector<Member<LayoutBox>, 16> dead_objects;
-  for (const auto& positioned_object : *positioned_descendants) {
+  for (LayoutBox* positioned_object : *positioned_descendants) {
     if (!o ||
         (positioned_object->IsDescendantOf(o) && o != positioned_object)) {
       if (containing_block_state == kNewContainingBlock) {
@@ -1237,8 +1237,7 @@ void LayoutBlock::DirtyForLayoutFromPercentageHeightDescendants(
   if (!descendants)
     return;
 
-  for (const auto& it : *descendants) {
-    LayoutBox* box = it;
+  for (LayoutBox* box : *descendants) {
     DCHECK(box->IsDescendantOf(this));
     while (box != this) {
       if (box->NormalChildNeedsLayout())

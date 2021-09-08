@@ -1441,7 +1441,10 @@ void LayoutGrid::LayoutPositionedObjects(bool relayout_children,
   if (!positioned_descendants)
     return;
 
-  for (const auto& child : *positioned_descendants) {
+  // Cannot use |const auto&| here and need to get a raw pointer in advance
+  // because |positioned_descendants| may be modified in the loop, triggering
+  // reallocation, and making |child| a dangling pointer.
+  for (LayoutBox* child : *positioned_descendants) {
     LayoutUnit column_breadth =
         GridAreaBreadthForOutOfFlowChild(*child, kForColumns);
     LayoutUnit row_breadth = GridAreaBreadthForOutOfFlowChild(*child, kForRows);
