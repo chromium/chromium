@@ -1627,6 +1627,17 @@ TEST_F(DownloadTargetDeterminerTest, NotifyExtensionsSafe) {
        DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
        EXPECT_LOCAL_PATH},
+
+      {// 4: Use a file extension that doesn't match the MIME type, but matches
+       // the URL.
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.xyz",
+       "text/plain", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("overridden/foo.xyz"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
   };
 
   ON_CALL(*delegate(), NotifyExtensions_(_, _, _))

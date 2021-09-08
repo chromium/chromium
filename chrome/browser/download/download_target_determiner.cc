@@ -409,11 +409,13 @@ void DownloadTargetDeterminer::NotifyExtensionsDone(
       net::FileURLToFilePath(download_->GetURL(), &file_path);
       new_path = new_path.ReplaceExtension(file_path.Extension());
     } else {
-      // If the (Chrome) extension does not suggest an file extension, do not
+      // If the (Chrome) extension does not suggest an file extension, or if the
+      // suggested extension matches that of the |virtual_path_|, do not
       // pass a mime type to GenerateSafeFileName so that it does not force the
-      // filename to have an extension. Otherwise, correct the file extension in
-      // case it is wrongly given.
-      if (new_path.Extension().empty()) {
+      // filename to have an extension or generate a different one. Otherwise,
+      // correct the file extension in case it is wrongly given.
+      if (new_path.Extension().empty() ||
+          new_path.Extension() == virtual_path_.Extension()) {
         net::GenerateSafeFileName(std::string() /*mime_type*/,
                                   false /*ignore_extension*/, &new_path);
       } else {
