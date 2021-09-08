@@ -461,7 +461,7 @@
       "content_script"
     ]
   },
-  "runtime.connect": {
+  "runtime.connect": [{
     // Everything except WebUI.
     "contexts": [
       "blessed_web_page",
@@ -472,7 +472,14 @@
       "web_page"
     ],
     "matches": ["<all_urls>"]
-  },
+  },{
+    "channel": "dev",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      // Allow only nassh.html page in Terminal System Web App.
+      "chrome-untrusted://terminal/html/nassh.html"
+    ]
+  }],
   "runtime.connectNative": {
     "dependencies": ["permission:nativeMessaging"],
     "contexts": ["blessed_extension"]
@@ -534,6 +541,13 @@
     "matches": [
       "chrome://password-change/*",
       "chrome://file-manager/*"
+    ]
+  },{
+    "channel": "dev",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      // Allow only nassh.html page in Terminal System Web App.
+      "chrome-untrusted://terminal/html/nassh.html"
     ]
   }],
   "runtime.sendNativeMessage": {
