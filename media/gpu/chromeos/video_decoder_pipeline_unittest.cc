@@ -56,6 +56,7 @@ class MockVideoFramePool : public DmabufVideoFramePool {
   MOCK_METHOD0(GetFrame, scoped_refptr<VideoFrame>());
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));
+  MOCK_METHOD0(ReleaseAllFrames, void());
 };
 
 constexpr gfx::Size kCodedSize(48, 36);
@@ -277,6 +278,12 @@ class VideoDecoderPipelineTest
     // been pegged to the test task runner, e.g. in PickDecoderOutputFormat().
     // Since in that case we don't care about threading, just detach it.
     DETACH_FROM_SEQUENCE(decoder_->decoder_sequence_checker_);
+  }
+
+  void InvokeWaitingCB(WaitingReason reason) {
+    decoder_->decoder_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&VideoDecoderPipeline::OnDecoderWaiting,
+                                  base::Unretained(decoder_.get()), reason));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -621,4 +628,29 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
   DetachDecoderSequenceChecker();
 }
 
+// Verifies that ReleaseAllFrames is called on the frame pool when we receive
+// the kDecoderStateLost event through the waiting callback. This can occur
+// during protected content playback on Intel.
+TEST_F(VideoDecoderPipelineTest, RebuildFramePoolsOnStateLost) {
+  InitializeDecoder(
+      base::BindOnce(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
+      StatusCode::kOk);
+
+  // Simulate the waiting callback from the decoder for kDecoderStateLost.
+  EXPECT_CALL(*this, OnWaiting(media::WaitingReason::kDecoderStateLost));
+  InvokeWaitingCB(media::WaitingReason::kDecoderStateLost);
+  task_environment_.RunUntilIdle();
+
+  // Invoke Reset() as a client would do, and we then expect that to invoke the
+  // method to rebuild the frame pool.
+  EXPECT_CALL(*reinterpret_cast<MockDecoder*>(GetUnderlyingDecoder()), Reset(_))
+      .WillOnce(::testing::WithArgs<0>(
+          [](base::OnceClosure closure) { std::move(closure).Run(); }));
+  EXPECT_CALL(*this, OnResetDone());
+  EXPECT_CALL(*pool_, ReleaseAllFrames());
+
+  decoder_->Reset(base::BindOnce(&VideoDecoderPipelineTest::OnResetDone,
+                                 base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+}
 }  // namespace media

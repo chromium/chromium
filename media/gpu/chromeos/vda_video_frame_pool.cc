@@ -171,6 +171,12 @@ void VdaVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
   CallFrameAvailableCbIfNeeded();
 }
 
+void VdaVideoFramePool::ReleaseAllFrames() {
+  // TODO(jkardatzke): Implement this when we do protected content on Android
+  // for Intel platforms.
+  NOTREACHED();
+}
+
 void VdaVideoFramePool::CallFrameAvailableCbIfNeeded() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);

@@ -398,6 +398,14 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
 
   CallFlushCbIfNeeded(DecodeStatus::ABORTED);
 
+  if (need_frame_pool_rebuild_) {
+    need_frame_pool_rebuild_ = false;
+    if (main_frame_pool_)
+      main_frame_pool_->ReleaseAllFrames();
+    if (auxiliary_frame_pool_)
+      auxiliary_frame_pool_->ReleaseAllFrames();
+  }
+
   client_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
 }
 
@@ -516,6 +524,9 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
 void VideoDecoderPipeline::OnDecoderWaiting(WaitingReason reason) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
+  if (reason == media::WaitingReason::kDecoderStateLost)
+    need_frame_pool_rebuild_ = true;
+
   client_task_runner_->PostTask(FROM_HERE, base::BindOnce(waiting_cb_, reason));
 }
 

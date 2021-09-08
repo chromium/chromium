@@ -68,6 +68,11 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // would be dropped immediately.
   virtual void NotifyWhenFrameAvailable(base::OnceClosure cb) = 0;
 
+  // Invoke to cause the pool to release all the frames it has allocated before
+  // which will cause new ones to be allocated. This method must be called on
+  // |parent_task_runner_| because it may invalidate weak ptrs.
+  virtual void ReleaseAllFrames() = 0;
+
  protected:
   scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
 };

@@ -247,6 +247,16 @@ void PlatformVideoFramePool::NotifyWhenFrameAvailable(base::OnceClosure cb) {
   frame_available_cb_ = std::move(cb);
 }
 
+void PlatformVideoFramePool::ReleaseAllFrames() {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
+  DVLOGF(4);
+  base::AutoLock auto_lock(lock_);
+  free_frames_.clear();
+  frames_in_use_.clear();
+  weak_this_factory_.InvalidateWeakPtrs();
+  weak_this_ = weak_this_factory_.GetWeakPtr();
+}
+
 // static
 void PlatformVideoFramePool::OnFrameReleasedThunk(
     absl::optional<base::WeakPtr<PlatformVideoFramePool>> pool,

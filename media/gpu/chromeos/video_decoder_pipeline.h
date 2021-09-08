@@ -287,6 +287,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Set to true when any unexpected error occurs.
   bool has_error_ GUARDED_BY_CONTEXT(decoder_sequence_checker_) = false;
 
+  // Set to true when we need to tell the frame pool to rebuild itself. This is
+  // needed for protected content on Intel platforms.
+  bool need_frame_pool_rebuild_ GUARDED_BY_CONTEXT(decoder_sequence_checker_) =
+      false;
+
   // Set to true to bypass checks for encrypted content support for testing.
   bool allow_encrypted_content_for_testing_ = false;
 
