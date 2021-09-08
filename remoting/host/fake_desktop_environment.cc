@@ -4,11 +4,13 @@
 
 #include "remoting/host/fake_desktop_environment.h"
 
+#include <memory>
 #include <utility>
 
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
+#include "remoting/host/fake_url_forwarder_configurator.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -113,7 +115,7 @@ std::unique_ptr<FileOperations> FakeDesktopEnvironment::CreateFileOperations() {
 
 std::unique_ptr<UrlForwarderConfigurator>
 FakeDesktopEnvironment::CreateUrlForwarderConfigurator() {
-  return nullptr;
+  return std::make_unique<FakeUrlForwarderConfigurator>();
 }
 
 std::string FakeDesktopEnvironment::GetCapabilities() const {

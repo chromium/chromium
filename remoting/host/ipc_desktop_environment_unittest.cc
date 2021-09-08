@@ -19,7 +19,10 @@
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -37,6 +40,7 @@
 #include "remoting/host/fake_keyboard_layout_monitor.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/fake_desktop_capturer.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
@@ -46,10 +50,14 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
+using base::test::RunCallback;
+using base::test::RunOnceCallback;
+using base::test::RunOnceClosure;
 using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::AtMost;
+using testing::ByMove;
 using testing::DeleteArg;
 using testing::DoAll;
 using testing::InSequence;
@@ -60,6 +68,9 @@ namespace remoting {
 
 using protocol::test::EqualsTouchEvent;
 using protocol::test::EqualsTouchEventTypeAndId;
+
+using SetUpUrlForwarderResponse =
+    protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
 namespace {
 
@@ -196,16 +207,21 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // Destroys the desktop process object created by CreateDesktopProcess().
   void DestoyDesktopProcess();
 
+  // Creates a new remote URL forwarder configurator for the desktop process.
+  void ResetRemoteUrlForwarderConfigurator();
+
   void OnDisconnectCallback();
 
   // Invoked when ChromotingDesktopDaemonMsg_DesktopAttached message is
   // received.
   void OnDesktopAttached(const IPC::ChannelHandle& desktop_pipe);
 
+  // Runs until there are no references to |task_runner_|. Calls after the main
+  // loop has been run are no-op.
   void RunMainLoopUntilDone();
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
   // Runs until |desktop_session_proxy_| is connected to the desktop.
   std::unique_ptr<base::RunLoop> setup_run_loop_;
@@ -244,6 +260,16 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // Input injector owned by |desktop_process_|.
   MockInputInjector* remote_input_injector_;
 
+  // Will be transferred to the caller of
+  // MockDesktopEnvironment::CreateUrlForwarderConfigurator().
+  // We create the configurator in advance to allow setting expectations before
+  // the desktop process is being created, during which the configurator will be
+  // used.
+  std::unique_ptr<MockUrlForwarderConfigurator>
+      owned_remote_url_forwarder_configurator_;
+  MockUrlForwarderConfigurator* remote_url_forwarder_configurator_;
+  std::unique_ptr<UrlForwarderConfigurator> url_forwarder_configurator_;
+
   // The last |terminal_id| passed to ConnectTermina();
   int terminal_id_;
 
@@ -253,7 +279,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   base::WeakPtrFactory<ClientSessionControl> client_session_control_factory_;
 
  private:
-  // Runs until there are references to |task_runner_|.
+  // Runs until there are no references to |task_runner_|.
   base::RunLoop main_run_loop_;
 };
 
@@ -329,6 +355,10 @@ void IpcDesktopEnvironmentTest::SetUp() {
       desktop_environment_->CreateVideoCapturer();
 
   desktop_environment_->SetCapabilities(std::string());
+
+  url_forwarder_configurator_ =
+      desktop_environment_->CreateUrlForwarderConfigurator();
+  ResetRemoteUrlForwarderConfigurator();
 }
 
 void IpcDesktopEnvironmentTest::TearDown() {
@@ -379,6 +409,11 @@ DesktopEnvironment* IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, SetCapabilities(_))
       .Times(AtMost(1));
+  DCHECK(owned_remote_url_forwarder_configurator_);
+  EXPECT_CALL(*desktop_environment, CreateUrlForwarderConfigurator())
+      .Times(AtMost(1))
+      .WillOnce(
+          Return(ByMove(std::move(owned_remote_url_forwarder_configurator_))));
 
   // Let tests know that the remote desktop environment is created.
   task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -413,6 +448,7 @@ void IpcDesktopEnvironmentTest::DeleteDesktopEnvironment() {
   input_injector_.reset();
   screen_controls_.reset();
   video_capturer_.reset();
+  url_forwarder_configurator_.reset();
 
   // Trigger DisconnectTerminal().
   desktop_environment_.reset();
@@ -459,6 +495,15 @@ void IpcDesktopEnvironmentTest::DestoyDesktopProcess() {
   remote_input_injector_ = nullptr;
 }
 
+void IpcDesktopEnvironmentTest::ResetRemoteUrlForwarderConfigurator() {
+  owned_remote_url_forwarder_configurator_ =
+      std::make_unique<MockUrlForwarderConfigurator>();
+  remote_url_forwarder_configurator_ =
+      owned_remote_url_forwarder_configurator_.get();
+  ON_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
+      .WillByDefault(RunOnceCallback<0>(false));
+}
+
 void IpcDesktopEnvironmentTest::OnDisconnectCallback() {
   DeleteDesktopEnvironment();
 }
@@ -471,9 +516,12 @@ void IpcDesktopEnvironmentTest::OnDesktopAttached(
 }
 
 void IpcDesktopEnvironmentTest::RunMainLoopUntilDone() {
+  bool should_run_loop = task_runner_ != nullptr;
   task_runner_ = nullptr;
   io_task_runner_ = nullptr;
-  main_run_loop_.Run();
+  if (should_run_loop) {
+    main_run_loop_.Run();
+  }
 }
 
 // Runs until the desktop is attached and exits immediately after that.
@@ -562,6 +610,7 @@ TEST_F(IpcDesktopEnvironmentTest, Reattach) {
   // Create and start a new desktop process object.
   setup_run_loop_ = std::make_unique<base::RunLoop>();
   DestoyDesktopProcess();
+  ResetRemoteUrlForwarderConfigurator();
   CreateDesktopProcess();
   setup_run_loop_->Run();
 
@@ -746,6 +795,114 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
   screen_controls_->SetScreenResolution(ScreenResolution(
       webrtc::DesktopSize(100, 100),
       webrtc::DesktopVector(96, 96)));
+}
+
+TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {
+  EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
+      .WillOnce(RunOnceCallback<0>(true));
+  base::MockCallback<UrlForwarderConfigurator::IsUrlForwarderSetUpCallback>
+      callback;
+  EXPECT_CALL(callback, Run(true))
+      .WillOnce([&]() {
+        // Do it again when the state is already known.
+        url_forwarder_configurator_->IsUrlForwarderSetUp(callback.Get());
+      })
+      .WillOnce(InvokeWithoutArgs(
+          this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(callback.Get());
+
+  // Run the message loop until the desktop is attached.
+  setup_run_loop_->Run();
+
+  // Run now rather than in TearDown() so that we can verify |callback|.
+  RunMainLoopUntilDone();
+}
+
+TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderHappyPath) {
+  EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
+      .WillOnce(RunOnceCallback<0>(false));
+  EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
+      .WillOnce([](auto& callback) {
+        callback.Run(SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED);
+        callback.Run(SetUpUrlForwarderResponse::COMPLETE);
+      });
+  base::MockCallback<UrlForwarderConfigurator::SetUpUrlForwarderCallback>
+      setup_state_callback;
+  base::MockCallback<UrlForwarderConfigurator::IsUrlForwarderSetUpCallback>
+      is_set_up_callback;
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(is_set_up_callback, Run(false)).WillOnce([&]() {
+      // Post task to prevent reentrant issue.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UrlForwarderConfigurator::SetUpUrlForwarder,
+                         base::Unretained(url_forwarder_configurator_.get()),
+                         setup_state_callback.Get()));
+    });
+    EXPECT_CALL(setup_state_callback,
+                Run(SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED))
+        .Times(1);
+    EXPECT_CALL(setup_state_callback, Run(SetUpUrlForwarderResponse::COMPLETE))
+        .WillOnce([&]() {
+          url_forwarder_configurator_->IsUrlForwarderSetUp(
+              is_set_up_callback.Get());
+        });
+    EXPECT_CALL(is_set_up_callback, Run(true))
+        .WillOnce(InvokeWithoutArgs(
+            this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+  }
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
+
+  // Run the message loop until the desktop is attached.
+  setup_run_loop_->Run();
+
+  // Run now rather than in TearDown() so that we can verify |callback|.
+  RunMainLoopUntilDone();
+}
+
+TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderFailed) {
+  EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
+      .WillOnce(RunOnceCallback<0>(false));
+  EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
+      .WillOnce(RunOnceCallback<0>(SetUpUrlForwarderResponse::FAILED));
+  base::MockCallback<UrlForwarderConfigurator::SetUpUrlForwarderCallback>
+      setup_state_callback;
+  base::MockCallback<UrlForwarderConfigurator::IsUrlForwarderSetUpCallback>
+      is_set_up_callback;
+
+  {
+    InSequence s;
+
+    EXPECT_CALL(is_set_up_callback, Run(false)).WillOnce([&]() {
+      // Post task to prevent reentrant issue.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UrlForwarderConfigurator::SetUpUrlForwarder,
+                         base::Unretained(url_forwarder_configurator_.get()),
+                         setup_state_callback.Get()));
+    });
+    EXPECT_CALL(setup_state_callback, Run(SetUpUrlForwarderResponse::FAILED))
+        .WillOnce([&]() {
+          url_forwarder_configurator_->IsUrlForwarderSetUp(
+              is_set_up_callback.Get());
+        });
+    EXPECT_CALL(is_set_up_callback, Run(false))
+        .WillOnce(InvokeWithoutArgs(
+            this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+  }
+
+  url_forwarder_configurator_->IsUrlForwarderSetUp(is_set_up_callback.Get());
+
+  // Run the message loop until the desktop is attached.
+  setup_run_loop_->Run();
+
+  // Run now rather than in TearDown() so that we can verify |callback|.
+  RunMainLoopUntilDone();
 }
 
 }  // namespace remoting

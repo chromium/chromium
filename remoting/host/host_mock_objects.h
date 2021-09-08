@@ -41,6 +41,8 @@ class MockDesktopEnvironment : public DesktopEnvironment {
   MockDesktopEnvironment();
   ~MockDesktopEnvironment() override;
 
+  // TODO(yuweih): Use new MOCK_METHOD style and remove the Ptr dance:
+  //   MOCK_METHOD(ReturnType, MethodName, (Args...), (const, override))
   MOCK_METHOD0(CreateActionExecutorPtr, ActionExecutor*());
   MOCK_METHOD0(CreateAudioCapturerPtr, AudioCapturer*());
   MOCK_METHOD0(CreateInputInjectorPtr, InputInjector*());
@@ -52,12 +54,16 @@ class MockDesktopEnvironment : public DesktopEnvironment {
       KeyboardLayoutMonitor*(
           base::RepeatingCallback<void(const protocol::KeyboardLayout&)>));
   MOCK_METHOD0(CreateFileOperationsPtr, FileOperations*());
-  MOCK_METHOD0(CreateUrlForwarderConfiguratorPtr, UrlForwarderConfigurator*());
   MOCK_CONST_METHOD0(GetCapabilities, std::string());
   MOCK_METHOD1(SetCapabilities, void(const std::string&));
   MOCK_CONST_METHOD0(GetDesktopSessionId, uint32_t());
   MOCK_METHOD0(CreateComposingVideoCapturerPtr,
                DesktopAndCursorConditionalComposer*());
+
+  MOCK_METHOD(std::unique_ptr<UrlForwarderConfigurator>,
+              CreateUrlForwarderConfigurator,
+              (),
+              (override));
 
   // DesktopEnvironment implementation.
   std::unique_ptr<ActionExecutor> CreateActionExecutor() override;
@@ -71,8 +77,6 @@ class MockDesktopEnvironment : public DesktopEnvironment {
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
-  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
-      override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
   CreateComposingVideoCapturer() override;
 };
@@ -214,6 +218,21 @@ class MockMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockMouseCursorMonitor);
+};
+
+class MockUrlForwarderConfigurator final : public UrlForwarderConfigurator {
+ public:
+  MockUrlForwarderConfigurator();
+  ~MockUrlForwarderConfigurator() override;
+
+  MOCK_METHOD(void,
+              IsUrlForwarderSetUp,
+              (IsUrlForwarderSetUpCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              SetUpUrlForwarder,
+              (const SetUpUrlForwarderCallback& callback),
+              (override));
 };
 
 }  // namespace remoting

@@ -17,8 +17,9 @@ UrlForwarderConfigurator::~UrlForwarderConfigurator() = default;
 
 // static
 std::unique_ptr<UrlForwarderConfigurator> UrlForwarderConfigurator::Create() {
-  // Unsupported platforms.
-  NOTREACHED();
+  // Unsupported platforms. Use NOTIMPLEMENTED() instead of NOTREACHED() since
+  // some unit tests still attempt to create the configurator.
+  NOTIMPLEMENTED();
   return nullptr;
 }
 

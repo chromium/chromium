@@ -30,6 +30,8 @@
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
 #include "remoting/host/mojom/clipboard.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/host/mojom/url_forwarder_configurator.mojom.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/process_stats_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -56,6 +58,7 @@ class ProcessStatsSender;
 class RemoteInputFilter;
 class ScreenControls;
 class ScreenResolution;
+class UrlForwarderConfigurator;
 
 namespace protocol {
 class ActionRequest;
@@ -72,7 +75,8 @@ class DesktopSessionAgent
       public ClientSessionControl,
       public protocol::ProcessStatsStub,
       public IpcFileOperations::ResultHandler,
-      public mojom::ClipboardEventHandler {
+      public mojom::ClipboardEventHandler,
+      public mojom::UrlForwarderConfigurator {
  public:
   class Delegate {
    public:
@@ -193,6 +197,13 @@ class DesktopSessionAgent
   void StopProcessStatsReport();
 
  private:
+  // mojom::UrlForwarderConfigurator implementation.
+  void SetUpUrlForwarder() override;
+
+  void OnCheckUrlForwarderSetUpResult(bool is_set_up);
+  void OnUrlForwarderSetUpStateChanged(
+      protocol::UrlForwarderControl::SetUpUrlForwarderResponse::State state);
+
   // Task runner dedicated to running methods of |audio_capturer_|.
   scoped_refptr<AutoThreadTaskRunner> audio_capture_task_runner_;
 
@@ -262,6 +273,15 @@ class DesktopSessionAgent
       clipboard_observer_remote_;
   mojo::AssociatedReceiver<mojom::ClipboardEventHandler>
       clipboard_handler_receiver_{this};
+
+  // Checks and configures the URL forwarder.
+  std::unique_ptr<::remoting::UrlForwarderConfigurator>
+      url_forwarder_configurator_;
+
+  mojo::AssociatedReceiver<mojom::UrlForwarderConfigurator>
+      url_forwarder_configurator_receiver_{this};
+  mojo::AssociatedRemote<mojom::UrlForwarderStateObserver>
+      url_forwarder_state_observer_remote_;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};

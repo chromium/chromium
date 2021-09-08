@@ -15,6 +15,8 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,10 +33,12 @@
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
+#include "remoting/host/mojom/url_forwarder_configurator.mojom-shared.h"
 #include "remoting/host/process_stats_sender.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/host/screen_controls.h"
 #include "remoting/host/screen_resolution.h"
+#include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
@@ -136,6 +140,9 @@ class SharedMemoryImpl : public webrtc::SharedMemory {
 };
 
 namespace {
+
+using SetUpUrlForwarderResponse =
+    protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
 // Routes local clipboard events though the IPC channel to the network process.
 class DesktopSessionClipboardStub : public protocol::ClipboardStub {
@@ -314,6 +321,15 @@ void DesktopSessionAgent::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::ClipboardEventHandler>
         pending_receiver(std::move(handle));
     clipboard_handler_receiver_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::UrlForwarderConfigurator::Name_) {
+    if (url_forwarder_configurator_receiver_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::UrlForwarderConfigurator::Name_;
+      CrashProcess(base::Location::Current());
+    }
+    mojo::PendingAssociatedReceiver<mojom::UrlForwarderConfigurator>
+        pending_receiver(std::move(handle));
+    url_forwarder_configurator_receiver_.Bind(std::move(pending_receiver));
   }
 }
 
@@ -394,6 +410,8 @@ void DesktopSessionAgent::OnStartSessionAgent(
 
   // Hook up the associated interfaces.
   network_channel_->GetRemoteAssociatedInterface(&clipboard_observer_remote_);
+  network_channel_->GetRemoteAssociatedInterface(
+      &url_forwarder_state_observer_remote_);
 
   // Create a desktop environment for the new session.
   desktop_environment_ = delegate_->desktop_environment_factory().Create(
@@ -453,6 +471,13 @@ void DesktopSessionAgent::OnStartSessionAgent(
   // Set up the message handler for file transfers.
   session_file_operations_handler_.emplace(
       this, desktop_environment_->CreateFileOperations());
+
+  url_forwarder_configurator_ =
+      desktop_environment_->CreateUrlForwarderConfigurator();
+
+  // Check and report the initial URL forwarder setup state.
+  url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
+      &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
 }
 
 void DesktopSessionAgent::OnCaptureResult(
@@ -583,6 +608,10 @@ void DesktopSessionAgent::Stop() {
 
     clipboard_observer_remote_.reset();
     clipboard_handler_receiver_.reset();
+
+    url_forwarder_configurator_receiver_.reset();
+    url_forwarder_state_observer_remote_.reset();
+    url_forwarder_configurator_.reset();
 
     remote_input_filter_.reset();
 
@@ -778,6 +807,40 @@ void DesktopSessionAgent::StopProcessStatsReport() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(stats_sender_);
   stats_sender_.reset();
+}
+
+void DesktopSessionAgent::SetUpUrlForwarder() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
+      &DesktopSessionAgent::OnUrlForwarderSetUpStateChanged, this));
+}
+
+void DesktopSessionAgent::OnCheckUrlForwarderSetUpResult(bool is_set_up) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  url_forwarder_state_observer_remote_->OnUrlForwarderStateChange(
+      is_set_up ? mojom::UrlForwarderState::kSetUp
+                : mojom::UrlForwarderState::kNotSetUp);
+}
+
+void DesktopSessionAgent::OnUrlForwarderSetUpStateChanged(
+    SetUpUrlForwarderResponse::State state) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  mojom::UrlForwarderState mojo_state;
+  switch (state) {
+    case SetUpUrlForwarderResponse::COMPLETE:
+      mojo_state = mojom::UrlForwarderState::kSetUp;
+      break;
+    case SetUpUrlForwarderResponse::FAILED:
+      mojo_state = mojom::UrlForwarderState::kFailed;
+      break;
+    case SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED:
+      mojo_state = mojom::UrlForwarderState::kSetupPendingUserIntervention;
+      break;
+    default:
+      NOTREACHED() << "Unknown state: " << state;
+      mojo_state = mojom::UrlForwarderState::kUnknown;
+  }
+  url_forwarder_state_observer_remote_->OnUrlForwarderStateChange(mojo_state);
 }
 
 }  // namespace remoting

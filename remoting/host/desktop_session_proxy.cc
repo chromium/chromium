@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -46,6 +47,9 @@
 #endif  // defined(OS_WIN)
 
 namespace remoting {
+
+using SetUpUrlForwarderResponse =
+    protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
 class DesktopSessionProxy::IpcSharedBufferCore
     : public base::RefCountedThreadSafe<IpcSharedBufferCore> {
@@ -156,6 +160,13 @@ DesktopSessionProxy::CreateKeyboardLayoutMonitor(
 
 std::unique_ptr<FileOperations> DesktopSessionProxy::CreateFileOperations() {
   return ipc_file_operations_factory_.CreateFileOperations();
+}
+
+std::unique_ptr<UrlForwarderConfigurator>
+DesktopSessionProxy::CreateUrlForwarderConfigurator() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  return std::make_unique<IpcUrlForwarderConfigurator>(this);
 }
 
 std::string DesktopSessionProxy::GetCapabilities() const {
@@ -269,6 +280,17 @@ void DesktopSessionProxy::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::ClipboardEventObserver>
         pending_receiver(std::move(handle));
     clipboard_observer_receiver_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::UrlForwarderStateObserver::Name_) {
+    if (url_forwarder_state_observer_receiver_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::UrlForwarderStateObserver::Name_;
+      CrashProcess(base::Location::Current());
+      return;
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::UrlForwarderStateObserver>
+        pending_receiver(std::move(handle));
+    url_forwarder_state_observer_receiver_.Bind(std::move(pending_receiver));
   }
 }
 
@@ -294,6 +316,8 @@ bool DesktopSessionProxy::AttachToDesktop(
       client_session_control_->client_jid(), screen_resolution_, options_));
 
   desktop_channel_->GetRemoteAssociatedInterface(&clipboard_handler_remote_);
+  desktop_channel_->GetRemoteAssociatedInterface(
+      &url_forwarder_configurator_remote_);
 
   desktop_session_id_ = session_id;
 
@@ -306,6 +330,11 @@ void DesktopSessionProxy::DetachFromDesktop() {
   desktop_channel_.reset();
   clipboard_handler_remote_.reset();
   clipboard_observer_receiver_.reset();
+  url_forwarder_configurator_remote_.reset();
+  url_forwarder_state_observer_receiver_.reset();
+  current_url_forwarder_state_ = mojom::UrlForwarderState::kUnknown;
+  // We don't reset |is_url_forwarder_set_up_callback_| here since the request
+  // can come in before the DetachFromDesktop-AttachToDesktop sequence.
   desktop_session_id_ = UINT32_MAX;
 
   shared_buffers_.clear();
@@ -522,6 +551,79 @@ void DesktopSessionProxy::Cancel(uint64_t file_id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   SendToDesktop(new ChromotingNetworkDesktopMsg_CancelFile(file_id));
+}
+
+void DesktopSessionProxy::IsUrlForwarderSetUp(
+    UrlForwarderConfigurator::IsUrlForwarderSetUpCallback callback) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  switch (current_url_forwarder_state_) {
+    case mojom::UrlForwarderState::kUnknown:
+      // State is not known yet. Wait for OnUrlForwarderStateChange() to be
+      // called.
+      DCHECK(!is_url_forwarder_set_up_callback_);
+      is_url_forwarder_set_up_callback_ = std::move(callback);
+      break;
+    case mojom::UrlForwarderState::kSetUp:
+      std::move(callback).Run(true);
+      break;
+    default:
+      std::move(callback).Run(false);
+  }
+}
+
+void DesktopSessionProxy::SetUpUrlForwarder(
+    const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK(!set_up_url_forwarder_callback_);
+
+  if (!url_forwarder_configurator_remote_.is_connected()) {
+    LOG(ERROR) << "The UrlForwarderConfigurator remote is not connected. Setup "
+               << "request ignored.";
+    callback.Run(SetUpUrlForwarderResponse::FAILED);
+    return;
+  }
+  set_up_url_forwarder_callback_ = callback;
+  url_forwarder_configurator_remote_->SetUpUrlForwarder();
+}
+
+void DesktopSessionProxy::OnUrlForwarderStateChange(
+    mojom::UrlForwarderState state) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  current_url_forwarder_state_ = state;
+
+  if (is_url_forwarder_set_up_callback_) {
+    std::move(is_url_forwarder_set_up_callback_)
+        .Run(state == mojom::UrlForwarderState::kSetUp);
+  }
+
+  if (set_up_url_forwarder_callback_) {
+    switch (state) {
+      case mojom::UrlForwarderState::kSetUp:
+        set_up_url_forwarder_callback_.Run(SetUpUrlForwarderResponse::COMPLETE);
+        // Cleanup callback due to terminating state.
+        set_up_url_forwarder_callback_.Reset();
+        break;
+      case mojom::UrlForwarderState::kNotSetUp:
+        // The desktop session agent during the setup process will only report
+        // SET_UP or FAILED. NOT_SET_UP must come from a freshly started agent.
+        LOG(WARNING) << "Setup process failed because the previous desktop "
+                     << "session agent has exited";
+        FALLTHROUGH;
+      case mojom::UrlForwarderState::kFailed:
+        set_up_url_forwarder_callback_.Run(SetUpUrlForwarderResponse::FAILED);
+        // Cleanup callback due to terminating state.
+        set_up_url_forwarder_callback_.Reset();
+        break;
+      case mojom::UrlForwarderState::kSetupPendingUserIntervention:
+        set_up_url_forwarder_callback_.Run(
+            SetUpUrlForwarderResponse::USER_INTERVENTION_REQUIRED);
+        break;
+      default:
+        LOG(ERROR) << "Received unexpected state: " << state;
+    }
+  }
 }
 
 DesktopSessionProxy::~DesktopSessionProxy() {

@@ -8,7 +8,9 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
@@ -23,11 +25,15 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/ipc_file_operations.h"
+#include "remoting/host/ipc_url_forwarder_configurator.h"
 #include "remoting/host/mojom/clipboard.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/host/mojom/url_forwarder_configurator.mojom.h"
 #include "remoting/host/screen_resolution.h"
+#include "remoting/host/url_forwarder_configurator.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
+#include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -79,7 +85,8 @@ class DesktopSessionProxy
                                         DesktopSessionProxyTraits>,
       public IPC::Listener,
       public IpcFileOperations::RequestHandler,
-      public mojom::ClipboardEventObserver {
+      public mojom::ClipboardEventObserver,
+      public mojom::UrlForwarderStateObserver {
  public:
   DesktopSessionProxy(
       scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
@@ -99,6 +106,7 @@ class DesktopSessionProxy
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();
+  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator();
   std::string GetCapabilities() const;
   void SetCapabilities(const std::string& capabilities);
 
@@ -173,6 +181,15 @@ class DesktopSessionProxy
 
   // mojom::ClipboardEventObserver implementation.
   void OnClipboardEvent(const protocol::ClipboardEvent& event) override;
+
+  // API used to implement the UrlForwarderConfigurator interface.
+  void IsUrlForwarderSetUp(
+      UrlForwarderConfigurator::IsUrlForwarderSetUpCallback callback);
+  void SetUpUrlForwarder(
+      const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback);
+
+  // mojom::UrlForwarderStateObserver implementation.
+  void OnUrlForwarderStateChange(mojom::UrlForwarderState state) override;
 
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
@@ -286,6 +303,17 @@ class DesktopSessionProxy
       clipboard_handler_remote_;
   mojo::AssociatedReceiver<mojom::ClipboardEventObserver>
       clipboard_observer_receiver_{this};
+
+  mojo::AssociatedRemote<mojom::UrlForwarderConfigurator>
+      url_forwarder_configurator_remote_;
+  mojo::AssociatedReceiver<mojom::UrlForwarderStateObserver>
+      url_forwarder_state_observer_receiver_{this};
+  UrlForwarderConfigurator::IsUrlForwarderSetUpCallback
+      is_url_forwarder_set_up_callback_;
+  UrlForwarderConfigurator::SetUpUrlForwarderCallback
+      set_up_url_forwarder_callback_;
+  mojom::UrlForwarderState current_url_forwarder_state_ =
+      mojom::UrlForwarderState::kUnknown;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopSessionProxy);
 };

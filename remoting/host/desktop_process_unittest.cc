@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,6 +29,7 @@
 #include "remoting/host/desktop_process.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
+#include "remoting/host/fake_url_forwarder_configurator.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/screen_resolution.h"
@@ -39,6 +41,7 @@
 using testing::_;
 using testing::AnyNumber;
 using testing::AtMost;
+using testing::ByMove;
 using testing::InSequence;
 using testing::Return;
 
@@ -205,6 +208,10 @@ DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
   EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitorPtr(_))
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateKeyboardLayoutMonitor));
+  EXPECT_CALL(*desktop_environment, CreateUrlForwarderConfigurator())
+      .Times(AtMost(1))
+      .WillOnce(
+          Return(ByMove(std::make_unique<FakeUrlForwarderConfigurator>())));
   EXPECT_CALL(*desktop_environment, GetCapabilities())
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, SetCapabilities(_))

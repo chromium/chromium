@@ -88,8 +88,7 @@ std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
 
 std::unique_ptr<UrlForwarderConfigurator>
 IpcDesktopEnvironment::CreateUrlForwarderConfigurator() {
-  // TODO(yuweih): Get it from |desktop_session_proxy_|.
-  return UrlForwarderConfigurator::Create();
+  return desktop_session_proxy_->CreateUrlForwarderConfigurator();
 }
 
 std::string IpcDesktopEnvironment::GetCapabilities() const {
