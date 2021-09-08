@@ -122,8 +122,8 @@ export async function selectWallpaper(image, provider, store) {
   }
   store.endBatchUpdate();
 
-  // Explicitly disable daily refresh if wallpaper is manually selected.
-  await setDailyRefreshCollectionId('', provider, store);
+  // Cleared Daily Refresh state should be reflected in UI.
+  getDailyRefreshCollectionId(provider, store);
 }
 
 /**

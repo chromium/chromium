@@ -294,7 +294,8 @@ class ASH_EXPORT WallpaperControllerImpl
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const AccountId& accound_id,
                                    const std::string& collection_id) override;
-  std::string GetDailyRefreshCollectionId() const override;
+  std::string GetDailyRefreshCollectionId(
+      const AccountId& account_id) const override;
   void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) override;
   void OnGoogleDriveMounted(const AccountId& account_id) override;
@@ -584,7 +585,6 @@ class ASH_EXPORT WallpaperControllerImpl
   bool GetSyncedWallpaperInfo(const AccountId& account_id,
                               WallpaperInfo* info) const;
   void SyncLocalAndRemotePrefs(const AccountId& account_id);
-  void HandleSyncedCollectionIdChanged(const AccountId& account_id);
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
@@ -632,10 +632,10 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
 
-  void SetLocalDailyRefreshCollectionId(const AccountId& account_id,
-                                        const std::string& collection_id);
-
   PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
+
+  void HandleDailyWallpaperInfoSyncedIn(const AccountId& account_id,
+                                        const WallpaperInfo& info);
 
   bool locked_ = false;
 

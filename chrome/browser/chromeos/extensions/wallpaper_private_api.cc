@@ -339,7 +339,7 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
           asset_id, GURL(params->url), params->collection_id,
           wallpaper_api_util::GetLayoutEnum(
               wallpaper_base::ToString(params->layout)),
-          params->preview_mode, from_user),
+          params->preview_mode, from_user, /*daily_refresh_enabled=*/false),
       base::BindOnce(&WallpaperPrivateSetWallpaperIfExistsFunction::
                          OnSetOnlineWallpaperIfExistsCallback,
                      this));
@@ -381,7 +381,8 @@ ExtensionFunction::ResponseAction WallpaperPrivateSetWallpaperFunction::Run() {
           /*collection_id=*/std::string(),
           wallpaper_api_util::GetLayoutEnum(
               wallpaper_base::ToString(params->layout)),
-          params->preview_mode, /*from_user=*/false),
+          params->preview_mode, /*from_user=*/false,
+          /*daily_refresh_enabled=*/false),
       std::string(params->wallpaper.begin(), params->wallpaper.end()),
       base::BindOnce(
           &WallpaperPrivateSetWallpaperFunction::OnSetWallpaperCallback, this));
