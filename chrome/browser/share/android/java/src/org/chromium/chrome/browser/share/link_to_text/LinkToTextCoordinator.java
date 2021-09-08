@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -157,6 +158,12 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private void reshareHighlightedText() {
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
         setTextFragmentReceiver();
+
+        if (mProducer == null) {
+            onSelectorReady(INVALID_SELECTOR);
+            return;
+        }
+
         mProducer.extractTextFragmentsMatches(
                 new TextFragmentReceiver.ExtractTextFragmentsMatchesResponse() {
                     @Override
@@ -216,6 +223,12 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         setTextFragmentReceiver();
+
+        if (mProducer == null) {
+            onSelectorReady(INVALID_SELECTOR);
+            return;
+        }
+
         mProducer.requestSelector(new TextFragmentReceiver.RequestSelectorResponse() {
             @Override
             public void call(String selector) {
@@ -244,23 +257,43 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void requestSelectorForCanonicalUrl() {
-        mTab.getWebContents().getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
-            @Override
-            public void onResult(GURL result) {
-                if (!result.isEmpty()) {
-                    mShareUrl = result.getSpec();
+        if (shouldRequestCanonicalUrl()) {
+            mTab.getWebContents().getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
+                @Override
+                public void onResult(GURL result) {
+                    if (!result.isEmpty()) {
+                        mShareUrl = result.getSpec();
+                    }
+                    requestSelector();
                 }
-                requestSelector();
-            }
-        });
+            });
+        } else {
+            requestSelector();
+        }
+    }
+
+    private boolean shouldRequestCanonicalUrl() {
+        if (mTab.getWebContents() == null) return false;
+        if (mTab.getWebContents().getMainFrame() == null) return false;
+        if (mTab.getUrl().isEmpty()) return false;
+        if (mTab.isShowingErrorPage() || SadTab.isShowing(mTab)) {
+            return false;
+        }
+        return true;
     }
 
     private void setTextFragmentReceiver() {
-        mProducer = mChromeShareExtras.getRenderFrameHost() != null
-                ? mChromeShareExtras.getRenderFrameHost().getInterfaceToRendererFrame(
-                        TextFragmentReceiver.MANAGER)
-                : mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                        TextFragmentReceiver.MANAGER);
+        if (mChromeShareExtras.getRenderFrameHost() != null
+                && mChromeShareExtras.getRenderFrameHost().isRenderFrameCreated()) {
+            mProducer = mChromeShareExtras.getRenderFrameHost().getInterfaceToRendererFrame(
+                    TextFragmentReceiver.MANAGER);
+            return;
+        }
+
+        if (mTab.getWebContents() != null && mTab.getWebContents().getMainFrame() != null) {
+            mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+                    TextFragmentReceiver.MANAGER);
+        }
     }
 
     private void cleanup() {
