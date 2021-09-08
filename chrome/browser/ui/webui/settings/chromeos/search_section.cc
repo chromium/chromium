@@ -37,6 +37,7 @@ namespace {
 
 bool ShouldShowQuickAnswersSettings() {
   return ash::features::IsQuickAnswersV2Enabled() &&
+         ash::QuickAnswersState::Get() &&
          ash::QuickAnswersState::Get()->is_eligible();
 }
 
@@ -437,6 +438,8 @@ void SearchSection::UpdateAssistantSearchTags() {
 }
 
 void SearchSection::UpdateQuickAnswersSearchTags() {
+  DCHECK(ash::QuickAnswersState::Get());
+
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetQuickAnswersOnSearchConcepts());
 
