@@ -3041,13 +3041,13 @@ class ThirdPartyUaReducedOriginTrialBrowserTest
   GURL accept_ch_ua_reduced_cross_origin_iframe_request_url() const {
     return GURL(base::StrCat(
         {kFirstPartyOriginUrl,
-         "/accept_ch_ua_reuced_cross_origin_iframe_request.html"}));
+         "/accept_ch_ua_reduced_cross_origin_iframe_request.html"}));
   }
 
   GURL accept_ch_ua_reduced_cross_origin_subresource_request_url() const {
     return GURL(base::StrCat(
         {kFirstPartyOriginUrl,
-         "/accept_ch_ua_reuced_cross_origin_subresource_request.html"}));
+         "/accept_ch_ua_reduced_cross_origin_subresource_request.html"}));
   }
 
  protected:
@@ -3084,9 +3084,9 @@ class ThirdPartyUaReducedOriginTrialBrowserTest
       return false;
     }
     if (params->url_request.url.path() !=
-            "/accept_ch_ua_reuced_cross_origin_iframe_request.html" &&
+            "/accept_ch_ua_reduced_cross_origin_iframe_request.html" &&
         params->url_request.url.path() !=
-            "/accept_ch_ua_reuced_cross_origin_subresource_request.html") {
+            "/accept_ch_ua_reduced_cross_origin_subresource_request.html") {
       return false;
     }
 
@@ -3116,12 +3116,12 @@ class ThirdPartyUaReducedOriginTrialBrowserTest
                                "\n\n"});
     std::string body = "<html><head>";
     if (params->url_request.url.path() ==
-        "/accept_ch_ua_reuced_cross_origin_subresource_request.html") {
+        "/accept_ch_ua_reduced_cross_origin_subresource_request.html") {
       base::StrAppend(&body, {BuildSubresourceHTML()});
     }
     base::StrAppend(&body, {"</head><body>"});
     if (params->url_request.url.path() ==
-        "/accept_ch_ua_reuced_cross_origin_iframe_request.html") {
+        "/accept_ch_ua_reduced_cross_origin_iframe_request.html") {
       base::StrAppend(&body, {BuildIframeHTML()});
     }
     base::StrAppend(&body, {"</body></html>"});
