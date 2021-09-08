@@ -26,7 +26,7 @@ void AverageLagTrackingManager::CollectScrollEventsFromFrame(
     const std::vector<ui::LatencyInfo>& latency_infos) {
   std::vector<AverageLagTracker::EventInfo> event_infos;
 
-  for (ui::LatencyInfo latency_info : latency_infos) {
+  for (const ui::LatencyInfo& latency_info : latency_infos) {
     if (latency_info.source_event_type() != ui::SourceEventType::TOUCH)
       continue;
 
@@ -45,18 +45,16 @@ void AverageLagTrackingManager::CollectScrollEventsFromFrame(
         &event_timestamp);
     DCHECK(found_event);
 
-    AverageLagTracker::EventInfo event_info(
+    event_infos.emplace_back(
         latency_info.trace_id(), latency_info.scroll_update_delta(),
         latency_info.predicted_scroll_update_delta(), event_timestamp,
         found_scroll_begin == true
             ? AverageLagTracker::EventType::ScrollBegin
             : AverageLagTracker::EventType::ScrollUpdate);
-
-    event_infos.push_back(event_info);
   }
 
   if (event_infos.size() > 0)
-    frame_token_to_info_.push_back(std::make_pair(frame_token, event_infos));
+    frame_token_to_info_.emplace_back(frame_token, std::move(event_infos));
 }
 
 void AverageLagTrackingManager::DidPresentCompositorFrame(
@@ -68,7 +66,7 @@ void AverageLagTrackingManager::DidPresentCompositorFrame(
   while (!frame_token_to_info_.empty() &&
          !viz::FrameTokenGT(frame_token_to_info_.front().first, frame_token)) {
     if (frame_token_to_info_.front().first == frame_token)
-      infos = frame_token_to_info_.front().second;
+      infos = std::move(frame_token_to_info_.front().second);
 
     frame_token_to_info_.pop_front();
   }
@@ -87,7 +85,7 @@ void AverageLagTrackingManager::DidPresentCompositorFrame(
                 return a.trace_id < b.trace_id;
               });
 
-    for (AverageLagTracker::EventInfo info : infos) {
+    for (AverageLagTracker::EventInfo& info : infos) {
       info.finish_timestamp = frame_details.presentation_feedback.timestamp;
       lag_tracker_.AddScrollEventInFrame(info);
     }
