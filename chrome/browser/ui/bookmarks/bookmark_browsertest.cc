@@ -35,6 +35,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -419,3 +421,68 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+class BookmarkPrerenderBrowsertest : public BookmarkBrowsertest {
+ public:
+  BookmarkPrerenderBrowsertest()
+      : prerender_helper_(
+            base::BindRepeating(&BookmarkPrerenderBrowsertest::GetWebContents,
+                                base::Unretained(this))) {}
+  ~BookmarkPrerenderBrowsertest() override = default;
+  BookmarkPrerenderBrowsertest(const BookmarkPrerenderBrowsertest&) = delete;
+
+  BookmarkPrerenderBrowsertest& operator=(const BookmarkPrerenderBrowsertest&) =
+      delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    BookmarkBrowsertest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    BookmarkBrowsertest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkPrerenderBrowsertest,
+                       PrerenderingShouldNotUpdateStarredState) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), initial_url);
+
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  GURL bookmark_url = embedded_test_server()->GetURL("/title1.html");
+  bookmarks::AddIfNotBookmarked(bookmark_model, bookmark_url, u"Bookmark");
+
+  TestBookmarkTabHelperObserver bookmark_observer;
+  BookmarkTabHelper* tab_helper =
+      BookmarkTabHelper::FromWebContents(GetWebContents());
+  tab_helper->AddObserver(&bookmark_observer);
+
+  // Load a prerender page and prerendering should not notify to
+  // URLStarredChanged listener.
+  const int host_id = prerender_test_helper().AddPrerender(bookmark_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  EXPECT_FALSE(bookmark_observer.is_starred());
+
+  // Activate the prerender page.
+  prerender_test_helper().NavigatePrimaryPage(bookmark_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_TRUE(bookmark_observer.is_starred());
+
+  tab_helper->RemoveObserver(&bookmark_observer);
+}
