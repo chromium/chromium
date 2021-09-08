@@ -7,6 +7,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,6 +18,23 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace sharing_hub {
+
+namespace {
+
+bool IsQRCodeDialogOpen(content::WebContents* web_contents) {
+  qrcode_generator::QRCodeGeneratorBubbleController* controller =
+      qrcode_generator::QRCodeGeneratorBubbleController::Get(web_contents);
+  return controller && controller->IsBubbleShown();
+}
+
+bool IsSendTabToSelfDialogOpen(content::WebContents* web_contents) {
+  send_tab_to_self::SendTabToSelfBubbleController* controller =
+      send_tab_to_self::SendTabToSelfBubbleController::
+          CreateOrGetFromWebContents(web_contents);
+  return controller && controller->IsBubbleShown();
+}
+
+}  // namespace
 
 SharingHubIconView::SharingHubIconView(
     CommandUpdater* command_updater,
@@ -52,6 +71,11 @@ void SharingHubIconView::UpdateImpl() {
 
   SetCommandEnabled(enabled);
   SetVisible(enabled);
+
+  if (IsQRCodeDialogOpen(web_contents) ||
+      IsSendTabToSelfDialogOpen(web_contents)) {
+    SetHighlighted(true);
+  }
 }
 
 void SharingHubIconView::OnExecuting(

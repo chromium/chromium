@@ -57,9 +57,15 @@ void SendTabToSelfBubbleController::HideBubble() {
 }
 
 void SendTabToSelfBubbleController::ShowBubble() {
+  bubble_shown_ = true;
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   send_tab_to_self_bubble_view_ =
       browser->window()->ShowSendTabToSelfBubble(web_contents_, this, true);
+
+  if (sharing_hub::SharingHubOmniboxEnabled(
+          web_contents_->GetBrowserContext())) {
+    UpdateIcon();
+  }
 }
 
 SendTabToSelfBubbleView*
@@ -113,9 +119,12 @@ void SendTabToSelfBubbleController::OnManageDevicesClicked(
 }
 
 void SendTabToSelfBubbleController::OnBubbleClosed() {
+  bubble_shown_ = false;
   send_tab_to_self_bubble_view_ = nullptr;
 
-  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox)) {
+  // |web_contents_| can be null in tests.
+  if (web_contents_ && sharing_hub::SharingHubOmniboxEnabled(
+                           web_contents_->GetBrowserContext())) {
     UpdateIcon();
   }
 }
@@ -137,7 +146,14 @@ void SendTabToSelfBubbleController::SetInitialSendAnimationShown(bool shown) {
 
 void SendTabToSelfBubbleController::UpdateIcon() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kSendTabToSelf);
+
+  // |web_contents_| can be null in tests.
+  if (web_contents_ && sharing_hub::SharingHubOmniboxEnabled(
+                           web_contents_->GetBrowserContext())) {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
+  } else {
+    browser->window()->UpdatePageActionIcon(PageActionIconType::kSendTabToSelf);
+  }
 }
 
 // Static:

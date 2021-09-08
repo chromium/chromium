@@ -37,6 +37,8 @@ class QRCodeGeneratorBubbleController
   // Hides the QR Code Generator bubble.
   void HideBubble();
 
+  bool IsBubbleShown() { return bubble_shown_; }
+
   // Returns nullptr if no bubble is currently shown.
   QRCodeGeneratorBubbleView* qrcode_generator_bubble_view() const;
 
@@ -58,6 +60,9 @@ class QRCodeGeneratorBubbleController
 
   // Will be nullptr if no bubble is currently shown.
   QRCodeGeneratorBubbleView* qrcode_generator_bubble_ = nullptr;
+
+  // True if the bubble is currently shown.
+  bool bubble_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

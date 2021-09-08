@@ -58,15 +58,15 @@ void SendTabToSelfIconView::UpdateImpl() {
     return;
   }
 
-  SendTabToSelfBubbleController* controller = GetController();
-  // If desktop sharing hub is enabled, only show if the bubble is visible.
-  if (base::FeatureList::IsEnabled(sharing_hub::kSharingHubDesktopOmnibox)) {
-    bool visible =
-        controller && controller->send_tab_to_self_bubble_view() != nullptr;
-    SetVisible(visible);
+  // The bubble is anchored to the sharing hub icon when the sharing hub is
+  // enabled, so this icon is no longer required.
+  if (sharing_hub::SharingHubOmniboxEnabled(
+          web_contents->GetBrowserContext())) {
+    SetVisible(false);
     return;
   }
 
+  SendTabToSelfBubbleController* controller = GetController();
   if (!is_animating_label() && !omnibox_view->model()->has_focus()) {
     sending_animation_state_ = AnimationState::kNotShown;
   }
