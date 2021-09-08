@@ -13,6 +13,7 @@ import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.components.power_scheduler.PowerSchedulerFeatures;
 import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.gpu.config.GpuFeatures;
 import org.chromium.gpu.config.GpuSwitches;
 import org.chromium.services.network.NetworkServiceFeatures;
@@ -84,6 +85,11 @@ public final class ProductionSupportedFlagList {
                     "Enables modern SameSite cookie behavior: 1) SameSite=Lax by default "
                             + "(cookies without a SameSite attribute are treated as SameSite=Lax); "
                             + "2) Schemeful Same-Site (site boundaries include the URL scheme)."),
+            Flag.commandLine(ContentSwitches.SITE_PER_PROCESS,
+                    "Security mode that enables site isolation for all sites inside WebView. In "
+                            + "this mode, each renderer process will contain pages from at most "
+                            + "one site, using out-of-process iframes when needed. Highly "
+                            + "experimental."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),
