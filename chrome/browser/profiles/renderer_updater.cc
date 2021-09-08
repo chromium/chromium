@@ -149,6 +149,20 @@ void RendererUpdater::InitializeRenderer(
   } else {
     content_settings::GetRendererContentSettingRules(
         HostContentSettingsMapFactory::GetForProfile(profile), &rules);
+
+    // Always allow scripting in PDF renderers to retain the functionality of
+    // the scripted messaging proxy in between the plugins in the PDF renderers
+    // and the PDF extension UI. Content settings for JavaScript embedded in
+    // PDFs are enforced by the PDF plugin.
+    if (render_process_host->IsPdf()) {
+      rules.script_rules.clear();
+      rules.script_rules.emplace_back(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(),
+          base::Value::FromUniquePtrValue(
+              content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+          std::string(), is_incognito_process);
+    }
   }
   renderer_configuration->SetContentSettingRules(rules);
 }
