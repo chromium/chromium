@@ -76,8 +76,9 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       message_center_bubble_(bubble),
       notification_bar_(new StackedNotificationBar(this)),
       scroll_bar_(new MessageCenterScrollBar(this)),
-      scroller_(
-          new views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled)),
+      // TODO(crbug.com/1247455): Determine how to use ScrollWithLayers without
+      // breaking ARC.
+      scroller_(new views::ScrollView()),
       message_list_view_(new UnifiedMessageListView(this, model)),
       last_scroll_position_from_bottom_(0),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
@@ -97,7 +98,8 @@ void UnifiedMessageCenterView::Init() {
 
   // Need to set the transparent background explicitly, since ScrollView has
   // set the default opaque background color.
-  scroller_->SetContentsLayerType(ui::LAYER_NOT_DRAWN);
+  // TODO(crbug.com/1247455): Be able to do
+  // SetContentsLayerType(LAYER_NOT_DRAWN).
   scroller_->SetContents(
       std::make_unique<ScrollerContentsView>(message_list_view_));
   scroller_->SetBackgroundColor(absl::nullopt);
