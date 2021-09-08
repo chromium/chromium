@@ -38,6 +38,7 @@ generate_grd("build_grd") {
     "types.js",
     "emoji_picker_api_proxy.js",
     "no_results.svg",
+    "no_results_dark.svg",
   ]
   grdp_files = [
     preprocessed_grdp_file,
