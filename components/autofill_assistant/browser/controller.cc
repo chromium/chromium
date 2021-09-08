@@ -1283,7 +1283,8 @@ void Controller::InitFromParameters() {
 
   const absl::optional<bool> enable_tts =
       trigger_context_->GetScriptParameters().GetEnableTts();
-  if (enable_tts && enable_tts.value()) {
+  if (enable_tts && enable_tts.value() &&
+      !client_->IsSpokenFeedbackAccessibilityServiceEnabled()) {
     tts_enabled_ = true;
     for (ControllerObserver& observer : observers_) {
       observer.OnTtsButtonVisibilityChanged(/* visible= */ true);
@@ -1491,6 +1492,28 @@ void Controller::SetTtsButtonState(TtsButtonState state) {
   tts_button_state_ = state;
   for (ControllerObserver& observer : observers_) {
     observer.OnTtsButtonStateChanged(tts_button_state_);
+  }
+}
+
+void Controller::OnSpokenFeedbackAccessibilityServiceChanged(bool enabled) {
+  if (!enabled) {
+    // Nothing to do when the a11y service is disabled.
+    return;
+  }
+
+  if (!tts_enabled_) {
+    return;
+  }
+  // Disable TTS and hide TTS button.
+  tts_enabled_ = false;
+  for (ControllerObserver& observer : observers_) {
+    observer.OnTtsButtonVisibilityChanged(/* visible= */ false);
+  }
+  // Stop any ongoing TTS and reset button state.
+  if (tts_button_state_ == TtsButtonState::PLAYING) {
+    // Will not cause any TTS event.
+    tts_controller_->Stop();
+    SetTtsButtonState(TtsButtonState::DEFAULT);
   }
 }
 

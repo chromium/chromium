@@ -2357,6 +2357,8 @@ TEST_F(ControllerTest, SetOverlayColors) {
 }
 
 TEST_F(ControllerTest, EnableTts) {
+  EXPECT_CALL(mock_client_, IsSpokenFeedbackAccessibilityServiceEnabled())
+      .WillOnce(Return(false));
   EXPECT_CALL(mock_observer_, OnTtsButtonVisibilityChanged(true));
 
   GURL url("http://a.example.com/path");
@@ -2367,6 +2369,21 @@ TEST_F(ControllerTest, EnableTts) {
                TriggerContext::Options()));
 
   EXPECT_TRUE(controller_->GetTtsButtonVisible());
+}
+
+TEST_F(ControllerTest, DoNotEnableTtsWhenAccessibilityEnabled) {
+  EXPECT_CALL(mock_client_, IsSpokenFeedbackAccessibilityServiceEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnTtsButtonVisibilityChanged(true)).Times(0);
+
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options()));
+
+  EXPECT_FALSE(controller_->GetTtsButtonVisible());
 }
 
 TEST_F(ControllerTest, TtsMessageIsSetCorrectlyAtStartup) {
@@ -2457,6 +2474,31 @@ TEST_F(ControllerTest, OnTtsEventChangesTtsButtonStateCorrectly) {
   EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
   controller_->OnTtsEvent(AutofillAssistantTtsController::TTS_ERROR);
   EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
+TEST_F(ControllerTest, EnablingAccessibilityStopsTtsAndHidesTtsButton) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::PLAYING);
+
+  EXPECT_CALL(*mock_tts_controller_, Stop());
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  EXPECT_CALL(mock_observer_,
+              OnTtsButtonVisibilityChanged(/* visibility= */ false));
+  controller_->OnSpokenFeedbackAccessibilityServiceChanged(/* enabled= */ true);
+  EXPECT_FALSE(controller_->GetTtsButtonVisible());
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
+TEST_F(ControllerTest, DisablingAccessibilityShouldNotEnableTts) {
+  // TTS is disabled by default.
+  EXPECT_FALSE(controller_->GetTtsButtonVisible());
+
+  EXPECT_CALL(mock_observer_,
+              OnTtsButtonVisibilityChanged(/* visibility= */ false))
+      .Times(0);
+  controller_->OnSpokenFeedbackAccessibilityServiceChanged(
+      /* enabled= */ false);
+  EXPECT_FALSE(controller_->GetTtsButtonVisible());
 }
 
 TEST_F(ControllerTest, AddParametersToUserData) {

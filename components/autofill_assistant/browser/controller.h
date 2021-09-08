@@ -102,6 +102,10 @@ class Controller : public ScriptExecutorDelegate,
   // Returns true if the controller is in a state where UI is necessary.
   bool NeedsUI() const { return needs_ui_; }
 
+  // Called when an accessibility service with "FEEDBACK_SPOKEN" feedback type
+  // is enabled or disabled.
+  void OnSpokenFeedbackAccessibilityServiceChanged(bool enabled);
+
   // Overrides ScriptExecutorDelegate:
   const ClientSettings& GetSettings() override;
   const GURL& GetCurrentURL() override;

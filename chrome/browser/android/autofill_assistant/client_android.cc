@@ -385,6 +385,16 @@ void ClientAndroid::ShowFatalError(
       /*show_feedback_chip = */ false, Metrics::DropOutReason::NO_SCRIPTS);
 }
 
+void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean enabled) {
+  if (!controller_) {
+    return;
+  }
+  controller_->OnSpokenFeedbackAccessibilityServiceChanged(enabled);
+}
+
 int ClientAndroid::FindDirectAction(const std::string& action_name) {
   // It's too late to create a controller. This should have been done in
   // FetchWebsiteActions.
@@ -520,6 +530,11 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
 
 bool ClientAndroid::IsAccessibilityEnabled() const {
   return Java_AutofillAssistantClient_isAccessibilityEnabled(
+      AttachCurrentThread(), java_object_);
+}
+
+bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {
+  return Java_AutofillAssistantClient_isSpokenFeedbackAccessibilityServiceEnabled(
       AttachCurrentThread(), java_object_);
 }
 

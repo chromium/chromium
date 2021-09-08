@@ -250,7 +250,7 @@ public class BrowserAccessibilityState {
      * @return
      */
     @CalledByNative
-    private static int getAccessibilityServiceFeedbackTypeMask() {
+    public static int getAccessibilityServiceFeedbackTypeMask() {
         if (!sInitialized) updateAccessibilityServices();
         return sFeedbackTypeMask;
     }

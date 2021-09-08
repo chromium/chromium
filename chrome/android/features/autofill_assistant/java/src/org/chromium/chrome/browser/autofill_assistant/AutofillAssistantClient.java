@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.accounts.Account;
 import android.content.Context;
 import android.os.Build;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -86,6 +88,18 @@ public class AutofillAssistantClient {
     @CalledByNative
     private AutofillAssistantClient(long nativeClientAndroid) {
         mNativeClientAndroid = nativeClientAndroid;
+
+        // Add listener for accessibility services with "FEEDBACK_SPOKEN" feedback type.
+        BrowserAccessibilityState.Listener listener = (unused) -> {
+            if (mNativeClientAndroid == 0) return;
+
+            AutofillAssistantClientJni.get().onSpokenFeedbackAccessibilityServiceChanged(
+                    mNativeClientAndroid, AutofillAssistantClient.this,
+                    isSpokenFeedbackAccessibilityServiceEnabled());
+        };
+        // BrowserAccessibilityState listeners are garbage-collected and automatically removed
+        // from the set of active listeners.
+        BrowserAccessibilityState.addListener(listener);
     }
 
     /**
@@ -339,6 +353,17 @@ public class AutofillAssistantClient {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
+    /**
+     * Returns whether an accessibility service with "FEEDBACK_SPOKEN" feedback type is enabled
+     * or not.
+     */
+    @CalledByNative
+    private boolean isSpokenFeedbackAccessibilityServiceEnabled() {
+        return (BrowserAccessibilityState.getAccessibilityServiceFeedbackTypeMask()
+                       & AccessibilityServiceInfo.FEEDBACK_SPOKEN)
+                != 0;
+    }
+
     /** Adds a dynamic action to the given reporter. */
     @CalledByNative
     private void onFetchWebsiteActions(Callback<Boolean> callback, boolean success) {
@@ -372,5 +397,7 @@ public class AutofillAssistantClient {
                 String actionId, String experimentId, String[] argumentNames,
                 String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
         void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
+        void onSpokenFeedbackAccessibilityServiceChanged(
+                long nativeClientAndroid, AutofillAssistantClient caller, boolean enabled);
     }
 }

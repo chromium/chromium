@@ -101,6 +101,11 @@ class ClientAndroid : public Client,
   void ShowFatalError(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& jcaller);
 
+  void OnSpokenFeedbackAccessibilityServiceChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jboolean enabled);
+
   // Overrides Client
   void AttachUI() override;
   void DestroyUI() override;
@@ -116,6 +121,7 @@ class ClientAndroid : public Client,
   std::string GetCountryCode() const override;
   DeviceContext GetDeviceContext() const override;
   bool IsAccessibilityEnabled() const override;
+  bool IsSpokenFeedbackAccessibilityServiceEnabled() const override;
   content::WebContents* GetWebContents() const override;
   void Shutdown(Metrics::DropOutReason reason) override;
   void RecordDropOut(Metrics::DropOutReason reason) override;
