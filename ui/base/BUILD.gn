@@ -505,20 +505,16 @@ component("base") {
     allow_circular_includes_from = [ "//ui/base/x" ]
 
     if (!is_chromeos_ash) {
-      deps += [ "//ui/gfx/x" ]
+      # These files/deps aren't used in ChromeOS.
+      sources += [
+        "dragdrop/os_exchange_data_provider_x11.cc",
+        "dragdrop/os_exchange_data_provider_x11.h",
+      ]
+      deps += [
+        "//ui/events/platform/x11",
+        "//ui/gfx/x",
+      ]
     }
-  }
-
-  if (use_x11 && use_aura && is_linux) {
-    # These Aura X11 files aren't used on ChromeOS.
-    sources += [
-      "dragdrop/os_exchange_data_provider_x11.cc",
-      "dragdrop/os_exchange_data_provider_x11.h",
-    ]
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_aura && (is_linux || is_chromeos)) {
