@@ -3,11 +3,34 @@
 # found in the LICENSE file.
 
 import("//chromecast/chromecast.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "../../../.."
+  proto_out_dir = "chromecast/media/audio/audio_output_service"
+  sources = [ "audio_output_service.proto" ]
+  link_deps = [ "//chromecast/media/audio/net:proto" ]
+}
 
 cast_source_set("constants") {
   sources = [
     "constants.cc",
     "constants.h",
+  ]
+}
+
+cast_source_set("output_socket") {
+  sources = [
+    "output_socket.cc",
+    "output_socket.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/net:audio_socket" ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//net",
   ]
 }
 
@@ -19,12 +42,14 @@ cast_source_set("output_connection") {
     "output_stream_connection.h",
   ]
 
-  public_deps = [ "//chromecast/media/audio/mixer_service:proto" ]
+  public_deps = [
+    ":output_socket",
+    ":proto",
+  ]
 
   deps = [
     ":constants",
     "//base",
-    "//chromecast/media/audio/mixer_service:common",
     "//chromecast/media/audio/net:audio_socket_service",
     "//net",
   ]

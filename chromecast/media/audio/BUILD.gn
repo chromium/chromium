@@ -106,6 +106,8 @@ cast_source_set("audio_renderer") {
     "cast_audio_renderer.h",
   ]
 
+  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
+
   deps = [
     ":audio_io_thread",
     "//base",

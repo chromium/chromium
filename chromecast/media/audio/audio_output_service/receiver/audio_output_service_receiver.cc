@@ -13,8 +13,8 @@
 #include "base/timer/timer.h"
 #include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/audio_output_service/constants.h"
+#include "chromecast/media/audio/audio_output_service/output_socket.h"
 #include "chromecast/media/audio/audio_output_service/receiver/cma_backend_shim.h"
-#include "chromecast/media/audio/mixer_service/mixer_socket.h"
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 
 namespace chromecast {
@@ -33,11 +33,11 @@ enum MessageTypes : int {
 }  // namespace
 
 class AudioOutputServiceReceiver::Stream
-    : public mixer_service::MixerSocket::Delegate,
+    : public audio_output_service::OutputSocket::Delegate,
       public audio_output_service::CmaBackendShim::Delegate {
  public:
   Stream(AudioOutputServiceReceiver* receiver,
-         std::unique_ptr<mixer_service::MixerSocket> socket)
+         std::unique_ptr<OutputSocket> socket)
       : receiver_(receiver), socket_(std::move(socket)) {
     DCHECK(receiver_);
     DCHECK(socket_);
@@ -51,8 +51,8 @@ class AudioOutputServiceReceiver::Stream
   Stream& operator=(const Stream&) = delete;
   ~Stream() override = default;
 
-  // MixerSocket::Delegate implementation:
-  bool HandleMetadata(const mixer_service::Generic& message) override {
+  // OutputSocket::Delegate implementation:
+  bool HandleMetadata(const Generic& message) override {
     last_receive_time_ = base::TimeTicks::Now();
     inactivity_timer_.Reset();
 
@@ -154,10 +154,10 @@ class AudioOutputServiceReceiver::Stream
 
   // CmaBackendShim::Delegate implementation:
   void OnBackendInitialized(bool success) override {
-    mixer_service::Generic generic;
+    audio_output_service::Generic generic;
     generic.mutable_backend_initialization_status()->set_status(
-        success ? mixer_service::BackendInitializationStatus::SUCCESS
-                : mixer_service::BackendInitializationStatus::ERROR);
+        success ? audio_output_service::BackendInitializationStatus::SUCCESS
+                : audio_output_service::BackendInitializationStatus::ERROR);
     socket_->SendProto(kBackendInitialized, generic);
     last_send_time_ = base::TimeTicks::Now();
   }
@@ -172,11 +172,11 @@ class AudioOutputServiceReceiver::Stream
 
   void UpdateMediaTime(int64_t media_timestamp_microseconds,
                        int64_t reference_timestamp_microseconds) override {
-    mixer_service::CurrentMediaTimestamp message;
+    audio_output_service::CurrentMediaTimestamp message;
     message.set_media_timestamp_microseconds(media_timestamp_microseconds);
     message.set_reference_timestamp_microseconds(
         reference_timestamp_microseconds);
-    mixer_service::Generic generic;
+    audio_output_service::Generic generic;
     *(generic.mutable_current_media_timestamp()) = message;
     socket_->SendProto(kUpdateMediaTime, generic);
     last_send_time_ = base::TimeTicks::Now();
@@ -195,7 +195,7 @@ class AudioOutputServiceReceiver::Stream
   }
 
   AudioOutputServiceReceiver* const receiver_;
-  const std::unique_ptr<mixer_service::MixerSocket> socket_;
+  const std::unique_ptr<OutputSocket> socket_;
 
   base::OneShotTimer inactivity_timer_;
 
@@ -226,8 +226,8 @@ AudioOutputServiceReceiver::AudioOutputServiceReceiver(
 AudioOutputServiceReceiver::~AudioOutputServiceReceiver() = default;
 
 void AudioOutputServiceReceiver::CreateOutputStream(
-    std::unique_ptr<mixer_service::MixerSocket> socket,
-    const mixer_service::Generic& message) {
+    std::unique_ptr<OutputSocket> socket,
+    const Generic& message) {
   auto stream = std::make_unique<Stream>(this, std::move(socket));
   Stream* ptr = stream.get();
   streams_[ptr] = std::move(stream);

@@ -14,7 +14,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_io_thread.h"
-#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/net/conversions.h"
 #include "chromecast/media/cma/base/decoder_config_adapter.h"
 #include "media/base/audio_decoder_config.h"
@@ -40,12 +40,12 @@ namespace media {
 
 namespace {
 
-mixer_service::AudioDecoderConfig ConvertAudioDecoderConfig(
+audio_output_service::AudioDecoderConfig ConvertAudioDecoderConfig(
     const ::media::AudioDecoderConfig& audio_decoder_config) {
   chromecast::media::AudioConfig audio_config =
       DecoderConfigAdapter::ToCastAudioConfig(StreamId::kPrimary,
                                               audio_decoder_config);
-  mixer_service::AudioDecoderConfig proto_audio_config;
+  audio_output_service::AudioDecoderConfig proto_audio_config;
   proto_audio_config.set_audio_codec(
       audio_service::ConvertAudioCodec(audio_config.codec));
   proto_audio_config.set_channel_layout(
@@ -323,7 +323,7 @@ void CastAudioRenderer::UpdateAudioDecoderConfig(
     const ::media::AudioDecoderConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mixer_service::CmaBackendParams backend_params;
+  audio_output_service::CmaBackendParams backend_params;
   *(backend_params.mutable_audio_decoder_config()) =
       ConvertAudioDecoderConfig(config);
   output_connection_
@@ -462,15 +462,16 @@ void CastAudioRenderer::OnNewBuffer(
 
   size_t filled_bytes = buffer->end_of_stream() ? 0 : buffer->data_size();
   size_t io_buffer_size =
-      mixer_service::MixerSocket::kAudioMessageHeaderSize + filled_bytes;
+      audio_output_service::OutputSocket::kAudioMessageHeaderSize +
+      filled_bytes;
   auto io_buffer = base::MakeRefCounted<net::IOBuffer>(io_buffer_size);
   if (buffer->end_of_stream()) {
     OnEndOfStream();
   } else {
     last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-    memcpy(
-        io_buffer->data() + mixer_service::MixerSocket::kAudioMessageHeaderSize,
-        buffer->data(), buffer->data_size());
+    memcpy(io_buffer->data() +
+               audio_output_service::OutputSocket::kAudioMessageHeaderSize,
+           buffer->data(), buffer->data_size());
   }
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)
@@ -480,12 +481,13 @@ void CastAudioRenderer::OnNewBuffer(
 }
 
 void CastAudioRenderer::OnBackendInitialized(
-    const mixer_service::BackendInitializationStatus& status) {
+    const audio_output_service::BackendInitializationStatus& status) {
   MAKE_SURE_MAIN_THREAD(OnBackendInitialized, status);
   DCHECK(init_cb_);
 
   if (!status.has_status() ||
-      status.status() != mixer_service::BackendInitializationStatus::SUCCESS) {
+      status.status() !=
+          audio_output_service::BackendInitializationStatus::SUCCESS) {
     std::move(init_cb_).Run(::media::PIPELINE_ERROR_INITIALIZATION_FAILED);
     return;
   }
@@ -548,7 +550,7 @@ void CastAudioRenderer::OnApplicationMediaInfoReceived(
     ::media::mojom::CastApplicationMediaInfoPtr application_media_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  mixer_service::CmaBackendParams backend_params;
+  audio_output_service::CmaBackendParams backend_params;
   backend_params.mutable_application_media_info()->set_application_session_id(
       application_media_info->application_session_id);
   *(backend_params.mutable_audio_decoder_config()) =

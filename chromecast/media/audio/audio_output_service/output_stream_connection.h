@@ -9,9 +9,9 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/output_connection.h"
-#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
-#include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/audio_output_service/output_socket.h"
 
 namespace net {
 class IOBuffer;
@@ -19,7 +19,6 @@ class IOBuffer;
 
 namespace chromecast {
 namespace media {
-
 namespace audio_output_service {
 
 // OutputStreamConnection sends proto messages and audio buffers through the
@@ -28,7 +27,7 @@ namespace audio_output_service {
 // service. Threading model: this class should be created and used on an IO
 // thread.
 class OutputStreamConnection : public OutputConnection,
-                               public mixer_service::MixerSocket::Delegate {
+                               public OutputSocket::Delegate {
  public:
   // Delegate methods will be called on the sequence OutputStreamConnection is
   // created.
@@ -36,7 +35,7 @@ class OutputStreamConnection : public OutputConnection,
    public:
     // Called when the audio pipeline backend is initialized.
     virtual void OnBackendInitialized(
-        const mixer_service::BackendInitializationStatus& status) = 0;
+        const BackendInitializationStatus& status) = 0;
 
     // Called when the current media pts potentially changes because:
     //   1. A new buffer is pushed or
@@ -48,8 +47,7 @@ class OutputStreamConnection : public OutputConnection,
     virtual ~Delegate() = default;
   };
 
-  OutputStreamConnection(Delegate* delegate,
-                         mixer_service::CmaBackendParams params);
+  OutputStreamConnection(Delegate* delegate, CmaBackendParams params);
   OutputStreamConnection(const OutputStreamConnection&) = delete;
   OutputStreamConnection& operator=(const OutputStreamConnection&) = delete;
   ~OutputStreamConnection() override;
@@ -77,21 +75,21 @@ class OutputStreamConnection : public OutputConnection,
   void SetVolume(float volume);
 
   // Updates the config for the audio decoder.
-  void UpdateAudioConfig(const mixer_service::CmaBackendParams& params);
+  void UpdateAudioConfig(const CmaBackendParams& params);
 
  private:
   // OutputConnection implementation:
-  void OnConnected(std::unique_ptr<mixer_service::MixerSocket> socket) override;
+  void OnConnected(std::unique_ptr<OutputSocket> socket) override;
   void OnConnectionError() override;
 
-  // mixer_service::MixerSocket::Delegate implementation:
-  bool HandleMetadata(const mixer_service::Generic& message) override;
+  // OutputSocket::Delegate implementation:
+  bool HandleMetadata(const Generic& message) override;
 
   void SendHeartbeat();
 
   Delegate* const delegate_;
-  mixer_service::CmaBackendParams params_;
-  std::unique_ptr<mixer_service::MixerSocket> socket_;
+  CmaBackendParams params_;
+  std::unique_ptr<OutputSocket> socket_;
   base::OneShotTimer heartbeat_timer_;
   float volume_ = 1.0f;
   float playback_rate_ = 1.0f;

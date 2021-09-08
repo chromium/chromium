@@ -17,7 +17,7 @@
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
 #include "chromecast/media/api/cma_backend.h"
-#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
@@ -69,7 +69,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
 
   CmaBackendShim(base::WeakPtr<Delegate> delegate,
                  scoped_refptr<base::SequencedTaskRunner> delegate_task_runner,
-                 const mixer_service::CmaBackendParams& params,
+                 const CmaBackendParams& params,
                  MediaPipelineBackendManager* backend_manager,
                  external_service_support::ExternalConnector* connector);
 
@@ -96,7 +96,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
   void Stop();
 
   // Updates the config for audio decoder.
-  void UpdateAudioConfig(const mixer_service::CmaBackendParams& params);
+  void UpdateAudioConfig(const CmaBackendParams& params);
 
  private:
   enum class BackendState {
@@ -127,8 +127,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
   void SetVolumeMultiplierOnMediaThread(float multiplier);
   void SetPlaybackRateOnMediaThread(float playback_rate);
   void StopOnMediaThread();
-  void UpdateAudioConfigOnMediaThread(
-      const mixer_service::CmaBackendParams& params);
+  void UpdateAudioConfigOnMediaThread(const CmaBackendParams& params);
   bool SetAudioConfig();
 
   const base::WeakPtr<Delegate> delegate_;
@@ -136,7 +135,7 @@ class CmaBackendShim : public CmaBackend::AudioDecoder::Delegate {
   MediaPipelineBackendManager* const backend_manager_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   TaskRunnerImpl backend_task_runner_;
-  mixer_service::CmaBackendParams backend_params_;
+  CmaBackendParams backend_params_;
   scoped_refptr<DecoderBufferBase> pushed_buffer_;
 
   float playback_rate_ = 0.0f;

@@ -42,7 +42,7 @@ namespace audio_output_service {
 CmaBackendShim::CmaBackendShim(
     base::WeakPtr<Delegate> delegate,
     scoped_refptr<base::SequencedTaskRunner> delegate_task_runner,
-    const mixer_service::CmaBackendParams& params,
+    const audio_output_service::CmaBackendParams& params,
     MediaPipelineBackendManager* backend_manager,
     external_service_support::ExternalConnector* connector)
     : delegate_(std::move(delegate)),
@@ -82,8 +82,6 @@ void CmaBackendShim::OnGetMultiroomInfo(
   DCHECK(multiroom_info);
   LOG(INFO) << __FUNCTION__ << ": " << this << " session_id="
             << backend_params_.application_media_info().application_session_id()
-            << ", mixer_audio_enabled="
-            << backend_params_.application_media_info().mixer_audio_enabled()
             << ", multiroom=" << multiroom_info->multiroom
             << ", audio_channel=" << multiroom_info->audio_channel;
   // Close the MultiroomManager message pipe so that a connection error does not
@@ -109,8 +107,6 @@ void CmaBackendShim::InitializeOnMediaThread(
   device_params.audio_channel = multiroom_info->audio_channel;
   device_params.multiroom = multiroom_info->multiroom;
   device_params.output_delay_us = multiroom_info->output_delay.InMicroseconds();
-  device_params.pass_through_audio_support_desired =
-      !backend_params_.application_media_info().mixer_audio_enabled();
   cma_backend_ = backend_manager_->CreateBackend(device_params);
 
   audio_decoder_ = cma_backend_->CreateAudioDecoder();
@@ -194,7 +190,7 @@ void CmaBackendShim::Stop() {
 }
 
 void CmaBackendShim::UpdateAudioConfig(
-    const mixer_service::CmaBackendParams& params) {
+    const audio_output_service::CmaBackendParams& params) {
   POST_MEDIA_TASK(&CmaBackendShim::UpdateAudioConfigOnMediaThread, params);
 }
 
@@ -283,7 +279,7 @@ void CmaBackendShim::StopOnMediaThread() {
 }
 
 void CmaBackendShim::UpdateAudioConfigOnMediaThread(
-    const mixer_service::CmaBackendParams& params) {
+    const audio_output_service::CmaBackendParams& params) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   backend_params_.MergeFrom(params);

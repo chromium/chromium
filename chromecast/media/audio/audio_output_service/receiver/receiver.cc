@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
-#include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
+#include "chromecast/media/audio/audio_output_service/output_socket.h"
 #include "net/socket/stream_socket.h"
 
 namespace chromecast {
@@ -20,10 +20,9 @@ constexpr int kMaxAcceptLoop = 5;
 
 }  // namespace
 
-class Receiver::InitialSocket : public mixer_service::MixerSocket::Delegate {
+class Receiver::InitialSocket : public OutputSocket::Delegate {
  public:
-  InitialSocket(Receiver* receiver,
-                std::unique_ptr<mixer_service::MixerSocket> socket)
+  InitialSocket(Receiver* receiver, std::unique_ptr<OutputSocket> socket)
       : receiver_(receiver), socket_(std::move(socket)) {
     DCHECK(receiver_);
     socket_->SetDelegate(this);
@@ -34,8 +33,8 @@ class Receiver::InitialSocket : public mixer_service::MixerSocket::Delegate {
   ~InitialSocket() override = default;
 
  private:
-  // mixer_service::MixerSocket::Delegate implementation:
-  bool HandleMetadata(const mixer_service::Generic& message) override {
+  // OutputSocket::Delegate implementation:
+  bool HandleMetadata(const Generic& message) override {
     if (message.has_backend_params()) {
       receiver_->CreateOutputStream(std::move(socket_), message);
       receiver_->RemoveInitialSocket(this);
@@ -47,7 +46,7 @@ class Receiver::InitialSocket : public mixer_service::MixerSocket::Delegate {
   void OnConnectionError() override { receiver_->RemoveInitialSocket(this); }
 
   Receiver* const receiver_;
-  std::unique_ptr<mixer_service::MixerSocket> socket_;
+  std::unique_ptr<OutputSocket> socket_;
 };
 
 Receiver::Receiver(const std::string& uds_path, int tcp_port)
@@ -59,7 +58,7 @@ Receiver::~Receiver() = default;
 
 void Receiver::HandleAcceptedSocket(std::unique_ptr<net::StreamSocket> socket) {
   AddInitialSocket(std::make_unique<InitialSocket>(
-      this, std::make_unique<mixer_service::MixerSocket>(std::move(socket))));
+      this, std::make_unique<OutputSocket>(std::move(socket))));
 }
 
 void Receiver::AddInitialSocket(std::unique_ptr<InitialSocket> initial_socket) {

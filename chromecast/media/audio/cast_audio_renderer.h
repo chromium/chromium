@@ -98,7 +98,7 @@ class CastAudioRenderer
 
   // audio_output_service::OutputStreamConnection::Delegate implementation:
   void OnBackendInitialized(
-      const mixer_service::BackendInitializationStatus& status) override;
+      const audio_output_service::BackendInitializationStatus& status) override;
   void UpdateMediaTime(int64_t media_timestamp_microseconds,
                        int64_t reference_timestamp_microseconds) override;
 

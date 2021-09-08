@@ -9,8 +9,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "chromecast/media/audio/audio_output_service/audio_output_service.pb.h"
 #include "chromecast/media/audio/audio_output_service/receiver/receiver.h"
-#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
 
 namespace chromecast {
 namespace external_service_support {
@@ -18,13 +18,10 @@ class ExternalConnector;
 }  // namespace external_service_support
 
 namespace media {
-namespace mixer_service {
-class MixerSocket;
-}  // namespace mixer_service
-
 class MediaPipelineBackendManager;
 
 namespace audio_output_service {
+class OutputSocket;
 
 class AudioOutputServiceReceiver : public Receiver {
  public:
@@ -48,8 +45,8 @@ class AudioOutputServiceReceiver : public Receiver {
   class Stream;
 
   // Receiver implementation:
-  void CreateOutputStream(std::unique_ptr<mixer_service::MixerSocket> socket,
-                          const mixer_service::Generic& message) override;
+  void CreateOutputStream(std::unique_ptr<OutputSocket> socket,
+                          const Generic& message) override;
 
   void RemoveStream(Stream* stream);
 

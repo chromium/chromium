@@ -15,13 +15,9 @@
 
 namespace chromecast {
 namespace media {
-
-namespace mixer_service {
-class Generic;
-class MixerSocket;
-}  // namespace mixer_service
-
 namespace audio_output_service {
+class Generic;
+class OutputSocket;
 
 class Receiver : public AudioSocketService::Delegate {
  public:
@@ -30,9 +26,8 @@ class Receiver : public AudioSocketService::Delegate {
   Receiver& operator=(const Receiver&) = delete;
   ~Receiver() override;
 
-  virtual void CreateOutputStream(
-      std::unique_ptr<mixer_service::MixerSocket> socket,
-      const mixer_service::Generic& message) = 0;
+  virtual void CreateOutputStream(std::unique_ptr<OutputSocket> socket,
+                                  const Generic& message) = 0;
 
  private:
   class InitialSocket;

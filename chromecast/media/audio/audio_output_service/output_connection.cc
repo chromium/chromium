@@ -14,7 +14,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/audio_output_service/constants.h"
-#include "chromecast/media/audio/mixer_service/mixer_socket.h"
+#include "chromecast/media/audio/audio_output_service/output_socket.h"
 #include "chromecast/media/audio/net/audio_socket_service.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
@@ -58,8 +58,7 @@ void OutputConnection::ConnectCallback(int result) {
     LOG_IF(INFO, !log_timeout_) << "Now connected to audio output service.";
     log_connection_failure_ = true;
     log_timeout_ = true;
-    auto socket = std::make_unique<mixer_service::MixerSocket>(
-        std::move(connecting_socket_));
+    auto socket = std::make_unique<OutputSocket>(std::move(connecting_socket_));
     OnConnected(std::move(socket));
     return;
   }

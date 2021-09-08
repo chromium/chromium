@@ -31,9 +31,8 @@ enum MessageTypes : int {
 
 }  // namespace
 
-OutputStreamConnection::OutputStreamConnection(
-    Delegate* delegate,
-    mixer_service::CmaBackendParams params)
+OutputStreamConnection::OutputStreamConnection(Delegate* delegate,
+                                               CmaBackendParams params)
     : delegate_(delegate), params_(std::move(params)) {
   DCHECK(delegate_);
 }
@@ -55,7 +54,7 @@ void OutputStreamConnection::SendAudioBuffer(
 
   if (buffer_size_bytes == 0) {
     sent_eos_ = true;
-    mixer_service::Generic message;
+    Generic message;
     message.mutable_eos_played_out();
     socket_->SendProto(kEndOfStream, message);
     return;
@@ -75,7 +74,7 @@ void OutputStreamConnection::StartPlayingFrom(int64_t start_pts) {
   if (!socket_) {
     return;
   }
-  mixer_service::Generic message;
+  Generic message;
   message.mutable_set_start_timestamp()->set_start_pts(start_pts);
   socket_->SendProto(kStartTimestamp, message);
   heartbeat_timer_.Reset();
@@ -85,7 +84,7 @@ void OutputStreamConnection::StopPlayback() {
   if (!socket_) {
     return;
   }
-  mixer_service::Generic message;
+  Generic message;
   message.mutable_stop_playback();
   socket_->SendProto(kStop, message);
   heartbeat_timer_.Reset();
@@ -96,7 +95,7 @@ void OutputStreamConnection::SetPlaybackRate(float playback_rate) {
   if (!socket_) {
     return;
   }
-  mixer_service::Generic message;
+  Generic message;
   message.mutable_set_playback_rate()->set_playback_rate(playback_rate_);
   socket_->SendProto(kPlaybackRate, message);
   heartbeat_timer_.Reset();
@@ -107,19 +106,18 @@ void OutputStreamConnection::SetVolume(float volume) {
   if (!socket_) {
     return;
   }
-  mixer_service::Generic message;
+  Generic message;
   message.mutable_set_stream_volume()->set_volume(volume_);
   socket_->SendProto(kStreamVolume, message);
   heartbeat_timer_.Reset();
 }
 
-void OutputStreamConnection::UpdateAudioConfig(
-    const mixer_service::CmaBackendParams& params) {
+void OutputStreamConnection::UpdateAudioConfig(const CmaBackendParams& params) {
   params_.MergeFrom(params);
   if (!socket_) {
     return;
   }
-  mixer_service::Generic message;
+  Generic message;
   *(message.mutable_backend_params()) = params_;
   socket_->SendProto(kUpdateAudioConfig, message);
   heartbeat_timer_.Reset();
@@ -129,14 +127,13 @@ void OutputStreamConnection::Connect() {
   OutputConnection::Connect();
 }
 
-void OutputStreamConnection::OnConnected(
-    std::unique_ptr<mixer_service::MixerSocket> socket) {
+void OutputStreamConnection::OnConnected(std::unique_ptr<OutputSocket> socket) {
   DCHECK(socket);
 
   socket_ = std::move(socket);
   socket_->SetDelegate(this);
 
-  mixer_service::Generic message;
+  Generic message;
   *(message.mutable_backend_params()) = params_;
   if (playback_rate_ != 1.0f) {
     message.mutable_set_playback_rate()->set_playback_rate(playback_rate_);
@@ -161,15 +158,14 @@ void OutputStreamConnection::SendHeartbeat() {
     return;
   }
 
-  mixer_service::Generic message;
+  Generic message;
   message.mutable_heartbeat();
   socket_->SendProto(kHeartbeat, message);
   heartbeat_timer_.Start(FROM_HERE, kHeartbeatTimeout, this,
                          &OutputStreamConnection::SendHeartbeat);
 }
 
-bool OutputStreamConnection::HandleMetadata(
-    const mixer_service::Generic& message) {
+bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   if (message.has_backend_initialization_status()) {
     delegate_->OnBackendInitialized(message.backend_initialization_status());
   }

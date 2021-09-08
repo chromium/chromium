@@ -16,12 +16,8 @@ class StreamSocket;
 
 namespace chromecast {
 namespace media {
-
-namespace mixer_service {
-class MixerSocket;
-}  // namespace mixer_service
-
 namespace audio_output_service {
+class OutputSocket;
 
 // Base class for connecting to the audio output service.
 class OutputConnection {
@@ -37,8 +33,7 @@ class OutputConnection {
 
  protected:
   // Called when a connection is established to the audio output service.
-  virtual void OnConnected(
-      std::unique_ptr<mixer_service::MixerSocket> socket) = 0;
+  virtual void OnConnected(std::unique_ptr<OutputSocket> socket) = 0;
 
  private:
   void ConnectCallback(int result);

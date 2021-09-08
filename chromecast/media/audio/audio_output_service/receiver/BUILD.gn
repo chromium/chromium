@@ -18,10 +18,11 @@ cast_source_set("receiver") {
     "receiver.h",
   ]
 
-  public_deps = [ "//chromecast/media/audio/mixer_service:proto" ]
+  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
 
   deps = [
     "//base",
+    "//chromecast/media/audio/audio_output_service:output_socket",
     "//chromecast/media/audio/net:audio_socket_service",
     "//chromecast/media/audio/net:common",
     "//net",
@@ -36,6 +37,8 @@ cast_source_set("audio_output_service") {
     "cma_backend_shim.h",
   ]
 
+  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
+
   deps = [
     ":receiver",
     "//base",
@@ -45,6 +48,7 @@ cast_source_set("audio_output_service") {
     "//chromecast/media/api",
     "//chromecast/media/audio/audio_output_service:constants",
     "//chromecast/media/audio/audio_output_service:output_connection",
+    "//chromecast/media/audio/audio_output_service:output_socket",
     "//chromecast/media/audio/net:common",
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
