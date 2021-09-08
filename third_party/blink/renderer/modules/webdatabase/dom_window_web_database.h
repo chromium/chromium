@@ -55,7 +55,6 @@ class MODULES_EXPORT DOMWindowWebDatabase {
                                 uint32_t estimated_size,
                                 V8DatabaseCallback* creation_callback,
                                 ExceptionState&);
-  static bool IsThirdPartyContextWebSQLDeprecated();
 };
 
 }  // namespace blink

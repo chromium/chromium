@@ -1016,11 +1016,6 @@ const base::Feature kReportAllJavaScriptFrameworks{
 const base::Feature kCORSErrorsIssueOnly{"CORSErrorsIssueOnly",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables deprecating warnings (in Issues tab of DevTools) for third party
-// context use of WebSQL (`DOMWindowWebDatabase::openDatabase`).
-const base::Feature kDeprecateThirdPartyContextWebSQL{
-    "DeprecateThirdPartyContextWebSQL", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kSyncLoadDataUrlFonts{"SyncLoadDataUrlFonts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
