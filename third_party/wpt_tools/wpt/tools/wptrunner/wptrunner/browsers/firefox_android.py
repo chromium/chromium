@@ -8,13 +8,14 @@ from .base import (get_free_port,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
                                             MarionetteRefTestExecutor,  # noqa: F401
-                                            MarionetteCrashtestExecutor)  # noqa: F401
+                                            MarionetteCrashtestExecutor,  # noqa: F401
+                                            MarionetteWdspecExecutor)  # noqa: F401
 from .base import (Browser,
                    ExecutorBrowser)
 from .firefox import (get_timeout_multiplier,  # noqa: F401
                       run_info_extras as fx_run_info_extras,
                       update_properties,  # noqa: F401
-                      executor_kwargs,  # noqa: F401
+                      executor_kwargs as fx_executor_kwargs,  # noqa: F401
                       ProfileCreator as FirefoxProfileCreator)
 
 
@@ -23,7 +24,8 @@ __wptrunner__ = {"product": "firefox_android",
                  "browser": "FirefoxAndroidBrowser",
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
                               "reftest": "MarionetteRefTestExecutor",
-                              "crashtest": "MarionetteCrashtestExecutor"},
+                              "crashtest": "MarionetteCrashtestExecutor",
+                              "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
                  "executor_kwargs": "executor_kwargs",
                  "env_extras": "env_extras",
@@ -64,6 +66,15 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "install_fonts": kwargs["install_fonts"],
             "tests_root": config.doc_root,
             "specialpowers_path": kwargs["specialpowers_path"]}
+
+
+def executor_kwargs(logger, test_type, test_environment, run_info_data,
+                    **kwargs):
+    rv = fx_executor_kwargs(logger, test_type, test_environment, run_info_data,
+                            **kwargs)
+    if test_type == "wdspec":
+        rv["capabilities"]["moz:firefoxOptions"]["androidPackage"] = kwargs["package_name"]
+    return rv
 
 
 def env_extras(**kwargs):

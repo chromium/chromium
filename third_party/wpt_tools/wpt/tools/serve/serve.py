@@ -6,7 +6,6 @@ import logging
 import multiprocessing
 import os
 import platform
-import signal
 import subprocess
 import sys
 import threading
@@ -644,7 +643,7 @@ def start_servers(logger, host, ports, paths, routes, bind_address, config,
                 "h2": start_http2_server,
                 "ws": start_ws_server,
                 "wss": start_wss_server,
-                "quic-transport": start_quic_transport_server,
+                "webtransport-h3": start_webtransport_h3_server,
             }[scheme]
 
             server_proc = ServerProc(mp_context, scheme=scheme)
@@ -795,54 +794,21 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
         startup_failed(logger)
 
 
-class QuicTransportDaemon(object):
-    def __init__(self, host, port, handlers_path=None, private_key=None, certificate=None, log_level=None):
-        args = ["python3", "wpt", "serve-quic-transport"]
-        if host:
-            args += ["--host", host]
-        if port:
-            args += ["--port", str(port)]
-        if private_key:
-            args += ["--private-key", private_key]
-        if certificate:
-            args += ["--certificate", certificate]
-        if handlers_path:
-            args += ["--handlers-path", handlers_path]
-        if log_level == "debug":
-            args += ["--verbose"]
-        self.command = args
-        self.proc = None
-
-    def start(self):
-        def handle_signal(*_):
-            if self.proc:
-                try:
-                    self.proc.terminate()
-                except OSError:
-                    # It's fine if the child already exits.
-                    pass
-                self.proc.wait()
-            sys.exit(0)
-
-        signal.signal(signal.SIGTERM, handle_signal)
-        signal.signal(signal.SIGINT, handle_signal)
-
-        self.proc = subprocess.Popen(self.command)
-        # Give the server a second to start and then check.
-        time.sleep(1)
-        if self.proc.poll():
-            sys.exit(1)
-
-
-def start_quic_transport_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
+def start_webtransport_h3_server(logger, host, port, paths, routes, bind_address, config, **kwargs):
     try:
-        return QuicTransportDaemon(host,
-                                   port,
-                                   private_key=config.ssl_config["key_path"],
-                                   certificate=config.ssl_config["cert_path"],
-                                   log_level=config.log_level)
-    except Exception:
-        startup_failed(logger)
+        # TODO(bashi): Move the following import to the beginning of this file
+        # once WebTransportH3Server is enabled by default.
+        from webtransport.h3.webtransport_h3_server import WebTransportH3Server  # type: ignore
+        return WebTransportH3Server(host=host,
+                                    port=port,
+                                    doc_root=paths["doc_root"],
+                                    cert_path=config.ssl_config["cert_path"],
+                                    key_path=config.ssl_config["key_path"],
+                                    logger=logger)
+    except Exception as error:
+        logger.critical(
+            "Failed to start WebTransport over HTTP/3 server: {}".format(error))
+        sys.exit(0)
 
 
 def start(logger, config, routes, mp_context, log_handlers, **kwargs):
@@ -981,8 +947,8 @@ def build_config(logger, override_path=None, config_cls=ConfigBuilder, **kwargs)
     if enable_http2:
         rv._default["ports"]["h2"] = [9000]
 
-    if kwargs.get("quic_transport"):
-        rv._default["ports"]["quic-transport"] = [10000]
+    if kwargs.get("webtransport_h3"):
+        rv._default["ports"]["webtransport-h3"] = [11000]
 
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
@@ -1031,7 +997,8 @@ def get_parser():
                         help=argparse.SUPPRESS)
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
-    parser.add_argument("--quic-transport", action="store_true", help="Enable QUIC server for WebTransport")
+    parser.add_argument("--webtransport-h3", action="store_true",
+                        help="Enable WebTransport over HTTP/3 server")
     parser.add_argument("--exit-after-start", action="store_true", help="Exit after starting servers")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     parser.set_defaults(report=False)

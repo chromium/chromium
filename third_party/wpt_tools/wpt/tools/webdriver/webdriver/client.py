@@ -1,9 +1,10 @@
+from typing import Dict
+from urllib import parse as urlparse
+
 from . import error
 from . import protocol
 from . import transport
 from .bidi.client import BidiSession
-
-from urllib import parse as urlparse
 
 
 def command(func):
@@ -386,7 +387,7 @@ class Frame(object):
 
 
 class ShadowRoot(object):
-    identifier = "shadow-075b-4da1-b6ba-e579c2d3230a"
+    identifier = "shadow-6066-11e4-a52e-4f735466cecf"
 
     def __init__(self, session, id):
         """
@@ -402,7 +403,7 @@ class ShadowRoot(object):
     @classmethod
     def from_json(cls, json, session):
         uuid = json[ShadowRoot.identifier]
-        return cls(uuid, session)
+        return cls(session, uuid)
 
     def send_shadow_command(self, method, uri, body=None):
         url = "shadow/{}/{}".format(self.id, uri)
@@ -551,6 +552,9 @@ class Session(object):
             body["capabilities"] = self.requested_capabilities
 
         value = self.send_command("POST", "session", body=body)
+        assert isinstance(value["sessionId"], str)
+        assert isinstance(value["capabilities"], Dict)
+
         self.session_id = value["sessionId"]
         self.capabilities = value["capabilities"]
 

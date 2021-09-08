@@ -197,6 +197,7 @@
 ./tools/webdriver/webdriver/transport.py
 ./tools/webdriver/webdriver/bidi/__init__.py
 ./tools/webdriver/webdriver/bidi/client.py
+./tools/webdriver/webdriver/bidi/error.py
 ./tools/webtransport/README.md
 ./tools/webtransport/__init__.py
 ./tools/webtransport/h3/__init__.py

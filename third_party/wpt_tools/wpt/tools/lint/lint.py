@@ -694,8 +694,7 @@ ast_checkers = [item() for item in [OpenModeCheck]]
 
 def check_python_ast(repo_root, path, f):
     # type: (Text, Text, IO[bytes]) -> List[rules.Error]
-    # *.quic.py are Python 3 only and cannot be parsed by Python 2.
-    if not path.endswith(".py") or path.endswith(".quic.py"):
+    if not path.endswith(".py"):
         return []
 
     try:

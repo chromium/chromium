@@ -83,7 +83,7 @@ class TestEnvironment(object):
     websockets servers"""
     def __init__(self, test_paths, testharness_timeout_multipler,
                  pause_after_test, debug_test, debug_info, options, ssl_config, env_extras,
-                 enable_quic=False, mojojs_path=None):
+                 enable_webtransport=False, mojojs_path=None):
 
         self.test_paths = test_paths
         self.server = None
@@ -104,7 +104,7 @@ class TestEnvironment(object):
         self.env_extras = env_extras
         self.env_extras_cms = None
         self.ssl_config = ssl_config
-        self.enable_quic = enable_quic
+        self.enable_webtransport = enable_webtransport
         self.mojojs_path = mojojs_path
 
     def __enter__(self):
@@ -174,8 +174,8 @@ class TestEnvironment(object):
             "wss": [8889],
             "h2": [9000],
         }
-        if self.enable_quic:
-            ports["quic-transport"] = [10000]
+        if self.enable_webtransport:
+            ports["webtransport-h3"] = [11000]
         config.ports = ports
 
         if os.path.exists(override_path):
@@ -271,8 +271,9 @@ class TestEnvironment(object):
 
         if not failed and self.test_server_port:
             for scheme, servers in self.servers.items():
-                # TODO(Hexcles): Find a way to test QUIC's UDP port.
-                if scheme == "quic-transport":
+                if scheme == "webtransport-h3":
+                    # TODO(bashi): Find a way to test WebTransport over HTTP/3
+                    # server's UDP port.
                     continue
                 for port, server in servers:
                     s = socket.socket()

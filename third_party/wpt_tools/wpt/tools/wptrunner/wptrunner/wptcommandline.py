@@ -147,10 +147,11 @@ scheme host and port.""")
                                       action="append",
                                       choices=["not-implementing", "backlog", "implementing"],
                                       help="Skip tests that have the given implementation status")
-    # TODO: Remove this when QUIC is enabled by default.
-    test_selection_group.add_argument("--enable-quic", action="store_true", default=False,
-                                      help="Enable tests that require QUIC server (default: false)")
-
+    # TODO(bashi): Remove this when WebTransport over HTTP/3 server is enabled by default.
+    test_selection_group.add_argument("--enable-webtransport-h3",
+                                      action="store_true",
+                                      default=False,
+                                      help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
