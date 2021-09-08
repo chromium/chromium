@@ -307,16 +307,6 @@ extern const char kPolicyBlockedScripting[];
 // The default block size for hashing used in content verification.
 extern const int kContentVerificationDefaultBlockSize;
 
-// The origin of the CryptoToken component extension, which implements the
-// deprecated U2F Security Key API.
-// TODO(1224886): Delete together with CryptoToken code.
-extern const char kCryptotokenExtensionId[];
-
-// The name of the CryptoToken component extension deprecation trial, which
-// allows making requests to the extension after it has been default disabled.
-// TODO(1224886): Delete together with CryptoToken code.
-extern const char kCryptotokenDeprecationTrialName[];
-
 }  // namespace extension_misc
 
 #endif  // EXTENSIONS_COMMON_CONSTANTS_H_

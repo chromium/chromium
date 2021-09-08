@@ -67,11 +67,4 @@ const base::Feature kStrictExtensionIsolation{"StrictExtensionIsolation",
 const base::Feature kAllowSharedArrayBuffersUnconditionally{
     "AllowSharedArrayBuffersUnconditionally", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the CryptoToken component extension, which implements the deprecated
-// U2F Security Key API. Once this flag is default disabled sites can continue
-// to use CryptoToken via a Deprecation Trail with the same name.
-// TODO(1224886): Delete together with CryptoToken code.
-const base::Feature kU2FSecurityKeyAPI{"U2FSecurityKeyAPI",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace extensions_features
