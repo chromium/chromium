@@ -66,9 +66,10 @@ void BatchElementChecker::Run(WebController* web_controller) {
     web_controller->FindElement(
         entry.first, /* strict= */ true,
         base::BindOnce(
-            &element_action_util::TakeElementAndGetProperty<std::string>,
+            &element_action_util::TakeElementAndGetProperty<const std::string&>,
             base::BindOnce(&WebController::GetFieldValue,
                            web_controller->GetWeakPtr()),
+            std::string(),
             base::BindOnce(&BatchElementChecker::OnFieldValueChecked,
                            weak_ptr_factory_.GetWeakPtr(),
                            // Guaranteed to exist for the lifetime of

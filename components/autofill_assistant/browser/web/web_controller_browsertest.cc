@@ -226,8 +226,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     web_controller_->FindElement(
         selector, /* strict_mode= */ true,
         base::BindOnce(
-            &element_action_util::TakeElementAndGetProperty<std::string>,
-            std::move(perform_and_get),
+            &element_action_util::TakeElementAndGetProperty<const std::string&>,
+            std::move(perform_and_get), std::string(),
             base::BindOnce(&WebControllerBrowserTest::OnPerformAndGetString,
                            base::Unretained(this), run_loop.QuitClosure(),
                            &status, get_output)));

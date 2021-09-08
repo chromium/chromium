@@ -150,9 +150,10 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetProperty) {
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
   EXPECT_CALL(*this, MockDoneGet(EqualsStatus(OkClientStatus()), "value"));
 
-  TakeElementAndGetProperty<std::string>(
+  TakeElementAndGetProperty<const std::string&>(
       base::BindOnce(&ElementActionUtilTest::MockGetAction,
                      base::Unretained(this)),
+      std::string(),
       base::BindOnce(&ElementActionUtilTest::MockDoneGet,
                      base::Unretained(this)),
       OkClientStatus(), std::move(expected_element));
@@ -166,9 +167,10 @@ TEST_F(ElementActionUtilTest, TakeElementAndGetPropertyWithFailedStatus) {
               MockDoneGet(EqualsStatus(ClientStatus(ELEMENT_RESOLUTION_FAILED)),
                           std::string()));
 
-  TakeElementAndGetProperty<std::string>(
+  TakeElementAndGetProperty<const std::string&>(
       base::BindOnce(&ElementActionUtilTest::MockGetAction,
                      base::Unretained(this)),
+      std::string(),
       base::BindOnce(&ElementActionUtilTest::MockDoneGet,
                      base::Unretained(this)),
       ClientStatus(ELEMENT_RESOLUTION_FAILED), std::move(expected_element));

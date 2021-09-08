@@ -132,9 +132,10 @@ void ElementArea::Update() {
       delegate_->GetWebController()->FindElement(
           position.selector, /* strict= */ true,
           base::BindOnce(
-              &element_action_util::TakeElementAndGetProperty<RectF>,
+              &element_action_util::TakeElementAndGetProperty<const RectF&>,
               base::BindOnce(&WebController::GetElementRect,
                              delegate_->GetWebController()->GetWeakPtr()),
+              RectF(),
               base::BindOnce(&ElementArea::OnGetElementRect,
                              weak_ptr_factory_.GetWeakPtr(),
                              position.selector)));

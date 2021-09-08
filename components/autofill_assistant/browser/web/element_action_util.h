@@ -20,9 +20,9 @@ namespace {
 template <typename T>
 void RetainElementAndExecuteGetCallback(
     std::unique_ptr<ElementFinder::Result> element,
-    base::OnceCallback<void(const ClientStatus&, const T&)> callback,
+    base::OnceCallback<void(const ClientStatus&, T)> callback,
     const ClientStatus& status,
-    const T& result) {
+    T result) {
   DCHECK(element != nullptr);
   std::move(callback).Run(status, result);
 }
@@ -61,12 +61,13 @@ void TakeElementAndPerform(ElementActionCallback perform,
 template <typename T>
 void TakeElementAndGetProperty(
     ElementActionGetCallback<T> perform_and_get,
-    base::OnceCallback<void(const ClientStatus&, const T&)> done,
+    T default_value,
+    base::OnceCallback<void(const ClientStatus&, T)> done,
     const ClientStatus& element_status,
     std::unique_ptr<ElementFinder::Result> element_result) {
   if (!element_status.ok()) {
     VLOG(1) << __func__ << " Failed to find element.";
-    std::move(done).Run(element_status, T());
+    std::move(done).Run(element_status, default_value);
     return;
   }
 

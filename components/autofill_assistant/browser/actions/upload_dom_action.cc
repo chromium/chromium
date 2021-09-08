@@ -57,10 +57,11 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
         selector,
         base::BindOnce(
             &element_action_util::TakeElementAndGetProperty<
-                std::vector<std::string>>,
+                const std::vector<std::string>&>,
             base::BindOnce(&WebController::GetOuterHtmls,
                            delegate_->GetWebController()->GetWeakPtr(),
                            include_all_inner_text),
+            std::vector<std::string>(),
             base::BindOnce(&UploadDomAction::OnGetOuterHtmls,
                            weak_ptr_factory_.GetWeakPtr())));
     return;
@@ -69,10 +70,11 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
   delegate_->FindElement(
       selector,
       base::BindOnce(
-          &element_action_util::TakeElementAndGetProperty<std::string>,
+          &element_action_util::TakeElementAndGetProperty<const std::string&>,
           base::BindOnce(&WebController::GetOuterHtml,
                          delegate_->GetWebController()->GetWeakPtr(),
                          include_all_inner_text),
+          std::string(),
           base::BindOnce(&UploadDomAction::OnGetOuterHtml,
                          weak_ptr_factory_.GetWeakPtr())));
 }
