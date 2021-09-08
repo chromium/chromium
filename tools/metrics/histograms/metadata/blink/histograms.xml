@@ -2586,7 +2586,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Script.AsyncScriptCount" units="count"
-    expires_after="2021-10-04">
+    expires_after="2022-04-04">
   <owner>dom@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
