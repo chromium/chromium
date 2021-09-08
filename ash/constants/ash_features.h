@@ -52,6 +52,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAmbientModeDevUseProdFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAmbientModePhotoPreviewFeature;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAmbientModeNewUrl;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAppListBubble;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kArcAdbSideloadingFeature;
@@ -454,6 +455,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeNewUrlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppListBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppNotificationsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcInputOverlayEnabled();

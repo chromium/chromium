@@ -476,7 +476,8 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
   std::string client_id = GetClientId();
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchScreenUpdateRequest(
-          num_topics, gaia_id, access_token, client_id);
+          num_topics, gaia_id, access_token, client_id,
+          /*use_new_url=*/features::IsAmbientModeNewUrlEnabled());
   auto resource_request = CreateResourceRequest(request);
 
   // For portrait photos, the server returns image of half requested width.
