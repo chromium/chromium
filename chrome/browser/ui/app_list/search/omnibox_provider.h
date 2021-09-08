@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
@@ -55,8 +54,7 @@ class OmniboxProvider : public SearchProvider,
 
   FaviconCache favicon_cache_;
 
-  // The normalizer normalizes the relevance scores of Results
-  absl::optional<ScoreNormalizer> normalizer_;
+  // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxProvider);
 };

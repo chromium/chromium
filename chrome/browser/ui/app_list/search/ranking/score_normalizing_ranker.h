@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ui/app_list/search/score_normalizer/score_normalizer.h"
 
 class Profile;
 
@@ -35,9 +34,7 @@ class ScoreNormalizingRanker : public Ranker {
   void Rank(ResultsMap& results, ProviderType provider) override;
 
  private:
-  // A score normalizer for every provider type affected by the
-  // ScoreNormalizingRanker.
-  base::flat_map<ProviderType, std::unique_ptr<ScoreNormalizer>> normalizers_;
+  // TODO(crbug.com/1247475): Score normalizers removed due to stability issues.
 };
 
 }  // namespace app_list
