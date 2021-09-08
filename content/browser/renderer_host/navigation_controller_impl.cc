@@ -3582,7 +3582,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
       request_body,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
-      params.impression);
+      params.impression, params.is_pdf);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   return navigation_request;
@@ -3704,7 +3704,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, request_body,
-      nullptr /* navigation_ui_data */, absl::nullopt /* impression */);
+      nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+      false /* is_pdf */);
 }
 
 void NavigationControllerImpl::NotifyNavigationEntryCommitted(
@@ -3810,7 +3811,8 @@ void NavigationControllerImpl::LoadPostCommitErrorPage(
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,
           nullptr /* entry */, nullptr /* post_body */,
-          nullptr /* navigation_ui_data */, absl::nullopt /* impression */);
+          nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+          false /* is_pdf */);
   navigation_request->set_post_commit_error_page_html(error_page_html);
   navigation_request->set_net_error(error);
   node->CreatedNavigationRequest(std::move(navigation_request));

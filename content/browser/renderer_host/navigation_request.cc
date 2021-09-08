@@ -933,7 +933,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     NavigationEntryImpl* entry,
     const scoped_refptr<network::ResourceRequestBody>& post_body,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
-    const absl::optional<blink::Impression>& impression) {
+    const absl::optional<blink::Impression>& impression,
+    bool is_pdf) {
   TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
   // TODO(arthursonzogni): Form submission with the "GET" method is possible.
   // This is not currently handled here.
@@ -1019,7 +1020,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       nullptr /* prefetched_signed_exchange_cache */,
       nullptr /* web_bundle_handle_tracker */,
       rfh_restored_from_back_forward_cache, initiator_process_id,
-      was_opener_suppressed));
+      was_opener_suppressed, is_pdf));
 
   return navigation_request;
 }
@@ -1129,7 +1130,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
       std::move(web_bundle_handle_tracker),
       nullptr,  // rfh_restored_from_back_forward_cache
       initiator_process_id,
-      /*was_opener_suppressed=*/false));
+      /*was_opener_suppressed=*/false, /*is_pdf=*/false));
 
   return navigation_request;
 }
@@ -1244,7 +1245,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
       nullptr /* web_bundle_handle_tracker */,
       nullptr /* rfh_restored_from_back_forward_cache */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      false /* was_opener_suppressed */));
+      false /* was_opener_suppressed */, false /* is_pdf */));
 
   // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
   // top frame origin.
@@ -1296,7 +1297,8 @@ NavigationRequest::NavigationRequest(
     std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
     RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
     int initiator_process_id,
-    bool was_opener_suppressed)
+    bool was_opener_suppressed,
+    bool is_pdf)
     : frame_tree_node_(frame_tree_node),
       is_synchronous_renderer_commit_(is_synchronous_renderer_commit),
       common_params_(std::move(common_params)),
@@ -1333,7 +1335,8 @@ NavigationRequest::NavigationRequest(
       anonymous_(IsDocumentToCommitAnonymous(frame_tree_node,
                                              is_synchronous_renderer_commit)),
       previous_page_ukm_source_id_(
-          frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
+          frame_tree_node_->current_frame_host()->GetPageUkmSourceId()),
+      is_pdf_(is_pdf) {
   DCHECK(browser_initiated || common_params_->initiator_origin.has_value());
   DCHECK(!blink::IsRendererDebugURL(common_params_->url));
   DCHECK(common_params_->method == "POST" || !common_params_->post_data);

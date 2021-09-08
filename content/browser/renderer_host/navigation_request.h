@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/debug/crash_logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -199,7 +198,8 @@ class CONTENT_EXPORT NavigationRequest
       NavigationEntryImpl* entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      const absl::optional<blink::Impression>& impression);
+      const absl::optional<blink::Impression>& impression,
+      bool is_pdf);
 
   // Creates a request for a renderer-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
@@ -250,6 +250,9 @@ class CONTENT_EXPORT NavigationRequest
   // ReloadType::NONE.
   static ReloadType NavigationTypeToReloadType(
       blink::mojom::NavigationType type);
+
+  NavigationRequest(const NavigationRequest&) = delete;
+  NavigationRequest& operator=(const NavigationRequest&) = delete;
 
   ~NavigationRequest() override;
 
@@ -952,7 +955,8 @@ class CONTENT_EXPORT NavigationRequest
       std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
       RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
       int initiator_process_id,
-      bool was_opener_suppressed);
+      bool was_opener_suppressed,
+      bool is_pdf);
 
   // Checks if this navigation may activate a prerendered page. If it's
   // possible, schedules to start running CommitDeferringConditions for
@@ -1920,9 +1924,10 @@ class CONTENT_EXPORT NavigationRequest
   // the time when this NavigationRequest was created.
   int initiator_commit_navigation_sent_counter_ = -1;
 
-  base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
+  // Indicates that this navigation is for PDF content in a renderer.
+  bool is_pdf_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(NavigationRequest);
+  base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
 
 }  // namespace content
