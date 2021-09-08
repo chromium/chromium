@@ -39,6 +39,24 @@ void AssistantHeaderModel::SetBubbleMessage(const std::string& bubble_message) {
       base::android::ConvertUTF8ToJavaString(env, bubble_message));
 }
 
+void AssistantHeaderModel::SetProfileIconMenuSettingsMessage(
+    const std::string& profile_icon_menu_settings_message) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AssistantHeaderModel_setProfileIconMenuSettingsMessage(
+      env, jmodel_,
+      base::android::ConvertUTF8ToJavaString(
+          env, profile_icon_menu_settings_message));
+}
+
+void AssistantHeaderModel::SetProfileIconMenuSendFeedbackMessage(
+    const std::string& profile_icon_menu_send_feedback_message) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AssistantHeaderModel_setProfileIconMenuSendFeedbackMessage(
+      env, jmodel_,
+      base::android::ConvertUTF8ToJavaString(
+          env, profile_icon_menu_send_feedback_message));
+}
+
 void AssistantHeaderModel::SetProgress(int progress) {
   Java_AssistantHeaderModel_setProgress(AttachCurrentThread(), jmodel_,
                                         progress);

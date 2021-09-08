@@ -642,6 +642,7 @@ void UiControllerAndroid::RestoreUi() {
 
   OnStatusMessageChanged(ui_delegate_->GetStatusMessage());
   OnBubbleMessageChanged(ui_delegate_->GetBubbleMessage());
+  OnClientSettingsDisplayStringsChanged(ui_delegate_->GetClientSettings());
   auto step_progress_bar_configuration =
       ui_delegate_->GetStepProgressBarConfiguration();
   if (step_progress_bar_configuration.has_value()) {
@@ -1744,6 +1745,14 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
   }
 }
 
+void UiControllerAndroid::OnClientSettingsDisplayStringsChanged(
+    const ClientSettings& settings) {
+  header_model_->SetProfileIconMenuSettingsMessage(
+      GetDisplayStringUTF8(ClientSettingsProto::SETTINGS, settings));
+  header_model_->SetProfileIconMenuSendFeedbackMessage(
+      GetDisplayStringUTF8(ClientSettingsProto::SEND_FEEDBACK, settings));
+}
+
 void UiControllerAndroid::OnClientSettingsChanged(
     const ClientSettings& settings) {
   JNIEnv* env = AttachCurrentThread();
@@ -1786,6 +1795,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
   }
   Java_AssistantModel_setTalkbackSheetSizeFraction(
       env, GetModel(), settings.talkback_sheet_size_fraction);
+  OnClientSettingsDisplayStringsChanged(settings);
 }
 
 void UiControllerAndroid::OnGenericUserInterfaceChanged(

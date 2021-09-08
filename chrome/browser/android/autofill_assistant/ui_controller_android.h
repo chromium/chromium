@@ -283,6 +283,9 @@ class UiControllerAndroid : public ControllerObserver {
   // Restore the UI for the current UIDelegate.
   void RestoreUi();
 
+  // Performs tasks to update Display String Changes.
+  void OnClientSettingsDisplayStringsChanged(const ClientSettings& settings);
+
   // Java-side AutofillAssistantUiController object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 

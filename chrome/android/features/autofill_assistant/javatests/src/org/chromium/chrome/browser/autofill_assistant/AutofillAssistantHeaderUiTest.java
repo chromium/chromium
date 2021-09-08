@@ -252,12 +252,31 @@ public class AutofillAssistantHeaderUiTest {
                 () -> model.set(AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mRunnableMock));
 
         onView(is(viewHolder.mProfileIcon)).perform(click());
-
         onView(withText(R.string.autofill_assistant_send_feedback)).perform(click());
 
         verify(mRunnableMock).run();
 
         // TODO(crbug.com/806868): Test click on the "Settings" menu item.
+    }
+
+    @Test
+    @MediumTest
+    public void testProfileImageMenuSetMessages() {
+        AssistantHeaderModel model = createModel();
+        AssistantHeaderCoordinator coordinator = createCoordinator(model);
+        ViewHolder viewHolder = new ViewHolder(coordinator.getView());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mRunnableMock);
+            model.set(AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE, "test_settings");
+            model.set(
+                    AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, "test_feedback");
+        });
+
+        onView(is(viewHolder.mProfileIcon)).perform(click());
+        onView(withText("test_feedback")).perform(click());
+        verify(mRunnableMock).run();
+        // TODO(crbug.com/1229482): Test click on the "Settings" menu item.
     }
 
     @Test

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant.header;
 
 import android.content.Context;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -54,6 +55,8 @@ class AssistantHeaderViewBinder
         final ImageView mTtsButton;
         final View mProfileIconView;
         final PopupMenu mProfileIconMenu;
+        final MenuItem mProfileIconMenuSettingsMessage;
+        final MenuItem mProfileIconMenuSendFeedbackMessage;
         final RecyclerView mChipsContainer;
         @Nullable
         TextBubble mTextBubble;
@@ -71,6 +74,9 @@ class AssistantHeaderViewBinder
             mProfileIconView = headerView.findViewById(R.id.profile_image);
             mProfileIconMenu = new PopupMenu(context, mProfileIconView);
             mProfileIconMenu.inflate(R.menu.profile_icon_menu);
+            mProfileIconMenuSettingsMessage = mProfileIconMenu.getMenu().findItem(R.id.settings);
+            mProfileIconMenuSendFeedbackMessage =
+                    mProfileIconMenu.getMenu().findItem(R.id.send_feedback);
             mProfileIconView.setOnClickListener(unusedView -> mProfileIconMenu.show());
             mChipsContainer = chipsContainer;
         }
@@ -102,6 +108,12 @@ class AssistantHeaderViewBinder
             String message = model.get(AssistantHeaderModel.STATUS_MESSAGE);
             AssistantTextUtils.applyVisualAppearanceTags(view.mStatusMessage, message, null);
             view.mStatusMessage.announceForAccessibility(view.mStatusMessage.getText());
+        } else if (AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE == propertyKey) {
+            view.mProfileIconMenuSettingsMessage.setTitle(
+                    model.get(AssistantHeaderModel.PROFILE_ICON_MENU_SETTINGS_MESSAGE));
+        } else if (AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE == propertyKey) {
+            view.mProfileIconMenuSendFeedbackMessage.setTitle(
+                    model.get(AssistantHeaderModel.PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE));
         } else if (AssistantHeaderModel.PROGRESS == propertyKey) {
             view.mProgressBar.setProgress(model.get(AssistantHeaderModel.PROGRESS));
         } else if (AssistantHeaderModel.PROGRESS_ACTIVE_STEP == propertyKey) {

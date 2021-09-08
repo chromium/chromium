@@ -27,6 +27,10 @@ class AssistantHeaderModel {
   void SetDelegate(const AssistantHeaderDelegate& delegate);
   void SetStatusMessage(const std::string& status_message);
   void SetBubbleMessage(const std::string& bubble_message);
+  void SetProfileIconMenuSettingsMessage(
+      const std::string& profile_icon_menu_settings_message);
+  void SetProfileIconMenuSendFeedbackMessage(
+      const std::string& profile_icon_menu_send_feedback_message);
   void SetProgress(int progress);
   void SetProgressActiveStep(int active_step);
   void SetProgressVisible(bool visible);

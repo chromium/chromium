@@ -29,6 +29,12 @@ public class AssistantHeaderModel extends PropertyModel {
     public static final WritableObjectPropertyKey<String> BUBBLE_MESSAGE =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<String> PROFILE_ICON_MENU_SETTINGS_MESSAGE =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableIntPropertyKey PROGRESS = new WritableIntPropertyKey();
 
     public static final WritableIntPropertyKey PROGRESS_ACTIVE_STEP = new WritableIntPropertyKey();
@@ -64,10 +70,12 @@ public class AssistantHeaderModel extends PropertyModel {
             new WritableBooleanPropertyKey();
 
     public AssistantHeaderModel() {
-        super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROGRESS, PROGRESS_ACTIVE_STEP, PROGRESS_BAR_ERROR,
-                PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE,
-                FEEDBACK_BUTTON_CALLBACK, CHIPS, CHIPS_VISIBLE, TTS_BUTTON_VISIBLE,
-                TTS_BUTTON_STATE, TTS_BUTTON_CALLBACK, DISABLE_ANIMATIONS_FOR_TESTING);
+        super(STATUS_MESSAGE, BUBBLE_MESSAGE, PROFILE_ICON_MENU_SETTINGS_MESSAGE,
+                PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, PROGRESS, PROGRESS_ACTIVE_STEP,
+                PROGRESS_BAR_ERROR, PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR,
+                STEP_PROGRESS_BAR_ICONS, SPIN_POODLE, FEEDBACK_BUTTON_CALLBACK, CHIPS,
+                CHIPS_VISIBLE, TTS_BUTTON_VISIBLE, TTS_BUTTON_STATE, TTS_BUTTON_CALLBACK,
+                DISABLE_ANIMATIONS_FOR_TESTING);
         set(CHIPS, new ArrayList<>());
         set(PROGRESS_VISIBLE, true);
         set(TTS_BUTTON_VISIBLE, false);
@@ -82,6 +90,16 @@ public class AssistantHeaderModel extends PropertyModel {
     @CalledByNative
     private void setBubbleMessage(String bubbleMessage) {
         set(BUBBLE_MESSAGE, bubbleMessage);
+    }
+
+    @CalledByNative
+    private void setProfileIconMenuSettingsMessage(String profileIconMenuSettingsMessage) {
+        set(PROFILE_ICON_MENU_SETTINGS_MESSAGE, profileIconMenuSettingsMessage);
+    }
+
+    @CalledByNative
+    private void setProfileIconMenuSendFeedbackMessage(String profileIconMenuSendFeedbackMessage) {
+        set(PROFILE_ICON_MENU_SEND_FEEDBACK_MESSAGE, profileIconMenuSendFeedbackMessage);
     }
 
     @CalledByNative
