@@ -1354,7 +1354,8 @@ class WaitForFinishObserver : public DeepScanningRequest::Observer {
 
 IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
                        RetriableErrorShowsModal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(), ENHANCED_PROTECTION);
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
 
   ClientDownloadResponse metadata_response;
   metadata_response.set_request_deep_scan(true);
@@ -1417,7 +1418,8 @@ IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ConsumerDeepScanningBrowserTest,
                        NonretriableErrorDoesNotShowModal) {
-  SetSafeBrowsingState(browser()->profile()->GetPrefs(), ENHANCED_PROTECTION);
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
 
   ClientDownloadResponse metadata_response;
   metadata_response.set_request_deep_scan(true);

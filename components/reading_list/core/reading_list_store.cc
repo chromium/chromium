@@ -198,7 +198,7 @@ ReadingListStore::CreateMetadataChangeList() {
 // driven by sync if is not completely saved during the current run.
 absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-    syncer::EntityChangeList entity_data) {
+    syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto token = EnsureBatchCreated();
   // Keep track of the last update of each item.
@@ -207,7 +207,7 @@ absl::optional<syncer::ModelError> ReadingListStore::MergeSyncData(
       model_batch_updates = model_->BeginBatchUpdates();
 
   // Merge sync to local data.
-  for (const auto& change : entity_data) {
+  for (const auto& change : entity_changes) {
     synced_entries.insert(change->storage_key());
     const sync_pb::ReadingListSpecifics& specifics =
         change->data().specifics.reading_list();

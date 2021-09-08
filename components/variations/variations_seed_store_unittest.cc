@@ -918,11 +918,14 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
       kUncompressedBase64TestSeedData;
   const std::string base64_seed_signature = kBase64TestSeedSignature;
 
-  std::string seed_data;
-  ASSERT_TRUE(base::Base64Decode(uncompressed_base64_seed_data, &seed_data));
-  VariationsSeed seed;
-  ASSERT_TRUE(seed.ParseFromString(seed_data));
-  std::string base64_seed_data = SerializeSeedBase64(seed);
+  std::string base64_seed_data;
+  {
+    std::string seed_data;
+    ASSERT_TRUE(base::Base64Decode(uncompressed_base64_seed_data, &seed_data));
+    VariationsSeed seed;
+    ASSERT_TRUE(seed.ParseFromString(seed_data));
+    base64_seed_data = SerializeSeedBase64(seed);
+  }
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
@@ -936,8 +939,8 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
     std::string seed_data;
-    std::string base64_seed_signature;
-    EXPECT_TRUE(seed_store.LoadSeed(&seed, &seed_data, &base64_seed_signature));
+    std::string seed_signature;
+    EXPECT_TRUE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
         static_cast<base::HistogramBase::Sample>(
@@ -954,9 +957,8 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
     std::string seed_data;
-    std::string base64_seed_signature;
-    EXPECT_FALSE(
-        seed_store.LoadSeed(&seed, &seed_data, &base64_seed_signature));
+    std::string seed_signature;
+    EXPECT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
         static_cast<base::HistogramBase::Sample>(
@@ -972,10 +974,10 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
     SignatureVerifyingVariationsSeedStore seed_store(&prefs);
 
     base::HistogramTester histogram_tester;
+    VariationsSeed seed;
     std::string seed_data;
-    std::string base64_seed_signature;
-    EXPECT_FALSE(
-        seed_store.LoadSeed(&seed, &seed_data, &base64_seed_signature));
+    std::string seed_signature;
+    EXPECT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
         static_cast<base::HistogramBase::Sample>(
@@ -994,9 +996,8 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
     base::HistogramTester histogram_tester;
     VariationsSeed seed;
     std::string seed_data;
-    std::string base64_seed_signature;
-    EXPECT_FALSE(
-        seed_store.LoadSeed(&seed, &seed_data, &base64_seed_signature));
+    std::string seed_signature;
+    EXPECT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
         static_cast<base::HistogramBase::Sample>(
@@ -1006,6 +1007,8 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
 
   // Using a different seed should not match the signature.
   {
+    std::string seed_data;
+    ASSERT_TRUE(base::Base64Decode(uncompressed_base64_seed_data, &seed_data));
     VariationsSeed wrong_seed;
     ASSERT_TRUE(wrong_seed.ParseFromString(seed_data));
     (*wrong_seed.mutable_study(0)->mutable_name())[0] = 'x';
@@ -1016,10 +1019,9 @@ TEST(VariationsSeedStoreTest, VerifySeedSignature) {
     SignatureVerifyingVariationsSeedStore seed_store(&prefs);
 
     base::HistogramTester histogram_tester;
-    std::string seed_data;
-    std::string base64_seed_signature;
-    EXPECT_FALSE(
-        seed_store.LoadSeed(&seed, &seed_data, &base64_seed_signature));
+    VariationsSeed seed;
+    std::string seed_signature;
+    EXPECT_FALSE(seed_store.LoadSeed(&seed, &seed_data, &seed_signature));
     histogram_tester.ExpectUniqueSample(
         "Variations.LoadSeedSignature",
         static_cast<base::HistogramBase::Sample>(

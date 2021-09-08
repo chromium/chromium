@@ -360,7 +360,6 @@ int64_t FilesystemProxy::ComputeDirectorySize(const base::FilePath& path) {
 
   for (auto& entry : entries) {
     absl::optional<base::File::Info> info;
-    base::FilePath path = entry;
     remote_directory_->GetFileInfo(relative_path.Append(entry), &info);
     if (info.has_value())
       running_size += info->size;

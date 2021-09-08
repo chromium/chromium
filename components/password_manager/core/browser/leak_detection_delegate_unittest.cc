@@ -106,15 +106,15 @@ class LeakDetectionDelegateTest : public testing::Test {
 
   void SetSBState(safe_browsing::SafeBrowsingState state) {
     switch (state) {
-      case safe_browsing::ENHANCED_PROTECTION:
+      case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnhanced, true);
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnabled, true);
         break;
-      case safe_browsing::STANDARD_PROTECTION:
+      case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnhanced, false);
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnabled, true);
         break;
-      case safe_browsing::NO_SAFE_BROWSING:
+      case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
       default:
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnhanced, false);
         pref_service_->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
@@ -207,7 +207,7 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartCheck) {
 }
 
 TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
-  SetSBState(safe_browsing::STANDARD_PROTECTION);
+  SetSBState(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   SetLeakDetectionEnabled(true);
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(client(), IsIncognito).WillOnce(Return(false));
@@ -223,7 +223,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
 }
 
 TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
-  SetSBState(safe_browsing::ENHANCED_PROTECTION);
+  SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(client(), IsIncognito).WillOnce(Return(false));
@@ -239,7 +239,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
-  SetSBState(safe_browsing::NO_SAFE_BROWSING);
+  SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   SetLeakDetectionEnabled(true);
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(client(), IsIncognito).WillOnce(Return(false));
@@ -252,7 +252,7 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
-  SetSBState(safe_browsing::STANDARD_PROTECTION);
+  SetSBState(safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   SetLeakDetectionEnabled(false);
   const PasswordForm form = CreateTestForm();
   EXPECT_CALL(client(), IsIncognito).WillOnce(Return(false));

@@ -269,8 +269,8 @@ void ServiceWorkerContextAdapter::OnVersionStoppedRunning(int64_t version_id) {
 #if DCHECK_IS_ON()
     // If this service worker could not be found, then it must be because its
     // render process exited early.
-    size_t removed = stopped_service_workers_.erase(version_id);
-    DCHECK_EQ(removed, 1u);
+    size_t removed_count = stopped_service_workers_.erase(version_id);
+    DCHECK_EQ(removed_count, 1u);
 #endif  // DCHECK_IS_ON()
     return;
   }

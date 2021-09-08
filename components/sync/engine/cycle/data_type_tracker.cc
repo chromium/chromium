@@ -91,7 +91,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
 
 }  // namespace
 
-WaitInterval::WaitInterval() : mode(UNKNOWN) {}
+WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
 
 WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
     : mode(mode), length(length) {}
@@ -315,8 +315,9 @@ void DataTypeTracker::FillGetUpdatesTriggersMessage(
 
 bool DataTypeTracker::IsBlocked() const {
   return wait_interval_.get() &&
-         (wait_interval_->mode == WaitInterval::THROTTLED ||
-          wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF);
+         (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled ||
+          wait_interval_->mode ==
+              WaitInterval::BlockingMode::kExponentialBackoff);
 }
 
 base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
@@ -326,7 +327,8 @@ base::TimeDelta DataTypeTracker::GetTimeUntilUnblock() const {
 }
 
 base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
-  if (GetBlockingMode() != WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+  if (GetBlockingMode() !=
+      WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
     NOTREACHED();
     return base::TimeDelta::FromSeconds(0);
   }
@@ -336,23 +338,26 @@ base::TimeDelta DataTypeTracker::GetLastBackoffInterval() const {
 void DataTypeTracker::ThrottleType(base::TimeDelta duration,
                                    base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
-  wait_interval_ =
-      std::make_unique<WaitInterval>(WaitInterval::THROTTLED, duration);
+  wait_interval_ = std::make_unique<WaitInterval>(
+      WaitInterval::BlockingMode::kThrottled, duration);
 }
 
 void DataTypeTracker::BackOffType(base::TimeDelta duration,
                                   base::TimeTicks now) {
   unblock_time_ = std::max(unblock_time_, now + duration);
   wait_interval_ = std::make_unique<WaitInterval>(
-      WaitInterval::EXPONENTIAL_BACKOFF, duration);
+      WaitInterval::BlockingMode::kExponentialBackoff, duration);
 }
 
 void DataTypeTracker::UpdateThrottleOrBackoffState() {
   if (base::TimeTicks::Now() >= unblock_time_) {
     if (wait_interval_.get() &&
-        (wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF ||
-         wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF_RETRYING)) {
-      wait_interval_->mode = WaitInterval::EXPONENTIAL_BACKOFF_RETRYING;
+        (wait_interval_->mode ==
+             WaitInterval::BlockingMode::kExponentialBackoff ||
+         wait_interval_->mode ==
+             WaitInterval::BlockingMode::kExponentialBackoffRetrying)) {
+      wait_interval_->mode =
+          WaitInterval::BlockingMode::kExponentialBackoffRetrying;
     } else {
       unblock_time_ = base::TimeTicks();
       wait_interval_.reset();
@@ -373,7 +378,7 @@ base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay() const {
 
 WaitInterval::BlockingMode DataTypeTracker::GetBlockingMode() const {
   if (!wait_interval_) {
-    return WaitInterval::UNKNOWN;
+    return WaitInterval::BlockingMode::kUnknown;
   }
   return wait_interval_->mode;
 }

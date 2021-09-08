@@ -922,7 +922,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
        TestReferrerChain_NotSanitizedIfSubresourceAllowed) {
   EnableRealTimeUrlLookup({kRealTimeUrlLookupReferrerChain}, {});
   // Subresource is allowed when enhanced protection is enabled.
-  SetSafeBrowsingState(&test_pref_service_, ENHANCED_PROTECTION);
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,

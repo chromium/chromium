@@ -45,8 +45,9 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
     extension_prefs_ = ExtensionPrefs::Get(profile());
 
     if (enhanced_protection_enabled) {
-      safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                          safe_browsing::ENHANCED_PROTECTION);
+      safe_browsing::SetSafeBrowsingState(
+          profile()->GetPrefs(),
+          safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
     }
   }
 
@@ -56,8 +57,9 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
     params.pref_file = base::FilePath();
     InitializeExtensionService(params);
     extension_prefs_ = ExtensionPrefs::Get(profile());
-    safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                        safe_browsing::ENHANCED_PROTECTION);
+    safe_browsing::SetSafeBrowsingState(
+        profile()->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
@@ -270,8 +272,9 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
 
   // When ESB is enabled, the extension service will enforce all extensions with
   // `ALLOWLIST_NOT_ALLOWLISTED` state.
-  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -285,8 +288,9 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
   EXPECT_TRUE(IsDisabled(kExtensionId2));
 
   // If the ESB setting is turned off, the extensions are re-enabled.
-  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                      safe_browsing::STANDARD_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
@@ -584,8 +588,9 @@ TEST_F(ExtensionAllowlistUnitTest, TurnOffEnhancedProtection) {
       kExtensionId2, ALLOWLIST_ACKNOWLEDGE_DONE);
 
   // When turning off enhanced protection.
-  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                      safe_browsing::STANDARD_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   // 'kExtensionId1' and 'kExtensionId2' should be re-enabled and have their
   // acknowledge state reset.

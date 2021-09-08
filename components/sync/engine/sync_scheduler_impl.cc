@@ -505,7 +505,7 @@ void SyncSchedulerImpl::HandleFailure(
             : delay_provider_->GetInitialDelay(model_neutral_state);
     TimeDelta next_delay = delay_provider_->GetDelay(previous_delay);
     wait_interval_ = std::make_unique<WaitInterval>(
-        WaitInterval::EXPONENTIAL_BACKOFF, next_delay);
+        WaitInterval::BlockingMode::kExponentialBackoff, next_delay);
     SDVLOG(2) << "Sync cycle failed.  Will back off for "
               << wait_interval_->length.InMilliseconds() << "ms.";
   }
@@ -591,7 +591,7 @@ void SyncSchedulerImpl::RestartWaiting() {
     NotifyRetryTime(base::Time::Now() + wait_interval_->length);
     SDVLOG(2) << "Starting WaitInterval timer of length "
               << wait_interval_->length.InMilliseconds() << "ms.";
-    if (wait_interval_->mode == WaitInterval::THROTTLED) {
+    if (wait_interval_->mode == WaitInterval::BlockingMode::kThrottled) {
       pending_wakeup_timer_.Start(
           FROM_HERE, wait_interval_->length,
           base::BindOnce(&SyncSchedulerImpl::Unthrottle,
@@ -695,7 +695,7 @@ void SyncSchedulerImpl::RetryTimerCallback() {
 
 void SyncSchedulerImpl::Unthrottle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(WaitInterval::THROTTLED, wait_interval_->mode);
+  DCHECK_EQ(WaitInterval::BlockingMode::kThrottled, wait_interval_->mode);
 
   // We're no longer throttled, so clear the wait interval.
   wait_interval_.reset();
@@ -752,10 +752,11 @@ void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
   ModelTypeSet backed_off_types;
   for (ModelType type : types) {
     WaitInterval::BlockingMode mode = nudge_tracker_.GetTypeBlockingMode(type);
-    if (mode == WaitInterval::THROTTLED) {
+    if (mode == WaitInterval::BlockingMode::kThrottled) {
       throttled_types.Put(type);
-    } else if (mode == WaitInterval::EXPONENTIAL_BACKOFF ||
-               mode == WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+    } else if (mode == WaitInterval::BlockingMode::kExponentialBackoff ||
+               mode ==
+                   WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
       backed_off_types.Put(type);
     }
   }
@@ -770,19 +771,20 @@ void SyncSchedulerImpl::NotifyBlockedTypesChanged() {
 
 bool SyncSchedulerImpl::IsGlobalThrottle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wait_interval_ && wait_interval_->mode == WaitInterval::THROTTLED;
+  return wait_interval_ &&
+         wait_interval_->mode == WaitInterval::BlockingMode::kThrottled;
 }
 
 bool SyncSchedulerImpl::IsGlobalBackoff() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wait_interval_ &&
-         wait_interval_->mode == WaitInterval::EXPONENTIAL_BACKOFF;
+  return wait_interval_ && wait_interval_->mode ==
+                               WaitInterval::BlockingMode::kExponentialBackoff;
 }
 
 void SyncSchedulerImpl::OnThrottled(const TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  wait_interval_ = std::make_unique<WaitInterval>(WaitInterval::THROTTLED,
-                                                  throttle_duration);
+  wait_interval_ = std::make_unique<WaitInterval>(
+      WaitInterval::BlockingMode::kThrottled, throttle_duration);
   for (auto& observer : *cycle_context_->listeners()) {
     observer.OnThrottledTypesChanged(ModelTypeSet::All());
   }
@@ -804,7 +806,7 @@ void SyncSchedulerImpl::OnTypesBackedOff(ModelTypeSet types) {
   for (ModelType type : types) {
     TimeDelta last_backoff_time = kInitialBackoffRetryTime;
     if (nudge_tracker_.GetTypeBlockingMode(type) ==
-        WaitInterval::EXPONENTIAL_BACKOFF_RETRYING) {
+        WaitInterval::BlockingMode::kExponentialBackoffRetrying) {
       last_backoff_time = nudge_tracker_.GetTypeLastBackoffInterval(type);
     }
 

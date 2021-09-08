@@ -80,12 +80,13 @@ class NudgeTrackerTest : public ::testing::Test {
   }
 
   bool IsTypeThrottled(ModelType type) {
-    return nudge_tracker_.GetTypeBlockingMode(type) == WaitInterval::THROTTLED;
+    return nudge_tracker_.GetTypeBlockingMode(type) ==
+           WaitInterval::BlockingMode::kThrottled;
   }
 
   bool IsTypeBackedOff(ModelType type) {
     return nudge_tracker_.GetTypeBlockingMode(type) ==
-           WaitInterval::EXPONENTIAL_BACKOFF;
+           WaitInterval::BlockingMode::kExponentialBackoff;
   }
 
  protected:

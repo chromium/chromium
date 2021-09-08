@@ -129,11 +129,12 @@ void RemoveEntryByID(
     SessionID id,
     std::vector<std::unique_ptr<TabRestoreService::Entry>>* entries) {
   // Look for the entry in the top-level collection.
-  for (auto it = entries->begin(); it != entries->end(); ++it) {
-    TabRestoreService::Entry& entry = **it;
+  for (auto entry_it = entries->begin(); entry_it != entries->end();
+       ++entry_it) {
+    TabRestoreService::Entry& entry = **entry_it;
     // Erase it if it's our target.
     if (entry.id == id) {
-      entries->erase(it);
+      entries->erase(entry_it);
       return;
     }
     // If this entry is a window, look through its tabs.

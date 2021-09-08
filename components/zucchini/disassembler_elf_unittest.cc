@@ -153,8 +153,7 @@ TEST(DisassemblerElfTest, QuickDetect) {
     header.e_machine = elf::EM_386;
     header.e_version = 1;
     header.e_shentsize = sizeof(elf::Elf32_Shdr);
-    ConstBufferView image(reinterpret_cast<const uint8_t*>(&header),
-                          sizeof(header));
+    image = {reinterpret_cast<const uint8_t*>(&header), sizeof(header)};
     EXPECT_TRUE(DisassemblerElfX86::QuickDetect(image));
     EXPECT_FALSE(DisassemblerElfX64::QuickDetect(image));
   }
@@ -169,8 +168,7 @@ TEST(DisassemblerElfTest, QuickDetect) {
     header.e_machine = elf::EM_X86_64;
     header.e_version = 1;
     header.e_shentsize = sizeof(elf::Elf64_Shdr);
-    ConstBufferView image(reinterpret_cast<const uint8_t*>(&header),
-                          sizeof(header));
+    image = {reinterpret_cast<const uint8_t*>(&header), sizeof(header)};
     EXPECT_FALSE(DisassemblerElfX86::QuickDetect(image));
     EXPECT_TRUE(DisassemblerElfX64::QuickDetect(image));
   }

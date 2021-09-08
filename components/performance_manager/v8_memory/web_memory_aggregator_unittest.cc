@@ -402,7 +402,7 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
             NormalizeMeasurement(expected_result));
 
   {
-    WebMemoryAggregator aggregator(cross_site_child);
+    WebMemoryAggregator child_aggregator(cross_site_child);
 
     auto expected_cross_site_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(22, AttributionScope::kCrossOriginAggregated),
@@ -411,20 +411,20 @@ TEST_F(WebMemoryAggregatorTest, AggregateWindowOpener) {
             "https://cross-site-example.com/window-iframe.html", absl::nullopt,
             absl::nullopt),
     });
-    auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
+    auto cross_site_result = child_aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(cross_site_result),
               NormalizeMeasurement(expected_cross_site_result));
   }
 
   {
-    WebMemoryAggregator aggregator(cross_site_popup);
+    WebMemoryAggregator popup_aggregator(cross_site_popup);
 
     auto expected_cross_site_result = CreateExpectedMemoryMeasurement({
         ExpectedMemoryBreakdown(2, AttributionScope::kWindow,
                                 "https://cross-site-example.com/",
                                 absl::nullopt, absl::nullopt),
     });
-    auto cross_site_result = aggregator.AggregateMeasureMemoryResult();
+    auto cross_site_result = popup_aggregator.AggregateMeasureMemoryResult();
     EXPECT_EQ(NormalizeMeasurement(cross_site_result),
               NormalizeMeasurement(expected_cross_site_result));
   }

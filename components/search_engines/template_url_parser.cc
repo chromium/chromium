@@ -225,13 +225,13 @@ void SafeTemplateURLParser::OnXmlParseComplete(
 
 void SafeTemplateURLParser::ParseURLs(
     const std::vector<const base::Value*>& urls) {
-  for (auto* url : urls) {
+  for (auto* url_value : urls) {
     std::string template_url =
-        data_decoder::GetXmlElementAttribute(*url, kURLTemplateAttribute);
+        data_decoder::GetXmlElementAttribute(*url_value, kURLTemplateAttribute);
     std::string type =
-        data_decoder::GetXmlElementAttribute(*url, kURLTypeAttribute);
+        data_decoder::GetXmlElementAttribute(*url_value, kURLTypeAttribute);
     bool is_post = base::LowerCaseEqualsASCII(
-        data_decoder::GetXmlElementAttribute(*url, kParamMethodAttribute),
+        data_decoder::GetXmlElementAttribute(*url_value, kParamMethodAttribute),
         "post");
     bool is_html_url = (type == kHTMLType);
     bool is_suggest_url = (type == kSuggestionType);
@@ -250,7 +250,7 @@ void SafeTemplateURLParser::ParseURLs(
     std::vector<Param> extra_params;
 
     std::vector<const base::Value*> params;
-    GetChildElementsByTag(*url, kParamElement, &params);
+    GetChildElementsByTag(*url_value, kParamElement, &params);
     for (auto* param : params) {
       std::string key =
           data_decoder::GetXmlElementAttribute(*param, kParamNameAttribute);

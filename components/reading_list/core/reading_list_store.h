@@ -59,7 +59,7 @@ class ReadingListStore : public ReadingListModelStorage {
   // current run.
   absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
-      syncer::EntityChangeList entity_data) override;
+      syncer::EntityChangeList entity_changes) override;
 
   // Apply changes from the sync server locally.
   // Please note that |entity_changes| might have fewer entries than

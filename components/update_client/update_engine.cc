@@ -218,7 +218,7 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     const auto& it = id_to_result.find(id);
     if (it != id_to_result.end()) {
       const auto result = it->second;
-      const auto error = [](const std::string& status) {
+      const auto pair = [](const std::string& status) {
         // First, handle app status literals which can be folded down as an
         // updatecheck status
         if (status == "error-unknownApplication")
@@ -234,8 +234,8 @@ void UpdateEngine::UpdateCheckResultsAvailable(
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
       }(result.status);
-      component->SetUpdateCheckResult(result, error.first,
-                                      static_cast<int>(error.second));
+      component->SetUpdateCheckResult(result, pair.first,
+                                      static_cast<int>(pair.second));
     } else {
       component->SetUpdateCheckResult(
           absl::nullopt, ErrorCategory::kUpdateCheck,

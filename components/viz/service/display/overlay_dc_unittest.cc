@@ -630,55 +630,58 @@ TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
 // Test whether quads with rounded corners are supported.
 TEST_F(DCLayerOverlayTest, RoundedCorners) {
   // Frame #0
-  auto pass = CreateRenderPass();
+  {
+    auto pass = CreateRenderPass();
 
-  // Create a video YUV quad with rounded corner, nothing on top.
-  auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
-      resource_provider_.get(), child_resource_provider_.get(),
-      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  gfx::Rect rect(0, 0, 256, 256);
-  video_quad->rect = rect;
-  video_quad->visible_rect = rect;
-  pass->shared_quad_state_list.back()->overlay_damage_index = 0;
-  // Rounded corners
-  pass->shared_quad_state_list.back()->mask_filter_info =
-      gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
+    // Create a video YUV quad with rounded corner, nothing on top.
+    auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+    gfx::Rect rect(0, 0, 256, 256);
+    video_quad->rect = rect;
+    video_quad->visible_rect = rect;
+    pass->shared_quad_state_list.back()->overlay_damage_index = 0;
+    // Rounded corners
+    pass->shared_quad_state_list.back()->mask_filter_info =
+        gfx::MaskFilterInfo(gfx::RRectF(gfx::RectF(0.f, 0.f, 20.f, 30.f), 5.f));
 
-  DCLayerOverlayList dc_layer_list;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
-  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
-  damage_rect_ = gfx::Rect(0, 0, 256, 256);
-  AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
-  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(0, 0, 256, 256)};
+    DCLayerOverlayList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 256, 256);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list = {
+        gfx::Rect(0, 0, 256, 256)};
 
-  overlay_processor_->ProcessForOverlays(
-      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
-      render_pass_filters, render_pass_backdrop_filters,
-      std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
-      &damage_rect_, &content_bounds_);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &dc_layer_list,
+        &damage_rect_, &content_bounds_);
 
-  auto* root_pass = pass_list.back().get();
-  auto* replaced_quad = root_pass->quad_list.back();
-  auto* replaced_sqs = replaced_quad->shared_quad_state;
+    auto* root_pass = pass_list.back().get();
+    auto* replaced_quad = root_pass->quad_list.back();
+    auto* replaced_sqs = replaced_quad->shared_quad_state;
 
-  // The video should be forced to an underlay mode, even there is nothing on
-  // top.
-  EXPECT_EQ(1U, dc_layer_list.size());
-  EXPECT_EQ(-1, dc_layer_list.back().z_order);
+    // The video should be forced to an underlay mode, even there is nothing on
+    // top.
+    EXPECT_EQ(1U, dc_layer_list.size());
+    EXPECT_EQ(-1, dc_layer_list.back().z_order);
 
-  // Check whether there is a replaced quad in the quad list.
-  EXPECT_EQ(1U, root_pass->quad_list.size());
+    // Check whether there is a replaced quad in the quad list.
+    EXPECT_EQ(1U, root_pass->quad_list.size());
 
-  // Check whether blend mode == kDstOut, color == black and still have the
-  // rounded corner mask filter for the replaced solid quad.
-  EXPECT_EQ(replaced_sqs->blend_mode, SkBlendMode::kDstOut);
-  EXPECT_EQ(SolidColorDrawQuad::MaterialCast(replaced_quad)->color,
-            SK_ColorBLACK);
-  EXPECT_TRUE(replaced_sqs->mask_filter_info.HasRoundedCorners());
+    // Check whether blend mode == kDstOut, color == black and still have the
+    // rounded corner mask filter for the replaced solid quad.
+    EXPECT_EQ(replaced_sqs->blend_mode, SkBlendMode::kDstOut);
+    EXPECT_EQ(SolidColorDrawQuad::MaterialCast(replaced_quad)->color,
+              SK_ColorBLACK);
+    EXPECT_TRUE(replaced_sqs->mask_filter_info.HasRoundedCorners());
 
-  // The whole frame is damaged.
-  EXPECT_EQ(gfx::Rect(0, 0, 256, 256), damage_rect_);
+    // The whole frame is damaged.
+    EXPECT_EQ(gfx::Rect(0, 0, 256, 256), damage_rect_);
+  }
 
   // Frame #1
   {

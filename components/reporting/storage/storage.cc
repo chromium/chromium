@@ -414,8 +414,9 @@ class Storage::KeyInStorage {
         directory_,
         /*recursive=*/false, base::FileEnumerator::FILES,
         base::StrCat({kEncryptionKeyFilePrefix, FILE_PATH_LITERAL("*")}));
-    base::FilePath full_name;
-    while (full_name = dir_enum.Next(), !full_name.empty()) {
+
+    for (base::FilePath full_name = dir_enum.Next(); !full_name.empty();
+         full_name = dir_enum.Next()) {
       const auto result = key_files_to_remove.emplace(full_name);
       if (!result.second) {
         // Duplicate file name. Should not happen.

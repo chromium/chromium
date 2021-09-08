@@ -220,16 +220,16 @@ void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
   }
 
   if (!pref_service_->GetBoolean(prefs::kSafeBrowsingEnhanced)) {
-    AddSafeBrowsingEventAndUserStateToPref(UserState::ENHANCED_PROTECTION,
+    AddSafeBrowsingEventAndUserStateToPref(UserState::kEnhancedProtection,
                                            EventType::USER_STATE_DISABLED);
     int disabled_times_last_week = GetEventCountSince(
-        UserState::ENHANCED_PROTECTION, EventType::USER_STATE_DISABLED,
+        UserState::kEnhancedProtection, EventType::USER_STATE_DISABLED,
         base::Time::Now() - base::TimeDelta::FromDays(7));
     if (disabled_times_last_week <= kEsbDisabledMetricsQuota) {
       LogEnhancedProtectionDisabledMetrics();
     }
   } else {
-    AddSafeBrowsingEventAndUserStateToPref(UserState::ENHANCED_PROTECTION,
+    AddSafeBrowsingEventAndUserStateToPref(UserState::kEnhancedProtection,
                                            EventType::USER_STATE_ENABLED);
   }
 }
@@ -265,7 +265,7 @@ SafeBrowsingMetricsCollector::GetLatestEventFromEventType(
 
 void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   const base::Value* event_dict =
-      GetSafeBrowsingEventDictionary(UserState::ENHANCED_PROTECTION);
+      GetSafeBrowsingEventDictionary(UserState::kEnhancedProtection);
   if (!event_dict) {
     return;
   }
@@ -280,11 +280,11 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
     base::UmaHistogramCounts100(
         "SafeBrowsing.EsbDisabled.BypassCountLast28Days." +
             GetEventTypeMetricSuffix(event_type),
-        GetEventCountSince(UserState::ENHANCED_PROTECTION, event_type,
+        GetEventCountSince(UserState::kEnhancedProtection, event_type,
                            base::Time::Now() - base::TimeDelta::FromDays(28)));
 
     const absl::optional<Event> latest_event =
-        GetLatestEventFromEventType(UserState::ENHANCED_PROTECTION, event_type);
+        GetLatestEventFromEventType(UserState::kEnhancedProtection, event_type);
     if (latest_event) {
       bypass_events.emplace_back(latest_event.value());
     }
@@ -306,7 +306,7 @@ void SafeBrowsingMetricsCollector::LogEnhancedProtectionDisabledMetrics() {
   }
 
   const absl::optional<Event> latest_enabled_event =
-      GetLatestEventFromEventType(UserState::ENHANCED_PROTECTION,
+      GetLatestEventFromEventType(UserState::kEnhancedProtection,
                                   EventType::USER_STATE_ENABLED);
   if (latest_enabled_event) {
     const auto days_since_enabled =
@@ -338,18 +338,18 @@ int SafeBrowsingMetricsCollector::GetEventCountSince(UserState user_state,
 
 UserState SafeBrowsingMetricsCollector::GetUserState() {
   if (IsSafeBrowsingPolicyManaged(*pref_service_)) {
-    return UserState::MANAGED;
+    return UserState::kManaged;
   }
 
   SafeBrowsingState sb_state = GetSafeBrowsingState(*pref_service_);
   switch (sb_state) {
     case SafeBrowsingState::ENHANCED_PROTECTION:
-      return UserState::ENHANCED_PROTECTION;
+      return UserState::kEnhancedProtection;
     case SafeBrowsingState::STANDARD_PROTECTION:
-      return UserState::STANDARD_PROTECTION;
+      return UserState::kStandardProtection;
     case SafeBrowsingState::NO_SAFE_BROWSING:
       NOTREACHED() << "Unexpected Safe Browsing state.";
-      return UserState::STANDARD_PROTECTION;
+      return UserState::kStandardProtection;
   }
 }
 
@@ -372,11 +372,11 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
 std::string SafeBrowsingMetricsCollector::GetUserStateMetricSuffix(
     const UserState& user_state) {
   switch (user_state) {
-    case UserState::STANDARD_PROTECTION:
+    case UserState::kStandardProtection:
       return "StandardProtection";
-    case UserState::ENHANCED_PROTECTION:
+    case UserState::kEnhancedProtection:
       return "EnhancedProtection";
-    case UserState::MANAGED:
+    case UserState::kManaged:
       return "Managed";
   }
 }

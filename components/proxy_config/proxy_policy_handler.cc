@@ -313,19 +313,19 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
     }
     *mode_value = mode->GetString();
 
-    ProxyPrefs::ProxyMode mode;
-    if (!ProxyPrefs::StringToProxyMode(*mode_value, &mode)) {
+    ProxyPrefs::ProxyMode proxy_mode;
+    if (!ProxyPrefs::StringToProxyMode(*mode_value, &proxy_mode)) {
       errors->AddError(kProxySettings, kProxyMode,
                        IDS_POLICY_INVALID_PROXY_MODE_ERROR);
       return false;
     }
 
-    if (mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
+    if (proxy_mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
       errors->AddError(kProxySettings, kProxyPacUrl,
                        IDS_POLICY_NOT_SPECIFIED_ERROR);
       return false;
     }
-    if (mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
+    if (proxy_mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
       errors->AddError(kProxySettings, kProxyServer,
                        IDS_POLICY_NOT_SPECIFIED_ERROR);
       return false;

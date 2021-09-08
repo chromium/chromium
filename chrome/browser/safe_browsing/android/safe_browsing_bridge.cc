@@ -61,7 +61,8 @@ static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
 }
 
 static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(JNIEnv* env) {
-  return safe_browsing::GetSafeBrowsingState(*GetPrefService());
+  return static_cast<jint>(
+      safe_browsing::GetSafeBrowsingState(*GetPrefService()));
 }
 
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(JNIEnv* env,

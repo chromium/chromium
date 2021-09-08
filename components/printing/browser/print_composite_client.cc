@@ -290,10 +290,9 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
           requested->render_process_id_, requested->render_frame_id_,
           requested->document_cookie_, std::move(requested->params_));
     } else {
-      auto* render_frame_host = content::RenderFrameHost::FromID(
-          requested->render_process_id_, requested->render_frame_id_);
       compositor->NotifyUnavailableSubframe(
-          GenerateFrameGuid(render_frame_host));
+          GenerateFrameGuid(content::RenderFrameHost::FromID(
+              requested->render_process_id_, requested->render_frame_id_)));
     }
   }
   requested_subframes_.clear();

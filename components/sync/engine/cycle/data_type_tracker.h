@@ -25,17 +25,17 @@ namespace syncer {
 class InvalidationInterface;
 
 struct WaitInterval {
-  enum BlockingMode {
+  enum class BlockingMode {
     // Uninitialized state, should not be set in practice.
-    UNKNOWN = -1,
+    kUnknown = -1,
     // We enter a series of increasingly longer WaitIntervals if we experience
     // repeated transient failures.  We retry at the end of each interval.
-    EXPONENTIAL_BACKOFF,
+    kExponentialBackoff,
     // A server-initiated throttled interval.  We do not allow any syncing
     // during such an interval.
-    THROTTLED,
+    kThrottled,
     // We re retrying for exponetial backoff.
-    EXPONENTIAL_BACKOFF_RETRYING,
+    kExponentialBackoffRetrying,
   };
   WaitInterval();
   WaitInterval(BlockingMode mode, base::TimeDelta length);

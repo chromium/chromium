@@ -149,9 +149,9 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
   // Pick up a task from the queue if the queue has pending tasks and no other
   // task is running.
   if (tasks_.empty() && !task_queue_.empty()) {
-    auto task = task_queue_.front();
+    auto queued_task = task_queue_.front();
     task_queue_.pop_front();
-    RunTask(task);
+    RunTask(queued_task);
   }
 }
 

@@ -403,8 +403,8 @@ void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
     return;
 
   base::ListValue time_list;
-  for (const base::Time& timestamp : phishing_report_times_)
-    time_list.Append(base::Value(timestamp.ToDoubleT()));
+  for (const base::Time& report_time : phishing_report_times_)
+    time_list.Append(base::Value(report_time.ToDoubleT()));
   delegate_->GetPrefs()->Set(prefs::kSafeBrowsingCsdPingTimestamps, time_list);
 }
 

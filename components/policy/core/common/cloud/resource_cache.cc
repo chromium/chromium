@@ -302,9 +302,9 @@ int64_t ResourceCache::GetCacheDirectoryOrFileSize(
   if (base::DirectoryExists(path)) {
     int types = base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES;
     base::FileEnumerator enumerator(path, /* recursive */ false, types);
-    for (base::FilePath path = enumerator.Next(); !path.empty();
-         path = enumerator.Next()) {
-      path_size += GetCacheDirectoryOrFileSize(path);
+    for (base::FilePath child_path = enumerator.Next(); !child_path.empty();
+         child_path = enumerator.Next()) {
+      path_size += GetCacheDirectoryOrFileSize(child_path);
     }
   } else if (!base::GetFileSize(path, &path_size)) {
     path_size = 0;

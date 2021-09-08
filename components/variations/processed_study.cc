@@ -106,11 +106,11 @@ bool ValidateStudyAndComputeTotalProbability(
     // future from the server by introducing a new activation type.
     if (study.activation_type() == Study_ActivationType_ACTIVATE_ON_QUERY) {
       const auto& features = experiment.feature_association();
-      for (int i = 0; i < features.enable_feature_size(); ++i) {
-        features_to_associate.insert(features.enable_feature(i));
+      for (int j = 0; j < features.enable_feature_size(); ++j) {
+        features_to_associate.insert(features.enable_feature(j));
       }
-      for (int i = 0; i < features.disable_feature_size(); ++i) {
-        features_to_associate.insert(features.disable_feature(i));
+      for (int j = 0; j < features.disable_feature_size(); ++j) {
+        features_to_associate.insert(features.disable_feature(j));
       }
     }
 

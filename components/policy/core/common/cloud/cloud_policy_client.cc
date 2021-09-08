@@ -1149,9 +1149,10 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
         response.policy_response();
     responses_.clear();
     for (int i = 0; i < policy_response.responses_size(); ++i) {
-      const em::PolicyFetchResponse& response = policy_response.responses(i);
+      const em::PolicyFetchResponse& fetch_response =
+          policy_response.responses(i);
       em::PolicyData policy_data;
-      if (!policy_data.ParseFromString(response.policy_data()) ||
+      if (!policy_data.ParseFromString(fetch_response.policy_data()) ||
           !policy_data.IsInitialized() || !policy_data.has_policy_type()) {
         LOG(WARNING) << "Invalid PolicyData received, ignoring";
         continue;
@@ -1166,7 +1167,7 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
                      << ", entity: " << entity_id << ", ignoring";
         continue;
       }
-      responses_[key] = response;
+      responses_[key] = fetch_response;
     }
     state_keys_to_upload_.clear();
     NotifyPolicyFetched();

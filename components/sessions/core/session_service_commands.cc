@@ -822,7 +822,7 @@ bool CreateTabsAndWindows(
           DVLOG(1) << "Failed reading command " << command->id();
           return true;
         }
-        std::map<std::string, std::string> data;
+        std::map<std::string, std::string> tab_data;
         for (int i = 0; i < size; i++) {
           std::string key;
           std::string value;
@@ -830,11 +830,11 @@ bool CreateTabsAndWindows(
             DVLOG(1) << "Failed reading command " << command->id();
             return true;
           }
-          data.insert({key, value});
+          tab_data.insert({key, value});
         }
 
         GetTab(SessionID::FromSerializedValue(tab_id), tabs)->data =
-            std::move(data);
+            std::move(tab_data);
         break;
       }
 

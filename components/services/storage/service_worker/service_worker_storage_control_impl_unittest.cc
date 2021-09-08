@@ -1020,10 +1020,10 @@ TEST_F(ServiceWorkerStorageControlImplTest, WriteAndReadResource) {
   // Write content.
   {
     mojo_base::BigBuffer data(base::as_bytes(base::make_span(kData)));
-    int data_size = data.size();
+    int bytes_size = data.size();
 
     int result = WriteResponseData(writer.get(), std::move(data));
-    ASSERT_EQ(data_size, result);
+    ASSERT_EQ(bytes_size, result);
   }
 
   mojo::Remote<mojom::ServiceWorkerResourceReader> reader =
@@ -1522,28 +1522,30 @@ TEST_F(ServiceWorkerStorageControlImplTest, TrackRunningVersion) {
 
   mojo::Remote<mojom::ServiceWorkerLiveVersionRef> reference2;
   {
-    FindRegistrationResult result =
+    FindRegistrationResult find_result =
         FindRegistrationForId(registration_id, kKey);
-    ASSERT_EQ(result.status, DatabaseStatus::kOk);
-    ASSERT_TRUE(result.entry->version_reference);
-    reference2.Bind(std::move(result.entry->version_reference));
+    ASSERT_EQ(find_result.status, DatabaseStatus::kOk);
+    ASSERT_TRUE(find_result.entry->version_reference);
+    reference2.Bind(std::move(find_result.entry->version_reference));
   }
 
   mojo::Remote<mojom::ServiceWorkerLiveVersionRef> reference3;
   {
-    GetRegistrationsForOriginResult result =
+    GetRegistrationsForOriginResult get_registrations_result =
         GetRegistrationsForStorageKey(kKey);
-    ASSERT_EQ(result.status, DatabaseStatus::kOk);
-    ASSERT_EQ(result.registrations.size(), 1UL);
-    ASSERT_TRUE(result.registrations[0]->version_reference);
-    reference3.Bind(std::move(result.registrations[0]->version_reference));
+    ASSERT_EQ(get_registrations_result.status, DatabaseStatus::kOk);
+    ASSERT_EQ(get_registrations_result.registrations.size(), 1UL);
+    ASSERT_TRUE(get_registrations_result.registrations[0]->version_reference);
+    reference3.Bind(std::move(
+        get_registrations_result.registrations[0]->version_reference));
   }
 
   // Drop the first reference and delete the registration.
   reference1.reset();
   {
-    DeleteRegistrationResult result = DeleteRegistration(registration_id, kKey);
-    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+    DeleteRegistrationResult delete_result =
+        DeleteRegistration(registration_id, kKey);
+    ASSERT_EQ(delete_result.status, DatabaseStatus::kOk);
   }
 
   // Make sure all tasks are ran.

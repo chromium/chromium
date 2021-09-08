@@ -236,8 +236,8 @@ void TabLoadingFrameNavigationPolicy::CreatePageTimeout(
     base::TimeDelta timeout) {
 #if DCHECK_IS_ON()
   // Sanity check that no timeout entry already exists for this page.
-  for (const auto& timeout : timeouts_) {
-    DCHECK_NE(timeout.page_node, page_node);
+  for (const auto& entry : timeouts_) {
+    DCHECK_NE(entry.page_node, page_node);
   }
 #endif
   base::TimeTicks when = base::TimeTicks::Now() + timeout;

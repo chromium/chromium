@@ -77,31 +77,35 @@ bool NetworkProperties::UpdateFromValue(const base::DictionaryValue& value) {
     type = network_type;
   }
   if (value.GetDictionary(onc::network_type::kWiFi, &wifi)) {
-    const std::string* name = value.FindStringPath(onc::network_config::kName);
-    if (name)
-      this->name = *name;
-    const std::string* guid = value.FindStringPath(onc::network_config::kGUID);
-    if (guid)
-      this->guid = *guid;
-    const std::string* connection_state =
+    const std::string* name_ptr =
+        value.FindStringPath(onc::network_config::kName);
+    if (name_ptr)
+      name = *name_ptr;
+    const std::string* guid_ptr =
+        value.FindStringPath(onc::network_config::kGUID);
+    if (guid_ptr)
+      guid = *guid_ptr;
+    const std::string* connection_state_ptr =
         value.FindStringPath(onc::network_config::kConnectionState);
-    if (connection_state)
-      this->connection_state = *connection_state;
+    if (connection_state_ptr)
+      connection_state = *connection_state_ptr;
 
-    const std::string* security = wifi->FindStringPath(onc::wifi::kSecurity);
-    if (security)
-      this->security = *security;
-    const std::string* ssid = wifi->FindStringPath(onc::wifi::kSSID);
-    if (ssid)
-      this->ssid = *ssid;
-    const std::string* password = wifi->FindStringPath(onc::wifi::kPassphrase);
-    if (password)
-      this->password = *password;
+    const std::string* security_ptr =
+        wifi->FindStringPath(onc::wifi::kSecurity);
+    if (security_ptr)
+      security = *security_ptr;
+    const std::string* ssid_ptr = wifi->FindStringPath(onc::wifi::kSSID);
+    if (ssid_ptr)
+      ssid = *ssid_ptr;
+    const std::string* password_ptr =
+        wifi->FindStringPath(onc::wifi::kPassphrase);
+    if (password_ptr)
+      password = *password_ptr;
 
-    absl::optional<bool> auto_connect =
+    absl::optional<bool> auto_connect_opt =
         wifi->FindBoolKey(onc::wifi::kAutoConnect);
-    if (auto_connect)
-      this->auto_connect = *auto_connect;
+    if (auto_connect_opt)
+      auto_connect = *auto_connect_opt;
 
     return true;
   }

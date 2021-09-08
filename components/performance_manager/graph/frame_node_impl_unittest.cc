@@ -501,10 +501,8 @@ TEST_F(FrameNodeImplTest, PublicInterface) {
             public_frame_node->GetSiteInstanceId());
 
   auto child_frame_nodes = public_frame_node->GetChildFrameNodes();
-  for (auto* child_frame_node : frame_node->child_frame_nodes()) {
-    const FrameNode* child = child_frame_node;
+  for (auto* child : frame_node->child_frame_nodes())
     EXPECT_TRUE(base::Contains(child_frame_nodes, child));
-  }
   EXPECT_EQ(child_frame_nodes.size(), frame_node->child_frame_nodes().size());
 
   EXPECT_EQ(frame_node->lifecycle_state(),

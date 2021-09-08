@@ -362,7 +362,7 @@ class SyncSchedulerImplTest : public testing::Test {
     ModelTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
     for (ModelType type : blocked_types) {
       if (scheduler_->nudge_tracker_.GetTypeBlockingMode(type) ==
-          WaitInterval::THROTTLED) {
+          WaitInterval::BlockingMode::kThrottled) {
         throttled_types.Put(type);
       }
     }
@@ -374,7 +374,7 @@ class SyncSchedulerImplTest : public testing::Test {
     ModelTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
     for (ModelType type : blocked_types) {
       if (scheduler_->nudge_tracker_.GetTypeBlockingMode(type) ==
-          WaitInterval::EXPONENTIAL_BACKOFF) {
+          WaitInterval::BlockingMode::kExponentialBackoff) {
         backed_off_types.Put(type);
       }
     }
@@ -1814,7 +1814,8 @@ TEST_F(SyncSchedulerImplTest, PartialFailureWillExponentialBackoff) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
   TimeDelta first_blocking_time = GetTypeBlockingTime(THEMES);
 
-  SetTypeBlockingMode(THEMES, WaitInterval::EXPONENTIAL_BACKOFF_RETRYING);
+  SetTypeBlockingMode(THEMES,
+                      WaitInterval::BlockingMode::kExponentialBackoffRetrying);
   // This won't cause a sync cycle because the types are backed off.
   scheduler()->ScheduleLocalNudge(type);
   PumpLoop();

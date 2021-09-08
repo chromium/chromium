@@ -1821,8 +1821,9 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
       test_observer, dummy_extension->id(),
       api::developer_private::EVENT_TYPE_PREFS_CHANGED));
 
-  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
 
   base::RunLoop().RunUntilIdle();
   // The warning state should not have changed since the allowlist state is not
@@ -1841,8 +1842,9 @@ TEST_F(DeveloperPrivateApiAllowlistUnitTest,
 
   test_observer.ClearEvents();
 
-  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                      safe_browsing::STANDARD_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
 
   base::RunLoop().RunUntilIdle();
   // The warning is now hidden because the profile is no longer Enhanced

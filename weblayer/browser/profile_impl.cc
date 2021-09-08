@@ -642,8 +642,9 @@ void ProfileImpl::SetBooleanSetting(SettingType type, bool value) {
     case SettingType::BASIC_SAFE_BROWSING_ENABLED:
 #if defined(OS_ANDROID)
       safe_browsing::SetSafeBrowsingState(
-          pref_service, value ? safe_browsing::STANDARD_PROTECTION
-                              : safe_browsing::NO_SAFE_BROWSING);
+          pref_service,
+          value ? safe_browsing::SafeBrowsingState::STANDARD_PROTECTION
+                : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
 #endif
       break;
     case SettingType::UKM_ENABLED: {

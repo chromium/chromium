@@ -734,7 +734,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   DCHECK(version_info_->group2_num_blocks == 0 ||
          version_info_->group2_block_ec_bytes() ==
              version_info_->group1_block_ec_bytes());
-  for (size_t j = 0; j < version_info_->group1_block_ec_bytes(); j++) {
+  for (j = 0; j < version_info_->group1_block_ec_bytes(); j++) {
     for (size_t i = 0; i < group1_num_blocks; i++) {
       interleaved_data[k++] =
           expanded_blocks[i][version_info_->group1_block_data_bytes + j];

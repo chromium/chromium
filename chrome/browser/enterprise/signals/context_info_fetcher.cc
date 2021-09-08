@@ -249,11 +249,11 @@ ContextInfoFetcher::GetSafeBrowsingProtectionLevel() {
 
   if (safe_browsing_enabled) {
     if (safe_browsing_enhanced_enabled)
-      return safe_browsing::ENHANCED_PROTECTION;
+      return safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
     else
-      return safe_browsing::STANDARD_PROTECTION;
+      return safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
   } else {
-    return safe_browsing::NO_SAFE_BROWSING;
+    return safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
   }
 }
 

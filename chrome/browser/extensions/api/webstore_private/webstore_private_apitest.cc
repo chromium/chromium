@@ -667,8 +667,9 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingNotAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
@@ -683,8 +684,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        EnhancedSafeBrowsingAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::ENHANCED_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
 
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
@@ -694,8 +696,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                        StandardSafeBrowsingNotAllowlisted) {
-  safe_browsing::SetSafeBrowsingState(browser()->profile()->GetPrefs(),
-                                      safe_browsing::STANDARD_PROTECTION);
+  safe_browsing::SetSafeBrowsingState(
+      browser()->profile()->GetPrefs(),
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 

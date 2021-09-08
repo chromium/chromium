@@ -82,7 +82,7 @@ TEST_F(FileImplTest, CreateWriteCloseRenameOpenRead) {
     // Open my_file again.
     mojo::Remote<mojom::File> file;
     error = base::File::Error::FILE_ERROR_FAILED;
-    bool handled =
+    handled =
         directory->OpenFile("your_file", file.BindNewPipeAndPassReceiver(),
                             mojom::kFlagRead | mojom::kFlagOpen, &error);
     ASSERT_TRUE(handled);

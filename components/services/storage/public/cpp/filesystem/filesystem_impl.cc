@@ -339,9 +339,9 @@ FilesystemImpl::GetDirectoryEntries(const base::FilePath& path,
       base::FileEnumerator::FolderSearchPolicy::ALL,
       base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   std::vector<base::FilePath> entries;
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
-    entries.push_back(path);
+  for (base::FilePath entry = enumerator.Next(); !entry.empty();
+       entry = enumerator.Next()) {
+    entries.push_back(entry);
   }
   if (enumerator.GetError() != base::File::FILE_OK)
     return enumerator.GetError();

@@ -1551,12 +1551,12 @@ TEST_P(AccountReconcilorTestMirrorMultilogin, TableRowTest) {
     }
     if (GetParam().gaia_api_calls[i] == 'U') {
       std::vector<CoreAccountId> accounts_to_send;
-      for (int i = 0; GetParam().cookies_after_reconcile[i] != '\0'; ++i) {
-        char cookie = GetParam().cookies_after_reconcile[i];
+      for (int j = 0; GetParam().cookies_after_reconcile[j] != '\0'; ++j) {
+        char cookie = GetParam().cookies_after_reconcile[j];
         std::string account_to_send = GaiaIdForAccountKey(cookie);
         accounts_to_send.push_back(PickAccountIdForAccount(
             account_to_send,
-            accounts_[GetParam().cookies_after_reconcile[i]].email));
+            accounts_[GetParam().cookies_after_reconcile[j]].email));
       }
       const signin::MultiloginParameters ml_params(
           gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,

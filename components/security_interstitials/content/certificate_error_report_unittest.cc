@@ -90,8 +90,8 @@ std::string GetPEMEncodedChain() {
     ADD_FAILURE();
     return cert_data;
   }
-  for (const auto& cert : pem_certs) {
-    cert_data += cert;
+  for (const auto& pem_cert : pem_certs) {
+    cert_data += pem_cert;
   }
   return cert_data;
 }

@@ -986,18 +986,18 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
   RegisterClient();
 
   const int kPublicKeyVersion = 42;
-  const base::Time kTimestamp(base::Time::UnixEpoch() +
-                              base::TimeDelta::FromDays(20));
+  const base::Time kOldTimestamp(base::Time::UnixEpoch() +
+                                 base::TimeDelta::FromDays(20));
 
   em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_timestamp(kTimestamp.ToJavaTime());
+  policy_fetch_request->set_timestamp(kOldTimestamp.ToJavaTime());
   policy_fetch_request->set_public_key_version(kPublicKeyVersion);
 
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
 
-  client_->set_last_policy_timestamp(kTimestamp);
+  client_->set_last_policy_timestamp(kOldTimestamp);
   client_->set_public_key_version(kPublicKeyVersion);
 
   ExpectAndCaptureJob(policy_response);
@@ -1325,8 +1325,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
     const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
     ASSERT_TRUE(fetch_request.has_policy_type());
     EXPECT_FALSE(fetch_request.has_settings_entity_id());
-    std::pair<std::string, std::string> key(fetch_request.policy_type(),
-                                            std::string());
+    key = {fetch_request.policy_type(), std::string()};
     EXPECT_EQ(1u, expected_namespaces.erase(key));
   }
   EXPECT_TRUE(expected_namespaces.empty());

@@ -87,15 +87,15 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.built_in_dns_client_enabled = signals.built_in_dns_client_enabled;
 
   switch (signals.safe_browsing_protection_level) {
-    case safe_browsing::NO_SAFE_BROWSING:
+    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_DISABLED;
       break;
-    case safe_browsing::STANDARD_PROTECTION:
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_STANDARD;
       break;
-    case safe_browsing::ENHANCED_PROTECTION:
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
       info.safe_browsing_protection_level = extensions::api::
           enterprise_reporting_private::SAFE_BROWSING_LEVEL_ENHANCED;
       break;

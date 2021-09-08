@@ -725,8 +725,9 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
 
   if (test_case.esb_user) {
     // Enable Enhanced Protection
-    safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
-                                        safe_browsing::ENHANCED_PROTECTION);
+    safe_browsing::SetSafeBrowsingState(
+        profile()->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
   extension_service()->Init();
 

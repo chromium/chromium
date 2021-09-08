@@ -251,8 +251,7 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
                                 full_name.MaybeAsASCII(), "'"}));
   }
   int64_t file_sequencing_id = 0;
-  const bool success =
-      base::StringToInt64(extension.substr(1), &file_sequencing_id);
+  bool success = base::StringToInt64(extension.substr(1), &file_sequencing_id);
   if (!success) {
     return Status(error::INTERNAL,
                   base::StrCat({"File extension does not parse: '",
@@ -265,8 +264,8 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
       full_name.RemoveFinalExtension().FinalExtension();
   if (!generation_extension.empty()) {
     int64_t file_generation_id = 0;
-    const bool success = base::StringToInt64(generation_extension.substr(1),
-                                             &file_generation_id);
+    success = base::StringToInt64(generation_extension.substr(1),
+                                  &file_generation_id);
     if (success && file_generation_id > 0) {
       // Found valid generation [1, int64_max] in the data file name.
       if (generation_id_ > 0) {

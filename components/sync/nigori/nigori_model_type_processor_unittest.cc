@@ -168,10 +168,10 @@ class NigoriModelTypeProcessorTest : public testing::Test {
 TEST_F(NigoriModelTypeProcessorTest,
        ShouldTrackTheMetadataWhenInitialSyncDone) {
   // Build a model type state with a specific cache guid.
-  const std::string kCacheGuid = "cache_guid";
+  const std::string kOtherCacheGuid = "cache_guid";
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
-  model_type_state.set_cache_guid(kCacheGuid);
+  model_type_state.set_cache_guid(kOtherCacheGuid);
 
   // Build entity metadata with a specific sequence number.
   const int kSequenceNumber = 100;
@@ -190,7 +190,7 @@ TEST_F(NigoriModelTypeProcessorTest,
   // processor.
   NigoriMetadataBatch processor_metadata_batch = processor()->GetMetadata();
   EXPECT_THAT(processor_metadata_batch.model_type_state.cache_guid(),
-              Eq(kCacheGuid));
+              Eq(kOtherCacheGuid));
   ASSERT_TRUE(processor_metadata_batch.entity_metadata);
   EXPECT_THAT(processor_metadata_batch.entity_metadata->sequence_number(),
               Eq(kSequenceNumber));

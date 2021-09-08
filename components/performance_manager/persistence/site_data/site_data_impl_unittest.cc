@@ -130,12 +130,12 @@ class SiteDataImplTest : public ::testing::Test {
   ::testing::NiceMock<testing::MockSiteDataImplOnDestroyDelegate>
       destroy_delegate_;
 
-  testing::NoopSiteDataStore data_store;
+  testing::NoopSiteDataStore data_store_;
 };
 
 TEST_F(SiteDataImplTest, BasicTestEndToEnd) {
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   local_site_data->NotifySiteLoaded();
   local_site_data->NotifyLoadedSiteBackgrounded();
@@ -192,7 +192,7 @@ TEST_F(SiteDataImplTest, BasicTestEndToEnd) {
 
 TEST_F(SiteDataImplTest, LastLoadedTime) {
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   // Create a second instance of this object, simulates having several tab
   // owning it.
@@ -223,7 +223,7 @@ TEST_F(SiteDataImplTest, LastLoadedTime) {
 
 TEST_F(SiteDataImplTest, GetFeatureUsageForUnloadedSite) {
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   local_site_data->NotifySiteLoaded();
   local_site_data->NotifyLoadedSiteBackgrounded();
@@ -276,7 +276,7 @@ TEST_F(SiteDataImplTest, AllDurationGetSavedOnUnload) {
   // This test helps making sure that the observation/timestamp fields get saved
   // for all the features being tracked.
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   const base::TimeDelta kInterval = base::TimeDelta::FromSeconds(1);
   const auto kIntervalInternalRepresentation =
@@ -341,7 +341,7 @@ TEST_F(SiteDataImplTest, DestroyNotifiesDelegate) {
       strict_delegate;
   {
     auto local_site_data =
-        GetDataImpl(kDummyOrigin, strict_delegate.GetWeakPtr(), &data_store);
+        GetDataImpl(kDummyOrigin, strict_delegate.GetWeakPtr(), &data_store_);
     EXPECT_CALL(strict_delegate,
                 OnSiteDataImplDestroyed(local_site_data.get()));
   }
@@ -528,7 +528,7 @@ TEST_F(SiteDataImplTest, LateAsyncReadDoesntBypassClearEvent) {
 
 TEST_F(SiteDataImplTest, BackgroundedCountTests) {
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   // By default the tabs are expected to be foregrounded.
   EXPECT_EQ(0U, local_site_data->loaded_tabs_in_background_count_for_testing());
@@ -623,9 +623,9 @@ TEST_F(SiteDataImplTest, FlushingStateToProtoDoesntAffectData) {
   // calling FlushStateToProto doesn't affect the data that gets recorded.
 
   auto local_site_data =
-      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin, destroy_delegate_.GetWeakPtr(), &data_store_);
   auto local_site_data_ref =
-      GetDataImpl(kDummyOrigin2, destroy_delegate_.GetWeakPtr(), &data_store);
+      GetDataImpl(kDummyOrigin2, destroy_delegate_.GetWeakPtr(), &data_store_);
 
   local_site_data->NotifySiteLoaded();
   local_site_data->NotifyLoadedSiteBackgrounded();

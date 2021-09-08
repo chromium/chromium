@@ -478,12 +478,9 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
         features::kBlockPromptsIfDismissedOften, &actual_params));
     EXPECT_EQ(params, actual_params);
 
-    {
-      std::map<std::string, std::string> actual_params;
-      EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-          features::kBlockPromptsIfDismissedOften, &actual_params));
-      EXPECT_EQ(params, actual_params);
-    }
+    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
+        features::kBlockPromptsIfDismissedOften, &actual_params));
+    EXPECT_EQ(params, actual_params);
 
     for (uint32_t i = 0; i < 5; ++i) {
       TestPermissionContext permission_context(browser_context(),

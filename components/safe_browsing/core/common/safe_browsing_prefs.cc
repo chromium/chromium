@@ -111,19 +111,19 @@ namespace safe_browsing {
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   if (IsEnhancedProtectionEnabled(prefs)) {
-    return ENHANCED_PROTECTION;
+    return SafeBrowsingState::ENHANCED_PROTECTION;
   } else if (prefs.GetBoolean(prefs::kSafeBrowsingEnabled)) {
-    return STANDARD_PROTECTION;
+    return SafeBrowsingState::STANDARD_PROTECTION;
   } else {
-    return NO_SAFE_BROWSING;
+    return SafeBrowsingState::NO_SAFE_BROWSING;
   }
 }
 
 void SetSafeBrowsingState(PrefService* prefs, SafeBrowsingState state) {
-  if (state == ENHANCED_PROTECTION) {
+  if (state == SafeBrowsingState::ENHANCED_PROTECTION) {
     SetEnhancedProtectionPref(prefs, true);
     SetStandardProtectionPref(prefs, true);
-  } else if (state == STANDARD_PROTECTION) {
+  } else if (state == SafeBrowsingState::STANDARD_PROTECTION) {
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, true);
   } else {
