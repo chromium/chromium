@@ -553,7 +553,7 @@ void AXTreeSerializer<AXSourceNode>::DeleteClientSubtree(
     Reset();  // Do not try to reuse a bad root later.
     // A heuristic for this condition rather than an explicit Reset() from a
     // caller makes it difficult to debug whether extra resets / lost virtual
-    // buffer positions are occurring because of this code. Therefore, a DHECK
+    // buffer positions are occurring because of this code. Therefore, a DCHECK
     // has been added in order to debug if or when this condition may occur.
 #if defined(AX_FAIL_FAST_BUILD)
     CHECK(!crash_on_error_)
@@ -597,7 +597,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   // new root of the accessibility tree. A heuristic for this condition rather
   // than an explicit Reset() from a caller makes it difficult to debug whether
   // extra resets / lost virtual buffer positions are occurring because of this
-  // code. Therefore, a DHECK has been added in order to debug if or when this
+  // code. Therefore, a DCHECK has been added in order to debug if or when this
   // condition may occur.
   int id = tree_->GetId(node);
   ClientTreeNode* client_node = ClientTreeNodeById(id);
