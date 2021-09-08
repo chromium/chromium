@@ -778,19 +778,25 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::LayoutRow(
         (!column_break_token || result->ColumnSpanner()))
       break;
 
-    // We're in a situation where we'd like to stretch the columns, but then we
-    // need to know the stretch amount (minimal space shortage).
-    if (minimal_space_shortage == LayoutUnit::Max())
-      break;
-
-    // We also need at least one soft break opportunity. If forced breaks cause
-    // too many breaks, there's no stretch amount that could prevent the columns
-    // from overflowing.
-    if (used_column_count_ <= forced_break_count + 1)
-      break;
-
-    LayoutUnit new_column_block_size = StretchColumnBlockSize(
-        minimal_space_shortage, column_size.block_size, row_offset);
+    // Attempt to stretch the columns.
+    LayoutUnit new_column_block_size;
+    if (used_column_count_ <= forced_break_count + 1) {
+      // If we have no soft break opportunities (because forced breaks cause too
+      // many breaks already), there's no stretch amount that could prevent the
+      // columns from overflowing. Give up, unless we're nested inside another
+      // fragmentation context, in which case we'll stretch the columns to take
+      // up all the space inside the multicol container fragment. A box is
+      // required to use all the remaining fragmentainer space when something
+      // inside breaks; see https://www.w3.org/TR/css-break-3/#box-splitting
+      if (!is_constrained_by_outer_fragmentation_context_)
+        break;
+      new_column_block_size = FragmentainerSpaceAtBfcStart(ConstraintSpace());
+    } else {
+      DCHECK(minimal_space_shortage != LayoutUnit::Max());
+      new_column_block_size = column_size.block_size + minimal_space_shortage;
+    }
+    new_column_block_size =
+        ConstrainColumnBlockSize(new_column_block_size, row_offset);
 
     // Give up if we cannot get taller columns. The multicol container may have
     // a specified block-size preventing taller columns, for instance.
@@ -1194,15 +1200,6 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSize(
   content_runs.DistributeImplicitBreaks(used_column_count_);
   return ConstrainColumnBlockSize(content_runs.TallestColumnBlockSize(),
                                   row_offset);
-}
-
-LayoutUnit NGColumnLayoutAlgorithm::StretchColumnBlockSize(
-    LayoutUnit minimal_space_shortage,
-    LayoutUnit current_column_size,
-    LayoutUnit row_offset) const {
-  LayoutUnit length = current_column_size + minimal_space_shortage;
-  // Honor {,min-,max-}{height,width} properties.
-  return ConstrainColumnBlockSize(length, row_offset);
 }
 
 // Constrain a balanced column block size to not overflow the multicol

@@ -79,12 +79,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       LayoutUnit row_offset,
       const NGBlockBreakToken* child_break_token);
 
-  // Stretch the column length. We do this during column balancing, when we
-  // discover that the current length isn't large enough to fit all content.
-  LayoutUnit StretchColumnBlockSize(LayoutUnit minimal_space_shortage,
-                                    LayoutUnit current_column_size,
-                                    LayoutUnit row_offset) const;
-
   LayoutUnit ConstrainColumnBlockSize(LayoutUnit size,
                                       LayoutUnit row_offset) const;
   LayoutUnit CurrentContentBlockOffset(LayoutUnit border_box_row_offset) const {
