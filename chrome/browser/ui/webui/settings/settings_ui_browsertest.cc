@@ -25,15 +25,16 @@ using ::testing::_;
 using ui_test_utils::NavigateToURL;
 
 IN_PROC_BROWSER_TEST_F(SettingsUITest, ViewSourceDoesntCrash) {
-  NavigateToURL(browser(),
-                GURL(content::kViewSourceScheme + std::string(":") +
-                     chrome::kChromeUISettingsURL + std::string("strings.js")));
+  ASSERT_TRUE(NavigateToURL(
+      browser(),
+      GURL(content::kViewSourceScheme + std::string(":") +
+           chrome::kChromeUISettingsURL + std::string("strings.js"))));
 }
 
 // Catch lifetime issues in message handlers. There was previously a problem
 // with PrefMember calling Init again after Destroy.
 IN_PROC_BROWSER_TEST_F(SettingsUITest, ToggleJavaScript) {
-  NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL));
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
 
   const auto& handlers = *browser()
                               ->tab_strip_model()
@@ -55,6 +56,6 @@ IN_PROC_BROWSER_TEST_F(SettingsUITest, TriggerHappinessTrackingSurveys) {
           browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
                                        kHatsSurveyTriggerSettings, _, _, _, _));
-  NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL));
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
   base::RunLoop().RunUntilIdle();
 }

@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUnloadBrowserTest, UnloadWithContentScripts) {
   std::string id = extension->id();
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   GURL test_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   // The content script sends an XHR with the webpage's (rather than
   // extension's) Origin header - this should succeed (given that

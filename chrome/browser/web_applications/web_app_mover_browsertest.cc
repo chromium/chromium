@@ -72,7 +72,7 @@ class WebAppMoverBrowsertestBase : public InProcessBrowserTest {
   }
 
   AppId InstallApp(GURL url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     AppId app_id;
     base::RunLoop run_loop;

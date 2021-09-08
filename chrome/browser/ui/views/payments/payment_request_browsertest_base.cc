@@ -120,10 +120,10 @@ void PaymentRequestBrowserTestBase::SetUpOnMainThread() {
 
 void PaymentRequestBrowserTestBase::NavigateTo(const std::string& file_path) {
   if (file_path.find("data:") == 0U) {
-    ui_test_utils::NavigateToURL(browser(), GURL(file_path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
   } else {
-    ui_test_utils::NavigateToURL(browser(),
-                                 https_server()->GetURL("a.com", file_path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server()->GetURL("a.com", file_path)));
   }
 }
 

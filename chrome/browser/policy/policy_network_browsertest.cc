@@ -602,7 +602,8 @@ class SSLPolicyTest : public PolicyTest {
   }
 
   LoadResult LoadPage(const std::string& path) {
-    ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path)));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     if (web_contents->GetController().GetLastCommittedEntry()->GetPageType() ==

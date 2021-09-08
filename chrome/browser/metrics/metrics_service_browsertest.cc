@@ -109,7 +109,7 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
     // Opens one tab.
-    ui_test_utils::NavigateToURL(browser(), GURL(crashy_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(crashy_url)));
     observer.Wait();
 
     // The MetricsService listens for the same notification, so the |observer|

@@ -91,7 +91,7 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(WasmTrapHandlerBrowserTest, OutOfBounds) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const auto& url = embedded_test_server()->GetURL("/wasm/out_of_bounds.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(RunJSTest("peek_in_bounds()"));
   ASSERT_NO_FATAL_FAILURE(

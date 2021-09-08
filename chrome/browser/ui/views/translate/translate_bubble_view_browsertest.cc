@@ -63,7 +63,7 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
  protected:
   void NavigateAndWaitForLanguageDetection(const GURL& url,
                                            const std::string& expected_lang) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     while (expected_lang !=
            ChromeTranslateClient::FromWebContents(

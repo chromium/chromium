@@ -946,9 +946,9 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest));
 
   // Navigate to a non-app page and test that the exception is not carried over.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/extensions/isolated_apps/non_app/main.html"));
+                     "/extensions/isolated_apps/non_app/main.html")));
   EXPECT_EQ(content::SSLHostStateDelegate::DENIED,
             state->QueryPolicy(kWWWGoogleHost, *cert,
                                net::ERR_CERT_DATE_INVALID, tab));
@@ -990,9 +990,9 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest));
 
   // Navigate to a non-app page and test that the exception is not carried over.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/extensions/isolated_apps/non_app/main.html"));
+                     "/extensions/isolated_apps/non_app/main.html")));
   EXPECT_FALSE(state->IsHttpAllowedForHost(kWWWGoogleHost, tab));
   EXPECT_FALSE(state->HasAllowException(kWWWGoogleHost, tab));
 }

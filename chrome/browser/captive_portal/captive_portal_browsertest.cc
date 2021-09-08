@@ -1201,7 +1201,7 @@ void CaptivePortalBrowserTest::NavigateToPageExpectNoTest(Browser* browser,
   MultiNavigationObserver navigation_observer;
   CaptivePortalObserver portal_observer(browser->profile());
 
-  ui_test_utils::NavigateToURL(browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
 
   // No captive portal checks should have ocurred or be pending, and there
   // should be no new tabs.
@@ -1272,7 +1272,8 @@ void CaptivePortalBrowserTest::FastTimeoutNoCaptivePortal(
   int active_index = browser->tab_strip_model()->active_index();
   int expected_tab_count = browser->tab_strip_model()->count();
 
-  ui_test_utils::NavigateToURL(browser, GURL(kMockHttpsConnectionTimeoutErr));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, GURL(kMockHttpsConnectionTimeoutErr)));
 
   // An attempt to detect a captive portal should have started by now.  If not,
   // abort early to prevent hanging.
@@ -2491,8 +2492,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, NavigateBrokenTab) {
   // Navigate the error tab to a non-error page.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(browser(), 0));
 
@@ -2547,8 +2548,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBack) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Navigate to a working page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
 
   // Go to the error page.
   SlowLoadBehindCaptivePortal(browser(), true);
@@ -2580,8 +2581,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, GoBackToTimeout) {
   SlowLoadNoCaptivePortal(browser(), captive_portal::RESULT_INTERNET_CONNECTED);
 
   // Navigate to a working page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
   ASSERT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE,
             GetStateOfTabReloaderAt(browser(), 0));
 
@@ -2637,7 +2638,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, ReloadTimeout) {
   // Do the first navigation while not behind a captive portal.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   CaptivePortalObserver portal_observer(browser()->profile());
-  ui_test_utils::NavigateToURL(browser(), GURL(kMockHttpsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kMockHttpsUrl)));
   ASSERT_EQ(0, portal_observer.num_results_received());
   ASSERT_EQ(1, tab_strip_model->count());
 
@@ -2691,7 +2692,8 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   // Navigate the new browser window so it'll be shown and we can pick the
   // active window.
-  ui_test_utils::NavigateToURL(browser2, GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser2, GURL(url::kAboutBlankURL)));
 
   // Generally, |browser2| will be the active window.  However, if the
   // original browser window lost focus before creating the new one, such as

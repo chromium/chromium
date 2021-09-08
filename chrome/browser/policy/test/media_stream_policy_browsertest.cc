@@ -41,7 +41,7 @@ class MediaStreamDevicesControllerBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     request_url_ = embedded_test_server()->GetURL("/simple.html");
     request_pattern_ = request_url_.GetOrigin().spec();
-    ui_test_utils::NavigateToURL(browser(), request_url_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), request_url_));
 
     // Testing both the new (PermissionManager) and old code-paths is not simple
     // since we are already using WithParamInterface. We only test whichever one

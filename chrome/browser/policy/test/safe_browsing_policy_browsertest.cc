@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
 
   // First, navigate to an SSL error page and make sure the enhanced protection
   // message appears by default.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   EXPECT_EQ(security_interstitials::CMD_TEXT_FOUND,
             IsEnhancedProtectionMessageVisibleOnInterstitial());
 
@@ -116,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingStatePolicyManaged) {
 
   // Navigate to an SSL error page, the enhanced protection message should not
   // appear.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired.GetURL("/")));
   EXPECT_EQ(security_interstitials::CMD_TEXT_NOT_FOUND,
             IsEnhancedProtectionMessageVisibleOnInterstitial());
 }

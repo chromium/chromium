@@ -104,7 +104,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateAndWaitForLoad(Browser* browser, const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     EXPECT_EQ(true, EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            "checkImage()"));
     FetchHistogramsFromChildProcesses();
@@ -777,20 +777,20 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeAllow, "*"}});
   // Trigger OAuth login by triggering OAuth start and complete.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/simple.html?initial"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/simple.html?initial")));
   histogram_tester_.ExpectUniqueSample(
       "Login.PageLoad.DetectionType",
       login_detection::LoginDetectionType::kNoLogin, 1);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_test_server_.GetURL("oauth_server.com",
-                                           "/simple.html?client_id=user"));
+                                           "/simple.html?client_id=user")));
   histogram_tester_.ExpectBucketCount(
       "Login.PageLoad.DetectionType",
       login_detection::LoginDetectionType::kNoLogin, 2);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/simple.html?code=123"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/simple.html?code=123")));
   histogram_tester_.ExpectBucketCount(
       "Login.PageLoad.DetectionType",
       login_detection::LoginDetectionType::kOauthFirstTimeLoginFlow, 1);
@@ -1033,8 +1033,8 @@ IN_PROC_BROWSER_TEST_F(
   robots_rules_server_.AddRobotsRules(
       GetHttpsTestURL("/"),
       {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
-  ui_test_utils::NavigateToURL(
-      browser(), GetHttpsTestURL("/load_image/preload_scanner_image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/preload_scanner_image.html")));
 
   // The robots rules will be fetched, but the image will not load.
   RetryForHistogramUntilCountReached(
@@ -1087,8 +1087,8 @@ IN_PROC_BROWSER_TEST_F(
   std::set<std::string> expected_compressed_image_requests;
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
-  ui_test_utils::NavigateToURL(browser(),
-                               GetHttpsTestURL("/load_image/image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetHttpsTestURL("/load_image/image.html")));
   expected_robots_rules_requests.emplace(GetHttpsTestURL("/").spec());
   expected_compressed_image_requests.emplace(
       GetHttpsTestURL("/load_image/image.html").spec());
@@ -1269,7 +1269,8 @@ IN_PROC_BROWSER_TEST_P(
   robots_rules_server_.AddRobotsRules(
       image_url.GetWithEmptyPath(),
       {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
-  ui_test_utils::NavigateToURL(browser(), GetHttpsTestURL("/simple.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetHttpsTestURL("/simple.html")));
 
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                          content::JsReplace(

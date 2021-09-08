@@ -23,7 +23,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterE2EBrowserTest,
       base::FilePath(FILE_PATH_LITERAL("media/bigbuck.webm")));
 
   // Start at a new tab, the file should open in the same tab.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   // Make sure there is 1 tab.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
 

@@ -239,7 +239,7 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
                                     net::EmbeddedTestServer* server) const {
     chrome::AddTabAt(browser, GURL(url::kAboutBlankURL), -1, true);
     GURL url = server->GetURL(test_page);
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     WebContents* new_tab = browser->tab_strip_model()->GetActiveWebContents();
     permissions::PermissionRequestManager::FromWebContents(new_tab)
         ->set_auto_response_for_test(

@@ -678,7 +678,8 @@ class CastV2PerformanceTest : public InProcessBrowserTest,
   }
 
   void NavigateToTestPagePath(const std::string& path) const {
-    ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path)));
   }
 
   // Given a vector of vector of data, extract the difference between

@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
 
-  ui_test_utils::NavigateToURL(guest_browser, test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(guest_browser, test_url));
   WaitForHistoryBackendToRun(guest_browser->profile());
 
   std::vector<GURL> urls =
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsCookies) {
   ASSERT_EQ("", cookie);
 
   // After navigation there is a cookie for the URL.
-  ui_test_utils::NavigateToURL(guest_browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(guest_browser, url));
   cookie = content::GetCookies(guest_profile, url);
   EXPECT_EQ("cookie1", cookie);
 

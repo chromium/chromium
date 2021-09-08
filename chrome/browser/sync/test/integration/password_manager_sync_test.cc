@@ -317,7 +317,7 @@ class PasswordManagerSyncTest : public SyncTest {
     ASSERT_EQ(web_contents,
               GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
     NavigationObserver observer(web_contents);
-    ui_test_utils::NavigateToURL(GetBrowser(0), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), url));
     observer.Wait();
     // After navigation, the password manager retrieves any matching credentials
     // from the store(s). So before doing anything else (like filling and

@@ -55,9 +55,10 @@ class BrowserClosingObserver : public BrowserListObserver {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest,
                        PRE_TwoBrowsersClosingShutdownHistograms) {
-  ui_test_utils::NavigateToURL(browser(), GURL("browser://version"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("browser://version")));
   Browser* browser2 = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(browser2, GURL("browser://help"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("browser://help")));
 
   BrowserClosingObserver closing_observer;
   BrowserList::AddObserver(&closing_observer);

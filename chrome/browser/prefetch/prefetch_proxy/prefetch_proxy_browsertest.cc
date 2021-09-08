@@ -1001,9 +1001,9 @@ IN_PROC_BROWSER_TEST_F(
   SetDataSaverEnabled(true);
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GetOriginServerURL("/service_worker/create_service_worker.html"));
+      GetOriginServerURL("/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(GetWebContents(),
                            "register('network_fallback_worker.js');"));
 
@@ -1023,10 +1023,10 @@ IN_PROC_BROWSER_TEST_F(
   MakeNavigationPrediction(doc_url, {prefetch_url});
   // No run loop is needed here since the service worker check is synchronous.
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 6 = |kPrefetchNotEligibleUserHasServiceWorker|
   EXPECT_EQ(absl::optional<int64_t>(6),
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(
     PrefetchProxyBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(NoAuthChallenges_FromProxy)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   std::unique_ptr<AuthChallengeObserver> auth_observer =
@@ -1055,14 +1055,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // Do a positive test first to make sure we get an auth challenge under these
   // circumstances.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetOriginServerURL("/auth_challenge"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetOriginServerURL("/auth_challenge")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(auth_observer->GotAuthChallenge());
 
   // Test that a proxy auth challenge does not show a dialog.
   auth_observer->Reset();
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   GURL doc_url("https://www.google.com/search?q=test");
   MakeNavigationPrediction(doc_url, {GURL("https://auth_challenge.com/")});
   base::RunLoop().RunUntilIdle();
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ProxyServerBackOff)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
 
-  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
       absl::make_optional(PrefetchProxyPrefetchStatus::kPrefetchFailedNetError),
@@ -1111,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_attempted_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
 
-  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(absl::make_optional(
                 PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable),
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(CookieOnHigherLevelDomain)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_eligible_count_);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
@@ -1150,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(CookieOnOtherPath)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_eligible_count_);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ExpiredCookie)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(
@@ -1206,7 +1206,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_eligible_count_);
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_successful_count_);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
@@ -1218,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(
     PrefetchProxyBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(CookieOnNonApplicableDomain)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
@@ -1244,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_eligible_count_);
   EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_successful_count_);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
@@ -1256,7 +1256,7 @@ IN_PROC_BROWSER_TEST_F(
     PrefetchProxyBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(NoAuthChallenges_FromOrigin)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   GURL auth_challenge_url = GetOriginServerURL("/auth_challenge");
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Do a positive test first to make sure we get an auth challenge under these
   // circumstances.
-  ui_test_utils::NavigateToURL(browser(), auth_challenge_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), auth_challenge_url));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(auth_observer->GotAuthChallenge());
 
@@ -1282,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(
   tab_helper_observer.SetExpectedPrefetchErrors(
       {{auth_challenge_url, net::HTTP_UNAUTHORIZED}});
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   GURL doc_url("https://www.google.com/search?q=test");
   MakeNavigationPrediction(doc_url, {auth_challenge_url});
 
@@ -1298,7 +1298,8 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   content::DisableBackForwardCacheForTesting(
       GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GetOriginServerURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GetOriginServerURL("/simple.html")));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1323,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   size_t starting_origin_request_count = OriginServerRequestCount();
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
   EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
@@ -1339,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1385,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 3);
 
   // Navigate to a prefetched page to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
   base::RunLoop().RunUntilIdle();
 
   VerifyOriginRequestsAreIsolated({
@@ -1501,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName);
 
   // Navigate to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1534,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   base::HistogramTester histogram_tester;
@@ -1578,7 +1579,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
 
   // Navigate to the ineligible prefetch page to verify the status.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_ok);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_ok));
   EXPECT_EQ(PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter,
             *tab_helper->after_srp_metrics()->prefetch_status_);
 
@@ -1613,7 +1614,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1642,7 +1643,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
 
   // Navigate to a prefetched page to trigger UKM recording. Note that because
   // the navigation is never committed, the UKM recording happens immediately.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_204);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_204));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1676,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1699,7 +1700,7 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 
   // Navigate to the predicted page to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), prefetch_404_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_404_url));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMOnSRP(
@@ -1717,7 +1718,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName);
 
   // Navigate to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1751,7 +1752,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1775,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(
   GURL link_not_on_srp = GetOriginServerURL("/title2.html");
 
   // Navigate to the page to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), link_not_on_srp);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), link_not_on_srp));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMOnSRP(
@@ -1793,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName);
 
   // Navigate to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1827,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   GURL ineligible_link = GetInsecureURL("/title1.html");
@@ -1839,7 +1840,7 @@ IN_PROC_BROWSER_TEST_F(
   // check or prefetch, so everything will be synchronous.
 
   // Navigate to the page to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), ineligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ineligible_link));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMOnSRP(
@@ -1857,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName);
 
   // Navigate to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1888,7 +1889,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLE_ON_WIN_MAC_CHROMEOS(PrefetchingUKM_PrefetchNotStarted)) {
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1918,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 
   // Navigate to a prefetched page to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMOnSRP(
@@ -1936,7 +1937,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_AfterSRPClick::kEntryName);
 
   // Navigate to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   VerifyUKMAfterSRP(
@@ -1970,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
       GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -1999,7 +2000,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   std::vector<net::test_server::HttpRequest> origin_requests_after_click =
       origin_server_requests();
@@ -2074,7 +2075,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
           ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(setting));
 
   // Navigating to the page should work just fine in the normal profile.
-  ui_test_utils::NavigateToURL(browser(), client_cert_needed_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), client_cert_needed_page));
   content::NavigationEntry* entry =
       GetWebContents()->GetController().GetLastCommittedEntry();
   EXPECT_EQ(entry->GetPageType(), content::PAGE_TYPE_NORMAL);
@@ -2120,7 +2121,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
       GetOriginServerURL("/service_worker/create_service_worker.html");
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   EXPECT_EQ("DONE", EvalJs(GetWebContents(),
                            "register('network_fallback_worker.js');"));
 
@@ -2151,7 +2152,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
   EXPECT_EQ(starting_origin_request_count + 1,
             after_prefetch_origin_request_count);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   // The prefetch should not have been used, so the webpage should have been
   // requested again.
@@ -2159,7 +2160,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
             after_prefetch_origin_request_count);
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
@@ -2209,7 +2210,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
   GURL starting_page = GetOriginServerURL("/simple.html");
 
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GetOriginServerURL("/"),
@@ -2234,7 +2235,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
   EXPECT_EQ(starting_origin_request_count + 1,
             after_prefetch_origin_request_count);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   // The prefetch should not have been used, so the webpage should have been
   // requested again.
@@ -2242,7 +2243,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
             after_prefetch_origin_request_count);
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
   auto expected_entries = std::vector<UkmEntry>{
@@ -2400,7 +2401,7 @@ IN_PROC_BROWSER_TEST_F(
   certificate_reporting_test_utils::SetCertReportingOptIn(
       browser(), certificate_reporting_test_utils::EXTENDED_REPORTING_OPT_IN);
 
-  ui_test_utils::NavigateToURL(browser(), safe_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), safe_page));
 
   PrefetchProxyTabHelper* tab_helper =
       PrefetchProxyTabHelper::FromWebContents(GetWebContents());
@@ -2511,7 +2512,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now navigate to the same page and expect that there will be a single domain
   // reliability report, i.e.: this navigation and not one from the prefetch.
-  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
 
   {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
@@ -2556,7 +2557,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLE_ON_WIN_MAC_CHROMEOS(ProbeGood)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -2579,7 +2580,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to the prefetched page, this also triggers UKM recording.
   size_t starting_origin_request_count = OriginServerRequestCount();
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Only the probe should have hit the origin server.
   EXPECT_EQ(starting_origin_request_count + 1, OriginServerRequestCount());
@@ -2601,7 +2602,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GT(probe_latency.value(), base::TimeDelta());
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   // 1 = |kPrefetchUsedProbeSuccess|.
@@ -2625,7 +2626,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLE_ON_WIN_MAC_CHROMEOS(ProbeBad)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   // Override the probing URL.
@@ -2653,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(
   // successfully done and processed.
   run_loop.Run();
 
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
@@ -2672,7 +2673,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_GT(probe_latency.value(), base::TimeDelta());
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   base::RunLoop().RunUntilIdle();
 
   // 1 = |kPrefetchNotUsedProbeFailed|.
@@ -2711,7 +2712,7 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
 
     SetDataSaverEnabled(true);
     GURL starting_page = GetOriginServerURL("/simple.html");
-    ui_test_utils::NavigateToURL(browser(), starting_page);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
     WaitForUpdatedCustomProxyConfig();
 
     PrefetchProxyTabHelper* tab_helper =
@@ -2743,7 +2744,7 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
 
     // Navigate to the prefetched page, this also triggers UKM recording.
     ASSERT_EQ(0U, probe_counter.count());
-    ui_test_utils::NavigateToURL(browser(), eligible_link);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
     EXPECT_EQ(expect_successful_tls_probe, 1U == probe_counter.count());
 
     EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
@@ -2764,7 +2765,7 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
     }
 
     // Navigate again to trigger UKM recording.
-    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(
@@ -2992,7 +2993,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
@@ -3104,7 +3105,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   // * The JavaScript will not be requested from the origin server.
   // * The prefetched JavaScript will be executed.
   // * The image will be fetched.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   std::vector<net::test_server::HttpRequest> proxy_requests_after_click =
       proxy_server_requests();
@@ -3142,7 +3143,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   // Navigate one more time to destroy the SubresourceManager so that its UMA is
   // recorded and to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
   EXPECT_EQ(absl::optional<int64_t>(16),
@@ -3173,7 +3174,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3199,7 +3200,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   prefetch_run_loop.Run();
 
   // Navigate to trigger the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.SpareRenderer.CountStartedOnSRP", 1, 1);
@@ -3423,7 +3424,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3447,10 +3448,10 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   prefetch_run_loop.Run();
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 19 = |kPrefetchUsedNoProbeNSPAttemptDenied|.
   EXPECT_EQ(absl::optional<int64_t>(19),
@@ -3467,7 +3468,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3512,10 +3513,10 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   prefetch_2_run_loop.Run();
 
   // Navigate to the second predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 22 = |kPrefetchUsedNoProbeNSPNotStarted|.
   EXPECT_EQ(absl::optional<int64_t>(22),
@@ -3529,7 +3530,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(NoAppCache)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3573,7 +3574,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(NoLinkRelSearch)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3622,7 +3623,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3650,14 +3651,14 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Checks that only one resource was used from cache.
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.AfterClick.Subresources.UsedCache", true, 1);
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
   EXPECT_EQ(absl::optional<int64_t>(16),
@@ -3696,7 +3697,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ProbeGood_NSPSuccess)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3728,13 +3729,13 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName);
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // This event should not be recorded until after the prefetched page is done.
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName);
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 17 = |kPrefetchUsedProbeSuccessWithNSP|.
   EXPECT_EQ(absl::optional<int64_t>(17),
@@ -3800,7 +3801,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3824,10 +3825,10 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   prefetch_run_loop.Run();
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 20 = |kPrefetchUsedProbeSuccessNSPAttemptDenied|.
   EXPECT_EQ(absl::optional<int64_t>(20),
@@ -3844,7 +3845,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3889,10 +3890,10 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   prefetch_2_run_loop.Run();
 
   // Navigate to the second predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 23 = |kPrefetchUsedProbeSuccessNSPNotStarted|.
   EXPECT_EQ(absl::optional<int64_t>(23),
@@ -3910,7 +3911,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
       GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -3954,7 +3955,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName);
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   std::vector<net::test_server::HttpRequest> origin_requests_after_click =
       origin_server_requests();
@@ -3974,7 +3975,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
   VerifyNoUKMEvent(ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName);
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 18 = |kPrefetchNotUsedProbeFailedWithNSP|.
   EXPECT_EQ(absl::optional<int64_t>(18),
@@ -4040,7 +4041,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -4071,10 +4072,10 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
       &delegate);
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 21 =  |kPrefetchNotUsedProbeFailedNSPAttemptDenied|.
   EXPECT_EQ(absl::optional<int64_t>(21),
@@ -4091,7 +4092,7 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
 
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -4143,10 +4144,10 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
       &delegate);
 
   // Navigate to the second predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link_2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link_2));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 24 = |kPrefetchNotUsedProbeFailedNSPNotStarted|.
   EXPECT_EQ(absl::optional<int64_t>(24),
@@ -4207,8 +4208,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
 
   // Make sure we are on a valid referring page.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetReferringPageServerURL("/search/q=blah"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetReferringPageServerURL("/search/q=blah")));
   InsertSpeculation(true, {eligible_link});
 
   // This run loop will quit when all the prefetch responses have been
@@ -4298,7 +4299,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   // * The JavaScript will not be requested from the origin server.
   // * The prefetched JavaScript will be executed.
   // * The image will be fetched.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   std::vector<net::test_server::HttpRequest> proxy_requests_after_click =
       proxy_server_requests();
@@ -4336,7 +4337,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   // Navigate one more time to destroy the SubresourceManager so that its UMA is
   // recorded and to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 16 = |kPrefetchUsedNoProbeWithNSP|.
   EXPECT_EQ(absl::optional<int64_t>(16),
@@ -4371,8 +4372,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
 
   // Make sure we are on a valid referring page.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetReferringPageServerURL("/search/q=blah"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetReferringPageServerURL("/search/q=blah")));
   InsertSpeculation(false, {prefetch_url});
 
   // This run loop will quit when the prefetch response has been successfully
@@ -4384,7 +4385,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   size_t starting_origin_request_count = OriginServerRequestCount();
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
   EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
@@ -4409,8 +4410,8 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   tab_helper_observer.SetExpectedSuccessfulURLs({prefetch_url});
 
   // Make sure we are on a valid referring page.
-  ui_test_utils::NavigateToURL(browser(),
-                               GetReferringPageServerURL("/search/q=blah"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetReferringPageServerURL("/search/q=blah")));
   InsertSpeculation(false, {prefetch_url});
 
   // This run loop will quit when the prefetch response has been successfully
@@ -4476,7 +4477,7 @@ class PrefetchProxyPrerenderBrowserTest : public PrefetchProxyBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,
                        ShouldNotAffectPrefetchProxyTabHelperOnPrerendering) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   WaitForUpdatedCustomProxyConfig();
 
   ASSERT_TRUE(content::SetCookie(browser()->profile(), GURL("https://foo.com"),
@@ -4507,7 +4508,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyPrerenderBrowserTest,
   EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
   EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_eligible_count_);
 
-  ui_test_utils::NavigateToURL(browser(), prefetch_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prefetch_url));
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   EXPECT_EQ(
@@ -4541,7 +4542,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLE_ON_WIN_MAC_CHROMEOS(PrefetchAfterCacheExpiration)) {
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), starting_page));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =
@@ -4567,10 +4568,10 @@ IN_PROC_BROWSER_TEST_F(
   prefetch_run_loop.Run();
 
   // Navigate to the predicted site.
-  ui_test_utils::NavigateToURL(browser(), eligible_link);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), eligible_link));
 
   // Navigate again to trigger UKM recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // 30 = |kPrefetchIsStale|.
   EXPECT_EQ(absl::optional<int64_t>(30),

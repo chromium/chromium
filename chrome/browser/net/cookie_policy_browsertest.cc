@@ -87,7 +87,7 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
 
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateToNewTabWithFrame(const std::string& host) {
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest, AllowFirstPartyCookies) {
 
   ASSERT_EQ("", content::GetCookies(browser()->profile(), url));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ("cookie1", content::GetCookies(browser()->profile(), url));
 }
@@ -339,9 +339,9 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
 
   // This cookie can be set even if it is Lax-by-default because the redirect
   // counts as a top-level navigation and therefore the context is lax.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(https_server_.GetURL(kHostA, "/server-redirect?").spec() +
-                      redirected_url.spec()));
+                      redirected_url.spec())));
 
   EXPECT_EQ("cookie2",
             content::GetCookies(browser()->profile(), redirected_url));

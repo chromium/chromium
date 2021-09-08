@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {
   for (const auto& test_case : test_cases) {
     GURL expected_url = GURL(test_case.second);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(test_case.first));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test_case.first)));
 
     // Sanity check that we always have one tab in the browser.
     ASSERT_EQ(browser()->tab_strip_model()->count(), 1);

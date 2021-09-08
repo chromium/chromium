@@ -113,7 +113,7 @@ class MediaStreamPermissionTest : public WebRtcTestBase {
 
     EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
 
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     return browser->tab_strip_model()->GetActiveWebContents();
   }
 

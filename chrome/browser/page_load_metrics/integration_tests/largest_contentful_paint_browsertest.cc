@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
 
   // Need to navigate away from the test html page to force metrics to get
   // flushed/synced.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check Trace Events.
   ValidateTraceEvents(StopTracingAndAnalyze());
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, DISABLED_FullSizeImageInIframe) {
   double lcpTime = EvalJs(web_contents(), "lcpTime").ExtractDouble();
 
   // Navigate away to force metrics recording.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // |lcpTime| is computed from 3 different JS timestamps, so use an epsilon of
   // 2 to account for coarsening and UKM integer rounding.

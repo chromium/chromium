@@ -112,8 +112,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
   // back via domAutomationController.
   void InstallPaymentAppInScopeForMethod(const std::string& scope,
                                          const std::string& method_name) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 alicepay_.GetURL("alicepay.com", scope));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), alicepay_.GetURL("alicepay.com", scope)));
     std::string contents;
     std::string script = "install('" + method_name + "');";
     ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -175,8 +175,8 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
         "https://larry.example.com/",
         larry_example_.GetURL("larry.example.com", "/"));
 
-    ui_test_utils::NavigateToURL(browser(),
-                                 alicepay_.GetURL("chromium.org", "/"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), alicepay_.GetURL("chromium.org", "/")));
 
     auto* finder = ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());

@@ -52,8 +52,8 @@ class NetInfoNetworkQualityEstimatorHoldbackBrowserTest
 
   void VerifyNetworkQualityNetInfoWebAPI(
       const std::string& expected_effective_connection_type) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 test_server_.GetURL("/net_info.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), test_server_.GetURL("/net_info.html")));
     content::NavigationEntry* entry =
         GetWebContents()->GetController().GetVisibleEntry();
     EXPECT_EQ(content::PAGE_TYPE_NORMAL, entry->GetPageType());
@@ -190,8 +190,8 @@ IN_PROC_BROWSER_TEST_P(NetInfoNetworkQualityEstimatorHoldbackBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/net_info.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/net_info.html")));
 
   if (GetParam()) {
     // ConfigureHoldbackExperiment() sets holdback ECT to 2G.

@@ -110,8 +110,8 @@ class AppApiTest : public extensions::ExtensionApiTest {
     chrome::NewTab(browser());
     tab_add.Wait();
     LOG(INFO) << "New tab.";
-    ui_test_utils::NavigateToURL(browser(),
-                                 base_url.Resolve("path2/empty.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), base_url.Resolve("path2/empty.html")));
     LOG(INFO) << "Nav 2.";
     EXPECT_TRUE(process_map->Contains(browser()
                                           ->tab_strip_model()
@@ -193,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
   ui_test_utils::TabAddedWaiter tab_add(browser());
   chrome::NewTab(browser());
   tab_add.Wait();
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path3/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path3/empty.html")));
   EXPECT_FALSE(process_map->Contains(browser()
                                          ->tab_strip_model()
                                          ->GetWebContentsAt(3)
@@ -331,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, MAYBE_BookmarkAppGetsNormalProcess) {
   ui_test_utils::TabAddedWaiter tab_add(browser());
   chrome::NewTab(browser());
   tab_add.Wait();
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path2/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path2/empty.html")));
   EXPECT_FALSE(process_map->Contains(browser()
                                          ->tab_strip_model()
                                          ->GetWebContentsAt(2)
@@ -397,7 +399,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcessRedirectBack) {
   GURL base_url = GetTestBaseURL("app_process");
 
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   chrome::NewTab(browser());
   // Wait until the second tab finishes its redirect train (2 hops).
   // 1. We navigate to redirect.html
@@ -445,7 +448,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigateIntoAppProcess) {
 
   // Load an app URL before loading the app.
   LOG(INFO) << "Loading path1/empty.html.";
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   LOG(INFO) << "Loading path1/empty.html - done.";
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_FALSE(
@@ -458,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigateIntoAppProcess) {
   LOG(INFO) << "Loading extension - done.";
   ASSERT_TRUE(app);
   LOG(INFO) << "Loading path1/empty.html.";
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   LOG(INFO) << "Loading path1/empty.html - done.";
   EXPECT_TRUE(
       process_map->Contains(contents->GetMainFrame()->GetProcess()->GetID()));
@@ -468,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigateIntoAppProcess) {
   DisableExtension(app->id());
   LOG(INFO) << "Disabling extension - done.";
   LOG(INFO) << "Loading path1/empty.html.";
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   LOG(INFO) << "Loading path1/empty.html - done.";
   EXPECT_FALSE(
       process_map->Contains(contents->GetMainFrame()->GetProcess()->GetID()));
@@ -497,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   DisableExtension(app->id());
   LOG(INFO) << "Disabling extension - done.";
   LOG(INFO) << "Navigate to path1/empty.html.";
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   LOG(INFO) << "Navigate to path1/empty.html - done.";
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   content::NavigationController& controller = contents->GetController();
@@ -567,7 +574,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcessWithJavaScript) {
   DisableExtension(app->id());
   LOG(INFO) << "Disabling extension - done.";
   LOG(INFO) << "Navigate to path1/empty.html.";
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   LOG(INFO) << "Navigate to path1/empty.html - done.";
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_FALSE(
@@ -614,8 +622,9 @@ IN_PROC_BROWSER_TEST_F(BlockedAppApiTest, OpenAppFromIframe) {
       LoadExtension(test_data_dir_.AppendASCII("app_process"));
   ASSERT_TRUE(app);
 
-  ui_test_utils::NavigateToURL(
-      browser(), GetTestBaseURL("app_process").Resolve("path3/container.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GetTestBaseURL("app_process").Resolve("path3/container.html")));
   ui_test_utils::WaitForViewVisibility(browser(), VIEW_ID_CONTENT_SETTING_POPUP,
                                        true);
 
@@ -643,8 +652,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ServerRedirectToAppFromExtension) {
   test_navigation_observer.StartWatchingNewWebContents();
 
   // Load the launcher extension, which should launch the app.
-  ui_test_utils::NavigateToURL(
-      browser(), launcher->GetResourceURL("server_redirect.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), launcher->GetResourceURL("server_redirect.html")));
 
   // Wait for app tab to be created and loaded.
   test_navigation_observer.Wait();
@@ -676,8 +685,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ClientRedirectToAppFromExtension) {
   test_navigation_observer.StartWatchingNewWebContents();
 
   // Load the launcher extension, which should launch the app.
-  ui_test_utils::NavigateToURL(
-      browser(), launcher->GetResourceURL("client_redirect.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), launcher->GetResourceURL("client_redirect.html")));
 
   // Wait for app tab to be created and loaded.
   test_navigation_observer.Wait();
@@ -709,8 +718,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, OpenWebPopupFromWebIframe) {
       LoadExtension(test_data_dir_.AppendASCII("app_process"));
   ASSERT_TRUE(app);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               base_url.Resolve("path1/container.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/container.html")));
   content::RenderProcessHost* process = browser()
                                             ->tab_strip_model()
                                             ->GetWebContentsAt(0)
@@ -740,7 +749,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
   GURL base_url = GetTestBaseURL("app_process");
 
   // Load the app, chrome.app.isInstalled should be true.
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("path1/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/empty.html")));
   WebContents* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_TRUE(
       process_map->Contains(contents->GetMainFrame()->GetProcess()->GetID()));
@@ -782,8 +792,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
       LoadExtension(test_data_dir_.AppendASCII("app_process"));
   ASSERT_TRUE(app);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               base_url.Resolve("path1/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("path1/iframe.html")));
   content::SiteInstance* app_instance =
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetSiteInstance();
   EXPECT_TRUE(process_map->Contains(app_instance->GetProcess()->GetID()));
@@ -832,7 +842,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
   // this in the future as part of https://crbug.com/718516.
   {
     content::TestNavigationObserver observer(popup_contents);
-    ui_test_utils::NavigateToURL(active_browser_list->get(1), non_app_url);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(active_browser_list->get(1), non_app_url));
     observer.Wait();
     EXPECT_EQ(app_instance, popup_contents->GetSiteInstance());
     EXPECT_TRUE(
@@ -853,7 +864,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, NavigatePopupFromAppToOutsideApp) {
     content::TestNavigationObserver observer(popup_contents);
     GURL cross_site_url(
         embedded_test_server()->GetURL("foo.com", "/title1.html"));
-    ui_test_utils::NavigateToURL(active_browser_list->get(1), cross_site_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(active_browser_list->get(1),
+                                             cross_site_url));
     observer.Wait();
     EXPECT_NE(app_instance, popup_contents->GetSiteInstance());
     EXPECT_FALSE(

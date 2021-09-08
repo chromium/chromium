@@ -290,7 +290,8 @@ void PolicyUITest::UpdateProviderPolicyForNamespace(
 
 void PolicyUITest::VerifyPolicies(
     const std::vector<std::vector<std::string>>& expected_policies) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
 
   // Retrieve the text contents of the policy table cells for all policies.
   const std::string javascript =
@@ -342,7 +343,8 @@ void PolicyUITest::VerifyExportingPolicies(
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory());
 
   // Navigate to the about:policy page.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
 
   // Click on 'save policies' button.
   const std::string javascript =

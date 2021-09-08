@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest, BlockWebSocket) {
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CreateWebSocketAndExpectResult(websocket_url,
                                  false /* expect_connection_success */);
 }
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("echo-with-no-extension"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterWebSocketBrowserTest,
                          GetParam() == IN_WORKER ? "inWorker" : "")));
   GURL websocket_url(GetWebSocketUrl("echo-with-no-extension"));
   ConfigureAsPhishingURL(url);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   CreateWebSocketAndExpectResult(websocket_url,
                                  true /* expect_connection_success */);

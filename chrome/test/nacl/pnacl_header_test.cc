@@ -78,7 +78,8 @@ void PnaclHeaderTest::RunLoadTest(const std::string& url,
   // in the background).
   base::ScopedPathOverride component_dir(chrome::DIR_PNACL_COMPONENT);
 
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL(url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(url)));
 
   // Wait until the NMF and pexe are also loaded, not just the HTML.
   // Do this by waiting till the LoadTestMessageHandler responds.

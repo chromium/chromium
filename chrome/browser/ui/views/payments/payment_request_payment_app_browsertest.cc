@@ -67,8 +67,8 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   // components/test/data/payments/alicepay.com/app1/index.js, which responds
   // back via domAutomationController.
   void InstallAlicePayForMethod(const std::string& method_name) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 alicepay_.GetURL("alicepay.com", "/app1/"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), alicepay_.GetURL("alicepay.com", "/app1/")));
 
     std::string contents;
     std::string script = "install('" + method_name + "');";
@@ -87,8 +87,8 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   // components/test/data/payments/bobpay.com/app1/index.js, which responds
   // back via domAutomationController.
   void InstallBobPayForMethod(const std::string& method_name) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 bobpay_.GetURL("bobpay.com", "/app1/"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), bobpay_.GetURL("bobpay.com", "/app1/")));
 
     std::string contents;
     std::string script = "install('" + method_name + "');";
@@ -105,8 +105,8 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
 
   // Installs Kyle Pay.
   void InstallKylePay() {
-    ui_test_utils::NavigateToURL(browser(),
-                                 kylepay_.GetURL("kylepay.com", "/"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), kylepay_.GetURL("kylepay.com", "/")));
     EXPECT_EQ("success", content::EvalJs(GetActiveWebContents(),
                                          "install('https://kylepay.com');"));
   }

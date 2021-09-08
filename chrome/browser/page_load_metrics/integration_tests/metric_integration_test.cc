@@ -65,7 +65,7 @@ void MetricIntegrationTest::Start() {
 
 void MetricIntegrationTest::Load(const std::string& relative_url) {
   GURL url = embedded_test_server()->GetURL("example.com", relative_url);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
 
 void MetricIntegrationTest::LoadHTML(const std::string& content) {

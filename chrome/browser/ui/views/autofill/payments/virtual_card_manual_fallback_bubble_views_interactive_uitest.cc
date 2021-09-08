@@ -148,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(
       GetBubbleViews()->GetWidget());
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   destroyed_waiter.Wait();
   EXPECT_FALSE(GetBubbleViews());
   EXPECT_FALSE(GetIconView()->GetVisible());

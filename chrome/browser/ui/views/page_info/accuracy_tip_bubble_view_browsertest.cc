@@ -121,7 +121,7 @@ class AccuracyTipBubbleViewBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kRegularUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kRegularUrl)));
   EXPECT_FALSE(IsUIShowing());
 
   histogram_tester()->ExpectUniqueSample("Privacy.AccuracyTip.PageStatus",
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, NoShowOnRegularUrl) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, ShowOnUrlInList) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
   histogram_tester()->ExpectUniqueSample(
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
       GetUrl(kAccuracyTipUrl),
       site_engagement::SiteEngagementScore::GetMediumEngagementBoundary());
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(IsUIShowing());
 
   histogram_tester()->ExpectUniqueSample(
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   const GURL url = GetUrl(kAccuracyTipUrl);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(IsUIShowing());
 
   auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressIgnoreButton) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, PressEsc) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
   service->SetClockForTesting(&clock);
 
   // The first time the dialog is shown, it has an "ignore" button.
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
   ClickExtraButton();
   EXPECT_FALSE(IsUIShowing());
@@ -238,12 +238,12 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
       AccuracyTipInteraction::kIgnore, 1);
 
   // The ui won't show again on an immediate navigation.
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_FALSE(IsUIShowing());
 
   // But a week later it shows up again with an opt-out button.
   clock.Advance(base::TimeDelta::FromDays(7));
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
   ClickExtraButton();
   EXPECT_FALSE(IsUIShowing());
@@ -255,13 +255,13 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OptOut) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
   // Tip disappears when navigating somewhere else.
   auto* view = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
   views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kRegularUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kRegularUrl)));
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
 
@@ -272,14 +272,14 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, DisappearOnNavigate) {
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
                        CloseBrowserWhileTipIsOpened) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
   CloseAllBrowsers();
 }
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
-  ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
   EXPECT_TRUE(IsUIShowing());
 
   // Click "learn more" and expect help center to open.
@@ -318,7 +318,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
        i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
        i++) {
     clock.Advance(base::TimeDelta::FromDays(7));
-    ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
     EXPECT_TRUE(IsUIShowing());
 
     ui_test_utils::NavigateToURLWithDisposition(
@@ -359,7 +360,8 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest,
        i < accuracy_tips::features::kMinPromptCountRequiredForSurvey.Get();
        i++) {
     clock.Advance(base::TimeDelta::FromDays(7));
-    ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kAccuracyTipUrl)));
     EXPECT_TRUE(IsUIShowing());
 
     ui_test_utils::NavigateToURLWithDisposition(
@@ -416,7 +418,8 @@ class AccuracyTipBubbleViewHttpBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewHttpBrowserTest,
                        ShowOnUrlInListButNotSecure) {
-  ui_test_utils::NavigateToURL(browser(), GetHttpUrl(kAccuracyTipUrl));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetHttpUrl(kAccuracyTipUrl)));
   EXPECT_FALSE(IsUIShowing());
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());

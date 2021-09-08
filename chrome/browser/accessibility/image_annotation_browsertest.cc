@@ -280,8 +280,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
                        AnnotateImageInAccessibilityTree) {
   FakeAnnotator::SetReturnOcrResults(true);
   FakeAnnotator::SetReturnLabelResults(true);
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/accessibility/image_annotation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/image_annotation.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -293,9 +293,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImagesInLinks) {
   FakeAnnotator::SetReturnOcrResults(true);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_link.html"));
+      https_server_.GetURL("/accessibility/image_annotation_link.html")));
 
   // Block until the accessibility tree has at least 8 annotations. If
   // that never happens, the test will time out.
@@ -327,9 +327,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImagesInLinks) {
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImagesInIframe) {
   FakeAnnotator::SetReturnOcrResults(true);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_iframe.html"));
+      https_server_.GetURL("/accessibility/image_annotation_iframe.html")));
 
   // Block until the accessibility tree has the annotated image from the
   // iframe in it. The test times out if it never appears.
@@ -347,9 +347,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AugmentImageNames) {
   FakeAnnotator::AddCustomLabelResultMapping("goat.jpg", "Billy goat");
   FakeAnnotator::AddCustomLabelResultMapping("dog.jpg", "Puppy");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_augment.html"));
+      https_server_.GetURL("/accessibility/image_annotation_augment.html")));
 
   // Block until the accessibility tree has at least 5 annotations. If
   // that never happens, the test will time out.
@@ -377,9 +377,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AugmentImageNamesInLinks) {
   FakeAnnotator::AddCustomLabelResultMapping("frog.jpg", "Tadpole");
   FakeAnnotator::AddCustomLabelResultMapping("train.png", "Locomotive");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(
-                     "/accessibility/image_annotation_augment_links.html"));
+                     "/accessibility/image_annotation_augment_links.html")));
 
   // Block until the accessibility tree has at least 3 annotations. If
   // that never happens, the test will time out.
@@ -401,9 +401,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AugmentImageNamesInLinks) {
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImageDoc) {
   FakeAnnotator::SetReturnOcrResults(true);
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_doc.html"));
+      https_server_.GetURL("/accessibility/image_annotation_doc.html")));
 
   // Block until the accessibility tree has at least 2 annotations. If
   // that never happens, the test will time out.
@@ -427,8 +427,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImageDoc) {
 
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImageUrl) {
   FakeAnnotator::SetReturnOcrResults(true);
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server_.GetURL("/accessibility/red.png"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/red.png")));
 
   // Block until the accessibility tree has at least 2 annotations. If
   // that never happens, the test will time out.
@@ -455,9 +455,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, NoAnnotationsAvailable) {
   FakeAnnotator::SetReturnOcrResults(false);
   FakeAnnotator::SetReturnLabelResults(false);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_doc.html"));
+      https_server_.GetURL("/accessibility/image_annotation_doc.html")));
 
   // Block until the annotation status for the root is empty. If that
   // never occurs then the test will time out.
@@ -478,9 +478,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AnnotationError) {
   FakeAnnotator::SetReturnErrorCode(
       image_annotation::mojom::AnnotateImageError::kFailure);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_doc.html"));
+      https_server_.GetURL("/accessibility/image_annotation_doc.html")));
 
   // Block until the annotation status for the root contains an error code. If
   // that never occurs then the test will time out.
@@ -499,8 +499,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, AnnotationError) {
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest, ImageWithSrcSet) {
   FakeAnnotator::SetReturnOcrResults(true);
   FakeAnnotator::SetReturnLabelResults(true);
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/accessibility/image_srcset.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/image_srcset.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -515,8 +515,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
   FakeAnnotator::SetReturnOcrResults(true);
   FakeAnnotator::SetReturnLabelResults(true);
 
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/accessibility/image_annotation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/image_annotation.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForAccessibilityTreeToContainNodeWithName(
@@ -524,8 +524,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
       "Appears to say: red.png Annotation. Appears to be: red.png 'en' Label");
 
   SetAcceptLanguages("fr,en");
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/accessibility/image_annotation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/image_annotation.html")));
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_contents,
@@ -535,7 +535,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
 IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
                        DoesntAnnotateInternalPages) {
   FakeAnnotator::SetReturnLabelResults(true);
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://version"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -575,8 +576,8 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
   FakeAnnotator::SetReturnLabelResults(false);
 
   // The following test page should have at least two images on it.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/accessibility/image_annotation.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/accessibility/image_annotation.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -612,9 +613,9 @@ IN_PROC_BROWSER_TEST_F(ImageAnnotationBrowserTest,
   FakeAnnotator::SetReturnLabelResults(false);
 
   // The following test page should have at least two images on it.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/accessibility/image_annotation_link.html"));
+      https_server_.GetURL("/accessibility/image_annotation_link.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

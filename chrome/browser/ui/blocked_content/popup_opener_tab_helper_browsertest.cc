@@ -68,7 +68,7 @@ class PopupOpenerTabHelperBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
                        UserDefaultPopupBlockerSetting_MetricLoggedOnPopup) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   // Open and close two pop-ups, the opener id does not change.
   const ukm::SourceId opener_source_id =
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_F(PopupOpenerTabHelperBrowserTest,
                        UserAllowsAllPopups_MetricLoggedOnPopup) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());

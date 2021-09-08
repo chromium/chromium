@@ -561,8 +561,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, FileURLError) {
     ASSERT_TRUE(base::WriteFile(main_frame_path, main_frame_data));
   }
 
-  ui_test_utils::NavigateToURL(browser(),
-                               net::FilePathToFileURL(main_frame_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(main_frame_path)));
   CheckHistograms(net::ERR_FILE_NOT_FOUND, HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNoNetworkAccessed);
 }
@@ -585,8 +585,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, FileURLSuccess) {
         temp_dir_.GetPath().AppendASCII(kSubresourcePath), subresource_data));
   }
 
-  ui_test_utils::NavigateToURL(browser(),
-                               net::FilePathToFileURL(main_frame_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::FilePathToFileURL(main_frame_path)));
   CheckHistograms(net::OK, HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNoNetworkAccessed);
 }

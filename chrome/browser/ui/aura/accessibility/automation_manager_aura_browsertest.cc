@@ -200,9 +200,10 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
   manager->Enable();
   auto* tree = manager->tree_.get();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("data:text/html;charset=utf-8,<button autofocus>Click me</button>"));
+      GURL(
+          "data:text/html;charset=utf-8,<button autofocus>Click me</button>")));
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 

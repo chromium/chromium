@@ -169,7 +169,7 @@ class ErrorPageTest : public InProcessBrowserTest {
   // Navigates the active tab to a mock url created for the file at |path|.
   void NavigateToFileURL(const std::string& path) {
     GURL url = embedded_test_server()->GetURL(path);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   // Navigates to the given URL and waits for the title to change to
@@ -180,7 +180,7 @@ class ErrorPageTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         base::ASCIIToUTF16(expected_title));
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     EXPECT_EQ(base::ASCIIToUTF16(expected_title),
               title_watcher.WaitAndGetTitle());
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, FileNotFound) {
   GURL non_existent_file_url =
       net::FilePathToFileURL(temp_dir.GetPath().AppendASCII("marmoset"));
 
-  ui_test_utils::NavigateToURL(browser(), non_existent_file_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_existent_file_url));
 
   ExpectDisplayingErrorPage(browser(), net::ERR_FILE_NOT_FOUND);
   // Only errors on HTTP/HTTPS pages should display a diagnostics button.
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, FileNotFound) {
 
 // Test that a DNS error occurring in the main frame displays an error page.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
   // Diagnostics button should be displayed, if available.
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
 // additional session history entry.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack1) {
   NavigateToFileURL("/title2.html");
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
   GoBackAndWaitForTitle("Title Of Awesomeness");
 }
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack1) {
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2) {
   NavigateToFileURL("/title2.html");
 
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
   NavigateToFileURL("/title3.html");
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2) {
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2AndForward) {
   NavigateToFileURL("/title2.html");
 
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
 
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2AndForward) {
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_GoBack2Forward2) {
   NavigateToFileURL("/title3.html");
 
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
   NavigateToFileURL("/title2.html");
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_DoReload) {
   // page.
   std::string url =
       embedded_test_server()->GetURL("mock.http", "/title2.html").spec();
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
   content::WebContents* web_contents =
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest,
                        DNSError_DoReloadAfterSameDocumentNavigation) {
   std::string url =
       embedded_test_server()->GetURL("mock.http", "/title2.html").spec();
-  ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetDnsErrorURL()));
   ExpectDisplayingErrorPage(browser(), net::ERR_NAME_NOT_RESOLVED);
 
   content::WebContents* web_contents =
@@ -474,10 +474,10 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError) {
 // Test that a DNS error occuring in an iframe does not result in an
 // additional session history entry.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, MAYBE_IFrameDNSError_GoBack) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_dns_error.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_dns_error.html")));
   GoBackAndWaitForTitle("Title Of Awesomeness");
 }
 
@@ -512,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, IFrameDNSError_JavaScript) {
       URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
 
   // Load a regular web page, in which we will inject an iframe.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
 
   // We expect to have two history entries, since we started off with navigation
   // to "about:blank" and then navigated to "title2.html".
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Page404) {
 // without a body.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Empty404) {
   GURL url = embedded_test_server()->GetURL("/errorpage/empty404.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // This depends on the non-internationalized error ID string in
   // localized_error.cc.
   ExpectDisplayingErrorPage(browser(), "HTTP ERROR 404");
@@ -591,8 +591,9 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Empty404) {
 
 // Check that the easter egg is present and initialised.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, CheckEasterEgg) {
-  ui_test_utils::NavigateToURL(browser(),
-      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -615,9 +616,9 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, CheckEasterEgg) {
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Incognito) {
   Browser* incognito_browser = CreateIncognitoBrowser();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED));
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
 
   // Verify that the expected error page is being displayed.
   ExpectDisplayingErrorPage(incognito_browser, net::ERR_NAME_NOT_RESOLVED);
@@ -681,7 +682,7 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents(),
         base::ASCIIToUTF16(expected_title));
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     EXPECT_EQ(base::ASCIIToUTF16(expected_title),
               title_watcher.WaitAndGetTitle());
@@ -833,9 +834,9 @@ class ErrorPageOfflineTest : public ErrorPageTest {
   }
 
   std::string NavigateToPageAndReadText() {
-    ui_test_utils::NavigateToURL(
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
-        URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED));
+        URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -1007,17 +1008,16 @@ const char ErrorPageForIDNTest::kHostnameJSUnicode[] =
 
 // Make sure error page shows correct unicode for IDN.
 IN_PROC_BROWSER_TEST_F(ErrorPageForIDNTest, IDN) {
-  ui_test_utils::NavigateToURL(
-      browser(),
-      URLRequestFailedJob::GetMockHttpUrlForHostname(net::ERR_UNSAFE_PORT,
-                                                     kHostname));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), URLRequestFailedJob::GetMockHttpUrlForHostname(
+                     net::ERR_UNSAFE_PORT, kHostname)));
   EXPECT_TRUE(IsDisplayingText(browser(), kHostnameJSUnicode));
 }
 
 // Make sure HTTP/0.9 is disabled on non-default ports by default.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Http09WeirdPort) {
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/echo-raw?spam"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/echo-raw?spam")));
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_HTTP_RESPONSE);
 }
 
@@ -1025,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Http09WeirdPort) {
 // https://crbug.com/462272.
 IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, RedirectToInvalidURL) {
   GURL url = embedded_test_server()->GetURL("/server-redirect?https://:");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_REDIRECT);
   // The error page should commit before the redirect, not after.
   EXPECT_EQ(url, browser()
@@ -1047,8 +1047,8 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
       &DNSErrorPageTest::Return500WithBinaryBody, kErrorPath));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kErrorPath));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kErrorPath)));
 
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_RESPONSE);
 }

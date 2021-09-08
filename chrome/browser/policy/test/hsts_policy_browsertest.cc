@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(HSTSPolicyTest, HSTSPolicyBypassList) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url("http://example/");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // If the policy didn't take effect, the request to http://example would be

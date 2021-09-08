@@ -272,13 +272,15 @@ void DnsProbeBrowserTest::SetFakeHostResolverResults(
 }
 
 void DnsProbeBrowserTest::NavigateToDnsError() {
-  NavigateToURL(active_browser_, URLRequestFailedJob::GetMockHttpUrl(
-                                     net::ERR_NAME_NOT_RESOLVED));
+  ASSERT_TRUE(NavigateToURL(
+      active_browser_,
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
 }
 
 void DnsProbeBrowserTest::NavigateToOtherError() {
-  NavigateToURL(active_browser_, URLRequestFailedJob::GetMockHttpUrl(
-                                     net::ERR_CONNECTION_REFUSED));
+  ASSERT_TRUE(NavigateToURL(
+      active_browser_,
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_CONNECTION_REFUSED)));
 }
 
 void DnsProbeBrowserTest::StartDelayedProbes(int expected_delayed_probe_count) {
@@ -547,8 +549,8 @@ IN_PROC_BROWSER_TEST_F(DnsProbeFailingProbesTest, SyncFailure) {
 
 // Make sure probes don't run for subframe DNS errors.
 IN_PROC_BROWSER_TEST_F(DnsProbeSuccessfulProbesTest, NoProbeInSubframe) {
-  NavigateToURL(browser(),
-                embedded_test_server()->GetURL("/iframe_dns_error.html"));
+  ASSERT_TRUE(NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_dns_error.html")));
 
   // By the time NavigateToURL returns, the browser will have seen the failed
   // provisional load.  If a probe was started (or considered but not run),

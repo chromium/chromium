@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a{allowfullscreen})");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::RenderFrameHost* main_frame = web_contents->GetMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
 

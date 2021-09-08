@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, Server) {
   GURL first_url =
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   std::vector<GURL> redirects = GetRedirects(first_url);
 
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   GURL first_url = ui_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath().AppendASCII("cancelled_redirect_test.html"));
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
   GURL initial_url = embedded_test_server()->GetURL(
       "/server-redirect?" + final_url.spec() + "#" + ref);
 
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   EXPECT_EQ(ref, browser()
                      ->tab_strip_model()
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
   GURL initial_url =
       embedded_test_server()->GetURL("/client-redirect?" + file_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   // We make sure the title doesn't match the title from the file, because the
   // nav should not have taken place.
   EXPECT_NE(u"File!",
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientFragments) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL first_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath().AppendASCII("ref_redirect.html"));
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   std::vector<GURL> redirects = GetRedirects(first_url);
   EXPECT_EQ(1U, redirects.size());
   EXPECT_EQ(first_url.spec() + "#myanchor", redirects[0].spec());

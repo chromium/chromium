@@ -41,8 +41,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
   ASSERT_TRUE(extension.get());
 
   // Go to the Extension Settings page and click the button.
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome://extensions?id=" + extension->id()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://extensions?id=" + extension->id())));
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   scoped_refptr<const Extension> extension =
       InstallExtension(extension_dir.Pack(), 1);
   ASSERT_TRUE(extension.get());
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome://extensions?options=" + extension->id()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://extensions?options=" + extension->id())));
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ("embedded", listener.message());
 }

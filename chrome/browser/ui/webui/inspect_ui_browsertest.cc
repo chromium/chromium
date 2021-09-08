@@ -38,7 +38,8 @@ class InspectUITest : public WebUIBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testTargetListed", base::Value("#pages"),
       base::Value("populateWebContentsTargets"),
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, InspectUIPage) {
 IN_PROC_BROWSER_TEST_F(InspectUITest, SharedWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(kSharedWorkerTestPage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIInspectURL),
@@ -75,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
 
   StartMockAdbServer(FlushWithSize);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
 
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest("testAdbTargetsListed"));
 
@@ -84,8 +86,10 @@ IN_PROC_BROWSER_TEST_F(InspectUITest, DISABLED_AndroidTargets) {
 
 IN_PROC_BROWSER_TEST_F(InspectUITest, ReloadCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIInspectURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIInspectURL)));
 }
 
 }  // namespace

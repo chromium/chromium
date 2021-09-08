@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
   GURL expired_non_support_url = https_expired_server()->GetURL("/title2.html");
   GURL good_support_url = https_server()->GetURL("/title2.html");
   SetHelpCenterUrl(browser(), good_support_url);
-  ui_test_utils::NavigateToURL(browser(), expired_non_support_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expired_non_support_url));
 
   std::u16string tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &tab_title);
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
                        SupportURLWithNoInterstitial) {
   GURL good_support_url = https_server()->GetURL("/title2.html");
   SetHelpCenterUrl(browser(), good_support_url);
-  ui_test_utils::NavigateToURL(browser(), good_support_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), good_support_url));
 
   std::u16string tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &tab_title);
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest, InterstitialOnSupportURL) {
   GURL expired_url = https_expired_server()->GetURL("/title2.html");
   SetHelpCenterUrl(browser(), expired_url);
 
-  ui_test_utils::NavigateToURL(browser(), expired_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expired_url));
 
   std::u16string tab_title;
   ui_test_utils::GetCurrentTabTitle(browser(), &tab_title);
@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
   replacements.ClearRef();
   SetHelpCenterUrl(browser(), expired_url.ReplaceComponents(replacements));
 
-  ui_test_utils::NavigateToURL(browser(), expired_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expired_url));
 
   // Check that we got redirected to the offline help content.
   std::u16string tab_title;
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionHelpTabHelperTest,
   replacements.ClearRef();
   SetHelpCenterUrl(browser(), expired_url.ReplaceComponents(replacements));
 
-  ui_test_utils::NavigateToURL(browser(), expired_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expired_url));
 
   // Check that we got redirected to the offline help content.
   std::u16string tab_title;

@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop run_loop;
   content::RenderWidgetHost* rwh =
       main_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();

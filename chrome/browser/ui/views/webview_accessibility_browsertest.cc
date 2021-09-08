@@ -77,8 +77,8 @@ class WebViewBrowserTest : public InProcessBrowserTest {
 
 // Flaky. https://crbug.com/1013805
 IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/fixed_size_document.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/fixed_size_document.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

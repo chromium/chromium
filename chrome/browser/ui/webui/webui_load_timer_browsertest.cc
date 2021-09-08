@@ -27,7 +27,7 @@ using WebuiLoadTimerTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebuiLoadTimerTest, Timers) {
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), GURL(kTestUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestUrl)));
   WebuiLoadTimer timer(browser()->tab_strip_model()->GetActiveWebContents(),
                        kDocumentInitialLoadUmaId, kDocumentLoadCompletedUmaId);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);

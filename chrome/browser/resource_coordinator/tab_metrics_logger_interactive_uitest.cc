@@ -79,7 +79,7 @@ class TabMetricsLoggerTest : public InProcessBrowserTest {
 // Tests before unload handler is calculated correctly.
 IN_PROC_BROWSER_TEST_F(TabMetricsLoggerTest, GetBeforeUnloadHandler) {
   EXPECT_FALSE(CurrentTabFeatures(0).has_before_unload_handler);
-  ui_test_utils::NavigateToURL(browser(), GURL(kBeforeUnloadHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kBeforeUnloadHtml)));
   EXPECT_TRUE(CurrentTabFeatures(0).has_before_unload_handler);
 }
 

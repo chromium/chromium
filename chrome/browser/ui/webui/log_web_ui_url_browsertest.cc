@@ -40,7 +40,7 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
     std::u16string title = l10n_util::GetStringUTF16(title_ids);
     content::TitleWatcher title_watcher(tab, title);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_EQ(title, title_watcher.WaitAndGetTitle());
     uint32_t origin_hash = base::Hash(url.GetOrigin().spec());
     EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),

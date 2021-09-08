@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
 
   // Navigate to a page with a subframe.
   GURL main_url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetMainFrame()->GetLastCommittedURL(), main_url);
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
           test_data_dir_.AppendASCII("simple_with_file"));
   ASSERT_TRUE(extension);
   GURL page_url = extension->GetResourceURL("file.html");
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   // Click a link in the extension.
   GURL target_url = embedded_test_server()->GetURL("/echoheader?referer");

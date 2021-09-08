@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 
   // Navigate to an arbitrary, mostly-empty test page.
   GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   // Verify that initially no processes show up as having been injected with
   // content scripts.
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   // even though the *current* set of documents hosted in the renderer process
   // have not run a content script.
   GURL new_url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-  ui_test_utils::NavigateToURL(browser(), new_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
   EXPECT_EQ("This page has a title.",
             content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 
   // Navigate to an arbitrary, mostly-empty test page.
   GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
     ContentScriptExecuterBeforeDidCommit content_script_executer(
         new_url, web_contents, extension->id(),
         "document.body.innerText = 'content script has run'");
-    ui_test_utils::NavigateToURL(browser(), new_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_url));
     content_script_executer.WaitForMessage();
   }
 
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   // Navigate to a test page that is *not* covered by `content_scripts.matches`
   // manifest entry above.
   GURL ignored_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), ignored_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ignored_url));
   content::WebContents* first_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(
   // manifest entry below (the extension is *not* installed at this point yet).
   GURL injected_url =
       embedded_test_server()->GetURL("example.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), injected_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
   content::WebContents* first_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
     ExtensionTestMessageListener listener("Hello from content script!", false);
-    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
     ExtensionTestMessageListener listener("Hello from content script!", false);
-    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(
     GURL injected_url =
         embedded_test_server()->GetURL("bar.com", "/title1.html");
     ExtensionTestMessageListener listener("Hello from content script!", false);
-    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), injected_url));
 
     // Verify that content script has been injected.
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   // Navigate to a test page that is *not* covered by the PageStateMatcher used
   // above.
   GURL ignored_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), ignored_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ignored_url));
 
   // Verify that initially no frames show up as having been injected with
   // content scripts.
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest, HistoryPushState) {
   GURL url =
       embedded_test_server()->GetURL("bar.com", "/History/push_state.html");
   ExtensionTestMessageListener listener("Hello from content script!", false);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Verify that content script has been injected.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -950,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
   // Navigate to a test page that is *not* covered by the dynamic content script
   // used above.
   GURL ignored_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
-  ui_test_utils::NavigateToURL(browser(), ignored_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ignored_url));
 
   // Verify that initially no frames show up as having been injected with
   // content scripts.

@@ -714,7 +714,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   bool NavigateToTestPage(const std::string& origin_of_main_frame) {
     GURL url =
         embedded_test_server()->GetURL(origin_of_main_frame, kTestPagePath);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return web_contents()->GetLastCommittedURL() == url;
   }
 

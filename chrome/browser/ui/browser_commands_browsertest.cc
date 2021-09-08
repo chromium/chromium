@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   GURL url1("chrome://version");
   GURL url2("chrome://about");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Should be disabled with 1 tab.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW));
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   GURL url1("chrome://version");
   GURL url2("chrome://about");
   GURL url3("chrome://terms");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   AddTabAtIndex(1, url2, ui::PAGE_TRANSITION_LINK);
   AddTabAtIndex(2, url3, ui::PAGE_TRANSITION_LINK);
   // Select the first tab.
@@ -211,7 +211,8 @@ class ReadLaterBrowserCommandsTest : public BrowserCommandsTest {
 
   void SetUpOnMainThread() override {
     // Navigate to a url that can be added to the reading list.
-    ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL("https://www.google.com")));
     BrowserCommandsTest::SetUpOnMainThread();
   }
 

@@ -40,7 +40,7 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
 
  private:
   void RunTest(const GURL& url) {
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);

@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                        PrepareForPageLoadNonHttpScheme) {
   std::string content = "<body>Hello world!</body>";
   GURL url = GetDataURLWithContent(content);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
   // Ensure that no backgound task would make a host lookup or attempt to
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
 
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, LearnFromNavigation) {
         net::NetworkIsolationKey(origin, origin));
   }
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto prediction = GetPreconnectPrediction(url);
   ASSERT_TRUE(prediction);
   EXPECT_EQ(prediction->is_redirected, false);
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestLearnAllResources,
       url::Origin::Create(embedded_test_server()->GetURL("bar.com", "/")), 1,
       net::NetworkIsolationKey(origin, origin));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto prediction = GetPreconnectPrediction(url);
   ASSERT_TRUE(prediction);
   EXPECT_EQ(prediction->is_redirected, false);
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
         net::NetworkIsolationKey(origin, origin));
   }
 
-  ui_test_utils::NavigateToURL(browser(), original_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   // The predictor can correctly predict hosts by |redirect_url|
   auto prediction = GetPreconnectPrediction(redirect_url);
   ASSERT_TRUE(prediction);
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
 
   // The predictor will start predict for origins of subresources (based on
   // redirect) after the second navigation.
-  ui_test_utils::NavigateToURL(browser(), original_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), original_url));
   prediction = GetPreconnectPrediction(original_url);
   expected_requests.emplace_back(redirect_origin, 1,
                                  net::NetworkIsolationKey(origin, origin));
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, DnsPrefetch) {
   GURL url = embedded_test_server()->GetURL("/predictor/dns_prefetch.html");
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       GURL(kChromiumUrl).host(), network_isolation_key);
   EXPECT_TRUE(preconnect_manager_observer()->HostFound(
@@ -894,8 +894,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   GURL preconnect_url = embedded_test_server()->base_url();
   std::string preconnect_content =
       "<link rel=\"preconnect\" href=\"" + preconnect_url.spec() + "\">";
-  ui_test_utils::NavigateToURL(browser(),
-                               GetDataURLWithContent(preconnect_content));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetDataURLWithContent(preconnect_content)));
   connection_tracker()->WaitForAcceptedConnections(1u);
   EXPECT_EQ(1u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
@@ -991,8 +991,8 @@ class LoadingPredictorNetworkIsolationKeyBrowserTest
         "use-credentials",
     };
 
-    ui_test_utils::NavigateToURL(
-        browser(), preconnecting_test_server()->GetURL("/title1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), preconnecting_test_server()->GetURL("/title1.html")));
 
     // Preconnect a socket.
     content::WebContents* tab =
@@ -1099,7 +1099,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
       "/server-redirect?" + cacheable_url.spec());
 
   // Learn the redirects from initial navigation.
-  ui_test_utils::NavigateToURL(browser(), redirecting_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirecting_url));
   EXPECT_EQ(0u, connection_tracker()->GetAcceptedSocketCount());
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
     if (i == 0) {
       // NavigateToURL waits long enough to ensure information from the
       // navigation is learned, while WaitForNavigationFinished() does not.
-      ui_test_utils::NavigateToURL(browser(), redirecting_url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirecting_url));
     } else {
       auto observer = NavigateToURLAsync(redirecting_url);
       observer->WaitForNavigationFinished();
@@ -1205,14 +1205,14 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
 
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost1, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost1, "/title1.html")));
 
   chrome::NewTab(browser());
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html")));
 
   std::string start_preconnect = base::StringPrintf(
       "var link = document.createElement('link');"
@@ -1263,11 +1263,11 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
   // Tab 1 has two iframes, one at kHost1, one at kHost2.
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), preconnecting_test_server()->GetURL(
                      kHost1, GetPathWithPortReplacement(
                                  "/predictors/two_iframes.html",
-                                 preconnecting_test_server()->port())));
+                                 preconnecting_test_server()->port()))));
   std::vector<content::RenderFrameHost*> frames = tab1->GetAllFrames();
   ASSERT_EQ(3u, frames.size());
   ASSERT_EQ(kHost1, frames[0]->GetLastCommittedOrigin().host());
@@ -1278,8 +1278,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorNetworkIsolationKeyBrowserTest,
   chrome::NewTab(browser());
   content::WebContents* tab2 =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(
-      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), preconnecting_test_server()->GetURL(kHost2, "/title1.html")));
 
   // Preconnect a socket in the cross-origin iframe.
   std::string start_preconnect = base::StringPrintf(
@@ -1404,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
   ResetPredictorState();
 
@@ -1432,7 +1432,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithProxy,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
@@ -1567,7 +1567,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
@@ -1607,7 +1607,7 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   SetUpOptimizationHint(url, {Subresource("http://subresource.com/1"),
@@ -1699,8 +1699,8 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
 
   // Navigate to another URL - make sure optimization guide prediction is
   // cleared.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("nohints.com", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("nohints.com", "/")));
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.PreconnectLearningRecall.OptimizationGuide", 0, 1);
@@ -1746,12 +1746,12 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
 
   // Navigate the first time to something on redirecting origin to fill the
   // predictor's database and the HTTP cache.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
           "sometimesredirects.com",
           GetPathWithPortReplacement(kHtmlSubresourcesPath,
-                                     embedded_test_server()->port())));
+                                     embedded_test_server()->port()))));
   ResetNetworkState();
 
   url::Origin origin = url::Origin::Create(destination_url);
@@ -1813,7 +1813,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTestWithNoLocalPredictions,
                                              embedded_test_server()->port()));
   url::Origin origin = url::Origin::Create(url);
   net::NetworkIsolationKey network_isolation_key(origin, origin);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   auto observer = NavigateToURLAsync(url);
@@ -1964,7 +1964,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL url = embedded_test_server()->GetURL(
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   // Set up optimization hints.
@@ -2085,7 +2085,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL url = embedded_test_server()->GetURL(
       "test.com", GetPathWithPortReplacement(kHtmlSubresourcesPath,
                                              embedded_test_server()->port()));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ResetNetworkState();
 
   // Set up optimization hints.

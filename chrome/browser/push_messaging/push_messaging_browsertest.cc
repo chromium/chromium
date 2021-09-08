@@ -248,7 +248,8 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   }
 
   void LoadTestPage(const std::string& path) {
-    ui_test_utils::NavigateToURL(GetBrowser(), https_server_->GetURL(path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(),
+                                             https_server_->GetURL(path)));
   }
 
   void LoadTestPage() { LoadTestPage(GetTestURL()); }
@@ -2007,7 +2008,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
 
-  ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL));
 
   auto* web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   LOG(ERROR) << web_contents->GetLastCommittedURL();

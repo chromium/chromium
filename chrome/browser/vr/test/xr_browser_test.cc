@@ -183,7 +183,7 @@ content::WebContents* XrBrowserTestBase::GetCurrentWebContents() {
 void XrBrowserTestBase::LoadFileAndAwaitInitialization(
     const std::string& test_name) {
   GURL url = GetUrlForFile(test_name);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(PollJavaScriptBoolean("isInitializationComplete()",
                                     kPollTimeoutMedium,
                                     GetCurrentWebContents()))

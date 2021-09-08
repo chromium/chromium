@@ -237,13 +237,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   tab_helper->AddObserver(&bookmark_observer);
 
   // Go to a bookmarked url. Bookmark star should show.
-  ui_test_utils::NavigateToURL(browser(), bookmark_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bookmark_url));
   EXPECT_FALSE(IsShowingInterstitial(web_contents));
   EXPECT_TRUE(bookmark_observer.is_starred());
   // Now go to a non-bookmarked url which triggers an SSL warning. Bookmark
   // star should disappear.
   GURL error_url = https_server.GetURL("/");
-  ui_test_utils::NavigateToURL(browser(), error_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_FALSE(bookmark_observer.is_starred());

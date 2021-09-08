@@ -69,11 +69,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   Browser* app_browser = web_app::LaunchWebAppBrowser(
       browser()->profile(), test_system_web_app_installation_->GetAppId());
   GURL app_url = test_system_web_app_installation_->GetAppUrl();
-  ui_test_utils::NavigateToURL(app_browser, app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
 
   // Create second tab and close it, TAB entry should be created.
   chrome::NewTab(app_browser);
-  ui_test_utils::NavigateToURL(app_browser, app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
   chrome::CloseTab(app_browser);
   ASSERT_EQ(1U, trs->entries().size());
   const sessions::TabRestoreService::Entry* tab_entry =

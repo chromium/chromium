@@ -135,7 +135,7 @@ class BrowsingDataRemoverBrowserTest
   void TestSiteData(const std::string& type, base::Time delete_begin) {
     EXPECT_EQ(0, GetSiteDataCount());
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(GetBrowser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
@@ -159,7 +159,7 @@ class BrowsingDataRemoverBrowserTest
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(GetBrowser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
     EXPECT_EQ(0, GetSiteDataCount());
     ExpectCookieTreeModelCount(0);
     // Opening a store of this type creates a site data entry.
@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
 // Verify can modify database after deleting it.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
   GURL url = embedded_test_server()->GetURL("/simple_database.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text')", "done");
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
 
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
 
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text2')", "done");
   RunScriptAndCheckResult("getRecords()", "text2");
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   // Set a cookie.
   const char kDataType[] = "Cookie";
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   SetDataForType(kDataType);
   EXPECT_EQ(1, GetSiteDataCount());
   ExpectCookieTreeModelCount(1);
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
                        SessionStorageDeletionWebOnly) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   const std::string type = "SessionStorage";
   EXPECT_FALSE(HasDataForType(type));
   SetDataForType(type);
@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, SessionStorageCounting) {
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   EXPECT_EQ(0, GetSiteDataCount());
   ExpectCookieTreeModelCount(0);
   SetDataForType("SessionStorage");
@@ -948,7 +948,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MediaLicenseDeletion) {
   EXPECT_EQ(0, GetMediaLicenseCount());
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
   EXPECT_EQ(0, GetMediaLicenseCount());
@@ -991,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
   EXPECT_EQ(0, GetMediaLicenseCount());
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
 #if defined(OS_MAC)
   // On some Macs the file system uses second granularity. So before
@@ -1065,7 +1065,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_EQ(0, GetMediaLicenseCount());
   EXPECT_FALSE(HasDataForType(kMediaLicenseType));
@@ -1132,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL(kLocalHost, "/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   for (const std::string& type : kStorageTypes) {
     SetDataForType(type);
@@ -1188,7 +1188,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                        PRE_SessionOnlyStorageRemoved) {
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   for (const std::string& type : kSessionOnlyStorageTestTypes) {
     SetDataForType(type);
@@ -1208,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // All cookies should have been deleted.
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   for (const std::string& type : kSessionOnlyStorageTestTypes) {
     EXPECT_FALSE(HasDataForType(type));
   }

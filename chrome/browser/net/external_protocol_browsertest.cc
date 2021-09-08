@@ -116,7 +116,7 @@ void InvokeUrlAndWaitForExternalHandler(Browser* browser, GURL target_url) {
   FakeProtocolHandlerDelegate external_handler_delegate;
   ExternalProtocolHandler::SetDelegateForTesting(&external_handler_delegate);
 
-  ui_test_utils::NavigateToURL(browser, target_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, target_url));
   auto actual_url = external_handler_delegate.WaitForUrl();
   EXPECT_EQ(target_url, actual_url);
 

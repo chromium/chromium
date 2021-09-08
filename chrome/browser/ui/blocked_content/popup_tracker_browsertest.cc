@@ -103,8 +103,8 @@ class PopupTrackerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, NoPopup_NoTracker) {
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_FALSE(blocked_content::PopupTracker::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents()));
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        WindowOpenPopup_HasTracker_GestureClose) {
   base::HistogramTester tester;
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        WindowOpenPopup_WithInteraction) {
   base::HistogramTester tester;
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ControlClick_HasTracker
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Mac uses command instead of control for the new tab action.
   bool is_mac = false;
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, DISABLED_ShiftClick_HasTracker) 
   base::HistogramTester tester;
   const GURL url = embedded_test_server()->GetURL(
       "/popup_blocker/popup-simulated-click-on-anchor.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, AllowlistedPopup_HasTracker) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Is blocked by the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content_settings::PageSpecificContentSettings::GetForFrame(
                   web_contents->GetMainFrame())
                   ->IsContentBlocked(ContentSettingsType::POPUPS));
@@ -402,7 +402,7 @@ class SafeBrowsingPopupTrackerBrowserTest : public PopupTrackerBrowserTest {
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
                        PopupClosedBeforeNavigationFinished_LoggedAsNoValue) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   const GURL unsafe_url = embedded_test_server()->GetURL("/slow");
   ConfigureAsList(unsafe_url, safe_browsing::GetUrlSocEngId());
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
                        SafePopup_LoggedAsSafe) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
                        PhishingPopup_LoggedAsUnsafe) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   // Associate each domain with a separate safe browsing ListIdentifier to
   // exercise the set of lists.
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPopupTrackerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, PopupInTab_IsWindowFalse) {
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupInWindow_IsWindowTrue) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupNoRedirect_RedirectCountZero) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 #endif
 
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
                        MAYBE_PopupJavascriptRenavigation_RedirectCountZero) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -751,7 +751,7 @@ class PopupTrackerPrerenderBrowserTest : public PopupTrackerBrowserTest {
 IN_PROC_BROWSER_TEST_F(PopupTrackerPrerenderBrowserTest,
                        DoNotAffectRecordingUKMByPrerender) {
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
 
   // Load a prerender url in the popup window.
   const GURL prerender_url = embedded_test_server()->GetURL("/empty.html");

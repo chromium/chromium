@@ -70,10 +70,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "1", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab/page.html"));
+            "google.com", "/extensions/api_test/active_tab/page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -125,10 +125,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "2", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab/final_page.html"));
+            "google.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -139,10 +139,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
     ExtensionTestMessageListener navigation_count_listener(
         "3", false /*will_reply*/);
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "example.com", "/extensions/api_test/active_tab/final_page.html"));
+            "example.com", "/extensions/api_test/active_tab/final_page.html")));
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
     EXPECT_TRUE(navigation_count_listener.WaitUntilSatisfied());
   }
@@ -159,10 +159,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTabCors) {
   ASSERT_TRUE(background_page_ready.WaitUntilSatisfied());
 
   {
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "google.com", "/extensions/api_test/active_tab_cors/page.html"));
+            "google.com", "/extensions/api_test/active_tab_cors/page.html")));
     std::u16string title = u"page";
     content::TitleWatcher watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), title);
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   // in this case).
   GURL file_url_1 =
       net::FilePathToFileURL(extension->path().AppendASCII("manifest.json"));
-  ui_test_utils::NavigateToURL(browser(), file_url_1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), file_url_1));
 
   // Assigned to |inactive_tab_id| since we open another foreground tab
   // subsequently.

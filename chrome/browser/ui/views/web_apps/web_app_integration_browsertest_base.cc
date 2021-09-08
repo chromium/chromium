@@ -469,7 +469,7 @@ void WebAppIntegrationBrowserTestBase::NavigateTabbedBrowserToSite(
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   app_banner_manager->WaitForInstallableCheck();
 }
 

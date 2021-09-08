@@ -190,7 +190,7 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   GURL download_url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
-  ui_test_utils::NavigateToURL(GetBrowser(), download_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), download_url));
   observer->WaitForFinished();
 
   VerifyDownloadCount(1u);

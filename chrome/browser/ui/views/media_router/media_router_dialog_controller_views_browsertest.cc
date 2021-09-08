@@ -107,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
   EXPECT_FALSE(MediaDialogView::IsShowing());
   // Navigate to a page with origin so that the PresentationRequest notification
   // created on this page has an origin to be displayed.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/simple_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
   CreateDialogController();
   dialog_controller_->ShowMediaRouterDialogForPresentation(
       CreateStartPresentationContext(initiator_));
@@ -117,8 +117,8 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
 
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
                        ActivateInitiatorBeforeDialogOpen) {
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/simple_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple_page.html")));
   CreateDialogController();
 
   // Create a new foreground tab that covers |web_contents|.

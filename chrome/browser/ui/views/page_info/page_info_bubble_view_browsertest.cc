@@ -111,7 +111,7 @@ void ClickAndWaitForSettingsPageToOpen(views::View* site_settings_button) {
 // Returns the URL of the new tab that's opened on clicking the "Site settings"
 // button from Page Info.
 const GURL OpenSiteSettingsForUrl(Browser* browser, const GURL& url) {
-  ui_test_utils::NavigateToURL(browser, url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   OpenPageInfoBubble(browser);
   // Get site settings button.
   views::View* site_settings_button = GetView(
@@ -298,30 +298,32 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ChromeURL) {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://settings")));
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ChromeExtensionURL) {
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("chrome-extension://extension-id/options.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-extension://extension-id/options.html")));
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ChromeDevtoolsURL) {
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("devtools://devtools/bundled/inspector.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("devtools://devtools/bundled/inspector.html")));
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, ViewSourceURL) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -376,7 +378,8 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        VerifyEnterprisePasswordReusePageInfoBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/")));
 
   // Update security state of the current page to match
   // SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE.
@@ -458,7 +461,8 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        VerifySavedPasswordReusePageInfoBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histograms;
-  ui_test_utils::NavigateToURL(browser(), embedded_test_server()->GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/")));
 
   // Update security state of the current page to match
   // SB_THREAT_TYPE_SAVED_PASSWORD_REUSE.
@@ -534,33 +538,33 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        ClosesOnUserNavigateToSamePage) {
-  ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl()));
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
-  ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl()));
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        ClosesOnUserNavigateToDifferentPage) {
-  ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimplePageUrl()));
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_INTERNAL_PAGE,
             PageInfoBubbleView::GetShownBubbleType());
-  ui_test_utils::NavigateToURL(browser(), GetIframePageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetIframePageUrl()));
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
 }
 
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
                        DoesntCloseOnSubframeNavigate) {
-  ui_test_utils::NavigateToURL(browser(), GetIframePageUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetIframePageUrl()));
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_NONE,
             PageInfoBubbleView::GetShownBubbleType());
   OpenPageInfoBubble(browser());
@@ -611,8 +615,8 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestWithAutoupgradesDisabled,
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(https_server.Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(), https_server.GetURL("/delayed_mixed_content.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/delayed_mixed_content.html")));
   OpenPageInfoBubble(browser());
 
   views::BubbleDialogDelegateView* page_info =
@@ -646,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(https_server.Start());
 
-  ui_test_utils::NavigateToURL(browser(), https_server.GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
 
   // Setup the bogus identity with an expired cert and SB flagging.
   PageInfoUI::IdentityInfo identity;
@@ -699,7 +704,8 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest, MalwareAndEvCert) {
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(https_server.Start());
 
-  ui_test_utils::NavigateToURL(browser(), https_server.GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/simple.html")));
 
   // Generate a valid mock EV HTTPS identity, with an EV certificate. Must
   // match conditions in PageInfoBubbleView::SetIdentityInfo() for setting

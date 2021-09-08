@@ -234,7 +234,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL image_url(embedded_test_server()->GetURL(image_path));
     GURL page("data:text/html,<img src='" + image_url.spec() + "'>");
-    ui_test_utils::NavigateToURL(browser(), page);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
     // Open and close a context menu.
     ContextMenuWaiter waiter;
@@ -330,7 +330,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     GURL page_url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("test.pdf")));
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -361,7 +361,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     // Load a page with pdf file inside.
     GURL page_url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")), base::FilePath(file_name));
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -809,8 +809,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
   // Go to a page with a link
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,<a href='about:blank'>link</a>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<a href='about:blank'>link</a>")));
 
   // Open a context menu.
   blink::WebMouseEvent mouse_event(
@@ -847,7 +847,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenAboutBlankInNewTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL page(embedded_test_server()->GetURL("/title1.html"));
 
-  ui_test_utils::NavigateToURL(browser(), page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
   // Set up menu with link URL.
   content::ContextMenuParams context_menu_params;
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenDataURLInNewTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL page(embedded_test_server()->GetURL("/title1.html"));
 
-  ui_test_utils::NavigateToURL(browser(), page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
   // Set up menu with link URL.
   content::ContextMenuParams context_menu_params;
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
 
   // Go to a |page| with a link to echoheader URL.
   GURL page("data:text/html,<a href='" + echoheader.spec() + "'>link</a>");
-  ui_test_utils::NavigateToURL(browser(), page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
   // Set up referrer URL with fragment.
   const GURL kReferrerWithFragment("http://foo.com/test#fragment");
@@ -954,7 +954,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Go to a |page| with a link to echoheader URL.
   GURL page("data:text/html,<a href='" + echoheader.spec() + "'>link</a>");
-  ui_test_utils::NavigateToURL(browser(), page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
   // Set up referrer URL with fragment.
   const GURL kReferrerWithFragment("http://foo.com/test#fragment");
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileName) {
 
   // Go to a page with a link having download attribute.
   const std::string kSuggestedFilename("test_filename.png");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Open a context menu.
   blink::WebMouseEvent mouse_event(
@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        MenuContentsVerification_MainFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Open a context menu.
   ContextMenuWaiter menu_observer;
@@ -1119,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        MenuContentsVerification_Subframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/iframe.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -1176,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   GURL image_url(
       "data:text/html,<html><img src=\"http://example.test/cat.jpg\" "
       "width=\"200\" height=\"10000\" tabindex=\"-1\" /></html>");
-  ui_test_utils::NavigateToURL(browser(), image_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), image_url));
 
   // Open and close a context menu.
   ContextMenuWaiter menu_observer;
@@ -1216,8 +1216,8 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   const char kAnchorHtml[] =
       "<div contenteditable='true'>Some text and "
       "<a href='https://test.com' id='anchor1'>link</a></div> ";
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kAnchorHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kAnchorHtml)));
 
   // Open and close a context menu.
   ContextMenuWaiter menu_observer;
@@ -1268,7 +1268,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, SuggestedFileNameCrossOrigin) {
       embedded_test_server()->GetURL("/download-anchor-cross-origin.html"));
 
   // Go to a page with a link having download attribute.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Open a context menu.
   blink::WebMouseEvent mouse_event(
@@ -1470,7 +1470,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     // with the right MIME type, so use a data URL to make a page containing it.
     GURL image_url(embedded_test_server()->GetURL(image_path));
     GURL page("data:text/html,<img src='" + image_url.spec() + "'>");
-    ui_test_utils::NavigateToURL(browser(), page);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
   }
 
   void AttemptImageSearch() {
@@ -1677,7 +1677,7 @@ class LoadImageBrowserTest : public InProcessBrowserTest {
 
     // Go to a page with an image in it
     GURL page_url(embedded_test_server()->GetURL(page_path));
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   }
 
   // Some platforms are flaky due to slower loading interacting with deferred

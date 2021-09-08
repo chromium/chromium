@@ -82,13 +82,14 @@ class FlocOriginTrialBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTest, OriginTrialEnabled) {
-  ui_test_utils::NavigateToURL(browser(), OriginTrialEnabledURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialEnabledURL()));
 
   EXPECT_TRUE(HasInterestCohortApi(web_contents()));
 }
 
 IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTest, OriginTrialDisabled) {
-  ui_test_utils::NavigateToURL(browser(), OriginTrialDisabledURL());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), OriginTrialDisabledURL()));
 
   EXPECT_FALSE(HasInterestCohortApi(web_contents()));
 }
@@ -105,7 +106,7 @@ class FlocOriginTrialBrowserTestBaseFeatureDisabled
 
 IN_PROC_BROWSER_TEST_F(FlocOriginTrialBrowserTestBaseFeatureDisabled,
                        OriginTrialEnabled) {
-  ui_test_utils::NavigateToURL(browser(), OriginTrialEnabledURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), OriginTrialEnabledURL()));
 
   // If the base::Feature is disabled, the OT / API is disabled regardless of
   // the OT config.

@@ -42,8 +42,8 @@ class DataSaverWebAPIsBrowserTest : public InProcessBrowserTest {
   void VerifySaveDataAPI(bool expected_header_set, Browser* browser = nullptr) {
     if (!browser)
       browser = InProcessBrowserTest::browser();
-    ui_test_utils::NavigateToURL(browser,
-                                 test_server_.GetURL("/net_info.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, test_server_.GetURL("/net_info.html")));
     EXPECT_EQ(expected_header_set,
               RunScriptExtractBool(browser, "getSaveData()"));
   }

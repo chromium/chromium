@@ -142,10 +142,10 @@ class AccessibilityFocusHighlightBrowserTest : public InProcessBrowserTest {
 // Flaky on all platforms. TODO(crbug.com/1083806): Enable this test.
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                        DISABLED_DrawsHighlight) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html,"
                       "<body style='background-color: rgb(204, 255, 255);'>"
-                      "<div tabindex=0 id='div'>Focusable div</div>"));
+                      "<div tabindex=0 id='div'>Focusable div</div>")));
 
   AccessibilityFocusHighlight::SetNoFadeForTesting();
   AccessibilityFocusHighlight::SkipActivationCheckForTesting();
@@ -185,12 +185,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
                        FocusBoundsIncludeImages) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("data:text/html,"
-                                    "<a id='link' href=''>"
-                                    "<img id='image' width='220' height='147' "
-                                    "style='vertical-align: middle;'>"
-                                    "</a>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,"
+                      "<a id='link' href=''>"
+                      "<img id='image' width='220' height='147' "
+                      "style='vertical-align: middle;'>"
+                      "</a>")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -253,10 +253,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityFocusHighlightEnabled, true);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,"
-                                               "<a id='link' href=''>"
-                                               "<img width='10' height='10'>"
-                                               "</a>"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:text/html,"
+                                                "<a id='link' href=''>"
+                                                "<img width='10' height='10'>"
+                                                "</a>")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

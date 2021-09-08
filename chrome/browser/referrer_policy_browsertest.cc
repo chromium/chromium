@@ -239,7 +239,7 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     // Watch for all possible outcomes to avoid timeouts if something breaks.
     AddAllPossibleTitles(start_url, &title_watcher);
 
-    ui_test_utils::NavigateToURL(browser(), start_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
     if (renderer_or_browser_initiated == BROWSER_INITIATED) {
       CHECK(disposition == WindowOpenDisposition::CURRENT_TAB);
@@ -550,8 +550,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, History) {
       blink::WebMouseEvent::Button::kLeft, EXPECT_ORIGIN_AS_REFERRER);
 
   // Navigate to C.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   std::u16string expected_title =
       GetExpectedTitle(start_url, EXPECT_ORIGIN_AS_REFERRER);
@@ -626,9 +626,9 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, IFrame) {
       new content::TitleWatcher(tab, expected_title));
 
   // Load a page that loads an iframe.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html"));
+      https_server_.GetURL("/referrer_policy/referrer-policy-iframe.html")));
   EXPECT_TRUE(content::ExecuteScript(
       tab,
       std::string("var frame = document.createElement('iframe');frame.src ='") +
@@ -888,7 +888,7 @@ class ReferrerOverrideTest
     std::u16string expected_title(u"loaded");
     std::unique_ptr<content::TitleWatcher> title_watcher(
         new content::TitleWatcher(tab, expected_title));
-    ui_test_utils::NavigateToURL(browser(), start_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
     // Wait for the page to load; during the load, since check_on_requests_ is
     // nonempty, OnServerIncomingRequest will validate the referrers.

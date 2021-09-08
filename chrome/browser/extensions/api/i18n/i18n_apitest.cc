@@ -43,9 +43,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   ResultCatcher catcher;
 
   // Test that the messages.json file is loaded and the i18n message is loaded.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   std::u16string title;
@@ -59,9 +58,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   ReloadExtension(extension->id());
 
   // Check that the i18n message is also changed.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   ui_test_utils::GetCurrentTabTitle(browser(), &title);

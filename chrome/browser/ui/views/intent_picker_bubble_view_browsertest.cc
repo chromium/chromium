@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTest, DoubleClickOpensApp) {
 
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  ui_test_utils::NavigateToURL(browser(), in_scope_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "IntentPickerBubbleView");

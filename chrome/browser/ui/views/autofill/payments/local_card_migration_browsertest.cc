@@ -270,10 +270,10 @@ class LocalCardMigrationBrowserTest
   }
 
   void NavigateTo(const std::string& file_path) {
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), file_path.find("data:") == 0U
                        ? GURL(file_path)
-                       : embedded_test_server()->GetURL(file_path));
+                       : embedded_test_server()->GetURL(file_path)));
   }
 
   void OnDecideToRequestLocalCardMigration() override {

@@ -29,8 +29,8 @@ class CollectedCookiesViewsTest : public InProcessBrowserTest {
         ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
     // Load a page with cookies.
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/cookie1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/cookie1.html")));
 
     // Spawn a cookies dialog.
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -78,8 +78,8 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, ChangeAndNavigateAway) {
   SetDialogChanged();
 
   // Navigation in the owning tab will close dialog.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/cookie2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/cookie2.html")));
 
   EXPECT_EQ(0u, infobar_count());
 }

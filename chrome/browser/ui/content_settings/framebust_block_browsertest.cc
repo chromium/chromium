@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 #endif
 
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, SimpleFramebust_Blocked) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
@@ -288,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   // Create a new browser to test in to ensure that the render process gets the
   // updated content settings.
   CreateAndSetBrowser();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
   NavigateIframeToUrlWithoutGesture(
       GetWebContents(), "test",
       embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   // Create a new browser to test in to ensure that the render process gets the
   // updated content settings.
   CreateAndSetBrowser();
-  ui_test_utils::NavigateToURL(browser(), top_level_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_level_url));
   NavigateIframeToUrlWithoutGesture(
       GetWebContents(), "test",
       embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -345,8 +345,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
 // persist on subsequent navigations.
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        FramebustBlocked_SubsequentNavigation_NoUI) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
@@ -368,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
       base::Contains(GetFramebustTabHelper()->blocked_urls(), redirect_url));
 
   // Now, navigate away and check that the UI went away.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
 
   // TODO(csharrison): Ideally we could query the actual UI here. For now, just
   // look at the internal state of the framebust tab helper.

@@ -234,8 +234,8 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   }
 
   // Navigate to the test html content.
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/test.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test.html"))));
 
   // Dump the form fields (and their inferred field types).
   content::WebContents* web_contents =

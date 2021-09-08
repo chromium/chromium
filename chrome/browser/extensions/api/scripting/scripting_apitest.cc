@@ -36,7 +36,7 @@ class ScriptingAPITest : public ExtensionApiTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
     content::TestNavigationObserver nav_observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     nav_observer.Wait();
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
     EXPECT_EQ(url, web_contents->GetLastCommittedURL());

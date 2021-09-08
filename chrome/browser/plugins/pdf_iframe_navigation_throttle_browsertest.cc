@@ -91,7 +91,7 @@ class PDFIFrameNavigationThrottleBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PDFIFrameNavigationThrottleBrowserTest,
                        HTMLFallbackInPrerender) {
   const GURL kUrl(embedded_test_server()->GetURL("/empty.html"));
-  ui_test_utils::NavigateToURL(browser(), kUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
 
   const GURL kPrerenderUrl =
       embedded_test_server()->GetURL("/pdf/test-iframe.html");

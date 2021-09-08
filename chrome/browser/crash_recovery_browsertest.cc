@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, Reload) {
   // The title of the active tab should change each time this URL is loaded.
   GURL url(
       "data:text/html,<script>document.title=new Date().valueOf()</script>");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   std::u16string title_before_crash;
   std::u16string title_after_crash;
@@ -132,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, ReloadCacheRevalidate) {
       base::BindRepeating(&CacheMaxAgeHandler::HandleRequest,
                           base::Owned(new CacheMaxAgeHandler(kTestPath))));
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kTestPath));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kTestPath)));
 
   std::u16string title_before_crash;
   std::u16string title_after_crash;
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, LoadInNewTab) {
   GURL url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle2File)));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   std::u16string title_before_crash;
   std::u16string title_after_crash;
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, LoadInNewTab) {
 // Regression test for http://crbug.com/348918
 IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, DoubleReloadWithError) {
   GURL url(content::GetWebUIURL("bogus"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(url, GetActiveWebContents()->GetVisibleURL());
 
   SimulateRendererCrash(browser());
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, BeforeUnloadNotRun) {
     "<script>window.onbeforeunload=function(e){return 'foo'}</script>"
     "</body></html>";
   GURL url(std::string("data:text/html,") + kBeforeUnloadHTML);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   SimulateRendererCrash(browser());
 }
 

@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
             GetChromeTestDataDir().MaybeAsASCII(), kInitialUrl.GetOrigin());
 
     // Navigate to the initial page.
-    NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
     ASSERT_FALSE(IsShowingSSLInterstitial(web_contents()));
 
     // Make sure there is no exception for the prerendering URL, so that an SSL
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
 
     // Navigate to the initial page and register a service worker that will
     // relay the fetch.
-    NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(NavigateToURL(browser(), kInitialUrl));
     ASSERT_EQ("DONE", EvalJs(web_contents(),
                              "register('fetch_event_respond_with_fetch.js');"));
     ASSERT_FALSE(IsShowingSSLInterstitial(web_contents()));

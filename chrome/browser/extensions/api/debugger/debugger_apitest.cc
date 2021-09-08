@@ -99,7 +99,7 @@ void DebuggerApiTest::SetUpOnMainThread() {
 
 testing::AssertionResult DebuggerApiTest::RunAttachFunction(
     const GURL& url, const std::string& expected_error) {
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

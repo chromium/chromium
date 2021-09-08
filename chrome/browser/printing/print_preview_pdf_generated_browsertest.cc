@@ -302,7 +302,7 @@ class PrintPreviewPdfGeneratedBrowserTest : public InProcessBrowserTest {
     base::FilePath path(file_name);
     GURL gurl = net::FilePathToFileURL(base::MakeAbsoluteFilePath(path));
 
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
 
     base::RunLoop loop;
     print_preview_delegate_->set_quit_closure(loop.QuitClosure());

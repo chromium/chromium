@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        CustomTabBarIsVisibleInFullscreen) {
   InstallAndLaunchBookmarkApp();
 
-  ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com")));
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
       ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});

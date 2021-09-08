@@ -116,7 +116,7 @@ class FlocInternalsBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, EmptyResponse) {
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, PopulatedResponse) {
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, ResponseWithExtremeValues) {
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(FlocInternalsBrowserTest, ResponseWithEmptyId) {
 
   fixed_floc_id_provider()->SetFlocStatus(std::move(status));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kFlocInternalsUrl)));
 
   std::vector<std::string> content_lines = GetPageContents();
 

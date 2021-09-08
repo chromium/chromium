@@ -126,7 +126,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
         page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
     StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
     GURL url = https_test_server()->GetURL(test_url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     waiter.Wait();
     CloseAllTabs();
     RunFrameworkDetection(simpler_frameworks, framework_name, url);
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(ParametrizedJavascriptFrameworksUkmObserverBrowserTest,
       page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/english_page.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   waiter.Wait();
   CloseAllTabs();
   for (const char* framework : simpler_frameworks) {
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(ParametrizedJavascriptFrameworksUkmObserverBrowserTest,
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL(
       "/page_load_metrics/multiple_frameworks.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   waiter.Wait();
   CloseAllTabs();
   struct {

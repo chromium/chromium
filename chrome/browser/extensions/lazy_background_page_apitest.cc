@@ -220,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, BroadcastEvent) {
 
   // Open a tab to a URL that will trigger the page action to show.
   LazyBackgroundObserver page_complete;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   page_complete.Wait();
 
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
@@ -243,8 +243,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, Filters) {
 
   // Open a tab to a URL that will fire a webNavigation event.
   LazyBackgroundObserver page_complete;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   page_complete.Wait();
 }
 
@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_WaitForNTP) {
   EXPECT_TRUE(IsBackgroundPageAlive(last_loaded_extension_id()));
 
   // Navigate away from the NTP, which should close the event page.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   lazybg.Wait();
 
   // Lazy Background Page has been shut down.
@@ -589,8 +589,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
   // Navigate to a page that opens a message channel to the background page.
   ResultCatcher catcher;
   LazyBackgroundObserver lazybg;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   lazybg.WaitUntilLoaded();
 
   // Background page got the content script's message and is still loaded
@@ -600,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, MAYBE_Messaging) {
 
   // Navigate away, closing the message channel and therefore the background
   // page.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   lazybg.WaitUntilClosed();
 
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
 
   ExtensionTestMessageListener page_ready("ready", true);
   GURL page_url = extension->GetResourceURL("page.html");
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
   EXPECT_TRUE(page_ready.WaitUntilSatisfied());
 
   // After the event is sent below, wait for the event page to have received

@@ -206,8 +206,8 @@ class IncognitoProfileContainmentBrowserTest : public InProcessBrowserTest {
 // because of the regular profile start up are already created.
 IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
                        PRE_StoringDataDoesNotModifyProfileFolder) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
 }
 
 // Test that calling several data storage APIs does not modify regular profile
@@ -226,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   // Run an Incognito session.
   Browser* browser = chrome::FindLastActive();
   EXPECT_TRUE(browser->profile()->IsOffTheRecord());
-  ui_test_utils::NavigateToURL(
-      browser, embedded_test_server()->GetURL("/browsing_data/site_data.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser,
+      embedded_test_server()->GetURL("/browsing_data/site_data.html")));
 
   const std::vector<std::string> kStorageTypes{
       "CacheStorage", "Cookie",        "FileSystem",    "IndexedDb",

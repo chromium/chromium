@@ -98,7 +98,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
 
 void OfferNotificationBubbleViewsTestBase::NavigateTo(
     const std::string& file_path) {
-  ui_test_utils::NavigateToURL(browser(), GURL(file_path));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
 }
 
 OfferNotificationBubbleViews*

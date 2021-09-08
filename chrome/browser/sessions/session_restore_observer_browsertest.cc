@@ -175,7 +175,7 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest,
                        MAYBE_SingleTabSessionRestore) {
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   Browser* new_browser = QuitBrowserAndRestore(browser());
 
   // The restored browser should have 1 tab.
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreObserverTest, MultipleTabSessionRestore) {
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetTestURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);

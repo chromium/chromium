@@ -198,8 +198,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 
   // Submit the form, using a simulated mouse click because form submissions not
@@ -299,8 +299,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
 
   WindowedNetworkObserver query_network_observer(expected_query_string);
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(kDataURIPrefix) + kFormHtml));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(kDataURIPrefix) + kFormHtml)));
   query_network_observer.Wait();
 }
 

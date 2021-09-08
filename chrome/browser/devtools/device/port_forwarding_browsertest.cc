@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest,
 
   RemoteDebuggingServer::EnableTetheringForDebug();
 
-  ui_test_utils::NavigateToURL(browser(), forwarding_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), forwarding_url));
 
   content::WebContents* wc = browser()->tab_strip_model()->GetWebContentsAt(0);
 

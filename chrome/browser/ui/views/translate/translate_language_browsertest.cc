@@ -122,8 +122,8 @@ class TranslateLanguageBrowserTest : public InProcessBrowserTest {
     // TODO(789593): investigate a more robust fix.
     TranslateBubbleView::CloseCurrentBubble();
 
-    ui_test_utils::NavigateToURL(browser_,
-                                 GURL(embedded_test_server()->GetURL(path)));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser_, GURL(embedded_test_server()->GetURL(path))));
   }
 
   void CheckForTranslateUI(const char* path, const bool expect_translate) {

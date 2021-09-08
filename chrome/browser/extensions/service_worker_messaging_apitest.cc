@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Wait for the content script to connect to the worker's port.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // content script to connect to its background's port.
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(content_script_connected_catcher.GetNextResult())
       << content_script_connected_catcher.message();
 

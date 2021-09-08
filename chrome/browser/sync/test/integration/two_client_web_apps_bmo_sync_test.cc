@@ -106,7 +106,7 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
     Browser* browser = CreateBrowser(profile);
     if (!start_url.is_valid())
       start_url = GetUserInitiatedAppURL();
-    ui_test_utils::NavigateToURL(browser, start_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, start_url));
 
     AppId app_id;
     base::RunLoop run_loop;

@@ -187,7 +187,7 @@ class FlocEligibilityBrowserTest
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
             web_contents());
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     waiter->AddMinimumCompleteResourcesExpectation(expected_complete_resources);
     waiter->Wait();
@@ -466,11 +466,11 @@ IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FlocEligibilityBrowserTest,
                        ApiNotAllowedInDetachedDocument) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL(
-          "a.test",
-          "/federated_learning/interest_cohort_api_in_detached_document.html"));
+      https_server_.GetURL("a.test",
+                           "/federated_learning/"
+                           "interest_cohort_api_in_detached_document.html")));
 
   EXPECT_EQ(
       "[error from subframe document] InvalidAccessError: Failed to execute "
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(
     FlocEligibilityBrowserTestChromePermissionsPolicyDisabled,
     PermissionsPolicyFeatureNotAvailable) {
   GURL main_page_url(https_server_.GetURL("a.test", "/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), main_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_page_url));
 
   EXPECT_FALSE(EvalJs(web_contents(), R"(
       document.featurePolicy.features().includes("interest-cohort")

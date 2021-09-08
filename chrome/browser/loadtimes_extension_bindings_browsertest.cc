@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
                        LoadTimesSameAfterClientInDocNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL plain_url = embedded_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), plain_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
@@ -65,12 +65,12 @@ IN_PROC_BROWSER_TEST_F(LoadtimesExtensionBindingsTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL plain_url = embedded_test_server()->GetURL("/simple.html");
   GURL hash_url(plain_url.spec() + "#");
-  ui_test_utils::NavigateToURL(browser(), plain_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), plain_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(
       contents, "window.before = window.chrome.loadTimes()"));
-  ui_test_utils::NavigateToURL(browser(), hash_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), hash_url));
   ASSERT_TRUE(content::ExecuteScript(
       contents, "window.after = window.chrome.loadTimes()"));
   CompareBeforeAndAfter();

@@ -163,7 +163,7 @@ class ChromeRenderProcessHostTest : public extensions::ExtensionBrowserTest {
 
     // Change the first tab to be the omnibox page (WebUI).
     GURL omnibox(chrome::kChromeUIOmniboxURL);
-    ui_test_utils::NavigateToURL(browser(), omnibox);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
     // The host objects from the page before the WebUI navigation stick around
     // until the old renderer cleans up and ACKs, which may happen later than
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest, MAYBE_ProcessPerTab) {
 
   // Change the first tab to be a WebUI page.
   GURL omnibox(chrome::kChromeUIOmniboxURL);
-  ui_test_utils::NavigateToURL(browser(), omnibox);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
   // The host objects from the page before the WebUI navigation stick around
   // until the old renderer cleans up and ACKs, which may happen later than the
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTest,
                        MAYBE_MultipleTabs) {
   // Change the first tab to be the omnibox page (TYPE_WEBUI).
   GURL omnibox(chrome::kChromeUIOmniboxURL);
-  ui_test_utils::NavigateToURL(browser(), omnibox);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), omnibox));
 
   // Create a new tab. It should be foreground.
   GURL page1("data:text/html,hello world1");
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostTest,
                        MAYBE_CloseAllTabsDuringProcessDied) {
   GURL url(chrome::kChromeUIOmniboxURL);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WebContents* wc1 = browser()->tab_strip_model()->GetWebContentsAt(0);
 
   content::WebContentsAddedObserver wc2_observer;
@@ -664,7 +664,7 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
     embedded_test_server()->StartAcceptingConnections();
 
     // Open a browser, navigate to the audio page and get its WebContents.
-    ui_test_utils::NavigateToURL(browser(), audio_url_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), audio_url_));
     audio_tab_web_contents_ =
         browser()->tab_strip_model()->GetActiveWebContents();
 

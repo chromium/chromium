@@ -318,8 +318,8 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestSingleTabShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browser());
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);
@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestSingleTabShutdown) {
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestShutdownMoreThanOnce) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browser());
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);
@@ -359,11 +359,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, PRE_TestSessionRestore) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/beforeunload.html"))));
   AddBlankTabAndShow(browser());
-  ASSERT_NO_FATAL_FAILURE(
-      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIAboutURL))));
   PrepareForDialog(browser());
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);
@@ -412,10 +412,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // and that all beforeunload dialogs are shown again after a cancel.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestMultipleWindows) {
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
 
@@ -456,14 +456,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestMultipleWindows) {
 // early.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestHangInBeforeUnloadMultipleTabs) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload_hang.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0],
+      embedded_test_server()->GetURL("/beforeunload_hang.html"))));
   AddBlankTabAndShow(browsers_[0]);
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   AddBlankTabAndShow(browsers_[0]);
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload_hang.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0],
+      embedded_test_server()->GetURL("/beforeunload_hang.html"))));
   // Disable the hang monitor in the tab that is not expected to hang, so that
   // the dialog is guaranteed to show.
   PrepareForDialog(browsers_[0]->tab_strip_model()->GetWebContentsAt(1));
@@ -491,12 +493,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestHangInBeforeUnloadMultipleWindows) {
   browsers_.push_back(CreateBrowser(browser()->profile()));
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload_hang.html")));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[2], embedded_test_server()->GetURL("/beforeunload_hang.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0],
+      embedded_test_server()->GetURL("/beforeunload_hang.html"))));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[2],
+      embedded_test_server()->GetURL("/beforeunload_hang.html"))));
   // Disable the hang monitor in the tab that is not expected to hang, so that
   // the dialog is guaranteed to show.
   PrepareForDialog(browsers_[1]);
@@ -537,11 +541,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   for (int i = 0; i < kTabCount; i++) {
     if (i)
       AddBlankTabAndShow(browsers_[0]);
-    ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browsers_[0],
         embedded_test_server()->GetURL((i == kResponsiveTabIndex)
                                            ? "/beforeunload.html"
-                                           : "/beforeunload_slow.html")));
+                                           : "/beforeunload_slow.html"))));
   }
   // Disable the hang monitor in the tab that is not expected to hang, so that
   // the dialog is guaranteed to show.
@@ -583,11 +587,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   for (int i = 0; i < kBrowserCount; i++) {
     if (i)
       browsers_.push_back(CreateBrowser(browser()->profile()));
-    ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browsers_[i],
         embedded_test_server()->GetURL((i == kResponsiveBrowserIndex)
                                            ? "/beforeunload.html"
-                                           : "/beforeunload_slow.html")));
+                                           : "/beforeunload_slow.html"))));
   }
   // Disable the hang monitor in the tab that is not expected to hang, so that
   // the dialog is guaranteed to show.
@@ -622,8 +626,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // Test that a window created during shutdown is closed.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        MAYBE_TestAddWindowDuringShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
 
   chrome::CloseAllBrowsersAndQuit();
@@ -638,15 +642,15 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 // cancel the shutdown.
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestAddWindowWithBeforeUnloadDuringShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
 
   AllBrowsersClosingCancelledObserver cancel_observer(2);
   chrome::CloseAllBrowsersAndQuit();
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[1]);
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
@@ -668,10 +672,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestAddTabDuringShutdown) {
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
 
@@ -691,10 +695,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestAddTabWithBeforeUnloadDuringShutdown) {
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
 
@@ -702,11 +706,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   chrome::CloseAllBrowsersAndQuit();
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
   AddBlankTabAndShow(browsers_[0]);
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   AddBlankTabAndShow(browsers_[1]);
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
   ASSERT_NO_FATAL_FAILURE(AcceptClose());
@@ -737,8 +741,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        MAYBE_AddBeforeUnloadDuringClosing) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html"))));
 
   // Open second window.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -823,16 +827,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestCloseTabDuringShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);
   chrome::CloseAllBrowsersAndQuit();
 
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[1]);
   browsers_[1]->tab_strip_model()->CloseAllTabs();
   ASSERT_NO_FATAL_FAILURE(CancelClose());
@@ -854,16 +858,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestOpenAndCloseWindowDuringShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
 
   AllBrowsersClosingCancelledObserver cancel_observer(2);
   chrome::CloseAllBrowsersAndQuit();
 
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[1]);
   ASSERT_FALSE(browsers_[1]->ShouldCloseWindow());
   ASSERT_NO_FATAL_FAILURE(CancelClose());
@@ -885,11 +889,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        TestCloseWindowDuringShutdown) {
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[0], embedded_test_server()->GetURL("/beforeunload.html"))));
   browsers_.push_back(CreateBrowser(browser()->profile()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browsers_[1], embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browsers_[0]);
   PrepareForDialog(browsers_[1]);
 
@@ -1036,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   content::TestNavigationObserver navigation_observer(
       otr_browser->tab_strip_model()->GetActiveWebContents(), 1);
-  ui_test_utils::NavigateToURL(otr_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser, GURL("about:blank")));
   navigation_observer.Wait();
 
   int num_downloads_blocking = 0;
@@ -1127,8 +1131,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        DISABLED_TestBeforeUnloadAndDownloads) {
   ASSERT_NO_FATAL_FAILURE(CreateStalledDownload(browser()));
-  ASSERT_NO_FATAL_FAILURE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/beforeunload.html")));
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/beforeunload.html"))));
   PrepareForDialog(browser());
 
   AllBrowsersClosingCancelledObserver cancel_observer(1);

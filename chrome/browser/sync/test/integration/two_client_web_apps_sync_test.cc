@@ -249,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
   AppId app_id;
   {
     Browser* browser = CreateBrowser(sourceProfile);
-    ui_test_utils::NavigateToURL(
-        browser, embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser,
+        embedded_test_server()->GetURL("/web_apps/favicon_only.html")));
     chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
     WebAppTestInstallObserver installObserver(sourceProfile);
     installObserver.BeginListening();

@@ -210,7 +210,7 @@ class UkmBrowserTestBase : public SyncTest {
                                        ukm::UkmTestHelper* ukm_test_helper) {
     content::NavigationHandleObserver observer(
         browser->tab_strip_model()->GetActiveWebContents(), url);
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     const ukm::SourceId source_id = ukm::ConvertToSourceId(
         observer.navigation_id(), ukm::SourceIdType::NAVIGATION_ID);
     return ukm_test_helper->GetSource(source_id);
@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
   content::NavigationHandleObserver tab_1_observer(
       sync_browser->tab_strip_model()->GetActiveWebContents(), test_urls[0]);
   // Navigate to a test URL in this new tab.
-  ui_test_utils::NavigateToURL(sync_browser, test_urls[0]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[0]));
   // Get the source id associated to the last committed navigation, which could
   // differ from the id from WebContents for example if the site executes a
   // same-document navigation (e.g. history.pushState/replaceState). This
@@ -1258,7 +1258,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
                          ui::PAGE_TRANSITION_TYPED, true);
   content::NavigationHandleObserver tab_2_observer(
       sync_browser->tab_strip_model()->GetActiveWebContents(), test_urls[1]);
-  ui_test_utils::NavigateToURL(sync_browser, test_urls[1]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[1]));
   source_id2 = ukm::ConvertToSourceId(tab_2_observer.navigation_id(),
                                       ukm::SourceIdType::NAVIGATION_ID);
 
@@ -1295,7 +1295,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, EvictObsoleteSources) {
 
   // Navigate to a new URL in the current tab, this will mark source 2 that was
   // in the current tab as obsolete.
-  ui_test_utils::NavigateToURL(sync_browser, test_urls[2]);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_urls[2]));
 
   // The previous report was the last one that could potentially contain entries
   // for source 1. Source 1 is thus no longer included in future reports. This
@@ -1417,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NotMarkSourcesIfNavigationNotCommitted) {
   EXPECT_FALSE(ukm_test_helper.IsSourceObsolete(source_id));
 
   // New navigation did not commit, thus the source should still be kept alive.
-  ui_test_utils::NavigateToURL(sync_browser, test_url_no_commit);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(sync_browser, test_url_no_commit));
   EXPECT_FALSE(ukm_test_helper.IsSourceObsolete(source_id));
 }
 #endif  // !defined(OS_ANDROID)

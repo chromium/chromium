@@ -160,8 +160,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SaveFile) {
 
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}));
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -203,8 +203,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
 
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}));
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -253,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, FullscreenOpenFile) {
 
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}));
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SafeBrowsing) {
 
   ui::SelectFileDialog::SetFactory(
       new FakeSelectFileDialogFactory({test_file}));
-  ui_test_utils::NavigateToURL(browser(), frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), frame_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
       new FakeSelectFileDialogFactory({test_file}));
 
   auto url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
       new FakeSelectFileDialogFactory({test_file}));
 
   auto url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -481,8 +481,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // Create three separate windows:
 
   // 1. Showing https://b.com/title1.html
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server.GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("b.com", "/title1.html")));
   content::WebContents* first_party_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   FileSystemAccessPermissionRequestManager::FromWebContents(
@@ -492,8 +492,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // 2. Showing https://a.com/iframe_cross_site.html, with an iframe for
   // https://b.com/title1.html
   Browser* second_window = CreateBrowser(profile);
-  ui_test_utils::NavigateToURL(
-      second_window, https_server.GetURL("a.com", "/iframe_cross_site.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      second_window, https_server.GetURL("a.com", "/iframe_cross_site.html")));
 
   content::WebContents* third_party_web_contents =
       second_window->tab_strip_model()->GetActiveWebContents();
@@ -506,8 +506,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
   // 3. Also showing https://b.com/title1.html
   Browser* third_window = CreateBrowser(profile);
-  ui_test_utils::NavigateToURL(third_window,
-                               https_server.GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      third_window, https_server.GetURL("b.com", "/title1.html")));
 
   // The b.com iframe inside a.com should wait to receive a handle from a
   // top-level b.com page.
@@ -569,8 +569,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   }
 
   // Now navigate away from b.com in first window.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server.GetURL("c.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("c.com", "/title1.html")));
 
   // Permission should still be granted in iframe.
   EXPECT_EQ("granted",
@@ -585,8 +585,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "self.entry.queryPermission({mode: 'readwrite'})"));
 
   // Now navigate away from b.com in third window as well.
-  ui_test_utils::NavigateToURL(third_window,
-                               https_server.GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      third_window, https_server.GetURL("a.com", "/title1.html")));
 
   // Permission should still be granted in iframe.
   EXPECT_EQ("granted",
@@ -625,8 +625,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // Create two separate windows:
 
   // 1. Showing https://b.com/title1.html
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server.GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("b.com", "/title1.html")));
   content::WebContents* first_party_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   FileSystemAccessPermissionRequestManager::FromWebContents(
@@ -636,8 +636,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   // 2. Showing https://a.com/iframe_cross_site.html, with an iframe for
   // https://b.com/title1.html
   Browser* second_window = CreateBrowser(profile);
-  ui_test_utils::NavigateToURL(
-      second_window, https_server.GetURL("a.com", "/iframe_cross_site.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      second_window, https_server.GetURL("a.com", "/iframe_cross_site.html")));
 
   content::WebContents* third_party_web_contents =
       second_window->tab_strip_model()->GetActiveWebContents();
@@ -746,7 +746,7 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
             {ContentSettingsType::FILE_SYSTEM_READ_GUARD,
              ContentSettingsType::FILE_SYSTEM_WRITE_GUARD});
 
-    ui_test_utils::NavigateToURL(browser(), kWebUITestUrl);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kWebUITestUrl));
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 

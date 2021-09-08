@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   AddLanguageDetectionObserver(url);
 
   // Navigate to |url|.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   sync_sessions::SyncSessionsWebContentsRouterFactory::GetInstance()
       ->GetForProfile(browser()->profile())

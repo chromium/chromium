@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
 
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
   current_throttle_manager()->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
 
   // Advance the clock to clear the intervention.
   test_clock->Advance(subresource_filter::kAdsInterventionDuration.Get());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(
   current_throttle_manager()->OnAdsViolationTriggered(
       web_contents()->GetMainFrame(),
       mojom::AdsViolation::kMobileAdDensityByHeightAbove30);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(
   // Advance the clock to to kAdsInterventionDuration from the first
   // intervention, this clear the intervention.
   test_clock->Advance(base::TimeDelta::FromMinutes(30));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
 
   // Should not trigger activation as the URL is not on the blocklist and
   // has no active ads interventions.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
 
   const base::TimeDelta kRenavigationDelay = base::TimeDelta::FromHours(2);
   test_clock->Advance(kRenavigationDelay);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(

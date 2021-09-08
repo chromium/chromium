@@ -156,11 +156,11 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
   // Fire off a request so that |test_server| sets a valid Expect-CT header.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
 
   // Navigate to a test server URL, which should trigger an Expect-CT report
   // because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
 
   // Navigate to a test server URL, whose header should trigger an Expect-CT
   // report because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed

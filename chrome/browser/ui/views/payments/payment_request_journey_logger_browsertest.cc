@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
 
   GURL main_frame_url =
       https_server()->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   // The iframe calls show() immediately.
   content::WebContents* tab =

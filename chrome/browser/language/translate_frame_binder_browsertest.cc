@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderBrowserTest,
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
 
   // Navigate to an initial page.
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   content::RenderFrameHost* prerendered_frame_host =

@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostBrowserTest,
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   csd_host->set_ui_manager(mock_ui_manager.get());
 
   GURL page_url(embedded_test_server()->GetURL("/safe_browsing/malware.html"));
-  ui_test_utils::NavigateToURL(browser(), page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
@@ -268,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
 
   const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Prerender then activate a phishing page.
   const GURL prerender_url =

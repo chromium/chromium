@@ -35,7 +35,8 @@ class ReadLaterButtonBrowserTest : public DialogBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
     // Navigate to a url that can be added to the reading list.
-    ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL("https://www.google.com")));
   }
 
   ReadLaterButton* GetReadLaterButton(Browser* browser) {

@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
                                              CONTENT_SETTING_BLOCK);
 
   GURL url = embedded_test_server()->GetURL("/webaudio_oscillator.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Start the audio on the current main frame.
   base::RunLoop run_loop;
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
       std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
 
   // Loads a simple page.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::test::PrerenderHostRegistryObserver registry_observer(
       *web_contents());

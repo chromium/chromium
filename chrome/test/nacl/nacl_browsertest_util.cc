@@ -229,7 +229,7 @@ bool NaClBrowserTestBase::RunJavascriptTest(
   content::JavascriptTestObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(),
       handler);
-  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   return observer.Run();
 }
 

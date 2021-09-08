@@ -101,9 +101,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // Navigating to example.com should show the page action.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
@@ -157,9 +157,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebRequest) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
 
   GURL expected_url = embedded_test_server()->GetURL(
       "example.com", "/native_bindings/simple2.html");
@@ -246,9 +246,9 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
            });
          });)");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html"));
+                     "example.com", "/native_bindings/simple.html")));
 
   ExtensionTestMessageListener listener("callback", false);
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
@@ -257,7 +257,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
 
 // Tests that bindings are available in WebUI pages.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto api_exists = [web_contents](const std::string& api_name) {

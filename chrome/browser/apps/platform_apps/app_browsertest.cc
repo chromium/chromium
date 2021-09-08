@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Isolation) {
   replace_host.SetHostStr("localhost");
   set_cookie_url = set_cookie_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), set_cookie_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
 
   // Make sure the cookie is set.
   int cookie_size;

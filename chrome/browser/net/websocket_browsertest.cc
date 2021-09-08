@@ -71,16 +71,16 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     // Visit a HTTP page for testing.
     GURL::Replacements replacements;
     replacements.SetSchemeStr("http");
-    ui_test_utils::NavigateToURL(
-        browser(), ws_server_.GetURL(path).ReplaceComponents(replacements));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), ws_server_.GetURL(path).ReplaceComponents(replacements)));
   }
 
   void NavigateToHTTPS(const std::string& path) {
     // Visit a HTTPS page for testing.
     GURL::Replacements replacements;
     replacements.SetSchemeStr("https");
-    ui_test_utils::NavigateToURL(
-        browser(), wss_server_.GetURL(path).ReplaceComponents(replacements));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), wss_server_.GetURL(path).ReplaceComponents(replacements)));
   }
 
   void NavigateToPath(const std::string& relative) {
@@ -89,7 +89,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     path =
         path.Append(net::GetWebSocketTestDataDirectory()).AppendASCII(relative);
     GURL url(std::string("file://") + path.MaybeAsASCII());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   // Prepare the title watcher.
@@ -184,9 +184,9 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
     std::string query("url=" + url.spec());
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
-    ui_test_utils::NavigateToURL(browser(),
-                                 http_server_.GetURL("/connect_to.html")
-                                     .ReplaceComponents(replacements));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_server_.GetURL("/connect_to.html")
+                       .ReplaceComponents(replacements)));
   }
 
  private:
@@ -298,10 +298,10 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketBasicAuthInHTTPURL) {
   // Open connect_check.html via HTTP with credentials in the URL.
   GURL::Replacements replacements;
   replacements.SetSchemeStr("http");
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       ws_server_.GetURLWithUserAndPassword("connect_check.html", "test", "test")
-          .ReplaceComponents(replacements));
+          .ReplaceComponents(replacements)));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -322,11 +322,11 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest,
   // Open connect_check.html via HTTPS with credentials in the URL.
   GURL::Replacements replacements;
   replacements.SetSchemeStr("https");
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      wss_server_.GetURLWithUserAndPassword(
-                      "connect_check.html", "test", "test")
-          .ReplaceComponents(replacements));
+      wss_server_
+          .GetURLWithUserAndPassword("connect_check.html", "test", "test")
+          .ReplaceComponents(replacements)));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
@@ -434,8 +434,8 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   // Set HSTS on localhost.
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), u"SET");
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server.GetURL("/websocket/set-hsts.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("/websocket/set-hsts.html")));
   const std::u16string result = title_watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "SET"));
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, MAYBE_WebSocketAppliesHSTS) {
   GURL http_url =
       http_server.GetURL("/websocket/check-hsts.html#" + ws_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), http_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }

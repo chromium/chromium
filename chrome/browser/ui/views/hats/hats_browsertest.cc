@@ -103,7 +103,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
   // Open a blank tab in the main browser, inspect it, and return the devtools
   // Browser for the undocked devtools window.
   Browser* OpenUndockedDevToolsWindow() {
-    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
     const bool is_docked = false;
     DevToolsWindow* devtools_window =

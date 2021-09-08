@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(IdleBrowserTest, Start) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   map->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::IDLE_DETECTION, CONTENT_SETTING_ALLOW);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Test that statuses are updated after idleDetector.start().
   std::string script = R"(

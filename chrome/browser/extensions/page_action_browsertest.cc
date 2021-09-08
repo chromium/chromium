@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionCrash25562) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }
@@ -60,13 +60,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageAction) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Navigate to a page with no feed.
   GURL no_feed = embedded_test_server()->GetURL(kNoFeedPage);
-  ui_test_utils::NavigateToURL(browser(), no_feed);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_feed));
   // Make sure the page action goes away.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
@@ -82,17 +82,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, PageActionSameDocumentNavigation) {
 
   // Page action should become visible when we navigate here.
   GURL feed_url = embedded_test_server()->GetURL(kHashPageA);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Same-document navigation, page action should remain.
   feed_url = embedded_test_server()->GetURL(kHashPageAHash);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 
   // Not a same-document navigation, page action should go away.
   feed_url = embedded_test_server()->GetURL(kHashPageB);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, UnloadPageAction) {
 
   // Navigation prompts the location bar to load page actions.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPage);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));

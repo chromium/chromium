@@ -217,9 +217,9 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
   bool FlushAndCheckZeroReports() {
     SetSafeBrowsingEnabled(true);
     SetExtendedReportingEnabled(true);
-    ui_test_utils::NavigateToURL(
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
-        https_server()->GetURL("flush-and-check-zero-reports.test", "/"));
+        https_server()->GetURL("flush-and-check-zero-reports.test", "/")));
     WaitForRequests(1);
     return (1u == requests_seen() &&
             "flush-and-check-zero-reports.test" == GetLastSeenReport()
@@ -275,8 +275,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   SetExtendedReportingEnabled(false);
 
   // Visit an HTTPS page.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
 
   // Check that no reports are sent.
   EXPECT_EQ(0u, requests_seen());
@@ -289,8 +289,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(1);
 
   // Check that one report was sent and contains the expected details.
@@ -304,8 +304,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 // sent.
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, DisableSafebrowsing) {
   SetSafeBrowsingEnabled(false);
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   EXPECT_EQ(0u, requests_seen());
   EXPECT_TRUE(FlushAndCheckZeroReports());
 }
@@ -316,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit a page with an invalid cert.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("invalid.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("invalid.test", "/")));
 
   EXPECT_EQ(0u, requests_seen());
   EXPECT_TRUE(FlushAndCheckZeroReports());
@@ -332,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // Create a new Incognito window.
   auto* incognito = CreateIncognitoBrowser();
 
-  ui_test_utils::NavigateToURL(incognito, https_server()->GetURL("/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(incognito, https_server()->GetURL("/")));
 
   EXPECT_EQ(0u, requests_seen());
   EXPECT_TRUE(FlushAndCheckZeroReports());
@@ -352,8 +353,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit an HTTPS page and wait for a report to be sent.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(1);
 
   // Check that one report was sent.
@@ -368,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // We can check that the same report gets cached again instead of being
   // deduplicated (i.e., another report should be sent).
   SetExtendedReportingEnabled(true);
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(2);
   EXPECT_EQ(2u, requests_seen());
   EXPECT_EQ(
@@ -428,8 +429,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       https_server()->GetCertificate().get(), "a.test", verify_result, net::OK);
 
   // Visit an HTTPS page and wait for the report to be sent.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(1);
 
   // Check that one report was enqueued.
@@ -479,8 +480,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       net::OK);
 
   SetExtendedReportingEnabled(true);
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("mixed-scts.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("mixed-scts.test", "/")));
   WaitForRequests(1);
   EXPECT_EQ(1u, requests_seen());
 
@@ -522,8 +523,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       net::OK);
 
   SetExtendedReportingEnabled(true);
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("mixed-scts.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("mixed-scts.test", "/")));
   WaitForRequests(1);
   EXPECT_EQ(1u, requests_seen());
 
@@ -560,8 +561,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest, NoValidSCTsNoReport) {
       verify_result, net::OK);
 
   SetExtendedReportingEnabled(true);
-  ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("invalid-scts.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("invalid-scts.test", "/")));
   EXPECT_EQ(0u, requests_seen());
   EXPECT_TRUE(FlushAndCheckZeroReports());
 }
@@ -591,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceZeroSamplingRateBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit an HTTPS page.
-  ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/")));
 
   // Check that no reports are observed.
   EXPECT_EQ(0u, requests_seen());
@@ -678,8 +680,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(1);
 
   // Check that one report was sent and contains the expected details.
@@ -697,8 +699,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
   SetExtendedReportingEnabled(true);
 
   // Visit an HTTPS page and wait for the report to be sent twice.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
   WaitForRequests(2);
 
   // Check that the report was sent twice and contains the expected details.
@@ -721,8 +723,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
       run_loop.QuitClosure());
 
   // Visit an HTTPS page and wait for the report to be sent.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
 
   // Wait until the reporter completes.
   run_loop.Run();
@@ -760,8 +762,8 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
 
   // Visit an HTTPS page, which will trigger a report being sent to the report
   // server but that report request will result in a cert error.
-  ui_test_utils::NavigateToURL(browser(),
-                               https_server()->GetURL("a.test", "/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("a.test", "/")));
 
   report_connection_listener()->WaitForConnections();
 

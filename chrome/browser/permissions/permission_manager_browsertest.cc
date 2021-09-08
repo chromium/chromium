@@ -109,9 +109,10 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
   static_cast<SubscriptionInterceptingPermissionManager*>(pm)
       ->SetSubscribeCallback(run_loop.QuitClosure());
 
-  ui_test_utils::NavigateToURL(
-      incognito_browser(), embedded_test_server()->GetURL(
-                               "/permissions/permissions_service_worker.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(),
+      embedded_test_server()->GetURL(
+          "/permissions/permissions_service_worker.html")));
   run_loop.Run();
 
   // TODO(crbug.com/889276) : We are relying here on the test shuts down to
@@ -145,8 +146,9 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
       PermissionManagerFactory::GetForProfile(incognito_browser()->profile()));
   pm->SetSubscribeCallback(run_loop.QuitClosure());
 
-  ui_test_utils::NavigateToURL(
-      incognito_browser(), embedded_test_server()->GetURL(
-                               "/permissions/permissions_service_worker.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser(),
+      embedded_test_server()->GetURL(
+          "/permissions/permissions_service_worker.html")));
   run_loop.Run();
 }

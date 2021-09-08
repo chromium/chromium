@@ -59,8 +59,8 @@ class ContentIndexTest : public InProcessBrowserTest,
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(https_server_->Start());
 
-    ui_test_utils::NavigateToURL(
-        browser(), https_server_->GetURL("/content_index/content_index.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_->GetURL("/content_index/content_index.html")));
 
     RunScript("RegisterServiceWorker()");
 

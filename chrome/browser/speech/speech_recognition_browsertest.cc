@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   static_cast<content::FakeSpeechRecognitionManager*>(
       fake_speech_recognition_manager_.get())->SetDelegate(delegate.get());
 
-  ui_test_utils::NavigateToURL(browser(), http_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(web_contents);
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
 
   // Navigating to an https page will force RVH change within
   // |web_contents|, results in WCO::RenderViewHostChanged().
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
   EXPECT_TRUE(speech_contents_observer.render_view_host_changed());
 

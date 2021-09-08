@@ -300,7 +300,7 @@ class SavePageBrowserTest : public InProcessBrowserTest {
 
   GURL NavigateToMockURL(const std::string& prefix) {
     GURL url = embedded_test_server()->GetURL("/save_page/" + prefix + ".htm");
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return url;
   }
 
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLOnly) {
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveFileURL) {
   GURL url = net::FilePathToFileURL(GetTestDirFile("text.txt"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "test", 1, &dir,
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
                        SaveHTMLOnly_CrossOriginReadPolicy) {
   GURL url = embedded_test_server()->GetURL(
       "/downloads/cross-origin-resource-policy-resource.txt");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "a", 1, &dir,
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLOnlyCancel) {
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithLongTextContent) {
   GURL url =
       embedded_test_server()->GetURL("/save_page/long-text-content.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
@@ -583,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveViewSourceHTMLOnly) {
   GURL view_source_url =
       GURL(content::kViewSourceScheme + std::string(":") + mock_url.spec());
   GURL actual_page_url = embedded_test_server()->GetURL("/save_page/a.htm");
-  ui_test_utils::NavigateToURL(browser(), view_source_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source_url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(actual_page_url, content::SAVE_PAGE_TYPE_AS_ONLY_HTML, "a", 1,
@@ -657,7 +657,8 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, NoSave) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(chrome::CanSavePage(browser()));
 }
 
@@ -862,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SavePageBrowserTest_NonMHTML) {
   SavePackageFilePicker::SetShouldPromptUser(false);
   GURL url("data:text/plain,foo");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
       browser()->profile()->GetDownloadManager(), run_loop.QuitClosure());
@@ -885,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, DangerousSubresources) {
   GURL url =
       embedded_test_server()->GetURL("/save_page/dubious-subresources.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
                  "dubious-subresources", 2, &dir, &full_file_name);
@@ -913,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveDownloadableIFrame) {
                             base::FilePath(), -1,
                             history::DownloadState::COMPLETE));
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     ASSERT_TRUE(VerifySavePackageExpectations(browser(), download_url));
     persisted.WaitForPersisted();
@@ -1019,7 +1020,7 @@ class SavePageSitePerProcessBrowserTest : public SavePageBrowserTest {
 IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML,
@@ -1079,7 +1080,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
 IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsMHTML) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::FilePath full_file_name, dir;
   SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_MHTML, "frames-xsite-mhtml",
@@ -1130,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
                        CompleteHtmlWhenRendererIsDead) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/save_page/frames-xsite.htm"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Kill one of renderer processes (this is the essence of this test).
   WebContents* web_contents = GetCurrentTab(browser());
@@ -1177,7 +1178,7 @@ class SavePageOriginalVsSavedComparisonTest
     // are met (this is mostly a sanity check - a failure to meet
     // expectations would probably mean that there is a test bug
     // (i.e. that we got called with wrong expected_foo argument).
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     DLOG(INFO) << "Verifying test expectations for original page... : "
                << GetCurrentTab(browser())->GetLastCommittedURL();
     AssertExpectationsAboutCurrentTab(
@@ -1198,8 +1199,8 @@ class SavePageOriginalVsSavedComparisonTest
     // met (i.e. if the same expectations are met for "after"
     // [saved version of the page] as for the "before"
     // [the original version of the page].
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL(net::FilePathToFileURL(full_file_name)));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(net::FilePathToFileURL(full_file_name))));
     DLOG(INFO) << "Verifying test expectations for saved page... : "
                << GetCurrentTab(browser())->GetLastCommittedURL();
     // Hidden elements, i.e., hidden frames, will be removed only from MHTML
@@ -1223,7 +1224,8 @@ class SavePageOriginalVsSavedComparisonTest
 
     // Check that we're able to navigate away and come back, as well.
     // See https://crbug.com/948246.
-    ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,foo")));
     chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
     EXPECT_TRUE(content::WaitForLoadStop(GetCurrentTab(browser())));
     DLOG(INFO) << "Verifying test expectations after history navigation...";

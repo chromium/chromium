@@ -179,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest, CSSBackgroundImageDeferred) {
 
   base::RunLoop().RunUntilIdle();
   // Navigate away to finish the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Verify that nothing is recorded for the image bucket.
   EXPECT_GE(0, histogram_tester.GetBucketCount(
@@ -191,13 +192,14 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest, CSSPseudoBackgroundImageLoaded) {
   EnableDataSaver(true);
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/lazyload/css-pseudo-background-image.html"));
+                     "/lazyload/css-pseudo-background-image.html")));
 
   base::RunLoop().RunUntilIdle();
   // Navigate away to finish the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Verify that the image bucket has substantial kilobytes recorded.
   EXPECT_GE(30 /* KB */, histogram_tester.GetBucketCount(
@@ -237,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadBrowserTest,
   SetUpLazyLoadFrameTestPage();
   GURL test_url(embedded_test_server()->GetURL("/mainpage.html"));
 
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_EQ(true, WaitForElementLoad(contents, "atf_auto"));

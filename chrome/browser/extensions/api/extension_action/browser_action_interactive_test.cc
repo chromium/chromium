@@ -430,8 +430,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   ASSERT_TRUE(extension) << message_;
 
   // Navigate to one of the extension's pages in a tab.
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("popup.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("popup.html")));
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

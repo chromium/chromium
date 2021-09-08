@@ -335,10 +335,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void NavigateTo(const std::string& file_path) {
     if (file_path.find("data:") == 0U) {
-      ui_test_utils::NavigateToURL(browser(), GURL(file_path));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(file_path)));
     } else {
-      ui_test_utils::NavigateToURL(browser(),
-                                   embedded_test_server()->GetURL(file_path));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), embedded_test_server()->GetURL(file_path)));
     }
   }
 

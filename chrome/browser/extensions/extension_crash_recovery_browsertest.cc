@@ -270,10 +270,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(1U, CountNotifications());
 
   // Navigate to another page.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), ui_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
-                     base::FilePath(FILE_PATH_LITERAL("title1.html"))));
+                     base::FilePath(FILE_PATH_LITERAL("title1.html")))));
   ASSERT_EQ(1U, CountNotifications());
 
   ReloadExtension(first_extension_id_);
@@ -520,10 +520,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
 
   // Open a tab extension.
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(std::string(extensions::kExtensionScheme) +
-                                   url::kStandardSchemeSeparator +
-                                   first_extension_id_ + "/background.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(std::string(extensions::kExtensionScheme) +
+                      url::kStandardSchemeSeparator + first_extension_id_ +
+                      "/background.html")));
 
   const int tabs_before = tab_strip->count();
   CrashExtension(first_extension_id_);

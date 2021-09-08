@@ -170,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   base::RunLoop().RunUntilIdle();
   ExpectIsWidgetVisible(true);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com")));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   content::RenderFrameHost* new_frame_host =

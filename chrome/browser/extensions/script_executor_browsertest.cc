@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MainFrameExecution) {
 
   {
     content::TestNavigationObserver nav_observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), example_com);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
     nav_observer.Wait();
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   }
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, MultipleSourceExecution) {
 
   {
     content::TestNavigationObserver nav_observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), example_com);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
     nav_observer.Wait();
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   }
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, SpecifiedFrames) {
 
   {
     content::TestNavigationObserver nav_observer(web_contents);
-    ui_test_utils::NavigateToURL(browser(), example_com);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_com));
     nav_observer.Wait();
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   }

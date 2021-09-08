@@ -60,7 +60,7 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
                        IframePaymentRequestDoesNotCrash) {
   GURL url = https_server_->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();

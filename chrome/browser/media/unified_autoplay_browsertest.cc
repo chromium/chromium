@@ -160,7 +160,7 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenSameOriginOutsideMenu) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenNewTab(kTestPageUrl, false);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenSameOriginOutsideMenu) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenSameOriginFromMenu) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenNewTab(kTestPageUrl, true);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
@@ -180,9 +180,9 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenSameOriginFromMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenCrossOriginFromMenu) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("foo.example.com", kTestPagePath));
+      embedded_test_server()->GetURL("foo.example.com", kTestPagePath)));
 
   content::WebContents* new_contents = OpenNewTab(
       embedded_test_server()->GetURL("bar.example.com", kTestPagePath), true);
@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenCrossOriginFromMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenCrossDomainFromMenu) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kTestPagePath));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kTestPagePath)));
 
   content::WebContents* new_contents = OpenNewTab(
       embedded_test_server()->GetURL("example.com", kTestPagePath), true);
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenCrossDomainFromMenu) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenWindowFromContextMenu) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenNewTab(kTestPageUrl, true);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenWindowFromContextMenu) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenWindowNotContextMenu) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenNewTab(kTestPageUrl, false);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenWindowNotContextMenu) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenFromRendererGesture) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenFromRenderer(kTestPageUrl, true);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenFromRendererGesture) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenFromRendererNoGesture) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   content::WebContents* new_contents = OpenFromRenderer(kTestPageUrl, false);
   EXPECT_EQ(nullptr, new_contents);
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, OpenFromRendererNoGesture) {
 IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, NoBypassUsingAutoplayFlag) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   EXPECT_FALSE(AttemptPlay(GetWebContents()));
 }
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest, BypassUsingAutoplayFlag) {
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
   SetAutoplayForceAllowFlag(kTestPageUrl);
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
 }
@@ -266,13 +266,13 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
   const GURL kTestPageUrl = embedded_test_server()->GetURL(kTestPagePath);
 
   SetAutoplayForceAllowFlag(kTestPageUrl);
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
 
   // Simulate a same document navigation by navigating to #test.
   GURL::Replacements replace_ref;
   replace_ref.SetRefStr("test");
-  ui_test_utils::NavigateToURL(browser(),
-                               kTestPageUrl.ReplaceComponents(replace_ref));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), kTestPageUrl.ReplaceComponents(replace_ref)));
 
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
 }
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
 
   GetWebContents()->OnWebPreferencesChanged();
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
 
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
 
   GetWebContents()->OnWebPreferencesChanged();
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
 
   EXPECT_TRUE(AttemptPlay(GetWebContents()));
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplayBrowserTest,
 
   GetWebContents()->OnWebPreferencesChanged();
 
-  ui_test_utils::NavigateToURL(browser(), kTestPageUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kTestPageUrl));
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
 
   EXPECT_FALSE(AttemptPlay(GetWebContents()));
@@ -491,8 +491,8 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, DISABLED_Allow) {
   // Simulate a same document navigation by navigating to #test.
   GURL::Replacements replace_ref;
   replace_ref.SetRefStr("test");
-  ui_test_utils::NavigateToURL(browser(),
-                               main_url.ReplaceComponents(replace_ref));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), main_url.ReplaceComponents(replace_ref)));
 
   EXPECT_TRUE(AutoplayAllowed(main_frame()));
   EXPECT_TRUE(AutoplayAllowed(first_child()));

@@ -67,8 +67,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   {
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-        GURL(extension->GetResourceURL("update.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("update.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   {
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-        GURL(extension->GetResourceURL("update2.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("update2.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -146,9 +146,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
   // Load a page which removes the popup using chrome.pageAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("change_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -177,9 +176,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, RemovePopup) {
   // Load a page which removes the popup using chrome.pageAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("remove_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -206,8 +204,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Getters) {
   ASSERT_TRUE(extension) << message_;
 
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
@@ -220,8 +218,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
   ASSERT_TRUE(extension) << message_;
 
   // Page action icon is displayed when a tab is created.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
   chrome::NewTab(browser());
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});

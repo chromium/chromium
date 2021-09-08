@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   // Navigate to the extension's page.
   const GURL extension_file_url(extension->GetResourceURL("file.html"));
-  ui_test_utils::NavigateToURL(browser(), extension_file_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_file_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

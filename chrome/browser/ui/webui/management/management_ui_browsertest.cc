@@ -60,7 +60,8 @@ class ManagementUITest : public InProcessBrowserTest {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://management"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://management")));
 
   // The browser is not managed.
   const std::string javascript =

@@ -90,16 +90,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuApiTestWithContextType,
   {
     // Tell the extension to update the page action state.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-                                 extension->GetResourceURL("popup.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL("popup.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
   {
     // Tell the extension to update the page action state again.
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(browser(),
-                                 extension->GetResourceURL("popup2.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), extension->GetResourceURL("popup2.html")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 }

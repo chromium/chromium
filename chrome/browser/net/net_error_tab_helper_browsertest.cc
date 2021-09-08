@@ -96,18 +96,18 @@ IN_PROC_BROWSER_TEST_F(
     NetErrorTabHelperWithPrerenderingTest,
     MAYBE_ErrorPagesDoNotPrerenderOrTriggerDnsProbeStatuses) {
   GURL initial_url = embedded_test_server()->GetURL("/title2.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   EXPECT_FALSE(pending_probe_status_count());
 
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
   GURL error_page_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  ui_test_utils::NavigateToURL(browser(), error_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_page_url));
   EXPECT_TRUE(pending_probe_status_count());
 
   ClearProbeStatusQueue();
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   EXPECT_FALSE(pending_probe_status_count());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(NetErrorTabHelperWithPrerenderingTest,
                        ShowErrorPagesInPrerender) {
   GURL initial_url =
       net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Overrides the last committed origin to treat the network error as the same
   // url with the non-opaque origins.

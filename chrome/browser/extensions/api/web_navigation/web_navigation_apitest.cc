@@ -317,13 +317,13 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType,
                          "webnavigation/serverRedirectSingleProcess/a.html",
                          embedded_test_server()->port()));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   url = GURL(base::StringPrintf(
       "http://www.b.com:%u/server-redirect?http://www.b.com:%u/test",
       embedded_test_server()->port(), embedded_test_server()->port()));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
   GURL url = extension->GetResourceURL(
       "a.html?" + base::NumberToString(embedded_test_server()->port()));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // This corresponds to "Open link in new tab".
   content::ContextMenuParams params;
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, RequestOpenTab) {
                                              ExtensionRegistry::ENABLED);
   GURL url = extension->GetResourceURL("a.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // There's a link on a.html. Middle-click on it to open it in a new tab.
   blink::WebMouseEvent mouse_event(
@@ -604,16 +604,17 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
 
   GURL url(embedded_test_server()->GetURL(
       "www.a.com", "/extensions/api_test/webnavigation/crash/a.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderProcessHostWatcher process_watcher(
       tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  ui_test_utils::NavigateToURL(browser(), GURL(blink::kChromeUICrashURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(blink::kChromeUICrashURL)));
   process_watcher.Wait();
 
   url = GURL(embedded_test_server()->GetURL(
       "www.a.com", "/extensions/api_test/webnavigation/crash/b.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

@@ -2349,7 +2349,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, CookieIsolation) {
   replace_host.SetHostStr("localhost");
   set_cookie_url = set_cookie_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), set_cookie_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), set_cookie_url));
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/cookie_isolation",
                                {.launch_as_platform_app = true}))
       << message_;
@@ -2369,7 +2369,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, CookieIsolation) {
 IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_PRE_StoragePersistence) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/storage_persistence",
       {.custom_arg = "PRE_StoragePersistence", .launch_as_platform_app = true}))
@@ -2383,7 +2383,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_PRE_StoragePersistence) {
 IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_StoragePersistence) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // We don't care where the main browser is on this test.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/storage_persistence",
@@ -2404,7 +2404,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DOMStorageIsolation) {
   replace_host.SetHostStr("localhost");
   navigate_to_url = navigate_to_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), navigate_to_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigate_to_url));
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/dom_storage_isolation",
                                {.launch_as_platform_app = true}));
   // Verify that the browser tab's local/session storage does not have the same
@@ -2441,7 +2441,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, FindabilityIsolation) {
   replace_host.SetHostStr("localhost");
   navigate_to_url = navigate_to_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), navigate_to_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), navigate_to_url));
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/findability_isolation",
                                {.launch_as_platform_app = true}));
 }
@@ -4566,7 +4566,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
 IN_PROC_BROWSER_TEST_F(ChromeSignInWebViewTest,
                        DISABLED_NoFindInPageForUnattachedGuest) {
   GURL signin_url{"chrome://chrome-signin"};
-  ui_test_utils::NavigateToURL(browser(), signin_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* attached_guest = GetGuestViewManager()->WaitForNextGuestCreated();

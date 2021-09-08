@@ -70,9 +70,9 @@ IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,
   EXPECT_FALSE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
 
   // Cache should reset upon navigation.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/credit_card_upload_form_cc.html"));
+      embedded_test_server()->GetURL("/credit_card_upload_form_cc.html")));
   EXPECT_TRUE(GetCreditCardAccessManager()->UnmaskedCardCacheIsEmpty());
 }
 

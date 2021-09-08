@@ -245,7 +245,8 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     test_file =
         test_file.AppendASCII("extensions").AppendASCII("test_file.html");
 
-    ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), net::FilePathToFileURL(test_file)));
 
     bool result = false;
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(

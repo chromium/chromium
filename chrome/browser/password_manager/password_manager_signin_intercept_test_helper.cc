@@ -82,8 +82,8 @@ void PasswordManagerSigninInterceptTestHelper::NavigateToGaiaSigninPage(
   DCHECK(gaia::IsGaiaSignonRealm(https_url.GetOrigin()));
 
   NavigationObserver navigation_observer(contents);
-  ui_test_utils::NavigateToURL(chrome::FindBrowserWithWebContents(contents),
-                               https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      chrome::FindBrowserWithWebContents(contents), https_url));
   navigation_observer.Wait();
 }
 

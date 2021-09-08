@@ -87,7 +87,7 @@ class SameSiteCookiesPolicyTest : public PolicyTest,
 
   void NavigateToHttpPageWithFrame(const std::string& host) {
     GURL main_url(http_server_.GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateFrameToHttps(const std::string& host, const std::string& path) {

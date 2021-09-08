@@ -36,7 +36,7 @@ class AutoplayPolicyTest : public PolicyTest {
 
   void NavigateToTestPage() {
     GURL origin = embedded_test_server()->GetURL(kAutoplayTestPageURL);
-    ui_test_utils::NavigateToURL(browser(), origin);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
 
     // Navigate the subframe to the test page but on the second origin.
     GURL origin2 = embedded_test_server2()->GetURL(kAutoplayTestPageURL);

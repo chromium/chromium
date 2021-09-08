@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
   StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsShowingInterstitial(contents));
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
   StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingInterstitial(contents));
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerWithoutCookies, DoesNotSaveCookies) {
                 .size(),
             0u);
 
-  ui_test_utils::NavigateToURL(browser(), bad_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
 
   EXPECT_EQ(GetCookies(
                 g_browser_process->safe_browsing_service()->GetNetworkContext())

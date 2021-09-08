@@ -286,8 +286,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 
   // Open a cross-origin kReportingHost iframe that fails to load. No report
   // should be uploaded, since the NetworkIsolationKey does not match.
-  ui_test_utils::NavigateToURL(browser(),
-                               server()->GetURL("/iframe_blank.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), server()->GetURL("/iframe_blank.html")));
   content::NavigateIframeToURL(
       browser()->tab_strip_model()->GetActiveWebContents(), "test",
       server()->GetURL(kReportingHost, "/close-socket?should-not-be-reported"));
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
   // the original request where reporting information was learned.
   GURL expect_reported_url =
       server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
-  ui_test_utils::NavigateToURL(browser(), expect_reported_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expect_reported_url));
   upload_response()->WaitForRequest();
   std::unique_ptr<base::Value> actual =
       ParseReportUpload(upload_response()->http_request()->content);

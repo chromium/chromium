@@ -40,7 +40,7 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
 
     // Prime the interest groups if the API is enabled.
-    ui_test_utils::NavigateToURL(browser(), test_url());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
     if (HasInterestGroupApi(web_contents())) {
       JoinInterestGroup(web_contents());
       WaitUntilCanRunAuction(web_contents());
@@ -172,7 +172,7 @@ class FledgePermissionsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesAllowed) {
   // With cookies, API works.
   SetGlobalCookiesAllowed(true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesAllowedForSite) {
   // With cookies, API works.
   SetGlobalCookiesAllowed(false);
   SetAllowCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest,
   // With cookies, API works.
   SetAllowThirdPartyCookies(false);
   SetAllowThirdPartyCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_TRUE(CanRunAuction(web_contents()));
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest,
 IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlocked) {
   // With no cookies, API does nothing.
   SetGlobalCookiesAllowed(false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlocked) {
 IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlockedForSite) {
   // With no cookies, API does nothing.
   SetAllowCookiesForURL(test_url(), false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, CookiesBlockedForSite) {
 IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest, ThirdPartyCookiesBlocked) {
   // With no cookies, API does nothing.
   SetAllowThirdPartyCookies(false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionsBrowserTest,
                        ThirdPartyCookiesBlockedForSite) {
   // With no cookies, API does nothing.
   SetAllowThirdPartyCookiesForURL(test_url(), false);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_TRUE(HasInterestGroupApi(web_contents()));
   EXPECT_FALSE(CanRunAuction(web_contents()));
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(FledgePermissionBrowserTestBaseFeatureDisabled,
   // Even with cookies no feature means no API.
   SetGlobalCookiesAllowed(true);
   SetAllowCookiesForURL(test_url(), true);
-  ui_test_utils::NavigateToURL(browser(), test_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
 
   ASSERT_FALSE(HasInterestGroupApi(web_contents()));
 }

@@ -179,7 +179,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
   void InitWithUrl(const GURL& url) {
     DCHECK(example_url_.is_empty());
     example_url_ = url;
-    ui_test_utils::NavigateToURL(browser(), example_url_);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), example_url_));
     EXPECT_EQ(PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED,
               GetContentSettings()->GetMicrophoneCameraState());
   }

@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       R"([{"time_to_live_in_hours": 1, "data_types":["download_history"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   // Add cookie.
   SetDataForType("Cookie");
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       R"([{"time_to_live_in_hours": 1, "data_types":["browsing_history"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   SetDataForType("History");
   EXPECT_TRUE(HasDataForType("History"));
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       ["cookies_and_other_site_data"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   const std::vector<std::string> kTypes{
       "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",

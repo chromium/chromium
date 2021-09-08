@@ -173,9 +173,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
@@ -211,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   // Close the default browser.
   CloseBrowserSynchronously(browser());
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito, embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(incognito->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
@@ -302,9 +302,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest, CreateExistingTasks) {
   EXPECT_TRUE(tasks().empty());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
 
@@ -344,9 +344,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   EXPECT_TRUE(tasks().empty());
   Browser* browser = CreateIncognitoBrowser();
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser, embedded_test_server()->GetURL(
-                   "/service_worker/create_service_worker.html"));
+                   "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);

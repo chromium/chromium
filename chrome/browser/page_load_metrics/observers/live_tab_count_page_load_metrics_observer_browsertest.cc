@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiterForForegroundTab();
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   waiter->Wait();
 
   size_t live_tab_count = tab_count_metrics::LiveTabCount();
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
   auto waiter = CreatePageLoadMetricsTestWaiterForForegroundTab();
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   waiter->Wait();
 
   size_t live_tab_count = tab_count_metrics::LiveTabCount();

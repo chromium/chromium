@@ -135,7 +135,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     // need it before the page navigates.
     InjectTimerTaskRunner();
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void LoadTestPageAndWaitForPlay(const GURL& url, bool web_contents_muted) {
@@ -259,8 +259,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     // need it before the page navigates.
     InjectTimerTaskRunner();
 
-    ui_test_utils::NavigateToURL(
-        browser(), http_server_origin2_.GetURL("/engagement_test.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_server_origin2_.GetURL("/engagement_test.html")));
   }
 
   const net::EmbeddedTestServer& http_server() const { return http_server_; }

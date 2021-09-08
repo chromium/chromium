@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerCloseFromScriptsTest, WindowClose) {
   LaunchApp(maybe_installation_->GetType(), &app_browser);
 
   const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
-  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
   EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());
@@ -857,7 +857,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShouldNotCloseFromScriptsTest,
   LaunchApp(maybe_installation_->GetType(), &app_browser);
 
   const GURL kPageURL = maybe_installation_->GetAppUrl().Resolve("/page2.html");
-  ui_test_utils::NavigateToURL(app_browser, kPageURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, kPageURL));
   EXPECT_EQ(kPageURL, app_browser->tab_strip_model()
                           ->GetActiveWebContents()
                           ->GetLastCommittedURL());

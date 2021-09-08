@@ -107,7 +107,7 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
                      "DisabledForRenderFrameHostReason2",
                      kMessagingBucket));
     // 3) Navigate to B.
-    ui_test_utils::NavigateToURL(browser(), url_b);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
     // What happens next depends on whether or not content script is allowed. If
     // it is, then the `rfh_a` should be cached and the channel should still be
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheExtensionsDisabledBrowserTest,
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since there is an active non-component loaded extension.
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since the active extension injected content_scripts.
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache.
   delete_observer_rfh_a.WaitUntilDeleted();
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 4) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // 5) Expect that A is in the back forward cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -519,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // 4) Expect that A is in the back forward cache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // 4) Expect that A is in the back forward cache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(
                    kMessagingBucket));
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
   EXPECT_TRUE(
       WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents()));
 
@@ -712,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(1u, MessageService::Get(profile())->GetChannelCountForTest());
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is cached, and the channel is still open.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -769,7 +769,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 1u);
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   EXPECT_EQ(MessageService::Get(profile())->GetChannelCountForTest(), 1u);
 
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
             ExecuteScriptInBackgroundPage(extension->id(), kDisconnectScript));
 
   // 3) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // 4) Expect that A is in the back forward cache.
   EXPECT_EQ(rfh_a->GetLifecycleState(),
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is destroyed as loading page B will causes a storage
   // event which is sent to all listeners. Since `rfh_a` is a listener but is in
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBlockedExtensionBrowserTest,
   content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Expect that `rfh_a` is destroyed as it wouldn't be placed in the cache
   // since there is a blocked feature flag with id
@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, TabsOrigin) {
   ExpectTitleChangeSuccess(*extension, "first nav");
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(rfh_a.IsDestroyed());
@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
             EvalJs(rfh_a, "document.getElementById('stage').value;"));
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
   ExpectTitleChangeSuccess(*extension, "changed_title");
 
   // 2) Navigate to B.
-  ui_test_utils::NavigateToURL(browser(), url_b);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
 
   // Ensure that `rfh_a` is in the cache.
   EXPECT_FALSE(rfh_a.IsDestroyed());

@@ -231,7 +231,7 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     // Navigate to a Google URL.
     GURL page_url =
         GetGoogleUrlWithPath("/service_worker/fetch_from_page.html");
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
     EXPECT_TRUE(HasReceivedHeader(page_url, "X-Client-Data"));
     // Check that there is a controller to check that the test is really testing
     // service worker.
@@ -462,7 +462,7 @@ void CreateFieldTrialsWithDifferentVisibilities() {
 // attached to network requests to Google but stripped on redirects.
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromResourceRequest) {
-  ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleRedirectUrl1()));
 
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
                        TestStrippingHeadersFromSubresourceRequest) {
   GURL url = server()->GetURL("/simple_page.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(FetchResource(browser(), GetGoogleRedirectUrl1()));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl1(), "X-Client-Data"));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleRedirectUrl2(), "X-Client-Data"));
@@ -485,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, Incognito) {
   Browser* incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito, GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito, GetGoogleUrl()));
 
   EXPECT_FALSE(HasReceivedHeader(GetGoogleUrl(), "X-Client-Data"));
 
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
       IdentityManagerFactory::GetForProfile(browser()->profile()),
       "main_email@gmail.com", signin::ConsentLevel::kSync);
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   CreateGoogleSignedInFieldTrial(signed_in_id);
 
   // By default the user is not signed in.
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
 
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // studies.
   trial->group();
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithRestrictedVisibility,
   // kRestrictGoogleWebVisibility is enabled and the same values otherwise.
   CreateFieldTrialsWithDifferentVisibilities();
 
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   absl::optional<std::string> header =
       GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
   ASSERT_TRUE(header);
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // Verify "X-Client-Data" is present on the navigation to Google.
   // Also test that "Service-Worker-Navigation-Preload" is present to verify
   // we are really testing the navigation preload request.
-  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleUrl()));
   EXPECT_TRUE(HasReceivedHeader(GetGoogleUrl(), "X-Client-Data"));
   EXPECT_TRUE(
       HasReceivedHeader(GetGoogleUrl(), "Service-Worker-Navigation-Preload"));

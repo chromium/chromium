@@ -278,8 +278,9 @@ class CommandsApiTest : public ExtensionApiTest {
 
   // Navigates to a test URL and return the ID of the navigated tab.
   int NavigateToTestURLAndReturnTabId() {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/extensions/test_file.txt")));
     return sessions::SessionTabHelper::FromWebContents(
                browser()->tab_strip_model()->GetActiveWebContents())
         ->session_id()
@@ -317,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
   // Test that there are two browser actions in the toolbar.
   ASSERT_EQ(2, browser_actions_bar->NumberOfBrowserActions());
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   // activeTab shouldn't have been granted yet.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -476,8 +477,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, DontOverwriteSystemShortcuts) {
 
   ASSERT_TRUE(RunExtensionTest("keybinding/dont_overwrite_system")) << message_;
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   // Activate the regular shortcut (Alt+Shift+F).
   ExtensionTestMessageListener alt_shift_f_listener("alt_shift_f", false);
@@ -522,9 +523,9 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
       extension->id(), manifest_values::kBrowserActionCommandEvent,
       kBookmarkKeybinding);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/extensions/test_file_with_ctrl-d_keybinding.html"));
+                     "/extensions/test_file_with_ctrl-d_keybinding.html")));
 
   ExtensionTestMessageListener test_listener(false);  // Won't reply.
   // Activate the shortcut (Ctrl+D) which should be handled by the extension.
@@ -927,8 +928,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, MAYBE_ContinuePropagation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(RunExtensionTest("keybinding/continue_propagation")) << message_;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
 
@@ -1000,8 +1001,8 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, AddRemoveAddComponentExtension) {
 IN_PROC_BROWSER_TEST_F(CommandsApiTest, TabParameter) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("keybinding/tab_parameter")) << message_;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
   ResultCatcher catcher;
@@ -1033,9 +1034,9 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, MAYBE_IncognitoMode) {
       browser()->profile(),
       embedded_test_server()->GetURL("/extensions/test_file.html"));
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      embedded_test_server()->GetURL("/extensions/test_file.txt"));
+      embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   TestEventRouterObserver test_observer(
       EventRouter::Get(incognito_browser->profile()));

@@ -468,9 +468,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, PromptForDynamicForm) {
   password_store->AddLogin(signin_form);
 
   // Show the dynamic form.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "example.com", "/password/dynamic_password_form.html"));
+                     "example.com", "/password/dynamic_password_form.html")));
   ASSERT_TRUE(content::ExecuteScript(
       WebContents(), "document.getElementById('create_form_button').click();"));
 
@@ -1082,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 // Test for checking that no prompt is shown for URLs with file: scheme.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForFileSchemeURLs) {
   GURL url = GetFileURL("password_form.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   NavigationObserver observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
@@ -1548,8 +1548,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
   WindowedAuthNeededObserver auth_needed_observer(nav_controller);
 
   // Navigate to a page requiring HTTP auth.
-  ui_test_utils::NavigateToURL(browser(),
-                               http_test_server.GetURL("/basic_auth"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_test_server.GetURL("/basic_auth")));
   auth_needed_observer.Wait();
 
   WindowedAuthSuppliedObserver auth_supplied_observer(nav_controller);
@@ -1607,7 +1607,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_url.SchemeIs(url::kHttpsScheme));
 
   NavigationObserver form_observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
   form_observer.Wait();
 
   std::string fill_and_submit_redirect =
@@ -1681,8 +1681,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   password_store->AddLogin(http_form);
 
   NavigationObserver form_observer(WebContents());
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server().GetURL("/password/password_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server().GetURL("/password/password_form.html")));
   form_observer.Wait();
   WaitForPasswordStore();
 
@@ -1721,8 +1721,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Navigate to HTTPS page and trigger the migration.
   NavigationObserver form_observer(WebContents());
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server().GetURL("/password/password_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server().GetURL("/password/password_form.html")));
   form_observer.Wait();
 
   // Issue the query for HTTPS credentials.
@@ -2189,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   GURL main_frame_url = embedded_test_server()->GetURL(
       "www.foo.com", "/password/password_form_in_crosssite_iframe.html");
   NavigationObserver observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   observer.Wait();
 
   // Create an iframe and navigate cross-site.
@@ -2218,7 +2218,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Visit the form again.
   NavigationObserver reload_observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   reload_observer.Wait();
 
   NavigationObserver iframe_observer_2(WebContents());
@@ -2253,7 +2253,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   GURL main_frame_url = embedded_test_server()->GetURL(
       "www.foo.com", "/password/password_form_in_crosssite_iframe.html");
   NavigationObserver observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   observer.Wait();
 
   // Create an iframe and navigate cross-site.
@@ -2282,7 +2282,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   // Visit the form again.
   NavigationObserver reload_observer(WebContents());
-  ui_test_utils::NavigateToURL(browser(), main_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
   reload_observer.Wait();
 
   NavigationObserver iframe_observer_2(WebContents());
@@ -2814,8 +2814,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, BasicAuthSeparateRealms) {
   content::NavigationController* nav_controller =
       &WebContents()->GetController();
   WindowedAuthNeededObserver auth_needed_observer(nav_controller);
-  ui_test_utils::NavigateToURL(browser(),
-                               http_test_server.GetURL("/basic_auth"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_test_server.GetURL("/basic_auth")));
   auth_needed_observer.Wait();
 
   // The auth dialog caused a query to PasswordStore, make sure it was
@@ -2844,7 +2844,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ProxyAuthFilling) {
 
   content::NavigationController* controller = &WebContents()->GetController();
   WindowedAuthNeededObserver auth_needed_waiter(controller);
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   auth_needed_waiter.Wait();
 
   BubbleObserver(WebContents()).WaitForManagementState();
@@ -3499,14 +3499,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, CorrectEntryForHttpAuth) {
 
   // Navigate to about:blank first. This is a page where password manager
   // should not work.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::NavigationController* nav_controller =
       &WebContents()->GetController();
   WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   // Navigate to a page requiring HTTP auth
-  ui_test_utils::NavigateToURL(browser(),
-                               http_test_server.GetURL("/basic_auth"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_test_server.GetURL("/basic_auth")));
 
   auth_needed_observer.Wait();
 
@@ -3563,8 +3563,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       &WebContents()->GetController();
   WindowedAuthNeededObserver auth_needed_observer(nav_controller);
   // Navigate to a page requiring HTTP auth.
-  ui_test_utils::NavigateToURL(browser(),
-                               http_test_server.GetURL("/basic_auth"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), http_test_server.GetURL("/basic_auth")));
   auth_needed_observer.Wait();
 
   NavigationObserver nav_observer(WebContents());
@@ -3667,7 +3667,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   GURL url_B = embedded_test_server()->GetURL(
       "www.foo.com", "/password/new_password_form.html");
   NavigationObserver observer_B(WebContents());
-  ui_test_utils::NavigateToURL(browser(), url_B);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_B));
   observer_B.Wait();
 
   // Fill in the new password and submit.
@@ -3717,7 +3717,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   const GURL url = https_test_server().GetURL("accounts.google.com",
                                               "/password/gaia_reath_form.html");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Expects no requests to the password store. So no filling.
   EXPECT_EQ(0, password_store->fill_matching_logins_calls());
@@ -3735,7 +3735,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   const GURL url = https_test_server().GetURL(
       "accounts.google.com", "/password/password_form.html?ssp=1");
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Expects no requests to the password store. So no filling.
   EXPECT_EQ(0, password_store->fill_matching_logins_calls());
@@ -4515,7 +4515,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   MockPrerenderPasswordManagerDriverInjector injector(WebContents());
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::test::PrerenderHostRegistryObserver registry_observer(
       *WebContents());
@@ -4566,7 +4566,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
                        SavePasswordInPrerender) {
   MockPrerenderPasswordManagerDriverInjector injector(WebContents());
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");
@@ -4613,7 +4613,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
                        BindCredentialManagerInPrerender) {
   MockPrerenderPasswordManagerDriverInjector injector(WebContents());
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto prerender_url =
       embedded_test_server()->GetURL("/password/credentials.html");
@@ -4654,7 +4654,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerPrerenderBrowserTest,
   MockPrerenderPasswordManagerDriverInjector injector(web_contents());
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   auto prerender_url =
       embedded_test_server()->GetURL("/password/password_form.html");

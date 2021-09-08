@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
 
   // First we navigate to our special focus tracking page.
   GURL url = embedded_test_server()->GetURL(kEndState);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

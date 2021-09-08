@@ -92,7 +92,7 @@ class LoginRobotsSrcVideoBrowserTest : public InProcessBrowserTest {
   // Navigatest to the page with <video> element, starts the play and waits for
   // it to complete.
   void NavigateAndWaitForLoad(Browser* browser, const GURL& url) {
-    ui_test_utils::NavigateToURL(browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     EXPECT_TRUE(ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
                        "playVideo()"));
     RetryForHistogramUntilCountReached(

@@ -45,7 +45,8 @@ class NewTabPageNavigationThrottleTest : public InProcessBrowserTest {
   // Navigates to the New Tab Page and then returns the GURL that ultimately was
   // navigated to.
   GURL NavigateToNewTabPage() {
-    ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GURL(chrome::kChromeUINewTabURL)));
     return web_contents()->GetController().GetLastCommittedEntry()->GetURL();
   }
 

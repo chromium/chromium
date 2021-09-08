@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
                        MAYBE_SadTabKeyboardAccessibility) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/links.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Start with focus in the location bar.
   chrome::FocusLocationBar(browser());
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
                        DISABLED_ReloadMultipleSadTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/links.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Kill the renderer process, resulting in a sad tab.
   KillRendererForActiveWebContentsSync();
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   // Create a second tab, navigate to a second url.
   chrome::NewTab(browser());
   GURL url2(embedded_test_server()->GetURL("/simple.html"));
-  ui_test_utils::NavigateToURL(browser(), url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   // Kill that one too.
   KillRendererForActiveWebContentsSync();

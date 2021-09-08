@@ -140,7 +140,7 @@ class PageInfoBubbleViewDialogBrowserTest
       url = file_url;
     }
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     OpenPageInfoBubble(browser());
 
     safe_browsing::ReusedPasswordAccountType reused_password_account_type;

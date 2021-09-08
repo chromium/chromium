@@ -35,8 +35,8 @@ class CollectedCookiesTest : public DialogBrowserTest {
         ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
     // Load a page with cookies.
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/cookie1.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/cookie1.html")));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -67,6 +67,6 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesTest, NavigateAway) {
   ShowUi(std::string());
 
   // Navigate to another page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/cookie2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/cookie2.html")));
 }

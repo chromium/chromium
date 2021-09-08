@@ -137,7 +137,7 @@ class SecurityStatePageLoadMetricsBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   // Site Engagement metrics.
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Https) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Http) {
   StartHttpServer();
   GURL url = http_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, Simple_Http) {
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, ReloadPage) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
     // The UKM isn't recorded until the page is destroyed.
     ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
 
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -337,7 +337,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest, OtherScheme) {
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
   CloseAllTabs();
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(
     MixedContent) {
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -428,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   // Make HTTPS server cause an interstitial.
   StartHttpsServer(net::EmbeddedTestServer::CERT_EXPIRED);
   GURL url = https_test_server()->GetURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -453,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
                        HostDoesNotExist) {
   GURL url("http://nonexistent.test/page.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   histogram_tester()->ExpectTotalCount(
       SecurityStatePageLoadMetricsObserver::
@@ -501,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
     base::RunLoop run_loop;
     rep_observer->RegisterReputationCheckCallbackForTesting(
         run_loop.QuitClosure());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     run_loop.Run();
 
     histogram_tester()->ExpectTotalCount(
@@ -519,8 +520,8 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
 
   GURL http_url = http_test_server()->GetURL("/circle.svg");
   GURL https_url = https_test_server()->GetURL("/circle.svg");
-  ui_test_utils::NavigateToURL(browser(), http_url);
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
   CloseAllTabs();
 
   histogram_tester()->ExpectTotalCount(
@@ -556,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStatePageLoadMetricsBrowserTest,
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
 
   GURL https_url = https_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
   const base::TimeDelta kMinForegroundTime =
       base::TimeDelta::FromMilliseconds(10);

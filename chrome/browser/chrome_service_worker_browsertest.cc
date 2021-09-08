@@ -121,8 +121,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     const std::u16string expected_title1 = u"READY";
     content::TitleWatcher title_watcher1(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title1);
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(path)));
     EXPECT_EQ(expected_title1, title_watcher1.WaitAndGetTitle());
   }
 
@@ -161,8 +161,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
     const std::u16string expected_title = u"Done";
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/scope/done.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/scope/done.html")));
 
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                      run_loop.QuitClosure()));
   run_loop.Run();
 
-  ui_test_utils::NavigateToURL(incognito,
-                               embedded_test_server()->GetURL("/test.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito, embedded_test_server()->GetURL("/test.html")));
 
   CloseBrowserSynchronously(incognito);
 
@@ -410,8 +410,8 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
     const std::u16string expected_title = u"READY";
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL("/test.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
   }
 
@@ -984,9 +984,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('navigation_preload_worker.js');"));
 
@@ -996,8 +996,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
                    "document.cookie = 'foo=bar'; document.cookie;"));
 
   // Load the test page.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/service_worker/test"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/service_worker/test")));
 
   // The navigation preload request should have occurred and included cookies.
   ASSERT_TRUE(has_received_request());
@@ -1018,9 +1018,9 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 
   // Load a page that registers a service worker.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/service_worker/create_service_worker.html"));
+                     "/service_worker/create_service_worker.html")));
   EXPECT_EQ("DONE", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            "register('navigation_preload_worker.js');"));
 
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
 
   // Navigate to the page and embed a third-party iframe to the test
   // page.
-  ui_test_utils::NavigateToURL(browser(), top_frame_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
   GURL iframe_url = embedded_test_server()->GetURL("/service_worker/test");
   EXPECT_EQ(true, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                          "addIframe('" + iframe_url.spec() + "');"));

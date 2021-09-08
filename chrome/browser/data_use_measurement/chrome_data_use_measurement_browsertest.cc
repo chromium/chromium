@@ -93,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(ChromeDataUseMeasurementBrowsertest,
                        MAYBE_DataUseTrackerPrefsUpdated) {
   SimulateNetworkChange(network::mojom::ConnectionType::CONNECTION_3G);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   RetryUntilUserInitiatedDataUsePrefHasEntry();
 
   EXPECT_EQ(1u, GetCountEntriesUserInitiatedDataUsePrefs());

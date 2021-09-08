@@ -249,8 +249,8 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
   //
   // TODO(https://crbug.com/1003940): Clean this code up now that committed
   // interstitials have shipped.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("https://mock.failed.request/start=-20"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://mock.failed.request/start=-20")));
   content::RenderFrameHost* frame;
   frame = contents->GetMainFrame();
   ASSERT_TRUE(WaitForRenderFrameReady(frame));

@@ -47,7 +47,8 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
   void SetUpBrowser(Browser* browser) {
     // Load the helper page that helps drive these tests.
-    ui_test_utils::NavigateToURL(browser, https_server_->GetURL(kHelperPage));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, https_server_->GetURL(kHelperPage)));
 
     // Register the Service Worker that's required for Background Sync. The
     // behaviour without an activated worker is covered by layout tests.

@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   ConfigureAsPhishingURL(a_url);
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
@@ -137,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   // happens in the original WebContents.
   browser()->tab_strip_model()->ToggleSelectionAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 }
 
 class SubresourceFilterPopupBrowserTestWithParam
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(false, content::EvalJs(web_contents, "openWindow()",
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
   EXPECT_EQ(enable_adblock_on_abusive_sites, AreDisallowedRequestsBlocked());
 
   // Navigate to |b_url|, which should successfully open the popup.
-  ui_test_utils::NavigateToURL(browser(), b_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
   EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   // Popup UI should not be shown.
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
       SubresourceFilterLevel::ENFORCE /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   EXPECT_EQ(false, content::EvalJs(web_contents(), "openWindow()",
                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   console_observer.Wait();
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents());
 
   // Navigate to a_url, should log a warning and not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
   RoundTripAndVerifyLogMessages(
       console_observer, web_contents(),
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents());
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   EXPECT_EQ(true, content::EvalJs(web_contents(), "openWindow()",
                                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPopupBrowserTest,
   content::WebContentsConsoleObserver console_observer(web_contents());
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   EXPECT_TRUE(AreDisallowedRequestsBlocked());
 
   EXPECT_EQ(true, content::EvalJs(web_contents(), "openWindow()",
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
 
   // Navigate to |b_url|, which should successfully open the popup.
 
-  ui_test_utils::NavigateToURL(browser(), b_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
 
   content::TestNavigationObserver navigation_observer(nullptr, 1);
   navigation_observer.StartWatchingNewWebContents();
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
       SubresourceFilterLevel::WARN /* bas_level */);
 
   // Navigate to a_url, should not trigger the popup blocker.
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(true, content::EvalJs(web_contents, "openWindow()",
@@ -373,7 +373,8 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterPopupBrowserTestWithParam,
   ConfigureAsAbusiveAndBetterAds(
       url, SubresourceFilterLevel::ENFORCE /* abusive_level */,
       SubresourceFilterLevel::WARN /* bas_level */);
-  ui_test_utils::NavigateToURL(browser(), GetTestUrl("/title1.html"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetTestUrl("/title1.html")));
 
   // Should not trigger the popup blocker because internally opens the tab with
   // a user gesture.

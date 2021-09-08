@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   // will be installed from.
   GURL update_xml_url = embedded_test_server()->GetURL(update_xml_path);
   extension_test_util::SetGalleryUpdateURL(update_xml_url);
-  ui_test_utils::NavigateToURL(browser(), update_xml_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), update_xml_url));
 
   // Blocklist "*" but force-install the importer extension. The shared module
   // should be automatically installed too.
@@ -1976,7 +1976,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, MAYBE_ExtensionInstallSources) {
 
   GURL download_page_url = embedded_test_server()->GetURL(
       "/policy/extension_install_sources_test.html");
-  ui_test_utils::NavigateToURL(browser(), download_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_page_url));
 
   const GURL install_source_url(
       embedded_test_server()->GetURL("/extensions/*"));

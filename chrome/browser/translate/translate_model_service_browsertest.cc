@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceDisabledBrowserTest,
                        LanguageDetectionModelNotCreated) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(browser(), english_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
   RetryForHistogramUntilCountReached(
       &histogram_tester, "Translate.CLD3.TopLanguageEvaluationDuration", 1);
   histogram_tester.ExpectTotalCount(
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
 IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
                        LanguageDetectionModelCreated) {
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(browser(), english_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 1);

@@ -248,8 +248,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Basic) {
 
   // Open a URL in the tab, so the event handler can check the tab's
   // "url" and "title" properties.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
   // Simulate the browser action being clicked.
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
             GetBrowserActionsBar()->GetTooltip(extension->id()));
 
   // Reload that tab, default title should come back.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_EQ("hi!", GetBrowserActionsBar()->GetTooltip(extension->id()));
 }
 
@@ -637,9 +637,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   // a page which removes the popup using chrome.browserAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("change_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("change_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -673,9 +672,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, RemovePopup) {
   // Load a page which removes the popup using chrome.browserAction.setPopup().
   {
     ResultCatcher catcher;
-    ui_test_utils::NavigateToURL(
-        browser(),
-        GURL(extension->GetResourceURL("remove_popup.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(extension->GetResourceURL("remove_popup.html"))));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -723,9 +721,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, IncognitoBasic) {
 
   // Open a URL in the tab, so the event handler can check the tab's
   // "url" and "title" properties.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser,
-      embedded_test_server()->GetURL("/extensions/test_file.txt"));
+      embedded_test_server()->GetURL("/extensions/test_file.txt")));
 
   ResultCatcher catcher;
   // Simulate the browser action being clicked.
@@ -907,24 +905,24 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
 
   // Tell the extension to update the browser action state.
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that CSS values (#0F0) set color correctly.
   ASSERT_EQ(SkColorSetARGB(255, 0, 255, 0),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that array values set color correctly.
   ASSERT_EQ(SkColorSetARGB(255, 255, 255, 255),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(extension->GetResourceURL("update3.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update3.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test that hsl() values 'hsl(120, 100%, 50%)' set color correctly.
@@ -932,8 +930,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
   // Test basic color keyword set correctly.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL(extension->GetResourceURL("update4.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update4.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   ASSERT_EQ(SkColorSetARGB(255, 0, 0, 255),
@@ -950,13 +948,13 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, Getters) {
 
   // Test the getters for defaults.
   ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Test the getters for a specific tab.
-  ui_test_utils::NavigateToURL(browser(),
-      GURL(extension->GetResourceURL("update2.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(extension->GetResourceURL("update2.html"))));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
@@ -972,8 +970,8 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/simple.html")));
 
   ExtensionAction* browser_action = GetBrowserAction(browser(), *extension);
   EXPECT_TRUE(browser_action);

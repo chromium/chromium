@@ -40,16 +40,16 @@ IN_PROC_BROWSER_TEST_F(HungRendererNavigationTest,
 
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TabDialogs::FromWebContents(active_web_contents)
       ->ShowHungRendererDialog(
           active_web_contents->GetMainFrame()->GetRenderViewHost()->GetWidget(),
           base::DoNothing::Repeatedly());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("b.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   // Expect that the dialog has been dismissed.
   EXPECT_FALSE(TabDialogs::FromWebContents(active_web_contents)
                    ->IsShowingHungRendererDialog());

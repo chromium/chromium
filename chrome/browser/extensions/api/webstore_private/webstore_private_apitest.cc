@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest,
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/webstore_private/noframe.html");
   content::WebContents* web_contents = GetWebContents();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Try to load the same URL, but with the current Chrome web store origin in
   // an iframe (i.e. http://www.example.com)
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, FrameErrorPageBlocked) {
   GURL url = embedded_test_server()->GetURL(
       "/extensions/api_test/webstore_private/noframe2.html");
   content::WebContents* web_contents = GetWebContents();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Try to load the same URL, but with the current Chrome web store origin in
   // an iframe (i.e. http://www.example.com)

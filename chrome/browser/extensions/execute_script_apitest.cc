@@ -142,7 +142,8 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameAllowed) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           net::FilePathToFileURL(test_file)));
 
   SetCustomArg("ALLOWED");
   ASSERT_TRUE(RunExtensionTest("executescript/file_access", {},
@@ -157,7 +158,8 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, InjectScriptInFileFrameDenied) {
   // script into it.
   base::FilePath test_file =
       test_data_dir_.DirName().AppendASCII("test_file.txt");
-  ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           net::FilePathToFileURL(test_file)));
 
   SetCustomArg("DENIED");
   ASSERT_TRUE(RunExtensionTest("executescript/file_access")) << message_;

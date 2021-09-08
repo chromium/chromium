@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   EXPECT_TRUE(IsCrossOriginIsolated(coi_background_rfh));
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
-  ui_test_utils::NavigateToURL(browser(), extension_test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(IsCrossOriginIsolated(web_contents->GetMainFrame()));
@@ -293,8 +293,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
             coi_background_rfh->GetProcess());
 
   // Load test.html as a web accessible resource inside a web frame.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
 
@@ -480,8 +480,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(coi_background_rfh);
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(
@@ -587,8 +587,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
                                    .test_js = kTestJs});
   ASSERT_TRUE(coi_extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

@@ -64,12 +64,13 @@ IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest,
 
   for (const auto& test : tests) {
     base::HistogramTester histogram_tester;
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(test.url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(test.url)));
 
     base::RunLoop().RunUntilIdle();
     // Navigate away to finish the histogram recording.
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
     uint64_t total_usage = 0, total_apptabstate_usage = 0;
     for (const auto& sample : histogram_tester.GetAllSamples(
@@ -91,12 +92,13 @@ IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest, TestContentType) {
   ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/google/google.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/google/google.html")));
 
   base::RunLoop().RunUntilIdle();
   // Navigate away to finish the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   base::HistogramBase::Count main_frame_html_data_use =
       histogram_tester.GetBucketCount(
@@ -129,11 +131,12 @@ IN_PROC_BROWSER_TEST_F(DataUseMetricsObserverBrowserTest, NavigateToPlaintext) {
   base::HistogramTester histogram_tester;
   GURL test_url(plaintext_server->GetURL("/page"));
 
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   base::RunLoop().RunUntilIdle();
 
   // Navigate away to force the histogram recording.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   uint64_t total_usage = 0, total_apptabstate_usage = 0;
   for (const auto& sample : histogram_tester.GetAllSamples(

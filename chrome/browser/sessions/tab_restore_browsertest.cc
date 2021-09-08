@@ -369,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreToDifferentWindow) {
 // If this becomes flaky, use http://crbug.com/14774
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
   // Navigate to url1 then url2.
-  ui_test_utils::NavigateToURL(browser(), url1_);
-  ui_test_utils::NavigateToURL(browser(), url2_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2_));
 
   // Create a new browser.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -908,9 +908,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(++tab_count, browser()->tab_strip_model()->count());
 
   // Navigate to more URLs, then a cross-site URL.
-  ui_test_utils::NavigateToURL(browser(), http_url2);
-  ui_test_utils::NavigateToURL(browser(), http_url1);
-  ui_test_utils::NavigateToURL(browser(), url1_);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url2));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url1));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1_));
 
   // Close the tab.
   CloseTab(1);
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Navigating to a new URL should clear the forward list, because the max
   // page ID of the renderer should have been updated when we restored the tab.
-  ui_test_utils::NavigateToURL(browser(), http_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url2));
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   EXPECT_EQ(http_url2,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
@@ -1042,7 +1042,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Then navigate to a normal URL.
-  ui_test_utils::NavigateToURL(browser(), http_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
 
   // Close the tab.
   CloseTab(1);
@@ -1480,7 +1480,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreReaderModePages) {
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
   EXPECT_EQ(GURL("chrome-distiller://any"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
@@ -1506,13 +1507,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate to some random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example1.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example1.com")));
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
 
   // Navigate to another random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example2.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example2.com")));
 
   // Close it. Restoring restores example2 site.
   CloseTab(interesting_tab);
@@ -1546,13 +1550,16 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // Navigate to some random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example1.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example1.com")));
 
   // Navigate the tab to a reader mode page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome-distiller://any")));
 
   // Navigate to another random page.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.example2.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://www.example2.com")));
 
   // Go back to the example1.
   GoBack(browser());
@@ -1734,7 +1741,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL initial_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
   url::Origin initial_origin = url::Origin::Create(initial_url);
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Open about:blank in a new tab.
   content::WebContents* old_popup = nullptr;

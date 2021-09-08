@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowOpener, CheckWindowOpenerNonNull) {
   GURL url(
       "data:text/html,<a href='about:blank' target='_blank' "
       "id='link'>popup</a>");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   content::WebContents* tab_1 =

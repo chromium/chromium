@@ -284,7 +284,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBind();
 
     content::WebContents* web_contents =
@@ -319,7 +319,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBindOrTimeout();
 
     content::WebContents* web_contents =

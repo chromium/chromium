@@ -45,7 +45,7 @@ namespace {
 // points at empty.html in the test data dir.
 void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   GURL url(spec);
-  ui_test_utils::NavigateToURL(browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(url, contents->GetURL());
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistSubresources) {
   FlushBlacklistPolicy();
 
   std::string blacklisted_image_load_result;
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(imageLoadResult)",
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistSubresources) {
   EXPECT_EQ("success", blacklisted_image_load_result);
 
   std::string blacklisted_iframe_load_result;
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "window.domAutomationController.send(iframeLoadResult)",
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistClientRedirect) {
   UpdateProviderPolicy(policies);
   FlushBlacklistPolicy();
 
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(u"Redirected!",
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistServerRedirect) {
   GURL first_url = embedded_test_server()->GetURL("/server-redirect?" +
                                                   redirected_url.spec());
 
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_EQ(u"Redirected!",
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlacklistServerRedirect) {
   UpdateProviderPolicy(policies);
   FlushBlacklistPolicy();
 
-  ui_test_utils::NavigateToURL(browser(), first_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(u"Redirected!",
@@ -382,8 +382,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlacklistable) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/test.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test.html")));
 
   EXPECT_EQ(JSIncrementerFetch(contents), 1);
 

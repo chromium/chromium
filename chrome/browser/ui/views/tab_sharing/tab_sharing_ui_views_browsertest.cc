@@ -515,12 +515,13 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   ASSERT_THAT(base::UTF16ToUTF8(GetInfobarMessageText(browser(), 0)),
               ::testing::HasSubstr(chrome::kChromeUINewTabHost));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIVersionURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIVersionURL)));
   EXPECT_THAT(
       base::UTF16ToUTF8(GetInfobarMessageText(browser(), kCapturingTab)),
       ::testing::HasSubstr(chrome::kChromeUIVersionHost));
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_THAT(
       base::UTF16ToUTF8(GetInfobarMessageText(browser(), kCapturingTab)),
       ::testing::HasSubstr("about:blank"));

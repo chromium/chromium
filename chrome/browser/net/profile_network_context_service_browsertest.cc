@@ -110,8 +110,8 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
   // The HttpCache is only created when a request is issued, thus we perform a
   // navigation to ensure that the http cache is initialized.
   void NavigateToCreateHttpCache() {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/createbackend"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/createbackend")));
   }
 
  private:

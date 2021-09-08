@@ -66,8 +66,8 @@ class SubframeTaskBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateTo(const char* page_url) const {
-    ui_test_utils::NavigateToURL(browser(),
-                                 embedded_test_server()->GetURL(page_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL(page_url)));
   }
 };
 

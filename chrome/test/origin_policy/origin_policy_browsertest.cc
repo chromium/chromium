@@ -55,7 +55,8 @@ class OriginPolicyBrowserTest : public InProcessBrowserTest {
   // the bulk of the test logic.
   std::u16string NavigateToAndReturnTitle(const char* url) {
     EXPECT_TRUE(server());
-    ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url)));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(server()->GetURL(url))));
     std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser(), &title);
     return title;

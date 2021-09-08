@@ -385,7 +385,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("media/session")),
         base::FilePath(FILE_PATH_LITERAL("video-with-metadata.html")));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void OpenDifferentMetadataURLInNewTab() {

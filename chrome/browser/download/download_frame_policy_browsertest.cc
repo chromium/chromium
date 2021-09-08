@@ -173,7 +173,7 @@ class DownloadFramePolicyBrowserTest
     std::string host_name = "foo.com";
     GURL top_frame_url =
         embedded_test_server()->GetURL(host_name, "/frame_factory.html");
-    ui_test_utils::NavigateToURL(browser(), top_frame_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
 
     const char* method = is_ad_frame ? "createAdFrame" : "createFrame";
     GURL subframe_url = embedded_test_server()->GetURL(

@@ -250,9 +250,9 @@ Browser* WebAppNavigationBrowserTest::OpenTestWebApp() {
 }
 
 void WebAppNavigationBrowserTest::NavigateToLaunchingPage(Browser* browser) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser,
-      https_server_.GetURL(GetLaunchingPageHost(), GetLaunchingPagePath()));
+      https_server_.GetURL(GetLaunchingPageHost(), GetLaunchingPagePath())));
 }
 
 bool WebAppNavigationBrowserTest::TestActionDoesNotOpenAppWindow(

@@ -121,10 +121,9 @@ const char kExpectedIconUrl[] = "/notifications/no_such_file.png";
 IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "/notifications/notifications_request_function.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/notifications/notifications_request_function.html")));
 
   // Request permission by calling request() while eval'ing an inline script;
   // That's considered a user gesture to webkit, and should produce an infobar.
@@ -145,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -167,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, NotificationBlockerTest) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   EXPECT_EQ(0, GetNotificationPopupCount());
   blocker.SetNotificationsEnabled(false);
@@ -197,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseNotification) {
 
   // Creates a notification and closes it.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -217,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCancelNotification) {
 
   // Creates a notification and cancels it in the origin page.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string note_id = CreateSimpleNotification(browser(), true);
   EXPECT_NE(note_id, "-1");
@@ -231,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCancelNotification) {
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionRequestUIAppears) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_TRUE(RequestPermissionAndWait(browser()));
   ASSERT_EQ(0, GetNotificationCount());
 }
@@ -240,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowOnPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Tries to create a notification & clicks 'allow' on the prompt.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   // This notification should not be shown because we do not have permission.
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -255,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyOnPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that no notification is created when Deny is chosen from prompt.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_TRUE(RequestAndDenyPermission(browser()));
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -268,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestClosePermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that no notification is created when prompt is dismissed.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_TRUE(RequestAndDismissPermission(browser()));
   CreateSimpleNotification(browser(), false);
   ASSERT_EQ(0, GetNotificationCount());
@@ -281,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionAPI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that Notification.permission returns the right thing.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_EQ("default", QueryPermissionStatus(browser()));
 
   AllowOrigin(GetTestPageURL().GetOrigin());
@@ -295,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithPermissionsEmbargo,
                        TestPermissionEmbargo) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Verify embargo behaviour - automatically blocked after 3 dismisses.
   ASSERT_TRUE(RequestAndDismissPermission(browser()));
@@ -313,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowNotificationsFromAllSites) {
 
   // Verify that all domains can be allowed to show notifications.
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -326,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyNotificationsFromAllSites) {
 
   // Verify that no domain can show notifications.
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK);
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
@@ -342,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyDomainAndAllowAll) {
   DenyOrigin(GetTestPageURL().GetOrigin());
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
@@ -358,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestAllowDomainAndDenyAll) {
   AllowOrigin(GetTestPageURL().GetOrigin());
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -372,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyAndThenAllowDomain) {
   // Verify that denying and again allowing should show notifications.
   DenyOrigin(GetTestPageURL().GetOrigin());
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), false);
   EXPECT_EQ("-1", result);
@@ -392,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
 
   // Verify able to create, deny, and close the notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   base::RunLoop origin_queried_waiter;
   ukm_recorder.SetOnAddEntryCallback(ukm::builders::Permission::kEntryName,
@@ -429,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateDenyCloseNotifications) {
 
   // Verify able to create, deny, and close the notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
 
@@ -451,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCloseTabWithPermissionRequestUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Test that user can close tab when bubble present.
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   EXPECT_TRUE(RequestPermissionAndWait(browser()));
   content::WebContentsDestroyedWatcher destroyed_watcher(
       browser()->tab_strip_model()->GetWebContentsAt(0));
@@ -470,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCrashRendererNotificationRemain) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
   CrashTab(browser(), 0);
@@ -483,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationReplacement) {
   // Test that we can replace a notification using the replaceId.
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateNotification(
       browser(), true, "abc.png", "Title1", "Body1", "chat");
@@ -512,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest,
   // cause the notification to reappear as a popup again.
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   ASSERT_EQ(0, GetNotificationPopupCount());
 
@@ -540,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationValidIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   std::string result = CreateNotification(
@@ -561,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationInvalidIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   // Not supplying an icon URL.
@@ -592,8 +591,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestNotificationDoubleClose) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(
-      browser(), GetTestPageURLForFile("notification-double-close.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetTestPageURLForFile("notification-double-close.html")));
   ASSERT_EQ(0, GetNotificationPopupCount());
 
   std::string result = CreateNotification(
@@ -621,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayNormal) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -643,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
@@ -678,10 +677,10 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   ASSERT_TRUE(embedded_test_server()->Start());
   AllowAllOrigins();
 
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   Browser* other_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(other_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);
@@ -729,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
 
   // Creates a simple notification.
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
   browser()->exclusive_access_manager()->fullscreen_controller()->
@@ -772,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   ASSERT_TRUE(https_server.Start());
 
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
   const int notification_tab = browser()->tab_strip_model()->active_index();
 
   // We should see displayed notifications by default.
@@ -786,9 +785,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
 
   // Open a new tab to a diffent origin from the one that shows notifications.
   chrome::NewTab(browser());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server.GetURL("/notifications/notification_tester.html"));
+      https_server.GetURL("/notifications/notification_tester.html")));
   const int screen_capture_tab = browser()->tab_strip_model()->active_index();
 
   // Start a screen capture session.

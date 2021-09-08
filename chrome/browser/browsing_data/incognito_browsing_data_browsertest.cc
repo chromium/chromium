@@ -97,8 +97,8 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_EQ(0, GetSiteDataCount(regular_browser));
     EXPECT_EQ(0, GetSiteDataCount(incognito_browser));
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(incognito_browser, url);
-    ui_test_utils::NavigateToURL(regular_browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(regular_browser, url));
 
     // Even after navigation.
     EXPECT_EQ(0, GetSiteDataCount(incognito_browser));
@@ -117,7 +117,7 @@ class IncognitoBrowsingDataBrowserTest
     // Restart Incognito and ensure it is empty.
     RestartIncognitoBrowser();
     incognito_browser = GetIncognitoBrowser();
-    ui_test_utils::NavigateToURL(incognito_browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
     EXPECT_EQ(0, GetSiteDataCount(incognito_browser));
     ExpectCookieTreeModelCount(incognito_browser, 0);
@@ -136,7 +136,7 @@ class IncognitoBrowsingDataBrowserTest
     ExpectCookieTreeModelCount(incognito_browser, 0);
 
     GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-    ui_test_utils::NavigateToURL(incognito_browser, url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
     EXPECT_EQ(0, GetSiteDataCount(incognito_browser));
     ExpectCookieTreeModelCount(incognito_browser, 0);
     // Opening a store of this type creates a site data entry in Incognito only.
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
 // Verify database is reset after Incognito restart.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Database) {
   GURL url = embedded_test_server()->GetURL("/simple_database.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text')", "done");
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Database) {
 
   RestartIncognitoBrowser();
 
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   RunScriptAndCheckResult("createTable()", "done");
   RunScriptAndCheckResult("insertRecord('text2')", "done");
   RunScriptAndCheckResult("getRecords()", "text2");
@@ -435,18 +435,18 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
                        SessionStorageDeletionWebOnly) {
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   const std::string type = "SessionStorage";
   EXPECT_FALSE(HasDataForType(type));
   SetDataForType(type);
   EXPECT_TRUE(HasDataForType(type));
 
   // No residue in regular mode.
-  ui_test_utils::NavigateToURL(GetRegularBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetRegularBrowser(), url));
   EXPECT_FALSE(HasDataForType(type, GetRegularBrowser()));
 
   RestartIncognitoBrowser();
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
   EXPECT_FALSE(HasDataForType(type));
 }
 
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   EXPECT_EQ(0, GetMediaLicenseCount());
   GURL url =
       embedded_test_server()->GetURL("/browsing_data/media_license.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
   EXPECT_EQ(0, GetMediaLicenseCount());
@@ -518,13 +518,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
   EXPECT_TRUE(HasDataForType(kMediaLicenseType));
 
   // No residue in regular mode.
-  ui_test_utils::NavigateToURL(GetRegularBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetRegularBrowser(), url));
   EXPECT_EQ(0, GetMediaLicenseCount(GetRegularBrowser()));
   EXPECT_FALSE(HasDataForType(kMediaLicenseType, GetRegularBrowser()));
 
   // Restart Incognito.
   RestartIncognitoBrowser();
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   EXPECT_EQ(0, GetSiteDataCount());
   EXPECT_EQ(0, GetMediaLicenseCount());
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   ASSERT_TRUE(https_server.Start());
 
   GURL url = https_server.GetURL(kLocalHost, "/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
   for (const std::string& type : kStorageTypes) {
     SetDataForType(type);

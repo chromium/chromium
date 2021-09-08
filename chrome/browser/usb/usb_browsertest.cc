@@ -153,7 +153,7 @@ class WebUsbTest : public InProcessBrowserTest {
         content::SetBrowserClientForTesting(&test_content_browser_client_);
 
     GURL url = embedded_test_server()->GetURL("localhost", "/simple_page.html");
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     origin_ = url.GetOrigin();
 
     RenderFrameHost* render_frame_host =

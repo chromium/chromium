@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
 
   // Navigate to an extension resource.
   GURL ext_url = extension->GetResourceURL("ext.html");
-  ui_test_utils::NavigateToURL(browser(), ext_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ext_url));
 
   // Focus the location bar / omnibox.
   chrome::FocusLocationBar(browser());

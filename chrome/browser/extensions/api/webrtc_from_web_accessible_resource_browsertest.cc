@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcFromWebAccessibleResourceTest,
   permissions::PermissionRequestObserver permission_request_observer(
       web_contents);
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(permission_request_observer.request_shown());
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcFromWebAccessibleResourceTest,
   permissions::PermissionRequestObserver permission_request_observer(
       web_contents);
   extensions::ResultCatcher catcher;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(permission_request_observer.request_shown());

@@ -138,9 +138,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       break;
     }
     case ContentSettingsType::POPUPS: {
-      ui_test_utils::NavigateToURL(
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
           browser(),
-          embedded_test_server()->GetURL("/popup_blocker/popup-many-10.html"));
+          embedded_test_server()->GetURL("/popup_blocker/popup-many-10.html")));
       EXPECT_TRUE(content::ExecuteScript(web_contents, std::string()));
       auto* helper =
           blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);

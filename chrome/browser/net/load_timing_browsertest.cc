@@ -114,7 +114,7 @@ class LoadTimingBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, HTTP) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, DISABLED_HTTPS) {
   https_server.AddDefaultHandlers();
   ASSERT_TRUE(https_server.Start());
   GURL url = https_server.GetURL("/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(LoadTimingBrowserTest, Proxy) {
 
   // This request will fail if it doesn't go through proxy.
   GURL url("http://does.not.resolve.test/chunked?waitBeforeHeaders=100");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   TimingDeltas navigation_deltas;
   GetResultDeltas(&navigation_deltas);

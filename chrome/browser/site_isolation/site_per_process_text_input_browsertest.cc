@@ -334,7 +334,7 @@ class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
     std::string path = base::StringPrintf("/cross_site_iframe_factory.html?%s",
                                           structure.c_str());
     GURL main_url(embedded_test_server()->GetURL("a.com", path));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   // Iteratively uses ChildFrameAt(frame, i) to get the i-th child frame
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   content::TextInputManagerTypeObserver reset_state_observer(
       active_contents(), ui::TEXT_INPUT_TYPE_NONE);
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   reset_state_observer.Wait();
 }
 
@@ -1123,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
                        SubframeKeyboardEditCommands) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/frame_tree/page_with_one_frame.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents = active_contents();
 
   GURL frame_url(

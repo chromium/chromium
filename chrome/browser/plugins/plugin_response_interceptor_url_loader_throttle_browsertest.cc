@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(PluginResponseInterceptorURLLoaderThrottleBrowserTest,
   // Navigate to a PDF that's marked as an attachment and test that it
   // is downloaded.
   GURL url(embedded_test_server()->GetURL("/download.pdf"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(url, download_observer.GetLastUrl());
 
   // Didn't launch a PPAPI process.

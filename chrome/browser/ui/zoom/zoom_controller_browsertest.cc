@@ -63,7 +63,8 @@ class ZoomControllerBrowserTest : public InProcessBrowserTest {
         false);
     ZoomChangedWatcher zoom_change_watcher(web_contents, zoom_change_data);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUISettingsURL)));
     zoom_change_watcher.Wait();
   }
 };  // ZoomControllerBrowserTest
@@ -124,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, OnPreferenceChanged) {
 }
 
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, ErrorPagesCanZoom) {
-  ui_test_utils::NavigateToURL(browser(), GURL("http://kjfhkjsdf.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://kjfhkjsdf.com")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -274,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
       ZoomController::FromWebContents(web_contents);
 
   GURL settings_url(chrome::kChromeUISettingsURL);
-  ui_test_utils::NavigateToURL(browser(), settings_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), settings_url));
   EXPECT_NE(
       content::PAGE_TYPE_ERROR,
       web_contents->GetController().GetLastCommittedEntry()->GetPageType());

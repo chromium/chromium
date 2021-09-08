@@ -676,7 +676,8 @@ void TestRecipeReplayer::CleanupSiteData() {
   // Navigate to about:blank, then clear the browser cache.
   // Navigating to about:blank before clearing the cache ensures that
   // the cleanup is thorough and nothing is held.
-  ui_test_utils::NavigateToURL(browser_, GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser_, GURL(url::kAboutBlankURL)));
   content::BrowsingDataRemover* remover =
       browser_->profile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
@@ -1228,7 +1229,7 @@ bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::DictStorage action) {
   if (!url)
     return false;
   VLOG(1) << "Making explicit URL redirect to '" << *url << "'";
-  ui_test_utils::NavigateToURL(browser_, GURL(*url));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser_, GURL(*url)));
 
   WaitTillPageIsIdle();
 

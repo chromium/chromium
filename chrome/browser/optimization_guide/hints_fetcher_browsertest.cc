@@ -239,7 +239,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     // Navigate to |url| to prime the OptimizationGuide hints for the
     // url's host and ensure that they have been loaded from the store (via
     // histogram) prior to the navigation that tests functionality.
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester, optimization_guide::kLoadedHintLocalHistogramString,
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
 
   LoadHintsForUrl(https_url());
 
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   // Verifies that the fetched hint is just used in memory and nothing is
   // loaded.
@@ -662,7 +662,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
   // Set the connection online to force a fetch at navigation time.
   SetNetworkConnectionOnline();
 
-  ui_test_utils::NavigateToURL(browser(), GURL("https://unsuccessful.com/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://unsuccessful.com/")));
 
   // We expect that we requested hints for 1 URL.
   EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
@@ -681,9 +682,12 @@ IN_PROC_BROWSER_TEST_F(
   // Set the connection online to force a fetch at navigation time.
   SetNetworkConnectionOnline();
 
-  ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/1"));
-  ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/2"));
-  ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/3"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/1")));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/2")));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://hung.com/3")));
 
   // We expect that one request was canceled.
   histogram_tester->ExpectUniqueSample(
@@ -717,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
 
   LoadHintsForUrl(https_url());
 
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   // Verifies that the fetched hint is used in-memory and no hint is loaded
   // from store.
@@ -734,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherClearFetchedHints) {
   // Try to load the same hint to confirm fetched hints are no longer there.
   LoadHintsForUrl(https_url());
 
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   histogram_tester->ExpectUniqueSample(
       "OptimizationGuide.HintCache.HintType.Loaded",
@@ -775,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherOverrideTimer) {
 
   LoadHintsForUrl(https_url());
 
-  ui_test_utils::NavigateToURL(browser(), https_url());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url()));
 
   // Verifies that the fetched hint is used from memory and no hints are loaded.
   histogram_tester->ExpectTotalCount(
@@ -853,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     expected_request.insert(GURL(full_url).host());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     EXPECT_EQ(2u, count_hints_requests_received());
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -872,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // should be recorded as covered by the hints fetcher.
     base::flat_set<std::string> expected_request;
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
@@ -899,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
         ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
 
     Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-    ui_test_utils::NavigateToURL(otr_browser, GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(otr_browser, GURL(full_url)));
 
     // Make sure no additional hints requests were received.
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -957,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(
     expected_request.insert(GURL(full_url).host());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     EXPECT_EQ(2u, count_hints_requests_received());
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -986,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(
     base::flat_set<std::string> expected_request;
     expected_request.insert(GURL(full_url).host());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
@@ -1047,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(
     expected_request.insert(GURL(full_url).host());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     EXPECT_EQ(2u, count_hints_requests_received());
     optimization_guide::RetryForHistogramUntilCountReached(
@@ -1074,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(
     // should be recorded as covered by the hints fetcher.
     base::flat_set<std::string> expected_request;
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
-    ui_test_utils::NavigateToURL(browser(), GURL(full_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
     // With URL-keyed Hints, every unique URL navigated to will result in a
     // hints fetch if racing is enabled and allowed.
@@ -1158,7 +1162,8 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
   // Navigate to a host not in the seeded site engagement service; it
   // should be recorded as not covered by the hints fetcher.
   ResetCountHintsRequestsReceived();
-  ui_test_utils::NavigateToURL(browser(), search_results_page_url());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), search_results_page_url()));
 
   WaitUntilHintsFetcherRequestReceived();
   EXPECT_EQ(1u, count_hints_requests_received());

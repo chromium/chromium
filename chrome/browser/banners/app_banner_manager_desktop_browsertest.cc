@@ -91,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(browser(),
-                                 GetBannerURLWithAction("stash_event"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GetBannerURLWithAction("stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -126,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(
-        browser(), GetBannerURLWithAction("verify_appinstalled_stash_event"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GetBannerURLWithAction("verify_appinstalled_stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -172,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest, DestroyWebContents) {
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(browser(),
-                                 GetBannerURLWithAction("stash_event"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GetBannerURLWithAction("stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -216,9 +216,9 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GetBannerURLWithManifestAndQuery("/banners/minimal-ui.json",
-                                                    "action", "stash_event"));
+                                                    "action", "stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -247,9 +247,9 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GetBannerURLWithManifestAndQuery("/banners/fullscreen.json",
-                                                    "action", "stash_event"));
+                                                    "action", "stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(browser(), GetBannerURL());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetBannerURL()));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(browser(), GetBannerURL());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetBannerURL()));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -352,10 +352,10 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GetBannerURLWithManifestAndQuery(
                        "/banners/manifest_display_override.json", "action",
-                       "stash_event"));
+                       "stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -383,11 +383,11 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         GetBannerURLWithManifestAndQuery(
             "/banners/manifest_display_override_display_is_browser.json",
-            "action", "stash_event"));
+            "action", "stash_event")));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
 
-    ui_test_utils::NavigateToURL(browser(), GetBannerURL());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetBannerURL()));
     run_loop.Run();
     EXPECT_EQ(State::PENDING_PROMPT, manager->state());
   }

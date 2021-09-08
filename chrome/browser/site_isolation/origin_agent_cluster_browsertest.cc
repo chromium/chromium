@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(OriginAgentClusterBrowserTest, Navigations) {
   web_feature_waiter->AddWebFeatureExpectation(
       blink::mojom::WebFeature::kOriginAgentClusterHeader);
 
-  ui_test_utils::NavigateToURL(browser(), start_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
   EXPECT_FALSE(web_feature_waiter->DidObserveWebFeature(
       blink::mojom::WebFeature::kOriginAgentClusterHeader));

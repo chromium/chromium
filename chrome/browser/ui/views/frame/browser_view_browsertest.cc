@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
       bookmarks::prefs::kShowBookmarkBar, false);
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   chrome::AddTabAt(browser(), GURL(), -1, true);
-  ui_test_utils::NavigateToURL(browser(), new_tab_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url));
 
   ASSERT_TRUE(browser_view()->bookmark_bar());
   BookmarkBarViewObserverImpl observer;
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
   // Opens "chrome://version/" page, which uses default favicon.
   GURL version_url(chrome::kChromeUIVersionURL);
-  ui_test_utils::NavigateToURL(browser(), version_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), version_url));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* helper = TabUIHelper::FromWebContents(contents);
   ASSERT_TRUE(helper);

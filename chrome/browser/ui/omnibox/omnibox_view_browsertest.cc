@@ -604,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
 
   // Navigate in first tab and enter text into the omnibox.
   GURL url1("data:text/html,page1");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
   omnibox_view->SetUserText(u"foo");
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -742,7 +742,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
   OmniboxView* omnibox_view = NULL;
@@ -841,7 +842,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FocusSearchLongUrl) {
 
   ASSERT_GT(strlen(url::kAboutBlankURL),
             std::char_traits<char16_t>::length(kSearchKeyword));
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Make sure nothing DCHECKs.
   chrome::FocusSearch(browser());
@@ -952,7 +954,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   model->SetUserSelectedDefaultSearchProvider(NULL);
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
   OmniboxView* omnibox_view = NULL;
@@ -1151,7 +1154,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   chrome::FocusLocationBar(browser());
 
   OmniboxView* omnibox_view = NULL;

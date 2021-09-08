@@ -280,7 +280,7 @@ namespace {
 // Note that network URLs are not actually loaded in tests, so this also tests
 // that error pages leave the intended URL in the address bar.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_CurrentTab) {
-  ui_test_utils::NavigateToURL(browser(), GetGoogleURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetGoogleURL()));
   EXPECT_EQ(GetGoogleURL(),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
   // We should have one window with one tab.
@@ -1818,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
 
   // Visit a WebUI page with bindings.
   GURL webui_url(chrome::kChromeUIOmniboxURL);
-  ui_test_utils::NavigateToURL(browser(), webui_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webui_url));
 
   // window.open a new tab.  This will keep the chrome://omnibox process alive
   // once we navigate away from it.
@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
 
   // Navigate to another page in the popup.
   GURL nonwebui_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ui_test_utils::NavigateToURL(browser(), nonwebui_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), nonwebui_url));
   EXPECT_NE(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
 
   // Go back in the popup.  This should finish without crashing and should
@@ -1900,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 
   // Load page with iframe.
   const GURL url1 = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Retrieve the iframe.
   const auto all_frames = tab->GetAllFrames();

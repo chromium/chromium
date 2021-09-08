@@ -211,8 +211,8 @@ content::WebContents* PasswordDialogViewTest::SetupTabWithTestController(
   browser->tab_strip_model()->AppendWebContents(std::move(new_tab), true);
 
   // Navigate to a Web URL.
-  EXPECT_NO_FATAL_FAILURE(
-      ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com")));
+  EXPECT_NO_FATAL_FAILURE(EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser, GURL("http://www.google.com"))));
   EXPECT_EQ(controller_,
             ManagePasswordsUIController::FromWebContents(raw_new_tab));
   return raw_new_tab;

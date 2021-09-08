@@ -87,8 +87,8 @@ IN_PROC_BROWSER_TEST_F(AudibleContentsTrackerTest,
       test_data_dir.AppendASCII("chrome/test/data/"));
   // Start the test server after adding the request handler for thread safety.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/autoplay_audio.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/autoplay_audio.html")));
 
   // Wait until the audio starts.
   while (!audio_observer->is_audio_playing()) {

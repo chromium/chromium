@@ -51,7 +51,7 @@ namespace {
 
 // Verify kPACScript is installed as the PAC script.
 void VerifyProxyScript(Browser* browser) {
-  ui_test_utils::NavigateToURL(browser, GURL("http://google.com"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GURL("http://google.com")));
 
   // Verify we get the ERR_PROXY_CONNECTION_FAILED screen.
   EXPECT_EQ(true, content::EvalJs(
@@ -116,9 +116,9 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   // of the page will be 'PASS' on success.
   GURL::Replacements replacements;
   replacements.SetSchemeStr("http");
-  ui_test_utils::NavigateToURL(browser(),
-                               ws_server.GetURL("proxied_request_check.html")
-                                   .ReplaceComponents(replacements));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), ws_server.GetURL("proxied_request_check.html")
+                     .ReplaceComponents(replacements)));
 
   const std::u16string result = watcher.WaitAndGetTitle();
   EXPECT_TRUE(base::EqualsASCII(result, "PASS"));

@@ -108,7 +108,7 @@ class AutomationApiCanvasTest : public AutomationApiTest {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const tab =
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, SanityCheck) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Enable image labels.
   browser()->profile()->GetPrefs()->SetBoolean(

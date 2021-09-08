@@ -46,7 +46,7 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_succeeded_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();
@@ -60,7 +60,7 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_failed_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();

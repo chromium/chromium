@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptHeaderTest, Check) {
       }));
   ASSERT_TRUE(server.Start());
   GURL url = server.GetURL("/pdf/pdf_embed.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   plugin_loop.Run();
   favicon_loop.Run();

@@ -151,8 +151,8 @@ void NavigateToFeedAndValidate(net::EmbeddedTestServer* server,
   NamedFrameCreatedObserver subframe_observer(tab, "preview");
 
   // Navigate to the subscribe page directly.
-  ui_test_utils::NavigateToURL(browser,
-                               GetFeedUrl(server, url, true, extension_id));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, GetFeedUrl(server, url, true, extension_id)));
   ASSERT_TRUE(subframe_observer.Wait() != nullptr);
 
   std::string message;
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSMultiRelLink) {
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPageMultiRel);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }

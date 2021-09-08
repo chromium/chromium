@@ -59,7 +59,8 @@ IN_PROC_BROWSER_TEST_F(PolicyWebStoreIconTest, AppsWebStoreIconHidden) {
   // current profile. Browser restart is not required.
 
   // Open new tab page and look for the web store icons.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -81,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(PolicyWebStoreIconTest, AppsWebStoreIconHidden) {
   UpdateProviderPolicy(policies);
 
   // The web store icons should now be hidden.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   EXPECT_FALSE(
       ContainsVisibleElement(contents, "ahfgeienlihckogmohjhadlkjgocpleb"));
   EXPECT_FALSE(ContainsVisibleElement(contents, "chrome-web-store-link"));

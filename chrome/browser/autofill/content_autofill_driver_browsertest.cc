@@ -198,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        SameDocumentNavigationHideAutofillPopup) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
 
   // The Autofill popup should be hidden for same document navigations. It may
   // called twice because the zoom changed event may also fire for same-page
@@ -212,9 +212,9 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   same_document_navigation_callback_ = runner->QuitClosure();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo")));
   // This will block until a same document navigation is observed.
   runner->Run();
 }
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/cross_origin_iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The Autofill popup should NOT be hidden for subframe navigations.
   EXPECT_CALL(autofill_client(), HideAutofillPopup).Times(0);
@@ -287,9 +287,9 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        GetElementFormAndFieldData) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/autofill/autofill_assistant_test_form.html"));
+                     "/autofill/autofill_assistant_test_form.html")));
 
   GetElementFormAndFieldData("#testformone #NAME_FIRST",
                              /*expected_form_size=*/9u);

@@ -220,7 +220,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     http_test_server->ServeFilesFromSourceDirectory(media::GetTestDataPath());
     CHECK(http_test_server->Start());
     GURL gurl = http_test_server->GetURL("/test_key_system_instantiation.html");
-    ui_test_utils::NavigateToURL(browser(), gurl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   }
 
   // Create a valid JavaScript string for the content type. Format is

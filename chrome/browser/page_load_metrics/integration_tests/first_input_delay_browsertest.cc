@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
   double expected_fid = EvalJs(web_contents(), "runtest()").ExtractDouble();
   EXPECT_GT(expected_fid, 0.0);
 
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check UKM. We compare the webexposed value to the UKM value. The webexposed
   // value will be rounded whereas the UKM value will not, so it may be off by 1

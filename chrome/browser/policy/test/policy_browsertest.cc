@@ -206,7 +206,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   if (!content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled())
     return;
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   // WebGL is enabled by default.
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -455,7 +456,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
 
   // Navigate to a page with a certificate date error and then check that a
   // network time query was not sent.
-  ui_test_utils::NavigateToURL(browser(), https_server_expired_.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired_.GetURL("/")));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   WaitForInterstitial(tab);
@@ -466,7 +468,8 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
   UpdateProviderPolicy(policies);
-  ui_test_utils::NavigateToURL(browser(), https_server_expired_.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           https_server_expired_.GetURL("/")));
   EXPECT_TRUE(IsShowingInterstitial(tab));
   EXPECT_EQ(1u, num_requests());
 }

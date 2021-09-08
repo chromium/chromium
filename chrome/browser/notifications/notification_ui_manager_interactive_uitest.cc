@@ -54,8 +54,8 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    ui_test_utils::NavigateToURL(
-        browser(), https_server_->GetURL(std::string("/") + kTestFileName));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_->GetURL(std::string("/") + kTestFileName)));
     InProcessBrowserTest::SetUpOnMainThread();
   }
 

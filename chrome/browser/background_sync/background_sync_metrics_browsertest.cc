@@ -36,7 +36,7 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
     // recorded.
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL url(embedded_test_server()->GetURL("/links.html"));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
  protected:

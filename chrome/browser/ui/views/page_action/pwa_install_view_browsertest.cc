@@ -189,7 +189,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
         webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
     DCHECK(!app_banner_manager->WaitForInstallableCheck());
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     bool installable = app_banner_manager->WaitForInstallableCheck();
 
     return OpenTabResult{web_contents, app_banner_manager, installable};

@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TitleWatcher title_watcher(contents, expected_title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   base::ListValue blacklist;
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
   content::RunAllTasksUntilIdle();
   content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   std::u16string blocked_page_title(u"test.example.org");
   EXPECT_EQ(blocked_page_title, contents->GetTitle());

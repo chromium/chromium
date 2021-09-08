@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   SetInputTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // SiteEngagementMetrics::kEngagementTypeHistogram is 2 with
   // kFirstDailyEngagement and kNavigation.
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   SetMediaTrackerPauseTimer(helper);
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
   EXPECT_EQ(tester.last_updated_url(), url);
 

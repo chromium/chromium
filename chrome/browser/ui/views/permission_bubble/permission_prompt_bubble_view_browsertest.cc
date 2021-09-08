@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   for (const char* origin_spec :
        {"https://a.com", "https://b.com", "https://c.com"}) {
     GURL requesting_origin(origin_spec);
-    ui_test_utils::NavigateToURL(browser(), requesting_origin);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requesting_origin));
     permissions::MockPermissionRequest notification_request(
         requesting_origin, permissions::RequestType::kNotifications);
     test_api_->manager()->AddRequest(GetActiveMainFrame(),
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   EXPECT_FALSE(quiet_ui_icon.get_critical_promo_id_for_testing().has_value());
 
   GURL notification("http://www.notification1.com/");
-  ui_test_utils::NavigateToURL(browser(), notification);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification));
   permissions::MockPermissionRequest notification_request(
       notification, permissions::RequestType::kNotifications);
   test_api_->manager()->AddRequest(GetActiveMainFrame(), &notification_request);
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   // The second Notifications permission request to verify that the IPH is not
   // shown.
   GURL notification2("http://www.notification2.com/");
-  ui_test_utils::NavigateToURL(browser(), notification2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification2));
   permissions::MockPermissionRequest notification_request2(
       notification2, permissions::RequestType::kNotifications);
   test_api_->manager()->AddRequest(GetActiveMainFrame(),

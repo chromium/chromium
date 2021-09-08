@@ -464,7 +464,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
   content::WebContents* OpenTestPageInNewTab(const std::string& test_url) {
     chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
     GURL url = embedded_test_server()->GetURL(test_url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 };
@@ -545,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
 
   // We navigate to a FileURL so that the origin will change, which should
   // trigger the capture to end.
-  ui_test_utils::NavigateToURL(browser(), GetFileURL(kMainHtmlFileName));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetFileURL(kMainHtmlFileName)));
 
   // Verify that the video stream has ended.
   std::string result;
@@ -582,9 +583,9 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
   ASSERT_EQ(target_tab, browser()->tab_strip_model()->GetActiveWebContents());
 
   // We navigate using the test server so that the origin doesn't change.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/webrtc/captured_page_main.html"));
+      embedded_test_server()->GetURL("/webrtc/captured_page_main.html")));
 
   // Verify that the video hasn't been ended.
   std::string result;

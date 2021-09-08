@@ -85,7 +85,8 @@ IN_PROC_BROWSER_TEST_P(ProfileErrorBrowserTest, MAYBE_CorruptedProfile) {
   const char kPaintHistogram[] = "Startup.FirstWebContents.NonEmptyPaint3";
 
   // Navigate to a URL so the first non-empty paint is registered.
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/")));
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

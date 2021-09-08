@@ -80,9 +80,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
                     .AppendASCII("behllobkkfkfnphdnhnkndlbkcpglgmj")
                     .AppendASCII("1.0.0.0")));
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html"));
+      GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
 
   bool result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -92,9 +92,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
   // There was a bug where we would crash if we navigated to a page in the same
   // extension because no new render view was getting created, so we would not
   // do some setup.
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html"));
+      GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
   result = false;
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       GetActiveWebContents(browser()), "testTabsAPI()", &result));
@@ -118,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TabNavigationToPlatformApp) {
     content::WebContents* web_contents = GetActiveWebContents(browser());
     content::TestNavigationObserver observer(web_contents,
                                              net::ERR_BLOCKED_BY_CLIENT);
-    ui_test_utils::NavigateToURL(browser(), redirect_to_platform_app);
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), redirect_to_platform_app));
     observer.Wait();
     EXPECT_FALSE(observer.last_navigation_succeeded());
   }
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionNavigationUIData) {
 
   // Load a page with an iframe.
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(web_contents);

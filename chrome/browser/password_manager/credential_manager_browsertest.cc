@@ -60,7 +60,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
                      const std::string& relative_url) {
     NavigationObserver observer(WebContents());
     GURL url = test_server.GetURL(hostname, relative_url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     observer.Wait();
   }
 
@@ -115,7 +115,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     const GURL a_url2 = https_test_server().GetURL("bar.a.com", "/title2.html");
 
     // Navigate to a mostly empty page.
-    ui_test_utils::NavigateToURL(browser(), a_url1);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
 
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -133,7 +133,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
         WebContents(), "user", "hunter2"));
 
     // Trigger a same-site navigation.
-    ui_test_utils::NavigateToURL(browser(), a_url2);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2));
 
     // Ensure that the old document no longer has a mojom::CredentialManager
     // interface connection to the ContentCredentialManager, nor can it get one
@@ -221,7 +221,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     const GURL b_url = https_test_server().GetURL("b.com", "/title2.html");
 
     // Navigate to a mostly empty page.
-    ui_test_utils::NavigateToURL(browser(), a_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
 
     ChromePasswordManagerClient* client =
         ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -242,7 +242,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     // and which will swap out the old RenderFrameHost.
     content::RenderFrameDeletedObserver rfh_destruction_observer(
         WebContents()->GetMainFrame());
-    ui_test_utils::NavigateToURL(browser(), b_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
 
     // Ensure that the navigator.credentials.store() call is never serviced.
     // The sufficient conditions for this are:
@@ -725,8 +725,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   AddHSTSHost(https_test_server().host_port_pair().host());
 
   // Navigate to HTTPS page and trigger the migration.
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server().GetURL("/password/done.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server().GetURL("/password/done.html")));
 
   // Call the API to trigger the account chooser.
   ASSERT_TRUE(content::ExecuteScript(
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       browser()->profile()->GetPrefs());
 
   // Navigate to a mostly empty page.
-  ui_test_utils::NavigateToURL(browser(), a_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
 
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(WebContents());
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_TRUE(client->was_store_ever_called());
 
   // Trigger a same-site navigation.
-  ui_test_utils::NavigateToURL(browser(), a_url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2));
 
   // Expect the Mojo connection closed.
   EXPECT_FALSE(client->has_binding_for_credential_manager());
@@ -861,21 +861,21 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
   EXPECT_TRUE(client->has_binding_for_credential_manager());
 
   // Same-document navigation. Call to get() succeeds.
-  ui_test_utils::NavigateToURL(browser(), a_url2_ref);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url2_ref));
   EXPECT_TRUE(client->has_binding_for_credential_manager());
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                true));
 
   // Cross-site navigation. Call to get() succeeds without results.
-  ui_test_utils::NavigateToURL(browser(), b_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                false));
 
   // Trigger a cross-site navigation back. Call to get() should still succeed,
   // and once again with results.
-  ui_test_utils::NavigateToURL(browser(), a_url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url1));
   ASSERT_NO_FATAL_FAILURE(
       TriggerNavigatorGetPasswordCredentialsAndExpectHasResult(WebContents(),
                                                                true));

@@ -122,9 +122,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(testing::_)).Times(0);
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      https_server_.GetURL("a.test", "/clear_site_data_header_cookies"));
+      https_server_.GetURL("a.test", "/clear_site_data_header_cookies")));
 
   EXPECT_EQ(base::Time(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());

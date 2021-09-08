@@ -153,10 +153,10 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
         url::SchemeHostPort("https", hostname, https_server_.port()).GetURL());
 
     // Navigate to the page with SSL error.
-    ui_test_utils::NavigateToURL(browser(), kCertErrorURL);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kCertErrorURL));
 
     // Navigate away from the interstitial to trigger report upload.
-    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   }
 
   void SendPendingReports() {

@@ -58,7 +58,7 @@ class ExtensionWebUITest : public ExtensionApiTest {
 
     // Run the test.
     bool actual_result = false;
-    ui_test_utils::NavigateToURL(browser(), page_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
     content::RenderFrameHost* webui =
         browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
     if (!webui)
@@ -98,8 +98,8 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
   // Loads |extension|'s options page in an <extensionoptions> and returns the
   // <extensionoptions>'s WebContents.
   content::WebContents* OpenExtensionOptions(const Extension* extension) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 GURL(chrome::kChromeUIExtensionsURL));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(chrome::kChromeUIExtensionsURL)));
     content::WebContents* webui =
         browser()->tab_strip_model()->GetActiveWebContents();
 

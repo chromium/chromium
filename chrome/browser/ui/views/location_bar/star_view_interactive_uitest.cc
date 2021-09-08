@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTestWithReadLaterEnabled,
       ReadingListModelFactory::GetForBrowserContext(browser()->profile());
   test::ReadingListLoadObserver(reading_list_model).Wait();
   GURL url("http://www.test.com/");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   StarView* star_icon = GetStarIcon();
   const GURL current_url =

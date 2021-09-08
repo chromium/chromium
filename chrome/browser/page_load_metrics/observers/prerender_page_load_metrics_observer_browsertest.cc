@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Navigate to an initial page.
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   histogram_tester().ExpectTotalCount(
       internal::kHistogramPrerenderActivationToLargestContentfulPaint2, 1);
@@ -142,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Navigate to an initial page.
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -173,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // As the tab was in the background when activated, no CWV metrics are
   // recorded.
@@ -208,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Navigate to an initial page.
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -225,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // As the prerender was cancelled, no prerendering metrics are recorded.
   EXPECT_EQ(0u, histogram_tester()
@@ -242,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Navigate to an initial page.
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   // Start a prerender.
   GURL redirected_url = embedded_test_server()->GetURL("/title2.html");
@@ -260,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Verify that UKM records the URL after the redirection.
   auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);

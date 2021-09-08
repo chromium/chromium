@@ -59,7 +59,7 @@ class AllUrlsApiTest : public ExtensionApiTest {
                                             false);
     ExtensionTestMessageListener listener_b("execute: " + expected_url, false);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     ASSERT_TRUE(listener_a.WaitUntilSatisfied());
     ASSERT_TRUE(listener_b.WaitUntilSatisfied());
   }

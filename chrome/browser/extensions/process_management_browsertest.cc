@@ -156,8 +156,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, MAYBE_ProcessOverflow) {
   GURL extension1_url = extension1->url();
 
   // Create multiple tabs for each type of renderer that might exist.
-  ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("isolated_apps/app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("isolated_apps/app1/main.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
 
   // Navigate a tab to an extension page.
   GURL extension_url = extension->GetResourceURL("popup.html");
-  ui_test_utils::NavigateToURL(browser(), extension_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(extension_url, web_contents->GetLastCommittedURL());
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
                        NavigateWebTabToChromeWebStoreViaPost) {
   // Navigate a tab to a web page with a form.
   GURL web_url = embedded_test_server()->GetURL("foo.com", "/form.html");
-  ui_test_utils::NavigateToURL(browser(), web_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), web_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_url, web_contents->GetLastCommittedURL());
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreInIsolatedOriginTest,
   GURL cws_web_url = gallery_url().ReplaceComponents(replace_path);
 
   // Navigate to Chrome Web Store and check that it's loaded successfully.
-  ui_test_utils::NavigateToURL(browser(), cws_web_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cws_web_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
@@ -686,8 +686,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
 
   // Navigate the current tab to the test page in the extension, which will
   // create the extension process and register the webRequest blocking listener.
-  ui_test_utils::NavigateToURL(browser(),
-                               extension->GetResourceURL("/test.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("/test.html")));
 
   // Open a new tab to about:blank, which will result in a new SiteInstance
   // without an explicit site URL set.
@@ -752,8 +752,8 @@ IN_PROC_BROWSER_TEST_F(
                                    std::string(32, 'a') + "/");
   EXPECT_NE(installed_extension, nonexistent_extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("example.com", "/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto can_access_window = [this, web_contents](const GURL& url) {

@@ -374,7 +374,8 @@ class DiceBrowserTest : public InProcessBrowserTest,
 
   // Navigates to the given path on the test server.
   void NavigateToURL(const std::string& path) {
-    ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_.GetURL(path)));
   }
 
   // Returns the identity manager.
@@ -835,8 +836,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
 #endif
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
   // Navigate to Gaia and from the native tab, which uses an extension.
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("chrome:chrome-signin?reason=5"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome:chrome-signin?reason=5")));
 
   // Check that the request had no Dice request header.
   if (dice_request_header_.empty())

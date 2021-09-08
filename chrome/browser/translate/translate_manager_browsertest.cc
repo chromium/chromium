@@ -373,8 +373,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
 
   ResetObserver();
   // Now navigate to a page in French.
-  ui_test_utils::NavigateToURL(
-      browser(), GURL(embedded_test_server()->GetURL("/french_page.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("/french_page.html"))));
   WaitUntilLanguageDetermined();
 
   EXPECT_EQ("fr",
@@ -1234,7 +1234,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   GURL french_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
-  ui_test_utils::NavigateToURL(browser(), french_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), french_url));
 
   WaitUntilLanguageDetermined();
   EXPECT_EQ("fr",
@@ -1377,8 +1377,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   ResetObserver();
   // Now navigate to a page in French.
-  ui_test_utils::NavigateToURL(
-      browser(), GURL(embedded_test_server()->GetURL("/french_page.html")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("/french_page.html"))));
   WaitUntilLanguageDetermined();
 
   EXPECT_EQ("fr",
@@ -1997,7 +1997,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerWithSubFrameSupportBrowserTest,
 
   GURL french_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
-  ui_test_utils::NavigateToURL(browser(), french_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), french_url));
 
   WaitUntilLanguageDetermined();
   EXPECT_EQ("fr",

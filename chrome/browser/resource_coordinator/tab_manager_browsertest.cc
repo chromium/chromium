@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectPDFPages) {
   // Get two tabs open, the first one being a PDF page and the second one being
   // the foreground tab.
   GURL url1 = embedded_test_server()->GetURL("/pdf/test.pdf");
-  ui_test_utils::NavigateToURL(browser(), url1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   GURL url2(chrome::kChromeUIAboutURL);
   ui_test_utils::NavigateToURLWithDisposition(
@@ -416,7 +416,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   auto* tsm = browser()->tab_strip_model();
 
   // Open 2 tabs, the second one being in the background.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIAboutURL),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -459,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
 // Makes sure that tabs using media devices are protected.
 IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectVideoTabs) {
   // Open 2 tabs, the second one being in the background.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUIAboutURL),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
@@ -500,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectDevToolsTabsFromDiscarding) {
   // Get two tabs open, the second one being the foreground tab.
   GURL test_page(ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   // Open a DevTools window for the first.
   DevToolsWindow* devtool = DevToolsWindowTesting::OpenDevToolsWindowSync(
       GetWebContentsAt(0), true /* is_docked */);
@@ -680,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
 
   GURL test_page(ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
   // document.wasDiscarded is false initially.
   bool not_discarded_result;
@@ -698,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
   // the navigation will reload the tab.
   // TODO(fdoray): Figure out why the test fails if a reload is done instead of
   // a navigation.
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   EXPECT_EQ(LifecycleUnitState::ACTIVE, GetLifecycleUnitAt(0)->GetState());
 
   // document.wasDiscarded is true on navigate after discard.
@@ -711,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
 IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
   GURL test_page(ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   content::WebContents* web_contents = tsm()->GetActiveWebContents();
 
   // The renderer process should be alive at this point.
@@ -741,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, DiscardedTabHasNoProcess) {
 
   // Here we simulate re-focussing the tab causing reload with navigation,
   // the navigation will reload the tab.
-  ui_test_utils::NavigateToURL(browser(), test_page);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
   // Reload should mean that the renderer process is alive now.
   EXPECT_EQ(process, web_contents->GetMainFrame()->GetProcess());
@@ -759,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Grab the original frames.
   content::WebContents* contents = tsm()->GetActiveWebContents();
@@ -796,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   // Here we simulate re-focussing the tab causing reload with navigation,
   // the navigation will reload the tab.
   // TODO(panicker): Consider adding a test hook on LifecycleUnit when ready.
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // Re-assign pointers after discarding, as they've changed.
   contents = tsm()->GetActiveWebContents();
@@ -833,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest,
   EXPECT_FALSE(discarded_childframe_result);
 
   // Navigate the main frame (same site) again, wasDiscarded is not set anymore.
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       main_frame, kDiscardedStateJS, &discarded_mainframe_result));
   EXPECT_FALSE(discarded_mainframe_result);

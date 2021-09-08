@@ -64,7 +64,7 @@ class PageLoadMetricsObserverPrerenderBrowserTest
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverPrerenderBrowserTest,
                        PrerenderingDontRecordUKMMetricsAndUMAHistogram) {
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), initial_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   auto entries = test_ukm_recorder()->GetEntriesByName(
       ukm::builders::LoadCountsPerTopLevelDocument::kEntryName);

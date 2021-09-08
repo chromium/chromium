@@ -428,7 +428,7 @@ void DownloadURL(Browser* browser, const GURL& download_url) {
           download_manager, 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT));
 
-  ui_test_utils::NavigateToURL(browser, download_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, download_url));
   observer->WaitForFinished();
 }
 

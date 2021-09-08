@@ -142,9 +142,9 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   set_baseline("2936082");
   // Navigate to an installable site so PWA install icon shows up.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+      embedded_test_server()->GetURL("/banners/manifest_test_page.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* app_banner_manager =

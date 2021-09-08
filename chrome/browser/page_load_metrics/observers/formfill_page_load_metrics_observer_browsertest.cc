@@ -57,14 +57,15 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        UserDataFieldFilledUseCounter) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
@@ -87,29 +88,29 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        UserDataFieldFilledPreviouslyUseCounter) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "a.com", "/autofill/autofill_test_form.html"));
+                     "a.com", "/autofill/autofill_test_form.html")));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 1);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 2);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
@@ -120,19 +121,20 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        ClearBrowsingData) {
   base::HistogramTester histogram_tester;
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   ClearBrowsingData(chrome_browsing_data_remover::DATA_TYPE_SITE_USAGE_DATA);
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",

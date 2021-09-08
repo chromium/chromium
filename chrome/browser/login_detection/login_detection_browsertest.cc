@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
   GURL test_url(https_test_server_.GetURL("www.saved.com", "/title1.html"));
 
   // Initial navigation will not be treated as no login.
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
 
   // Use site isolation to save the site to manual passworded list.
@@ -94,25 +94,26 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
 
   // Subsequent navigation be detected as login.
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 
   // Navigations to other subdomains of saved.com are treated as login too.
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("mobile.saved.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server_.GetURL("mobile.saved.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 
   ResetHistogramTester();
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("saved.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("saved.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kPasswordEnteredLogin);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   // Navigate to the OAuth requestor.
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
   ResetHistogramTester();
 
@@ -140,15 +141,15 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   ResetHistogramTester();
 
   // Subsequent navigations to the OAuth requestor site will be treated as OAuth
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("www.foo.com", "/title3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("www.foo.com", "/title3.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kOauthLogin);
 }
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest,
                        OptimizationGuideDetectedBlacklist) {
-  ui_test_utils::NavigateToURL(
-      browser(), GURL("https://www.optguideloggedin.com/page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("https://www.optguideloggedin.com/page.html")));
   ExpectLoginDetectionTypeMetric(
       LoginDetectionType::kOptimizationGuideDetected);
 }

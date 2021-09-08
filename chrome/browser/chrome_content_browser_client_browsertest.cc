@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::NavigationEntry* entry = browser()
                                         ->tab_strip_model()
                                         ->GetWebContentsAt(0)
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
-  ui_test_utils::NavigateToURL(browser(), ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   InstantService* instant_service =
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
 
   // Navigating to a non-NTP URL on ntp.com should not result in an Instant
   // process.
-  ui_test_utils::NavigateToURL(browser(), isolated_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
   EXPECT_FALSE(instant_service->IsInstantProcess(
       contents->GetMainFrame()->GetProcess()->GetID()));
   EXPECT_EQ(contents->GetMainFrame()->GetSiteInstance()->GetSiteURL(),
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(OpenWindowFromNTPBrowserTest,
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
-  ui_test_utils::NavigateToURL(browser(), ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* ntp_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   InstantService* instant_service =
@@ -299,11 +299,11 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorScheme) {
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->OnWebPreferencesChanged();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
-          base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html"))));
+          base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html")))));
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedColorScheme()), tab_title);
@@ -316,7 +316,8 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
       ->GetActiveWebContents()
       ->OnWebPreferencesChanged();
 
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIDownloadsURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIDownloadsURL)));
 
   bool matches;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
@@ -340,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesPdfUI) {
   pdf_extension_url.append(url::kStandardSchemeSeparator);
   pdf_extension_url.append(extension_misc::kPdfExtensionId);
   GURL pdf_index = GURL(pdf_extension_url).Resolve("/index.html");
-  ui_test_utils::NavigateToURL(browser(), pdf_index);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_index));
 
   bool matches;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
@@ -419,11 +420,11 @@ IN_PROC_BROWSER_TEST_P(PrefersContrastTest, PrefersContrast) {
       ->tab_strip_model()
       ->GetActiveWebContents()
       ->OnWebPreferencesChanged();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       ui_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
-          base::FilePath(FILE_PATH_LITERAL("prefers-contrast.html"))));
+          base::FilePath(FILE_PATH_LITERAL("prefers-contrast.html")))));
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(base::ASCIIToUTF16(ExpectedPrefersContrast()), tab_title);
@@ -470,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, CustomHandler) {
 #endif
   AddProtocolHandler("news", "https://abc.xyz/?url=%s");
 
-  ui_test_utils::NavigateToURL(browser(), GURL("news:something"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("news:something")));
 
   std::u16string expected_title = u"abc.xyz";
   content::TitleWatcher title_watcher(
@@ -483,7 +484,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest, HandlersIgnoredWhenDisabled) {
   AddProtocolHandler("bitcoin", "https://abc.xyz/?url=%s");
   protocol_handler_registry()->Disable();
 
-  ui_test_utils::NavigateToURL(browser(), GURL("bitcoin:something"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("bitcoin:something")));
 
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));

@@ -34,8 +34,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAA) {
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // Navigate to a new URL and check that the proxying works.
-  ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("/is_uvpaa/page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server_.GetURL("/is_uvpaa/page.html")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);

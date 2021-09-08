@@ -64,8 +64,8 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
     {
       base::RunLoop run_loop;
       quit_closure_ = run_loop.QuitClosure();
-      ui_test_utils::NavigateToURL(browser(),
-                                   embedded_test_server()->GetURL(test_url));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), embedded_test_server()->GetURL(test_url)));
       run_loop.Run();
       EXPECT_FALSE(base::Contains(header_map_, "Cookie"));
     }
@@ -79,8 +79,8 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
     {
       base::RunLoop run_loop;
       quit_closure_ = run_loop.QuitClosure();
-      ui_test_utils::NavigateToURL(browser(),
-                                   embedded_test_server()->GetURL(test_url));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), embedded_test_server()->GetURL(test_url)));
       run_loop.Run();
       EXPECT_TRUE(base::Contains(header_map_, "Cookie"));
       EXPECT_EQ(kCookie, header_map_["Cookie"]);

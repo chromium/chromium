@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAcceptEncodingHeaderTest, Check) {
       }));
   ASSERT_TRUE(server.Start());
   GURL url = server.GetURL("/fetch.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   navigation_loop.Run();
   subresource_loop.Run();

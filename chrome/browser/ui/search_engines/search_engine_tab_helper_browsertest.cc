@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
   // Navigate to a page with a search descriptor. Path doesn't matter as the
   // test server always serves the same HTML.
   GURL url(embedded_test_server()->GetURL("/"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // No new search engines should be added.
   EXPECT_EQ(template_urls, url_service->GetTemplateURLs());
 }
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperPrerenderingBrowserTest,
       url_service->GetTemplateURLs();
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/form_search.html");

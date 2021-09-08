@@ -114,7 +114,7 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
 
   void NavigateToPageWithFrame(const std::string& host) {
     GURL main_url(https_server_.GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateFrameTo(const std::string& host) {

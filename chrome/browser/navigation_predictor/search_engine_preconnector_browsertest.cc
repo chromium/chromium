@@ -321,7 +321,8 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
       ->SetTickClockForTesting(&tick_clock_);
 
   if (load_page()) {
-    ui_test_utils::NavigateToURL(browser(), GetTestURL(kSearchURLWithQuery));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             GetTestURL(kSearchURLWithQuery)));
   }
 
   // Put the fake search URL to be preconnected in foreground.
@@ -393,11 +394,13 @@ IN_PROC_BROWSER_TEST_F(SearchEnginePreconnectorKeepSocketBrowserTest,
 
   WaitForPreresolveCountForURL(GetTestURL(kSearchURL), 1);
 
-  ui_test_utils::NavigateToURL(browser(), GetTestURL(kSearchURLWithQuery));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetTestURL(kSearchURLWithQuery)));
 
   auto ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   const auto& entries =
       ukm_recorder->GetMergedEntriesByName(ukm::builders::PageLoad::kEntryName);

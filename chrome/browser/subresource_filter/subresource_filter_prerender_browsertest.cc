@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   MockSubresourceFilterObserver observer(web_contents());
   EXPECT_CALL(observer, OnPageActivationComputed(_, HasActivationLevelDryRun()))
       .Times(2);
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
   prerender_helper_.AddPrerender(kPrerenderingUrl);
 }
 
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelDisabled()));
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
   }
 
   // Trigger a prerender to the prerendering URL - this URL should activate the
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelDisabled()));
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
   }
 
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelEnabled()));
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
   }
 
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelDisabled()));
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
   }
 
   // Trigger a prerender. Ensure it too is activated.
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   }
 
   // Navigate to the initial URL and trigger the prerender.
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
   const int host_id = prerender_helper_.AddPrerender(kPrerenderingUrl);
   RenderFrameHost* prerender_rfh =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
 
   // Navigate to the initial URL.
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Trigger a prerendering of title1.html.
   const int prerender_host_id = prerender_helper_.AddPrerender(kPrerenderUrl1);
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   }
 
   // Navigate to the initial URL.
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   // Trigger a prerender. Ensure it is activated.
   {
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
     MockSubresourceFilterObserver observer(web_contents());
     EXPECT_CALL(observer,
                 OnPageActivationComputed(_, HasActivationLevelEnabled()));
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
     ASSERT_TRUE(Mock::VerifyAndClearExpectations(&observer));
   }
 
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 
   // Load the initial page and trigger a prerender.
   {
-    ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
     const int prerender_host_id =
         prerender_helper_.AddPrerender(kPrerenderingUrl);
     prerender_rfh =

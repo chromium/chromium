@@ -276,7 +276,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
   AppId InstallWebApp() {
     GURL app_url = GetAppURL();
-    ui_test_utils::NavigateToURL(browser(), app_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
     AppId app_id;
     base::RunLoop run_loop;
@@ -348,7 +348,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
   ManifestUpdateResult GetResultAfterPageLoad(const GURL& url) {
     UpdateCheckResultAwaiter awaiter(browser(), url);
-    ui_test_utils::NavigateToURL(browser(), url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     return std::move(awaiter).AwaitNextResult();
   }
 
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   GURL url = GetAppURL();
   UpdateCheckResultAwaiter awaiter(browser(), url);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   chrome::CloseTab(browser());
   EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
             ManifestUpdateResult::kWebContentsDestroyed);
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   GetManifestUpdateManager(browser()).hang_update_checks_for_testing();
 
   GURL url = GetAppURL();
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   base::RunLoop run_loop;
   UpdateCheckResultAwaiter awaiter(browser(), url);

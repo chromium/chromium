@@ -152,7 +152,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
 
   // Navigates the browser to the test page indicated by |path|.
   void NavigateToTestPage(const std::string& path) const {
-    ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path)));
   }
 
   // Executes |script| and stores the result as a string in |result|. A boolean
@@ -966,7 +967,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_NO_FATAL_FAILURE(GrantNotificationPermissionForTest());
 
   Browser* other_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(other_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string script_result;
   ASSERT_TRUE(RunScript(
