@@ -1472,7 +1472,7 @@ def get_previous_non_blank_line(clean_lines, line_number):
 
 def check_ctype_functions(clean_lines, line_number, file_state, error):
     """Looks for use of the standard functions in ctype.h and suggest they be replaced
-       by use of equivalent ones in <wtf/ASCIICType.h>?.
+       by use of equivalent ones in "wtf/text/ascii_ctype.h"?.
 
     Args:
       clean_lines: A CleansedLines instance containing the file.
@@ -1493,9 +1493,9 @@ def check_ctype_functions(clean_lines, line_number, file_state, error):
 
     ctype_function = ctype_function_search.group('ctype_function')
     error(
-        line_number, 'runtime/ctype_function', 4,
-        'Use equivalent function in <wtf/ASCIICType.h> instead of the %s() function.'
-        % (ctype_function))
+        line_number, 'runtime/ctype_function', 4, 'Use equivalent function in '
+        '"third_party/blink/renderer/platform/wtf/text/ascii_ctype.h" instead '
+        'of the %s() function.' % (ctype_function))
 
 
 def replaceable_check(operator, macro, line):

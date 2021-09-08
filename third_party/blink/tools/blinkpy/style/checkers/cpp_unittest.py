@@ -2486,9 +2486,10 @@ class WebKitStyleTest(CppStyleTestBase):
 
     def test_ctype_fucntion(self):
         self.assert_lint(
-            'int i = isascii(8);',
-            'Use equivalent function in <wtf/ASCIICType.h> instead of the '
-            'isascii() function.  [runtime/ctype_function] [4]', 'foo.cpp')
+            'int i = isascii(8);', 'Use equivalent function in '
+            '"third_party/blink/renderer/platform/wtf/text/ascii_ctype.h" '
+            'instead of the isascii() function.  [runtime/ctype_function] [4]',
+            'foo.cpp')
 
     def test_redundant_virtual(self):
         self.assert_lint(

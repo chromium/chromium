@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/modules/url_pattern/url_pattern_component.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -118,6 +119,30 @@ absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input) {
   }
 
   return StdStringFromCanonOutput(canon_output, component);
+}
+
+absl::StatusOr<std::string> IPv6HostnameEncodeCallback(
+    absl::string_view input) {
+  std::string result;
+  result.reserve(input.size());
+  // This implements a light validation and canonicalization of IPv6 hostname
+  // content.  Ideally we would use the URL parser's hostname canonicalizer
+  // here, but that is too strict for the encoding callback.  The callback may
+  // see only bits and pieces of the hostname pattern; e.g. for `[:address]` it
+  // sees the `[` and `]` strings as separate calls.  Since the full URL
+  // hostname parser wants to completely parse IPv6 hostnames, this will always
+  // trigger an error.  Therefore, to allow pattern syntax within IPv6 brackets
+  // we simply check for valid characters and lowercase any hex digits.
+  for (size_t i = 0; i < input.size(); ++i) {
+    char c = input[i];
+    if (!IsASCIIHexDigit(c) && c != '[' && c != ']' && c != ':') {
+      return absl::InvalidArgumentError(
+          std::string("Invalid IPv6 hostname character '") + c + "' in '" +
+          std::string(input) + "'.");
+    }
+    result += ToASCIILower(c);
+  }
+  return result;
 }
 
 absl::StatusOr<std::string> PortEncodeCallback(absl::string_view input) {

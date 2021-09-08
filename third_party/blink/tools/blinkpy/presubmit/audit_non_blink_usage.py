@@ -1307,6 +1307,9 @@ _CONFIG = [
             # liburlpattern API.
             "base::IsStringASCII",
 
+            # Needed to use part of the StringUTF8Adaptor API.
+            "base::StringPiece",
+
             # //third_party/liburlpattern
             'liburlpattern::.+',
 

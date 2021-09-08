@@ -40,8 +40,31 @@ StringView TypeToString(Component::Type type) {
   NOTREACHED();
 }
 
+// Utility method to determine if a particular hostname pattern should be
+// treated as an IPv6 hostname.  This implements a simple and fast heuristic
+// looking for a leading `[`.  It is intended to catch the most common cases
+// with minimum overhead.
+bool TreatAsIPv6Hostname(base::StringPiece pattern_utf8) {
+  // The `[` string cannot be a valid IPv6 hostname.  We need at least two
+  // characters to represent `[*`.
+  if (pattern_utf8.size() < 2)
+    return false;
+
+  if (pattern_utf8[0] == '[')
+    return true;
+
+  // We do a bit of extra work to detect brackets behind an escape and
+  // within a grouping.
+  if ((pattern_utf8[0] == '\\' || pattern_utf8[0] == '{') &&
+      pattern_utf8[1] == '[')
+    return true;
+
+  return false;
+}
+
 // Utility method to get the correct encoding callback for a given type.
-liburlpattern::EncodeCallback GetEncodeCallback(Component::Type type,
+liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
+                                                Component::Type type,
                                                 Component* protocol_component) {
   switch (type) {
     case Component::Type::kProtocol:
@@ -51,7 +74,10 @@ liburlpattern::EncodeCallback GetEncodeCallback(Component::Type type,
     case Component::Type::kPassword:
       return PasswordEncodeCallback;
     case Component::Type::kHostname:
-      return HostnameEncodeCallback;
+      if (TreatAsIPv6Hostname(pattern_utf8))
+        return IPv6HostnameEncodeCallback;
+      else
+        return HostnameEncodeCallback;
     case Component::Type::kPort:
       return PortEncodeCallback;
     case Component::Type::kPathname:
@@ -205,7 +231,8 @@ Component* Component::Compile(StringView pattern,
   StringUTF8Adaptor utf8(final_pattern);
   auto parse_result = liburlpattern::Parse(
       absl::string_view(utf8.data(), utf8.size()),
-      GetEncodeCallback(type, protocol_component), options);
+      GetEncodeCallback(utf8.AsStringPiece(), type, protocol_component),
+      options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError(
         "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +

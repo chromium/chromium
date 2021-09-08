@@ -2200,6 +2200,85 @@
     }
   },
   {
+    "pattern": [ "http://[:address]/" ],
+    "inputs": [ "http://[::1]/" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "http",
+      "hostname": "[:address]",
+      "pathname": "/"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "[::1]", "groups": { "address": "::1" }},
+      "pathname": { "input": "/", "groups": {} }
+    }
+  },
+  {
+    "pattern": [ "http://[\\:\\:AB\\::num]/" ],
+    "inputs": [ "http://[::ab:1]/" ],
+    "exactly_empty_components": [ "username", "password", "port", "search",
+                                  "hash" ],
+    "expected_obj": {
+      "protocol": "http",
+      "hostname": "[\\:\\:ab\\::num]",
+      "pathname": "/"
+    },
+    "expected_match": {
+      "protocol": { "input": "http", "groups": {} },
+      "hostname": { "input": "[::ab:1]", "groups": { "num": "1" }},
+      "pathname": { "input": "/", "groups": {} }
+    }
+  },
+  {
+    "pattern": [{ "hostname": "[\\:\\:AB\\::num]" }],
+    "inputs": [{ "hostname": "[::ab:1]" }],
+    "expected_obj": {
+      "hostname": "[\\:\\:ab\\::num]"
+    },
+    "expected_match": {
+      "hostname": { "input": "[::ab:1]", "groups": { "num": "1" }}
+    }
+  },
+  {
+    "pattern": [{ "hostname": "[\\:\\:xY\\::num]" }],
+    "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "hostname": "{[\\:\\:ab\\::num]}" }],
+    "inputs": [{ "hostname": "[::ab:1]" }],
+    "expected_match": {
+      "hostname": { "input": "[::ab:1]", "groups": { "num": "1" }}
+    }
+  },
+  {
+    "pattern": [{ "hostname": "{[\\:\\:fé\\::num]}" }],
+    "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "hostname": "{[\\:\\::num\\:1]}" }],
+    "inputs": [{ "hostname": "[::ab:1]" }],
+    "expected_match": {
+      "hostname": { "input": "[::ab:1]", "groups": { "num": "ab" }}
+    }
+  },
+  {
+    "pattern": [{ "hostname": "{[\\:\\::num\\:fé]}" }],
+    "expected_obj": "error"
+  },
+  {
+    "pattern": [{ "hostname": "[*\\:1]" }],
+    "inputs": [{ "hostname": "[::ab:1]" }],
+    "expected_match": {
+      "hostname": { "input": "[::ab:1]", "groups": { "0": "::ab" }}
+    }
+  },
+  {
+    "pattern": [{ "hostname": "*\\:1]" }],
+    "expected_obj": "error"
+  },
+  {
     "pattern": [ "https://foo{{@}}example.com" ],
     "inputs": [ "https://foo@example.com" ],
     "expected_obj": "error"
