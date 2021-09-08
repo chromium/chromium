@@ -164,11 +164,6 @@ Document* RemoteFontFaceSource::GetDocument() const {
   return window ? window->document() : nullptr;
 }
 
-void RemoteFontFaceSource::Dispose() {
-  ClearResource();
-  PruneTable();
-}
-
 bool RemoteFontFaceSource::IsLoading() const {
   return GetResource() && GetResource()->IsLoading();
 }

@@ -19,14 +19,11 @@ class FontCustomPlatformData;
 
 class RemoteFontFaceSource final : public CSSFontFaceSource,
                                    public FontResourceClient {
-  USING_PRE_FINALIZER(RemoteFontFaceSource, Dispose);
-
  public:
   enum Phase { kNoLimitExceeded, kShortLimitExceeded, kLongLimitExceeded };
 
   RemoteFontFaceSource(CSSFontFace*, FontSelector*, FontDisplay);
   ~RemoteFontFaceSource() override;
-  void Dispose();
 
   bool IsLoading() const override;
   bool IsLoaded() const override;
