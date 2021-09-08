@@ -15357,15 +15357,17 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'example_value': 'tls1',
+      'example_value': 'tls1.2',
       'id': 279,
       'caption': '''Minimum SSL version enabled''',
       'tags': [],
-      'desc': '''Warning: Support for suppressing the TLS 1.0/1.1 warning will be removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> starting in version 91 (around May 2021) and this policy will stop working then.
+      'desc': '''Setting the policy to a valid value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't use SSL/TLS versions less than the specified version. Unrecognized values are ignored.
 
-      Setting the policy to a valid value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't use SSL/TLS versions less than the specified version. Unrecognized values are ignored.
+      If this policy is not set, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will show an error for TLS 1.0 and TLS 1.1, but the user will be able to bypass it.
 
-      If this policy is not set, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will show an error for TLS 1.0 and TLS 1.1, but the user will be able to bypass it.''',
+      If this policy is set to "tls1.2", the user will not be able to bypass this error.
+
+      Support for setting this policy to "tls1" or "tls1.1" was removed in version 91. Suppressing the TLS 1.0/1.1 warning is no longer supported.''',
     },
     {
       'name': 'SSLVersionFallbackMin',
