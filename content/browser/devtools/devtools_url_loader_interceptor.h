@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
+#include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -173,9 +174,7 @@ class DevToolsURLLoaderInterceptor {
       base::OnceCallback<void(bool use_fallback,
                               const absl::optional<net::AuthCredentials>&)>;
   // Can only be called on the IO thread.
-  static void HandleAuthRequest(int32_t process_id,
-                                int32_t routing_id,
-                                int32_t request_id,
+  static void HandleAuthRequest(GlobalRequestID req_id,
                                 const net::AuthChallengeInfo& auth_info,
                                 HandleAuthRequestCallback callback);
 

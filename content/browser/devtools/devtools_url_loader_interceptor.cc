@@ -20,7 +20,6 @@
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/global_request_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -589,12 +588,9 @@ void DevToolsURLLoaderFactoryProxy::OnProxyBindingError() {
 
 // static
 void DevToolsURLLoaderInterceptor::HandleAuthRequest(
-    int32_t process_id,
-    int32_t routing_id,
-    int32_t request_id,
+    GlobalRequestID req_id,
     const net::AuthChallengeInfo& auth_info,
     HandleAuthRequestCallback callback) {
-  GlobalRequestID req_id(process_id, request_id);
   if (auto* job = InterceptionJob::FindByRequestId(req_id))
     job->OnAuthRequest(auth_info, std::move(callback));
   else

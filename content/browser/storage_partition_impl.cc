@@ -456,7 +456,6 @@ class LoginHandlerDelegate {
       const net::AuthChallengeInfo& auth_info,
       bool is_request_for_main_frame,
       uint32_t process_id,
-      uint32_t routing_id,
       uint32_t request_id,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
@@ -464,7 +463,6 @@ class LoginHandlerDelegate {
       : auth_challenge_responder_(std::move(auth_challenge_responder)),
         auth_info_(auth_info),
         request_id_(process_id, request_id),
-        routing_id_(routing_id),
         is_request_for_main_frame_(is_request_for_main_frame),
         creating_login_delegate_(false),
         url_(url),
@@ -476,7 +474,7 @@ class LoginHandlerDelegate {
         &LoginHandlerDelegate::OnRequestCancelled, base::Unretained(this)));
 
     DevToolsURLLoaderInterceptor::HandleAuthRequest(
-        request_id_.child_id, routing_id_, request_id_.request_id, auth_info_,
+        request_id_, auth_info_,
         base::BindOnce(&LoginHandlerDelegate::ContinueAfterInterceptor,
                        weak_factory_.GetWeakPtr()));
   }
@@ -533,7 +531,6 @@ class LoginHandlerDelegate {
       auth_challenge_responder_;
   net::AuthChallengeInfo auth_info_;
   const content::GlobalRequestID request_id_;
-  const uint32_t routing_id_;
   bool is_request_for_main_frame_;
   bool creating_login_delegate_;
   GURL url_;
@@ -546,7 +543,6 @@ class LoginHandlerDelegate {
 
 void OnAuthRequiredContinuation(
     int32_t process_id,
-    int32_t routing_id,
     uint32_t request_id,
     const GURL& url,
     bool is_request_for_main_frame,
@@ -562,11 +558,10 @@ void OnAuthRequiredContinuation(
     auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
     return;
   }
-  new LoginHandlerDelegate(std::move(auth_challenge_responder),
-                           std::move(web_contents_getter), auth_info,
-                           is_request_for_main_frame, process_id, routing_id,
-                           request_id, url, head_headers,
-                           first_auth_attempt);  // deletes self
+  new LoginHandlerDelegate(
+      std::move(auth_challenge_responder), std::move(web_contents_getter),
+      auth_info, is_request_for_main_frame, process_id, request_id, url,
+      head_headers, first_auth_attempt);  // deletes self
 }
 
 bool IsPrimaryMainFrameRequest(int process_id, int routing_id) {
@@ -1804,10 +1799,10 @@ void StoragePartitionImpl::OnAuthRequired(
   is_primary_main_frame = IsPrimaryMainFrameRequest(process_id, routing_id);
   web_contents_getter =
       base::BindRepeating(GetWebContents, process_id, routing_id);
-  OnAuthRequiredContinuation(
-      process_id, routing_id, request_id, url, is_primary_main_frame,
-      first_auth_attempt, auth_info, head_headers,
-      std::move(auth_challenge_responder), web_contents_getter);
+  OnAuthRequiredContinuation(process_id, request_id, url, is_primary_main_frame,
+                             first_auth_attempt, auth_info, head_headers,
+                             std::move(auth_challenge_responder),
+                             web_contents_getter);
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
