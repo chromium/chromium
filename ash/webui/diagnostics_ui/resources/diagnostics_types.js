@@ -358,6 +358,18 @@ export let WiFiStateProperties = ash.diagnostics.mojom.WiFiStateProperties;
 export let SecurityType = ash.diagnostics.mojom.SecurityType;
 
 /**
+ * Type alias for RoamingState.
+ * @typedef {ash.diagnostics.mojom.RoamingState}
+ */
+export let RoamingState = ash.diagnostics.mojom.RoamingState;
+
+/**
+ * Type alias for LockType.
+ * @typedef {ash.diagnostics.mojom.LockType}
+ */
+export let LockType = ash.diagnostics.mojom.LockType;
+
+/**
  * Radio band related to channel frequency.
  * @enum {number}
  */

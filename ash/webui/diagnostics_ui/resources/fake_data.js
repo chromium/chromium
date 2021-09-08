@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -440,12 +440,27 @@ export let fakeCellularNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
   typeProperties: {
-    cellular: {},
+    cellular: {
+      networkTechnology: 'LTE',
+      roaming: true,
+      roamingState: RoamingState.kRoaming,
+      signalStrength: 55,
+      iccid: '83948080007483825411',
+      eid: '82099038007008862600508229159883',
+      simLocked: true,
+      lockType: LockType.kSimPin,
+      simAbsent: false,
+    },
   },
   observerGuid: 'cellularGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
-  ipConfig: null,
+  ipConfig: {
+    ipAddress: '192.168.86.197',
+    gateway: '',
+    nameServers: null,
+    routingPrefix: 0,
+  },
 };
 
 /** @type {!Array<!KeyboardInfo>} */

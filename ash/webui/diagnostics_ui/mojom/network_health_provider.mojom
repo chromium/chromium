@@ -31,9 +31,37 @@ enum NetworkType {
   kUnsupported,
 };
 
-// TODO(michaelcheco): Add Cellular properties.
-struct CellularStateProperties {
+// The roaming status of the cellular modem on the current network.
+enum RoamingState {
+  kNone,
+  kRoaming,
+  kHome,
+};
 
+// Specifies the type of SIM lock in effect.
+enum LockType {
+  kNone,
+  kSimPin,
+  kSimPuk,
+};
+
+struct CellularStateProperties {
+  // The Integrated Circuit Card Identifier of the SIM card installed in the
+  // device.
+  string iccid;
+  // The Embedded Universal Integrated Circuit Card Identifier of the eSIM card
+  // installed in the device.
+  string eid;
+  // The network technology currently in use (EDGE, LTE, etc).
+  string network_technology;
+  // True when in a roaming state and the provider is not always roaming.
+  bool roaming;
+  RoamingState roaming_state;
+  // The current signal strength for this network in the range [0, 100].
+  int32 signal_strength;
+  // True when a SIM is present and locked.
+  bool sim_locked;
+  LockType lock_type;
 };
 
 // TODO(michaelcheco): Add Ethernet properties.

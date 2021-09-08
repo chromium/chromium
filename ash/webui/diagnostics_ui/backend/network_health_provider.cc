@@ -129,10 +129,17 @@ mojom::EthernetStatePropertiesPtr CreateEthernetStateProperties(
   return mojom::EthernetStateProperties::New();
 }
 
-// TODO(michaelcheco): Add Cellular properties.
 mojom::CellularStatePropertiesPtr CreateCellularStateProperties(
     const network_mojom::NetworkTypeStateProperties& network_type_props) {
-  return mojom::CellularStateProperties::New();
+  auto cellular_props = mojom::CellularStateProperties::New();
+  cellular_props->iccid = network_type_props.get_cellular()->iccid;
+  cellular_props->eid = network_type_props.get_cellular()->eid;
+  cellular_props->network_technology =
+      network_type_props.get_cellular()->network_technology;
+  cellular_props->roaming = network_type_props.get_cellular()->roaming;
+  cellular_props->signal_strength =
+      network_type_props.get_cellular()->signal_strength;
+  return cellular_props;
 }
 
 bool IsMatchingDevice(const network_mojom::DeviceStatePropertiesPtr& device,
@@ -172,6 +179,29 @@ bool ClearDisconnectedNetwork(NetworkObserverInfo* network_info) {
   return true;
 }
 
+mojom::RoamingState GetRoamingState(
+    absl::optional<std::string>& roaming_state) {
+  if (!roaming_state.has_value()) {
+    return mojom::RoamingState::kNone;
+  }
+
+  std::string state = roaming_state.value();
+  // Possible values are 'Home' and 'Roaming'.
+  DCHECK(state == "Home" || state == "Roaming");
+  return state == "Home" ? mojom::RoamingState::kHome
+                         : mojom::RoamingState::kRoaming;
+}
+
+constexpr mojom::LockType GetLockType(const std::string& lock_type) {
+  // Possible values are 'sim-pin', 'sim-puk' or empty.
+  if (lock_type.empty()) {
+    return mojom::LockType::kNone;
+  }
+  DCHECK(lock_type == "sim-pin" || lock_type == "sim-puk");
+  return lock_type == "sim-pin" ? mojom::LockType::kSimPin
+                                : mojom::LockType::kSimPuk;
+}
+
 void UpdateNetwork(
     const network_mojom::NetworkTypeStateProperties& network_type_props,
     mojom::Network* network) {
@@ -184,10 +214,22 @@ void UpdateNetwork(
       type_properties->set_ethernet(
           CreateEthernetStateProperties(network_type_props));
       break;
-    case mojom::NetworkType::kCellular:
-      type_properties->set_cellular(
-          CreateCellularStateProperties(network_type_props));
+    case mojom::NetworkType::kCellular: {
+      auto cellular_props = CreateCellularStateProperties(network_type_props);
+      // If we have existing Cellular type properties, i.e., Sim Lock Status
+      // was present for this network, combine the newly created Cellular
+      // properties with the existing ones.
+      if (network->type_properties) {
+        cellular_props->lock_type =
+            network->type_properties->get_cellular()->lock_type;
+        cellular_props->sim_locked =
+            network->type_properties->get_cellular()->sim_locked;
+        cellular_props->roaming_state =
+            network->type_properties->get_cellular()->roaming_state;
+      }
+      type_properties->set_cellular(std::move(cellular_props));
       break;
+    }
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
       break;
@@ -216,6 +258,13 @@ void UpdateNetwork(
   ClearDisconnectedNetwork(network_info);
 }
 
+void CreateEmptyCellularPropertiesForNetwork(mojom::Network* network) {
+  auto type_properties = mojom::NetworkTypeProperties::New();
+  auto cellular_props = mojom::CellularStateProperties::New();
+  type_properties->set_cellular(std::move(cellular_props));
+  network->type_properties = std::move(type_properties);
+}
+
 void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
                    NetworkObserverInfo* network_info) {
   mojom::Network* network = network_info->network.get();
@@ -223,6 +272,17 @@ void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
 
   network->type = ConvertNetworkType(device->type);
   network->mac_address = device->mac_address;
+  if (network->type == mojom::NetworkType::kCellular &&
+      device->sim_lock_status) {
+    // Create partially populated CellularStateProperties struct.
+    // Remaining properties will be added in CreateCellularStateProperties.
+    CreateEmptyCellularPropertiesForNetwork(network);
+    DCHECK(network->type_properties->is_cellular());
+    network->type_properties->get_cellular()->lock_type =
+        GetLockType(device->sim_lock_status->lock_type);
+    network->type_properties->get_cellular()->sim_locked =
+        device->sim_lock_status->lock_enabled;
+  }
 
   // TODO(michaelcheco): Combine the applicable device states like
   // kDisabled and kDisabling into the combined NetworkState enum.
@@ -252,6 +312,16 @@ void UpdateNetwork(
     // TODO(zentaro): Investigate IPV6.
     auto ip_config = managed_properties->ip_configs.value()[0].Clone();
     network->ip_config = CreateIPConfigProperties(ip_config);
+  }
+
+  if (network->type == mojom::NetworkType::kCellular && managed_properties) {
+    auto roaming_state = GetRoamingState(
+        managed_properties->type_properties->get_cellular()->roaming_state);
+    if (!network->type_properties) {
+      CreateEmptyCellularPropertiesForNetwork(network);
+    }
+    DCHECK(network->type_properties->is_cellular());
+    network->type_properties->get_cellular()->roaming_state = roaming_state;
   }
 }
 

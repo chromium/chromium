@@ -47,6 +47,9 @@ constexpr char kEth0NetworkGuid[] = "eth0_network_guid";
 constexpr char kWlan0DevicePath[] = "/device/wlan0";
 constexpr char kWlan0Name[] = "wlan0_name";
 constexpr char kWlan0NetworkGuid[] = "wlan0_network_guid";
+constexpr char kCellular0DevicePath[] = "/device/cellular0";
+constexpr char kCellular0Name[] = "cellular0_name";
+constexpr char kCellular0NetworkGuid[] = "cellular0_network_guid";
 constexpr char kFormattedMacAddress[] = "01:23:45:67:89:AB";
 constexpr char kTestIPConfigPath[] = "test_ip_config_path";
 
@@ -286,6 +289,79 @@ class NetworkHealthProviderTest : public testing::Test {
 
   void SetWifiPortal() {
     SetNetworkState(kWlan0DevicePath, shill::kStatePortal);
+  }
+
+  void SetCellularConnected() {
+    SetNetworkState(kCellular0DevicePath, shill::kStateReady);
+  }
+
+  void SetCellularDisconnected() {
+    SetNetworkState(kCellular0DevicePath, shill::kStateOffline);
+  }
+
+  void SetCellularOnline() {
+    SetNetworkState(kCellular0DevicePath, shill::kStateOnline);
+  }
+
+  void AssociateCellular() {
+    network_handler_test_helper_->service_test()->AddService(
+        kCellular0DevicePath, kCellular0NetworkGuid, kCellular0Name,
+        shill::kTypeCellular, shill::kStateAssociation, true);
+    network_handler_test_helper_->profile_test()->AddService(
+        NetworkProfileHandler::GetSharedProfilePath(), kCellular0DevicePath);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void CreateCellularDevice() {
+    network_handler_test_helper_->manager_test()->AddTechnology(
+        shill::kTypeCellular, true);
+    network_handler_test_helper_->device_test()->AddDevice(
+        kCellular0DevicePath, shill::kTypeCellular, kCellular0Name);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetCellularProperty(std::string property, base::Value value) {
+    network_handler_test_helper_->SetServiceProperty(kCellular0DevicePath,
+                                                     property, value);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetCellularIccid(std::string iccid) {
+    SetCellularProperty(shill::kIccidProperty, base::Value(iccid));
+  }
+
+  void SetCellularNetworkTechnology(std::string technology) {
+    SetCellularProperty(shill::kNetworkTechnologyProperty,
+                        base::Value(technology));
+  }
+
+  void SetCellularEid(std::string eid) {
+    SetCellularProperty(shill::kEidProperty, base::Value(eid));
+  }
+
+  void SetCellularSignalStrength(int signal_strength) {
+    SetCellularProperty(shill::kSignalStrengthProperty,
+                        base::Value(signal_strength));
+  }
+
+  void SetCellularSimLockStatus(std::string lock_type, bool sim_locked) {
+    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
+    sim_lock_status.SetKey(shill::kSIMLockEnabledProperty,
+                           base::Value(sim_locked));
+    sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_type));
+    sim_lock_status.SetKey(shill::kSIMLockRetriesLeftProperty, base::Value(3));
+    network_handler_test_helper_->device_test()->SetDeviceProperty(
+        kCellular0DevicePath, shill::kSIMLockStatusProperty,
+        std::move(sim_lock_status),
+        /*notify_changed=*/true);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetCellularRoamingState(std::string roaming_state) {
+    SetCellularProperty(shill::kRoamingStateProperty,
+                        base::Value(roaming_state));
   }
 
   void SetWifiProperty(std::string property, base::Value value) {
@@ -593,6 +669,83 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   EXPECT_EQ(observer_guid, list_observer.active_guid());
 }
 
+// Test the setup and all intermediate states for cellular network.
+TEST_F(NetworkHealthProviderTest, SetupCellularNetwork) {
+  // Observe the network list.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  size_t list_call_count = 0;
+  ExpectListObserverFired(list_observer, &list_call_count);
+
+  // No networks are present and no active network.
+  ASSERT_EQ(0u, list_observer.observer_guids().size());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Create a cellular device and verify `list_observer` fired.
+  CreateCellularDevice();
+  ExpectListObserverFired(list_observer, &list_call_count);
+
+  // Verify a new network is created, but there is no active guid because
+  // the network isn't connected.
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string observer_guid = list_observer.observer_guids()[0];
+  EXPECT_FALSE(observer_guid.empty());
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Observe the network and verify the observer fired.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, observer_guid);
+  size_t state_call_count = 0;
+  ExpectStateObserverFired(observer, &state_call_count);
+
+  // Get latest state and verify wifi in not connected state.
+  EXPECT_EQ(observer.GetLatestState()->observer_guid, observer_guid);
+  EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kCellular);
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+
+  // Put the cellular device into the connecting/associating state and verify
+  // the new state and there is still no active guid.
+  AssociateCellular();
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnecting);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Put cellular into connected (but not online) state. It's guid should now
+  // be the active one.
+  SetCellularConnected();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kConnected);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
+
+  // Put cellular into online state. It's guid should remain active.
+  SetCellularOnline();
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
+
+  // Simulate disconnect and network goes back to kNotConnected, and the
+  // active guid should be cleared.
+  SetCellularDisconnected();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state,
+            mojom::NetworkState::kNotConnected);
+  EXPECT_TRUE(list_observer.active_guid().empty());
+
+  // Simulate reconnect and back to online state. The active guid should be
+  // set.
+  SetCellularOnline();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
+}
+
 // Test modifying wifi properties
 TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
   // Create a wifi device.
@@ -681,6 +834,150 @@ TEST_F(NetworkHealthProviderTest, ChangingWifiProperties) {
             frequency_2);
   EXPECT_EQ(observer.GetLatestState()->type_properties->get_wifi()->security,
             security_2);
+}
+
+// Test modifying cellular properties
+TEST_F(NetworkHealthProviderTest, ChangingCellularProperties) {
+  // Create a cellular device.
+  FakeNetworkListObserver list_observer;
+  SetupObserver(&list_observer);
+  CreateCellularDevice();
+  ASSERT_EQ(1u, list_observer.observer_guids().size());
+  const std::string guid = list_observer.observer_guids()[0];
+
+  // Put cellular online and validate it is active.
+  FakeNetworkStateObserver observer;
+  SetupObserver(&observer, guid);
+  AssociateCellular();
+  SetCellularOnline();
+  size_t state_call_count = 0;
+  size_t list_call_count = 0;
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(guid, list_observer.active_guid());
+
+  // Set iccid.
+  const std::string iccid_1 = "1234567890";
+  SetCellularIccid(iccid_1);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->iccid,
+            iccid_1);
+
+  // Change the iccid.
+  const std::string iccid_2 = "0987654321";
+  SetCellularIccid(iccid_2);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->iccid,
+            iccid_2);
+
+  // Set network_technology.
+  const std::string network_technology_1 = shill::kNetworkTechnologyEdge;
+  SetCellularNetworkTechnology(network_technology_1);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->network_technology,
+            network_technology_1);
+
+  // Change the network_technology.
+  const std::string network_technology_2 = shill::kNetworkTechnologyLte;
+  SetCellularNetworkTechnology(network_technology_2);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->network_technology,
+            network_technology_2);
+
+  // Set eid.
+  const std::string eid_1 = "03928509238502395213124";
+  SetCellularEid(eid_1);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->eid,
+            eid_1);
+
+  // Change the eid.
+  const std::string eid_2 = "89012375908213750982315";
+  SetCellularEid(eid_2);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->eid,
+            eid_2);
+
+  // Set signal strength.
+  const int signal_strength_1 = 40;
+  SetCellularSignalStrength(signal_strength_1);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->signal_strength,
+            signal_strength_1);
+
+  // Change the signal strength.
+  const int signal_strength_2 = 55;
+  SetCellularSignalStrength(signal_strength_2);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->signal_strength,
+            signal_strength_2);
+
+  // Set roaming state.
+  const std::string roaming_state_1 = shill::kRoamingStateHome;
+  SetCellularRoamingState(roaming_state_1);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->roaming_state,
+      mojom::RoamingState::kHome);
+
+  // Change roaming state.
+  const std::string roaming_state_2 = shill::kRoamingStateRoaming;
+  SetCellularRoamingState(roaming_state_2);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->roaming_state,
+      mojom::RoamingState::kRoaming);
+
+  SetCellularSimLockStatus(shill::kSIMLockPin, /**sim_locked=*/true);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->lock_type,
+      mojom::LockType::kSimPin);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->sim_locked,
+      true);
+
+  SetCellularSimLockStatus(/**lock_type=*/"", /**sim_locked=*/false);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->lock_type,
+      mojom::LockType::kNone);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->sim_locked,
+      false);
+
+  // Verify all properties are still set.
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->signal_strength,
+            signal_strength_2);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->iccid,
+            iccid_2);
+  EXPECT_EQ(observer.GetLatestState()->type_properties->get_cellular()->eid,
+            eid_2);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->roaming_state,
+      mojom::RoamingState::kRoaming);
+  EXPECT_EQ(observer.GetLatestState()
+                ->type_properties->get_cellular()
+                ->network_technology,
+            network_technology_2);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->lock_type,
+      mojom::LockType::kNone);
+  EXPECT_EQ(
+      observer.GetLatestState()->type_properties->get_cellular()->sim_locked,
+      false);
 }
 
 // Start with an online ethernet connection and validate the interaction
