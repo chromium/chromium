@@ -99,8 +99,14 @@ class UnifiedMessageListView::MessageViewContainer
   ~MessageViewContainer() override { message_view_->RemoveObserver(this); }
 
   // Update the border and background corners based on if the notification is
-  // at the top or the bottom.
-  void UpdateBorder(bool is_top, bool is_bottom) {
+  // at the top or the bottom. If `force_update` is true, ignore previous states
+  // and always update the border.
+  void UpdateBorder(bool is_top, bool is_bottom, bool force_update) {
+    if (is_top_ == is_top && is_bottom_ == is_bottom && !force_update)
+      return;
+    is_top_ = is_top;
+    is_bottom_ = is_bottom;
+
     message_view_->SetBorder(
         is_bottom ? views::NullBorder()
                   : views::CreateSolidSidedBorder(
@@ -237,6 +243,11 @@ class UnifiedMessageListView::MessageViewContainer
   // programagically. False if slid out manually by the user.
   bool is_slid_out_programatically = false;
 
+  // Keeps track if this view is at the top or bottom of `list_view_`. Storing
+  // this to prevent unnecessary update.
+  bool is_top_ = false;
+  bool is_bottom_ = false;
+
   MessageView* const message_view_;
   UnifiedMessageListView* const list_view_;
   NotificationSwipeControlView* const control_view_;
@@ -279,7 +290,7 @@ void UnifiedMessageListView::Init() {
         notification->id(), message_center::DISPLAY_SOURCE_MESSAGE_CENTER);
     is_latest = false;
   }
-  UpdateBorders();
+  UpdateBorders(/*force_update=*/true);
   UpdateBounds();
 }
 
@@ -456,7 +467,7 @@ void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
   auto* view = CreateMessageView(*notification);
   view->SetExpanded(view->IsAutoExpandingAllowed());
   AddChildViewAt(new MessageViewContainer(view, this), index_to_insert);
-  UpdateBorders();
+  UpdateBorders(/*force_update=*/false);
   ResetBounds();
 }
 
@@ -559,7 +570,7 @@ void UnifiedMessageListView::AnimationEnded(const gfx::Animation* animation) {
     UpdateClearAllAnimation();
   }
 
-  UpdateBorders();
+  UpdateBorders(/*force_update=*/false);
 
   if (state_ != State::IDLE)
     StartAnimation();
@@ -625,12 +636,13 @@ void UnifiedMessageListView::CollapseAllNotifications() {
     AsMVC(child)->Collapse();
 }
 
-void UnifiedMessageListView::UpdateBorders() {
+void UnifiedMessageListView::UpdateBorders(bool force_update) {
   // The top notification is drawn with rounded corners when the stacking bar is
   // not shown.
   bool is_top = children().size() == 1 && state_ != State::MOVE_DOWN;
   for (auto* child : children()) {
-    AsMVC(child)->UpdateBorder(is_top, child == children().back());
+    AsMVC(child)->UpdateBorder(is_top, child == children().back(),
+                               force_update);
     is_top = false;
   }
 }
@@ -691,7 +703,7 @@ void UnifiedMessageListView::DeleteRemovedNotifications() {
     }
   }
 
-  UpdateBorders();
+  UpdateBorders(/*force_update=*/false);
 }
 
 void UnifiedMessageListView::StartAnimation() {

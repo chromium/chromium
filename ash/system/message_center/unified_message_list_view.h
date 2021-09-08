@@ -179,7 +179,9 @@ class ASH_EXPORT UnifiedMessageListView
 
   // Updates the borders of notifications. It adds separators between
   // notifications, and rounds notification corners at the top and the bottom.
-  void UpdateBorders();
+  // `force_update` indicates if we should update borders on all notifications
+  // regardless of their previous state.
+  void UpdateBorders(bool force_update);
 
   // Updates |final_bounds| of all notifications and moves old |final_bounds| to
   // |start_bounds|.
