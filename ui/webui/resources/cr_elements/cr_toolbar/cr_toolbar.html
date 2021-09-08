@@ -112,7 +112,13 @@
       :host-context([enable-branding-update]):host([always-show-logo]) picture,
       :host-context([enable-branding-update]):host(:not([narrow])) picture {
         display: initial;
-        margin-inline-end: 10px;
+        margin-inline-end: 16px;
+      }
+
+      :host-context([enable-branding-update]):host([always-show-logo]) #leftSpacer,
+      :host-context([enable-branding-update]):host(:not([narrow])) #leftSpacer {
+        /* 12px to match #rightSpacer + 9px to align with icons in menus. */
+        padding-inline-start: calc(12px + 9px);
       }
 
       :host-context([enable-branding-update]):host([always-show-logo]) :is(picture, #product-logo),
