@@ -73,6 +73,11 @@ WARN_UNUSED_RESULT bool IsExpectedSubframeErrorTransition(
     SiteInstance* start_site_instance,
     SiteInstance* end_site_instance);
 
+// Open a new popup passing no URL to window.open, which results in a blank page
+// and no last committed entry. Returns the newly created shell. Also saves the
+// reference to the opened window in the "last_opened_window" variable in JS.
+Shell* OpenBlankWindow(WebContentsImpl* web_contents);
+
 // Creates compact textual representations of the state of the frame tree that
 // is appropriate for use in assertions.
 //

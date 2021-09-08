@@ -128,6 +128,17 @@ bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
   }
 }
 
+Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
+  Shell* new_shell = new_shell_observer.GetShell();
+  EXPECT_NE(new_shell->web_contents(), web_contents);
+  EXPECT_FALSE(
+      new_shell->web_contents()->GetController().GetLastCommittedEntry());
+  return new_shell;
+}
+
 FrameTreeVisualizer::FrameTreeVisualizer() {
 }
 

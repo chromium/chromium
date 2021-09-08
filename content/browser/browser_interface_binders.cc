@@ -281,12 +281,7 @@ void BindColorChooserFactoryForFrame(
 void BindConversionInternalsHandler(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<::mojom::ConversionInternalsHandler> receiver) {
-  auto* contents = WebContents::FromRenderFrameHost(host);
-  DCHECK_EQ(contents->GetLastCommittedURL().host_piece(),
-            kChromeUIConversionInternalsHost);
-  DCHECK(contents->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
-
-  content::WebUI* web_ui = contents->GetWebUI();
+  content::WebUI* web_ui = host->GetWebUI();
 
   // Performs a safe downcast to the concrete ConversionInternalsUI subclass.
   ConversionInternalsUI* conversion_internals_ui =
@@ -302,17 +297,17 @@ void BindConversionInternalsHandler(
     return;
   }
 
+  DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
+            kChromeUIConversionInternalsHost);
+  DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
+
   conversion_internals_ui->BindInterface(std::move(receiver));
 }
 
 void BindProcessInternalsHandler(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<::mojom::ProcessInternalsHandler> receiver) {
-  auto* contents = WebContents::FromRenderFrameHost(host);
-  DCHECK_EQ(contents->GetLastCommittedURL().host_piece(),
-            kChromeUIProcessInternalsHost);
-
-  content::WebUI* web_ui = contents->GetWebUI();
+  content::WebUI* web_ui = host->GetWebUI();
 
   // Performs a safe downcast to the concrete ProcessInternalsUI subclass.
   ProcessInternalsUI* process_internals_ui =
@@ -326,6 +321,10 @@ void BindProcessInternalsHandler(
         bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
     return;
   }
+
+  DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
+            kChromeUIProcessInternalsHost);
+  DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
 
   process_internals_ui->BindProcessInternalsHandler(std::move(receiver), host);
 }
