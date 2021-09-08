@@ -18,7 +18,10 @@ android_library("java") {
   ]
   srcjar_deps = [ ":device_reauth_java_enums_srcjar" ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/device_reauth/BiometricAuthenticatorBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/device_reauth/BiometricAuthenticatorBridge.java",
+    "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
+  ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
@@ -26,7 +29,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/device_reauth/BiometricAuthenticatorBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/device_reauth/BiometricAuthenticatorBridge.java",
+    "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
+  ]
 }
 
 java_cpp_enum("device_reauth_java_enums_srcjar") {

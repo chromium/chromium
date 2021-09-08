@@ -3010,6 +3010,8 @@ static_library("browser") {
       "device_reauth/android/biometric_authenticator_bridge.h",
       "device_reauth/android/biometric_authenticator_bridge_impl.cc",
       "device_reauth/android/biometric_authenticator_bridge_impl.h",
+      "device_reauth/android/reauthenticator_bridge.cc",
+      "device_reauth/android/reauthenticator_bridge.h",
       "dom_distiller/dom_distiller_service_factory_android.cc",
       "dom_distiller/dom_distiller_service_factory_android.h",
       "dom_distiller/tab_utils_android.cc",
