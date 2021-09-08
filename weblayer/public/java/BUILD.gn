@@ -90,6 +90,7 @@ android_library("java") {
     "org/chromium/weblayer/ObserverList.java",
     "org/chromium/weblayer/OpenUrlCallback.java",
     "org/chromium/weblayer/Page.java",
+    "org/chromium/weblayer/PageInfoDisplayOptions.java",
     "org/chromium/weblayer/PaymentDetailsUpdateServiceWrapper.java",
     "org/chromium/weblayer/PrerenderController.java",
     "org/chromium/weblayer/Profile.java",

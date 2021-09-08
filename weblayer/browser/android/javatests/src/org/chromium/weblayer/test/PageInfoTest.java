@@ -27,6 +27,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.weblayer.PageInfoDisplayOptions;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -66,8 +67,25 @@ public class PageInfoTest {
         int buttonId = ResourceUtil.getIdentifier(remoteContext, "id/security_button", packageName);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.findViewById(buttonId));
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.findViewById(buttonId));
+            }
+        });
+        onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowPageInfo() {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(
+                mActivityTestRule.getTestDataURL("simple_page.html"));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                PageInfoDisplayOptions options =
+                        PageInfoDisplayOptions.builder().showPublisherUrl().build();
+                activity.getBrowser().getUrlBarController().showPageInfo(options);
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
     }
@@ -81,8 +99,9 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT));
     }
@@ -96,8 +115,9 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText(CONNECTION_IS_NOT_SECURE_TEXT)).perform(click());
         onViewWaiting(withText("The identity of this website has not been verified."));
@@ -113,8 +133,9 @@ public class PageInfoTest {
                 mActivityTestRule.getTestDataURL("simple_page.html"), extras);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            StrictModeContext ignored = StrictModeContext.allowDiskReads();
-            EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                EventUtils.simulateTouchCenterOfView(activity.getUrlBarView());
+            }
         });
         onViewWaiting(withText("Cookies")).perform(click());
         onViewWaiting(withText("0 cookies in use"));
