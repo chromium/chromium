@@ -5016,6 +5016,7 @@ test("unit_tests") {
       "../browser/ui/web_applications/file_stream_data_pipe_getter_unittest.cc",
       "../browser/ui/webui/certificate_provisioning_ui_handler_unittest.cc",
       "../browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils_unittest.cc",
+      "../browser/ui/webui/chromeos/arc_graphics_tracing/arc_graphics_tracing_handler_unittest.cc",
       "../browser/ui/webui/chromeos/edu_account_login_handler_unittest.cc",
       "../renderer/chromeos_delayed_callback_group_unittest.cc",
     ]

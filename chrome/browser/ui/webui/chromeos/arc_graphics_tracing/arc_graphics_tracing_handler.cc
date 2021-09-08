@@ -80,29 +80,6 @@ base::FilePath GetLastTracingModelPath(Profile* profile) {
       kLastTracingModelName);
 }
 
-base::FilePath GetModelPathFromTitle(Profile* profile,
-                                     const std::string& title) {
-  constexpr size_t max_name_size = 32;
-  char normalized_name[max_name_size];
-  size_t index = 0;
-  for (char c : title) {
-    c = base::ToLowerASCII(c);
-    if (index == max_name_size)
-      break;
-    if (c == ' ') {
-      normalized_name[index++] = '_';
-      continue;
-    }
-    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
-      normalized_name[index++] = c;
-  }
-  normalized_name[index] = 0;
-  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
-      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
-                         normalized_name,
-                         (base::Time::Now() - base::Time()).InSeconds()));
-}
-
 std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
     const base::FilePath& last_model_path) {
   std::string json_content;
@@ -320,6 +297,31 @@ base::trace_event::TraceConfig GetTracingConfig(ArcGraphicsTracingMode mode) {
 }
 
 }  // namespace
+
+// static
+base::FilePath ArcGraphicsTracingHandler::GetModelPathFromTitle(
+    Profile* profile,
+    const std::string& title) {
+  constexpr size_t kMaxNameSize = 32;
+  char normalized_name[kMaxNameSize];
+  size_t index = 0;
+  for (char c : title) {
+    if (index == kMaxNameSize - 1)
+      break;
+    c = base::ToLowerASCII(c);
+    if (c == ' ') {
+      normalized_name[index++] = '_';
+      continue;
+    }
+    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+      normalized_name[index++] = c;
+  }
+  normalized_name[index] = 0;
+  return file_manager::util::GetDownloadsFolderForProfile(profile).AppendASCII(
+      base::StringPrintf("overview_tracing_%s_%" PRId64 ".json",
+                         normalized_name,
+                         (base::Time::Now() - base::Time()).InSeconds()));
+}
 
 ArcGraphicsTracingHandler::ArcGraphicsTracingHandler(
     ArcGraphicsTracingMode mode)

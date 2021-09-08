@@ -20,12 +20,15 @@
 #include "ui/events/event_handler.h"
 #include "ui/wm/public/activation_change_observer.h"
 
+class Profile;
+
 namespace arc {
 class ArcGraphicsJankDetector;
 class ArcSystemStatCollector;
 }  // namespace arc
 
 namespace base {
+class FilePath;
 class ListValue;
 }  // namespace base
 
@@ -42,6 +45,9 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
                                   public ui::EventHandler,
                                   public exo::SurfaceObserver {
  public:
+  static base::FilePath GetModelPathFromTitle(Profile* profile,
+                                              const std::string& title);
+
   explicit ArcGraphicsTracingHandler(ArcGraphicsTracingMode mode);
   ~ArcGraphicsTracingHandler() override;
 
