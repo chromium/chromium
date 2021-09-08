@@ -26,9 +26,9 @@ namespace multidevice_setup {
 
 namespace {
 
-constexpr std::array<mojom::Feature, 2> kPhoneHubSubFeatures{
+constexpr std::array<mojom::Feature, 3> kPhoneHubSubFeatures{
     mojom::Feature::kPhoneHubNotifications,
-    mojom::Feature::kPhoneHubTaskContinuation};
+    mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
 base::flat_map<mojom::Feature, std::string>
 GenerateFeatureToEnabledPrefNameMap() {
@@ -486,7 +486,8 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
     if (pair.first != feature)
       continue;
 
-    if (pair.second == multidevice::SoftwareFeature::kPhoneHubClient &&
+    if ((pair.second == multidevice::SoftwareFeature::kPhoneHubClient ||
+         pair.second == multidevice::SoftwareFeature::kEcheClient) &&
         is_secondary_user_) {
       return false;
     }
@@ -541,9 +542,10 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
     if (pair.first != feature)
       continue;
 
-    // The bluetooth public address is required in order to use PhoneHub and its
-    // sub-features.
-    if (pair.second == multidevice::SoftwareFeature::kPhoneHubHost &&
+    // The bluetooth public address is required in order to use PhoneHub/Eche
+    // and its sub-features.
+    if ((pair.second == multidevice::SoftwareFeature::kPhoneHubHost ||
+         pair.second == multidevice::SoftwareFeature::kEcheHost) &&
         host_device.bluetooth_public_address().empty()) {
       return false;
     }

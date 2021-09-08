@@ -143,6 +143,16 @@
         </template>
         <template is="dom-if"
             if="[[isFeatureSupported(
+                MultiDeviceFeature.ECHE, pageContentData)]]"
+            restamp>
+          <settings-multidevice-feature-item id="phoneHubAppsItem"
+              feature="[[MultiDeviceFeature.ECHE]]"
+              page-content-data="[[pageContentData]]" is-sub-feature
+              deep-link-focus-id$="[[Setting.kPhoneHubAppsOnOff]]">
+          </settings-multidevice-feature-item>
+        </template>
+        <template is="dom-if"
+            if="[[isFeatureSupported(
                 MultiDeviceFeature.WIFI_SYNC, pageContentData)]]"
             restamp>
           <settings-multidevice-wifi-sync-item id="wifiSyncItem"

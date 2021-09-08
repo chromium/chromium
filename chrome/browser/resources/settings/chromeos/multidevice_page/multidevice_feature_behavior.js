@@ -87,7 +87,8 @@ const MultiDeviceFeatureBehaviorImpl = {
   isPhoneHubSubFeature(feature) {
     return [
       settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
-      settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION
+      settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
+      settings.MultiDeviceFeature.ECHE
     ].includes(feature);
   },
 
@@ -157,6 +158,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18n('multidevicePhoneHubTaskContinuationItemTitle');
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.i18n('multideviceWifiSyncItemTitle');
+      case settings.MultiDeviceFeature.ECHE:
+        return this.i18n('multidevicePhoneHubAppsItemTitle');
       default:
         return '';
     }
@@ -180,6 +183,7 @@ const MultiDeviceFeatureBehaviorImpl = {
       case settings.MultiDeviceFeature.PHONE_HUB:
       case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
       case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
+      case settings.MultiDeviceFeature.ECHE:
         return 'os-settings:multidevice-better-together-suite';
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return 'os-settings:multidevice-wifi-sync';
@@ -211,6 +215,8 @@ const MultiDeviceFeatureBehaviorImpl = {
             'multidevicePhoneHubTaskContinuationItemSummary');
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.i18nAdvanced('multideviceWifiSyncItemSummary');
+      case settings.MultiDeviceFeature.ECHE:
+        return this.i18nAdvanced('multidevicePhoneHubAppsItemSummary');
       default:
         return '';
     }
@@ -245,6 +251,8 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.pageContentData.phoneHubTaskContinuationState;
       case settings.MultiDeviceFeature.WIFI_SYNC:
         return this.pageContentData.wifiSyncState;
+      case settings.MultiDeviceFeature.ECHE:
+        return this.pageContentData.phoneHubAppsState;
       default:
         return null;
     }

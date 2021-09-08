@@ -43,6 +43,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kPhoneHubNotificationsOnOff,
         chromeos.settings.mojom.Setting.kPhoneHubTaskContinuationOnOff,
         chromeos.settings.mojom.Setting.kWifiSyncOnOff,
+        chromeos.settings.mojom.Setting.kPhoneHubAppsOnOff,
       ]),
     },
   },

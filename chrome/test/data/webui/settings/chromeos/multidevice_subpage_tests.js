@@ -60,19 +60,25 @@ suite('Multidevice', function() {
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
           phoneHubState: supportedFeatures.includes(
-                        settings.MultiDeviceFeature.PHONE_HUB) ?
+                             settings.MultiDeviceFeature.PHONE_HUB) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
-          phoneHubNotificationsState: supportedFeatures.includes(
+          phoneHubNotificationsState:
+              supportedFeatures.includes(
                   settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
-          phoneHubTaskContinuationState: supportedFeatures.includes(
+          phoneHubTaskContinuationState:
+              supportedFeatures.includes(
                   settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
           wifiSyncState: supportedFeatures.includes(
-                  settings.MultiDeviceFeature.WIFI_SYNC) ?
+                             settings.MultiDeviceFeature.WIFI_SYNC) ?
+              settings.MultiDeviceFeatureState.ENABLED_BY_USER :
+              settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
+          phoneHubAppsState:
+              supportedFeatures.includes(settings.MultiDeviceFeature.ECHE) ?
               settings.MultiDeviceFeatureState.ENABLED_BY_USER :
               settings.MultiDeviceFeatureState.NOT_SUPPORTED_BY_CHROMEBOOK,
         });
@@ -144,6 +150,9 @@ suite('Multidevice', function() {
       assertEquals(
           !!multideviceSubpage.$$('#wifiSyncItem'),
           mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
+      assertEquals(
+          !!multideviceSubpage.$$('#phoneHubAppsItem'),
+          mode === settings.MultiDeviceSettingsMode.HOST_SET_VERIFIED);
     }
   });
 
@@ -157,6 +166,7 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
 
         setSupportedFeatures([
           settings.MultiDeviceFeature.SMART_LOCK,
@@ -165,6 +175,7 @@ suite('Multidevice', function() {
           settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS,
           settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
           settings.MultiDeviceFeature.WIFI_SYNC,
+          settings.MultiDeviceFeature.ECHE,
         ]);
         assertTrue(!!multideviceSubpage.$$('#smartLockItem'));
         assertFalse(!!multideviceSubpage.$$('#instantTetheringItem'));
@@ -173,6 +184,7 @@ suite('Multidevice', function() {
         assertTrue(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertTrue(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertTrue(!!multideviceSubpage.$$('#wifiSyncItem'));
+        assertTrue(!!multideviceSubpage.$$('#phoneHubAppsItem'));
 
         setSupportedFeatures([settings.MultiDeviceFeature.INSTANT_TETHERING]);
         assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
@@ -182,6 +194,7 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
 
         setSupportedFeatures([]);
         assertFalse(!!multideviceSubpage.$$('#smartLockItem'));
@@ -191,6 +204,7 @@ suite('Multidevice', function() {
         assertFalse(!!multideviceSubpage.$$('#phoneHubNotificationsItem'));
         assertFalse(!!multideviceSubpage.$$('#phoneHubTaskContinuationItem'));
         assertFalse(!!multideviceSubpage.$$('#wifiSyncItem'));
+        assertFalse(!!multideviceSubpage.$$('#phoneHubAppsItem'));
       });
 
   test('clicking SmartLock item routes to SmartLock subpage', function() {
@@ -308,5 +322,22 @@ suite('Multidevice', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Phone hub on/off toggle should be focused for settingId=209.');
+  });
+
+  test('Deep link to phone hub apps on/off', async () => {
+    const params = new URLSearchParams;
+    params.append('settingId', '218');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.MULTIDEVICE_FEATURES, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement = multideviceSubpage.$$('#phoneHubAppsItem')
+                                .$$('settings-multidevice-feature-toggle')
+                                .$$('cr-toggle');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Phone hub apps on/off toggle should be focused for settingId=218.');
   });
 });

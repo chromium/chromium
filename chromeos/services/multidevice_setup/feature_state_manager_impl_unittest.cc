@@ -551,7 +551,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
       mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
-      mojom::Feature::kPhoneHubTaskContinuation};
+      mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
     TryAllUnverifiedHostStatesAndVerifyFeatureState(phone_hub_feature);
@@ -565,6 +565,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
   SetSoftwareFeatureState(true /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubClient,
                           multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheClient,
+                          multidevice::SoftwareFeatureState::kSupported);
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
                        phone_hub_feature);
@@ -576,6 +579,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
                           multidevice::SoftwareFeatureState::kEnabled);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
+                          multidevice::SoftwareFeatureState::kSupported);
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
                        phone_hub_feature);
@@ -625,7 +631,7 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
 
   const std::vector<mojom::Feature> kAllPhoneHubFeatures{
       mojom::Feature::kPhoneHub, mojom::Feature::kPhoneHubNotifications,
-      mojom::Feature::kPhoneHubTaskContinuation};
+      mojom::Feature::kPhoneHubTaskContinuation, mojom::Feature::kEche};
 
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures)
     TryAllUnverifiedHostStatesAndVerifyFeatureState(phone_hub_feature);
@@ -639,6 +645,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
   SetSoftwareFeatureState(true /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubClient,
                           multidevice::SoftwareFeatureState::kSupported);
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheClient,
+                          multidevice::SoftwareFeatureState::kSupported);
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
                        phone_hub_feature);
@@ -649,6 +658,9 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHubForSecondaryUsers) {
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
+                          multidevice::SoftwareFeatureState::kEnabled);
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
                           multidevice::SoftwareFeatureState::kEnabled);
   for (const auto& phone_hub_feature : kAllPhoneHubFeatures) {
     VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
@@ -826,6 +838,81 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, WifiSync) {
   VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
                      mojom::Feature::kWifiSync);
   VerifyFeatureStateChange(7u /* expected_index */, mojom::Feature::kWifiSync,
+                           mojom::FeatureState::kProhibitedByPolicy);
+}
+
+TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, Eche) {
+  SetupFeatureStateManager();
+
+  TryAllUnverifiedHostStatesAndVerifyFeatureState(mojom::Feature::kEche);
+
+  SetVerifiedHost();
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kPhoneHubClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByPhone,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(1u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
+
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kPhoneHubHost,
+                          multidevice::SoftwareFeatureState::kEnabled);
+  VerifyFeatureState(mojom::FeatureState::kNotSupportedByChromebook,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(2u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByChromebook);
+
+  SetSoftwareFeatureState(true /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheClient,
+                          multidevice::SoftwareFeatureState::kSupported);
+  VerifyFeatureStateChange(3u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kNotSupportedByPhone);
+
+  // The top-level Phone Hub enabled pref is disabled for existing Better
+  // Together users; they must go to settings to explicitly enable PhoneHub.
+  SetSoftwareFeatureState(false /* use_local_device */,
+                          multidevice::SoftwareFeature::kEcheHost,
+                          multidevice::SoftwareFeatureState::kEnabled);
+  VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(
+      4u /* expected_index */, mojom::Feature::kEche,
+      mojom::FeatureState::kUnavailableTopLevelFeatureDisabled);
+
+  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
+  VerifyFeatureState(mojom::FeatureState::kEnabledByUser,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(5u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kEnabledByUser);
+
+  MakeBetterTogetherSuiteDisabledByUser();
+  VerifyFeatureState(mojom::FeatureState::kUnavailableSuiteDisabled,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(7u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kUnavailableSuiteDisabled);
+
+  test_pref_service()->SetBoolean(kEcheEnabledPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kDisabledByUser,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(8u /* expected_index */, mojom::Feature::kEche,
+                           mojom::FeatureState::kDisabledByUser);
+
+  // Re-enable Eche, then disable Phone Hub, which implicitly
+  // makes Eche unavailable.
+  test_pref_service()->SetBoolean(kEcheEnabledPrefName, true);
+  test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kUnavailableTopLevelFeatureDisabled,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(
+      10u /* expected_index */, mojom::Feature::kEche,
+      mojom::FeatureState::kUnavailableTopLevelFeatureDisabled);
+
+  // Prohibiting Phone Hub implicitly prohibits Eche features.
+  test_pref_service()->SetBoolean(kPhoneHubAllowedPrefName, false);
+  VerifyFeatureState(mojom::FeatureState::kProhibitedByPolicy,
+                     mojom::Feature::kEche);
+  VerifyFeatureStateChange(11u /* expected_index */, mojom::Feature::kEche,
                            mojom::FeatureState::kProhibitedByPolicy);
 }
 

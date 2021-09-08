@@ -100,6 +100,7 @@ cr.define('settings', function() {
    *   phoneHubState: !settings.MultiDeviceFeatureState,
    *   phoneHubNotificationsState: !settings.MultiDeviceFeatureState,
    *   phoneHubTaskContinuationState: !settings.MultiDeviceFeatureState,
+   *   phoneHubAppsState: !settings.MultiDeviceFeatureState,
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,

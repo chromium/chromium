@@ -67,6 +67,7 @@ enum Setting {
   kNearbyShareDeviceVisibility = 215,
   kNearbyShareContacts = 216,
   kNearbyShareDataUsage = 217,
+  kPhoneHubAppsOnOff = 218,
 
   // People section.
   kAddAccount = 300,

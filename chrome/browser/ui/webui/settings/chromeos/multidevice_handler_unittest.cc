@@ -134,6 +134,12 @@ void VerifyPageContentDict(
       multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation);
   EXPECT_EQ(static_cast<int>(it->second), phone_hub_task_continuation_state);
 
+  int phone_hub_apps_state;
+  EXPECT_TRUE(page_content_dict->GetInteger("phoneHubAppsState",
+                                            &phone_hub_apps_state));
+  it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
+  EXPECT_EQ(static_cast<int>(it->second), phone_hub_apps_state);
+
   int wifi_sync_state;
   EXPECT_TRUE(page_content_dict->GetInteger("wifiSyncState", &wifi_sync_state));
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
