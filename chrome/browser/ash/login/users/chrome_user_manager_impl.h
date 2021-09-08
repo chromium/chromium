@@ -156,6 +156,7 @@ class ChromeUserManagerImpl
   void PerformPostUserLoggedInActions(bool browser_restart) override;
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
+                          user_manager::UserRemovalReason reason,
                           user_manager::RemoveUserDelegate* delegate) override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;

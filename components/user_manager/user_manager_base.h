@@ -19,6 +19,7 @@
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"
@@ -32,8 +33,6 @@ class SingleThreadTaskRunner;
 }
 
 namespace user_manager {
-
-class RemoveUserDelegate;
 
 // Base implementation of the UserManager interface.
 class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
@@ -89,6 +88,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SwitchToLastActiveUser() override;
   void OnSessionStarted() override;
   void RemoveUser(const AccountId& account_id,
+                  UserRemovalReason reason,
                   RemoveUserDelegate* delegate) override;
   void RemoveUserFromList(const AccountId& account_id) override;
   bool IsKnownUser(const AccountId& account_id) const override;
@@ -141,6 +141,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) override;
   void NotifyUsersSignInConstraintsChanged() override;
+  void NotifyUserToBeRemoved(const AccountId& account_id) override;
+  void NotifyUserRemoved(const AccountId& account_id,
+                         UserRemovalReason reason) override;
   void Initialize() override;
 
   // This method updates "User was added to the device in this session nad is
@@ -214,6 +217,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Implementation for RemoveUser method. It is synchronous. It is called from
   // RemoveUserInternal after owner check.
   virtual void RemoveNonOwnerUserInternal(const AccountId& account_id,
+                                          UserRemovalReason reason,
                                           RemoveUserDelegate* delegate);
 
   // Removes a regular or supervised user from the user list.
@@ -228,6 +232,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // method, that verifies that owner will not get deleted, and calls
   // |RemoveNonOwnerUserInternal|.
   virtual void RemoveUserInternal(const AccountId& account_id,
+                                  UserRemovalReason reason,
                                   RemoveUserDelegate* delegate);
 
   // Removes data stored or cached outside the user's cryptohome (wallpaper,

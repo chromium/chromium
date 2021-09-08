@@ -27,6 +27,7 @@ class FakeChromeUserRemovalManager : public FakeChromeUserManager {
   FakeChromeUserRemovalManager() = default;
 
   void RemoveUser(const AccountId& account_id,
+                  user_manager::UserRemovalReason reason,
                   user_manager::RemoveUserDelegate* delegate) override {
     RemoveUserFromList(account_id);
   }

@@ -248,7 +248,9 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
   bool removed = prefs_util->RemoveFromListCrosSetting(
       chromeos::kAccountsPrefUsers, canonical_email);
   user_manager::UserManager::Get()->RemoveUser(
-      AccountId::FromUserEmail(parameters->email), NULL);
+      AccountId::FromUserEmail(parameters->email),
+      user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
+      /*delegate=*/nullptr);
   return RespondNow(OneArgument(base::Value(removed)));
 }
 

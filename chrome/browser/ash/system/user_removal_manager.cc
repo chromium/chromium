@@ -54,7 +54,10 @@ bool RemoveUsersIfNeeded() {
   const user_manager::UserList user_list = user_manager->GetUsers();
 
   for (user_manager::User* user : user_list)
-    user_manager->RemoveUser(user->GetAccountId(), nullptr);
+    user_manager->RemoveUser(
+        user->GetAccountId(),
+        user_manager::UserRemovalReason::REMOTE_ADMIN_INITIATED,
+        /*delegate=*/nullptr);
 
   return true;
 }

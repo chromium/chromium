@@ -1008,8 +1008,9 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
   } else {
     // Removes the account on the device.
-    user_manager::UserManager::Get()->RemoveUser(account_id,
-                                                 nullptr /*delegate*/);
+    user_manager::UserManager::Get()->RemoveUser(
+        account_id, user_manager::UserRemovalReason::GAIA_REMOVED,
+        nullptr /*delegate*/);
   }
 }
 

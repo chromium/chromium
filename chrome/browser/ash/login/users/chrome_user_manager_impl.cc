@@ -545,12 +545,13 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
 
 void ChromeUserManagerImpl::RemoveUserInternal(
     const AccountId& account_id,
+    user_manager::UserRemovalReason reason,
     user_manager::RemoveUserDelegate* delegate) {
   CrosSettings* cros_settings = CrosSettings::Get();
 
   auto callback =
       base::BindOnce(&ChromeUserManagerImpl::RemoveUserInternal,
-                     weak_factory_.GetWeakPtr(), account_id, delegate);
+                     weak_factory_.GetWeakPtr(), account_id, reason, delegate);
 
   // Ensure the value of owner email has been fetched.
   if (CrosSettingsProvider::TRUSTED !=
@@ -568,7 +569,7 @@ void ChromeUserManagerImpl::RemoveUserInternal(
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .RemoveProfileByAccountId(account_id);
-  RemoveNonOwnerUserInternal(account_id, delegate);
+  RemoveNonOwnerUserInternal(account_id, reason, delegate);
 }
 
 void ChromeUserManagerImpl::SaveUserOAuthStatus(
@@ -759,8 +760,12 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
          it != users_.end();) {
       const AccountId account_id = (*it)->GetAccountId();
       if ((*it)->HasGaiaAccount() && account_id != GetOwnerAccountId()) {
+        user_manager::UserManager::Get()->NotifyUserToBeRemoved(account_id);
         RemoveNonCryptohomeData(account_id);
         DeleteUser(*it);
+        user_manager::UserManager::Get()->NotifyUserRemoved(
+            account_id,
+            user_manager::UserRemovalReason::DEVICE_EPHEMERAL_USERS_ENABLED);
         it = users_.erase(it);
         changed = true;
       } else {

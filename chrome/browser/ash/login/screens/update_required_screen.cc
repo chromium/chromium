@@ -430,7 +430,10 @@ void UpdateRequiredScreen::DeleteUsersData() {
   // change underneath.
   const user_manager::UserList user_list = user_manager->GetUsers();
   for (user_manager::User* user : user_list) {
-    user_manager->RemoveUser(user->GetAccountId(), this /* delegate */);
+    user_manager->RemoveUser(user->GetAccountId(),
+                             user_manager::UserRemovalReason::
+                                 LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE,
+                             /*delegate=*/this);
   }
 }
 

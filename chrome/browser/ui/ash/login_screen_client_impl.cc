@@ -218,8 +218,9 @@ void LoginScreenClientImpl::OnRemoveUserWarningShown() {
 void LoginScreenClientImpl::RemoveUser(const AccountId& account_id) {
   ProfileMetrics::LogProfileDeleteUser(
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
-  user_manager::UserManager::Get()->RemoveUser(account_id,
-                                               nullptr /*delegate*/);
+  user_manager::UserManager::Get()->RemoveUser(
+      account_id, user_manager::UserRemovalReason::LOCAL_USER_INITIATED,
+      /*delegate=*/nullptr);
   if (ash::LoginDisplayHost::default_host())
     ash::LoginDisplayHost::default_host()->UpdateAddUserButtonStatus();
 }

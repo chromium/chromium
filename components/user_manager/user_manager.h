@@ -25,6 +25,15 @@ class RemoveUserDelegate;
 // order, stored in local state.
 USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
 
+enum class UserRemovalReason : int32_t {
+  UNKNOWN = 0,
+  LOCAL_USER_INITIATED = 1,
+  REMOTE_ADMIN_INITIATED = 2,
+  LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE = 3,
+  DEVICE_EPHEMERAL_USERS_ENABLED = 4,
+  GAIA_REMOVED = 5
+};
+
 // Interface for UserManagerBase - that provides base implementation for
 // Chrome OS user management. Typical features:
 // * Get list of all know users (who have logged into this Chrome OS device)
@@ -54,6 +63,13 @@ class USER_MANAGER_EXPORT UserManager {
     // Called when any of the device cros settings which are responsible for
     // user sign in are changed.
     virtual void OnUsersSignInConstraintsChanged();
+
+    // Called just before a user of the device will be removed.
+    virtual void OnUserToBeRemoved(const AccountId& account_id);
+
+    // Called just after a user of the device has been removed.
+    virtual void OnUserRemoved(const AccountId& account_id,
+                               UserRemovalReason reason);
 
    protected:
     virtual ~Observer();
@@ -177,10 +193,12 @@ class USER_MANAGER_EXPORT UserManager {
   // Invoked by session manager to inform session start.
   virtual void OnSessionStarted() = 0;
 
-  // Removes the user from the device. Note, it will verify that the given user
-  // isn't the owner, so calling this method for the owner will take no effect.
-  // Note, |delegate| can be NULL.
+  // Removes the user from the device while providing a reason for enterprise
+  // reporting. Note, it will verify that the given user isn't the owner, so
+  // calling this method for the owner will take no effect. Note, |delegate|
+  // can be NULL.
   virtual void RemoveUser(const AccountId& account_id,
+                          UserRemovalReason reason,
                           RemoveUserDelegate* delegate) = 0;
 
   // Removes the user from the persistent list only. Also removes the user's
@@ -315,6 +333,9 @@ class USER_MANAGER_EXPORT UserManager {
       const User& user,
       const gfx::ImageSkia& profile_image) = 0;
   virtual void NotifyUsersSignInConstraintsChanged() = 0;
+  virtual void NotifyUserToBeRemoved(const AccountId& account_id) = 0;
+  virtual void NotifyUserRemoved(const AccountId& account_id,
+                                 UserRemovalReason reason) = 0;
 
   // Returns true if guest user is allowed.
   virtual bool IsGuestSessionAllowed() const = 0;
