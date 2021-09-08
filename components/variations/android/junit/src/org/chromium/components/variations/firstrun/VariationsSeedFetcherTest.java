@@ -7,6 +7,7 @@ package org.chromium.components.variations.firstrun;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +35,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.variations.VariationsSwitches;
@@ -47,7 +50,7 @@ import java.util.Date;
  * Tests for VariationsSeedFetcher
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
 public class VariationsSeedFetcherTest {
     private HttpURLConnection mConnection;
     private VariationsSeedFetcher mFetcher;
@@ -77,6 +80,9 @@ public class VariationsSeedFetcherTest {
                 .getServerConnection(VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict,
                         sMilestone, sChannel);
         mPrefs = ContextUtils.getAppSharedPreferences();
+
+        RecordHistogram.forgetHistogramForTesting(
+                VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM);
     }
 
     @After
@@ -126,6 +132,13 @@ public class VariationsSeedFetcherTest {
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_BASE64, ""),
                 equalTo(Base64.encodeToString(
                         ApiCompatibilityUtils.getBytesUtf8("1234"), Base64.NO_WRAP)));
+        assertEquals("Should be logged as HTTP code", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM,
+                        HttpURLConnection.HTTP_OK));
+        assertEquals("Should only log Variations.FirstRun.SeedFetchResult once", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
     }
 
     /**
@@ -138,6 +151,9 @@ public class VariationsSeedFetcherTest {
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
 
         verify(mConnection, never()).connect();
+        assertEquals("Should not log Variations.FirstRun.SeedFetchResult if no fetch needed", 0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
     }
 
     /**
@@ -151,6 +167,13 @@ public class VariationsSeedFetcherTest {
 
         assertTrue(mPrefs.getBoolean(VariationsSeedFetcher.VARIATIONS_INITIALIZED_PREF, false));
         assertFalse(VariationsSeedBridge.hasJavaPref());
+        assertEquals("Should be logged as HTTP code", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM,
+                        HttpURLConnection.HTTP_NOT_FOUND));
+        assertEquals("Should only log Variations.FirstRun.SeedFetchResult once", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
     }
 
     /**
@@ -164,6 +187,13 @@ public class VariationsSeedFetcherTest {
 
         assertTrue(mPrefs.getBoolean(VariationsSeedFetcher.VARIATIONS_INITIALIZED_PREF, false));
         assertFalse(VariationsSeedBridge.hasJavaPref());
+        assertEquals("Should be logged as IOException", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM,
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_IOEXCEPTION));
+        assertEquals("Should only log Variations.FirstRun.SeedFetchResult once", 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedFetcher.SEED_FETCH_RESULT_HISTOGRAM));
     }
 
     /**

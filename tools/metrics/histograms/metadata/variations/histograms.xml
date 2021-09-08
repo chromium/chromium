@@ -102,7 +102,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The result of attempting to fetch an initial variations seed during Android
     Chrome first run. Records both the HTTP code and various error values in one
-    enumeration.
+    enumeration. Prior to M95, non-200 HTTP codes were counted as IOException.
+    Starting with M95, these codes are logged separately.
   </summary>
 </histogram>
 
