@@ -99,6 +99,13 @@ export class BookmarksListElement extends BookmarksListElementBase {
     this.bookmarksDragManager_.stopObserving();
   }
 
+  /** BookmarksDragDelegate */
+  getAscendants(bookmarkId: string): string[] {
+    const path = this.findPathToId_(bookmarkId);
+    return path.map(bookmark => bookmark.id);
+  }
+
+  /** BookmarksDragDelegate */
   getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number {
     const path = this.findPathToId_(bookmark.id);
     const parent = path[path.length - 2];
@@ -106,6 +113,10 @@ export class BookmarksListElement extends BookmarksListElementBase {
       return -1;
     }
     return parent.children.findIndex((child) => child.id === bookmark.id);
+  }
+  /** BookmarksDragDelegate */
+  isFolderOpen(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean {
+    return this.openFolders_.some(id => bookmark.id === id);
   }
 
   private addListener_(eventName: string, callback: Function): void {

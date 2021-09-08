@@ -7,6 +7,8 @@
   }
 
   .row {
+    --row-padding-inline-start: calc(var(--node-depth) * 17px);
+    --row-icon-width: 20px;
     align-items: center;
     appearance: none;
     background: transparent;
@@ -15,10 +17,10 @@
     color: currentColor;
     display: grid;
     grid-template-areas: 'arrow icon title';
-    grid-template-columns: 20px 20px auto;
+    grid-template-columns: var(--row-icon-width) var(--row-icon-width) auto;
     height: var(--row-height);
     line-height: var(--row-height);
-    padding-inline-start: calc(var(--node-depth) * 17px);
+    padding-inline-start: var(--row-padding-inline-start);
     text-align: start;
     width: 100%;
   }
@@ -124,6 +126,8 @@
     content: '';
     display: block;
     height: 2px;
+    margin-inline-start: calc(
+        var(--row-padding-inline-start) + var(--row-icon-width));
     position: absolute;
     top: -1px;
     width: 100%;

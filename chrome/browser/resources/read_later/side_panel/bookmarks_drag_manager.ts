@@ -11,6 +11,8 @@ import {getBookmarkFromElement, isBookmarkFolderElement, isValidDropTarget} from
 
 export const DROP_POSITION_ATTR = 'drop-position';
 
+const ROOT_FOLDER_ID = '0';
+
 export enum DropPosition {
   ABOVE = 'above',
   INTO = 'into',
@@ -18,7 +20,9 @@ export enum DropPosition {
 }
 
 interface BookmarksDragDelegate extends HTMLElement {
+  getAscendants(bookmarkId: string): string[];
   getIndex(bookmark: chrome.bookmarks.BookmarkTreeNode): number;
+  isFolderOpen(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
 }
 
 class DragSession {
@@ -52,6 +56,16 @@ class DragSession {
       this.clearStyles_();
     }
 
+    const dragOverBookmark = getBookmarkFromElement(dragOverElement);
+    const ascendants = this.delegate_.getAscendants(dragOverBookmark.id);
+    const isInvalidDragOverTarget = this.dragData_.elements &&
+        this.dragData_.elements.some(
+            element => ascendants.indexOf(element.id) !== -1);
+    if (isInvalidDragOverTarget) {
+      this.lastDragOverElement_ = null;
+      return;
+    }
+
     const isDraggingOverFolder = isBookmarkFolderElement(dragOverElement);
     const dragOverElRect = dragOverElement.getBoundingClientRect();
     const dragOverYRatio =
@@ -59,9 +73,18 @@ class DragSession {
 
     let dropPosition;
     if (isDraggingOverFolder) {
-      if (dragOverYRatio <= .25) {
+      const folderIsOpen = this.delegate_.isFolderOpen(dragOverBookmark);
+      if (dragOverBookmark.parentId === ROOT_FOLDER_ID) {
+        // Cannot drag above or below children of root folder.
+        dropPosition = DropPosition.INTO;
+      } else if (dragOverYRatio <= .25) {
         dropPosition = DropPosition.ABOVE;
       } else if (dragOverYRatio <= .75) {
+        dropPosition = DropPosition.INTO;
+      } else if (folderIsOpen) {
+        // If a folder is open, its child bookmarks appear immediately below it
+        // so it should not be possible to drop a bookmark right below an open
+        // folder.
         dropPosition = DropPosition.INTO;
       } else {
         dropPosition = DropPosition.BELOW;
@@ -76,6 +99,7 @@ class DragSession {
 
   cancel() {
     this.clearStyles_();
+    this.lastDragOverElement_ = null;
   }
 
   finish() {
@@ -178,7 +202,8 @@ export class BookmarksDragManager {
         e.composedPath().find(target => (target as HTMLElement).draggable) as
         HTMLElement);
     if (!bookmark ||
-        /* Cannot drag root's children. */ bookmark.parentId === '0' ||
+        /* Cannot drag root's children. */ bookmark.parentId ===
+            ROOT_FOLDER_ID ||
         bookmark.unmodifiable) {
       return;
     }

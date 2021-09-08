@@ -4,9 +4,10 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {FOLDER_OPEN_CHANGED_EVENT} from 'chrome://read-later.top-chrome/side_panel/bookmark_folder.js';
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 import {BookmarksDragManager, DROP_POSITION_ATTR, DropPosition} from 'chrome://read-later.top-chrome/side_panel/bookmarks_drag_manager.js';
-import {BookmarksListElement} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
+import {BookmarksListElement, LOCAL_STORAGE_OPEN_FOLDERS_KEY} from 'chrome://read-later.top-chrome/side_panel/bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -43,24 +44,34 @@ suite('SidePanelBookmarkDragManagerTest', () => {
         id: '4',
         title: 'My folder',
         parentId: '1',
-        children: [],
+        children: [{
+          id: '5',
+          title: 'My folder\'s child',
+          url: 'http://google.com',
+          parentId: '4',
+        }],
       },
     ],
   }];
 
   function getDraggableElements() {
-    const draggableElements = [];
+    function getDraggableElementsInner(root) {
+      const draggableElements = [];
+      const children =
+          root.shadowRoot.querySelectorAll('bookmark-folder, .bookmark');
+      children.forEach(child => {
+        if (child.tagName === 'BOOKMARK-FOLDER') {
+          draggableElements.push(child.shadowRoot.querySelector('#folder'));
+          draggableElements.push(...getDraggableElementsInner(child));
+        } else {
+          draggableElements.push(child);
+        }
+      });
+      return draggableElements;
+    }
+
     const rootFolder = delegate.shadowRoot.querySelector('bookmark-folder');
-    const children =
-        rootFolder.shadowRoot.querySelectorAll('bookmark-folder, .bookmark');
-    children.forEach(child => {
-      if (child.tagName === 'BOOKMARK-FOLDER') {
-        draggableElements.push(child.shadowRoot.querySelector('#folder'));
-      } else {
-        draggableElements.push(child);
-      }
-    });
-    return draggableElements;
+    return getDraggableElementsInner(rootFolder);
   }
 
   setup(async () => {
@@ -75,6 +86,9 @@ suite('SidePanelBookmarkDragManagerTest', () => {
         /** @type {!Array<!chrome.bookmarks.BookmarkTreeNode>} */ (
             JSON.parse(JSON.stringify(folders))));
     BookmarksApiProxy.setInstance(bookmarksApi);
+
+    window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] =
+        JSON.stringify(['1', '4']);
 
     delegate = new BookmarksListElement();
     bookmarkDragManager = new BookmarksDragManager(delegate);
@@ -137,7 +151,38 @@ suite('SidePanelBookmarkDragManagerTest', () => {
     const dragOverFolder = draggableElements[2];
     assertDropPosition(dragOverFolder, 0.2, DropPosition.ABOVE);
     assertDropPosition(dragOverFolder, 0.5, DropPosition.INTO);
+    delegate.isFolderOpen = () => false;
     assertDropPosition(dragOverFolder, 0.8, DropPosition.BELOW);
+    delegate.isFolderOpen = () => true;
+    assertDropPosition(dragOverFolder, 0.8, DropPosition.INTO);
+  });
+
+  test('DragOverDescendant', async () => {
+    chrome.bookmarkManagerPrivate.startDrag = () => {};
+    const draggableElements = getDraggableElements();
+    const draggedFolder = draggableElements[2];
+    draggedFolder.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
+
+    // Drag over self.
+    let dragOverRect = draggedFolder.getBoundingClientRect();
+    draggedFolder.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top,
+    }));
+    assertEquals(null, draggedFolder.getAttribute(DROP_POSITION_ATTR));
+
+    const dragOverChild = draggableElements[3];
+    dragOverRect = dragOverChild.getBoundingClientRect();
+    dragOverChild.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top,
+    }));
+    assertEquals(null, dragOverChild.getAttribute(DROP_POSITION_ATTR));
   });
 
   test('DropsIntoFolder', () => {
