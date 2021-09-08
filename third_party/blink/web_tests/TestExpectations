@@ -5768,7 +5768,7 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables
 
 #Sheriff 2020-11-24
 crbug.com/1087242 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Crash Failure Pass Timeout ]
-crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Pass Skip Timeout ]
+crbug.com/1149771 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Failure Pass Skip Timeout ]
 crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Skip Timeout ]
 crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 
