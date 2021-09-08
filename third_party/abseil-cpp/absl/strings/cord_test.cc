@@ -1385,6 +1385,59 @@ TEST_P(CordTest, DiabolicalGrowth) {
                cord.EstimatedMemoryUsage());
 }
 
+// The following tests check support for >4GB cords in 64-bit binaries, and
+// 2GB-4GB cords in 32-bit binaries.  This function returns the large cord size
+// that's appropriate for the binary.
+
+// Construct a huge cord with the specified valid prefix.
+static absl::Cord MakeHuge(absl::string_view prefix) {
+  absl::Cord cord;
+  if (sizeof(size_t) > 4) {
+    // In 64-bit binaries, test 64-bit Cord support.
+    const size_t size =
+        static_cast<size_t>(std::numeric_limits<uint32_t>::max()) + 314;
+    cord.Append(absl::MakeCordFromExternal(
+        absl::string_view(prefix.data(), size),
+        [](absl::string_view s) { DoNothing(s, nullptr); }));
+  } else {
+    // Cords are limited to 32-bit lengths in 32-bit binaries.  The following
+    // tests check for use of "signed int" to represent Cord length/offset.
+    // However absl::string_view does not allow lengths >= (1u<<31), so we need
+    // to append in two parts;
+    const size_t s1 = (1u << 31) - 1;
+    // For shorter cord, `Append` copies the data rather than allocating a new
+    // node. The threshold is currently set to 511, so `s2` needs to be bigger
+    // to not trigger the copy.
+    const size_t s2 = 600;
+    cord.Append(absl::MakeCordFromExternal(
+        absl::string_view(prefix.data(), s1),
+        [](absl::string_view s) { DoNothing(s, nullptr); }));
+    cord.Append(absl::MakeCordFromExternal(
+        absl::string_view("", s2),
+        [](absl::string_view s) { DoNothing(s, nullptr); }));
+  }
+  return cord;
+}
+
+TEST_P(CordTest, HugeCord) {
+  absl::Cord cord = MakeHuge("huge cord");
+  EXPECT_LE(cord.size(), cord.EstimatedMemoryUsage());
+  EXPECT_GE(cord.size() + 100, cord.EstimatedMemoryUsage());
+}
+
+// Tests that Append() works ok when handed a self reference
+TEST_P(CordTest, AppendSelf) {
+  // We run the test until data is ~16K
+  // This guarantees it covers small, medium and large data.
+  std::string control_data = "Abc";
+  absl::Cord data(control_data);
+  while (control_data.length() < 0x4000) {
+    data.Append(data);
+    control_data.append(control_data);
+    ASSERT_EQ(control_data, data);
+  }
+}
+
 TEST_P(CordTest, MakeFragmentedCordFromInitializerList) {
   absl::Cord fragmented =
       absl::MakeFragmentedCord({"A ", "fragmented ", "Cord"});

@@ -689,13 +689,10 @@ void Cord::InlineRep::AppendArray(absl::string_view src,
       return;
     }
 
-    // Note: we don't concern ourselves if src aliases data stored in the
-    // inlined data of 'this',  as we update the InlineData only at the end.
-    // We are going from an inline size to beyond inline size. Make the new size
-    // either double the inlined size, or the added size + 10%.
-    const size_t size1 = inline_length * 2 + src.size();
-    const size_t size2 = inline_length + src.size() / 10;
-    rep = CordRepFlat::New(std::max<size_t>(size1, size2));
+    // Allocate flat to be a perfect fit on first append exceeding inlined size.
+    // Subsequent growth will use amortized growth until we reach maximum flat
+    // size.
+    rep = CordRepFlat::New(inline_length + src.size());
     appended = std::min(src.size(), rep->flat()->Capacity() - inline_length);
     memcpy(rep->flat()->Data(), data_.as_chars(), inline_length);
     memcpy(rep->flat()->Data() + inline_length, src.data(), appended);
