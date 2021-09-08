@@ -1162,4 +1162,84 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingConfigIsInvalid) {
   histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
 }
 
+TEST_F(ChromeVariationsConfigurationTest, ParseValidSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:5, snooze_interval:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 5u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 3u);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, UnorderedSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "snooze_interval:3, max_limit:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 3u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 3u);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, InvalidMaxLimitSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:e, snooze_interval:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, InvalidIntervalSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:3, snooze_interval:e";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, IncompleteSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
+}
+
 }  // namespace feature_engagement

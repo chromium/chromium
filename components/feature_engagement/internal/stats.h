@@ -71,6 +71,8 @@ enum class TriggerHelpUIResult {
 // Used in the metrics to track the configuration parsing event.
 // The failure reasons are not mutually exclusive.
 // Out-dated entries shouldn't be deleted but marked as obsolete.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Keep this synced with the enum in //tools/metrics/histograms/enums.xml.
 enum class ConfigParsingEvent {
   // The configuration is parsed correctly.
@@ -119,8 +121,11 @@ enum class ConfigParsingEvent {
   // Successfully read checked in configuration.
   SUCCESS_FROM_SOURCE = 14,
 
+  // Fails to parse the snooze parameters.
+  FAILURE_SNOOZE_PARAMS_PARSE = 15,
+
   // Last entry for the enum.
-  COUNT = 15,
+  COUNT = 16,
 };
 
 // Used in metrics to track database states. Each type will match to a suffix

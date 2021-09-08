@@ -45,6 +45,10 @@ const char kAvailabilityKey[] = "availability";
 const char kTrackingOnlyKey[] = "tracking_only";
 const char kIgnoredKeyPrefix[] = "x_";
 
+const char kSnoozeParams[] = "snooze_params";
+const char kSnoozeParamsMaxLimit[] = "max_limit";
+const char kSnoozeParamsInterval[] = "snooze_interval";
+
 const char kEventConfigDataNameKey[] = "name";
 const char kEventConfigDataComparatorKey[] = "comparator";
 const char kEventConfigDataWindowKey[] = "window";
@@ -265,6 +269,46 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
   return true;
 }
 
+bool ParseSnoozeParams(const base::StringPiece& definition,
+                       SnoozeParams* snooze_params) {
+  auto tokens = base::SplitStringPiece(definition, ",", base::TRIM_WHITESPACE,
+                                       base::SPLIT_WANT_ALL);
+  if (tokens.size() != 2)
+    return false;
+
+  bool has_max_limit = false;
+  bool has_snooze_interval = false;
+  for (const auto& token : tokens) {
+    auto pair = base::SplitStringPiece(token, ":", base::TRIM_WHITESPACE,
+                                       base::SPLIT_WANT_ALL);
+
+    if (pair.size() != 2)
+      return false;
+
+    const base::StringPiece& key = pair[0];
+    const base::StringPiece& value = pair[1];
+    if (base::LowerCaseEqualsASCII(key, kSnoozeParamsMaxLimit)) {
+      uint32_t parsed_value;
+      if (!base::StringToUint(value, &parsed_value)) {
+        snooze_params->snooze_interval = 0u;
+        return false;
+      }
+      snooze_params->max_limit = parsed_value;
+      has_max_limit = true;
+    } else if (base::LowerCaseEqualsASCII(key, kSnoozeParamsInterval)) {
+      uint32_t parsed_value;
+      if (!base::StringToUint(value, &parsed_value)) {
+        snooze_params->max_limit = 0u;
+        return false;
+      }
+      snooze_params->snooze_interval = parsed_value;
+      has_snooze_interval = true;
+    }
+  }
+
+  return has_max_limit && has_snooze_interval;
+}
+
 bool ParseTrackingOnly(const base::StringPiece& definition,
                        bool* tracking_only) {
   // Since |tracking_only| is a primitive, ensure it set.
@@ -402,6 +446,15 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
         continue;
       }
       config.availability = comparator;
+    } else if (key == kSnoozeParams) {
+      SnoozeParams snooze_params;
+      if (!ParseSnoozeParams(param_value, &snooze_params)) {
+        stats::RecordConfigParsingEvent(
+            stats::ConfigParsingEvent::FAILURE_SNOOZE_PARAMS_PARSE);
+        ++parse_errors;
+        continue;
+      }
+      config.snooze_params = snooze_params;
     } else if (base::StartsWith(key, kEventConfigKeyPrefix,
                                 base::CompareCase::INSENSITIVE_ASCII)) {
       EventConfig event_config;

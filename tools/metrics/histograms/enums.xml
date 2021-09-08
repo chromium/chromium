@@ -13520,6 +13520,7 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="FAILURE_SESSION_RATE_IMPACT_UNKNOWN_FEATURE"/>
   <int value="13" label="FAILURE_TRACKING_ONLY_PARSE"/>
   <int value="14" label="SUCCESS_FROM_SOURCE"/>
+  <int value="15" label="FAILURE_SNOOZE_PARAMS_PARSE"/>
 </enum>
 
 <enum name="ConfusionMatrix">
