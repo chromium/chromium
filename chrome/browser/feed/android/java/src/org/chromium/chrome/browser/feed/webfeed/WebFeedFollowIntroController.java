@@ -46,6 +46,19 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Controls when and how the Web Feed follow intro is shown.
+ *
+ * Main requirements for the presentation of the intro (all must be true):
+ *  1. The URL is recommended.
+ *  2. This site was visited enough times in day-boolean visits and in total visits.
+ *  3. Enough time has passed since the last intro was presented and since the last intro for this
+ *     site was presented.
+ *  4. Feature tracker allows the presentation of the intro, including a weekly presentation limit
+ *     check.
+ *
+ * If the intro debug mode pref is enabled then only 1. is checked for.
+ *
+ * Note: The feature engagement tracker check happens only later, and it includes checking for
+ * a weekly limit.
  */
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
@@ -86,7 +99,7 @@ public class WebFeedFollowIntroController {
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final RecommendationInfoFetcher mRecommendationFetcher =
-            new RecommendationInfoFetcher();
+            new RecommendationInfoFetcher(mPrefService);
 
     private final long mAppearanceThresholdMillis;
 
@@ -142,7 +155,7 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
-                    Log.i(TAG, "No intro: URL scheme is not HTTP or HTTPS");
+                    Log.i(TAG, "No intro: tab is incognito, or URL scheme is not HTTP or HTTPS");
                     return;
                 }
                 mRecommendationFetcher.beginFetch(tab, url, result -> {
@@ -267,19 +280,8 @@ public class WebFeedFollowIntroController {
     }
 
     /**
-     * Executes the basic checks for the presentation of the intro (all must be true):
-     *  1. It was not already presented for this page
-     *  2. The URL is recommended.
-     *  3. This site was visited enough in day-boolean count and in total.
-     *  4. Enough time has passed since the last intro was presented and since the last intro was
-     *     presented for this site.
-     *
-     * If the intro debug mode pref is enabled then only 1. and 2. are checked for.
-     *
-     * Note: The feature engagement tracker check happens only later, and it includes checking for
-     * a weekly limit.
-     *
-     * @return true if the follow intro passes the basic checks to be shown. false otherwise.
+     * Executes some basic checks for the presentation of the intro.
+     * @return true if the follow intro passes the basic checks. false otherwise.
      */
     private boolean basicFollowIntroChecks(RecommendedWebFeedInfo recommendedInfo) {
         Tab tab = mTabSupplier.get();
@@ -288,7 +290,6 @@ public class WebFeedFollowIntroController {
         }
 
         if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            Log.i(TAG, "Allowed intro: debug mode is enabled");
             return true;
         }
 
@@ -335,6 +336,7 @@ public class WebFeedFollowIntroController {
     private static class RecommendationInfoFetcher {
         private final int mNumVisitMin;
         private final int mDailyVisitMin;
+        private final PrefService mPrefService;
         private Request mRequest;
         private static class Request {
             public Tab tab;
@@ -343,7 +345,8 @@ public class WebFeedFollowIntroController {
             public Callback<RecommendedWebFeedInfo> callback;
         }
 
-        RecommendationInfoFetcher() {
+        RecommendationInfoFetcher(PrefService prefService) {
+            mPrefService = prefService;
             mNumVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                     ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
             mDailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
@@ -366,7 +369,15 @@ public class WebFeedFollowIntroController {
 
             PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
                     ()
-                            -> { fetchVisitCounts(request); },
+                            -> {
+                        // Skip visit counts check if debug mode is enabled.
+                        if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+                            Log.i(TAG, "Intro debug mode is enabled: some checks will be skipped");
+                            fetchWebFeedInfoIfRecommended(request);
+                        } else {
+                            fetchVisitCounts(request);
+                        }
+                    },
                     ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
                             PARAM_WAIT_TIME_MILLIS, DEFAULT_WAIT_TIME_MILLIS));
         }
