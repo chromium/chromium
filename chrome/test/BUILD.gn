@@ -1653,6 +1653,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/net/system_network_context_manager_browsertest.cc",
       "../browser/net/trust_token_usecounter_browsertest.cc",
       "../browser/net/websocket_browsertest.cc",
+      "../browser/new_tab_page/new_tab_page_browsertest.cc",
       "../browser/no_best_effort_tasks_browsertest.cc",
       "../browser/no_best_effort_tasks_during_startup_browsertest.cc",
       "../browser/notifications/scheduler/notification_schedule_service_browsertest.cc",

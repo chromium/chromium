@@ -459,6 +459,9 @@ class AppElement extends mixinBehaviors
 
   /** @private */
   async onLazyRendered_() {
+    // Integration tests use this attribute to determine when lazy load has
+    // completed.
+    document.documentElement.setAttribute('lazy-loaded', true);
     // Instantiate modules even if |modulesEnabled| is false to counterfactually
     // trigger a HaTS survey in a potential control group.
     if (!loadTimeData.getBoolean('modulesLoadEnabled') ||
