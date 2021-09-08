@@ -247,6 +247,9 @@ public class ChromeProvidedSharingOptionsProvider {
             ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)) {
             mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
         }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LIGHTWEIGHT_REACTIONS)) {
+            mOrderedFirstPartyOptions.add(createLightweightReactionsFirstPartyOption());
+        }
         mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
@@ -439,6 +442,16 @@ public class ChromeProvidedSharingOptionsProvider {
                             mShareParams.getRawText().trim(), mChromeOptionShareCallback);
                     coordinator.showDialog();
                 })
+                .build();
+    }
+
+    private FirstPartyOption createLightweightReactionsFirstPartyOption() {
+        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
+                ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
+                .setIcon(R.drawable.lightweight_reactions_icon,
+                        R.string.sharing_lightweight_reactions)
+                .setFeatureNameForMetrics("SharingHubAndroid.LightweightReactions")
+                .setOnClickCallback((view) -> {})
                 .build();
     }
 

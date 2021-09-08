@@ -4710,6 +4710,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Copy image
       </message>
 
+      <message name="IDS_SHARING_LIGHTWEIGHT_REACTIONS" desc="Label for the Add emotion button in sharing hub.">
+        Add emotion
+      </message>
+
       <message name="IDS_SHARING_SCREENSHOT" desc="Label for Screenshot button in the sharing hub.">
         Screenshot
       </message>
