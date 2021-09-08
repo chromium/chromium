@@ -25,9 +25,9 @@ const char kAnimatedCssPropertiesHistogramName[] =
 const char kPermissionsPolicyViolationHistogramName[] =
     "Blink.UseCounter.PermissionsPolicy.Violation.Enforce";
 const char kPermissionsPolicyHeaderHistogramName[] =
-    "Blink.UseCounter.PermissionsPolicy.Allow";
+    "Blink.UseCounter.PermissionsPolicy.Header2";
 const char kPermissionsPolicyIframeAttributeHistogramName[] =
-    "Blink.UseCounter.PermissionsPolicy.Header";
+    "Blink.UseCounter.PermissionsPolicy.Allow2";
 
 }  // namespace internal
 
