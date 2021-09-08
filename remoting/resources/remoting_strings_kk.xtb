@@ -65,7 +65,7 @@
 <translation id="405887016757208221">Қашықтағы компьютер сеансты жұмысқа дайындау әрекетін сәтсіз аяқтады. Мәселе әлі де шешілмесе, хостты қайта конфигурациялаңыз.</translation>
 <translation id="4060747889721220580">Файлды жүктеп алу</translation>
 <translation id="4126409073460786861">Реттеу аяқталғаннан кейін, бетті жаңартыңыз. Одан кейін құрылғыны таңдап, PIN кодын енгізу арқылы компьютерге кіре аласыз</translation>
-<translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> есептік жазбасымен кірдіңіз.</translation>
+<translation id="4145029455188493639"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="4155497795971509630">Кейбір қажетті компоненттер жоқ. Бағдарламалық жасақтаманың соңғы нұсқасы орнатылғандығын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="4176825807642096119">Кіру коды</translation>
 <translation id="4227991223508142681">Хостқа орналастыру бағдарламасы</translation>
@@ -106,7 +106,7 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Жұмыс үстеліңіз қазір <ph name="USER" /> пайдаланушысымен бөлісілген.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> есептік жазбасымен кірдіңіз.</translation>
+<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="579702532610384533">Қайта қосылу</translation>
 <translation id="5810269635982033450">Экран сенсорлық тақта сияқты жұмыс істейді</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
@@ -161,7 +161,7 @@
 <translation id="8041089156583427627">Пікір жіберу</translation>
 <translation id="8060029310790625334">Анықтама орталығы</translation>
 <translation id="806699900641041263"><ph name="HOSTNAME" /> хостымен байланыс орнатылуда</translation>
-<translation id="8073845705237259513">Chrome Remote Desktop пайдалану үшін құрылғыңызға Google есептік жазбасын қосуыңыз қажет.</translation>
+<translation id="8073845705237259513">Chrome Remote Desktop пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="809687642899217504">Компьютерлерім</translation>
 <translation id="8116630183974937060">Желілік қате орын алды. Құрылғыңыз желіде екендігін тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> қызметін пайдалану үшін арнайы мүмкіндіктерді пайдалануға рұқсат беруіңіз керек, сонда қашықтағы құрылғыдан енгізілген деректерді осы Mac құрылғысына жіберуге болады.
@@ -169,7 +169,7 @@
 Рұқсат беру үшін төмендегі "<ph name="BUTTON_NAME" />" түймесін басыңыз. "Арнайы мүмкіндіктер" параметрлері панелін ашыңыз және "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығын белгілеңіз.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығы белгіленіп тұрса, белгісін алып, қайта белгілеңіз.</translation>
-<translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google есептік жазбасын қосуыңыз қажет.</translation>
+<translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="8386846956409881180">Хост жарамсыз OAuth есептік деректерімен реттелген.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> қызметіне рұқсат беру</translation>
 <translation id="8406498562923498210">Chrome Remote Desktop ортасында іске қосылатын сеансты таңдаңыз (кейбір сеанс түрлері Chrome Remote Desktop және жергілікті консольде бір уақытта жұмыс істей алмайтынын ескеріңіз).</translation>

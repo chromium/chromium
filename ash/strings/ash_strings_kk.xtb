@@ -23,7 +23,7 @@
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
 <translation id="1119348796022671382">Интерфейсті ашық түске бояу үшін тақырыптық түс режимі тұсқағазыңыздан алынған түстерді пайдаланады.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
-<translation id="1148499908455722006"><ph name="USER_NAME" /> есептік жазбасы туралы ақпарат диалогтік терезесін ашу</translation>
+<translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
 <translation id="1165712434476988950">Жаңарту күшіне енуі үшін, құрылғыны қайта іске қосу қажет.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
@@ -82,7 +82,7 @@
 <translation id="1516740043221086139">Мазаламау режимі қосулы.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
 <translation id="1525508553941733066">ЖАБУ</translation>
-<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын пайдалану үшін алдымен барлық аккаунттан шығуыңыз керек. Шығу үшін "Бас тарту" түймесін басып, артқа қайтыңыз. Бұдан кейін күй аумағын ашу уақытын таңдап, "Шығу" түймесін басыңыз. Сосын <ph name="USER_EMAIL_ADDRESS_2" /> есептік жазбасына қайта кіріңіз.</translation>
+<translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын пайдалану үшін алдымен барлық аккаунттан шығуыңыз керек. Шығу үшін "Бас тарту" түймесін басып, артқа қайтыңыз. Бұдан кейін күй аумағын ашу уақытын таңдап, "Шығу" түймесін басыңыз. Сосын <ph name="USER_EMAIL_ADDRESS_2" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="15373452373711364">Үлкен тінтуір курсоры</translation>
 <translation id="1546492247443594934">2-ші жұмыс үстелі</translation>
 <translation id="1550523713251050646">Қосымша опциялар үшін басыңыз</translation>
@@ -604,7 +604,7 @@
 <translation id="5673434351075758678">Параметрлер синхрондалғаннан кейін, "<ph name="FROM_LOCALE" />" тілі "<ph name="TO_LOCALE" />" тіліне өзгертілді.</translation>
 <translation id="5677928146339483299">Тыйым салынған</translation>
 <translation id="5679050765726761783">Қуаты төмен адаптер жалғанды</translation>
-<translation id="5682642926269496722">Қазіргі пайдаланушының есептік жазбасы үшін Google Assistant қолжетімді емес.</translation>
+<translation id="5682642926269496722">Қазіргі пайдаланушының аккаунты үшін Google Assistant қолжетімді емес.</translation>
 <translation id="5689633613396158040">Түнгі жарық режимін қосып қойсаңыз, айнала күңгірттеніп тұрғанда, экран жарығы көзіңізді ауыртпайды. Түнгі жарық қосылатын уақытты өзгерту немесе оны толықтай өшіру үшін түртіңіз.</translation>
 <translation id="5691772641933328258">Саусағыңыздың ізі танылмады</translation>
 <translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
@@ -667,7 +667,7 @@
 <translation id="6114505516289286752">Тіл файлдары (<ph name="LANGUAGE" />) жүктеп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
-<translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасын өшіру диалогтік терезесін ашу</translation>
+<translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6154006699632741460">Перифериялық құрылғыға қолдау жоқ</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
@@ -681,7 +681,7 @@
 <translation id="6267036997247669271"><ph name="NAME" />: белсендірілуде…</translation>
 <translation id="6283712521836204486">Мазаламау режимі өшірулі.</translation>
 <translation id="6284232397434400372">Ажыратымдылық өзгертілді</translation>
-<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасы ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>
+<translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> аккаунты ата-ананың рұқсатымен кейінірек қайта енгізіледі.</translation>
 <translation id="6291221004442998378">Зарядталып жатқан жоқ.</translation>
 <translation id="6310121235600822547"><ph name="DISPLAY_NAME" /> дисплейі <ph name="ROTATION" /> бағытында бұрылды</translation>
 <translation id="6315170314923504164">Микрофон</translation>
@@ -920,7 +920,7 @@
 <translation id="8142699993796781067">Жеке желі</translation>
 <translation id="8152092012181020186">Жабу үшін Ctrl + W пернелер тіркесімін басыңыз.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Бұл параметрді әкімшіңіз басқарады.</translation>
-<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> есептік жазбасы туралы ақпарат диалогтік терезесін ашу</translation>
+<translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> тілін пайдалану</translation>
 <translation id="8192202700944119416">Хабарландырулар жасырулы.</translation>
 <translation id="8196787716797768628">Қолданбалар арасында жылдам ауысып, Chromebook-ті планшет режимінде қолдану үшін қимылдарды пайдаланыңыз.</translation>
