@@ -1354,7 +1354,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Los usuarios no podrán cambiar las carpetas en las que están colocados los marcadores, pero podrán ocultarlas de la barra de marcadores. El nombre predeterminado de la carpeta de marcadores administrados es "Marcadores administrados", pero se puede cambiar si se añade un nuevo subdiccionario a la política con una única clave llamada "<ph name="TOPLEVEL_NAME" />" que tenga asignado como valor el nombre que se quiera asignar a la carpeta. Los marcadores administrados no se sincronizan con la cuenta de usuario y las extensiones no pueden modificarlos.</translation>
 <translation id="2552966063069741410">Zona horaria</translation>
-<translation id="2555244983262829274">Ocultar el botón de inicio en la barra de herramientas</translation>
+<translation id="2555244983262829274">Ocultar el botón de inicio de la barra de herramientas</translation>
 <translation id="2562339630163277285">Especifica la URL del motor de búsqueda utilizada para proporcionar resultados instantáneos. La URL debe contener la cadena <ph name="SEARCH_TERM_MARKER" />, que se sustituirá en el momento de la consulta por el texto que el usuario haya introducido hasta el momento.
 
           Esta política es opcional. Si no se establece, no se proporcionarán resultados de búsqueda instantánea.
@@ -2276,9 +2276,9 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3727675072430693164">Si se habilita la política, los dispositivos registrados enviarán estadísticas de hardware sobre componentes SoC.
 
       Si se inhabilita la política o no se establece, los dispositivos registrados no enviarán estadísticas.</translation>
-<translation id="3729937245044939404">Esta política está obsoleta en M70. Utiliza en su lugar <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />.
+<translation id="3729937245044939404">Esta política está obsoleta en M70. Utiliza <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> y <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> en su lugar.
 
-      Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios rellenen formularios web automáticamente con información almacenada anteriormente, como la dirección o la tarjeta de crédito.
+      Habilita la función Autocompletar de <ph name="PRODUCT_NAME" /> y permite que los usuarios rellenen formularios web automáticamente con información almacenada anteriormente, como una dirección o una tarjeta de crédito.
 
       Si se inhabilita esta opción, los usuarios no podrán acceder a la función Autocompletar.
 
@@ -3600,7 +3600,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se le asigna ningún valor, el usuario podrá controlar la visibilidad de las tarjetas. Las tarjetas serán visibles de forma predeterminada.
       </translation>
-<translation id="5455609857202311243">Ignorar la aprobación de la política del centro de distribución de claves (KDC) durante la autenticación de HTTP</translation>
+<translation id="5455609857202311243">Ignorar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="5455888515928026628">Durante el inicio de sesión en la pantalla de bloqueo, <ph name="PRODUCT_OS_NAME" /> puede realizar la autenticación a través de un servidor (con conexión) o una contraseña almacenada en caché (sin conexión).
 
       Si se le asigna el valor -2 a esta política, coincidirá con el valor del límite de tiempo de inicio de sesión sin conexión de la pantalla de inicio de sesión dado por <ph name="POLICY" />.
@@ -4226,19 +4226,19 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
 <translation id="6276624383311206185">
-      Especifica si los módulos de WebAssembly se pueden enviar a ventanas o
-      trabajadores de otros orígenes. La opción de compartir módulos de WebAssembly de otros orígenes
+      Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o
+      trabajador de varios orígenes. La opción de compartir módulos de WebAssembly de varios orígenes
       dejará de estar disponible como parte de las medidas que se van a tomar para desactivar document.domain. Consulta
       https://github.com/mikewest/deprecating-document-domain. Esta política
-      permite volver a habilitar la opción de compartir módulos de WebAssembly de otros orígenes para prolongar
+      permite volver a habilitar la opción de compartir módulos de WebAssembly de varios orígenes para prolongar
       el periodo de transición del proceso de desactivación.
 
-      Si se le asigna el valor True, los sitios también podrán enviar módulos de WebAssembly de otros orígenes
+      Si se le asigna el valor True, los sitios también podrán enviar módulos de WebAssembly de varios orígenes
       sin restricciones.
 
       Si se le asigna el valor False o no se le asigna ningún valor, los sitios solo podrán enviar módulos de WebAssembly a
       ventanas y trabajadores del mismo origen.</translation>
-<translation id="6277314550042130537">Usar la aprobación de la política del centro de distribución de claves (KDC) durante la autenticación de HTTP</translation>
+<translation id="6277314550042130537">Usar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="6279722058145292462">Si se establece esta política, se especificará en días la frecuencia con la que un cliente cambia la contraseña de la cuenta de su dispositivo. El cliente genera aleatoriamente la contraseña y el usuario no puede verla. Si se inhabilita esta política o se establece un número elevado de días, se podría comprometer la seguridad, ya que los posibles atacantes tendrían más tiempo para averiguar la contraseña de la cuenta del dispositivo y utilizarla.
 
       Si no se le asigna un valor a la política, la contraseña de la cuenta del dispositivo cambiará cada 30 días.
@@ -4865,7 +4865,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Los patrones de URL tienen este formato: https://www.chromium.org/administrators/url-blocklist-filter-format. Sin embargo, como la validez de los certificados de un determinado nombre de host es independiente del esquema, puerto o ruta, <ph name="PRODUCT_NAME" /> solo tiene en cuenta la parte del nombre del host de la URL. No se admiten hosts comodín.</translation>
 <translation id="6972540544240464302">Selecciona la configuración del programador de tareas</translation>
-<translation id="6975533677426693807">Siempre abrir archivos PDF usando el lector de PDF interno</translation>
+<translation id="6975533677426693807">Abrir siempre archivos PDF usando el lector de PDF interno</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Si se asigna el valor <ph name="BR_ENABLED" /> a esta política, el servicio de copia de seguridad y restauración de Android está activado inicialmente. Si se le asigna el valor <ph name="BR_DISABLED" /> o no se le asigna ninguno, el servicio de copia de seguridad y restauración estará desactivado durante la configuración.
 
@@ -4967,7 +4967,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7072208053150563108">Frecuencia de cambio de contraseña de dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Mi teléfono.</translation>
 <translation id="7079519252486108041">Bloquear pop-ups en estos sitios</translation>
-<translation id="707988220162760379">Siempre abrir archivos PDF usando un lector de PDF externo</translation>
+<translation id="707988220162760379">Abrir siempre archivos PDF usando un lector de PDF externo</translation>
 <translation id="7081784525008938771">Si se habilita la política o no se establece, no se considerará que el usuario está inactivo mientras se reproduzca vídeo. Esto impide que se alcancen el retraso de inactividad, el retraso de atenuación de pantalla y el retraso de bloqueo de pantalla y que se lleven a cabo las acciones correspondientes.
 
       Si se inhabilita la política, la actividad de vídeo no impedirá que se considere al usuario como inactivo.</translation>

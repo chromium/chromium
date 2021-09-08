@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Đặt ngón tay của bạn trên cảm biến vân tay để mở khóa thiết bị.</translation>
 <translation id="1509163368529404530">&amp;Khôi phục nhóm</translation>
 <translation id="1509281256533087115">Truy cập mọi <ph name="DEVICE_NAME_AND_VENDOR" /> qua USB</translation>
-<translation id="1509960214886564027">Các tính năng trên nhiều trang web có thể hoạt động không đúng cách</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1510785804673676069">Nếu bạn sử dụng máy chủ proxy, hãy kiểm tra cài đặt proxy của bạn hoặc
     liên hệ với quản trị viên mạng để kiểm tra xem máy chủ proxy
@@ -1236,7 +1235,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2270450558902169558">Trao đổi dữ liệu với bất kỳ thiết bị nào trong miền <ph name="DOMAIN" /></translation>
 <translation id="2270627217422354837">Trao đổi dữ liệu với bất kỳ thiết bị nào trong miền: <ph name="DOMAINS" /></translation>
 <translation id="2271469253353559191">Lịch áp dụng chế độ tối</translation>
-<translation id="2272430695183451567">Đã chỉ định 0 công tắc</translation>
+<translation id="2272430695183451567">Đã gán 0 công tắc</translation>
 <translation id="2272570998639520080">Ly rượu Martini</translation>
 <translation id="2273119997271134996">Vấn đề với cổng video khi gắn đế sạc</translation>
 <translation id="2274840746523584236">Sạc pin cho Chromebook</translation>
@@ -3969,7 +3968,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5213114823401215820">Mở lại nhóm đã đóng</translation>
 <translation id="5213481667492808996">Dịch vụ dữ liệu '<ph name="NAME" />' đã sẵn sàng cho bạn sử dụng</translation>
 <translation id="5213891612754844763">Hiển thị cài đặt proxy</translation>
-<translation id="5214249693262842685">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như nhằm điều chỉnh quảng cáo cho phù hợp với bạn. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="5215502535566372932">Chọn quốc gia</translation>
 <translation id="521582610500777512">Đã hủy ảnh</translation>
 <translation id="5222403284441421673">Tệp không an toàn đã bị chặn tải xuống</translation>
@@ -5350,7 +5348,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="674632704103926902">Bật tính năng kéo nhấn</translation>
 <translation id="6748054820659621153">Tìm kiếm trên Màn hình của bạn bằng Google Ống kính</translation>
 <translation id="6748465660675848252">Bạn có thể tiến hành nhưng chỉ các cài đặt và dữ liệu đã đồng bộ hóa của bạn mới được lưu trữ. Tất cả dữ liệu cục bộ sẽ mất.</translation>
-<translation id="6749006854028927059">Các trang web không thể dùng cookie giám sát hoạt động duyệt web của bạn trên nhiều trang web để điều chỉnh quảng cáo cho phù hợp với bạn chẳng hạn. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="6750757184909117990">Tắt mạng di động</translation>
 <translation id="6750946710563435348">Sử dụng tên người dùng khác</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Ẩn danh)</translation>

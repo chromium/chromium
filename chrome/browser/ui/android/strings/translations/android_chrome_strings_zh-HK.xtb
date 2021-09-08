@@ -126,7 +126,7 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
-<translation id="1910950723001426294">分享選項清單已關閉。</translation>
+<translation id="1910950723001426294">閂咗分享選項清單。</translation>
 <translation id="1918175104945982129">「Google 助理」語音搜尋的同意使用者介面已開啟，顯示在畫面下半部</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1922362554271624559">建議的語言</translation>
@@ -506,7 +506,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="4141536112466364990">瞭解 Chrome</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
-<translation id="4162867837470729563">分享選項清單已開啟，顯示於整個畫面。</translation>
+<translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4179980317383591987">已使用 <ph name="AMOUNT" /></translation>
@@ -849,7 +849,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6203593061661911168">使用 Wi-Fi 時將開始下載</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
-<translation id="6212786426849242805">讓 Google 同時考量網頁上的部分文字</translation>
+<translation id="6212786426849242805">讓 Google 同時考慮部分網頁的文字</translation>
 <translation id="6221633008163990886">解鎖即可匯出您的密碼</translation>
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
@@ -899,7 +899,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6459045781120991510">問卷</translation>
 <translation id="6461962085415701688">無法開啟檔案</translation>
 <translation id="6464977750820128603">您可查看在 Chrome 上瀏覽的網站，並為這些網站設定計時器。\n\nGoogle 會收到這些設有計時器的網站相關資料，以及您的瀏覽時間長度。這些資料可協助我們改善「健康數碼生活」。</translation>
-<translation id="6473086018775716761">分享選項清單已開啟，顯示在畫面下半部。</translation>
+<translation id="6473086018775716761">分享選項清單宜家顯示喺畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對您很重要：</translation>
 <translation id="6482749332252372425">儲存空間不足，因此無法下載 <ph name="FILE_NAME" />。</translation>
@@ -1136,7 +1136,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="7853202427316060426">活動</translation>
 <translation id="7857691613771368249">詢問何時儲存檔案</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
-<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> 需要取得鄰近裝置權限，才能連線到你的裝置</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> 需要獲得附近的裝置權限，才能連線至您的裝置</translation>
 <translation id="7875915731392087153">建立電郵</translation>
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> 個未讀頁面}other{您有 <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> 個未讀頁面}}</translation>
@@ -1198,7 +1198,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="8186512483418048923">尚餘 <ph name="FILES" /> 個檔案</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">尚餘 1 天</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">繼續</translation>
 <translation id="8209050860603202033">開啟圖片</translation>
 <translation id="8216351761227087153">觀看</translation>
@@ -1217,7 +1217,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="829672787777123339">正在連接您的裝置…</translation>
 <translation id="8310344678080805313">標準分頁</translation>
 <translation id="831192587911042850">將目前的網站新增至您正在追蹤的網站清單。</translation>
-<translation id="8319544457245040955">不必離開原本的網頁，即可查看主題資訊。只要選取網頁上的一或多個字詞，就能展開搜尋。如要編輯搜尋內容，請查看結果並在新分頁中開啟結果。</translation>
+<translation id="8319544457245040955">無需離開網頁即可瞭解主題。選取網頁上的一個或多個字詞，即可進行搜尋。如要編輯搜尋，請查看搜尋結果，並在新分頁中開啟結果。</translation>
 <translation id="8327155640814342956">為獲得最佳瀏覽體驗，請開啟 Chrome 進行更新</translation>
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>

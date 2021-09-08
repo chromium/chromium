@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Coloca tu dedo en el sensor de huella dactilar para desbloquear el dispositivo.</translation>
 <translation id="1509163368529404530">&amp;Restablecer grupo</translation>
 <translation id="1509281256533087115">Accede a cualquier <ph name="DEVICE_NAME_AND_VENDOR" /> a través de USB</translation>
-<translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
 <translation id="1510238584712386396">Selector</translation>
 <translation id="1510785804673676069">Si utilizas un servidor proxy, comprueba la configuración de proxy o comunícate con el administrador de red para asegurarte de que el servidor proxy funcione. Si crees que no necesitas un servidor proxy, modifica la <ph name="LINK_START" />configuración de proxy<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Esta llave de seguridad no puede almacenar datos de acceso</translation>
@@ -3950,7 +3949,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5213114823401215820">Volver a abrir el grupo cerrado</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
 <translation id="5213891612754844763">Mostrar la configuración de proxy</translation>
-<translation id="5214249693262842685">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que las características de algunos sitios no funcionen adecuadamente.</translation>
 <translation id="5215502535566372932">Selecciona un país</translation>
 <translation id="521582610500777512">Se descartó la foto.</translation>
 <translation id="5222403284441421673">Se bloqueó una descarga no segura</translation>
@@ -5331,7 +5329,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="674632704103926902">Habilitar la función tocar y arrastrar</translation>
 <translation id="6748054820659621153">Hacer búsquedas en la pantalla con Google Lens</translation>
 <translation id="6748465660675848252">Puedes continuar, pero se restaurarán únicamente la configuración y los datos sincronizados. Se perderán todos los datos locales.</translation>
-<translation id="6749006854028927059">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que las características de algunos sitios no funcionen de forma adecuada.</translation>
 <translation id="6750757184909117990">Inhabilitar la red móvil</translation>
 <translation id="6750946710563435348">Usar otro nombre de usuario</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incógnito)</translation>

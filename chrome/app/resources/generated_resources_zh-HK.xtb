@@ -214,7 +214,7 @@
 <translation id="1218015446623563536">刪除 Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi-Fi、流動網絡和感應器等來源，以便估計此裝置的所在位置。<ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />關閉裝置的主要位置資訊設定，即可關閉定位服務。您也可以在位置資訊設定中關閉使用 Wi‑Fi、流動網絡和感應器確定位置的功能。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1219115285613502247">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載，目前已暫時把語音傳送給 Google 處理。</translation>
+<translation id="1219115285613502247">無法下載<ph name="LANGUAGE" />語音檔案。系統稍後將再次嘗試下載，目前會暫時將語音傳送給 Google 處理。</translation>
 <translation id="122082903575839559">憑證簽章演算法</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 (使用 RSA 加密)</translation>
 <translation id="1221825588892235038">只限選取的內容</translation>
@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">將您的手指放在指紋感應器上即可解鎖裝置。</translation>
 <translation id="1509163368529404530">還原群組</translation>
 <translation id="1509281256533087115">使用 USB 存取所有 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
-<translation id="1509960214886564027">很多網站的功能可能會無法正常運作</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1510785804673676069">如果您使用 Proxy 伺服器，請檢查您的 Proxy 設定或
     與網絡管理員聯絡，確認 Proxy 伺服器是否運作正
@@ -3968,7 +3967,6 @@
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
-<translation id="5214249693262842685">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。有些網站的功能可能無法正常運作。</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="521582610500777512">已捨棄相片</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
@@ -5349,7 +5347,6 @@
 <translation id="674632704103926902">啟用輕觸拖曳</translation>
 <translation id="6748054820659621153">使用「Google 智能鏡頭」搜尋螢幕</translation>
 <translation id="6748465660675848252">您可以繼續，但是只有您的同步資料和設定會被還原。所有本機資料將會遺失。</translation>
-<translation id="6749006854028927059">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。 有些網站的功能可能會無法正常運作。</translation>
 <translation id="6750757184909117990">停用流動網絡</translation>
 <translation id="6750946710563435348">使用其他使用者名稱</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>
@@ -6742,7 +6739,7 @@
 <translation id="819137301779081601">按下新的按鈕裝置即可開始指派動作
 按下已指派的按鈕裝置則可移除指派設定</translation>
 <translation id="8192944472786724289">「<ph name="APP_NAME" />」要求分享螢幕內容。</translation>
-<translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">磁碟大小</translation>
 <translation id="8198323535106903877">我們將為您安裝這 <ph name="NUMBER_OF_APPS" /> 個應用程式</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>

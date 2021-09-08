@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Legg en finger på fingeravtrykkssensoren for å låse opp enheten.</translation>
 <translation id="1509163368529404530">&amp;Gjenopprett gruppe</translation>
 <translation id="1509281256533087115">Få tilgang til en hvilken som helst <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
-<translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1510785804673676069">Hvis du bruker en proxy-tjener, må du sjekke innstillingene for proxy-tjener eller ta kontakt med nettverksadministratoren for å kontrollere at proxy-tjeneren fungerer. Hvis du ikke vil bruke en proxy-tjener, kan du endre <ph name="LINK_START" />innstillingene for proxy-tjener<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Denne sikkerhetsnøkkelen kan ikke lagre påloggingsinformasjon</translation>
@@ -3960,7 +3959,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5213114823401215820">Åpne den lukkede gruppen igjen</translation>
 <translation id="5213481667492808996">Datatjenesten «<ph name="NAME" />» er klar for bruk</translation>
 <translation id="5213891612754844763">Vis innstillingene for proxy-tjener</translation>
-<translation id="5214249693262842685">Når du er i Inkognitomodus, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="5215502535566372932">Velg land</translation>
 <translation id="521582610500777512">Bildet er forkastet</translation>
 <translation id="5222403284441421673">En usikker nedlasting er blokkert</translation>
@@ -5341,7 +5339,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="674632704103926902">Slå på trykk og dra</translation>
 <translation id="6748054820659621153">Søk på skjermen med Google Lens</translation>
 <translation id="6748465660675848252">Du kan fortsette, men bare synkroniserte data og innstillinger blir gjenopprettet. Alle lokale data går tapt.</translation>
-<translation id="6749006854028927059">Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="6750757184909117990">Slå av mobildata</translation>
 <translation id="6750946710563435348">Bruk et annet brukernavn</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>

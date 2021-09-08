@@ -478,7 +478,6 @@
 <translation id="1508491105858779599">Umiestnite prst na senzor odtlačkov prstov a odomknite zariadenie.</translation>
 <translation id="1509163368529404530">&amp;Obnoviť skupinu</translation>
 <translation id="1509281256533087115">Pristupovať k ľubovoľnému zariadeniu <ph name="DEVICE_NAME_AND_VENDOR" /> prostredníctvom rozhrania USB</translation>
-<translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1510785804673676069">Ak používate server proxy, skontrolujte jeho nastavenia alebo
     kontaktujte správcu siete a uistite sa, že server funguje.
@@ -3955,7 +3954,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5213114823401215820">Znova otvoriť zatvorenú skupinu</translation>
 <translation id="5213481667492808996">Dátová služba <ph name="NAME" /> je pripravená na použitie</translation>
 <translation id="5213891612754844763">Zobraziť nastavenia proxy servera</translation>
-<translation id="5214249693262842685">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch nemusia fungovať.</translation>
 <translation id="5215502535566372932">Vyberte krajinu</translation>
 <translation id="521582610500777512">Fotka bola zahodená</translation>
 <translation id="5222403284441421673">Bolo zablokované nezabezpečené sťahovanie</translation>
@@ -5336,7 +5334,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="674632704103926902">Povoliť presunutie klepnutím</translation>
 <translation id="6748054820659621153">Hľadať na obrazovke pomocou funkcie Google Lens</translation>
 <translation id="6748465660675848252">Môžete pokračovať, ale obnovia sa iba vaše synchronizované údaje a nastavenia. Všetky miestne údaje stratíte.</translation>
-<translation id="6749006854028927059">Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch môžu zlyhávať.</translation>
 <translation id="6750757184909117990">Zakázať mobilnú sieť</translation>
 <translation id="6750946710563435348">Použiť iné používateľské meno</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>

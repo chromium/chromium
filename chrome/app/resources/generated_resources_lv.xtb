@@ -478,7 +478,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1508491105858779599">Novietojiet pirkstu uz pirkstu nospiedumu sensora, lai atbloķētu ierīci.</translation>
 <translation id="1509163368529404530">&amp;Atjaunot grupu</translation>
 <translation id="1509281256533087115">Piekļūt jebkurai ierīcei <ph name="DEVICE_NAME_AND_VENDOR" />, izmantojot USB savienojumu</translation>
-<translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1510785804673676069">Ja lietojat starpniekserveri, pārbaudiet starpniekservera iestatījumus vai
     sazinieties ar tīkla administratoru, lai pārliecinātos, vai starpniekserveris
@@ -3955,7 +3954,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5213114823401215820">Atkārtoti atvērt aizvērtu grupu</translation>
 <translation id="5213481667492808996">Jūsu <ph name="NAME" /> datu pakalpojums ir gatavs lietošanai</translation>
 <translation id="5213891612754844763">Rādīt starpniekservera iestatījumus</translation>
-<translation id="5214249693262842685">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="5215502535566372932">Atlasīt valsti</translation>
 <translation id="521582610500777512">Fotoattēls tika noraidīts.</translation>
 <translation id="5222403284441421673">Tika bloķēta nedroša lejupielāde</translation>
@@ -5336,7 +5334,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="674632704103926902">Iespējot vilkšanu pieskaroties</translation>
 <translation id="6748054820659621153">Meklēšana ekrānā, izmantojot Google Lens</translation>
 <translation id="6748465660675848252">Varat turpināt, taču tiks atjaunoti tikai sinhronizētie dati un iestatījumi. Visi lokālie dati tiks zaudēti.</translation>
-<translation id="6749006854028927059">Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="6750757184909117990">Mobilā tīkla atspējošana</translation>
 <translation id="6750946710563435348">Izmantot citu lietotājvārdu</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito režīms)</translation>

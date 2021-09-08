@@ -230,6 +230,7 @@
 <translation id="3184767182050912705">ដោះ​សោដោយប្រើ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">បានចំណាំ</translation>
 <translation id="3224641773458703735">ដើម្បី​នាំចេញ​ពាក្យសម្ងាត់ អ្នកត្រូវ​កំណត់​លេខ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុន​សិន។</translation>
+<translation id="3230318355092723906">នៅពេលបិទការធ្វើសមកាលកម្ម អ្នកអាចមើលឃើញ​ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់​ផ្សេងទៀត​ទាំងអស់របស់អ្នក​នៅលើ​ឧបករណ៍នេះដដែល។ ប្រសិនបើ​អ្នកធ្វើការផ្លាស់ប្ដូរ ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និងការកំណត់​ផ្សេងទៀត​ទាំងអស់​នឹងមិនធ្វើសមកាលកម្ម​ទៅគណនី​របស់អ្នកទេ។</translation>
 <translation id="3240426699337459095">បានចម្លងតំណ</translation>
 <translation id="3244271242291266297">ខែ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> នៃ <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5984222099446776634">បានទៅកាន់កន្លងទៅថ្មីៗ</translation>
 <translation id="5988851877894965432">បើក URL នៅក្នុង Chrome</translation>
 <translation id="6012140227487808125">កំពុងអ៊ីនគ្រីប…</translation>
+<translation id="6020800238007543967">បង្ហាញការមើលតំណសាកល្បង</translation>
 <translation id="6021332621416007159">បើកនៅក្នុង...</translation>
 <translation id="6036514205982097558">ផ្ទាំងទាំងអស់​របស់អ្នកស្ថិតក្នុង​កម្មវិធីរុករកតាមអ៊ីនធឺណិតមួយ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6801927553864092214">សូមបើក​ផ្ទាំងឯកជន ដើម្បីរុករកជា​លក្ខណៈឯកជន</translation>
 <translation id="6807889908376551050">បង្ហាញទាំងអស់...</translation>
 <translation id="681368974849482173">ធាតុត្រូវបានបង្កើត</translation>
+<translation id="681450999322335505">ស្ថាប័នរបស់អ្នកបានបិទការធ្វើសមកាលកម្ម។</translation>
 <translation id="6830804042318138535">អាន​បន្ថែម</translation>
 <translation id="6831043979455480757">បកប្រែ</translation>
 <translation id="6842136130964845393">ដើម្បី​ប្រាកដថា អ្នកអាចចូលប្រើ​ពាក្យសម្ងាត់ដែលបានរក្សាទុក​របស់អ្នក​បានជានិច្ច សូមផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>

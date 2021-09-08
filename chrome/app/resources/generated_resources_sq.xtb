@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Vendose gishtin mbi sensorin e gjurmës së gishtit për të shkyçur pajisjen.</translation>
 <translation id="1509163368529404530">&amp;Restauro grupin</translation>
 <translation id="1509281256533087115">Qasu në çdo <ph name="DEVICE_NAME_AND_VENDOR" /> përmes USB</translation>
-<translation id="1509960214886564027">Veçoritë në shumë sajte mund të ndalojnë së funksionuari</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="1510785804673676069">Nëse po përdor një server përfaqësues, kontrollo cilësimet e përfaqësuesit ose kontakto me administratorin e rrjetit për të kontrolluar që serveri përfaqësues po punon. Nëse nuk beson se duhet të përdorësh një server përfaqësues, rregullo <ph name="LINK_START" />cilësimet e përfaqësuesit<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Ky çelës sigurie nuk mund të ruajë asnjë të dhënë identifikimi</translation>
@@ -3950,7 +3949,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="5213114823401215820">Rihap grupin e mbyllur</translation>
 <translation id="5213481667492808996">Shërbimi yt i të dhënave të "<ph name="NAME" />" është gati për përdorim</translation>
 <translation id="5213891612754844763">Shfaq cilësimet e përfaqësuesit</translation>
-<translation id="5214249693262842685">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, për shembull, për të personalizuar reklamat. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="5215502535566372932">Zgjidh vendin</translation>
 <translation id="521582610500777512">Fotografia u hoq</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
@@ -5331,7 +5329,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="674632704103926902">Aktivizo zvarritjen me trokitje</translation>
 <translation id="6748054820659621153">Kërko në ekranin tënd me "Lenten e Google"</translation>
 <translation id="6748465660675848252">Mund të vazhdosh, por do të restaurohen vetëm të dhënat e sinkronizuara. Të gjitha të dhënat lokale do të humbasin.</translation>
-<translation id="6749006854028927059">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, për shembull për t'i personalizuar reklamat. Veçoritë në disa sajte mund të ndalojnë së funksionuari.</translation>
 <translation id="6750757184909117990">Çaktivizo "Rrjetin celular"</translation>
 <translation id="6750946710563435348">Përdor emrin tjetër të përdoruesit</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (e fshehtë)</translation>

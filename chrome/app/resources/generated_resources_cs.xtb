@@ -478,7 +478,6 @@
 <translation id="1508491105858779599">Odemkněte zařízení tím, že položíte prst na snímač otisků prstů.</translation>
 <translation id="1509163368529404530">&amp;Obnovit skupinu</translation>
 <translation id="1509281256533087115">Přístup k jakémukoliv zařízení <ph name="DEVICE_NAME_AND_VENDOR" /> prostřednictvím USB</translation>
-<translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1510785804673676069">Pokud používáte proxy server, zkontrolujte jeho nastavení nebo
    se obraťte na správce sítě a ujistěte se, zda funguje.
@@ -3953,7 +3952,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5213114823401215820">Znovu otevřít zavřenou skupinu</translation>
 <translation id="5213481667492808996">Datová služba <ph name="NAME" /> je připravena k použití</translation>
 <translation id="5213891612754844763">Zobrazit nastavení proxy serveru</translation>
-<translation id="5214249693262842685">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="5215502535566372932">Vyberte zemi</translation>
 <translation id="521582610500777512">Fotografie byla zahozena</translation>
 <translation id="5222403284441421673">Bylo zablokováno nezabezpečené stahování</translation>
@@ -5334,7 +5332,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="674632704103926902">Aktivovat přetažení klepnutím</translation>
 <translation id="6748054820659621153">Vyhledávat na obrazovce pomocí Google Lens</translation>
 <translation id="6748465660675848252">Můžete pokračovat. Obnoví se však pouze synchronizovaná data a nastavení. Veškerá místní data budou ztracena.</translation>
-<translation id="6749006854028927059">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="6750757184909117990">Deaktivovat mobilní síť</translation>
 <translation id="6750946710563435348">Použít jiné uživatelské jméno</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Anonymní režim)</translation>

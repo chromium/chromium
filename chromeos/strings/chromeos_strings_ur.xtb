@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">کیش</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
+<translation id="3156846309055100599">صفحہ <ph name="PAGE_NUMBER" /> کو اسکین کیا جا رہا ہے...</translation>
 <translation id="315738237743207937">کیپٹو پورٹل کا پتا چلا</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">پاس ورڈ کی میعاد <ph name="TIME" /> میں ختم ہونے والی ہے</translation>
 <translation id="4238516577297848345">کوئی پرنٹ جاب پیشرفت میں نہیں</translation>
 <translation id="4244962993387259361">‏میموری ٹیسٹ چلانے کیلئے آپ کے پاس کم از کم MB‏ 500 خالی ہونا ضروری ہے۔ اسپیس خالی کرنے کیلئے ترتیبات &gt; اسٹوریج مینیجمنٹ پر جائیں۔</translation>
+<translation id="4258281355379922695">‏HTTPS کی درخواستوں میں تاخیر</translation>
 <translation id="4289540628985791613">عمومی جائزہ</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="TOTAL_PAGE_NUMBER" /> میں سے <ph name="PRINTED_PAGE_NUMBER" />۔ براہ کرم پرنٹ جاب منسوخ کرنے کے لیے enter دبائیں۔</translation>
+<translation id="463791356324567266">اسکین کا عمل منسوخ کیا جا رہا ہے...</translation>
 <translation id="4646949265910132906">‏WiFi کنکشن محفوظ کریں</translation>
 <translation id="4654549501020883054">روزانہ تبدیل کریں</translation>
 <translation id="4665014895760275686">مینوفیکچرر</translation>
@@ -250,6 +253,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">اسکین مکمل نہیں ہو سکا</translation>
+<translation id="5502931783115429516">‏Android نہیں چل رہا ہے</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">فعال ہو رہا ہے</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -257,6 +261,7 @@
 <translation id="5701381305118179107">مرکز</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">پورٹل صورت حال</translation>
+<translation id="5784136236926853061">‏زیادہ HTTPS تاخیر</translation>
 <translation id="5832805196449965646">شخص کو شامل کریں</translation>
 <translation id="583281660410589416">نامعلوم</translation>
 <translation id="5849570051105887917">گھر فراہم کرنے والے کا کوڈ</translation>
@@ -348,6 +353,7 @@
 <translation id="7343649194310845056">نیٹ ورک کے آلات</translation>
 <translation id="7359657277149375382">فائل کی قسم</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
@@ -355,6 +361,7 @@
 <translation id="7490813197707563893">‏MAC پتہ</translation>
 <translation id="7497215489070763236">‏سرور CA سرٹیفکیٹ</translation>
 <translation id="7502658306369382406">‏IPv6 پتہ</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">ڈائیگناسٹک روٹینز</translation>
 <translation id="7561454561030345039">یہ کارروائی آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

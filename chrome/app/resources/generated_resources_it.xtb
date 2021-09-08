@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Appoggia il dito sul sensore di impronte digitali per sbloccare il dispositivo.</translation>
 <translation id="1509163368529404530">&amp;Ripristina gruppo</translation>
 <translation id="1509281256533087115">Accedi a qualsiasi dispositivo <ph name="DEVICE_NAME_AND_VENDOR" /> tramite USB</translation>
-<translation id="1509960214886564027">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1510785804673676069">Se utilizzi un server proxy, controlla le impostazioni del proxy o
     contatta l'amministratore di rete per verificare che il server
@@ -3953,7 +3952,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5213114823401215820">Riapri gruppo chiuso</translation>
 <translation id="5213481667492808996">Il tuo servizio dati "<ph name="NAME" />" è pronto all'uso</translation>
 <translation id="5213891612754844763">Mostra impostazioni proxy</translation>
-<translation id="5214249693262842685">Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su siti diversi, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="5215502535566372932">Seleziona il paese</translation>
 <translation id="521582610500777512">La foto è stata eliminata</translation>
 <translation id="5222403284441421673">Download non sicuro bloccato</translation>
@@ -5334,7 +5332,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="674632704103926902">Attiva trascinamento al tocco</translation>
 <translation id="6748054820659621153">Cerca sullo schermo con Google Lens</translation>
 <translation id="6748465660675848252">Puoi continuare, tuttavia verranno ripristinati soltanto le impostazioni e i dati sincronizzati. Tutti i dati locali andranno persi.</translation>
-<translation id="6749006854028927059">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti web, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="6750757184909117990">Disabilita rete mobile</translation>
 <translation id="6750946710563435348">Usa un altro nome utente</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (In incognito)</translation>

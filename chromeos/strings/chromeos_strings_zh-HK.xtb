@@ -102,7 +102,7 @@
 <translation id="3102119246920354026">快取</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">流動數據</translation>
-<translation id="3156846309055100599">正在掃描第 <ph name="PAGE_NUMBER" /> 頁…</translation>
+<translation id="3156846309055100599">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁…</translation>
 <translation id="315738237743207937">已偵測到強制網絡入口</translation>
 <translation id="3188257591659621405">我的檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
@@ -158,7 +158,7 @@
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
 <translation id="4238516577297848345">沒有進行中的列印工作</translation>
 <translation id="4244962993387259361">如要執行記憶體測試，您需要最少 500 MB 的可用空間。如要釋出空間，請前往 [設定] &gt; [儲存空間管理工具]。</translation>
-<translation id="4258281355379922695">HTTP 延遲</translation>
+<translation id="4258281355379922695">HTTP 延遲時間</translation>
 <translation id="4289540628985791613">概覽</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
@@ -183,7 +183,7 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
-<translation id="463791356324567266">正在取消掃描…</translation>
+<translation id="463791356324567266">正在取消掃瞄…</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
 <translation id="4654549501020883054">每日變更</translation>
 <translation id="4665014895760275686">製造商</translation>

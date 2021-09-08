@@ -482,7 +482,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1508491105858779599">Položite prst na tipalo prstnih odtisov, da odklenete napravo.</translation>
 <translation id="1509163368529404530">&amp;Obnovi skupino</translation>
 <translation id="1509281256533087115">Dostop do katere koli naprave <ph name="DEVICE_NAME_AND_VENDOR" /> prek USB-ja</translation>
-<translation id="1509960214886564027">Funkcije na številnih spletnih mestih morda ne bodo delovale</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1510785804673676069">Če uporabljate strežnik proxy, preverite nastavitve proxyja ali
         se obrnite na omrežnega skrbnika in poskrbite, da strežnik
@@ -3972,7 +3971,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5213114823401215820">Vnovično odpiranje zaprte skupine</translation>
 <translation id="5213481667492808996">Podatkovno storitev omrežja »<ph name="NAME" />« lahko začnete uporabljati</translation>
 <translation id="5213891612754844763">Prikaži nastavitve strežnika proxy</translation>
-<translation id="5214249693262842685">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="5215502535566372932">Izberite državo</translation>
 <translation id="521582610500777512">Fotografija je bila zavržena</translation>
 <translation id="5222403284441421673">Prenos, ki ni varen, je blokiran</translation>
@@ -5355,7 +5353,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="674632704103926902">Omogoči vlečenje z dotikom</translation>
 <translation id="6748054820659621153">Išči po zaslonu z Googlom Lens</translation>
 <translation id="6748465660675848252">Lahko nadaljujete, toda obnovljeni bodo samo sinhronizirani podatki in nastavitve. Vsi lokalni podatki bodo izgubljeni.</translation>
-<translation id="6749006854028927059">Spletna mesta ne morejo uporabljati vaših piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="6750757184909117990">Onemogočanje mobilnega omrežja</translation>
 <translation id="6750946710563435348">Uporaba drugega uporabniškega imena</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (anonimni način)</translation>

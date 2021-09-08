@@ -482,7 +482,6 @@
 <translation id="1508491105858779599">Palieskite pirštu piršto antspaudo jutiklį, kad atrakintumėte įrenginį.</translation>
 <translation id="1509163368529404530">&amp;Atkurti grupę</translation>
 <translation id="1509281256533087115">Pasiekite bet kurį „<ph name="DEVICE_NAME_AND_VENDOR" />“ per USB</translation>
-<translation id="1509960214886564027">Funkcijos gali neveikti daugybėje svetainių.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1510785804673676069">Jei naudojate įgaliotąjį serverį, patikrinkite jo nustatymus arba
     susisiekite su tinklo administratoriumi, kad įsitikintumėte, jog įgaliotasis
@@ -3972,7 +3971,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5213114823401215820">Iš naujo atidaryti uždarytą grupę</translation>
 <translation id="5213481667492808996">„<ph name="NAME" />“ duomenų paslauga paruošta naudoti</translation>
 <translation id="5213891612754844763">Rodyti tarpinio serverio nustatymus</translation>
-<translation id="5214249693262842685">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="5215502535566372932">Pasirinkite šalį</translation>
 <translation id="521582610500777512">Nuotrauka buvo atmesta</translation>
 <translation id="5222403284441421673">Nesaugus atsisiuntimas užblokuotas</translation>
@@ -5354,7 +5352,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="674632704103926902">Įgalinti vilkimą palietus</translation>
 <translation id="6748054820659621153">Paieška ekrane naudojant „Google Lens“</translation>
 <translation id="6748465660675848252">Galite tęsti, bet bus atkurti tik sinchronizuoti duomenys ir nustatymai. Visi vietiniai duomenys bus prarasti.</translation>
-<translation id="6749006854028927059">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="6750757184909117990">Išjungti mobilųjį ryšį</translation>
 <translation id="6750946710563435348">Naudoti kitą naudotojo vardą</translation>
 <translation id="6751344591405861699">„<ph name="WINDOW_TITLE" />“ (Inkognito)</translation>

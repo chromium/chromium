@@ -478,7 +478,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1508491105858779599">Umieść palec na czytniku linii papilarnych, by odblokować urządzenie.</translation>
 <translation id="1509163368529404530">&amp;Przywróć grupę</translation>
 <translation id="1509281256533087115">Dostęp do każdego urządzenia <ph name="DEVICE_NAME_AND_VENDOR" /> przez USB</translation>
-<translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1510785804673676069">Jeśli używasz serwera proxy, sprawdź jego ustawienia lub
     skontaktuj się z administratorem sieci, by sprawdzić, czy
@@ -3950,7 +3949,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5213114823401215820">Otwórz ponownie zamkniętą grupę</translation>
 <translation id="5213481667492808996">Usługa transmisji danych „<ph name="NAME" />” jest gotowa do użycia</translation>
 <translation id="5213891612754844763">Pokaż ustawienia serwera proxy</translation>
-<translation id="5214249693262842685">W trybie incognito strony nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam. Funkcje niektórych stron mogą nie działać prawidłowo.</translation>
 <translation id="5215502535566372932">Wybierz kraj</translation>
 <translation id="521582610500777512">Zdjęcie zostało odrzucone</translation>
 <translation id="5222403284441421673">Zablokowano pobieranie niebezpiecznego pliku</translation>
@@ -5331,7 +5329,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="674632704103926902">Włącz przeciąganie dotykiem</translation>
 <translation id="6748054820659621153">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="6748465660675848252">Możesz kontynuować, ale zostaną przywrócone tylko zsynchronizowane dane i ustawienia. Wszystkie dane lokalne zostaną utracone.</translation>
-<translation id="6749006854028927059">Strony nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam. Funkcje niektórych stron mogą nie działać prawidłowo.</translation>
 <translation id="6750757184909117990">Wyłącz sieć komórkową</translation>
 <translation id="6750946710563435348">Użyj innej nazwy użytkownika</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>

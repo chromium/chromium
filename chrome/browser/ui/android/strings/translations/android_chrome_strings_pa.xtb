@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome ਦਾ ਇਹ ਵਰਜਨ ਪੁਰਾਣਾ ਹੈ</translation>
 <translation id="1883903952484604915">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="189358972401248634">ਹੋਰ ਭਾਸ਼ਾਵਾਂ</translation>
+<translation id="1910950723001426294">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਬੰਦ ਹੈ।</translation>
 <translation id="1918175104945982129">Assistant ਦੀ ਅਵਾਜ਼ੀ ਖੋਜ ਲਈ ਸਹਿਮਤੀ ਵਾਲਾ UI ਅੱਧੀ ਸਕ੍ਰੀਨ ਵਿੱਚ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="1919130412786645364">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
 <translation id="1922362554271624559">ਸੁਝਾਈਆਂ ਗਈਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2278052315791335171">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ <ph name="SITE" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ</translation>
 <translation id="2286841657746966508">ਬਿਲਿੰਗ ਪਤਾ</translation>
+<translation id="228704530595896923">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ।</translation>
 <translation id="230115972905494466">ਕੋਈ ਅਨੁਰੂਪ ਡੀਵਾਈਸ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="230155349749732438">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਵਰਤਣ ਲਈ <ph name="BEGIN_LINK" />ਖੋਜਾਂ ਅਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ<ph name="END_LINK" /> ਦਾ ਚਾਲੂ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="2318045970523081853">ਕਾਲ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">ਡੀਵਾਈਸ ਦੀ ਮੌਜੂਦਾ ਭਾਸ਼ਾ</translation>
 <translation id="4141536112466364990">Chrome ਬਾਰੇ ਜਾਣੋ</translation>
 <translation id="4149994727733219643">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼</translation>
+<translation id="4162867837470729563">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਪੂਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="4165986682804962316">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4170011742729630528">ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ; ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ਵਰਤਿਆ ਗਿਆ</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">ਵਾਈ-ਫਾਈ 'ਤੇ ਡਾਊਨਲੋਡ ਸ਼ੁਰੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ਨਹੀਂ ਹੋ?</translation>
 <translation id="6211386937064921208">ਇਸ ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="6212786426849242805">Google ਨੂੰ ਪੰਨੇ ਦੀ ਕੁਝ ਲਿਖਤ ਨੂੰ ਵੀ ਧਿਆਨ ਵਿੱਚ ਰੱਖਣ ਦਿਓ</translation>
 <translation id="6221633008163990886">ਆਪਣੇ ਪਾਸਵਰਡ ਨਿਰਯਾਤ ਕਰਨ ਲਈ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="6232535412751077445">‘ਟਰੈਕ ਨਾ ਕਰੋ’ ਨੂੰ ਚਾਲੂ ਕਰਨ ਤੋਂ ਭਾਵ ਹੈ ਕਿ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਸੰਬੰਧੀ ਟਰੈਫ਼ਿਕ ਵਿੱਚ ਕੋਈ ਬੇਨਤੀ ਸ਼ਾਮਲ ਕੀਤੀ ਜਾਵੇਗੀ। ਕੋਈ ਵੀ ਪ੍ਰਭਾਵ ਇਸ 'ਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਕਿ ਵੈੱਬਸਾਈਟ ਬੇਨਤੀ ਦਾ ਜਵਾਬ ਦਿੰਦੀ ਹੈ ਜਾਂ ਨਹੀਂ ਅਤੇ ਬੇਨਤੀ ਦਾ ਅਰਥ ਕਿਵੇਂ ਕੱਢਿਆ ਜਾਂਦਾ ਹੈ।
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">ਸਰਵੇਖਣ</translation>
 <translation id="6461962085415701688">ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="6464977750820128603">ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Chrome ਵਿੱਚ ਜਾਂਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਲਈ ਟਾਈਮਰ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹੋ।\n\nGoogle ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਲਈ ਤੁਸੀਂ ਟਾਈਮਰ ਸੈੱਟ ਕੀਤਾ ਹੁੰਦਾ ਹੈ ਅਤੇ ਨਾਲ ਹੀ ਇਹ ਜਾਣਕਾਰੀ ਵੀ ਪ੍ਰਾਪਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਨੂੰ ਕਿੰਨੀ ਦੇਰ ਤੱਕ ਦੇਖਦੇ ਰਹੇ ਹੋ। ਇਹ ਜਾਣਕਾਰੀ ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤੀ ਜਾਂਦੀ ਹੈ।</translation>
+<translation id="6473086018775716761">ਸਾਂਝਾਕਰਨ ਵਿਕਲਪਾਂ ਦੀ ਸੂਚੀ ਅੱਧੀ ਸਕ੍ਰੀਨ 'ਤੇ ਖੁੱਲ੍ਹੀ ਹੋਈ ਹੈ।</translation>
 <translation id="6475951671322991020">ਵੀਡੀਓ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="6477928892249167417">ਇਹ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਲਈ ਮਹੱਤਵਪੂਰਨ ਲੱਗ ਰਹੀਆਂ ਹਨ:</translation>
 <translation id="6482749332252372425">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਕਮੀ ਦੇ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">ਸਰਗਰਮੀ</translation>
 <translation id="7857691613771368249">ਪੁੱਛੋ ਕਿ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਦੋਂ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
 <translation id="7859988229622350291">ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
+<translation id="78707286264420418">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ <ph name="PRODUCT_NAME" /> ਨੂੰ ਨਜ਼ਦੀਕੀ ਡੀਵਾਈਸਾਂ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="7875915731392087153">ਈਮੇਲ ਬਣਾਓ</translation>
 <translation id="7876243839304621966">ਸਾਰੇ ਹਟਾਓ</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ ਹੈ}one{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ ਹੈ}other{ਤੁਹਾਡੇ ਕੋਲ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ਨਾ-ਪੜ੍ਹੇ ਪੰਨੇ ਹਨ}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ਫ਼ਾਈਲਾਂ ਬਾਕੀ</translation>
 <translation id="8189750580333936930">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ</translation>
 <translation id="8190358571722158785">1 ਦਿਨ ਬਾਕੀ</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />ਤੁਹਾਡੇ ਡੀਵਾਈਸ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">ਦੁਬਾਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8209050860603202033">ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8216351761227087153">ਦੇਖੋ</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="8310344678080805313">ਸਟੈਂਡਰਡ ਟੈਬਸ</translation>
 <translation id="831192587911042850">ਮੌਜੂਦਾ ਵੈੱਬਸਾਈਟ ਨੂੰ ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਉਸ ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਦਾ ਤੁਸੀਂ ਅਨੁਸਰਣ ਕਰ ਰਹੇ ਹੋ।</translation>
+<translation id="8319544457245040955">ਪੰਨਾ ਛੱਡੇ ਬਿਨਾਂ ਵਿਸ਼ੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ। ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਸ਼ਬਦਾਂ ਨੂੰ ਖੋਜਣ ਲਈ ਪੰਨੇ 'ਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਚੁਣੋ। ਆਪਣੀ ਖੋਜ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਨਤੀਜਿਆਂ ਨੂੰ ਦੇਖੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ।</translation>
 <translation id="8327155640814342956">ਬਿਹਤਰੀਨ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਨੁਭਵ ਲਈ, Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਾਸਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="834313815369870491">ਕਦੇ ਵੀ ਇਹਨਾਂ ਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="8349013245300336738">ਵਰਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>

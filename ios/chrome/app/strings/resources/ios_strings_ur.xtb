@@ -230,6 +230,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے غیر مقفل کریں</translation>
 <translation id="3207960819495026254">بُک مارک بنایا ہوا</translation>
 <translation id="3224641773458703735">پاس ورڈز برآمد کرنے کیلئے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا ہوگا۔</translation>
+<translation id="3230318355092723906">مطابقت پذیری کی سہولت آف ہونے پر، آپ ابھی بھی اپنے تمام بک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلے پر دیکھ سکتے ہیں۔ اگر آپ تبدیلیاں کرتے ہیں تو وہ آپ کے اکاؤنٹ کے ساتھ سِنک نہیں ہوں گی۔</translation>
 <translation id="3240426699337459095">لنک کاپی ہوگیا</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، <ph name="ADDITIONAL_INFO" />، <ph name="INDEX" /> از <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="5988851877894965432">‏URLs کو Chrome میں کھولیں</translation>
 <translation id="6012140227487808125">مرموز کاری ہو رہی ہے…</translation>
+<translation id="6020800238007543967">لنک کے پیش مناظر دکھائیں</translation>
 <translation id="6021332621416007159">اس میں کھولیں…</translation>
 <translation id="6036514205982097558">ایک ہی براؤزر میں آپ کے سبھی ٹیبز</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6801927553864092214">نجی طور پر براؤز کرنے کے لیے ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
+<translation id="681450999322335505">آپ کی تنظیم نے مطابقت پذیری کی سہولت کو غیر فعال کر دیا۔</translation>
 <translation id="6830804042318138535">مزید پڑھیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>

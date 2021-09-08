@@ -475,7 +475,6 @@
 <translation id="1508491105858779599">请将手指放在指纹传感器上以解锁设备。</translation>
 <translation id="1509163368529404530">恢复组(&amp;R)</translation>
 <translation id="1509281256533087115">通过 USB 访问任何<ph name="DEVICE_NAME_AND_VENDOR" /></translation>
-<translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1510785804673676069">如果您使用的是代理服务器，请检查您的代理设置，或与网络管理员核实代理服务器是否运转正常。如果您认为自己使用的不是代理服务器，请调整您的<ph name="LINK_START" />代理设置<ph name="LINK_END" />。</translation>
 <translation id="1511997356770098059">此安全密钥无法存储任何登录数据</translation>
@@ -3944,7 +3943,6 @@
 <translation id="5213114823401215820">重新打开已关闭的群组</translation>
 <translation id="5213481667492808996">您可以使用“<ph name="NAME" />”的数据流量服务了</translation>
 <translation id="5213891612754844763">显示代理设置</translation>
-<translation id="5214249693262842685">不过，在无痕模式下，网站无法使用您的 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="5215502535566372932">选择国家/地区</translation>
 <translation id="521582610500777512">照片已被舍弃</translation>
 <translation id="5222403284441421673">已阻止不安全的下载</translation>
@@ -5323,7 +5321,6 @@
 <translation id="674632704103926902">启用点按拖动功能</translation>
 <translation id="6748054820659621153">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
 <translation id="6748465660675848252">您可以继续，但系统将只恢复已同步的数据和设置。所有本地数据都将会丢失。</translation>
-<translation id="6749006854028927059">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6750946710563435348">使用其他用户名</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>

@@ -476,7 +476,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1508491105858779599">Gailua desblokeatzeko, jarri hatza hatz-marken sentsorean.</translation>
 <translation id="1509163368529404530">Leheneratu taldea</translation>
 <translation id="1509281256533087115">Atzitu edozer <ph name="DEVICE_NAME_AND_VENDOR" /> USB bidez</translation>
-<translation id="1509960214886564027">Baliteke webgune askotako eginbideek ez funtzionatzea</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1510785804673676069">Proxy-zerbitzari bat erabiltzen ari bazara, egiaztatu proxy-ezarpenak edo
     jarri harremanetan sarearen administratzailearekin proxy-zerbitzariak
@@ -3952,7 +3951,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5213114823401215820">Ireki berriro itxitako taldea</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" datu-zerbitzua erabiltzeko prest dago</translation>
 <translation id="5213891612754844763">Erakutsi proxy-ezarpenak</translation>
-<translation id="5214249693262842685">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="5215502535566372932">Hautatu herrialdea</translation>
 <translation id="521582610500777512">Argazkia baztertu da</translation>
 <translation id="5222403284441421673">Segurua ez den deskarga bat blokeatu da</translation>
@@ -5333,7 +5331,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="674632704103926902">Gaitu sakatze bidezko arrastatzea</translation>
 <translation id="6748054820659621153">Bilatu pantailako edukia Google Lens bidez</translation>
 <translation id="6748465660675848252">Aurrera egin dezakezu, baina sinkronizatutako datuak eta ezarpenak soilik leheneratuko dira. Galdu egingo dira gailuko datu guztiak.</translation>
-<translation id="6749006854028927059">Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="6750757184909117990">Desgaitu sare mugikorra</translation>
 <translation id="6750946710563435348">Erabili beste erabiltzaile-izen bat</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (ezkutuko moduan)</translation>

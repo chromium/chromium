@@ -478,7 +478,6 @@
 <translation id="1508491105858779599">Postavite prst na senzor otiska prsta kako biste otključali uređaj.</translation>
 <translation id="1509163368529404530">&amp;Vrati grupu</translation>
 <translation id="1509281256533087115">pristupiti bilo kojem uređaju <ph name="DEVICE_NAME_AND_VENDOR" /> putem USB-a</translation>
-<translation id="1509960214886564027">Značajke na mnogim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1510785804673676069">Ako upotrebljavate proxy poslužitelj, provjerite svoje postavke proxy poslužitelja ili
     kontaktirajte administratora mreže radi provjere funkcionalnosti proxy
@@ -3956,7 +3955,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5213114823401215820">Ponovo otvori zatvorenu grupu</translation>
 <translation id="5213481667492808996">Vaša podatkovna usluga "<ph name="NAME" />" spremna je za upotrebu</translation>
 <translation id="5213891612754844763">Prikaži postavke proxyja</translation>
-<translation id="5214249693262842685">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="5215502535566372932">Odaberite zemlju</translation>
 <translation id="521582610500777512">Fotografija je odbačena</translation>
 <translation id="5222403284441421673">Nesigurno preuzimanje blokirano</translation>
@@ -5337,7 +5335,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="674632704103926902">Omogući povlačenje dodirom</translation>
 <translation id="6748054820659621153">Pretraži zaslon pomoću Google objektiva</translation>
 <translation id="6748465660675848252">Možete nastaviti, no vratit će se samo sinkronizirani podaci i postavke. Izgubit će se svi lokalni podaci.</translation>
-<translation id="6749006854028927059">Web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="6750757184909117990">Onemogućivanje mobilne mreže</translation>
 <translation id="6750946710563435348">Upotrijebite drugo korisničko ime</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Anonimno)</translation>

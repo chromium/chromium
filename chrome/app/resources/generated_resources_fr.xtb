@@ -477,7 +477,6 @@
 <translation id="1508491105858779599">Placez votre doigt sur le lecteur d'empreinte digitale pour déverrouiller l'appareil.</translation>
 <translation id="1509163368529404530">&amp;Restaurer le groupe</translation>
 <translation id="1509281256533087115">Accéder à n'importe quel appareil <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
-<translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1510238584712386396">Lanceur d'applications</translation>
 <translation id="1510785804673676069">Si vous utilisez un serveur proxy, vérifiez vos paramètres de proxy ou
     contactez votre administrateur réseau pour vérifier que le serveur
@@ -3954,7 +3953,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5213114823401215820">Rouvrir le groupe fermé</translation>
 <translation id="5213481667492808996">Votre service de données "<ph name="NAME" />" est disponible</translation>
 <translation id="5213891612754844763">Afficher les paramètres de proxy</translation>
-<translation id="5214249693262842685">Lorsque vous êtes en navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
 <translation id="521582610500777512">La photo a été supprimée.</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
@@ -5336,7 +5334,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="674632704103926902">Activer le déplacement tactile</translation>
 <translation id="6748054820659621153">Rechercher sur l'écran avec Google Lens</translation>
 <translation id="6748465660675848252">Vous pouvez continuer, mais seules les données que vous avez synchronisées seront restaurées (de même que vos paramètres). Toutes les données stockées en local seront perdues.</translation>
-<translation id="6749006854028927059">Les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités de certains sites peuvent être bloquées.</translation>
 <translation id="6750757184909117990">Désactiver le réseau mobile</translation>
 <translation id="6750946710563435348">Utiliser un autre nom d'utilisateur</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navigation privée)</translation>

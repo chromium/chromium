@@ -480,7 +480,6 @@
 <translation id="1508491105858779599">Settu fingurinn á fingrafaraskynjarann til að taka tækið úr lás.</translation>
 <translation id="1509163368529404530">&amp;Endurheimta hóp</translation>
 <translation id="1509281256533087115">Fá aðgang að öllum <ph name="DEVICE_NAME_AND_VENDOR" /> um USB</translation>
-<translation id="1509960214886564027">Eiginleikar gætu bilað á mörgum vefsvæðum</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1510785804673676069">Ef þú ert að nota proxy-þjón skaltu kanna proxy-stillingarnar eða
     hafa samband við kerfisstjóra til að ganga úr skugga um að
@@ -3969,7 +3968,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5213114823401215820">Enduropna lokaðan hóp</translation>
 <translation id="5213481667492808996">Gagnaþjónustan þín hjá <ph name="NAME" /> er tilbúin til notkunar</translation>
 <translation id="5213891612754844763">Sýna stillingar staðgengilsþjóns</translation>
-<translation id="5214249693262842685">Þegar huliðsstilling er notuð geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Ekki er víst að allir eiginleikar á öllum vefsvæðum virki.</translation>
 <translation id="5215502535566372932">Veldu land</translation>
 <translation id="521582610500777512">Mynd var fleygt</translation>
 <translation id="5222403284441421673">Lokað á óöruggt niðurhal</translation>
@@ -5350,7 +5348,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="674632704103926902">Draga með snertingu</translation>
 <translation id="6748054820659621153">Leitaðu á skjánum með Google linsu</translation>
 <translation id="6748465660675848252">Þú getur haldið áfram en aðeins samstillt gögn og stillingar verða endurheimt. Öll staðbundin gögn tapast.</translation>
-<translation id="6749006854028927059">Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Ekki er víst að allir eiginleikar á öllum vefsvæðum virki.</translation>
 <translation id="6750757184909117990">Óvirkja farsímakerfi</translation>
 <translation id="6750946710563435348">Nota annað notandanafn</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (huliðsgluggi)</translation>

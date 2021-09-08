@@ -1975,7 +1975,7 @@
 
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
 <translation id="3359186795130278362">啟用有限制的受管理訪客工作階段。</translation>
-<translation id="33592541385181121">不在產生的 Kerberos SPN 中納入連接埠</translation>
+<translation id="33592541385181121">不在產生的 Kerberos SPN 中納入通訊埠</translation>
 <translation id="3360093276083825336">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定電池供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊。
@@ -2143,7 +2143,7 @@
 <translation id="355118380775352753">要在替代瀏覽器中開啟的網站</translation>
 <translation id="3554498762428140109">啟用原生視窗遮蔽功能</translation>
 <translation id="3554984410014457319">允許 Google 助理聽取語音啟動字詞</translation>
-<translation id="3557586898458302131">在產生的 Kerberos SPN 中納入非標準連接埠</translation>
+<translation id="3557586898458302131">在產生的 Kerberos SPN 中納入非標準通訊埠</translation>
 <translation id="3562741878192828370">指定下載後應自動開啟的檔案類型清單。列出檔案類型時，請勿加入開頭的分隔符，因此請列出「txt」，而非「.txt」。
 
       在啟用安全瀏覽功能的情況下，即便使用者已指定要讓系統自動開啟某些類型的檔案，Chrome 還是會檢查這類檔案，如果未通過檢查，就不會開啟檔案。
@@ -2233,7 +2233,7 @@
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報這類統計資料。</translation>
 <translation id="3729937245044939404">這項政策自 M70 起已淘汰，請改用 <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> 和 <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />。
 
-      啟用 <ph name="PRODUCT_NAME" /> 的自動填入功能，允許使用者利用先前儲存的資訊 (例如地址或信用卡資料) 自動填寫網路表單。
+      啟用 <ph name="PRODUCT_NAME" /> 的自動填入功能，允許使用者利用先前儲存的資訊 (例如地址或信用卡資訊) 自動填寫網路表單。
 
       如果你停用這項設定，使用者就無法使用自動填入功能。
 

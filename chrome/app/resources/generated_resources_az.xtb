@@ -474,7 +474,6 @@
 <translation id="1508491105858779599">Cihazı kiliddən çıxarmaq üçün barmağınızı barmaq izi sensoruna yerləşdirin</translation>
 <translation id="1509163368529404530">&amp;Qrupu bərpa edin</translation>
 <translation id="1509281256533087115">Hər hansı <ph name="DEVICE_NAME_AND_VENDOR" /> adlı cihaza USB vasitəsilə daxil olun</translation>
-<translation id="1509960214886564027">Bir çox saytdakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
 <translation id="1510785804673676069">Əgər proksi server istifadə edirsinizsə, proksi ayarlarını yoxlayın və ya
     proksi serverinizin işlədiyini yoxlamaq üçün şəbəkə administratorunuz ilə
@@ -3949,7 +3948,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5213114823401215820">Qapalı qrupu yenidən açın</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" data xidmətiniz istifadəyə hazırdır</translation>
 <translation id="5213891612754844763">Proksi ayarlarını göstərin</translation>
-<translation id="5214249693262842685">Anonim rejimdə olduqda saytlar müxtəlif saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün). Bəzi saytlarda funksiyalar işləməyə bilər.</translation>
 <translation id="5215502535566372932">Ölkə seçin</translation>
 <translation id="521582610500777512">Fotoşəkil kənarlaşdırıldı</translation>
 <translation id="5222403284441421673">Təhlükəli endirmə blok edildi</translation>
@@ -5328,7 +5326,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="674632704103926902">Tıklama sürükləməsinə icazə verin</translation>
 <translation id="6748054820659621153">Ekranınızı Google Linza ilə axtarın</translation>
 <translation id="6748465660675848252">Davam edə bilərsiniz, amma yalnız sinxronlaşmış datanız və ayarlarınız bərpa olunacaq. Bütün lokal data silinəcək.</translation>
-<translation id="6749006854028927059">Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün). Bəzi saytlarda xüsusiyyətlər işləməyə bilər.</translation>
 <translation id="6750757184909117990">Mobil şəbəkəni deaktiv edin</translation>
 <translation id="6750946710563435348">Digər istifadəçi adından istifadə edin</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkoqnito)</translation>

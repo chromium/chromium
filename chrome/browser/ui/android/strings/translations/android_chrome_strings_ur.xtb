@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
 <translation id="1883903952484604915">میری فائلز</translation>
 <translation id="189358972401248634">دوسری زبانیں</translation>
+<translation id="1910950723001426294">اشتراک کرنے کے اختیارات کی فہرست بند ہے۔</translation>
 <translation id="1918175104945982129">‏اسسٹنٹ صوتی تلاش کی رضامندی ui نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="1919130412786645364">‏Chrome میں سائن ان کی اجازت دیں</translation>
 <translation id="1922362554271624559">تجویز کردہ زبانیں</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
+<translation id="228704530595896923">اشتراک کرنے کے اختیارات کی فہرست۔</translation>
 <translation id="230115972905494466">کوئی مطابقت پذیر آلہ نہیں ملا</translation>
 <translation id="230155349749732438">اس ترتیب کو استعمال کرنے کیلئے <ph name="BEGIN_LINK" />تلاشوں اور براؤزنگ کو بہتر بنائیں<ph name="END_LINK" /> آن کرنا ضروری ہے</translation>
 <translation id="2318045970523081853">کال کرنے کے لیے تھپتھپائیں</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">آلہ کی موجودہ زبان</translation>
 <translation id="4141536112466364990">‏Chrome سیکھیں</translation>
 <translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
+<translation id="4162867837470729563">اشتراک کرنے کے اختیارات کی فہرست اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
 <translation id="4170011742729630528">سروس دستیاب نہیں ہے؛ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> استعمال شدہ</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">‏ڈاؤن لوڈ Wi-Fi آن ہونے پر شروع ہوگا</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
 <translation id="6211386937064921208">اس صفحہ کا پیش منظر دکھایا جا رہا ہے</translation>
+<translation id="6212786426849242805">‏Google کو صفحے کے کچھ ٹیکسٹ پر بھی غور کرنے دیں</translation>
 <translation id="6221633008163990886">اپنے پاس ورڈز برآمد کرنے کے لئے غیر مقفل کریں</translation>
 <translation id="6232535412751077445">ٹریک نہ کریں' کو فعال کرنے کا مطلب یہ ہے کہ آپ کی براؤزنگ ٹریفک کے ساتھ ایک درخواست شامل کر دی جائے گی۔ کسی بھی اثر کا انحصار اس بات پر ہوتا ہے کہ آیا ویب سائٹ درخواست کا جواب دیتی ہے اور درخواست کی ترجمانی کس طرح کی جاتی ہے۔
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">سرویز</translation>
 <translation id="6461962085415701688">فائل نہیں کھل سکتی</translation>
 <translation id="6464977750820128603">‏آپ Chrome میں اپنی ملاحظہ کردہ سائٹس کو دیکھ اور ان کے لیے ٹائمرز سیٹ کر سکتے ہیں۔\n\nجن سائٹس کے لیے آپ ٹائمرز سیٹ کرتے ہیں اور جتنی دیر تک آپ ان سائٹس کو ملاحظہ کرتے ہیں اس کے بارے میں Google معلومات حاصل کرتا ہے۔ ڈیجیٹل فلاح و بہبود کو بہتر بنانے کے لیے اس معلومات کا استعمال کیا جاتا ہے۔</translation>
+<translation id="6473086018775716761">اشتراک کرنے کے اختیارات کی فہرست نصف اونچائی پر کھلی ہوئی ہے۔</translation>
 <translation id="6475951671322991020">ویڈیو ڈاؤن لوڈ کریں</translation>
 <translation id="6477928892249167417">یہ سائٹس آپ کے لیے اہم معلوم ہوتی ہیں:</translation>
 <translation id="6482749332252372425">اسٹوریج کی جگہ کم ہونے کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7857691613771368249">پوچھیں کہ فائلز کب محفوظ کرنی ہیں</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> کو آپ کے آلے سے منسلک ہونے کے لیے قریبی آلات کی اجازت درکار ہے</translation>
 <translation id="7875915731392087153">ای میل تخلیق کریں</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> بغیر پڑھا ہوا صفحہ ہے}other{آپ کے پاس <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> بغیر پڑھے ہوئے صفحات ہیں}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> فائلیں باقی ہیں</translation>
 <translation id="8189750580333936930">رازداری سینڈ باکس</translation>
 <translation id="8190358571722158785">1 دن باقی</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8209050860603202033">تصویر کھولیں</translation>
 <translation id="8216351761227087153">دیکھیں</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">آپ کے آلے سے منسلک ہو رہا ہے…</translation>
 <translation id="8310344678080805313">معیاری ٹیبز</translation>
 <translation id="831192587911042850">موجودہ ویب سائٹ کو ان ویب سائٹس کی فہرست میں شامل کرتا ہے جن کی آپ پیروی کر رہے ہیں۔</translation>
+<translation id="8319544457245040955">صفحہ کو چھوڑے بغیر موضوع کے بارے میں جانیں۔ صفحے پر ایک یا مزید الفاظ منتخب کریں تاکہ انہیں تلاش کر سکیں۔ اپنی تلاش میں ترمیم کرنے کے لیے، نتائج دیکھیں اور انہیں ایک نئے ٹیب میں کھولیں۔</translation>
 <translation id="8327155640814342956">‏براؤزنگ کے بہترین تجربے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8349013245300336738">استعمال کردہ ڈیٹا کی مقدار کے لحاظ سے ترتیب دیں</translation>

@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Cihazın kilidini açmak için parmağınızı parmak izi sensörünün üzerine yerleştirin.</translation>
 <translation id="1509163368529404530">&amp;Grubu geri yükle</translation>
 <translation id="1509281256533087115">USB üzerinden herhangi bir <ph name="DEVICE_NAME_AND_VENDOR" /> cihazına erişme</translation>
-<translation id="1509960214886564027">Birçok sitedeki özellikler çalışmayabilir</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1510785804673676069">Bir proxy sunucusu kullanıyorsanız, proxy ayarlarınızı kontrol edin veya
         proxy sunucunuzun çalıştığını kontrol etmek için ağ yöneticinize
@@ -3951,7 +3950,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5213114823401215820">Kapatılan grubu yeniden aç</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" veri hizmetiniz kullanıma hazır</translation>
 <translation id="5213891612754844763">Proxy ayarlarını göster</translation>
-<translation id="5214249693262842685">Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler bozulabilir.</translation>
 <translation id="5215502535566372932">Ülke seçin</translation>
 <translation id="521582610500777512">Fotoğraf silindi</translation>
 <translation id="5222403284441421673">Güvenli olmayan indirme işlemi engellendi</translation>
@@ -5333,7 +5331,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="674632704103926902">Hafifçe vurarak sürüklemeyi etkinleştir</translation>
 <translation id="6748054820659621153">Google Lens ile Ekranınızda Arama yapın</translation>
 <translation id="6748465660675848252">Devam edebilirsiniz, ancak yalnızca senkronize edilen verileriniz ve ayarlarınız geri yüklenecek. Tüm yerel verileri kaybedeceksiniz.</translation>
-<translation id="6749006854028927059">Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="6750757184909117990">Hücresel bağlantıyı devre dışı bırak</translation>
 <translation id="6750946710563435348">Başka kullanıcı adı kullan</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Gizli mod)</translation>

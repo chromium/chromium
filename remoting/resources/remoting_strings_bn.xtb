@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4563926062592110512">ক্লায়েন্ট বিচ্ছিন্ন হয়েছে: <ph name="CLIENT_USERNAME" />৷</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাবে কনফিগার করা হয়নি। অন্য একটি ডিফল্ট ওয়েব ব্রাউজার বেছে নিয়ে URL ফরোয়ার্ড করার সুবিধা চালু করুন।</translation>
 <translation id="4635770493235256822">দূরবর্তী ডিভাইস</translation>
 <translation id="4660011489602794167">কীবোর্ড দেখান</translation>
 <translation id="4703799847237267011">আপনার Chromoting অধিবেশন শেষ হয়েছে৷</translation>

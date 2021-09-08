@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
 <translation id="189358972401248634">Sonstige Sprachen</translation>
+<translation id="1910950723001426294">Die Liste der Freigabeoptionen ist geschlossen.</translation>
 <translation id="1918175104945982129">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant halb geöffnet</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1922362554271624559">Vorgeschlagene Sprachen</translation>
@@ -193,6 +194,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2276696007612801991">Melden Sie sich in Ihrem Google-Konto an, um Ihre Passwörter zu prüfen</translation>
 <translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird Ihr Konto auf <ph name="SITE" /> nicht gelöscht</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
+<translation id="228704530595896923">Liste der Freigabeoptionen.</translation>
 <translation id="230115972905494466">Keine kompatiblen Geräte gefunden</translation>
 <translation id="230155349749732438">Für diese Einstellung muss <ph name="BEGIN_LINK" />Suchanfragen und das Surfen verbessern<ph name="END_LINK" /> aktiviert sein</translation>
 <translation id="2318045970523081853">Zum Anrufen tippen</translation>
@@ -504,6 +506,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und ist nur in ausgewählt
 <translation id="4137746084635924146">Aktuelle Gerätesprache</translation>
 <translation id="4141536112466364990">Informationen zu Chrome</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
+<translation id="4162867837470729563">Die Liste der Freigabeoptionen ist vollständig geöffnet.</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4170011742729630528">Der Dienst ist momentan nicht verfügbar. Bitte versuchen Sie es später erneut.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> verwendet</translation>
@@ -846,6 +849,7 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6203593061661911168">Der Download beginnt bei Verbindung mit einem WLAN</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht Ihre E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
+<translation id="6212786426849242805">Google erlauben, zusätzlich Text auf der Seite zu berücksichtigen</translation>
 <translation id="6221633008163990886">Zum Exportieren Ihrer Passwörter entsperren</translation>
 <translation id="6232535412751077445">Wenn Sie das Kästchen „Do Not Track“ anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
@@ -895,6 +899,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6459045781120991510">Umfragen</translation>
 <translation id="6461962085415701688">Datei kann nicht geöffnet werden</translation>
 <translation id="6464977750820128603">Sie sehen in Chrome besuchte Websites und können Timer einstellen.\n\nGoogle erhält Informationen zu den Websites, für die Sie Timer einstellen, sowie zur Dauer des Besuchs. Anhand dieser Informationen wird Digital Wellbeing optimiert.</translation>
+<translation id="6473086018775716761">Die Liste der Freigabeoptionen ist halb geöffnet.</translation>
 <translation id="6475951671322991020">Video herunterladen</translation>
 <translation id="6477928892249167417">Diese Websites scheinen Ihnen wichtig zu sein:</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> konnte nicht heruntergeladen werden, weil nicht genügend Speicherplatz vorhanden ist.</translation>
@@ -1131,6 +1136,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7857691613771368249">Nachfragen, wann Dateien gespeichert werden sollen</translation>
 <translation id="7859988229622350291">Nie übersetzen</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> benötigt die Berechtigung zum Zugriff auf Geräte in der Nähe, um eine Verbindung zu Ihrem Gerät herzustellen</translation>
 <translation id="7875915731392087153">E-Mail erstellen</translation>
 <translation id="7876243839304621966">Alle entfernen</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Sie haben <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> ungelesene Seite}other{Sie haben <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> ungelesene Seiten}}</translation>
@@ -1192,6 +1198,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8186512483418048923">Noch <ph name="FILES" /> Dateien</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 Tag übrig</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
 <translation id="8209050860603202033">Bild öffnen</translation>
 <translation id="8216351761227087153">Ansehen</translation>
@@ -1210,6 +1217,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="829672787777123339">Verbindung zu Ihrem Gerät wird hergestellt…</translation>
 <translation id="8310344678080805313">Standard-Tabs</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen Sie folgen.</translation>
+<translation id="8319544457245040955">Sie erfahren mehr über ein Thema, ohne die Seite zu verlassen. Wählen Sie mindestens ein Wort auf der Seite aus, um dazu Suchergebnisse zu erhalten. Wenn Sie die Suchanfrage bearbeiten möchten, sehen Sie sich die Ergebnisse an und öffnen Sie sie in einem neuen Tab.</translation>
 <translation id="8327155640814342956">Noch besser und komfortabler surfen – jetzt Chrome öffnen und aktualisieren</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8349013245300336738">Nach Menge der verwendeten Daten sortieren</translation>

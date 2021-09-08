@@ -214,6 +214,7 @@
 <translation id="1218015446623563536">Linux हटवा</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />या डिव्हाइसच्या स्थानाचा अंदाज लावण्यात मदत करण्यासाठी, Google ची स्थान सेवा वाय-फाय, मोबाइल नेटवर्क आणि सेंसरसारख्या स्रोतांचा वापर करते.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही या डिव्हाइसवरील मुख्य स्थान सेटिंग बंद करून स्थान बंद करू शकता. तुम्ही स्थान सेटिंग्जमध्ये स्थानासाठी वाय-फाय, मोबाइल नेटवर्क आणि सेंसरचा वापर देखील बंद करू शकता.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219115285613502247"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड करता आल्या नाहीत. नंतर डाउनलोड करण्याचा प्रयत्न केला जाईल. सध्या प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली आहे.</translation>
 <translation id="122082903575839559">सर्टिफिकेट स्वाक्षरी अल्गोरिदम</translation>
 <translation id="1221024147024329929">PKCS #1 RSA एंक्रिप्शनसह MD2</translation>
 <translation id="1221825588892235038">केवळ निवड</translation>
@@ -478,7 +479,6 @@
 <translation id="1508491105858779599">डिव्हाइस अनलॉक करण्‍यासाठी तुमचे बोट फिंगरप्रिंट सेन्सरवर ठेवा.</translation>
 <translation id="1509163368529404530">&amp;गट रिस्टोअर करा</translation>
 <translation id="1509281256533087115">USB द्वारे कोणतेही <ph name="DEVICE_NAME_AND_VENDOR" /> ॲक्सेस करा</translation>
-<translation id="1509960214886564027">अनेक साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1510785804673676069">तुम्ही प्रॉक्सी सर्व्हर वापरत असल्यास, तुमची प्रॉक्सी सेटिंग्ज तपासा किंवा
         प्रॉक्सी सर्व्हर कार्य करत असल्याचे तपासण्यासाठी
@@ -572,6 +572,7 @@
 <translation id="1602085790802918092">व्हर्च्युअल मशीन सुरू करत आहे</translation>
 <translation id="1603914832182249871">(गुप्त)</translation>
 <translation id="1604432177629086300">प्रिंट करू शकलो नाही. प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="1605744057217831567">सर्व साइट डेटा आणि परवानग्या पहा</translation>
 <translation id="1606077700029460857">माउस सेटिंग्ज बदला</translation>
 <translation id="1607139524282324606">प्रवेश साफ करा</translation>
 <translation id="1607499585984539560">वापरकर्ता डोमेनशी संबंधित नाही</translation>
@@ -1346,6 +1347,7 @@
 <translation id="2364498172489649528">पास झाले</translation>
 <translation id="2365507699358342471">या पेजवर क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज दिसू शकतात.</translation>
 <translation id="2367972762794486313">अ‍ॅप्स दर्शवा</translation>
+<translation id="236939127352773362">डिव्हाइस जवळपास शेअर करताना</translation>
 <translation id="2371076942591664043">&amp;पूर्ण झाल्यानंतर उघडा</translation>
 <translation id="2373666622366160481">कागदाच्या आकारात बसवा</translation>
 <translation id="2375406435414127095">तुमच्या फोनशी कनेक्ट करा</translation>
@@ -2770,6 +2772,7 @@
 <translation id="3877075909000773256"><ph name="USER_NAME" /> च्या डिव्हाइससाठी Nearby सह शेअरिंग सेटिंग्ज. या शेअरिंगसाठी <ph name="USER_EMAIL" /> खाते वापरत आहे.</translation>
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3882165008614329320">कॅमेरा किंवा फाइलवरून सद्य व्हिडिओ</translation>
+<translation id="3883306461188700142">तुमचा आवाज वापरून टाइप करा. Search + D दाबा त्यानंतर, बोलण्यास सुरुवात करा.</translation>
 <translation id="3884152383786131369">एकाहून अधिक भाषांमध्ये उपलब्ध असणारा वेब आशय सूचीमधील सपोर्ट असलेली पहिली भाषा वापरेल. ही प्राधान्ये तुमच्या ब्राउझर सेटिंग्जसह सिंक केली आहेत. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">अपडेट तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्‍थापित केली जातात</translation>
 <translation id="3886446263141354045">या साइट ॲक्सेस करण्याची तुमची विनंती <ph name="NAME" /> कडे पाठवली गेली आहे</translation>
@@ -3962,7 +3965,6 @@
 <translation id="5213114823401215820">बंद केलेला गट पुन्हा उघडा</translation>
 <translation id="5213481667492808996">तुमची '<ph name="NAME" />' डेटा सेवा वापरण्यासाठी तयार आहे</translation>
 <translation id="5213891612754844763">प्रॉक्सी सेटिग्ज दर्शवा</translation>
-<translation id="5214249693262842685">गुप्त मोडमध्ये असताना वेगवेगळ्या साइटवरील तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी पाहण्यासाठी साइट तुमच्या कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="5215502535566372932">देश निवडा</translation>
 <translation id="521582610500777512">फोटो टाकून दिला</translation>
 <translation id="5222403284441421673">असुरक्षित डाउनलोड ब्लॉक केले</translation>
@@ -4995,6 +4997,7 @@
 <translation id="6344576354370880196">सेव्ह केलेले प्रिंटर</translation>
 <translation id="6345418402353744910">प्रॉक्सी <ph name="PROXY" /> साठी तुमचे वापरकर्ता नाव आणि पासवर्ड आवश्यक आहे जेणेकरून, ॲडमिन तुमचे नेटवर्क कॉंफिगर करू शकेल</translation>
 <translation id="6345878117466430440">वाचलेले अशी खूण करा</translation>
+<translation id="6347010704471250799">सूचना दाखवा</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करा</translation>
 <translation id="6354918092619878358">SECG एल्लिपटिक कर्व्ह secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">(अल्फा गुणवत्तेचा) प्रायोगिक ब्राउझर! काही वैशिष्ट्ये उपलब्ध नाहीत किंवा अपूर्ण आहेत. अशा प्रकारे समस्यांची तक्रार करा: मदत &gt; "समस्येची तक्रार करा...".</translation>
@@ -5322,6 +5325,7 @@
 <translation id="6721972322305477112">&amp;फाइल</translation>
 <translation id="672208878794563299">ही साइट पुढच्यावेळी पुन्हा विचारेल.</translation>
 <translation id="6723661294526996303">बुकमार्क आणि सेटिंग्ज इंपोर्ट करा</translation>
+<translation id="6723839827191551955">तुम्ही कास्ट करत असलेला मीडिया नियंत्रित करा</translation>
 <translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6725073593266469338">UI सेवा</translation>
 <translation id="6725206449694821596">इंटरनेट प्रिंट प्रोटोकॉल (IPP)</translation>
@@ -5342,7 +5346,6 @@
 <translation id="674632704103926902">टॅप ड्रॅगिंग सुरू करा</translation>
 <translation id="6748054820659621153">Google Lens वापरून तुमच्या स्क्रीनवरील गोष्टी शोधा</translation>
 <translation id="6748465660675848252">तुम्ही सुरू ठेवू शकता परंतु केवळ तुमचा संकालित डेटा आणि सेटिंग्ज पुनर्संचयित केले जातील. सर्व स्थानिक डेटा गमावला जाईल.</translation>
-<translation id="6749006854028927059">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="6750757184909117990">मोबाइल नेटवर्क बंद करा</translation>
 <translation id="6750946710563435348">दुसरे वापरकर्ता नाव वापरा</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (गुप्त)</translation>
@@ -6733,6 +6736,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="819137301779081601">असाइनमेंटला सुरुवात करण्यासाठी, नवीन स्विच दाबा
 असाइनमेंट काढून टाकण्यासाठी, असाइन केलेला स्विच दाबा</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> ला तुमच्या स्क्रीनचा आशय शेअर करायचा आहे.</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">डिस्क वरील आकार</translation>
 <translation id="8198323535106903877">आम्ही तुमच्यासाठी ती <ph name="NUMBER_OF_APPS" /> ॲप्स इंस्टॉल करू</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>

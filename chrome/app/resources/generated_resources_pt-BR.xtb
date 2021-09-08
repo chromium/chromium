@@ -480,7 +480,6 @@
 <translation id="1508491105858779599">Coloque o dedo no sensor de impressão digital para desbloquear o dispositivo.</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acessar qualquer <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
-<translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1510785804673676069">Se você estiver usando um servidor proxy, verifique suas configurações de proxy ou 
      entre em contato com o administrador da rede para certificar-se de que o 
@@ -3971,7 +3970,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5213114823401215820">Reabrir grupo fechado</translation>
 <translation id="5213481667492808996">Seu serviço de dados "<ph name="NAME" />" está pronto para ser usado</translation>
 <translation id="5213891612754844763">Mostrar configurações de proxy</translation>
-<translation id="5214249693262842685">Na navegação anônima, os sites não podem usar seus cookies para ver suas atividades de navegação em outros sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="5215502535566372932">Selecione um país</translation>
 <translation id="521582610500777512">A foto foi descartada.</translation>
 <translation id="5222403284441421673">Download não seguro bloqueado</translation>
@@ -5084,7 +5082,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> - Busca por Bluetooth ativada</translation>
 <translation id="6445450263907939268">Se você não deseja essas alterações, é possível restaurar as configurações anteriores.</translation>
 <translation id="6446213738085045933">Criar atalho na área de trabalho</translation>
-<translation id="6447210166804596538">Revise os controles de privacidade e segurança mais importantes em um só lugar</translation>
+<translation id="6447210166804596538">Revisar os controles de privacidade e segurança mais importantes em um só lugar</translation>
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6450876761651513209">Alterar configurações relacionadas a privacidade</translation>
 <translation id="6451344358166983408">Site ou página</translation>
@@ -5353,7 +5351,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="674632704103926902">Ativar gesto de arrastar com toque</translation>
 <translation id="6748054820659621153">Pesquisar na tela usando o Google Lens</translation>
 <translation id="6748465660675848252">É possível prosseguir, mas apenas seus dados e configurações sincronizados serão restaurados. Todos os dados locais serão perdidos.</translation>
-<translation id="6749006854028927059">Os sites não podem usar seus cookies para ver sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="6750757184909117990">Desativar rede celular</translation>
 <translation id="6750946710563435348">Usar outro nome de usuário</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Modo anônimo)</translation>

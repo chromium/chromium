@@ -2577,6 +2577,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="4097556069183835428">Als het beleid is ingesteld op None, staat het vergrootglas uit.
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het vergrootglas in eerste instantie uit, maar kunnen gebruikers dit op elk moment aanzetten.</translation>
+<translation id="4098920079809952737">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4103289232974211388">Omleiden naar SAML IdP na bevestiging van de gebruiker</translation>

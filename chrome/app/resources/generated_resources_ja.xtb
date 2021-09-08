@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">デバイスのロックを解除するには、指紋認証センサーに指を置いてください。</translation>
 <translation id="1509163368529404530">グループを復元(&amp;R)</translation>
 <translation id="1509281256533087115">あらゆる <ph name="DEVICE_NAME_AND_VENDOR" /> からの USB 経由のアクセス</translation>
-<translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1510785804673676069">プロキシ サーバーを使用している場合は、プロキシの設定をチェックするか、
     ネットワーク管理者に問い合わせてプロキシ サーバーが正常に動作
@@ -3952,7 +3951,6 @@
 <translation id="5213114823401215820">閉じたグループを開く</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」データサービスを使用できるようになりました</translation>
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
-<translation id="5214249693262842685">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="5215502535566372932">国を選択</translation>
 <translation id="521582610500777512">写真を破棄しました</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
@@ -5333,7 +5331,6 @@
 <translation id="674632704103926902">タップによるドラッグを有効にする</translation>
 <translation id="6748054820659621153">Google レンズで画面を検索</translation>
 <translation id="6748465660675848252">続行した場合、同期済みのデータと設定のみが復元され、ローカルデータはすべて失われます。</translation>
-<translation id="6749006854028927059">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="6750757184909117990">モバイルデータ通信を無効にする</translation>
 <translation id="6750946710563435348">他のユーザー名を使用</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（シークレット モード）</translation>

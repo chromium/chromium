@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Letakkan jari Anda pada sensor sidik jari untuk membuka kunci perangkat.</translation>
 <translation id="1509163368529404530">&amp;Pulihkan grup</translation>
 <translation id="1509281256533087115">Akses <ph name="DEVICE_NAME_AND_VENDOR" /> apa pun via USB</translation>
-<translation id="1509960214886564027">Fitur di banyak situs mungkin error</translation>
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1510785804673676069">Jika Anda menggunakan server proxy, periksa setelan proxy Anda atau
     hubungi administrator jaringan untuk memastikan server
@@ -3969,7 +3968,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5213114823401215820">Buka kembali grup yang tertutup</translation>
 <translation id="5213481667492808996">Layanan data '<ph name="NAME" />' Anda sudah siap digunakan</translation>
 <translation id="5213891612754844763">Tampilkan setelan proxy</translation>
-<translation id="5214249693262842685">Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="5215502535566372932">Pilih negara</translation>
 <translation id="521582610500777512">Foto dibuang</translation>
 <translation id="5222403284441421673">Download tidak aman diblokir</translation>
@@ -5350,7 +5348,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="674632704103926902">Aktifkan ketuk tarik</translation>
 <translation id="6748054820659621153">Telusuri Layar Anda dengan Google Lens</translation>
 <translation id="6748465660675848252">Anda dapat melanjutkan, namun hanya setelan dan data yang disinkronkan yang akan dipulihkan. Semua data lokal akan hilang.</translation>
-<translation id="6749006854028927059">Situs tidak dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan. Fitur di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="6750757184909117990">Nonaktifkan Jaringan Seluler</translation>
 <translation id="6750946710563435348">Gunakan nama pengguna lain</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Samaran)</translation>

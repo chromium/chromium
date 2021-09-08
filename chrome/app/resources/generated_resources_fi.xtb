@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Avaa laitteen lukitus pitämällä sormea sormenjälkitunnistimella.</translation>
 <translation id="1509163368529404530">&amp;Palauta ryhmä</translation>
 <translation id="1509281256533087115">Jokainen <ph name="DEVICE_NAME_AND_VENDOR" /> on käytettävissä USB:n kautta</translation>
-<translation id="1509960214886564027">Useiden sivustojen ominaisuudet saattavat lakata toimimasta</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1510785804673676069">Jos käytät välityspalvelinta, tarkista välityspalvelimen asetukset tai
     ota yhteyttä verkon järjestelmänvalvojaan ja varmista,
@@ -3965,7 +3964,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5213114823401215820">Avaa suljettu ryhmä uudelleen</translation>
 <translation id="5213481667492808996">Datapalvelu (<ph name="NAME" />) on valmiina käyttöön</translation>
 <translation id="5213891612754844763">Näytä välityspalvelinasetukset</translation>
-<translation id="5214249693262842685">Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet saattavat lakata toimimasta.</translation>
 <translation id="5215502535566372932">Valitse maa</translation>
 <translation id="521582610500777512">Kuva hylättiin</translation>
 <translation id="5222403284441421673">Suojaamaton lataus estetty</translation>
@@ -5346,7 +5344,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="674632704103926902">Ota käyttöön napauttamalla vetäminen</translation>
 <translation id="6748054820659621153">Hae näytöltä Google Lensillä</translation>
 <translation id="6748465660675848252">Voit jatkaa, mutta vain synkronoidut tietosi ja asetuksesi palautetaan. Kaikki paikalliset tiedot menetetään.</translation>
-<translation id="6749006854028927059">Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. personoidakseen mainoksia. Joidenkin sivustojen ominaisuudet saattavat lakata toimimasta.</translation>
 <translation id="6750757184909117990">Poista mobiiliyhteys käytöstä</translation>
 <translation id="6750946710563435348">Käytä toista käyttäjänimeä</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>

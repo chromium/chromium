@@ -2606,6 +2606,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="4097556069183835428">Se a política for definida como "Nenhuma", a lupa será desativada.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, a lupa será inicialmente desativada, mas os usuários poderão ativá-la quando quiserem.</translation>
+<translation id="4098920079809952737">Permitir a impressão com e sem gráficos em segundo plano</translation>
 <translation id="410068710490553233">Permitir login em outras Contas do Google</translation>
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4103289232974211388">Redireciona para IdP de SAML após confirmação do usuário</translation>

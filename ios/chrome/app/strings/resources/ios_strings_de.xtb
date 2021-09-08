@@ -230,6 +230,7 @@ Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer 
 <translation id="3184767182050912705">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="3207960819495026254">Mit einem Lesezeichen versehen</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
+<translation id="3230318355092723906">Wenn die Synchronisierung deaktiviert ist, sehen Sie weiterhin Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf diesem Gerät. Änderungen werden aber nicht mehr mit Ihrem Konto synchronisiert.</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> von <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5984222099446776634">Kürzlich besucht</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
+<translation id="6020800238007543967">Linkvorschau</translation>
 <translation id="6021332621416007159">Öffnen in...</translation>
 <translation id="6036514205982097558">Alle Ihre Tabs in einem Browser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6801927553864092214">Wenn Sie privat surfen möchten, öffnen Sie einen Inkognitotab</translation>
 <translation id="6807889908376551050">Alle anzeigen...</translation>
 <translation id="681368974849482173">Element erstellt</translation>
+<translation id="681450999322335505">Ihre Organisation hat die Synchronisierung deaktiviert.</translation>
 <translation id="6830804042318138535">Mehr anzeigen</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6842136130964845393">Bestätigen Sie Ihre Identität, damit Sie jederzeit auf Ihre gespeicherten Passwörter zugreifen können</translation>

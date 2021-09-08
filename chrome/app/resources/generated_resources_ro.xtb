@@ -477,7 +477,6 @@
 <translation id="1508491105858779599">Pune degetul pe senzorul de amprentă pentru a debloca dispozitivul.</translation>
 <translation id="1509163368529404530">&amp;Restabilește grupul</translation>
 <translation id="1509281256533087115">Accesează orice <ph name="DEVICE_NAME_AND_VENDOR" /> prin USB</translation>
-<translation id="1509960214886564027">Este posibil ca funcțiile de pe mai multe site-uri să fie întrerupte</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1510785804673676069">Dacă utilizați un server proxy, verificați setările de proxy sau
     contactați administratorul de rețea pentru a verifica dacă
@@ -3954,7 +3953,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5213114823401215820">Redeschide grupul închis</translation>
 <translation id="5213481667492808996">Serviciul de date „<ph name="NAME" />” este gata de utilizare.</translation>
 <translation id="5213891612754844763">Afișează setările de proxy</translation>
-<translation id="5214249693262842685">În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
 <translation id="5215502535566372932">Selectează o țară</translation>
 <translation id="521582610500777512">Fotografia a fost ștearsă</translation>
 <translation id="5222403284441421673">O descărcare nesigură a fost blocată</translation>
@@ -5335,7 +5333,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="674632704103926902">Activați tragerea prin atingere</translation>
 <translation id="6748054820659621153">Caută pe ecran folosind Google Lens</translation>
 <translation id="6748465660675848252">Poți continua, dar numai datele și setările sincronizate vor fi restabilite. Toate datele locale se vor pierde.</translation>
-<translation id="6749006854028927059">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
 <translation id="6750757184909117990">Dezactivează rețeaua mobilă</translation>
 <translation id="6750946710563435348">Folosește alt nume de utilizator</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>

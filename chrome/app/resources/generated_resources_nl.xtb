@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Plaats je vinger op de vingerafdruksensor om het apparaat te ontgrendelen.</translation>
 <translation id="1509163368529404530">G&amp;roep herstellen</translation>
 <translation id="1509281256533087115">Toegang tot <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
-<translation id="1509960214886564027">Functies op veel sites werken mogelijk niet meer</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1510785804673676069">Als je een proxyserver gebruikt, controleer je je proxyinstellingen of
     neemt je contact op met je netwerkbeheerder om te controleren of de
@@ -3950,7 +3949,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5213114823401215820">Gesloten groep heropenen</translation>
 <translation id="5213481667492808996">Je dataservice '<ph name="NAME" />' is klaar voor gebruik</translation>
 <translation id="5213891612754844763">Proxyinstellingen tonen</translation>
-<translation id="5214249693262842685">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet meer.</translation>
 <translation id="5215502535566372932">Land selecteren</translation>
 <translation id="521582610500777512">Foto is geannuleerd</translation>
 <translation id="5222403284441421673">Onveilige download geblokkeerd</translation>
@@ -5331,7 +5329,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="674632704103926902">Tikken en slepen aanzetten</translation>
 <translation id="6748054820659621153">Zoeken op je scherm met Google Lens</translation>
 <translation id="6748465660675848252">Je kunt doorgaan, maar alleen je gesynchroniseerde gegevens en instellingen worden hersteld. Alle lokale gegevens gaan verloren.</translation>
-<translation id="6749006854028927059">Sites kunnen je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken mogelijk niet meer.</translation>
 <translation id="6750757184909117990">Mobiel netwerk uitzetten</translation>
 <translation id="6750946710563435348">Andere gebruikersnaam gebruiken</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Incognito)</translation>

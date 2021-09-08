@@ -79,7 +79,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4512952200932940229">版權所有 2021 Chromium 作者。保留所有權利。</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4563926062592110512">已中斷連線至用戶端：<ph name="CLIENT_USERNAME" />。</translation>
-<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />設定有誤。請選擇其他預設網路瀏覽器，然後重新啟用網址轉送功能。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />並未正確設定。請使用其他預設網絡瀏覽器，然後再次啟用網址轉送功能。</translation>
 <translation id="4635770493235256822">遠端裝置</translation>
 <translation id="4660011489602794167">顯示鍵盤</translation>
 <translation id="4703799847237267011">您的 Chromoting 工作階段已結束。</translation>

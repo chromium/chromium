@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">지문 센서에 손가락을 갖다 대 기기를 잠금 해제합니다.</translation>
 <translation id="1509163368529404530">그룹 복원(&amp;R)</translation>
 <translation id="1509281256533087115">USB를 통해 모든 <ph name="DEVICE_NAME_AND_VENDOR" />에 액세스</translation>
-<translation id="1509960214886564027">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="1510785804673676069">프록시 서버를 사용하는 경우 프록시 설정을 확인하거나
     네트워크 관리자에게 문의하여 프록시 서버가 작동하는지
@@ -3966,7 +3965,6 @@
 <translation id="5213114823401215820">닫은 그룹 다시 열기</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
-<translation id="5214249693262842685">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="5215502535566372932">국가 선택</translation>
 <translation id="521582610500777512">사진이 삭제되었습니다.</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
@@ -5347,7 +5345,6 @@
 <translation id="674632704103926902">탭 드래그 사용</translation>
 <translation id="6748054820659621153">Google 렌즈로 화면 검색</translation>
 <translation id="6748465660675848252">계속 진행할 수 있지만 동기화된 데이터와 설정만 복원됩니다. 모든 로컬 데이터가 손실됩니다.</translation>
-<translation id="6749006854028927059">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="6750757184909117990">셀룰러 사용 중지</translation>
 <translation id="6750946710563435348">다른 사용자 이름 사용</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (시크릿 모드)</translation>

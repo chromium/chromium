@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">將你的手指放在指紋感應器上即可解鎖裝置。</translation>
 <translation id="1509163368529404530">還原群組 (&amp;R)</translation>
 <translation id="1509281256533087115">透過 USB 存取任何 <ph name="DEVICE_NAME_AND_VENDOR" /></translation>
-<translation id="1509960214886564027">許多網站的功能可能無法正常運作</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1510785804673676069">如果你使用 Proxy 伺服器，請檢查你的 Proxy 設定或
     與網路管理員聯絡，確認 Proxy 伺服器是否運作正
@@ -3952,7 +3951,6 @@
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">現在可以使用「<ph name="NAME" />」的數據服務了</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
-<translation id="5214249693262842685">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="521582610500777512">已捨棄相片</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
@@ -5333,7 +5331,6 @@
 <translation id="674632704103926902">啟用輕觸拖曳</translation>
 <translation id="6748054820659621153">使用 Google 智慧鏡頭搜尋你的螢幕畫面</translation>
 <translation id="6748465660675848252">您可以繼續操作，但系統只會還原您已同步處理的資料和設定。所有本機資料都會遺失。</translation>
-<translation id="6749006854028927059">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="6750757184909117990">停用行動數據</translation>
 <translation id="6750946710563435348">使用其他的使用者名稱</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (無痕模式)</translation>

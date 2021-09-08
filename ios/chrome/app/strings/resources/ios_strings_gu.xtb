@@ -230,6 +230,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે અનલૉક કરો</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
 <translation id="3224641773458703735">પાસવર્ડના નિકાસ માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
+<translation id="3230318355092723906">સિંક કરવાનું બંધ હોય ત્યારે, તમે હજી પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગને જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" /> માનું <ph name="INDEX" /></translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">હાલમાં મુલાકાત લીધેલા</translation>
 <translation id="5988851877894965432">URLsને Chromeમાં ખોલો</translation>
 <translation id="6012140227487808125">એન્ક્રિપ્ટ કરી રહ્યું છે...</translation>
+<translation id="6020800238007543967">લિંકના પ્રીવ્યૂ બતાવો</translation>
 <translation id="6021332621416007159">આમાં ખોલો...</translation>
 <translation id="6036514205982097558">એક જ બ્રાઉઝરમાં તમારી બધી ટૅબ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@
 <translation id="6801927553864092214">ખાનગી રૂપે બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો</translation>
 <translation id="6807889908376551050">બધું બતાવો...</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
+<translation id="681450999322335505">તમારી સંસ્થાએ સિંક બંધ કર્યું છે.</translation>
 <translation id="6830804042318138535">વધુ વાંચો</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">તમે તમારા સાચવેલા પાસવર્ડ ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>

@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
 <translation id="189358972401248634">અન્ય ભાષાઓ</translation>
+<translation id="1910950723001426294">શેરિંગના વિકલ્પોની સૂચિ બંધ છે.</translation>
 <translation id="1918175104945982129">Assistant વૉઇસ શોધની સંમતિ માટેનું UI અડધી ઊંચાઈએ ખોલ્યું</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1922362554271624559">સૂચવેલી ભાષાઓ</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">તમારા પાસવર્ડ ચેક કરવા માટે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો</translation>
 <translation id="2278052315791335171">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં</translation>
 <translation id="2286841657746966508">બિલિંગ સરનામું</translation>
+<translation id="228704530595896923">શેરિંગના વિકલ્પોની સૂચિ.</translation>
 <translation id="230115972905494466">કોઈ સુસંગત ઉપકરણો મળ્યા નથી</translation>
 <translation id="230155349749732438">આ સેટિંગનો ઉપયોગ કરવા માટે <ph name="BEGIN_LINK" />શોધ અને બ્રાઉઝિંગ બહેતર બનાવો<ph name="END_LINK" />નો વિકલ્પ ચાલુ કરેલો હોવો જરૂરી છે</translation>
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">ડિવાઇસની હાલની ભાષા</translation>
 <translation id="4141536112466364990">Chrome વિશે જાણો</translation>
 <translation id="4149994727733219643">વેબપેજ માટે સરળ દૃશ્ય</translation>
+<translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
 <translation id="4170011742729630528">સેવા ઉપલબ્ધ નથી; પછી ફરીથી પ્રયાસ કરો</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ડેટા વપરાયો</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">વાઇ-ફાઇ ચાલુ થવા પર, ડાઉનલોડ શરૂ થશે</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
+<translation id="6212786426849242805">Googleને પણ પેજની કેટલીક ટેક્સ્ટ વિશે વિચારવાની મંજૂરી આપો</translation>
 <translation id="6221633008163990886">તમારા બધા પાસવર્ડને નિકાસ કરવા માટે અનલૉક કરો</translation>
 <translation id="6232535412751077445">'ટ્રૅક કરશો નહીં’ ને સક્ષમ કરવાનો અર્થ છે કે તમારા બ્રાઉઝિંગ ટ્રાફિકમાં વિનંતી શામેલ કરવામાં આવશે. કોઈ વેબસાઇટ, વિનંતી પર પ્રતિસાદ કરે છે કે નહીં અને વિનંતીનું અર્થઘટન કેવી રીતે કર્યું તેના પર કોઈ પણ અસર આધારિત હોય છે.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">સર્વેક્ષણો</translation>
 <translation id="6461962085415701688">ફાઇલ ખોલી શકતાં નથી</translation>
 <translation id="6464977750820128603">તમે Chromeમાં મુલાકાત લીધેલી સાઇટ જોઈ શકશો અને તેના માટે ટાઇમર પણ સેટ કરી શકશો.\n\nતમે જે સાઇટ માટે ટાઇમર સેટ કરો છો અને કેટલા સમય માટે તેની મુલાકાત લો છો, તે માહિતી Google મેળવે છે. આ માહિતી ડિજિટલ લાઇફસ્ટાઇલને બહેતર બનાવવા માટે ઉપયોગમાં લેવામાં આવે છે.</translation>
+<translation id="6473086018775716761">શેરિંગના વિકલ્પોની સૂચિ અડધી ઊંચાઈએ ખોલી છે.</translation>
 <translation id="6475951671322991020">વીડિયો ડાઉનલોડ કરો</translation>
 <translation id="6477928892249167417">આ સાઇટ તમારા માટે મહત્ત્વની લાગી રહી છે:</translation>
 <translation id="6482749332252372425">સ્ટોરેજ સ્થાનના અભાવના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7857691613771368249">ફાઇલો ક્યારે સાચવવી તે પૂછવામાં આવે</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" />ને તમારા ડિવાઇસ સાથે કનેક્ટ કરવા માટે નજીકના ડિવાઇસની પરવાનગીની જરૂર છે</translation>
 <translation id="7875915731392087153">ઇમેઇલ બનાવો</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{તમે વાંચ્યા વગરનું <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> પેજ ધરાવો છો}one{તમે વાંચ્યા વગરનું <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ ધરાવો છો}other{તમે વાંચ્યા વગરના <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> પેજ ધરાવો છો}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ફાઇલ બાકી છે</translation>
 <translation id="8189750580333936930">પ્રાઇવસી સૅન્ડબૉક્સ</translation>
 <translation id="8190358571722158785">1 દિવસ બાકી</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8209050860603202033">છબી ખોલો</translation>
 <translation id="8216351761227087153">જુઓ</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ…</translation>
 <translation id="8310344678080805313">માનક ટેબ્સ</translation>
 <translation id="831192587911042850">તમે ફૉલો કરતા હો તે વેબસાઇટની સૂચિમાં હાલની વેબસાઇટને ઉમેરે છે.</translation>
+<translation id="8319544457245040955">પેજ છોડ્યા વિના કોઈ વિષય વિશે જાણો. પેજ પરના એક કે તેનાથી વધુ શબ્દોની શોધ કરવા માટે તેમને પસંદ કરો. તમારી શોધમાં ફેરફાર કરવા માટે, પરિણામો જુઓ અને તેમને નવી ટૅબમાં ખોલો.</translation>
 <translation id="8327155640814342956">બ્રાઉઝિંગનો શ્રેષ્ઠ અનુભવ મેળવવા અપડેટ કરવા માટે Chrome ખોલો</translation>
 <translation id="834313815369870491">સાઇટનો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="8349013245300336738">વપરાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>

@@ -230,7 +230,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3184767182050912705">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3224641773458703735">Debes establecer primero un bloqueo de pantalla en tu dispositivo para poder exportar las contraseñas.</translation>
-<translation id="3230318355092723906">Cuando la sincronización esté desactivada, podrás seguir viendo todos tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
+<translation id="3230318355092723906">Cuando la sincronización está desactivada, puedes seguir viendo todos tus marcadores, el historial, las contraseñas y otros ajustes en este dispositivo. Si realizas cambios, no se sincronizarán con tu cuenta.</translation>
 <translation id="3240426699337459095">Enlace copiado</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
@@ -609,7 +609,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="6801927553864092214">Para navegar en privado, abre una pestaña de incógnito</translation>
 <translation id="6807889908376551050">Mostrar todo...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
-<translation id="681450999322335505">Tu organización ha desactivado la sincronización.</translation>
+<translation id="681450999322335505">Tu organización ha desactivado la sincronización</translation>
 <translation id="6830804042318138535">Ver más</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Verifica tu identidad para asegurarte de que siempre tengas acceso a tus contraseñas guardadas</translation>

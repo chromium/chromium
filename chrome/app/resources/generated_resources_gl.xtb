@@ -475,7 +475,6 @@
 <translation id="1508491105858779599">Coloca o dedo no sensor de impresión dixital para desbloquear o dispositivo.</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Acceda a calquera <ph name="DEVICE_NAME_AND_VENDOR" /> por USB</translation>
-<translation id="1509960214886564027">As funcións de moitos sitios poden deixar de funcionar</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1510785804673676069">Se estás utilizando un servidor proxy, comproba a configuración do teu proxy ou
     ponte en contacto co administrador da túa rede para comprobar que o servidor
@@ -3947,7 +3946,6 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5213114823401215820">Volver abrir grupo pechado</translation>
 <translation id="5213481667492808996">Xa podes usar o servizo de datos <ph name="NAME" /></translation>
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
-<translation id="5214249693262842685">Co modo de incógnito activado, os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden quedar bloqueadas.</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
 <translation id="521582610500777512">Descartouse a foto</translation>
 <translation id="5222403284441421673">Bloqueouse unha descarga non segura</translation>
@@ -5326,7 +5324,6 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="674632704103926902">Activar a acción de tocar e arrastrar</translation>
 <translation id="6748054820659621153">Buscar contido da pantalla con Google Lens</translation>
 <translation id="6748465660675848252">Podes continuar, pero só se restablecerán a configuración e os datos sincronizados. Perderanse todos os datos locais.</translation>
-<translation id="6749006854028927059">Os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden quedar bloqueadas.</translation>
 <translation id="6750757184909117990">Desactivar rede móbil</translation>
 <translation id="6750946710563435348">Usar outro nome de usuario</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (incógnito)</translation>

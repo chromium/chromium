@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Weka kidole chako kwenye kitambua alama ya kidole ili ufungue kifaa.</translation>
 <translation id="1509163368529404530">&amp;Rejesha kikundi</translation>
 <translation id="1509281256533087115">Fikia <ph name="DEVICE_NAME_AND_VENDOR" /> yoyote kupitia USB</translation>
-<translation id="1509960214886564027">Huenda vipengele kwenye tovuti nyingi vikakosa kufanya kazi</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1510785804673676069">Ukitumia seva ya proksi, angalia mipangilio yako ya proksi au wasiliana na msimamizi wako wa mtandao ili kuhakikisha kuwa seva ya proksi inafanya kazi. Ikiwa huamini kuwa unafaa kuwa ukitumia seva ya proksi, rekebisha <ph name="LINK_START" />mipangilio yako ya proksi<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Ufunguo huu wa usalama hauwezi kuhifadhi data yoyote ya kuingia katika akaunti</translation>
@@ -3963,7 +3962,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5213114823401215820">Fungua tena kikundi kilichofungwa</translation>
 <translation id="5213481667492808996">Huduma yako ya data ya '<ph name="NAME" />' iko tayari kutumiwa</translation>
 <translation id="5213891612754844763">Onyesha mipangilio ya seva mbadala</translation>
-<translation id="5214249693262842685">Katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti vikakosa kufanya kazi.</translation>
 <translation id="5215502535566372932">Chagua nchi</translation>
 <translation id="521582610500777512">Picha ilitupwa</translation>
 <translation id="5222403284441421673">Kipakuliwa kisicho salama kimezuiwa</translation>
@@ -5344,7 +5342,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="674632704103926902">Washa uburutaji wa kugonga</translation>
 <translation id="6748054820659621153">Tafuta Kwenye Skrini Yako Ukitumia Lenzi ya Google</translation>
 <translation id="6748465660675848252">Unaweza kuendelea, lakini data na mipangilio yako iliyosawazishwa pekee ndiyo itakayorejeshwa. Data yote ya karibu itapotea.</translation>
-<translation id="6749006854028927059">Tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti tofauti, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti vikakosa kufanya kazi.</translation>
 <translation id="6750757184909117990">Zima Mtandao wa Simu</translation>
 <translation id="6750946710563435348">Tumia jina lingine la mtumiaji</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Hali fiche)</translation>

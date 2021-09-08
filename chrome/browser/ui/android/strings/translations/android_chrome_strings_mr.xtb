@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1883903952484604915">माझ्या फाइल</translation>
 <translation id="189358972401248634">इतर भाषा</translation>
+<translation id="1910950723001426294">शेअरिंग पर्यांयाची सूची बंद आहे.</translation>
 <translation id="1918175104945982129">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI स्क्रीनवर अर्ध्या उंचीपर्यंत उघडले</translation>
 <translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
 <translation id="1922362554271624559">सुचवलेल्या भाषा</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">तुमचे पासवर्ड तपासण्यासाठी तुमच्या Google खात्यामध्ये साइन इन करा</translation>
 <translation id="2278052315791335171">हा पासवर्ड हटवल्यामुळे तुमचे <ph name="SITE" /> वरील खाते हटवले जाणार नाही</translation>
 <translation id="2286841657746966508">बिलिंग पत्ता</translation>
+<translation id="228704530595896923">शेअरिंग पर्यायांची सूची.</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
 <translation id="230155349749732438">हे सेटिंग वापरण्यासाठी <ph name="BEGIN_LINK" />शोध आणि ब्राउझिंगमध्ये सुधारणा करा<ph name="END_LINK" /> सुरू असणे आवश्यक आहे</translation>
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">डिव्हाइसची सध्याची भाषा</translation>
 <translation id="4141536112466364990">Chrome बद्दल जाणून घ्या</translation>
 <translation id="4149994727733219643">वेब पेजसाठी सोपा केलेला व्ह्यू</translation>
+<translation id="4162867837470729563">पूर्ण उघडलेली शेअरिंग पर्यायांची सूची.</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
 <translation id="4170011742729630528">सेवा उपलब्ध नाही; नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> वापरला</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">वाय-फायशी कनेक्ट झाल्यावर, डाउनलोड सुरू होईल</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
+<translation id="6212786426849242805">Google ला पेजवरील काही मजकूरदेखील विचारात घेऊ द्या</translation>
 <translation id="6221633008163990886">तुमचे पासवर्ड एक्सपोर्ट करण्यासाठी अनलॉक करा</translation>
 <translation id="6232535412751077445">'Do Not Track' सुरू करणे म्हणजे तुमच्या ब्राउझिंग ट्रॅफिकमध्‍ये एक विनंती समाविष्‍ट केली जाईल. वेबसाइट विनंतीला प्रतिसाद देते किंवा नाही आणि विनंतीचा निष्‍कर्ष कसा काढला जातो यावर कोणताही प्रभाव अवलंबून असतो.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">सर्वेक्षणे</translation>
 <translation id="6461962085415701688">फाइल उघडू शकत नाही</translation>
 <translation id="6464977750820128603">तुम्ही Chrome मध्ये भेट दिलेल्या साइट पाहू शकता आणि त्यांच्यासाठी टायमर सेट करू शकता.\n\nGoogle ला तुम्ही ज्या साइटसाठी टायमर सेट केला आणि त्यांना किती वेळ भेट दिली याबद्दलची माहिती मिळते. ही माहिती Digital wellbeing चांगले करण्यास वापरली जाते.</translation>
+<translation id="6473086018775716761">अर्ध्या उंचीवर उघडलेल्या शेअरिंग पर्यायांची सूची.</translation>
 <translation id="6475951671322991020">व्हिडिओ डाउनलोड करा</translation>
 <translation id="6477928892249167417">या साइट तुमच्यासाठी महत्त्वाच्या आहेत असे दिसते:</translation>
 <translation id="6482749332252372425">स्टोरेज स्थानाच्या अभावामुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7857691613771368249">फाइल कधी सेव्ह करायच्या ते विचारा</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
+<translation id="78707286264420418">तुमच्या डिव्हाइसशी कनेक्ट करण्यासाठी <ph name="PRODUCT_NAME" /> ला जवळपासची डिव्हाइस या परवानगीची आवश्यकता आहे</translation>
 <translation id="7875915731392087153">ईमेल तयार करा</translation>
 <translation id="7876243839304621966">सर्व काढून टाका</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> न वाचलेले पेज आहे}other{तुमच्याकडे <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> न वाचलेली पेज आहेत}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> फाइल शिल्लक</translation>
 <translation id="8189750580333936930">प्रायव्हसी सॅंडबॉक्स</translation>
 <translation id="8190358571722158785">1 दिवस शिल्लक</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">रेझ्युमे</translation>
 <translation id="8209050860603202033">इमेज उघडा</translation>
 <translation id="8216351761227087153">पहा</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">तुमच्या डिव्हाइसशी कनेक्ट करत आहे…</translation>
 <translation id="8310344678080805313">मानक टॅब</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
+<translation id="8319544457245040955">पेज न सोडता विषयाबद्दल जाणून घ्या. एक किंवा त्याहून अधिक शब्द शोधण्यासाठी ते पेजवर निवडा. तुमचा शोध संपादित करण्यासाठी, परिणाम पहा आणि ते नवीन टॅबमध्ये उघडा.</translation>
 <translation id="8327155640814342956">उत्तम ब्राउझिंग अनुभव मिळवण्याकरीता, Chrome अपडेट करण्यासाठी उघडा</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8349013245300336738">वापरलेल्या डेटानुसार क्रमाने लावा</translation>

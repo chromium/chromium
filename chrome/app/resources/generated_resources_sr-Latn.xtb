@@ -478,7 +478,6 @@
 <translation id="1508491105858779599">Stavite prst na senzor za otisak prsta da biste otključali uređaj.</translation>
 <translation id="1509163368529404530">&amp;Vrati grupu</translation>
 <translation id="1509281256533087115">Pristupaj bilo kom uređaju <ph name="DEVICE_NAME_AND_VENDOR" /> preko USB-a</translation>
-<translation id="1509960214886564027">Funkcije na mnogim sajtovima mogu da prestanu sa radom</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1510785804673676069">Ako koristite proksi server, proverite podešavanja proksija ili kontaktirajte administratora mreže da biste proverili da li proksi server funkcioniše. Ako ne smatrate da treba da koristite proksi server, prilagodite <ph name="LINK_START" />podešavanja proksija<ph name="LINK_END" />.</translation>
 <translation id="1511997356770098059">Na ovom bezbednosnom ključu ne možete da čuvate podatke za prijavljivanje</translation>
@@ -1851,7 +1850,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="2912247081180973411">Zatvori prozore</translation>
 <translation id="2913331724188855103">Dozvoli sajtovima da čuvaju i čitaju podatke kolačića (preporučuje se)</translation>
 <translation id="2915102088417824677">Prikaži evidenciju aktivnosti</translation>
-<translation id="2915873080513663243">Automatsko prelaženje sadržaja</translation>
+<translation id="2915873080513663243">Automatsko skeniranje sadržaja</translation>
 <translation id="2916073183900451334">Pritiskom na Tab na veb stranici biće istaknute veze, kao i polja u obrascu</translation>
 <translation id="2916745397441987255">Pretražite dodatke</translation>
 <translation id="2918484644467055090">Ovaj uređaj ne može da se registruje u organizaciji kojoj pripada vaš nalog jer je označen kao uređaj kojim upravlja druga organizacija.</translation>
@@ -2993,7 +2992,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4120817667028078560">Putanja je predugačka</translation>
 <translation id="4124823734405044952">Bezbednosni ključ je resetovan</translation>
 <translation id="4124935795427217608">Jednorog</translation>
-<translation id="4126916490446791914">Automatsko prelaženje sadržaja je omogućeno</translation>
+<translation id="4126916490446791914">Automatsko skeniranje sadržaja je omogućeno</translation>
 <translation id="412730574613779332">Spandeks</translation>
 <translation id="4130199216115862831">Evidencija uređaja</translation>
 <translation id="4130207949184424187">Ovaj dodatak je promenio stranicu koja se prikazuje kada pretražujete iz omniboksa.</translation>
@@ -3952,7 +3951,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5213114823401215820">Ponovo otvori zatvorenu grupu</translation>
 <translation id="5213481667492808996">Usluga prenosa podataka „<ph name="NAME" />“ je spremna za korišćenje</translation>
 <translation id="5213891612754844763">Prikaži podešavanja proksija</translation>
-<translation id="5214249693262842685">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="5215502535566372932">Izaberite zemlju</translation>
 <translation id="521582610500777512">Slika je odbačena</translation>
 <translation id="5222403284441421673">Nebezbedno preuzimanje je blokirano</translation>
@@ -5334,7 +5332,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="674632704103926902">Omogući prevlačenje dodirom</translation>
 <translation id="6748054820659621153">Pretraživanje ekrana pomoću Google objektiva</translation>
 <translation id="6748465660675848252">Možete da nastavite, ali će biti vraćeni samo sinhronizovani podaci i podešavanja. Izgubićete sve lokalne podatke.</translation>
-<translation id="6749006854028927059">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="6750757184909117990">Onemogući mobilnu mrežu</translation>
 <translation id="6750946710563435348">Koristite drugo korisničko ime</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (bez arhiviranja)</translation>

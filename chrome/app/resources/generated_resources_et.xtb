@@ -479,7 +479,6 @@
 <translation id="1508491105858779599">Seadme avamiseks asetage sõrm sõrmejäljeandurile.</translation>
 <translation id="1509163368529404530">&amp;Taasta grupp</translation>
 <translation id="1509281256533087115">Juurdepääs seadmele <ph name="DEVICE_NAME_AND_VENDOR" /> USB kaudu</translation>
-<translation id="1509960214886564027">Paljude saitide funktsioonid ei pruugi töötada</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1510785804673676069">Kui kasutate puhverserverit, siis kontrollige oma puhverserveri
     seadeid või võtke ühendust võrguadministraatoriga
@@ -3959,7 +3958,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5213114823401215820">Suletud grupi uuesti avamine</translation>
 <translation id="5213481667492808996">Võrgu „<ph name="NAME" />” andmesideteenus on kasutamiseks valmis</translation>
 <translation id="5213891612754844763">Kuva puhverserveri seaded</translation>
-<translation id="5214249693262842685">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="5215502535566372932">Valige riik</translation>
 <translation id="521582610500777512">Fotost loobuti</translation>
 <translation id="5222403284441421673">Ebaturvaline allalaadimine blokeeriti</translation>
@@ -5340,7 +5338,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="674632704103926902">Luba puutega lohistamine</translation>
 <translation id="6748054820659621153">Otsige Google Lensi abil ekraanikuvalt</translation>
 <translation id="6748465660675848252">Võite jätkata, kuid taastatakse ainult teie sünkroonitud andmed ja seaded. Kõik kohalikud andmed lähevad kaotsi.</translation>
-<translation id="6749006854028927059">Saidid ei saa reklaamide isikupärastamiseks küpsisefailide abil eri saitidel teie sirvimistegevust jälgida. Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="6750757184909117990">Mobiilsidevõrgu keelamine</translation>
 <translation id="6750946710563435348">Kasuta teist kasutajanime</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Inkognito)</translation>

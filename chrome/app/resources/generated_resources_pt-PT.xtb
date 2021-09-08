@@ -476,7 +476,6 @@
 <translation id="1508491105858779599">Coloque o dedo no sensor de impressões digitais para desbloquear o dispositivo.</translation>
 <translation id="1509163368529404530">&amp;Restaurar grupo</translation>
 <translation id="1509281256533087115">Aceder a qualquer <ph name="DEVICE_NAME_AND_VENDOR" /> através de USB</translation>
-<translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1510785804673676069">Se utilizar um servidor proxy, verifique as definições de proxy ou
     contacte o gestor de rede para se certificar de que o servidor
@@ -3954,7 +3953,6 @@ Pretende pará-lo?</translation>
 <translation id="5213114823401215820">Voltar a abrir grupo fechado</translation>
 <translation id="5213481667492808996">O serviço de dados de "<ph name="NAME" />" está pronto a ser utilizado.</translation>
 <translation id="5213891612754844763">Mostrar definições de proxy</translation>
-<translation id="5214249693262842685">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="5215502535566372932">Selecionar país</translation>
 <translation id="521582610500777512">A foto foi rejeitada</translation>
 <translation id="5222403284441421673">Transferência insegura bloqueada</translation>
@@ -5336,7 +5334,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="674632704103926902">Ativar arrastamento através do toque</translation>
 <translation id="6748054820659621153">Pesquisar no ecrã com o Google Lens</translation>
 <translation id="6748465660675848252">Pode continuar, mas apenas os dados e definições sincronizados são restaurados. Todos os dados locais perdem-se.</translation>
-<translation id="6749006854028927059">Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="6750757184909117990">Desativar rede móvel</translation>
 <translation id="6750946710563435348">Utilize outro nome de utilizador</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Navegação anónima)</translation>
