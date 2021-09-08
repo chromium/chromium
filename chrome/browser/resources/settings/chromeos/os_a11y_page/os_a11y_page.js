@@ -91,7 +91,7 @@ Polymer({
   ready() {
     this.addWebUIListener(
         'screen-reader-state-changed',
-        this.onScreenReaderStateChanged_.bind(this));
+        hasScreenReader => this.onScreenReaderStateChanged_(hasScreenReader));
 
     // Enables javascript and gets the screen reader state.
     this.browserProxy_.a11yPageReady();

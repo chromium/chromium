@@ -115,12 +115,14 @@ Polymer({
     // this to their own value later.
     this.previewText_ = this.i18n('textToSpeechPreviewInput');
     this.addWebUIListener(
-        'all-voice-data-updated', this.populateVoiceList_.bind(this));
+        'all-voice-data-updated', voices => this.populateVoiceList_(voices));
     this.ttsBrowserProxy_.getAllTtsVoiceData();
     this.addWebUIListener(
-        'tts-extensions-updated', this.populateExtensionList_.bind(this));
+        'tts-extensions-updated',
+        extensions => this.populateExtensionList_(extensions));
     this.addWebUIListener(
-        'tts-preview-state-changed', this.onTtsPreviewStateChanged_.bind(this));
+        'tts-preview-state-changed',
+        isSpeaking => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();
   },
 

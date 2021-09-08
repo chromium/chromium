@@ -136,7 +136,7 @@ export class ChangeDictationLocaleDialog extends
   /** @override */
   ready() {
     super.ready();
-    this.addEventListener('exit-pane', this.onPaneExit_.bind(this));
+    this.addEventListener('exit-pane', () => this.onPaneExit_());
   }
 
   /** @override */

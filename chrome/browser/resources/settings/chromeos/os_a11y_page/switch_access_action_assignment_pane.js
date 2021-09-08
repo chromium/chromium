@@ -199,10 +199,10 @@ Polymer({
 
     this.addWebUIListener(
         'switch-access-got-key-press-for-assignment',
-        this.onKeyDown_.bind(this));
+        event => this.onKeyDown_(event));
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        this.onAssignmentsChanged_.bind(this));
+        value => this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_
         .notifySwitchAccessActionAssignmentPaneActive();
 
