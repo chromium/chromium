@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 #include "components/autofill_assistant/browser/controller_observer.h"
+#include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
@@ -855,7 +856,7 @@ void Controller::EnterStoppedState(bool show_feedback_chip) {
     Chip feedback_chip;
     feedback_chip.type = FEEDBACK_ACTION;
     feedback_chip.text =
-        l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_SEND_FEEDBACK);
+        GetDisplayStringUTF8(ClientSettingsProto::SEND_FEEDBACK, GetSettings());
     feedback_action.SetCallback(base::BindOnce(&Controller::ShutdownIfNecessary,
                                                weak_ptr_factory_.GetWeakPtr()));
     feedback_action.chip() = feedback_chip;
@@ -1030,9 +1031,10 @@ void Controller::OnGetScripts(const GURL& url,
     VLOG(1) << "Failed to get assistant scripts for " << script_url_.host()
             << ", http-status=" << http_status;
 #endif
-    OnFatalError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
-                 /*show_feedback_chip=*/true,
-                 Metrics::DropOutReason::GET_SCRIPTS_FAILED);
+    OnFatalError(
+        GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR, GetSettings()),
+        /*show_feedback_chip=*/true,
+        Metrics::DropOutReason::GET_SCRIPTS_FAILED);
     return;
   }
 
@@ -1044,9 +1046,10 @@ void Controller::OnGetScripts(const GURL& url,
     VLOG(2) << __func__ << " from " << script_url_.host() << " returned "
             << "unparseable response";
 #endif
-    OnFatalError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
-                 /*show_feedback_chip=*/true,
-                 Metrics::DropOutReason::GET_SCRIPTS_UNPARSABLE);
+    OnFatalError(
+        GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR, GetSettings()),
+        /*show_feedback_chip=*/true,
+        Metrics::DropOutReason::GET_SCRIPTS_UNPARSABLE);
     return;
   }
   if (response_proto.has_client_settings()) {
@@ -1095,9 +1098,10 @@ void Controller::OnGetScripts(const GURL& url,
     script_tracker()->SetScripts({});
 
     if (state_ == AutofillAssistantState::TRACKING) {
-      OnFatalError(
-          l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
-          /*show_feedback_chip=*/false, Metrics::DropOutReason::NO_SCRIPTS);
+      OnFatalError(GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
+                                        GetSettings()),
+                   /*show_feedback_chip=*/false,
+                   Metrics::DropOutReason::NO_SCRIPTS);
       return;
     }
     OnNoRunnableScriptsForPage();
@@ -1147,7 +1151,7 @@ void Controller::OnScriptExecuted(const std::string& script_path,
 #endif
 
     OnScriptError(
-        l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
+        GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR, GetSettings()),
         Metrics::DropOutReason::SCRIPT_FAILED);
     return;
   }
@@ -1868,9 +1872,9 @@ void Controller::OnNoRunnableScriptsForPage() {
       // We're still waiting for the set of initial scripts, but either didn't
       // get any scripts or didn't get scripts that could possibly become
       // runnable with a DOM change.
-      OnScriptError(
-          l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
-          Metrics::DropOutReason::NO_INITIAL_SCRIPTS);
+      OnScriptError(GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
+                                         GetSettings()),
+                    Metrics::DropOutReason::NO_INITIAL_SCRIPTS);
       break;
 
     case AutofillAssistantState::PROMPT:
@@ -1878,8 +1882,9 @@ void Controller::OnNoRunnableScriptsForPage() {
       // The user has navigated to a page that has no scripts or the scripts
       // have reached a state from which they cannot recover through a DOM
       // change.
-      OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                    Metrics::DropOutReason::NO_SCRIPTS);
+      OnScriptError(
+          GetDisplayStringUTF8(ClientSettingsProto::GIVE_UP, GetSettings()),
+          Metrics::DropOutReason::NO_SCRIPTS);
       break;
 
     default:
@@ -1972,8 +1977,9 @@ void Controller::OnNavigationShutdownOrError(const GURL& url,
           google_util::DISALLOW_NON_STANDARD_PORTS)) {
     client_->Shutdown(reason);
   } else {
-    OnScriptError(l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_GIVE_UP),
-                  reason);
+    OnScriptError(
+        GetDisplayStringUTF8(ClientSettingsProto::GIVE_UP, GetSettings()),
+        reason);
   }
 }
 

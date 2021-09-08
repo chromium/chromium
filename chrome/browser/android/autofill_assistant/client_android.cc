@@ -29,6 +29,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
+#include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
@@ -42,7 +43,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
@@ -380,7 +380,8 @@ void ClientAndroid::ShowFatalError(
   }
   controller_->RequireUI();
   controller_->OnFatalError(
-      l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_DEFAULT_ERROR),
+      GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
+                           controller_->GetSettings()),
       /*show_feedback_chip = */ false, Metrics::DropOutReason::NO_SCRIPTS);
 }
 

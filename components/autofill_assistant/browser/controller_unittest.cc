@@ -52,6 +52,7 @@ using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Gt;
 using ::testing::InSequence;
 using ::testing::Invoke;
@@ -252,6 +253,25 @@ class ControllerTest : public testing::Test {
 
   void SetTtsButtonStateForTest(TtsButtonState state) {
     controller_->tts_button_state_ = state;
+  }
+
+  void AddDisplayStringToClientSettingsProto(
+      ClientSettingsProto::DisplayStringId id,
+      const std::string str,
+      ClientSettingsProto* proto) {
+    ClientSettingsProto::DisplayString* display_str =
+        proto->add_display_strings();
+    display_str->set_id(id);
+    display_str->set_value(str);
+  }
+
+  void SetupDisplayStrings(ClientSettingsProto* settings_proto) {
+    AddDisplayStringToClientSettingsProto(ClientSettingsProto::GIVE_UP,
+                                          "give_up", settings_proto);
+    AddDisplayStringToClientSettingsProto(ClientSettingsProto::SEND_FEEDBACK,
+                                          "send_feedback", settings_proto);
+    AddDisplayStringToClientSettingsProto(ClientSettingsProto::DEFAULT_ERROR,
+                                          "default_error", settings_proto);
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -619,6 +639,12 @@ TEST_F(ControllerTest, CloseCustomTab) {
 
 TEST_F(ControllerTest, StopWithFeedbackChip) {
   SupportsScriptResponseProto script_response;
+  script_response.mutable_client_settings()->set_display_strings_locale(
+      "en-US");
+  ClientSettingsProto::DisplayString* display_str =
+      script_response.mutable_client_settings()->add_display_strings();
+  display_str->set_id(ClientSettingsProto::SEND_FEEDBACK);
+  display_str->set_value("send_feedback");
   AddRunnableScript(&script_response, "stop");
   SetNextScriptResponse(script_response);
 
@@ -637,8 +663,11 @@ TEST_F(ControllerTest, StopWithFeedbackChip) {
   EXPECT_CALL(mock_client_,
               RecordDropOut(Metrics::DropOutReason::SCRIPT_SHUTDOWN));
   EXPECT_TRUE(controller_->PerformUserAction(0));
-  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
-  EXPECT_EQ(FEEDBACK_ACTION, controller_->GetUserActions().at(0).chip().type);
+  EXPECT_THAT(
+      controller_->GetUserActions(),
+      ElementsAre(Property(&UserAction::chip,
+                           AllOf(Field(&Chip::type, FEEDBACK_ACTION),
+                                 Field(&Chip::text, "send_feedback")))));
 }
 
 TEST_F(ControllerTest, RefreshScriptWhenDomainChanges) {
@@ -2665,12 +2694,36 @@ TEST_F(ControllerTest, SetDateTimeRangeSameDateValidTime) {
 TEST_F(ControllerTest, ChangeClientSettings) {
   SupportsScriptResponseProto response;
   response.mutable_client_settings()->set_periodic_script_check_interval_ms(1);
+  response.mutable_client_settings()->set_display_strings_locale("en-US");
+  ClientSettingsProto::DisplayString* display_str1 =
+      response.mutable_client_settings()->add_display_strings();
+  display_str1->set_id(ClientSettingsProto::GIVE_UP);
+  display_str1->set_value("give_up");
+  ClientSettingsProto::DisplayString* display_str2 =
+      response.mutable_client_settings()->add_display_strings();
+  display_str2->set_id(ClientSettingsProto::SEND_FEEDBACK);
+  display_str2->set_value("send_feedback");
   SetupScripts(response);
   EXPECT_CALL(mock_observer_,
               OnClientSettingsChanged(
-                  Field(&ClientSettings::periodic_script_check_interval,
-                        base::TimeDelta::FromMilliseconds(1))));
+                  AllOf(Field(&ClientSettings::periodic_script_check_interval,
+                              base::TimeDelta::FromMilliseconds(1)),
+                        Field(&ClientSettings::display_strings_locale, "en-US"),
+                        Field(&ClientSettings::display_strings,
+                              UnorderedElementsAre(
+                                  Pair(ClientSettingsProto::GIVE_UP, "give_up"),
+                                  Pair(ClientSettingsProto::SEND_FEEDBACK,
+                                       "send_feedback"))))));
   Start();
+  EXPECT_THAT(controller_->GetSettings(),
+              AllOf(Field(&ClientSettings::periodic_script_check_interval,
+                          base::TimeDelta::FromMilliseconds(1)),
+                    Field(&ClientSettings::display_strings_locale, "en-US"),
+                    Field(&ClientSettings::display_strings,
+                          UnorderedElementsAre(
+                              Pair(ClientSettingsProto::GIVE_UP, "give_up"),
+                              Pair(ClientSettingsProto::SEND_FEEDBACK,
+                                   "send_feedback")))));
 }
 
 TEST_F(ControllerTest, WriteUserData) {
