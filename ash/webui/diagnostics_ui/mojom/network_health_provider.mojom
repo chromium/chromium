@@ -21,6 +21,7 @@ enum NetworkState {
   kPortal,
   kConnecting,
   kNotConnected,
+  kDisabled,
 };
 
 // The network technology type.

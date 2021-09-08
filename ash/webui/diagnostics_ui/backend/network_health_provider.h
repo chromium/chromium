@@ -31,6 +31,7 @@ struct NetworkObserverInfo {
   std::string network_guid;
   mojom::NetworkPtr network;
   mojo::Remote<mojom::NetworkStateObserver> observer;
+  chromeos::network_config::mojom::DeviceStateType device_state;
 };
 
 class NetworkHealthProvider

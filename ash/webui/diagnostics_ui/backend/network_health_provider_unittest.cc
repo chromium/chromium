@@ -21,6 +21,8 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_metadata_store.h"
+#include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/cros_network_config.h"
@@ -273,6 +275,23 @@ class NetworkHealthProviderTest : public testing::Test {
   void SetEthernetDisconnected() {
     SetNetworkState(kEth0DevicePath, shill::kStateOffline);
   }
+
+  void SetDeviceState(const std::string& type, bool enabled) {
+    chromeos::NetworkTypePattern pattern = type == shill::kTypeEthernet
+                                               ? NetworkTypePattern::Ethernet()
+                                               : NetworkTypePattern::WiFi();
+    NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
+        pattern, enabled, network_handler::ErrorCallback());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetEthernetDisabled() { SetDeviceState(shill::kTypeEthernet, false); }
+
+  void SetEthernetEnabled() { SetDeviceState(shill::kTypeEthernet, true); }
+
+  void SetWifiDisabled() { SetDeviceState(shill::kTypeWifi, false); }
+
+  void SetWifiEnabled() { SetDeviceState(shill::kTypeWifi, true); }
 
   void SetWifiConnected() {
     // NOTE: `kStateReady` is connected but not "online".
@@ -541,7 +560,6 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   // Get latest state and verify ethernet in not connected state.
   EXPECT_EQ(observer.GetLatestState()->observer_guid, observer_guid);
   EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kEthernet);
-  // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
             mojom::NetworkState::kNotConnected);
   EXPECT_EQ(observer.GetLatestState()->type_properties.get(), nullptr);
@@ -587,6 +605,22 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
   EXPECT_FALSE(list_observer.active_guid().empty());
   EXPECT_EQ(observer_guid, list_observer.active_guid());
+
+  // AFter disabling ethernet, verify network state is kNotConnected and device
+  // state is kDisabled.
+  SetEthernetDisabled();
+  EXPECT_TRUE(list_observer.active_guid().empty());
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kDisabled);
+
+  // Enable ethernet and verify that it's guid becomes active again.
+  SetEthernetEnabled();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
 }
 
 // Test the setup and all intermediate states for ethernet network.
@@ -621,7 +655,6 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   // Get latest state and verify wifi in not connected state.
   EXPECT_EQ(observer.GetLatestState()->observer_guid, observer_guid);
   EXPECT_EQ(observer.GetLatestState()->type, mojom::NetworkType::kWiFi);
-  // TODO(michaelcheco): Support disabled state.
   EXPECT_EQ(observer.GetLatestState()->state,
             mojom::NetworkState::kNotConnected);
   EXPECT_EQ(observer.GetLatestState()->type_properties.get(), nullptr);
@@ -662,6 +695,22 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
   // Simulate reconnect and back to online state. The active guid should be
   // set.
   SetWifiOnline();
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);
+  EXPECT_FALSE(list_observer.active_guid().empty());
+  EXPECT_EQ(observer_guid, list_observer.active_guid());
+
+  // AFter disabling wifi, verify network state is kNotConnected and device
+  // state is kDisabled.
+  SetWifiDisabled();
+  EXPECT_TRUE(list_observer.active_guid().empty());
+  ExpectListObserverFired(list_observer, &list_call_count);
+  ExpectStateObserverFired(observer, &state_call_count);
+  EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kDisabled);
+
+  // Enable wifi and verify that it's guid becomes active again.
+  SetWifiEnabled();
   ExpectListObserverFired(list_observer, &list_call_count);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state, mojom::NetworkState::kOnline);

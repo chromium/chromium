@@ -58,6 +58,7 @@ bool IsConnectedOrOnline(mojom::NetworkState state) {
       return true;
     case mojom::NetworkState::kNotConnected:
     case mojom::NetworkState::kConnecting:
+    case mojom::NetworkState::kDisabled:
       return false;
   }
 }
@@ -76,6 +77,21 @@ constexpr mojom::NetworkState ConnectionStateToNetworkState(
     case network_mojom::ConnectionStateType::kNotConnected:
       return mojom::NetworkState::kNotConnected;
   }
+}
+
+bool DeviceIsDisabledOrDisabling(network_mojom::DeviceStateType device_state) {
+  return device_state == network_mojom::DeviceStateType::kDisabled ||
+         device_state == network_mojom::DeviceStateType::kDisabling;
+}
+
+constexpr mojom::NetworkState CombineNetworkStates(
+    network_mojom::ConnectionStateType connection_state,
+    network_mojom::DeviceStateType device_state) {
+  if (DeviceIsDisabledOrDisabling(device_state)) {
+    return mojom::NetworkState::kDisabled;
+  }
+
+  return ConnectionStateToNetworkState(connection_state);
 }
 
 constexpr mojom::NetworkType ConvertNetworkType(
@@ -243,8 +259,8 @@ void UpdateNetwork(
     NetworkObserverInfo* network_info) {
   mojom::Network* network = network_info->network.get();
   network->name = network_state->name;
-  network->state =
-      ConnectionStateToNetworkState(network_state->connection_state);
+  network->state = CombineNetworkStates(network_state->connection_state,
+                                        network_info->device_state);
 
   // Network type must be populated before calling UpdateNetwork.
   network->type = ConvertNetworkType(network_state->type);
@@ -272,6 +288,7 @@ void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
 
   network->type = ConvertNetworkType(device->type);
   network->mac_address = device->mac_address;
+  network_info->device_state = device->device_state;
   if (network->type == mojom::NetworkType::kCellular &&
       device->sim_lock_status) {
     // Create partially populated CellularStateProperties struct.
@@ -284,10 +301,8 @@ void UpdateNetwork(const network_mojom::DeviceStatePropertiesPtr& device,
         device->sim_lock_status->lock_enabled;
   }
 
-  // TODO(michaelcheco): Combine the applicable device states like
-  // kDisabled and kDisabling into the combined NetworkState enum.
-  if (device->device_state != network_mojom::DeviceStateType::kEnabled) {
-    network->state = mojom::NetworkState::kNotConnected;
+  if (DeviceIsDisabledOrDisabling(device->device_state)) {
+    network->state = mojom::NetworkState::kDisabled;
     ClearDisconnectedNetwork(network_info);
   }
 }
