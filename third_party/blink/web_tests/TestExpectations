@@ -6888,3 +6888,10 @@ crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Crash Pass Failure ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Crash Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
+
+# Temporarily disable to update DevTools Application Panel
+crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
+crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
+crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
+crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
+crbug.com/1110752 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
