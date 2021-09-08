@@ -7039,7 +7039,9 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
     // The pending page's RenderViewHost is gone.
     return;
   }
-  DCHECK(IsInPrimaryMainFrame(rvh->GetMainFrame()))
+
+  auto* rvh_impl = static_cast<RenderViewHostImpl*>(rvh);
+  DCHECK(IsInPrimaryMainFrame(rvh_impl->GetMainFrame()))
       << "GetRenderViewHost() must belong to the primary frame tree";
 
   // Ensure fullscreen mode is exited in the |delegate_| since a crashed
@@ -7055,7 +7057,7 @@ void WebContentsImpl::RenderViewTerminated(RenderViewHost* rvh,
   // Cancel any visible dialogs so they are not left dangling over the sad tab.
   CancelActiveAndPendingDialogs();
 
-  audio_stream_monitor_.RenderProcessGone(rvh->GetProcess()->GetID());
+  audio_stream_monitor_.RenderProcessGone(rvh_impl->GetProcess()->GetID());
 
   // Reset the loading progress. TODO(avi): What does it mean to have a
   // "renderer crash" when there is more than one renderer process serving a
@@ -7851,7 +7853,7 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
-  if (!render_view_host->GetMainFrame() && proxy_host) {
+  if (!rvh_impl->GetMainFrame() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
         proxy_host->frame_tree_node()
             ->current_frame_host()

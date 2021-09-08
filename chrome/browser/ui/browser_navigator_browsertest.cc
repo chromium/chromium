@@ -1854,7 +1854,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   EXPECT_EQ(webui_rvh, popup->GetMainFrame()->GetRenderViewHost());
   EXPECT_TRUE(webui_rvh->IsRenderViewLive());
   EXPECT_TRUE(content::BINDINGS_POLICY_MOJO_WEB_UI &
-              webui_rvh->GetMainFrame()->GetEnabledBindings());
+              popup->GetMainFrame()->GetEnabledBindings());
 }
 
 // Test that main frame navigations generate a NavigationUIData with the

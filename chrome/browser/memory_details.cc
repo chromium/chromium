@@ -309,7 +309,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
 
       // The rest of this block will happen only once per WebContents.
       GURL page_url = contents->GetLastCommittedURL();
-      bool is_webui = rvh->GetMainFrame()->GetEnabledBindings() &
+      bool is_webui = contents->GetMainFrame()->GetEnabledBindings() &
                       content::BINDINGS_POLICY_WEB_UI;
 
       if (is_webui) {

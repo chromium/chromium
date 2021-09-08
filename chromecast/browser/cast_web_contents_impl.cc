@@ -33,7 +33,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/bindings_policy.h"
@@ -321,10 +320,8 @@ void CastWebContentsImpl::EnableBackgroundVideoPlayback(bool enabled) {
 
 void CastWebContentsImpl::AllowWebAndMojoWebUiBindings() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::RenderViewHost* rvh = web_contents_->GetRenderViewHost();
-  DCHECK(rvh);
-  rvh->GetMainFrame()->AllowBindings(content::BINDINGS_POLICY_WEB_UI |
-                                     content::BINDINGS_POLICY_MOJO_WEB_UI);
+  web_contents_->GetMainFrame()->AllowBindings(
+      content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
 }
 
 // Set background to transparent before making the view visible. This is in

@@ -71,7 +71,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -340,8 +339,8 @@ void RenderWidgetHostViewAndroid::InitAsPopup(
 
 void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
-      RenderViewHost::From(host())->GetMainFrame());
+  RenderFrameHostImpl* frame_host =
+      RenderViewHostImpl::From(host())->GetMainFrame();
   if (frame_host && frame_host->ShouldVirtualKeyboardOverlayContent()) {
     float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
     frame_host->NotifyVirtualKeyboardOverlayRect(
@@ -350,8 +349,8 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
-  RenderFrameHostImpl* frame_host = static_cast<RenderFrameHostImpl*>(
-      RenderViewHost::From(host())->GetMainFrame());
+  RenderFrameHostImpl* frame_host =
+      RenderViewHostImpl::From(host())->GetMainFrame();
   return frame_host && frame_host->ShouldVirtualKeyboardOverlayContent();
 }
 
@@ -1055,8 +1054,8 @@ void RenderWidgetHostViewAndroid::ResetGestureDetection() {
 void RenderWidgetHostViewAndroid::OnDidNavigateMainFrameToNewPage() {
   // Move to front only if we are the primary page (we don't want to receive
   // events in the Prerender). GetMainFrame() may be null in tests.
-  if (view_.parent() && RenderViewHost::From(host())->GetMainFrame() &&
-      RenderViewHost::From(host())->GetMainFrame()->GetLifecycleState() ==
+  if (view_.parent() && RenderViewHostImpl::From(host())->GetMainFrame() &&
+      RenderViewHostImpl::From(host())->GetMainFrame()->GetLifecycleState() ==
           RenderFrameHost::LifecycleState::kActive) {
     view_.parent()->MoveToFront(&view_);
   }
@@ -1241,8 +1240,8 @@ void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     // we're currently in SynchronousCopyContents, as this can lead to
     // redundant copies.
     if (!in_sync_copy_contents_) {
-      RenderFrameHost* frame_host =
-          RenderViewHost::From(host())->GetMainFrame();
+      RenderFrameHostImpl* frame_host =
+          RenderViewHostImpl::From(host())->GetMainFrame();
       if (frame_host && last_render_frame_metadata_) {
         // Update our |root_scroll_offset|, as changes to this value do not
         // trigger a new RenderFrameMetadata, and it may be out of date. This

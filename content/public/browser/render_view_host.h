@@ -70,9 +70,6 @@ class CONTENT_EXPORT RenderViewHost {
   // change.
   virtual int GetRoutingID() = 0;
 
-  // Returns the main frame for this render view.
-  virtual RenderFrameHost* GetMainFrame() = 0;
-
   // Instructs the RenderView to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
 

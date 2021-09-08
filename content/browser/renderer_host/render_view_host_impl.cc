@@ -642,6 +642,24 @@ void RenderViewHostImpl::RenderViewCreated(
   }
 }
 
+RenderFrameHostImpl* RenderViewHostImpl::GetMainFrame() {
+  // If the RenderViewHost is active, it should always have a main frame
+  // RenderFrameHostImpl. If it is inactive, it could've been created for a
+  // speculative main frame navigation, in which case it will transition to
+  // active once that navigation commits. In this case, return the speculative
+  // main frame RenderFrameHostImpl, as that's expected by certain code paths,
+  // such as RenderViewHostImpl::SetUIProperty().  If there's no speculative
+  // main frame navigation, return nullptr.
+  //
+  // TODO(alexmos, creis): Migrate these code paths to use RenderFrameHost APIs
+  // and remove this fallback.  See https://crbug.com/763548.
+  if (is_active()) {
+    return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+                                       main_frame_routing_id_);
+  }
+  return frame_tree_->root()->render_manager()->speculative_frame_host();
+}
+
 void RenderViewHostImpl::ClosePage() {
   // TODO(crbug.com/1161996): Remove this VLOG once the investigation is done.
   VLOG(1) << "RenderViewHostImpl::ClosePage() IsRenderViewLive() = "
@@ -660,10 +678,8 @@ void RenderViewHostImpl::ClosePage() {
         ->WillCloseRenderView(GetProcess()->GetID(), GetRoutingID());
 #endif
 
-    static_cast<RenderFrameHostImpl*>(GetMainFrame())
-        ->GetAssociatedLocalMainFrame()
-        ->ClosePage(base::BindOnce(&RenderViewHostImpl::OnPageClosed,
-                                   weak_factory_.GetWeakPtr()));
+    GetMainFrame()->GetAssociatedLocalMainFrame()->ClosePage(base::BindOnce(
+        &RenderViewHostImpl::OnPageClosed, weak_factory_.GetWeakPtr()));
   } else {
     // This RenderViewHost doesn't have a live renderer, so just skip the close
     // event and close the page.
@@ -680,9 +696,8 @@ void RenderViewHostImpl::ClosePageIgnoringUnloadEvents() {
 }
 
 void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
-  static_cast<RenderFrameHostImpl*>(GetMainFrame())
-      ->GetAssociatedLocalMainFrame()
-      ->ZoomToFindInPageRect(rect_to_zoom);
+  GetMainFrame()->GetAssociatedLocalMainFrame()->ZoomToFindInPageRect(
+      rect_to_zoom);
 }
 
 void RenderViewHostImpl::RenderProcessExited(
@@ -710,24 +725,6 @@ int RenderViewHostImpl::GetRoutingID() {
   return routing_id_;
 }
 
-RenderFrameHost* RenderViewHostImpl::GetMainFrame() {
-  // If the RenderViewHost is active, it should always have a main frame
-  // RenderFrameHost.  If it is inactive, it could've been created for a
-  // speculative main frame navigation, in which case it will transition to
-  // active once that navigation commits. In this case, return the speculative
-  // main frame RenderFrameHost, as that's expected by certain code paths, such
-  // as RenderViewHostImpl::SetUIProperty().  If there's no speculative main
-  // frame navigation, return nullptr.
-  //
-  // TODO(alexmos, creis): Migrate these code paths to use RenderFrameHost APIs
-  // and remove this fallback.  See https://crbug.com/763548.
-  if (is_active()) {
-    return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
-                                       main_frame_routing_id_);
-  }
-  return frame_tree_->root()->render_manager()->speculative_frame_host();
-}
-
 void RenderViewHostImpl::RenderWidgetGotFocus() {
   RenderViewHostDelegateView* view = delegate_->GetDelegateView();
   if (view)
@@ -741,16 +738,13 @@ void RenderViewHostImpl::RenderWidgetLostFocus() {
 }
 
 void RenderViewHostImpl::SetInitialFocus(bool reverse) {
-  static_cast<RenderFrameHostImpl*>(GetMainFrame())
-      ->GetAssociatedLocalMainFrame()
-      ->SetInitialFocus(reverse);
+  GetMainFrame()->GetAssociatedLocalMainFrame()->SetInitialFocus(reverse);
 }
 
 void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
                                               const gfx::Rect& rect) {
-  static_cast<RenderFrameHostImpl*>(GetMainFrame())
-      ->GetAssociatedLocalMainFrame()
-      ->AnimateDoubleTapZoom(point, rect);
+  GetMainFrame()->GetAssociatedLocalMainFrame()->AnimateDoubleTapZoom(point,
+                                                                      rect);
 }
 
 bool RenderViewHostImpl::SuddenTerminationAllowed() {
@@ -759,8 +753,7 @@ bool RenderViewHostImpl::SuddenTerminationAllowed() {
   // the dialog.
   return sudden_termination_allowed_ ||
          delegate_->IsJavaScriptDialogShowing() ||
-         static_cast<RenderFrameHostImpl*>(GetMainFrame())
-             ->BeforeUnloadTimedOut();
+         GetMainFrame()->BeforeUnloadTimedOut();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -839,7 +832,7 @@ void RenderViewHostImpl::OnHardwareConfigurationChanged() {
 
 void RenderViewHostImpl::EnablePreferredSizeMode() {
   if (is_active()) {
-    static_cast<RenderFrameHostImpl*>(GetMainFrame())
+    GetMainFrame()
         ->GetAssociatedLocalMainFrame()
         ->EnablePreferredSizeChangedMode();
   }
@@ -855,9 +848,8 @@ void RenderViewHostImpl::ExecutePluginActionAtLocation(
           gfx::PointF(location.x(), location.y()));
   gfx::Point local_location(local_location_f.x(), local_location_f.y());
 
-  static_cast<RenderFrameHostImpl*>(GetMainFrame())
-      ->GetAssociatedLocalMainFrame()
-      ->PluginActionAt(local_location, plugin_action);
+  GetMainFrame()->GetAssociatedLocalMainFrame()->PluginActionAt(local_location,
+                                                                plugin_action);
 }
 
 void RenderViewHostImpl::PostRenderViewReady() {
@@ -884,7 +876,7 @@ void RenderViewHostImpl::ClosePageTimeout() {
 std::vector<viz::SurfaceId> RenderViewHostImpl::CollectSurfaceIdsForEviction() {
   if (!is_active())
     return {};
-  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(GetMainFrame());
+  RenderFrameHostImpl* rfh = GetMainFrame();
   if (!rfh || !rfh->IsActive())
     return {};
   FrameTreeNode* root = rfh->frame_tree_node();
