@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_ELEMENTS_MEDIA_CONTROL_TIMELINE_ELEMENT_H_
 
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_slider_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
@@ -56,7 +56,7 @@ class MediaControlTimelineElement : public MediaControlSliderElement {
   void DefaultEventHandler(Event&) override;
   bool KeepEventInNode(const Event&) const override;
 
-  void UpdateLiveTimeline();
+  void RenderTimelineTimerFired(TimerBase*);
   void MaybeUpdateTimelineInterval();
 
   // Checks if we can begin or end a scrubbing event. If the event is a pointer
@@ -78,7 +78,7 @@ class MediaControlTimelineElement : public MediaControlSliderElement {
 
   absl::optional<LiveAnchorTime> live_anchor_time_;
 
-  base::RepeatingTimer render_timeline_timer_;
+  HeapTaskRunnerTimer<MediaControlTimelineElement> render_timeline_timer_;
 };
 
 }  // namespace blink
