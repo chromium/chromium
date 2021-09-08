@@ -2608,6 +2608,7 @@ interface FederatedCredential : Credential
     static method logout
     static method revoke
     attribute @@toStringTag
+    getter approvedBy
     getter iconURL
     getter idToken
     getter name

@@ -60,6 +60,12 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
     return g_empty_string;
   }
 
+  const String& approvedBy() const {
+    // TODO(goto): This is a stub, so that we can port the WebID API
+    // gradually.
+    return g_empty_string;
+  }
+
   static ScriptPromise logout(ScriptState*, const Vector<String>&);
   static ScriptPromise revoke(ScriptState*, const String);
 
