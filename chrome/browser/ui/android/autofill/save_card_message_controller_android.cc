@@ -197,7 +197,6 @@ void SaveCardMessageControllerAndroid::ConfirmName(
 
 void SaveCardMessageControllerAndroid::OnNameConfirmed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& name) {
   OnPromptCompleted(AutofillClient::ACCEPTED,
                     {base::android::ConvertJavaStringToUTF16(name),
@@ -206,7 +205,6 @@ void SaveCardMessageControllerAndroid::OnNameConfirmed(
 
 void SaveCardMessageControllerAndroid::OnDateConfirmed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& month,
     const base::android::JavaParamRef<jstring>& year) {
   OnPromptCompleted(
@@ -217,9 +215,7 @@ void SaveCardMessageControllerAndroid::OnDateConfirmed(
 
 // --- Dialog Dismissed ---
 
-void SaveCardMessageControllerAndroid::DialogDismissed(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+void SaveCardMessageControllerAndroid::DialogDismissed(JNIEnv* env) {
   if (reprompt_required_) {
     return;
   }
@@ -266,7 +262,6 @@ void SaveCardMessageControllerAndroid::OnPromptCompleted(
 
 void SaveCardMessageControllerAndroid::OnLegalMessageLinkClicked(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jstring>& url) {
   reprompt_required_ = true;
   // Temporarily dismiss the dialog and then re-prompt when user returns to

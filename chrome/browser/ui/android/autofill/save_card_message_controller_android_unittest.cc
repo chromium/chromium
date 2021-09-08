@@ -67,7 +67,7 @@ class SaveCardMessageControllerAndroidTest
   void OnNameConfirmed() {
     JNIEnv* env = base::android::AttachCurrentThread();
     controller_.OnNameConfirmed(
-        env, nullptr,
+        env,
         base::android::JavaParamRef<jstring>(
             env,
             base::android::ConvertUTF8ToJavaString(env, "test").Release()));
@@ -77,7 +77,7 @@ class SaveCardMessageControllerAndroidTest
   void OnDateConfirmed() {
     JNIEnv* env = base::android::AttachCurrentThread();
     controller_.OnDateConfirmed(
-        env, nullptr,
+        env,
         base::android::JavaParamRef<jstring>(
             env, base::android::ConvertUTF8ToJavaString(env, "12").Release()),
         base::android::JavaParamRef<jstring>(
@@ -87,15 +87,14 @@ class SaveCardMessageControllerAndroidTest
 
   void OnConfirmationDialogDismissed() {
     JNIEnv* env = base::android::AttachCurrentThread();
-    controller_.DialogDismissed(env, nullptr);
+    controller_.DialogDismissed(env);
   }
 
   void OnLegalMessageLinkClicked() {
     JNIEnv* env = base::android::AttachCurrentThread();
     controller_.OnLegalMessageLinkClicked(
-        env, nullptr,
-        base::android::JavaParamRef<jstring>(
-            env, base::android::ConvertUTF16ToJavaString(env, u"").obj()));
+        env, base::android::JavaParamRef<jstring>(
+                 env, base::android::ConvertUTF16ToJavaString(env, u"").obj()));
   }
 
   void OnWebContentsFocused() { controller_.OnWebContentsFocused(); }

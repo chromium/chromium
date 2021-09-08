@@ -63,19 +63,14 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // SaveCardMessageConfirmDelegate
   void OnNameConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& name) override;
   void OnDateConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) override;
-  void DialogDismissed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) override;
+  void DialogDismissed(JNIEnv* env) override;
   void OnLegalMessageLinkClicked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url) override;
 
   bool IsGooglePayBrandingEnabled() const;

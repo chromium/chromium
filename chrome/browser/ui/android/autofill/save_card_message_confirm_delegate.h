@@ -18,22 +18,17 @@ class SaveCardMessageConfirmDelegate {
  public:
   virtual void OnNameConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& name) = 0;
 
   virtual void OnDateConfirmed(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& month,
       const base::android::JavaParamRef<jstring>& year) = 0;
 
-  virtual void DialogDismissed(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj) = 0;
+  virtual void DialogDismissed(JNIEnv* env) = 0;
 
   virtual void OnLegalMessageLinkClicked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& url) = 0;
 };
 
