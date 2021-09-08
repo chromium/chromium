@@ -142,13 +142,4 @@ void ClientHints::ClearAdditionalClientHints() {
   additional_hints_.clear();
 }
 
-void ClientHints::SetMostRecentMainFrameViewportSize(
-    const gfx::Size& viewport_size) {
-  viewport_size_ = viewport_size;
-}
-
-gfx::Size ClientHints::GetMostRecentMainFrameViewportSize() {
-  return viewport_size_;
-}
-
 }  // namespace client_hints
