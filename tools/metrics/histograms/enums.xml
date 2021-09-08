@@ -81145,6 +81145,9 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="TempFileFailure">
+  <obsolete>
+    Removed in M95.
+  </obsolete>
   <int value="0" label="Creating"/>
   <int value="1" label="Opening (obsolete)"/>
   <int value="2" label="Closing (obsolete)"/>

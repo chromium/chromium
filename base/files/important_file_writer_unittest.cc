@@ -430,26 +430,6 @@ TEST_F(ImportantFileWriterTest,
   histogram_tester.ExpectTotalCount("ImportantFile.SerializationDuration", 1);
 }
 
-TEST_F(ImportantFileWriterTest, WriteFileAtomicallyHistogramSuffixTest) {
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(PathExists(file_));
-  EXPECT_TRUE(ImportantFileWriter::WriteFileAtomically(file_, "baz", "test"));
-  EXPECT_TRUE(PathExists(file_));
-  EXPECT_EQ("baz", GetFileContent(file_));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 0);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 0);
-
-  FilePath invalid_file_ = FilePath().AppendASCII("bad/../non_existent/path");
-  EXPECT_FALSE(PathExists(invalid_file_));
-  EXPECT_FALSE(ImportantFileWriter::WriteFileAtomically(invalid_file_, ""));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 0);
-  EXPECT_FALSE(
-      ImportantFileWriter::WriteFileAtomically(invalid_file_, "", "test"));
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError", 1);
-  histogram_tester.ExpectTotalCount("ImportantFile.FileCreateError.test", 1);
-}
-
 // Test that the chunking to avoid very large writes works.
 TEST_F(ImportantFileWriterTest, WriteLargeFile) {
   // One byte larger than kMaxWriteAmount.

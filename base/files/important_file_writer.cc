@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/critical_closure.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
@@ -23,7 +24,6 @@
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -52,39 +52,6 @@ static_assert(kReplaceRetryFailure > kReplaceRetries, "No overlap allowed");
 constexpr auto kReplacePauseInterval = TimeDelta::FromMilliseconds(100);
 #endif
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum TempFileFailure {
-  FAILED_CREATING = 0,
-  // FAILED_OPENING = 1,
-  // FAILED_CLOSING = 2,
-  FAILED_WRITING = 3,
-  FAILED_RENAMING = 4,
-  FAILED_FLUSHING = 5,
-  TEMP_FILE_FAILURE_MAX
-};
-
-// Helper function to write samples to a histogram with a dynamically assigned
-// histogram name.  Works with different error code types convertible to int
-// which is the actual argument type of UmaHistogramExactLinear.
-template <typename SampleType>
-void UmaHistogramExactLinearWithSuffix(const char* histogram_name,
-                                       StringPiece histogram_suffix,
-                                       SampleType add_sample,
-                                       SampleType max_sample) {
-  static_assert(std::is_convertible<SampleType, int>::value,
-                "SampleType should be convertible to int");
-  DCHECK(histogram_name);
-  std::string histogram_full_name(histogram_name);
-  if (!histogram_suffix.empty()) {
-    histogram_full_name.append(".");
-    histogram_full_name.append(histogram_suffix.data(),
-                               histogram_suffix.length());
-  }
-  UmaHistogramExactLinear(histogram_full_name, static_cast<int>(add_sample),
-                          static_cast<int>(max_sample));
-}
-
 void UmaHistogramTimesWithSuffix(const char* histogram_name,
                                  StringPiece histogram_suffix,
                                  base::TimeDelta sample) {
@@ -96,16 +63,6 @@ void UmaHistogramTimesWithSuffix(const char* histogram_name,
                                histogram_suffix.length());
   }
   UmaHistogramTimes(histogram_full_name, sample);
-}
-
-void LogFailure(const FilePath& path,
-                StringPiece histogram_suffix,
-                TempFileFailure failure_code,
-                StringPiece message) {
-  UmaHistogramExactLinearWithSuffix("ImportantFile.TempFileFailures",
-                                    histogram_suffix, failure_code,
-                                    TEMP_FILE_FAILURE_MAX);
-  DPLOG(WARNING) << "temp file failure: " << path.value() << " : " << message;
 }
 
 // Deletes the file named |tmp_file_path| (which may be open as |tmp_file|),
@@ -224,11 +181,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   File tmp_file =
       CreateAndOpenTemporaryFileInDir(path.DirName(), &tmp_file_path);
   if (!tmp_file.IsValid()) {
-    UmaHistogramExactLinearWithSuffix(
-        "ImportantFile.FileCreateError", histogram_suffix,
-        -tmp_file.error_details(), -File::FILE_ERROR_MAX);
-    LogFailure(path, histogram_suffix, FAILED_CREATING,
-               "could not create temporary file");
+    DPLOG(WARNING) << "Failed to create temporary file to update " << path;
     return false;
   }
 
@@ -242,19 +195,16 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     const int write_amount = std::min(kMaxWriteAmount, end - scan);
     bytes_written = tmp_file.WriteAtCurrentPos(scan, write_amount);
     if (bytes_written != write_amount) {
-      UmaHistogramExactLinearWithSuffix(
-          "ImportantFile.FileWriteError", histogram_suffix,
-          -File::GetLastFileError(), -File::FILE_ERROR_MAX);
-      LogFailure(
-          path, histogram_suffix, FAILED_WRITING,
-          "error writing, bytes_written=" + NumberToString(bytes_written));
+      DPLOG(WARNING) << "Failed to write " << write_amount << " bytes to temp "
+                     << "file to update " << path
+                     << " (bytes_written=" << bytes_written << ")";
       DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path);
       return false;
     }
   }
 
   if (!tmp_file.Flush()) {
-    LogFailure(path, histogram_suffix, FAILED_FLUSHING, "error flushing");
+    DPLOG(WARNING) << "Failed to flush temp file to update " << path;
     DeleteTmpFileWithRetry(std::move(tmp_file), tmp_file_path);
     return false;
   }
@@ -299,17 +249,13 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
 #endif  // defined(OS_WIN)
 
   if (!result) {
-    UmaHistogramExactLinearWithSuffix("ImportantFile.FileRenameError",
-                                      histogram_suffix, -replace_file_error,
-                                      -File::FILE_ERROR_MAX);
 #if defined(OS_WIN)
     // Restore the error code from ReplaceFile so that it will be available for
-    // LogFailure, otherwise failures in SetCurrrentThreadPriority may be
+    // the log message, otherwise failures in SetCurrentThreadPriority may be
     // reported instead.
     ::SetLastError(last_error);
 #endif
-    LogFailure(path, histogram_suffix, FAILED_RENAMING,
-               "could not rename temporary file");
+    DPLOG(WARNING) << "Failed to replace " << path << " with " << tmp_file_path;
     DeleteTmpFileWithRetry(File(), tmp_file_path);
   }
 
