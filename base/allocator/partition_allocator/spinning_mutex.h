@@ -53,6 +53,10 @@ PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
 
 #endif  // defined(OS_APPLE)
 
+#if defined(OS_FUCHSIA)
+#include <lib/sync/mutex.h>
+#endif
+
 namespace base {
 namespace internal {
 
@@ -115,6 +119,8 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
 #elif defined(OS_POSIX)
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
+#elif defined(OS_FUCHSIA)
+  sync_mutex lock_;
 #endif
 
 #else  // defined(PA_HAS_FAST_MUTEX)
@@ -228,6 +234,16 @@ ALWAYS_INLINE bool SpinningMutex::Try() {
 ALWAYS_INLINE void SpinningMutex::Release() {
   int retval = pthread_mutex_unlock(&lock_);
   PA_DCHECK(retval == 0);
+}
+
+#elif defined(OS_FUCHSIA)
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  return sync_mutex_trylock(&lock_) == ZX_OK;
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  sync_mutex_unlock(&lock_);
 }
 
 #endif

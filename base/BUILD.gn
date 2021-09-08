@@ -131,6 +131,14 @@ if (is_android) {
   }
 }
 
+if (is_fuchsia) {
+  config("fuchsia_sync_lib") {
+    libs = [
+      "sync",  # Used by spinning_mutex.h.
+    ]
+  }
+}
+
 config("perfetto_config") {
   if (use_perfetto_client_library) {
     defines = [
@@ -1723,6 +1731,7 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/syslog",
       "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
@@ -1740,6 +1749,11 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/pkg/syslog",
       "//third_party/icu",
     ]
+
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs = [ ":fuchsia_sync_lib" ]
   }
 
   # Use the base implementation of hash functions when building for
@@ -2633,8 +2647,7 @@ test("base_perftests") {
     "synchronization/waitable_event_perftest.cc",
     "threading/thread_perftest.cc",
   ]
-  if (!is_ios) {
-    # iOS doesn't use the partition allocator, therefore it can't run this test.
+  if (use_partition_alloc) {
     sources += [
       "allocator/partition_allocator/partition_alloc_perftest.cc",
       "allocator/partition_allocator/partition_lock_perftest.cc",

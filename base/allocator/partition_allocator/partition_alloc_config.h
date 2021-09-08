@@ -64,8 +64,8 @@ static_assert(sizeof(void*) != 8, "");
 // On some platforms, we implement locking by spinning in userspace, then going
 // into the kernel only if there is contention. This requires platform support,
 // namely:
-// - On Linux,  futex(2)
-// - On Windows a fast userspace "try" operation, which is available on Windows
+// - On Linux, futex(2)
+// - On Windows, a fast userspace "try" operation which is available
 //   with SRWLock
 // - On macOS 10.14+, pthread.
 //
@@ -76,7 +76,7 @@ static_assert(sizeof(void*) != 8, "");
 //
 // Otherwise, a userspace spinlock implementation is used.
 #if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
+    (defined(OS_MAC) && defined(ARCH_CPU_ARM64)) || defined(OS_FUCHSIA)
 #define PA_HAS_FAST_MUTEX
 #endif
 
@@ -89,7 +89,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Need TLS support.
-#if defined(OS_POSIX) || defined(OS_WIN)
+#if defined(OS_POSIX) || defined(OS_WIN) || defined(OS_FUCHSIA)
 #define PA_THREAD_CACHE_SUPPORTED
 #endif
 

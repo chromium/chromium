@@ -25,7 +25,7 @@
 #if !defined(PA_HAS_FAST_MUTEX)
 #include "base/threading/platform_thread.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if defined(OS_POSIX)
 #include <sched.h>
 
 #define YIELD_THREAD sched_yield()
@@ -106,6 +106,12 @@ void SpinningMutex::LockSlow() {
 void SpinningMutex::LockSlow() {
   int retval = pthread_mutex_lock(&lock_);
   PA_DCHECK(retval == 0);
+}
+
+#elif defined(OS_FUCHSIA)
+
+void SpinningMutex::LockSlow() {
+  sync_mutex_lock(&lock_);
 }
 
 #endif

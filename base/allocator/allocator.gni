@@ -99,10 +99,12 @@ assert(!is_ios || use_allocator != "tcmalloc", "Tcmalloc doesn't work on iOS.")
 
 assert(
     !use_allocator_shim || is_linux || is_chromeos || is_android || is_win ||
-        is_apple,
-    "use_allocator_shim works only on Android, iOS, Linux, macOS, and Windows.")
+        is_fuchsia || is_apple,
+    "use_allocator_shim works only on Android, iOS, Linux, macOS, Fuchsia, " +
+        "and Windows.")
 
 if (is_win && use_allocator_shim) {
+  # TODO(crbug.com/1245317): Add a comment indicating why the shim doesn't work.
   assert(!is_component_build,
          "The allocator shim doesn't work for the component build on Windows.")
 }
