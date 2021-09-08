@@ -19,6 +19,10 @@ namespace bluetooth {
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bluetoothPairNewDevice", IDS_SETTINGS_BLUETOOTH_PAIR_NEW_DEVICES},
+      {"bluetoothAvailableDevices",
+       IDS_SETTINGS_BLUETOOTH_PAIRING_AVAILABLE_DEVICES},
+      {"bluetoothNoAvailableDevices",
+       IDS_SETTINGS_BLUETOOTH_PAIRING_NO_AVAILABLE_DEVICES},
       {"bluetoothAccept", IDS_SETTINGS_BLUETOOTH_ACCEPT_PASSKEY},
       {"bluetoothEnterKey", IDS_SETTINGS_BLUETOOTH_ENTER_KEY},
       {"bluetoothPair", IDS_SETTINGS_BLUETOOTH_PAIR},

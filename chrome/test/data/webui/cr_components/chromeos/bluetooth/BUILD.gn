@@ -15,6 +15,7 @@ js_type_check("closure_compile") {
   deps = [
     ":bluetooth_base_page_test",
     ":bluetooth_icon_test",
+    ":bluetooth_pairing_device_item_test",
     ":bluetooth_pairing_device_selection_page_test",
     ":bluetooth_pairing_ui_test",
   ]
@@ -41,6 +42,14 @@ js_library("bluetooth_base_page_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_base_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("bluetooth_pairing_device_item_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_device_item",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

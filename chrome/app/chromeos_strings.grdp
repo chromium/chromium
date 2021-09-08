@@ -766,6 +766,14 @@
     Accept and continue
   </message>
 
+   <!-- Strings for the Bluetooth pairing dialog -->
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRING_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices that are available for pairing.">
+    Available devices
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_PAIRING_NO_AVAILABLE_DEVICES" desc="Bluetooth pairing dialog: Title for the list of Bluetooth devices when no devices are available for pairing.">
+    No devices found
+  </message>
+
   <!-- Strings for the OOBE packaged license screen -->
   <message name="IDS_OOBE_PACKAGED_LICENSE_TITLE" desc="Title of the screen which advertises use of packaged license.">
     Enroll your device

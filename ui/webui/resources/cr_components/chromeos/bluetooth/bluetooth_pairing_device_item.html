@@ -1,0 +1,24 @@
+<style include="cr-shared-style">
+  #container {
+    max-height: 32px;
+  }
+
+  .text-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-start: 24px;
+    min-height: var(--settings-row-min-height);
+  }
+
+  .cr-row {
+    padding: 0;
+  }
+</style>
+<div id="container" class="cr-row continuation">
+  <bluetooth-icon device="[[device]]"></bluetooth-icon>
+  <div id="deviceName" class="text-row">
+    [[getDeviceName_(device.*)]]
+    <!--TODO(crbug.com/1010321): Add secondary text for device pairing status.-->
+  </div>
+</div>

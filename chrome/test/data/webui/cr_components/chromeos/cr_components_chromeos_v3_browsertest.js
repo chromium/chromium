@@ -19,6 +19,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ],
   ['BluetoothIcon', 'bluetooth/bluetooth_icon_test.js'],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
+  ['PairingDeviceItem', 'bluetooth/bluetooth_pairing_device_item_test.js'],
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
 
 [['CrPolicyNetworkBehaviorMojo', 'network/cr_policy_network_behavior_mojo_tests.m.js'],

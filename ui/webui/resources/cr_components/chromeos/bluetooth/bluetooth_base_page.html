@@ -1,8 +1,13 @@
 <style include="iron-positioning">
-  #button-bar {
+  :host ::slotted([slot='page-body']) {
+    color: var(--cr-primary-text-color);
+    height: 246px;
+  }
+
+  #buttonBar {
     align-self: flex-end;
     margin-bottom: 14px;
-    margin-top: auto;
+    margin-top: 12px;
   }
 
   #container {
@@ -17,12 +22,16 @@
     font-weight: normal;
     line-height: 24px;
   }
+
+  .cancel-button {
+    margin-inline-end: 0;
+  }
 </style>
 <div id="container">
   <h3 id="title" class="">[[i18n('bluetoothPairNewDevice')]]</h3>
   <!-- TODO(crbug.com/1010321): Add a subtext div here -->
-  <slot name="page-body"></slot>
-  <div id="button-bar">
+  <slot name="page-body" id="pageBody"></slot>
+  <div id="buttonBar">
     <!-- TODO(crbug.com/1010321): Add confirm and pair buttons here -->
     <cr-button class="cancel-button" on-click="onCancelClick_">
       [[i18n('cancel')]]

@@ -27,7 +27,14 @@ if (optimize_webui) {
       "../../../../../ui/webui/resources:preprocess",
     ]
 
-    excludes = [ "chrome://resources/js/cr.m.js" ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-lite.js",
+      "chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
+    ]
   }
 }
 

@@ -8,12 +8,26 @@
  * pairing to a device.
  */
 import './bluetooth_base_page.js';
+import './bluetooth_pairing_device_item.js';
+import '../../../cr_elements/shared_style_css.m.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrScrollableBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ */
+const SettingsBluetoothPairingDeviceSelectionPageElementBase =
+    mixinBehaviors([CrScrollableBehavior, I18nBehavior], PolymerElement);
 
 /** @polymer */
-export class SettingsBluetoothPairingDeviceSelectionPageUiElement extends
-    PolymerElement {
+export class SettingsBluetoothPairingDeviceSelectionPageElement extends
+    SettingsBluetoothPairingDeviceSelectionPageElementBase {
   static get is() {
     return 'bluetooth-pairing-device-selection-page';
   }
@@ -21,8 +35,40 @@ export class SettingsBluetoothPairingDeviceSelectionPageUiElement extends
   static get template() {
     return html`{__html_template__}`;
   }
+
+  static get properties() {
+    return {
+      /**
+       * @type {!Array<!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties>}
+       */
+      devices: {
+        type: Array,
+        value: [],
+      },
+    };
+  }
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  shouldShowDeviceList_() {
+    return this.devices && this.devices.length > 0;
+  }
+
+  /**
+   * @private
+   * @return {string}
+   */
+  getDeviceListTitle_() {
+    if (this.shouldShowDeviceList_()) {
+      return this.i18n('bluetoothAvailableDevices');
+    }
+
+    return this.i18n('bluetoothNoAvailableDevices');
+  }
 }
 
 customElements.define(
-    SettingsBluetoothPairingDeviceSelectionPageUiElement.is,
-    SettingsBluetoothPairingDeviceSelectionPageUiElement);
+    SettingsBluetoothPairingDeviceSelectionPageElement.is,
+    SettingsBluetoothPairingDeviceSelectionPageElement);
