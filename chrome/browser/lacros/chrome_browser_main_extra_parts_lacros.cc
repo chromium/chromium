@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
@@ -34,6 +35,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
+  kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();
   web_page_info_provider_ =
       std::make_unique<crosapi::WebPageInfoProviderLacros>();
 

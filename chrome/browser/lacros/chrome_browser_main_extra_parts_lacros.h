@@ -15,6 +15,7 @@ class DriveFsCache;
 class DownloadControllerClientLacros;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
+class KioskSessionServiceLacros;
 
 namespace crosapi {
 class TaskManagerLacros;
@@ -48,6 +49,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros download information to ash.
   std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;
+
+  // Manages the resources used in the web Kiosk session, and sends window
+  // status changes of lacros-chrome to ash when necessary.
+  std::unique_ptr<KioskSessionServiceLacros> kiosk_session_service_;
 
   // Handles tab property requests from ash.
   std::unique_ptr<crosapi::WebPageInfoProviderLacros> web_page_info_provider_;

@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/feedback_util.h"
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -98,6 +99,13 @@ void BrowserServiceLacros::NewFullscreenWindow(
   CHECK(browser);
   CHECK(browser->window());
   browser->window()->Show();
+
+  // TODO(crbug/1247638): we'd better figure out a better solution to move this
+  // special logic for web Kiosk out of this method.
+  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kWebKioskSession) {
+    KioskSessionServiceLacros::Get()->InitWebKioskSession(browser);
+  }
 
   // TODO(anqing): valicate current profile and window status, and return
   // non-success result if anything is wrong.
