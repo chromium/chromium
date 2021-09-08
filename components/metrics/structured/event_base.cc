@@ -85,17 +85,17 @@ absl::optional<EventBase> EventBase::FromEvent(const Event& event) {
                        project_validator.value()->id_scope(),
                        project_validator.value()->event_type());
 
-  for (const auto& metric_value : event.metric_values()) {
+  for (const auto& metric : event.metric_values()) {
     // Validate that both name and metric type are valid structured metrics.
-    absl::optional<EventValidator::MetricMetadata> metric_metadata =
-        event_validator.value()->GetMetricMetadata(metric_value.first);
+    auto metric_metadata =
+        event_validator.value()->GetMetricMetadata(metric.first);
     if (!metric_metadata.has_value() ||
-        metric_metadata.value().metric_type != metric_value.second.type) {
+        metric_metadata.value().metric_type != metric.second.type) {
       return absl::nullopt;
     }
 
-    const auto& value = metric_value.second.value;
-    switch (metric_value.second.type) {
+    const auto& value = metric.second.value;
+    switch (metric.second.type) {
       case Event::MetricType::kHmac:
         event_base.AddHmacMetric(metric_metadata.value().metric_name_hash,
                                  value.GetString());
