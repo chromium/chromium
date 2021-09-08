@@ -6,9 +6,12 @@ import './data_point.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network} from './diagnostics_types.js';
+import {LockType, Network, RoamingState} from './diagnostics_types.js';
+import {getLockType} from './diagnostics_utils.js';
 
 /**
  * @fileoverview
@@ -20,10 +23,46 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  behaviors: [I18nBehavior],
+
   properties: {
     /** @type {!Network} */
     network: {
       type: Object,
     },
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeRoamingText_() {
+    if (!this.network.typeProperties.cellular.roaming) {
+      return this.i18n('networkRoamingOff');
+    }
+
+    const state = this.network.typeProperties.cellular.roamingState;
+    switch (state) {
+      case RoamingState.kNone:
+        return '';
+      case RoamingState.kRoaming:
+        return this.i18n('networkRoamingStateRoaming');
+      case RoamingState.kHome:
+        return this.i18n('networkRoamingStateHome');
+    }
+
+    assertNotReached();
+    return '';
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeSimLockedText_() {
+    const {simLocked, lockType} = this.network.typeProperties.cellular;
+    return (simLocked && lockType !== LockType.kNone) ?
+        this.i18n('networkSimLockedText', getLockType(lockType)) :
+        this.i18n('networkSimUnlockedText');
   },
 });

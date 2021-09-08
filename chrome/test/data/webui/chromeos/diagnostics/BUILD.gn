@@ -64,6 +64,7 @@ js_library("cellular_info_test") {
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:cellular_info",
+    "//ash/webui/diagnostics_ui/resources:diagnostics_utils",
   ]
 }
 

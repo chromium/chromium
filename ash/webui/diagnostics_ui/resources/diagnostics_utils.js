@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {NetworkState, NetworkType, RoutineType} from './diagnostics_types.js';
+import {LockType, NetworkState, NetworkType, RoutineType} from './diagnostics_types.js';
 
 /**
  * Converts a KiB storage value to GiB and returns a fixed-point string
@@ -80,6 +80,23 @@ export function getNetworkState(state) {
       return loadTimeData.getString('networkStateConnectingText');
     case NetworkState.kNotConnected:
       return loadTimeData.getString('networkStateNotConnectedText');
+    default:
+      assertNotReached();
+      return '';
+  }
+}
+
+/**
+ * @param {!LockType} lockType
+ * @return {string}
+ */
+export function getLockType(lockType) {
+  switch (lockType) {
+    case LockType.kSimPuk:
+      return 'sim-puk';
+    case LockType.kSimPin:
+      return 'sim-pin';
+    case LockType.kNone:
     default:
       assertNotReached();
       return '';
