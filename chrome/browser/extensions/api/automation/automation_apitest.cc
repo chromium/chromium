@@ -653,7 +653,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, HitTestMultipleWindows) {
+// TODO(crbug.com/1209766) Flaky on lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_HitTestMultipleWindows DISABLED_HitTestMultipleWindows
+#else
+#define MAYBE_HitTestMultipleWindows HitTestMultipleWindows
+#endif
+
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_HitTestMultipleWindows) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "hit_test_multiple_windows.html"}))
