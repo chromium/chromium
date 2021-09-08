@@ -36,25 +36,7 @@ group("telemetry_chrome_test") {
   ]
   data = []
 
-  if (is_android) {
-    # TODO(crbug.com/1213269): Remove these APK dependencies and fully switch to
-    # the separate Android targets below once all Android uses of the old target
-    # have been cleaned up.
-    data_deps += [
-      ":telemetry_weblayer_apks",
-      "//android_webview:system_webview_apk",
-      "//android_webview/test:webview_instrumentation_apk",
-      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
-      "//chrome/android:chrome_public_apk",
-      "//chrome/android:monochrome_public_apk",
-      "//chrome/android:monochrome_public_bundle",
-      "//chrome/android/webapk/shell_apk:maps_go_webapk",
-    ]
-
-    if (enable_chrome_android_internal) {
-      data_deps += [ "//clank:telemetry_clank_test" ]
-    }
-  } else if (!is_fuchsia) {
+  if (!is_fuchsia && !is_android) {
     data_deps += [ "//chrome" ]
   }
 
@@ -143,6 +125,7 @@ if (is_android) {
     data_deps = [
       ":telemetry_chrome_test",
       ":telemetry_weblayer_apks",
+      "//chrome/android:monochrome_public_apk",
     ]
   }
 

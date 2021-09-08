@@ -638,15 +638,15 @@ static_library("test_support") {
   }
 }
 
-group("telemetry_gpu_integration_test") {
-  testonly = true
-  data_deps = [
-    "//content/test:telemetry_gpu_integration_test_support",
-    "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-  ]
-}
-
-if (is_android) {
+if (!is_android) {
+  group("telemetry_gpu_integration_test") {
+    testonly = true
+    data_deps = [
+      "//content/test:telemetry_gpu_integration_test_support",
+      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+    ]
+  }
+} else {
   template("telemetry_gpu_integration_test_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
@@ -4114,15 +4114,15 @@ group("telemetry_perf_unittests_base") {
   data_deps = [ "//testing:test_scripts_shared" ]
 }
 
-group("telemetry_perf_unittests") {
-  testonly = true
-  data_deps = [
-    ":telemetry_perf_unittests_base",
-    "//tools/perf:perf",
-  ]
-}
-
-if (is_android) {
+if (!is_android) {
+  group("telemetry_perf_unittests") {
+    testonly = true
+    data_deps = [
+      ":telemetry_perf_unittests_base",
+      "//tools/perf:perf",
+    ]
+  }
+} else {
   template("telemetry_perf_unittests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
@@ -4150,15 +4150,15 @@ group("telemetry_perf_tests_base") {
   ]
 }
 
-group("telemetry_perf_tests") {
-  testonly = true
-  data_deps = [
-    ":telemetry_perf_tests_base",
-    "//tools/perf/:perf",
-  ]
-}
-
-if (is_android) {
+if (!is_android) {
+  group("telemetry_perf_tests") {
+    testonly = true
+    data_deps = [
+      ":telemetry_perf_tests_base",
+      "//tools/perf/:perf",
+    ]
+  }
+} else {
   template("telemetry_perf_tests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
@@ -4251,14 +4251,14 @@ template("performance_test_suite_template_base") {
   }
 }
 
-template("performance_test_suite_template") {
-  forward_variables_from(invoker, [ "override_board" ])
-  performance_test_suite_template_base(target_name) {
-    data_deps = [ "//chrome/test:telemetry_perf_tests" ]
+if (!is_android) {
+  template("performance_test_suite_template") {
+    forward_variables_from(invoker, [ "override_board" ])
+    performance_test_suite_template_base(target_name) {
+      data_deps = [ "//chrome/test:telemetry_perf_tests" ]
+    }
   }
-}
-
-if (is_android) {
+} else {
   template("performance_test_suite_template_android") {
     forward_variables_from(invoker,
                            [
@@ -4268,16 +4268,53 @@ if (is_android) {
     performance_test_suite_template_base(target_name) {
       data_deps =
           [ "//chrome/test:telemetry_perf_tests${telemetry_target_suffix}" ]
+
+      # Special case some suffixes and add additional data dependencies based
+      # off the logic in Telemetry's
+      # //internal/backends/android_browser_backend_settings.py since some
+      # browser types can map to multiple binaries.
+      # TODO(crbug.com/1231290): Remove this once the Telemetry code is fixed
+      # so that browser type is 1:1 with binary choice.
+      # ChromeBackendSettings
+      if (telemetry_target_suffix == "_android_clank_chrome") {
+        data_deps +=
+            [ "//chrome/test:telemetry_perf_tests_android_clank_monochrome" ]
+      }
+      if (telemetry_target_suffix == "_android_clank_monochrome") {
+        data_deps +=
+            [ "//chrome/test:telemetry_perf_tests_android_clank_chrome" ]
+      }
+
+      # WebViewBackendSettings
+      if (telemetry_target_suffix == "_android_monochrome") {
+        data_deps += [ "//chrome/test:telemetry_perf_tests_android_webview" ]
+      }
+      if (telemetry_target_suffix == "_android_webview") {
+        data_deps += [ "//chrome/test:telemetry_perf_tests_android_monochrome" ]
+      }
+
+      # WebViewGoogleBackendSettings
+      if (telemetry_target_suffix == "_android_clank_monochrome") {
+        data_deps +=
+            [ "//chrome/test:telemetry_perf_tests_android_clank_webview" ]
+      }
+      if (telemetry_target_suffix == "_android_clank_webview") {
+        data_deps += [
+          "//chrome/test:telemetry_perf_tests_android_clank_monochrome",
+          "//chrome/test:telemetry_perf_tests_android_clank_trichrome_webview",
+        ]
+      }
     }
   }
 }
 
-if (!is_fuchsia) {
+if (is_fuchsia) {
+  # Currently no perf tests for Fuchsia.
+} else if (!is_android) {
   performance_test_suite_template("performance_test_suite") {
   }
-}
-
-if (is_android) {
+} else {
+  import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
   foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
     performance_test_suite_template_android(
         "performance_test_suite${_target_suffix}") {
@@ -4306,12 +4343,32 @@ if (is_android) {
   # //testing/buildbot/gn_isolate_map.pyl
   group("performance_webview_test_suite") {
     testonly = true
-    deps = [ "//chrome/test:performance_test_suite_android_webview" ]
+
+    # TODO(crbug.com/1231290): Properly split this once Telemetry code is fixed
+    # so that browser type is 1:1 with binary choice and we can split public/
+    # internal binary usage.
+    if (enable_chrome_android_internal) {
+      deps = [ "//chrome/test:performance_test_suite_android_clank_webview" ]
+    } else {
+      deps = [ "//chrome/test:performance_test_suite_android_webview" ]
+    }
+    data_deps = [
+      "//android_webview/tools/system_webview_shell:system_webview_shell_apk",
+    ]
   }
 
   group("performance_weblayer_test_suite") {
     testonly = true
     deps = [ "//chrome/test:performance_test_suite_android_weblayer" ]
+
+    # TODO(crbug.com/1231290): Properly split this once Telemetry code is fixed
+    # so that browser type is 1:1 with binary choice and we can split public/
+    # internal binary usage.
+    if (enable_chrome_android_internal) {
+      deps += [ "//chrome/test:performance_test_suite_android_clank_weblayer" ]
+    } else {
+      deps += [ "//chrome/test:performance_test_suite_android_weblayer" ]
+    }
   }
 
   # Difference between this and telemetry_perf_tests is that this runs a devil
@@ -9393,15 +9450,15 @@ if (is_mac || is_win || is_android) {
     data_deps = [ "//testing:test_scripts_shared" ]
   }
 
-  group("rendering_representative_perf_tests") {
-    testonly = true
-    data_deps = [
-      ":rendering_representative_perf_tests_base",
-      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-    ]
-  }
-
-  if (is_android) {
+  if (!is_android) {
+    group("rendering_representative_perf_tests") {
+      testonly = true
+      data_deps = [
+        ":rendering_representative_perf_tests_base",
+        "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+      ]
+    }
+  } else {
     template("rendering_representative_perf_tests_android_template") {
       forward_variables_from(invoker, [ "telemetry_target_suffix" ])
       group(target_name) {

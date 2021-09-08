@@ -50,15 +50,15 @@ group("vr_perf_tests_base") {
   }
 }
 
-group("vr_perf_tests") {
-  testonly = true
-  data_deps = [
-    ":vr_perf_tests_base",
-    "//tools/perf:perf",
-  ]
-}
-
-if (is_android) {
+if (!is_android) {
+  group("vr_perf_tests") {
+    testonly = true
+    data_deps = [
+      ":vr_perf_tests_base",
+      "//tools/perf:perf",
+    ]
+  }
+} else {
   template("vr_perf_tests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {

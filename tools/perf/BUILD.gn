@@ -2,15 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-group("perf") {
-  testonly = true
-  data_deps = [
-    ":perf_without_chrome",
-    "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-  ]
-}
-
-if (is_android) {
+if (!is_android) {
+  group("perf") {
+    testonly = true
+    data_deps = [
+      ":perf_without_chrome",
+      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+    ]
+  }
+} else {
   template("perf_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
