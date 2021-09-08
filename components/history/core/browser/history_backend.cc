@@ -1566,7 +1566,7 @@ std::vector<Cluster> HistoryBackend::GetClusters(int max_results) {
   std::vector<Cluster> clusters;
 
   for (const auto& cluster_row : cluster_rows) {
-    std::vector<ScoredAnnotatedVisit> current_scored_annotated_visits;
+    std::vector<ClusterVisit> current_cluster_visits;
     for (VisitID annotated_visit_id : cluster_row.visit_ids) {
       const auto annotated_visits_it =
           base::ranges::find(annotated_visits, annotated_visit_id,
@@ -1574,12 +1574,14 @@ std::vector<Cluster> HistoryBackend::GetClusters(int max_results) {
                                return annotated_visit.visit_row.visit_id;
                              });
       // TODO(manukh): Add scores.
-      if (annotated_visits_it != annotated_visits.end())
-        current_scored_annotated_visits.push_back({*annotated_visits_it});
+      if (annotated_visits_it != annotated_visits.end()) {
+        ClusterVisit cluster_visit;
+        cluster_visit.annotated_visit = *annotated_visits_it;
+        current_cluster_visits.push_back(cluster_visit);
+      }
     }
-    if (!current_scored_annotated_visits.empty()) {
-      clusters.push_back(
-          {cluster_row.cluster_id, current_scored_annotated_visits, {}});
+    if (!current_cluster_visits.empty()) {
+      clusters.push_back({cluster_row.cluster_id, current_cluster_visits, {}});
     }
   }
   return clusters;

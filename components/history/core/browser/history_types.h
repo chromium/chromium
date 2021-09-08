@@ -783,24 +783,36 @@ struct AnnotatedVisitRow {
   VisitContentAnnotations content_annotations;
 };
 
-// An `AnnotatedVisit` associated with a score.
-struct ScoredAnnotatedVisit {
+// An `AnnotatedVisit` associated with some other metadata from clustering.
+struct ClusterVisit {
+  ClusterVisit();
+  ~ClusterVisit();
+  ClusterVisit(const ClusterVisit&);
+
   AnnotatedVisit annotated_visit;
-  float score;
+
+  // A floating point score in the range [0, 1] describing how important this
+  // visit is to the containing cluster.
+  float score = 0.0;
+
+  // A list of `VisitID`s considered duplicates of this cluster visit. The best
+  // visit among all the duplicates will list the worse duplicate visit IDs in
+  // its vector. The worse duplicates will have an empty vector here.
+  std::vector<VisitID> duplicate_visit_ids;
 };
 
 // A cluster of `ScoredAnnotatedVisit`s with associated `keywords`.
 struct Cluster {
   Cluster();
   Cluster(int64_t cluster_id,
-          const std::vector<ScoredAnnotatedVisit>& scored_annotated_visits,
+          const std::vector<ClusterVisit>& visits,
           const std::vector<std::u16string>& keywords);
   Cluster(const Cluster&);
   Cluster& operator=(const Cluster&);
   ~Cluster();
 
   int64_t cluster_id;
-  std::vector<ScoredAnnotatedVisit> scored_annotated_visits;
+  std::vector<ClusterVisit> visits;
   // TODO(manukh): retrieve and persist `keywords`.
   std::vector<std::u16string> keywords;
 };

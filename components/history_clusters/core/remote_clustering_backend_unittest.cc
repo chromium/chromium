@@ -99,24 +99,18 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
           [&](const std::vector<history::Cluster>& clusters) {
             ASSERT_EQ(clusters.size(), 2u);
 
-            ASSERT_EQ(clusters[0].scored_annotated_visits.size(), 2u);
-            EXPECT_EQ(clusters[0]
-                          .scored_annotated_visits[0]
-                          .annotated_visit.url_row.url(),
+            ASSERT_EQ(clusters[0].visits.size(), 2u);
+            EXPECT_EQ(clusters[0].visits[0].annotated_visit.url_row.url(),
                       "https://google.com/");
-            EXPECT_FLOAT_EQ(clusters[0].scored_annotated_visits[0].score, 0.66);
-            EXPECT_EQ(clusters[0]
-                          .scored_annotated_visits[1]
-                          .annotated_visit.url_row.url(),
+            EXPECT_FLOAT_EQ(clusters[0].visits[0].score, 0.66);
+            EXPECT_EQ(clusters[0].visits[1].annotated_visit.url_row.url(),
                       "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[0].scored_annotated_visits[1].score, 0.66);
+            EXPECT_FLOAT_EQ(clusters[0].visits[1].score, 0.66);
 
-            ASSERT_EQ(clusters[1].scored_annotated_visits.size(), 1u);
-            EXPECT_EQ(clusters[1]
-                          .scored_annotated_visits[0]
-                          .annotated_visit.url_row.url(),
+            ASSERT_EQ(clusters[1].visits.size(), 1u);
+            EXPECT_EQ(clusters[1].visits[0].annotated_visit.url_row.url(),
                       "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[1].scored_annotated_visits[0].score, 0.66);
+            EXPECT_FLOAT_EQ(clusters[1].visits[0].score, 0.66);
 
             run_loop_quit_.Run();
           }),

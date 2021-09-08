@@ -61,14 +61,16 @@ std::vector<history::Cluster> ParseResponseProto(
     history::Cluster cluster;
     for (const std::string& keyword : cluster_proto.keywords())
       cluster.keywords.push_back(base::UTF8ToUTF16(keyword));
-    for (const proto::ClusterVisit& cluster_visit :
+    for (const proto::ClusterVisit& cluster_visit_proto :
          cluster_proto.cluster_visits()) {
       const auto visits_it = base::ranges::find(
-          visits, cluster_visit.visit_id(),
+          visits, cluster_visit_proto.visit_id(),
           [](const auto& visit) { return visit.visit_row.visit_id; });
       if (visits_it != visits.end()) {
-        cluster.scored_annotated_visits.push_back(
-            {*visits_it, cluster_visit.score()});
+        history::ClusterVisit new_cluster_visit;
+        new_cluster_visit.annotated_visit = *visits_it;
+        new_cluster_visit.score = cluster_visit_proto.score();
+        cluster.visits.push_back(new_cluster_visit);
       }
     }
     clusters.push_back(cluster);

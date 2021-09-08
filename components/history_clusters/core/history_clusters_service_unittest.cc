@@ -56,15 +56,19 @@ class TestClusteringBackend : public ClusteringBackend {
 
   // Fetches a scored visit by an ID. `visit_id` must be valid. This is a
   // convenience method used for constructing the fake response.
-  history::ScoredAnnotatedVisit GetVisitById(int visit_id, float score = 0.5) {
+  history::ClusterVisit GetVisitById(int visit_id, float score = 0.5) {
     for (auto& visit : last_clustered_visits_) {
-      if (visit.visit_row.visit_id == visit_id)
-        return {visit, score};
+      if (visit.visit_row.visit_id == visit_id) {
+        history::ClusterVisit cluster_visit;
+        cluster_visit.annotated_visit = visit;
+        cluster_visit.score = score;
+        return cluster_visit;
+      }
     }
 
     NOTREACHED() << "TestClusteringBackend::GetVisitById "
                  << "could not find visit_id: " << visit_id;
-    return history::ScoredAnnotatedVisit();
+    return history::ClusterVisit();
   }
 
   // Should be invoked before `GetClusters()` is invoked.
@@ -227,13 +231,13 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
             auto& clusters = result.clusters;
             ASSERT_EQ(clusters.size(), 2u);
 
-            auto& visits = clusters[0].scored_annotated_visits;
+            auto& visits = clusters[0].visits;
             ASSERT_EQ(visits.size(), 1u);
             EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
                       "https://github.com/");
             EXPECT_FLOAT_EQ(visits[0].score, 0.1);
 
-            visits = clusters[1].scored_annotated_visits;
+            visits = clusters[1].visits;
             ASSERT_EQ(visits.size(), 2u);
             EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
                       "https://google.com/");
@@ -360,7 +364,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
 
           if (test_data[i].expect_first_cluster) {
             const auto& cluster = clusters[0];
-            const auto& visits = cluster.scored_annotated_visits;
+            const auto& visits = cluster.visits;
             ASSERT_EQ(visits.size(), 2u);
             EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
                       "https://github.com/");
@@ -396,7 +400,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
           if (test_data[i].expect_second_cluster) {
             const auto& cluster =
                 test_data[i].expect_first_cluster ? clusters[1] : clusters[0];
-            const auto& visits = cluster.scored_annotated_visits;
+            const auto& visits = cluster.visits;
             ASSERT_EQ(visits.size(), 1u);
             EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
                       "https://github.com/");

@@ -209,7 +209,7 @@ bool DoesQueryMatchCluster(const query_parser::QueryNodeVector& find_nodes,
   }
 
   // Also extract all of the visits' URLs and titles into `find_in_words`.
-  for (const auto& visit : cluster.scored_annotated_visits) {
+  for (const auto& visit : cluster.visits) {
     GURL gurl = visit.annotated_visit.url_row.url();
 
     std::u16string url_lower =
@@ -264,7 +264,7 @@ std::vector<history::Cluster> SortClusters(
   // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
   //  this sort step, if they are stored in-order.
   for (auto& cluster : clusters) {
-    base::ranges::sort(cluster.scored_annotated_visits, [](auto& v1, auto& v2) {
+    base::ranges::sort(cluster.visits, [](auto& v1, auto& v2) {
       if (v1.score != v2.score) {
         // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
         return v1.score > v2.score;
@@ -282,14 +282,12 @@ std::vector<history::Cluster> SortClusters(
     // TODO(tommycli): If we can establish an invariant that no backend will
     //  ever return an empty cluster, we can simplify the below code.
     base::Time c1_time;
-    if (!c1.scored_annotated_visits.empty()) {
-      c1_time = c1.scored_annotated_visits.front()
-                    .annotated_visit.visit_row.visit_time;
+    if (!c1.visits.empty()) {
+      c1_time = c1.visits.front().annotated_visit.visit_row.visit_time;
     }
     base::Time c2_time;
-    if (!c1.scored_annotated_visits.empty()) {
-      c2_time = c2.scored_annotated_visits.front()
-                    .annotated_visit.visit_row.visit_time;
+    if (!c1.visits.empty()) {
+      c2_time = c2.visits.front().annotated_visit.visit_row.visit_time;
     }
 
     // Use c1 > c2 to get more recent clusters BEFORE older clusters.
@@ -347,7 +345,7 @@ std::string GetDebugJSONForClusters(
     debug_cluster.SetKey("keywords", std::move(debug_keywords));
 
     base::ListValue debug_visits;
-    for (const auto& visit : cluster.scored_annotated_visits) {
+    for (const auto& visit : cluster.visits) {
       base::DictionaryValue debug_visit;
       debug_visit.SetIntKey("visit_id",
                             visit.annotated_visit.visit_row.visit_id);

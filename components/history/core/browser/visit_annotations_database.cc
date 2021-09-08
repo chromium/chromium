@@ -475,7 +475,7 @@ void VisitAnnotationsDatabase::AddClusters(
       "VALUES(?,?,0)"));
 
   for (const auto& cluster : clusters) {
-    if (cluster.scored_annotated_visits.empty())
+    if (cluster.visits.empty())
       continue;
     clusters_statement.Reset(false);
     if (!clusters_statement.Run()) {
@@ -485,7 +485,7 @@ void VisitAnnotationsDatabase::AddClusters(
     const int64_t cluster_id = GetDB().GetLastInsertRowId();
     DCHECK(cluster_id);
     base::ranges::for_each(
-        cluster.scored_annotated_visits,
+        cluster.visits,
         [&](const auto& annotated_visit) {
           clusters_and_visits_statement.Reset(true);
           clusters_and_visits_statement.BindInt64(0, cluster_id);
@@ -498,7 +498,7 @@ void VisitAnnotationsDatabase::AddClusters(
                 << ", visit_id = " << annotated_visit.visit_row.visit_id;
           }
         },
-        &ScoredAnnotatedVisit::annotated_visit);
+        &ClusterVisit::annotated_visit);
   }
 }
 

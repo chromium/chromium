@@ -47,7 +47,7 @@ namespace {
 
 // Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
 mojom::URLVisitPtr VisitToMojom(
-    const history::ScoredAnnotatedVisit& scored_annotated_visit) {
+    const history::ClusterVisit& scored_annotated_visit) {
   auto visit_mojom = mojom::URLVisit::New();
   auto& annotated_visit = scored_annotated_visit.annotated_visit;
   visit_mojom->normalized_url = annotated_visit.url_row.url();
@@ -114,7 +114,7 @@ void ServiceResultToMojom(
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
     std::set<std::string> related_searches;  // Keeps track of unique searches.
-    for (const auto& visit : cluster.scored_annotated_visits) {
+    for (const auto& visit : cluster.visits) {
       if (cluster_mojom->visits.empty()) {
         // First visit is always the top visit.
         cluster_mojom->visits.push_back(VisitToMojom(visit));
