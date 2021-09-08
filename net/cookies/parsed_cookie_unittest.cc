@@ -518,18 +518,15 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   std::string test_str = "test";
   std::string padded_test_str = lots_of_spaces + test_str + lots_of_spaces;
 
-  // Ensure that leading/trailing whitespace gets stripped before the length
-  // calculations are enforced.
-  // TODO(crbug.com/1244296) Based on the comment in ParsedCookie::SetString
-  // (which makes a case for removing leading/trailing whitespace for attribute
-  // values that get set) I assumed that SetName and SetValue would do the same,
-  // but this doesn't appear to be the case (instead, they just fail to set the
-  // name or value). Should we change them to remove leading/trailing whitespace
-  // for consistency? If so, uncomment the following tests:
-  // EXPECT_TRUE(pc40.SetName(padded_test_str));
-  // EXPECT_TRUE(pc40.SetValue(padded_test_str));
-  // EXPECT_EQ(test_str, pc40.Name());
-  // EXPECT_EQ(test_str, pc40.Value());
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    // Ensure that leading/trailing whitespace gets stripped before the length
+    // calculations are enforced.
+    ParsedCookie pc41("name=value");
+    EXPECT_TRUE(pc41.SetName(padded_test_str));
+    EXPECT_TRUE(pc41.SetValue(padded_test_str));
+    EXPECT_EQ(test_str, pc41.Name());
+    EXPECT_EQ(test_str, pc41.Value());
+  }
 
   std::string name_equals_value = "name=value";
   ParsedCookie pc50(name_equals_value);
@@ -670,6 +667,14 @@ TEST(ParsedCookieTest, SetNameAndValue) {
       EXPECT_EQ("\"foobar=\"foobar", pc.ToCookieLine());
       EXPECT_TRUE(pc.IsValid());
 
+      EXPECT_TRUE(pc.SetName("  foo bar  "));
+      EXPECT_EQ("foo bar=\"foobar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_TRUE(pc.SetValue("  foo bar  "));
+      EXPECT_EQ("foo bar=foo bar", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
     } else {
       // Set invalid name / value.
       EXPECT_FALSE(pc.SetName("@foobar"));
@@ -683,9 +688,17 @@ TEST(ParsedCookieTest, SetNameAndValue) {
       EXPECT_FALSE(pc.SetValue("\"foobar"));
       EXPECT_EQ("name=value", pc.ToCookieLine());
       EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetName("  foo bar  "));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
+
+      EXPECT_FALSE(pc.SetValue("  foo bar  "));
+      EXPECT_EQ("name=value", pc.ToCookieLine());
+      EXPECT_TRUE(pc.IsValid());
     }
 
-    // Set valid name / value
+    // Set valid name / value.
     EXPECT_TRUE(pc.SetValue("value"));
     EXPECT_TRUE(pc.SetName(std::string()));
     EXPECT_EQ("=value", pc.ToCookieLine());
@@ -703,8 +716,36 @@ TEST(ParsedCookieTest, SetNameAndValue) {
     EXPECT_EQ("test=", pc.ToCookieLine());
     EXPECT_TRUE(pc.IsValid());
 
-    // Ensure that failure occurs when trying to set a name containing '='
+    // Ensure that failure occurs when trying to set a name containing '='.
     EXPECT_FALSE(pc.SetName("invalid=name"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    // Ensure that trying to set a name containing ';' fails.
+    EXPECT_FALSE(pc.SetName("invalid;name"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("invalid;value"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    // Ensure tab characters are treated as control characters.
+    // TODO(crbug.com/1233602) Update this such that tab characters are allowed
+    // and are handled correctly.
+    EXPECT_FALSE(pc.SetName("\tinvalid\t"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("\tinvalid\t"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetName("na\tme"));
+    EXPECT_EQ("test=", pc.ToCookieLine());
+    EXPECT_TRUE(pc.IsValid());
+
+    EXPECT_FALSE(pc.SetValue("val\tue"));
     EXPECT_EQ("test=", pc.ToCookieLine());
     EXPECT_TRUE(pc.IsValid());
   }

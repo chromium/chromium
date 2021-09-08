@@ -219,9 +219,33 @@ CookiePriority ParsedCookie::Priority() const {
 bool ParsedCookie::SetName(const std::string& name) {
   if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
     const std::string& value = pairs_.empty() ? "" : pairs_[0].second;
-    if (!IsValidCookieNameValuePair(name, value)) {
+
+    // Ensure there are no invalid characters in `name`. This should be done
+    // before calling ParseTokenString because we want terminating characters
+    // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
+    // truncation.
+    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+    // cookies containing these characters, we should be able to simplify this
+    // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
+    // Also, this check will currently fail if `name` has a tab character in the
+    // leading or trailing whitespace, which is inconsistent with what happens
+    // when parsing a cookie line in the constructor (but the old logic for
+    // SetName() behaved this way as well).
+    if (!IsValidCookieName(name)) {
       return false;
     }
+
+    // Use the same whitespace trimming code as the constructor.
+    const std::string& parsed_name = ParseTokenString(name);
+
+    if (!IsValidCookieNameValuePair(parsed_name, value)) {
+      return false;
+    }
+
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].first = parsed_name;
+
   } else {
     if (!name.empty() && !HttpUtil::IsToken(name))
       return false;
@@ -229,20 +253,43 @@ bool ParsedCookie::SetName(const std::string& name) {
     // Fail if we'd be creating a cookie with an empty name and value.
     if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
       return false;
-  }
 
-  if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
-  pairs_[0].first = name;
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].first = name;
+  }
   return true;
 }
 
 bool ParsedCookie::SetValue(const std::string& value) {
   if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
     const std::string& name = pairs_.empty() ? "" : pairs_[0].first;
-    if (!IsValidCookieNameValuePair(name, value)) {
+
+    // Ensure there are no invalid characters in `value`. This should be done
+    // before calling ParseValueString because we want terminating characters
+    // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
+    // truncation.
+    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+    // cookies containing these characters, we should be able to simplify this
+    // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
+    // Also, this check will currently fail if `value` has a tab character in
+    // the leading or trailing whitespace, which is inconsistent with what
+    // happens when parsing a cookie line in the constructor (but the old logic
+    // for SetValue() behaved this way as well).
+    if (!IsValidCookieValue(value)) {
       return false;
     }
+
+    // Use the same whitespace trimming code as the constructor.
+    const std::string& parsed_value = ParseValueString(value);
+
+    if (!IsValidCookieNameValuePair(name, parsed_value)) {
+      return false;
+    }
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].second = parsed_value;
+
   } else {
     if (!IsValidCookieValueLegacy(value))
       return false;
@@ -250,11 +297,11 @@ bool ParsedCookie::SetValue(const std::string& value) {
     // Fail if we'd be creating a cookie with an empty name and value.
     if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
       return false;
-  }
 
-  if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
-  pairs_[0].second = value;
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].second = value;
+  }
   return true;
 }
 
