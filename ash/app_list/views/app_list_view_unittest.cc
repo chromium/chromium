@@ -289,7 +289,7 @@ class AppListViewTest : public views::ViewsTestBase,
     return view_->app_list_main_view()->contents_view();
   }
 
-  AppsGridView* apps_grid_view() {
+  PagedAppsGridView* apps_grid_view() {
     return contents_view()->apps_container_view()->apps_grid_view();
   }
 
@@ -765,7 +765,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     return view_->app_list_main_view()->contents_view();
   }
 
-  AppsGridView* apps_grid_view() {
+  PagedAppsGridView* apps_grid_view() {
     return main_view()
         ->contents_view()
         ->apps_container_view()
@@ -1220,8 +1220,10 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
   EXPECT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
 
   // Select the second page.
-  app_list_folder_view()->items_grid_view()->pagination_model()->SelectPage(
-      1, false /* animate */);
+  ASSERT_FALSE(features::IsAppListBubbleEnabled());
+  static_cast<PagedAppsGridView*>(app_list_folder_view()->items_grid_view())
+      ->pagination_model()
+      ->SelectPage(1, false /* animate */);
 
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =

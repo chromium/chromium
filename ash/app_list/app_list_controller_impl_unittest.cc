@@ -108,7 +108,7 @@ AppsContainerView* GetAppsContainerView() {
   return GetContentsView()->apps_container_view();
 }
 
-AppsGridView* GetAppsGridView() {
+PagedAppsGridView* GetAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
 }
 
@@ -341,7 +341,7 @@ TEST_F(AppListControllerImplTest, PageResetByTimerInTabletMode) {
 
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
 
-  AppsGridView* apps_grid_view = GetAppsGridView();
+  PagedAppsGridView* apps_grid_view = GetAppsGridView();
   apps_grid_view->pagination_model()->SelectPage(1, false /* animate */);
 
   DismissAppListNow();
@@ -1506,7 +1506,7 @@ TEST_F(AppListSortTest, BasicUI) {
 
 TEST_F(AppListSortTest, CreatePage) {
   ShowAppListNow(AppListViewState::kFullscreenAllApps);
-  AppsGridView* apps_grid_view = GetAppsGridView();
+  PagedAppsGridView* apps_grid_view = GetAppsGridView();
   test::AppsGridViewTestApi test_api(apps_grid_view);
   PopulateItem(test_api.TilesPerPage(0));
   EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());

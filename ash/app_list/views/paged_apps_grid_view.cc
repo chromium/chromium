@@ -21,7 +21,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
-#include "ash/public/cpp/pagination/pagination_model.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -69,6 +68,14 @@ constexpr char kPageDragScrollInTabletMaxLatencyHistogram[] =
 // Delay in milliseconds to do the page flip in fullscreen app list.
 constexpr base::TimeDelta kPageFlipDelay =
     base::TimeDelta::FromMilliseconds(500);
+
+// Duration for page transition.
+constexpr base::TimeDelta kPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// Duration for overscroll page transition.
+constexpr base::TimeDelta kOverscrollPageTransitionDuration =
+    base::TimeDelta::FromMilliseconds(50);
 
 // Vertical padding between the apps grid pages in cardified state.
 constexpr int kCardifiedPaddingBetweenPages = 12;
@@ -212,6 +219,8 @@ void PagedAppsGridView::Init() {
   const auto& config = GetAppListConfig();
   SetLayout(config.preferred_cols(), config.preferred_rows());
   AppsGridView::Init();
+  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
+                                           kOverscrollPageTransitionDuration);
 }
 
 void PagedAppsGridView::OnTabletModeChanged(bool started) {
@@ -522,6 +531,14 @@ int PagedAppsGridView::GetPaddingBetweenPages() const {
              : GetAppListConfig().page_spacing();
 }
 
+int PagedAppsGridView::GetTotalPages() const {
+  return pagination_model_.total_pages();
+}
+
+int PagedAppsGridView::GetSelectedPage() const {
+  return pagination_model_.selected_page();
+}
+
 bool PagedAppsGridView::IsScrollAxisVertical() const {
   return pagination_controller_->scroll_axis() ==
          PaginationController::SCROLL_AXIS_VERTICAL;
@@ -584,6 +601,83 @@ int PagedAppsGridView::TilesPerPage(int page) const {
     return page == 0 ? 15 : 20;
 
   return cols() * rows_per_page();
+}
+
+void PagedAppsGridView::UpdatePaging() {
+  if (!IsInFolder() && !features::IsLauncherRemoveEmptySpaceEnabled()) {
+    pagination_model_.SetTotalPages(view_structure_.total_pages());
+    return;
+  }
+
+  // Folders have the same number of tiles on every page, while the root
+  // level grid can have a different number of tiles per page.
+  int tiles = view_model()->view_size();
+  int total_pages = 1;
+  int tiles_on_page = TilesPerPage(0);
+  while (tiles > tiles_on_page) {
+    tiles -= tiles_on_page;
+    ++total_pages;
+    tiles_on_page = TilesPerPage(total_pages - 1);
+  }
+  pagination_model_.SetTotalPages(total_pages);
+}
+
+void PagedAppsGridView::RecordPageMetrics() {
+  DCHECK(!IsInFolder());
+  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages", GetTotalPages());
+
+  if (features::IsLauncherRemoveEmptySpaceEnabled())
+    return;
+
+  // Calculate the number of pages that have empty slots.
+  int page_count = 0;
+  const auto& pages = view_structure_.pages();
+  for (size_t i = 0; i < pages.size(); ++i) {
+    if (static_cast<int>(pages[i].size()) < TilesPerPage(i))
+      ++page_count;
+  }
+  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPagesNotFull", page_count);
+}
+
+const gfx::Vector2d PagedAppsGridView::CalculateTransitionOffset(
+    int page_of_view) const {
+  gfx::Size grid_size = GetTileGridSize();
+
+  // If there is a transition, calculates offset for current and target page.
+  const int current_page = GetSelectedPage();
+  const PaginationModel::Transition& transition =
+      pagination_model_.transition();
+  const bool is_valid = pagination_model_.is_valid_page(transition.target_page);
+
+  int multiplier = page_of_view;
+  if (is_valid && abs(transition.target_page - current_page) > 1) {
+    if (page_of_view == transition.target_page) {
+      if (transition.target_page > current_page)
+        multiplier = current_page + 1;
+      else
+        multiplier = current_page - 1;
+    } else if (page_of_view != current_page) {
+      multiplier = -1;
+    }
+  }
+
+  if (IsScrollAxisVertical()) {
+    const int page_height = grid_size.height() + GetPaddingBetweenPages();
+    return gfx::Vector2d(0, page_height * multiplier);
+  }
+
+  // Page size including padding pixels. A tile.x + page_width means the same
+  // tile slot in the next page.
+  const int page_width = grid_size.width() + GetPaddingBetweenPages();
+  return gfx::Vector2d(page_width * multiplier, 0);
+}
+
+void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
+  if (pagination_model_.has_transition())
+    return;
+
+  if (IsValidIndex(index))
+    pagination_model_.SelectPage(index.page, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

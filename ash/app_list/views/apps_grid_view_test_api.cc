@@ -75,8 +75,8 @@ void AppsGridViewTestApi::LayoutToIdealBounds() {
 gfx::Rect AppsGridViewTestApi::GetItemTileRectOnCurrentPageAt(int row,
                                                               int col) const {
   int slot = row * (view_->cols()) + col;
-  gfx::Rect bounds_in_ltr = view_->GetExpectedTileBounds(
-      GridIndex(view_->pagination_model()->selected_page(), slot));
+  gfx::Rect bounds_in_ltr =
+      view_->GetExpectedTileBounds(GridIndex(view_->GetSelectedPage(), slot));
   // `GetExpectedTileBounds()` returns expected bounds for item at provided grid
   // index in LTR UI. Make sure this method returns mirrored bounds in RTL UI.
   return view_->GetMirroredRect(bounds_in_ltr);

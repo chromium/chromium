@@ -295,7 +295,7 @@ GridIndex PagedViewStructure::GetLastTargetIndexOfPage(int page_index) const {
   }
 
   if (mode_ == Mode::kFullPages) {
-    if (page_index == apps_grid_view_->pagination_model_.total_pages() - 1)
+    if (page_index == apps_grid_view_->GetTotalPages() - 1)
       return GetLastTargetIndex();
     return GridIndex(page_index, TilesPerPage(page_index) - 1);
   }

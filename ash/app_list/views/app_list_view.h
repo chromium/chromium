@@ -76,7 +76,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
     explicit TestApi(AppListView* view);
     ~TestApi();
 
-    AppsGridView* GetRootAppsGridView();
+    PagedAppsGridView* GetRootAppsGridView();
 
    private:
     AppListView* const view_;

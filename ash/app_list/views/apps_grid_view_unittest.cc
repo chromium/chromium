@@ -307,7 +307,7 @@ class AppsGridViewTest : public AshTestBase {
 
   AppListItemView* GetItemViewInAppsGridForPoint(
       const gfx::Point& point,
-      AppsGridView* grid_view) const {
+      PagedAppsGridView* grid_view) const {
     std::unique_ptr<AppsGridViewTestApi> temp_test_api =
         std::make_unique<AppsGridViewTestApi>(grid_view);
     const int selected_page = grid_view->pagination_model()->selected_page();
@@ -336,6 +336,14 @@ class AppsGridViewTest : public AshTestBase {
 
   PaginationModel* GetPaginationModel() const {
     return apps_grid_view_->pagination_model();
+  }
+
+  int GetSelectedPage(AppsGridView* grid_view) const {
+    return grid_view->GetSelectedPage();
+  }
+
+  int GetTotalPages(AppsGridView* grid_view) const {
+    return grid_view->GetTotalPages();
   }
 
   AppListFolderView* app_list_folder_view() const {
@@ -486,8 +494,7 @@ class AppsGridViewDragAndDropTestBase : public AppsGridViewTest {
       int column,
       AppsGridView* apps_grid_view) {
     AppsGridViewTestApi test_api(apps_grid_view);
-    const int selected_page =
-        apps_grid_view->pagination_model()->selected_page();
+    const int selected_page = GetSelectedPage(apps_grid_view);
     GridIndex index(selected_page, row * apps_grid_view->cols() + column);
     AppListItemView* view = test_api.GetViewAtIndex(index);
     DCHECK(view);
@@ -1005,8 +1012,10 @@ TEST_F(AppsGridViewTest, PageResetAfterOpenFolder) {
 
   // Open the folder. It should be at page 0.
   test_api_->PressItemAt(0);
+  ASSERT_FALSE(features::IsAppListBubbleEnabled());
   PaginationModel* pagination_model =
-      app_list_folder_view()->items_grid_view()->pagination_model();
+      static_cast<PagedAppsGridView*>(folder_apps_grid_view())
+          ->pagination_model();
   EXPECT_EQ(3, pagination_model->total_pages());
   EXPECT_EQ(0, pagination_model->selected_page());
 
@@ -1359,10 +1368,8 @@ TEST_F(AppsGridViewTest, CheckFolderWithMultiplePagesContents) {
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
-  PaginationModel* folder_pagination_model =
-      folder_apps_grid_view()->pagination_model();
-  EXPECT_EQ(1, folder_pagination_model->total_pages());
-  EXPECT_EQ(0, folder_pagination_model->selected_page());
+  EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
+  EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 
@@ -1416,7 +1423,7 @@ TEST_F(AppsGridViewTest, SwitchPageFolderItem) {
   test_api_->PressItemAt(0);
   AnimateFolderViewPageFlip(1);
 
-  EXPECT_EQ(1, folder_apps_grid_view()->pagination_model()->selected_page());
+  EXPECT_EQ(1, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
@@ -2675,10 +2682,8 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
-  PaginationModel* folder_pagination_model =
-      folder_apps_grid_view()->pagination_model();
-  EXPECT_EQ(1, folder_pagination_model->total_pages());
-  EXPECT_EQ(0, folder_pagination_model->selected_page());
+  EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
+  EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
 }
 

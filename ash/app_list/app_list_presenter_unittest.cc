@@ -4356,11 +4356,11 @@ TEST_P(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(start_point);
   generator->PressLeftButton();
-  AppsGridView* apps_grid_view = GetAppListView()
-                                     ->app_list_main_view()
-                                     ->contents_view()
-                                     ->apps_container_view()
-                                     ->apps_grid_view();
+  PagedAppsGridView* apps_grid_view = GetAppListView()
+                                          ->app_list_main_view()
+                                          ->contents_view()
+                                          ->apps_container_view()
+                                          ->apps_grid_view();
 
   // Drags the mouse a bit above (twice as shelf's height). This should show the
   // item vaguely.

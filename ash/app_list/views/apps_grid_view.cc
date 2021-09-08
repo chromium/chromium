@@ -96,14 +96,6 @@ constexpr int kFolderItemReparentDelay = 50;
 // Maximum vertical and horizontal spacing between tiles.
 constexpr int kMaximumTileSpacing = 96;
 
-// Duration for page transition.
-constexpr base::TimeDelta kPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(250);
-
-// Duration for overscroll page transition.
-constexpr base::TimeDelta kOverscrollPageTransitionDuration =
-    base::TimeDelta::FromMilliseconds(50);
-
 // RowMoveAnimationDelegate is used when moving an item into a different row.
 // Before running the animation, the item's layer is re-created and kept in
 // the original position, then the item is moved to just before its target
@@ -310,9 +302,6 @@ void AppsGridView::Init() {
   bounds_animator_->AddObserver(this);
 
   UpdateBorder();
-
-  pagination_model_.SetTransitionDurations(kPageTransitionDuration,
-                                           kOverscrollPageTransitionDuration);
 }
 
 AppsGridView::~AppsGridView() {
@@ -703,11 +692,8 @@ void AppsGridView::EndDrag(bool cancel) {
     // Select the page where dragged item is dropped. Avoid doing so when the
     // dragged item ends up in a folder.
     const int model_index = GetModelIndexOfItem(drag_item);
-    if (model_index < view_model_.view_size()) {
-      pagination_model_.SelectPage(
-          view_structure_.GetIndexFromModelIndex(model_index).page,
-          false /* animate */);
-    }
+    if (model_index < view_model_.view_size())
+      EnsureViewVisible(view_structure_.GetIndexFromModelIndex(model_index));
   }
 
   // Hide the |current_ghost_view_| for item drag that started
@@ -914,25 +900,6 @@ void AppsGridView::Update() {
     RecordPageMetrics();
 }
 
-void AppsGridView::UpdatePaging() {
-  if (!folder_delegate_ && !features::IsLauncherRemoveEmptySpaceEnabled()) {
-    pagination_model_.SetTotalPages(view_structure_.total_pages());
-    return;
-  }
-
-  // Folders have the same number of tiles on every page, while the root
-  // level grid can have a different number of tiles per page.
-  int tiles = view_model_.view_size();
-  int total_pages = 1;
-  int tiles_on_page = TilesPerPage(0);
-  while (tiles > tiles_on_page) {
-    tiles -= tiles_on_page;
-    ++total_pages;
-    tiles_on_page = TilesPerPage(total_pages - 1);
-  }
-  pagination_model_.SetTotalPages(total_pages);
-}
-
 void AppsGridView::UpdatePulsingBlockViews() {
   const int existing_items = item_list_ ? item_list_->item_count() : 0;
   const int tablet_page_size =
@@ -976,14 +943,6 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   return view;
 }
 
-void AppsGridView::EnsureViewVisible(const GridIndex& index) {
-  if (pagination_model_.has_transition())
-    return;
-
-  if (IsValidIndex(index))
-    pagination_model_.SelectPage(index.page, false);
-}
-
 void AppsGridView::SetSelectedItemByIndex(const GridIndex& index) {
   if (GetIndexOfView(selected_view_) == index)
     return;
@@ -1019,39 +978,6 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
 
   const int model_index = view_structure_.GetModelIndexFromIndex(index);
   return GetItemViewAt(model_index);
-}
-
-const gfx::Vector2d AppsGridView::CalculateTransitionOffset(
-    int page_of_view) const {
-  gfx::Size grid_size = GetTileGridSize();
-
-  // If there is a transition, calculates offset for current and target page.
-  const int current_page = pagination_model_.selected_page();
-  const PaginationModel::Transition& transition =
-      pagination_model_.transition();
-  const bool is_valid = pagination_model_.is_valid_page(transition.target_page);
-
-  int multiplier = page_of_view;
-  if (is_valid && abs(transition.target_page - current_page) > 1) {
-    if (page_of_view == transition.target_page) {
-      if (transition.target_page > current_page)
-        multiplier = current_page + 1;
-      else
-        multiplier = current_page - 1;
-    } else if (page_of_view != current_page) {
-      multiplier = -1;
-    }
-  }
-
-  if (IsScrollAxisVertical()) {
-    const int page_height = grid_size.height() + GetPaddingBetweenPages();
-    return gfx::Vector2d(0, page_height * multiplier);
-  }
-
-  // Page size including padding pixels. A tile.x + page_width means the same
-  // tile slot in the next page.
-  const int page_width = grid_size.width() + GetPaddingBetweenPages();
-  return gfx::Vector2d(page_width * multiplier, 0);
 }
 
 bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
@@ -1366,7 +1292,7 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   int col = (point.x() - bounds.x() + x_offset - GetGridCenteringOffset().x()) /
             total_tile_size.width();
   col = base::clamp(col, 0, cols_ - 1);
-  const int selected_page = pagination_model_.selected_page();
+  const int selected_page = GetSelectedPage();
   drop_target_ =
       std::min(GridIndex(selected_page, row * cols_ + col),
                view_structure_.GetLastTargetIndexOfPage(selected_page));
@@ -1573,7 +1499,7 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
       // folder grid is paged horizontally) - set the target page beyond the
       // number of pages in the grid so the focus gets moved to the next
       // focusable view.
-      target_page = pagination_model_.total_pages();
+      target_page = GetTotalPages();
     } else {
       // Move focus to the first row of next page if target row is beyond range.
       ++target_page;
@@ -1591,7 +1517,7 @@ bool AppsGridView::HandleVerticalFocusMovement(bool arrow_up) {
     return true;
   }
 
-  if (target_page >= pagination_model_.total_pages()) {
+  if (target_page >= GetTotalPages()) {
     // Move focus down outside the apps grid if target page is beyond range.
     views::View* v = GetFocusManager()->GetNextFocusableView(
         view_model_.view_at(view_model_.view_size() - 1),
@@ -1759,18 +1685,17 @@ void AppsGridView::HandleKeyboardReparent(
 
 AppListItemView* AppsGridView::GetCurrentPageFirstItemViewInFolder() {
   DCHECK(folder_delegate_);
-  int first_index = pagination_model_.selected_page() *
-                    GetAppListConfig().max_folder_items_per_page();
+  int first_index =
+      GetSelectedPage() * GetAppListConfig().max_folder_items_per_page();
   return view_model_.view_at(first_index);
 }
 
 AppListItemView* AppsGridView::GetCurrentPageLastItemViewInFolder() {
   DCHECK(folder_delegate_);
-  int last_index =
-      std::min((pagination_model_.selected_page() + 1) *
-                       GetAppListConfig().max_folder_items_per_page() -
-                   1,
-               item_list_->item_count() - 1);
+  int last_index = std::min(
+      (GetSelectedPage() + 1) * GetAppListConfig().max_folder_items_per_page() -
+          1,
+      item_list_->item_count() - 1);
   return view_model_.view_at(last_index);
 }
 
@@ -1921,8 +1846,8 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
 
   const bool moving_to_new_page =
       !item->IsInFolder() &&
-      (target.page == pagination_model_.total_pages() ||
-       (target.page == pagination_model_.total_pages() - 1 &&
+      (target.page == GetTotalPages() ||
+       (target.page == GetTotalPages() - 1 &&
         view_structure_.GetLastTargetIndexOfPage(target.page).slot == 0));
 
   {
@@ -2063,7 +1988,7 @@ void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
 }
 
 void AppsGridView::CancelContextMenusOnCurrentPage() {
-  GridIndex start_index(pagination_model_.selected_page(), 0);
+  GridIndex start_index(GetSelectedPage(), 0);
   if (!IsValidIndex(start_index))
     return;
   int start = view_structure_.GetModelIndexFromIndex(start_index);
@@ -2200,7 +2125,7 @@ void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
 GridIndex AppsGridView::GetNearestTileIndexForPoint(
     const gfx::Point& point) const {
   gfx::Rect bounds = GetContentsBounds();
-  const int current_page = pagination_model_.selected_page();
+  const int current_page = GetSelectedPage();
   bounds.Inset(GetTilePadding());
   const gfx::Size total_tile_size = GetTotalTileSize();
   const gfx::Vector2d grid_offset = GetGridCenteringOffset();
@@ -2256,9 +2181,8 @@ AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
 
   // Calculate the original bound of the tile at |index|.
   gfx::Rect tile_rect =
-      GetExpectedTileBounds(GridIndex(pagination_model_.selected_page(), slot));
-  tile_rect.Offset(
-      CalculateTransitionOffset(pagination_model_.selected_page()));
+      GetExpectedTileBounds(GridIndex(GetSelectedPage(), slot));
+  tile_rect.Offset(CalculateTransitionOffset(GetSelectedPage()));
 
   const auto& entries = view_model_.entries();
   const auto iter =
@@ -2308,7 +2232,7 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
       // moving right to a new page should be a no-op.
       if (view_structure_.items_on_page(source_index.page) == 1)
         return source_index;
-      return GridIndex(pagination_model_.total_pages(), 0);
+      return GridIndex(GetTotalPages(), 0);
     }
 
     target_index = GetIndexOfView(
@@ -2343,7 +2267,7 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     // The app will move to the first row of the next page.
     ++target_page;
     if (folder_delegate_) {
-      if (target_page >= pagination_model_.total_pages())
+      if (target_page >= GetTotalPages())
         return source_index;
     } else {
       if (target_page >= view_structure_.total_pages()) {
@@ -2439,16 +2363,14 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 
   int target_page = target_index.page;
   if (!folder_delegate_) {
-    // Update |pagination_model_| because the move could have resulted in a
+    // Update paging because the move could have resulted in a
     // page getting collapsed or created.
-    if (view_structure_.total_pages() != pagination_model_.total_pages()) {
-      pagination_model_.SetTotalPages(view_structure_.total_pages());
-    }
+    UpdatePaging();
+
     // |target_page| may change due to a page collapsing.
-    target_page =
-        std::min(pagination_model_.total_pages() - 1, target_index.page);
+    target_page = std::min(GetTotalPages() - 1, target_index.page);
   }
-  pagination_model_.SelectPage(target_page, false /*animate*/);
+  EnsureViewVisible(GridIndex(target_page, target_index.slot));
   SetSelectedView(original_selected_view);
   Layout();
   AnnounceReorder(target_index);
@@ -2460,8 +2382,8 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
 }
 
 bool AppsGridView::IsValidIndex(const GridIndex& index) const {
-  return index.page >= 0 && index.page < pagination_model_.total_pages() &&
-         index.slot >= 0 && index.slot < TilesPerPage(index.page) &&
+  return index.page >= 0 && index.page < GetTotalPages() && index.slot >= 0 &&
+         index.slot < TilesPerPage(index.page) &&
          view_structure_.GetModelIndexFromIndex(index) <
              view_model_.view_size();
 }
@@ -2554,39 +2476,21 @@ int AppsGridView::GetTargetModelIndexFromItemIndex(size_t item_index) {
   return target_model_index;
 }
 
-void AppsGridView::RecordPageMetrics() {
-  DCHECK(!folder_delegate_);
-  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages",
-                           pagination_model_.total_pages());
-
-  if (features::IsLauncherRemoveEmptySpaceEnabled())
-    return;
-
-  // Calculate the number of pages that have empty slots.
-  int page_count = 0;
-  const auto& pages = view_structure_.pages();
-  for (size_t i = 0; i < pages.size(); ++i) {
-    if (static_cast<int>(pages[i].size()) < TilesPerPage(i))
-      ++page_count;
-  }
-  UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPagesNotFull", page_count);
-}
-
 int AppsGridView::GetNumberOfItemsOnPage(int page) const {
-  if (page < 0 || page >= pagination_model_.total_pages())
+  if (page < 0 || page >= GetTotalPages())
     return 0;
 
   if (!folder_delegate_ && !features::IsLauncherRemoveEmptySpaceEnabled())
     return view_structure_.items_on_page(page);
 
   // We are guaranteed not on the last page, so the page must be full.
-  if (page < pagination_model_.total_pages() - 1)
+  if (page < GetTotalPages() - 1)
     return TilesPerPage(page);
 
   // We are on the last page, so calculate the number of items on the page.
   int item_count = view_model_.view_size();
   int current_page = 0;
-  while (current_page < pagination_model_.total_pages() - 1) {
+  while (current_page < GetTotalPages() - 1) {
     item_count -= TilesPerPage(current_page);
     ++current_page;
   }
@@ -2659,7 +2563,7 @@ void AppsGridView::CreateGhostImageView() {
 
   // When the item is dragged outside the boundaries of the app grid, if the
   // |reorder_placeholder_| moves to another page, then do not show a ghost.
-  if (pagination_model_.selected_page() != reorder_placeholder_.page) {
+  if (GetSelectedPage() != reorder_placeholder_.page) {
     BeginHideCurrentGhostImageView();
     return;
   }

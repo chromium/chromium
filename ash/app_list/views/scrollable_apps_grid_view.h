@@ -47,6 +47,8 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   gfx::Insets GetTilePadding() const override;
   gfx::Size GetTileGridSize() const override;
   int GetPaddingBetweenPages() const override;
+  int GetTotalPages() const override;
+  int GetSelectedPage() const override;
   bool IsScrollAxisVertical() const override;
   void CalculateIdealBounds() override;
   bool MaybeAutoScroll() override;
@@ -56,6 +58,9 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   void SetFocusAfterEndDrag() override;
   void RecordAppMovingTypeMetrics(AppListAppMovingType type) override;
   int TilesPerPage(int page) const override;
+  const gfx::Vector2d CalculateTransitionOffset(
+      int page_of_view) const override;
+  void EnsureViewVisible(const GridIndex& index) override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {

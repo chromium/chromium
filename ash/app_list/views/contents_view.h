@@ -38,7 +38,6 @@ class AppListView;
 class ApplicationDragAndDropHost;
 class AppListMainView;
 class AppsContainerView;
-class AppsGridView;
 class AssistantPageView;
 class ExpandArrowView;
 class SearchBoxView;
@@ -243,11 +242,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // Internal version of the above that does the actual work.
   void AddLauncherPageInternal(std::unique_ptr<AppListPage> view,
                                AppListState state);
-
-  // Gets the PaginationModel owned by the AppsGridView.
-  // Note: This is different to |pagination_model_|, which manages top-level
-  // launcher-page pagination.
-  PaginationModel* GetAppsPaginationModel();
 
   // Returns true if the |page| requires layout when transitioning from
   // |current_state| to |target_state|.

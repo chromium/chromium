@@ -13,7 +13,7 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/apps_grid_view.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -100,7 +100,7 @@ TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
 
   // Show a context menu for the first app list item view.
   AppListView::TestApi test_api(presenter()->GetView());
-  AppsGridView* grid_view = test_api.GetRootAppsGridView();
+  PagedAppsGridView* grid_view = test_api.GetRootAppsGridView();
   AppListItemView* item_view = grid_view->GetItemViewAt(0);
   DCHECK(item_view);
   item_view->ShowContextMenu(gfx::Point(), ui::MENU_SOURCE_MOUSE);

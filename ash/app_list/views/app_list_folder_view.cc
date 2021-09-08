@@ -559,8 +559,8 @@ void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
 
   page_switcher_ =
       contents_container_->AddChildView(std::make_unique<PageSwitcher>(
-          items_grid_view_->pagination_model(), false /* vertical */,
-          view_delegate_->IsInTabletMode(),
+          static_cast<PagedAppsGridView*>(items_grid_view_)->pagination_model(),
+          false /* vertical */, view_delegate_->IsInTabletMode(),
           AppListColorProvider::Get()->GetFolderBackgroundColor()));
 
   contents_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -676,7 +676,11 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
 
   hide_for_reparent_ = hide_for_reparent;
 
-  items_grid_view_->pagination_model()->SelectPage(0, false);
+  if (!features::IsAppListBubbleEnabled()) {
+    static_cast<PagedAppsGridView*>(items_grid_view_)
+        ->pagination_model()
+        ->SelectPage(0, false);
+  }
 
   folder_visibility_animations_.clear();
 

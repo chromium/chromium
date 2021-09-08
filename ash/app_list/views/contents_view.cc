@@ -495,11 +495,6 @@ void ContentsView::UpdateSearchBoxVisibility(AppListState current_state) {
   }
 }
 
-PaginationModel* ContentsView::GetAppsPaginationModel() {
-  return apps_container_view_->apps_grid_view()->pagination_model();
-}
-
-
 AppListPage* ContentsView::GetPageView(int index) const {
   DCHECK_GT(static_cast<int>(app_list_pages_.size()), index);
   return app_list_pages_[index];

@@ -122,6 +122,14 @@ int ScrollableAppsGridView::GetPaddingBetweenPages() const {
   return 0;
 }
 
+int ScrollableAppsGridView::GetTotalPages() const {
+  return 1;
+}
+
+int ScrollableAppsGridView::GetSelectedPage() const {
+  return 0;
+}
+
 bool ScrollableAppsGridView::IsScrollAxisVertical() const {
   return true;
 }
@@ -273,6 +281,17 @@ void ScrollableAppsGridView::RecordAppMovingTypeMetrics(
 
 int ScrollableAppsGridView::TilesPerPage(int page) const {
   return cols() * rows_per_page();
+}
+
+void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
+  // TODO(https://crbug.com/1245865): Make sure that the view at |index| is
+  // visible. Mainly called when keyboard reordering item views.
+}
+
+const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(
+    int page_of_view) const {
+  // The ScrollableAppsGridView has no page transitions.
+  return gfx::Vector2d();
 }
 
 BEGIN_METADATA(ScrollableAppsGridView, AppsGridView)

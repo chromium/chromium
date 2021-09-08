@@ -621,7 +621,7 @@ AppListView::TestApi::TestApi(AppListView* view) : view_(view) {
 
 AppListView::TestApi::~TestApi() = default;
 
-AppsGridView* AppListView::TestApi::GetRootAppsGridView() {
+PagedAppsGridView* AppListView::TestApi::GetRootAppsGridView() {
   return view_->GetRootAppsGridView();
 }
 
