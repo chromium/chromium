@@ -331,6 +331,28 @@ void MapperDragonRiseGeneric(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void Mapper2Axes8Keys(const Gamepad& input, Gamepad* mapped) {
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[2];
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[3];
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[0];
+  mapped->buttons[BUTTON_INDEX_DPAD_UP] = AxisNegativeAsButton(input.axes[1]);
+  mapped->buttons[BUTTON_INDEX_DPAD_DOWN] = AxisPositiveAsButton(input.axes[1]);
+  mapped->buttons[BUTTON_INDEX_DPAD_LEFT] = AxisNegativeAsButton(input.axes[0]);
+  mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
+      AxisPositiveAsButton(input.axes[0]);
+
+  // Missing buttons
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = NullButton();
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = NullButton();
+  mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = NullButton();
+  mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = NullButton();
+
+  mapped->buttons_length = BUTTON_INDEX_COUNT - 1;
+  mapped->axes_length = 0;
+}
+
 void MapperOnLiveWireless(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
@@ -698,6 +720,8 @@ constexpr struct MappingData {
     {GamepadId::kBroadcomProduct8502, MapperSnakebyteIDroidCon},
     // DragonRise Generic USB
     {GamepadId::kDragonRiseProduct0006, MapperDragonRiseGeneric},
+    // 2Axes 8Keys Game Pad
+    {GamepadId::kDragonRiseProduct0011, Mapper2Axes8Keys},
     // HORIPAD for Nintendo Switch
     {GamepadId::kHoriProduct00c1, MapperHoripadSwitch},
     // Xbox 360 Wired
