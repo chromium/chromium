@@ -904,10 +904,13 @@ void AutoEnrollmentClientImpl::Retry() {
 }
 
 void AutoEnrollmentClientImpl::CancelAndDeleteSoon() {
-  // Check if neither Hash dance request i.e. DeviceAutoEnrollmentRequest nor
-  // DeviceStateRetrievalRequest is in progress.
+  // Regardless of PSM execution, only check if neither Hash dance request (i.e.
+  // DeviceAutoEnrollmentRequest), nor device state request
+  // (i.e.DeviceInitialEnrollmentStateRequest or DeviceStateRetrievalRequest) is
+  // in progress.
   if (!request_job_) {
-    // The client isn't running, just delete it.
+    // Regardless of PsmHelper client execution, the AutoEnrollmentClientImpl
+    // isn't running, just delete it and it will delete PsmHelper immediately.
     delete this;
   } else {
     // Client still running, but our owner isn't interested in the result
