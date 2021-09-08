@@ -7,7 +7,19 @@
  * 'crostini-disk-resize' is a dialog for disk management e.g.
  * resizing their disk or converting it from sparse to preallocated.
  */
-(function() {
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../settings_shared_css.js';
+
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 
 /**
  * Which overall dialogue view should be shown e.g. loading, unsupported.
@@ -32,6 +44,7 @@ const ResizeState = {
 };
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-disk-resize-dialog',
 
   properties: {
@@ -45,7 +58,7 @@ Polymer({
       type: String,
     },
 
-    /** @private {Array<!cr_slider.SliderTick>} */
+    /** @private {Array<!SliderTick>} */
     diskSizeTicks_: {
       type: Array,
     },
@@ -112,7 +125,7 @@ Polymer({
   loadDiskInfo_() {
     // TODO(davidmunro): No magic 'termina' string.
     const vmName = 'termina';
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .getCrostiniDiskInfo(vmName, /*requestFullInfo=*/ true)
         .then(
             diskInfo => {
@@ -154,7 +167,7 @@ Polymer({
     const selectedIndex = this.$$('#diskSlider').value;
     const size = this.diskSizeTicks_[selectedIndex].value;
     this.resizeState_ = ResizeState.RESIZING;
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .resizeCrostiniDisk('termina', size)
         .then(
             succeeded => {
@@ -184,4 +197,3 @@ Polymer({
         resizeState === ResizeState.RESIZING;
   },
 });
-})();

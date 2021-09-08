@@ -12,7 +12,15 @@
  *   dialog is accepted or not.
  * - The dialog shows itself automatically when it is attached.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../settings_shared_css.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-confirmation-dialog',
 
   properties: {

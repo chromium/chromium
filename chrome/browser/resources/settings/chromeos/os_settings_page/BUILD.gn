@@ -24,7 +24,7 @@ js_library("os_settings_page") {
     "..:os_route.m",
     "../..:router",
     "../bluetooth_page:bluetooth_page",
-    "../crostini_page:crostini_page.m",
+    "../crostini_page:crostini_page",
     "../device_page:device_page.m",
     "../kerberos_page:kerberos_page.m",
     "../multidevice_page:multidevice_page.m",

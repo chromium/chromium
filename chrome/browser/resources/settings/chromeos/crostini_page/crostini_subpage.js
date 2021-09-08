@@ -16,13 +16,36 @@ const ConfirmationState = {
   CONFIRMED: 'confirmed',
 };
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, CrostiniPortProtocol, CrostiniPortSetting, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, PortState, MIN_VALID_PORT_NUMBER, MAX_VALID_PORT_NUMBER} from './crostini_browser_proxy.js';
+import './crostini_confirmation_dialog.js';
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route, RouteObserverBehavior} from '../../router.js';
+import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '../../settings_shared_css.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import './crostini_disk_resize_dialog.js';
+import './crostini_disk_resize_confirmation_dialog.js';
+import './crostini_port_forwarding.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     PrefsBehavior,
-    settings.RouteOriginBehavior,
+    RouteOriginBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -189,8 +212,8 @@ Polymer({
     },
   },
 
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.CROSTINI_DETAILS,
+  /** RouteOriginBehavior override */
+  route_: routes.CROSTINI_DETAILS,
 
 
   /** @private {boolean} */
@@ -215,17 +238,16 @@ Polymer({
         'crostini-container-upgrade-available-changed', (canUpgrade) => {
           this.showCrostiniContainerUpgrade_ = canUpgrade;
         });
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniInstallerStatus();
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
+    CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniUpgraderDialogStatus();
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniContainerUpgradeAvailable();
     this.loadDiskInfo_();
   },
 
   ready() {
-    const r = settings.routes;
+    const r = routes;
     this.addFocusConfig_(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
     this.addFocusConfig_(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
@@ -236,12 +258,12 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.CROSTINI_DETAILS) {
+    if (route !== routes.CROSTINI_DETAILS) {
       return;
     }
 
@@ -251,9 +273,8 @@ Polymer({
   /** @private */
   onCrostiniEnabledChanged_(enabled) {
     if (!enabled &&
-        settings.Router.getInstance().getCurrentRoute() ===
-            settings.routes.CROSTINI_DETAILS) {
-      settings.Router.getInstance().navigateToPreviousRoute();
+        Router.getInstance().getCurrentRoute() === routes.CROSTINI_DETAILS) {
+      Router.getInstance().navigateToPreviousRoute();
     }
     if (enabled) {
       // The disk size or type could have changed due to the user reinstalling
@@ -269,21 +290,19 @@ Polymer({
 
   /** @private */
   onExportImportClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_EXPORT_IMPORT);
+    Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
   },
 
   /** @private */
   onEnableArcAdbClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_ANDROID_ADB);
+    Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
   },
 
   /** @private */
   loadDiskInfo_() {
     // TODO(davidmunro): No magic 'termina' string.
     const vmName = 'termina';
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .getCrostiniDiskInfo(vmName, /*requestFullInfo=*/ false)
         .then(
             diskInfo => {
@@ -365,8 +384,8 @@ Polymer({
    * @private
    */
   onRemoveClick_() {
-    settings.CrostiniBrowserProxyImpl.getInstance().requestRemoveCrostini();
-    settings.recordSettingChange();
+    CrostiniBrowserProxyImpl.getInstance().requestRemoveCrostini();
+    recordSettingChange();
   },
 
   /**
@@ -374,26 +393,23 @@ Polymer({
    * @private
    */
   onContainerUpgradeClick_() {
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniContainerUpgradeView();
   },
 
   /** @private */
   onSharedPathsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_SHARED_PATHS);
+    Router.getInstance().navigateTo(routes.CROSTINI_SHARED_PATHS);
   },
 
   /** @private */
   onSharedUsbDevicesClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_SHARED_USB_DEVICES);
+    Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
   },
 
   /** @private */
   onPortForwardingClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_PORT_FORWARDING);
+    Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
   },
 
   /**
@@ -411,8 +427,7 @@ Polymer({
    * @private
    */
   onMicPermissionChange_: async function() {
-    if (await settings.CrostiniBrowserProxyImpl.getInstance()
-            .checkCrostiniIsRunning()) {
+    if (await CrostiniBrowserProxyImpl.getInstance().checkCrostiniIsRunning()) {
       this.showCrostiniMicPermissionDialog_ = true;
     } else {
       this.getMicToggle_().sendPrefChange();
@@ -424,7 +439,7 @@ Polymer({
     const toggle = this.getMicToggle_();
     if (e.detail.accepted) {
       toggle.sendPrefChange();
-      settings.CrostiniBrowserProxyImpl.getInstance().shutdownCrostini();
+      CrostiniBrowserProxyImpl.getInstance().shutdownCrostini();
     } else {
       toggle.resetToPrefValue();
     }

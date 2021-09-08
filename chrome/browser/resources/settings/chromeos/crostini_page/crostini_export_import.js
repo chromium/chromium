@@ -8,12 +8,27 @@
  * Crostini.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import './crostini_import_confirmation_dialog.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-crostini-export-import',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     WebUIListenerBehavior,
   ],
 
@@ -69,19 +84,18 @@ Polymer({
           this.installerShowing_ = installerShowing;
         });
 
-    settings.CrostiniBrowserProxyImpl.getInstance()
+    CrostiniBrowserProxyImpl.getInstance()
         .requestCrostiniExportImportOperationStatus();
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniInstallerStatus();
+    CrostiniBrowserProxyImpl.getInstance().requestCrostiniInstallerStatus();
   },
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.CROSTINI_EXPORT_IMPORT) {
+    if (route !== routes.CROSTINI_EXPORT_IMPORT) {
       return;
     }
 
@@ -90,7 +104,7 @@ Polymer({
 
   /** @private */
   onExportClick_() {
-    settings.CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer();
+    CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer();
   },
 
   /** @private */

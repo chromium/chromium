@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 // Uncomment as these modules are migrated to Polymer 3.
-import './crostini_page/crostini_arc_adb.m.js';
-import './crostini_page/crostini_arc_adb_confirmation_dialog.m.js';
-import './crostini_page/crostini_confirmation_dialog.m.js';
-import './crostini_page/crostini_disk_resize_confirmation_dialog.m.js';
-import './crostini_page/crostini_disk_resize_dialog.m.js';
-import './crostini_page/crostini_export_import.m.js';
-import './crostini_page/crostini_import_confirmation_dialog.m.js';
-import './crostini_page/crostini_page.m.js';
-import './crostini_page/crostini_port_forwarding.m.js';
-import './crostini_page/crostini_port_forwarding_add_port_dialog.m.js';
-import './crostini_page/crostini_subpage.m.js';
+import './crostini_page/crostini_arc_adb.js';
+import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
+import './crostini_page/crostini_confirmation_dialog.js';
+import './crostini_page/crostini_disk_resize_confirmation_dialog.js';
+import './crostini_page/crostini_disk_resize_dialog.js';
+import './crostini_page/crostini_export_import.js';
+import './crostini_page/crostini_import_confirmation_dialog.js';
+import './crostini_page/crostini_page.js';
+import './crostini_page/crostini_port_forwarding.js';
+import './crostini_page/crostini_port_forwarding_add_port_dialog.js';
+import './crostini_page/crostini_subpage.js';
 import './date_time_page/date_time_page.js';
 import './date_time_page/timezone_selector.js';
 import './guest_os/guest_os_shared_usb_devices.js';
@@ -59,7 +59,7 @@ export {SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/cr_compone
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../languages_page/languages_browser_proxy.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
-export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.m.js';
+export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';
 export {CROSTINI_TYPE, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE} from './guest_os/guest_os_browser_proxy.js';
