@@ -1537,8 +1537,9 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   initial_state_response.set_license_packaging_sku(
       em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   ServerWillSendStateForFRE(
-      std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      std::string(),
+      /*management_domain=*/std::string(),
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
+      /*device_disabled_message=*/std::string(),
       absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
@@ -1574,8 +1575,9 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   initial_state_response.set_license_packaging_sku(
       em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   ServerWillSendStateForFRE(
-      std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      std::string(),
+      /*management_domain=*/std::string(),
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
+      /*device_disabled_message=*/std::string(),
       absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
@@ -1611,8 +1613,9 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   initial_state_response.set_license_packaging_sku(
       em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   ServerWillSendStateForFRE(
-      std::string(), em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      std::string(),
+      /*management_domain=*/std::string(),
+      em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
+      /*device_disabled_message=*/std::string(),
       absl::optional<em::DeviceInitialEnrollmentStateResponse>(
           initial_state_response));
   client()->Start();
