@@ -11,16 +11,16 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
+
 class MediaAppUI;
-}
 
 // Implements the media_app mojom interface providing chrome://media-app
 // with browser process functions to call from the renderer process.
 class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
  public:
   MediaAppPageHandler(
-      chromeos::MediaAppUI* media_app_ui,
+      MediaAppUI* media_app_ui,
       mojo::PendingReceiver<media_app_ui::mojom::PageHandler> receiver);
   ~MediaAppPageHandler() override;
 
@@ -32,7 +32,9 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
 
  private:
   mojo::Receiver<media_app_ui::mojom::PageHandler> receiver_;
-  chromeos::MediaAppUI* media_app_ui_;  // Owns |this|.
+  MediaAppUI* media_app_ui_;  // Owns |this|.
 };
+
+}  // namespace ash
 
 #endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_PAGE_HANDLER_H_

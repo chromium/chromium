@@ -124,7 +124,7 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   auto info = CreateCommonWebAppInfoForMediaWebApp();
-  info->scope = GURL(chromeos::kChromeUIMediaAppURL);
+  info->scope = GURL(ash::kChromeUIMediaAppURL);
   info->start_url = info->scope;
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -140,7 +140,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
       },
       *info);
   apps::FileHandler file_handler;
-  file_handler.action = GURL(chromeos::kChromeUIMediaAppURL);
+  file_handler.action = GURL(ash::kChromeUIMediaAppURL);
   file_handler.accept = MakeFileHandlerAccept(kFileHandlers);
   info->file_handlers.push_back(std::move(file_handler));
   return info;
@@ -184,7 +184,7 @@ AudioSystemAppDelegate::AudioSystemAppDelegate(Profile* profile)
 std::unique_ptr<WebApplicationInfo> AudioSystemAppDelegate::GetWebAppInfo()
     const {
   auto info = CreateCommonWebAppInfoForMediaWebApp();
-  info->scope = GURL(chromeos::kChromeUIMediaAppAudioURL);
+  info->scope = GURL(ash::kChromeUIMediaAppAudioURL);
   info->start_url = info->scope;
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
@@ -200,7 +200,7 @@ std::unique_ptr<WebApplicationInfo> AudioSystemAppDelegate::GetWebAppInfo()
       },
       *info);
   apps::FileHandler file_handler;
-  file_handler.action = GURL(chromeos::kChromeUIMediaAppAudioURL);
+  file_handler.action = GURL(ash::kChromeUIMediaAppAudioURL);
   file_handler.accept = MakeFileHandlerAccept(kAudioFileHandlers);
   info->file_handlers.push_back(std::move(file_handler));
   return info;

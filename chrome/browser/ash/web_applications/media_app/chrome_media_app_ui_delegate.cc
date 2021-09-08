@@ -25,7 +25,7 @@ absl::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
   // on the language and relevant information we want feedback to include.
   // Note that category_tag is the name of the listnr bucket we want our
   // reports to end up in.
-  chrome::ShowFeedbackPage(GURL(chromeos::kChromeUIMediaAppURL), profile,
+  chrome::ShowFeedbackPage(GURL(ash::kChromeUIMediaAppURL), profile,
                            chrome::kFeedbackSourceMediaApp,
                            std::string() /* description_template */,
                            std::string() /* description_placeholder_text */,

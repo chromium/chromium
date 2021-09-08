@@ -12,9 +12,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-class MediaAppPageHandler;
+namespace ash {
 
-namespace chromeos {
+class MediaAppPageHandler;
 
 // The WebUI controller for chrome://media-app.
 class MediaAppUI : public ui::MojoWebUIController,
@@ -46,6 +46,6 @@ class MediaAppUI : public ui::MojoWebUIController,
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_UI_H_

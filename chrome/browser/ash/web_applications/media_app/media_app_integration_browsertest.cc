@@ -157,7 +157,7 @@ void TouchFileSync(const base::FilePath& path, const base::Time& time) {
 // Test that the Media App installs and launches correctly. Runs some spot
 // checks on the manifest.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaApp) {
-  const GURL url(chromeos::kChromeUIMediaAppURL);
+  const GURL url(ash::kChromeUIMediaAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::MEDIA, url, "Gallery"));
 }
@@ -512,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
               task.task_verb);
     EXPECT_EQ(descriptor.app_id, *GetManager().GetAppIdForSystemApp(
                                      web_app::SystemAppType::MEDIA));
-    EXPECT_EQ(chromeos::kChromeUIMediaAppURL, descriptor.action_id);
+    EXPECT_EQ(ash::kChromeUIMediaAppURL, descriptor.action_id);
     EXPECT_EQ(file_manager::file_tasks::TASK_TYPE_WEB_APP,
               descriptor.task_type);
   }

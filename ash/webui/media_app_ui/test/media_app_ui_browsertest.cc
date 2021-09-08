@@ -33,8 +33,8 @@ constexpr const char* kTestFiles[] = {
 }  // namespace
 
 MediaAppUiBrowserTest::MediaAppUiBrowserTest()
-    : SandboxedWebUiAppTestBase(chromeos::kChromeUIMediaAppURL,
-                                chromeos::kChromeUIMediaAppGuestURL,
+    : SandboxedWebUiAppTestBase(ash::kChromeUIMediaAppURL,
+                                ash::kChromeUIMediaAppGuestURL,
                                 {base::FilePath(kTestLibraryPath)},
                                 kGuestTestCases) {
   ConfigureDefaultTestRequestHandler(

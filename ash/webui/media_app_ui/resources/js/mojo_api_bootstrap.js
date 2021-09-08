@@ -4,8 +4,8 @@
 
 import './media_app_ui.mojom-lite.js';
 
-export const mediaAppPageHandler = new mediaAppUi.mojom.PageHandlerRemote();
+export const mediaAppPageHandler = new ash.mediaAppUi.mojom.PageHandlerRemote();
 
 // Set up a page handler to talk to the browser process.
-mediaAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
+ash.mediaAppUi.mojom.PageHandlerFactory.getRemote().createPageHandler(
     mediaAppPageHandler.$.bindNewPipeAndPassReceiver());

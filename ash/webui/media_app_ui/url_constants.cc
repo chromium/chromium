@@ -4,11 +4,11 @@
 
 #include "ash/webui/media_app_ui/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIMediaAppHost[] = "media-app";
 const char kChromeUIMediaAppURL[] = "chrome://media-app/";
 const char kChromeUIMediaAppAudioURL[] = "chrome://media-app/audio/";
 const char kChromeUIMediaAppGuestURL[] = "chrome-untrusted://media-app/";
 
-}  // namespace chromeos
+}  // namespace ash

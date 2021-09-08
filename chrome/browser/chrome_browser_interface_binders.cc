@@ -868,7 +868,7 @@ void PopulateChromeWebUIFrameBinders(
       map);
 
   RegisterWebUIControllerInterfaceBinder<
-      media_app_ui::mojom::PageHandlerFactory, chromeos::MediaAppUI>(map);
+      ash::media_app_ui::mojom::PageHandlerFactory, ash::MediaAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::network_health::mojom::NetworkHealthService,

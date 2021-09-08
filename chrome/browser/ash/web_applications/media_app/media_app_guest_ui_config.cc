@@ -35,12 +35,12 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
 
 MediaAppGuestUIConfig::MediaAppGuestUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chromeos::kChromeUIMediaAppHost) {}
+                  ash::kChromeUIMediaAppHost) {}
 
 MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui) {
   ChromeMediaAppGuestUIDelegate delegate;
-  return std::make_unique<chromeos::MediaAppGuestUI>(web_ui, &delegate);
+  return std::make_unique<ash::MediaAppGuestUI>(web_ui, &delegate);
 }

@@ -9,8 +9,10 @@
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_delegate.h"
 
+namespace ash {
+
 MediaAppPageHandler::MediaAppPageHandler(
-    chromeos::MediaAppUI* media_app_ui,
+    MediaAppUI* media_app_ui,
     mojo::PendingReceiver<media_app_ui::mojom::PageHandler> receiver)
     : receiver_(this, std::move(receiver)), media_app_ui_(media_app_ui) {}
 
@@ -21,3 +23,5 @@ void MediaAppPageHandler::OpenFeedbackDialog(
   auto error_message = media_app_ui_->delegate()->OpenFeedbackDialog();
   std::move(callback).Run(std::move(error_message));
 }
+
+}  // namespace ash

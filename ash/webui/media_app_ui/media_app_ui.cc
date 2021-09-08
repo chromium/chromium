@@ -20,7 +20,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 content::WebUIDataSource* CreateHostDataSource() {
@@ -120,4 +120,4 @@ bool MediaAppUI::IsJavascriptErrorReportingEnabled() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MediaAppUI)
 
-}  // namespace chromeos
+}  // namespace ash

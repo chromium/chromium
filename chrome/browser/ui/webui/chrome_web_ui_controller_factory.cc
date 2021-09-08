@@ -839,8 +839,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       url.host_piece() == ash::kChromeUIShimlessRMAHost) {
     return &NewWebUI<ash::ShimlessRMADialogUI>;
   }
-  if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
-    return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;
+  if (url.host_piece() == ash::kChromeUIMediaAppHost)
+    return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
   if (features::IsShortcutCustomizationAppEnabled()) {
     if (url.host_piece() == ash::kChromeUIShortcutCustomizationAppHost)
       return &NewWebUI<ash::ShortcutCustomizationAppUI>;

@@ -16,7 +16,7 @@ class WebUI;
 
 // Implementation of the chromeos::MediaAppGuestUIDelegate to expose some
 // //chrome functions to //chromeos.
-class ChromeMediaAppGuestUIDelegate : public chromeos::MediaAppGuestUIDelegate {
+class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
  public:
   ChromeMediaAppGuestUIDelegate();
   ChromeMediaAppGuestUIDelegate(const ChromeMediaAppGuestUIDelegate&) = delete;

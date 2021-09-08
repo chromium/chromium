@@ -15,7 +15,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -108,4 +108,4 @@ MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
 
 MediaAppGuestUI::~MediaAppGuestUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

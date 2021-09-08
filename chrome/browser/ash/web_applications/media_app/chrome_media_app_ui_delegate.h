@@ -16,7 +16,7 @@ class WebUI;
  * Implementation of the MediaAppUiDelegate interface. Provides the media app
  * code in chromeos/ with functions that only exist in chrome/.
  */
-class ChromeMediaAppUIDelegate : public MediaAppUIDelegate {
+class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
  public:
   explicit ChromeMediaAppUIDelegate(content::WebUI* web_ui);
 

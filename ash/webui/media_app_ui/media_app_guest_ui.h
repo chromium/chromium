@@ -9,9 +9,9 @@
 
 namespace content {
 class WebUIDataSource;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // A delegate used during data source creation to expose some //chrome
 // functionality to the data source
@@ -30,6 +30,6 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController {
   ~MediaAppGuestUI() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
