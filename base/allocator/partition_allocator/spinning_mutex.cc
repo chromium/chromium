@@ -112,7 +112,7 @@ void SpinningMutex::LockSlow() {
 
 #else  // defined(PA_HAS_FAST_MUTEX)
 
-void SpinningMutex::LockSlow() {
+void SpinningMutex::LockSlowSpinLock() {
   int yield_thread_count = 0;
   do {
     if (yield_thread_count < 10) {
@@ -125,7 +125,7 @@ void SpinningMutex::LockSlow() {
       // progress.
       PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
     }
-  } while (!Try());
+  } while (!TrySpinLock());
 }
 
 #endif  // defined(PA_HAS_FAST_MUTEX)

@@ -25,6 +25,34 @@
 #include <pthread.h>
 #endif
 
+#if defined(OS_APPLE)
+#include <os/lock.h>
+
+// os_unfair_lock is available starting with OS X 10.12, and Chromium targets
+// 10.11 at the minimum, so the symbols are not always available *at runtime*.
+// But we build with a 11.x SDK, so it's always in the headers.
+//
+// However, since the majority of clients have at least 10.12 (released late
+// 2016), we declare the symbols here, marking them weak. They will be nullptr
+// on 10.11, and defined on more recent versions.
+
+// Silence the compiler warning, here and below.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+
+#define PA_WEAK __attribute__((weak))
+
+extern "C" {
+
+PA_WEAK void os_unfair_lock_lock(os_unfair_lock_t lock);
+PA_WEAK bool os_unfair_lock_trylock(os_unfair_lock_t lock);
+PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
+}
+
+#pragma clang diagnostic pop
+
+#endif  // defined(OS_APPLE)
+
 namespace base {
 namespace internal {
 
@@ -53,9 +81,10 @@ namespace internal {
 // make any allocations, locks are small with a constexpr constructor and no
 // destructor.
 //
-// 2. Otherwise:
-// This is a simple SpinLock, in the sense that it does not have any awareness
-// of other threads' behavior.
+// 2. Otherwise: This is a simple SpinLock, in the sense that it does not have
+// any awareness of other threads' behavior. One exception: x86 macOS uses
+// os_unfair_lock() if available, which is the case for macOS >= 10.12, that is
+// most clients.
 class LOCKABLE BASE_EXPORT SpinningMutex {
  public:
   inline constexpr SpinningMutex();
@@ -90,6 +119,21 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 
 #else  // defined(PA_HAS_FAST_MUTEX)
   std::atomic<bool> lock_{false};
+
+#if defined(OS_APPLE)
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+  os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
+#pragma clang diagnostic pop
+
+#endif
+
+  // Spinlock-like, fallback.
+  ALWAYS_INLINE bool TrySpinLock();
+  ALWAYS_INLINE void ReleaseSpinLock();
+  void LockSlowSpinLock();
+
 #endif
 };
 
@@ -188,17 +232,62 @@ ALWAYS_INLINE void SpinningMutex::Release() {
 
 #endif
 
-#else   // defined(PA_HAS_FAST_MUTEX)
-ALWAYS_INLINE bool SpinningMutex::Try() {
+#else  // defined(PA_HAS_FAST_MUTEX)
+
+ALWAYS_INLINE bool SpinningMutex::TrySpinLock() {
   // Possibly faster than CAS. The theory is that if the cacheline is shared,
   // then it can stay shared, for the contended case.
   return !lock_.load(std::memory_order_relaxed) &&
          !lock_.exchange(true, std::memory_order_acquire);
 }
 
-ALWAYS_INLINE void SpinningMutex::Release() {
+ALWAYS_INLINE void SpinningMutex::ReleaseSpinLock() {
   lock_.store(false, std::memory_order_release);
 }
+
+#if defined(OS_APPLE)
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  if (LIKELY(os_unfair_lock_trylock))
+    return os_unfair_lock_trylock(&unfair_lock_);
+
+  return TrySpinLock();
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  // Always testing trylock(), since the definitions are all or nothing.
+  if (LIKELY(os_unfair_lock_trylock))
+    return os_unfair_lock_unlock(&unfair_lock_);
+
+  return ReleaseSpinLock();
+}
+
+ALWAYS_INLINE void SpinningMutex::LockSlow() {
+  if (LIKELY(os_unfair_lock_trylock))
+    return os_unfair_lock_lock(&unfair_lock_);
+  return LockSlowSpinLock();
+}
+
+#pragma clang diagnostic pop
+
+#else
+ALWAYS_INLINE bool SpinningMutex::Try() {
+  return TrySpinLock();
+}
+
+ALWAYS_INLINE void SpinningMutex::Release() {
+  return ReleaseSpinLock();
+}
+
+ALWAYS_INLINE void SpinningMutex::LockSlow() {
+  return LockSlowSpinLock();
+}
+
+#endif  // defined(OS_APPLE)
+
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
 }  // namespace internal
