@@ -16,7 +16,7 @@ TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
 
   struct {
     gfx::Rect element_bounds;
-    gfx::Rect window_bounds;
+    gfx::Rect content_area_bounds;
     gfx::Rect expected_popup_bounds_ltr;
     // Non-empty only when it differs from the ltr expectation.
     gfx::Rect expected_popup_bounds_rtl;
@@ -78,14 +78,14 @@ TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
 
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     gfx::Rect actual_popup_bounds =
-        CalculatePopupBounds(preferred_size, test_cases[i].window_bounds,
+        CalculatePopupBounds(preferred_size, test_cases[i].content_area_bounds,
                              test_cases[i].element_bounds, /* is_rtl= */ false);
     EXPECT_EQ(test_cases[i].expected_popup_bounds_ltr.ToString(),
               actual_popup_bounds.ToString())
         << "Popup bounds failed to match for ltr test " << i;
 
     actual_popup_bounds =
-        CalculatePopupBounds(preferred_size, test_cases[i].window_bounds,
+        CalculatePopupBounds(preferred_size, test_cases[i].content_area_bounds,
                              test_cases[i].element_bounds, /* is_rtl= */ true);
     gfx::Rect expected_popup_bounds = test_cases[i].expected_popup_bounds_rtl;
     if (expected_popup_bounds.IsEmpty())
