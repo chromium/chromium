@@ -24,6 +24,7 @@ Details on Chrome UI.
 * [Input Event Routing](/docs/ui/input_event/index.md)
 * [Activation and Focus](/docs/ui/activation_and_focus.md)
 * [Metadata and Properties](/docs/ui/views/metadata_properties.md)
+* [Layer Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 
 Archival Documentation on Chrome UI.
 * [Aura](/docs/ui/aura/index.md)
