@@ -1243,6 +1243,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/SmokeTests",
       "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/perf_tests/",
+
       # List all test expectations here
       "//third_party/blink/web_tests/ASANExpectations",
       "//third_party/blink/web_tests/LeakExpectations",
@@ -1253,6 +1254,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/TestExpectations",
       "//third_party/blink/web_tests/WebDriverExpectations",
       "//third_party/blink/web_tests/WebGPUExpectations",
+
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
       "//third_party/blink/web_tests/android/",
@@ -1338,6 +1340,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/webgpu/",
       "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/blink/web_tests/xmlviewer/",
+
       # === Test Case Folders Ends ===
     ]
 
@@ -1348,14 +1351,10 @@ if (!is_ios) {
         "//third_party/blink/web_tests/platform/win10.1909/",
       ]
       if (is_linux || is_fuchsia) {
-        data += [
-          "//third_party/blink/web_tests/platform/linux/",
-        ]
+        data += [ "//third_party/blink/web_tests/platform/linux/" ]
       }
       if (is_fuchsia) {
-        data += [
-          "//third_party/blink/web_tests/platform/fuchsia/",
-        ]
+        data += [ "//third_party/blink/web_tests/platform/fuchsia/" ]
       }
     } else if (is_mac) {
       data += [
@@ -1370,11 +1369,11 @@ if (!is_ios) {
 
     # flag-specific tests only runs on linux as of now
     if (is_linux) {
-        data += [
-          "//third_party/blink/web_tests/FlagSpecificConfig",
-          "//third_party/blink/web_tests/FlagExpectations/",
-          "//third_party/blink/web_tests/flag-specific/",
-        ]
+      data += [
+        "//third_party/blink/web_tests/FlagSpecificConfig",
+        "//third_party/blink/web_tests/FlagExpectations/",
+        "//third_party/blink/web_tests/flag-specific/",
+      ]
     }
   }
 
