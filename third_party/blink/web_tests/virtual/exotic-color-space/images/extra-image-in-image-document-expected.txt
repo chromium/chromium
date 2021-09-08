@@ -1,3 +1,0 @@
-Test for bug 38752: Images cannot be dynamically added to image documents.
-
-PASS

@@ -1,9 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS createImageData(sx, sy) creates blank image correctly
-PASS createImageData(ImageData) creates blank image correctly
-PASS getImageData(sx, sy, sw, sh) is successful.
-PASS putImageData(ImageData, dx, dy) is successful.
-PASS putImageData(ImageData, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight) is successful.
