@@ -24,6 +24,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -292,6 +294,41 @@ public abstract class AsyncTask<Result> {
             }
         } else {
             r = mFuture.get();
+        }
+        return r;
+    }
+
+    /**
+     * Waits if necessary for at most the given time for the computation to complete, and then
+     * retrieves its result.
+     *
+     * @param timeout Time to wait before cancelling the operation.
+     * @param unit The time unit for the timeout.
+     *
+     * @return The computed result.
+     *
+     * @throws CancellationException If the computation was cancelled.
+     * @throws ExecutionException If the computation threw an exception.
+     * @throws InterruptedException If the current thread was interrupted while waiting.
+     * @throws TimeoutException If the wait timed out.
+     */
+    @DoNotInline
+    // The string passed is safe since it is class and method name.
+    @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
+    public final Result get(long timeout, TimeUnit unit)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        Result r;
+        if (getStatus() != Status.FINISHED && ThreadUtils.runningOnUiThread()) {
+            StackTraceElement[] stackTrace = new Exception().getStackTrace();
+            String caller = "";
+            if (stackTrace.length > 1) {
+                caller = stackTrace[1].getClassName() + '.' + stackTrace[1].getMethodName() + '.';
+            }
+            try (TraceEvent e = TraceEvent.scoped(caller + "AsyncTask.get")) {
+                r = mFuture.get(timeout, unit);
+            }
+        } else {
+            r = mFuture.get(timeout, unit);
         }
         return r;
     }
