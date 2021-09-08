@@ -221,17 +221,12 @@ class InputMethodPreferencesTest : public PreferencesTest,
                                    public ::testing::WithParamInterface<bool> {
  public:
   InputMethodPreferencesTest() {
-    // TODO(crbug.com/1227693) Remove kSplitSettingsSync from the list when
-    // other parts of the code migrated.
     if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {ash::features::kSyncSettingsCategorization,
-           ash::features::kSplitSettingsSync},
-          {});
+      feature_list_.InitAndEnableFeature(
+          ash::features::kSyncSettingsCategorization);
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {ash::features::kSyncSettingsCategorization,
-               ash::features::kSplitSettingsSync});
+      feature_list_.InitAndDisableFeature(
+          ash::features::kSyncSettingsCategorization);
     }
   }
   ~InputMethodPreferencesTest() override = default;
