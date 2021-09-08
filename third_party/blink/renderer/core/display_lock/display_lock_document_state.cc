@@ -228,7 +228,14 @@ void DisplayLockDocumentState::ForcedRangeInfo::ForceLockIfNeeded(
     if (new_locked_element == &node) {
       Chain()->AddForcedUpdateScopeForContext(
           new_locked_element->GetDisplayLockContext());
-      break;
+      return;
+    }
+  }
+  for (Node& node : FlatTreeTraversal::AncestorsOf(*range_->FirstNode())) {
+    if (new_locked_element == &node) {
+      Chain()->AddForcedUpdateScopeForContext(
+          new_locked_element->GetDisplayLockContext());
+      return;
     }
   }
 }

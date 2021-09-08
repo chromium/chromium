@@ -192,10 +192,22 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(const Range* range)
   for (Node& node : EphemeralRangeInFlatTree(range).Nodes()) {
     if (Element* element = DynamicTo<Element>(&node)) {
       if (DisplayLockContext* context = element->GetDisplayLockContext()) {
-        context->NotifyForcedUpdateScopeStarted();
         forced_context_set_.insert(context);
       }
     }
+  }
+  // We want to unlock everything up the ancestor tree and all nodes in between
+  // the first and last nodes of the range. EphemeralRangeInFlatTree::Nodes will
+  // cover all of the in between nodes and the ancestors of the end node
+  for (Node& node : FlatTreeTraversal::AncestorsOf(*range->FirstNode())) {
+    if (Element* element = DynamicTo<Element>(&node)) {
+      if (DisplayLockContext* context = element->GetDisplayLockContext()) {
+        forced_context_set_.insert(context);
+      }
+    }
+  }
+  for (DisplayLockContext* context : forced_context_set_) {
+    context->NotifyForcedUpdateScopeStarted();
   }
 }
 
