@@ -353,6 +353,10 @@ class ActionDelegate {
   // Returns the current client settings.
   virtual const ClientSettings& GetSettings() const = 0;
 
+  // Sets/Updates current client settings.
+  virtual void SetClientSettings(
+      const ClientSettingsProto& client_settings) = 0;
+
   // Show a form to the user and call |changed_callback| with its values
   // whenever there is a change. |changed_callback| will be called directly with
   // the initial values of the form directly after this call. Returns true if

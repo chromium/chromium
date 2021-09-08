@@ -246,6 +246,11 @@ void FakeScriptExecutorDelegate::SetBrowseDomainsAllowlist(
   browse_domains_ = std::move(domains);
 }
 
+void FakeScriptExecutorDelegate::SetClientSettings(
+    const ClientSettingsProto& client_settings) {
+  client_settings_.UpdateFromProto(client_settings);
+}
+
 bool FakeScriptExecutorDelegate::SetForm(
     std::unique_ptr<FormProto> form,
     base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,

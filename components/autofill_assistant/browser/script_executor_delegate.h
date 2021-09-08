@@ -117,6 +117,8 @@ class ScriptExecutorDelegate {
   virtual ConfigureBottomSheetProto::PeekMode GetPeekMode() = 0;
   virtual void ExpandBottomSheet() = 0;
   virtual void CollapseBottomSheet() = 0;
+  virtual void SetClientSettings(
+      const ClientSettingsProto& client_settings) = 0;
   virtual bool SetForm(
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,

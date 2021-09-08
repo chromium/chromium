@@ -831,6 +831,7 @@ message ActionProto {
     BlurFieldProto blur_field = 85;
     ResetPendingCredentialsProto reset_pending_credentials = 86;
     SaveSubmittedPasswordProto save_submitted_password = 87;
+    UpdateClientSettingsProto update_client_settings = 89;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -839,7 +840,7 @@ message ActionProto {
   optional bool clean_contextual_ui = 33;
 
   reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51,
-      71;
+      71, 88;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -1475,6 +1476,15 @@ message SelectOptionProto {
   optional bool strict = 9;
 
   reserved 1, 3 to 5;
+}
+
+// Contains an update to ClientSettings. This is used to update Display Strings
+// for locales from the backend.
+message UpdateClientSettingsProto {
+  // The new ClientSettings to be used. Please see comments on how display
+  // strings are updated for display string locales in the description of
+  // |ClientSettingsProto|.
+  optional ClientSettingsProto client_settings = 1;
 }
 
 // Contain a localized text message from the server.

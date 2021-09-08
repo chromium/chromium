@@ -706,6 +706,11 @@ const ClientSettings& ScriptExecutor::GetSettings() const {
   return delegate_->GetSettings();
 }
 
+void ScriptExecutor::SetClientSettings(
+    const ClientSettingsProto& client_settings) {
+  return delegate_->SetClientSettings(client_settings);
+}
+
 bool ScriptExecutor::SetForm(
     std::unique_ptr<FormProto> form,
     base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,

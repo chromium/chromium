@@ -154,6 +154,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetPeekMode, ConfigureBottomSheetProto::PeekMode());
   MOCK_METHOD0(ExpandBottomSheet, void());
   MOCK_METHOD0(CollapseBottomSheet, void());
+  MOCK_METHOD1(SetClientSettings,
+               void(const ClientSettingsProto& client_settings));
   MOCK_METHOD3(
       SetForm,
       bool(std::unique_ptr<FormProto> form,

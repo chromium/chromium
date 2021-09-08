@@ -633,6 +633,13 @@ const FormProto::Result* Controller::GetFormResult() const {
   return form_result_.get();
 }
 
+void Controller::SetClientSettings(const ClientSettingsProto& client_settings) {
+  settings_.UpdateFromProto(client_settings);
+  for (ControllerObserver& observer : observers_) {
+    observer.OnClientSettingsChanged(settings_);
+  }
+}
+
 bool Controller::SetForm(
     std::unique_ptr<FormProto> form,
     base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,
@@ -682,8 +689,8 @@ bool Controller::SetForm(
       case FormInputProto::InputTypeCase::INPUT_TYPE_NOT_SET:
         VLOG(1) << "Encountered input with INPUT_TYPE_NOT_SET";
         return false;
-        // Intentionally no default case to make compilation fail if a new value
-        // was added to the enum but not to this list.
+        // Intentionally no default case to make compilation fail if a new
+        // value was added to the enum but not to this list.
     }
   }
 
@@ -1053,10 +1060,7 @@ void Controller::OnGetScripts(const GURL& url,
     return;
   }
   if (response_proto.has_client_settings()) {
-    settings_.UpdateFromProto(response_proto.client_settings());
-    for (ControllerObserver& observer : observers_) {
-      observer.OnClientSettingsChanged(settings_);
-    }
+    SetClientSettings(response_proto.client_settings());
   }
   if (response_proto.has_script_store_config()) {
     GetService()->SetScriptStoreConfig(response_proto.script_store_config());

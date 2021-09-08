@@ -144,6 +144,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetPeekMode(ConfigureBottomSheetProto::PeekMode peek_mode) override;
   void ExpandBottomSheet() override;
   void CollapseBottomSheet() override;
+  void SetClientSettings(const ClientSettingsProto& client_settings) override;
   bool SetForm(
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,

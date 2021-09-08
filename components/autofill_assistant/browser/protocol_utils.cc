@@ -45,6 +45,7 @@
 #include "components/autofill_assistant/browser/actions/stop_action.h"
 #include "components/autofill_assistant/browser/actions/tell_action.h"
 #include "components/autofill_assistant/browser/actions/unsupported_action.h"
+#include "components/autofill_assistant/browser/actions/update_client_settings_action.h"
 #include "components/autofill_assistant/browser/actions/upload_dom_action.h"
 #include "components/autofill_assistant/browser/actions/use_address_action.h"
 #include "components/autofill_assistant/browser/actions/use_credit_card_action.h"
@@ -217,6 +218,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ConfigureBottomSheetAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowForm:
       return std::make_unique<ShowFormAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kUpdateClientSettings:
+      return std::make_unique<UpdateClientSettingsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kPopupMessage:
       return std::make_unique<PopupMessageAction>(delegate, action);
     case ActionProto::ActionInfoCase::kWaitForDocument:
