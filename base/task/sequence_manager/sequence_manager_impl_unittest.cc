@@ -4885,6 +4885,7 @@ class MockCrashKeyImplementation : public debug::CrashKeyImplementation {
                debug::CrashKeyString*(const char name[], debug::CrashKeySize));
   MOCK_METHOD2(Set, void(debug::CrashKeyString*, StringPiece));
   MOCK_METHOD1(Clear, void(debug::CrashKeyString*));
+  MOCK_METHOD1(OutputCrashKeysToStream, void(std::ostream&));
 };
 
 }  // namespace

@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/debug/crash_logging.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
@@ -600,6 +601,9 @@ LogMessage::~LogMessage() {
       stream_ << "IPC message handler context: "
               << base::StringPrintf("0x%08X", task->ipc_hash) << std::endl;
     }
+
+    // Include the crash keys, if any.
+    base::debug::OutputCrashKeysToStream(stream_);
   }
 #endif
   stream_ << std::endl;
