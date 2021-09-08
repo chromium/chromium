@@ -266,17 +266,30 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     return count_hints_requests_received_;
   }
 
-  void WaitUntilHintsFetcherRequestReceived() {
-    while (true) {
-      {
-        // Acquire the |lock_| inside to avoid starving other consumers of the
-        // lock.
-        base::AutoLock lock(lock_);
-        if (count_hints_requests_received_ > 0)
-          return;
-      }
-      base::RunLoop().RunUntilIdle();
+  void increase_count_hints_requests_received() {
+    {
+      base::AutoLock lock(lock_);
+      ++count_hints_requests_received_;
     }
+
+    if (quit_closure_) {
+      content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                   std::move(quit_closure_));
+    }
+  }
+
+  void WaitUntilHintsFetcherRequestReceived() {
+    {
+      // Acquire the |lock_| inside to avoid starving other consumers of the
+      // lock.
+      base::AutoLock lock(lock_);
+      if (count_hints_requests_received_ > 0)
+        return;
+    }
+
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
   }
 
   void ResetCountHintsRequestsReceived() {
@@ -303,9 +316,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
       const net::test_server::HttpRequest& request) {
-    base::AutoLock lock(lock_);
-
-    ++count_hints_requests_received_;
+    increase_count_hints_requests_received();
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     // If the request is a GET, it corresponds to a navigation so return a
     // normal response.
@@ -410,6 +421,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // Guarded by |lock_|.
   // Count of hints requests received so far by |hints_server_|.
   size_t count_hints_requests_received_ = 0;
+
+  base::OnceClosure quit_closure_;
 
   // Guarded by |lock_|. Set of hosts and URLs for which a hints request is
   // expected to arrive. This set is verified to match with the set of hosts and
