@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -15,6 +16,8 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -22,7 +25,6 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
@@ -79,6 +81,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BetterSearchAndBrowsingManagedItemType,
   ItemTypePasswordLeakCheckSwitch,
 };
+
+// TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
+// instead of this when available.
+// Returns true when sign-in can be enabled/disabled by the user from the
+// google service settings.
+bool IsSigninControllableByUser() {
+  BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
+      GetApplicationContext()->GetLocalState()->GetInteger(
+          prefs::kBrowserSigninPolicy));
+  switch (policy_mode) {
+    case BrowserSigninMode::kEnabled:
+      return true;
+    case BrowserSigninMode::kDisabled:
+    case BrowserSigninMode::kForced:
+      return false;
+  }
+  NOTREACHED();
+  return true;
+}
 
 }  // namespace
 
@@ -197,7 +218,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewItem*)allowChromeSigninItem {
-  if (signin::IsSigninAllowedByPolicy()) {
+  if (IsSigninControllableByUser()) {
     return
         [self switchItemWithItemType:AllowChromeSigninItemType
                         textStringID:
@@ -239,7 +260,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       case AllowChromeSigninItemType: {
         SyncSwitchItem* signinDisabledItem =
             base::mac::ObjCCast<SyncSwitchItem>(item);
-        if (signin::IsSigninAllowedByPolicy()) {
+        if (IsSigninControllableByUser()) {
           signinDisabledItem.on = self.allowChromeSigninPreference.value;
         } else {
           signinDisabledItem.on = NO;

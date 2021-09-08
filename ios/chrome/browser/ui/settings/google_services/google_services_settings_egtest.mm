@@ -10,7 +10,9 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -27,7 +29,9 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -81,6 +85,12 @@ void DismissSignOut() {
   [super tearDown];
   [ChromeEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  return config;
 }
 
 // Opens the Google services settings view, and closes it.
@@ -498,6 +508,78 @@ void DismissSignOut() {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// TODO(crbug.com/1247487): Fix this test.
+// Tests that the sign-in cell can't be used when sign-in is disabled by policy.
+- (void)DISABLED_testSigninDisabledByPolicy {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSignInAtStartup);
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Disable browser sign-in.
+  [self setUpSigninDisabledEnterprisePolicy];
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kDisabled)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
+
+  // Open Google services settings and verify the sign-in cell shows the
+  // sign-in cell (even if greyed out).
+  [self openGoogleServicesSettings];
+  id<GREYMatcher> signinMatcher = [self
+      cellMatcherWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
+                detailTextID:
+                    IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL];
+  [[EarlGrey selectElementWithMatcher:signinMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert that sign-in cell shows the "Off" status instead of the knob.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SETTING_OFF))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clean-up policy.
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kEnabled)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+}
+
+// TODO(crbug.com/1247487): Fix this test.
+// Tests that the sign-in cell can't be used when sign-in is forced by policy.
+- (void)DISABLED_testSigninForcedByPolicy {
+  AppLaunchConfiguration config;
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kSignInAtStartup);
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Force browser sign-in.
+  [self setUpSigninForcedEnterprisePolicy];
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kForced)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
+
+  // Open Google services settings and verify the sign-in cell shows the
+  // sign-in cell (even if greyed out).
+  [self openGoogleServicesSettings];
+  id<GREYMatcher> signinMatcher = [self
+      cellMatcherWithTitleID:IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
+                detailTextID:
+                    IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL];
+  [[EarlGrey selectElementWithMatcher:signinMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert that sign-in cell shows the "Off" status instead of the knob.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SETTING_OFF))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Clean-up policy.
+  [ChromeEarlGrey setIntegerValue:static_cast<int>(BrowserSigninMode::kEnabled)
+                forLocalStatePref:prefs::kBrowserSigninPolicy];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+}
+
 #pragma mark - Helpers
 
 // Opens the Google services settings.
@@ -517,12 +599,25 @@ void DismissSignOut() {
                                                            0.1f, 0.1f)];
 }
 
-// Enables the Enterprise policy that disables sign-in entry points across
-// Chrome.
+// Enables the BrowserSigninMode::kDisabled Enterprise policy that disables
+// sign-in entry points across Chrome.
 - (void)setUpSigninDisabledEnterprisePolicy {
   NSDictionary* policy = @{
     base::SysUTF8ToNSString(policy::key::kBrowserSignin) :
         [NSNumber numberWithInt:(int)BrowserSigninMode::kDisabled]
+  };
+
+  [[NSUserDefaults standardUserDefaults]
+      setObject:policy
+         forKey:kPolicyLoaderIOSConfigurationKey];
+}
+
+// Enables the BrowserSigninMode::kForced Enterprise policy that disables the
+// allow sign-in item in Google Service Settings.
+- (void)setUpSigninForcedEnterprisePolicy {
+  NSDictionary* policy = @{
+    base::SysUTF8ToNSString(policy::key::kBrowserSignin) :
+        [NSNumber numberWithInt:(int)BrowserSigninMode::kForced]
   };
 
   [[NSUserDefaults standardUserDefaults]
