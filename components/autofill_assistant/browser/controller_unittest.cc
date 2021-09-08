@@ -2458,6 +2458,13 @@ TEST_F(ControllerTest, MaybePlayTtsMessageStartsPlayingCorrectTtsMessage) {
 
   EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", kClientLocale));
   controller_->MaybePlayTtsMessage();
+
+  // Change display strings locale.
+  ClientSettingsProto client_settings;
+  client_settings.set_display_strings_locale("test-locale");
+  controller_->SetClientSettings(client_settings);
+  EXPECT_CALL(*mock_tts_controller_, Speak("tts_message", "test-locale"));
+  controller_->MaybePlayTtsMessage();
 }
 
 TEST_F(ControllerTest, OnTtsEventChangesTtsButtonStateCorrectly) {

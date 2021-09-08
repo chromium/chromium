@@ -425,6 +425,11 @@ class Controller : public ScriptExecutorDelegate,
   void MakeDetailsVisible(size_t details_index);
   void NotifyDetailsChanged();
 
+  // This represents the display strings locale to be used for the currently
+  // executing set of actions. This locale is used in two ways currently:
+  // 1. Locale of backend provided display strings, if available.
+  // 2. TTS Controller uses this locale for playing TTS messages.
+  std::string GetDisplayStringsLocale();
   void SetTtsButtonState(TtsButtonState state);
 
   ClientSettings settings_;

@@ -157,6 +157,14 @@ std::string Controller::GetLocale() {
   return client_->GetLocale();
 }
 
+std::string Controller::GetDisplayStringsLocale() {
+  if (GetSettings().display_strings_locale.empty()) {
+    // Fallback locale
+    return GetLocale();
+  }
+  return GetSettings().display_strings_locale;
+}
+
 void Controller::SetTouchableElementArea(const ElementAreaProto& area) {
   touchable_element_area()->SetFromProto(area);
 }
@@ -207,7 +215,7 @@ void Controller::MaybePlayTtsMessage() {
   }
 
   // Will fire a TTS_START event.
-  tts_controller_->Speak(tts_message_, GetLocale());
+  tts_controller_->Speak(tts_message_, GetDisplayStringsLocale());
 }
 
 void Controller::SetDetails(std::unique_ptr<Details> details,
@@ -1460,7 +1468,7 @@ void Controller::OnTtsButtonClicked() {
   switch (tts_button_state_) {
     case TtsButtonState::DEFAULT:
       // Will fire a TTS_START event.
-      tts_controller_->Speak(tts_message_, GetLocale());
+      tts_controller_->Speak(tts_message_, GetDisplayStringsLocale());
       break;
     case TtsButtonState::PLAYING:
       // Will not cause any TTS event.
@@ -1470,7 +1478,7 @@ void Controller::OnTtsButtonClicked() {
     case TtsButtonState::DISABLED:
       SetTtsButtonState(TtsButtonState::DEFAULT);
       // Will fire a TTS_START event.
-      tts_controller_->Speak(tts_message_, GetLocale());
+      tts_controller_->Speak(tts_message_, GetDisplayStringsLocale());
       break;
   }
 }
