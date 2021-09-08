@@ -118,6 +118,7 @@ PdfNavigationThrottle::WillStartRequest() {
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.url = stream->original_url;
   params.transition = ui::PAGE_TRANSITION_AUTO_SUBFRAME;
+  params.is_pdf = true;
 
   WebContentsLifetimeHelper::CreateForWebContents(contents);
   WebContentsLifetimeHelper* helper =

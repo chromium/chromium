@@ -160,6 +160,9 @@ struct CONTENT_EXPORT OpenURLParams {
   // navigations that originate from links with impression attributes. Used for
   // conversion measurement.
   absl::optional<blink::Impression> impression;
+
+  // Indicates that this navigation is for PDF content in a renderer.
+  bool is_pdf = false;
 };
 
 class PageNavigator {

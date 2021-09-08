@@ -139,7 +139,8 @@ class NavigationController {
     // fields that are present in both structs (some properties are ignored
     // because they are unique to LoadURLParams or OpenURLParams).
     explicit LoadURLParams(const OpenURLParams& open_url_params);
-
+    LoadURLParams(const LoadURLParams&) = delete;
+    LoadURLParams& operator=(const LoadURLParams&) = delete;
     ~LoadURLParams();
 
     // The url to load. This field is required.
@@ -291,7 +292,8 @@ class NavigationController {
     // Download policy to be applied if this navigation turns into a download.
     blink::NavigationDownloadPolicy download_policy;
 
-    DISALLOW_COPY_AND_ASSIGN(LoadURLParams);
+    // Indicates that this navigation is for PDF content in a renderer.
+    bool is_pdf = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during
