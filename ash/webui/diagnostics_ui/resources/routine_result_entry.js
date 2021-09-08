@@ -60,6 +60,8 @@ export function getRoutineType(routineType) {
       return loadTimeData.getString('signalStrengthRoutineText');
     case RoutineType.kArcHttp:
       return loadTimeData.getString('arcHttpRoutineText');
+    case RoutineType.kArcPing:
+        return loadTimeData.getString('arcPingRoutineText');
     default:
       // Values should always be found in the enum.
       assert(false);
@@ -88,6 +90,7 @@ export function lookupLinkForRoutine(routineType) {
     case RoutineType.kLanConnectivity:
     case RoutineType.kSignalStrength:
     case RoutineType.kArcHttp:
+    case RoutineType.kArcPing:
       url = '#'
       break;
     default:

@@ -120,7 +120,8 @@ export function getRoutinesByNetworkType(type) {
     RoutineType.kHttpsFirewall,
     RoutineType.kHttpsLatency,
     RoutineType.kLanConnectivity,
-    RoutineType.kArcHttp
+    RoutineType.kArcHttp,
+    RoutineType.kArcPing
   ];
 
   // Add wifi-only routines to common networking routine array.

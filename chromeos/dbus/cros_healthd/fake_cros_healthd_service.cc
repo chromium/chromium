@@ -333,6 +333,13 @@ void FakeCrosHealthdService::RunVideoConferencingRoutine(
 
 void FakeCrosHealthdService::RunArcHttpRoutine(
     RunArcHttpRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcHttp;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthdService::RunArcPingRoutine(
+    RunArcPingRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kArcPing;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 

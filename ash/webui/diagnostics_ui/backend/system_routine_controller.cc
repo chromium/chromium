@@ -209,6 +209,12 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
                          weak_factory_.GetWeakPtr(), routine_type));
       break;
 
+    case mojom::RoutineType::kArcPing:
+      diagnostics_service_->RunArcPingRoutine(
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         weak_factory_.GetWeakPtr(), routine_type));
+      break;
+
     case mojom::RoutineType::kBatteryCharge:
       diagnostics_service_->RunBatteryChargeRoutine(
           GetExpectedRoutineDurationInSeconds(routine_type),
