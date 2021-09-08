@@ -15,6 +15,8 @@ class OSExchangeData;
 
 namespace wl {
 
+// TODO(crbug.com/1247063): Move into WaylandExchangeDataProvider class.
+
 // Tells if |mime_type| is supported for Drag and Drop operations.
 bool IsMimeTypeSupported(const std::string& mime_type);
 

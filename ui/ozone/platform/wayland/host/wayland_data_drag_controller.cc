@@ -10,12 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/pickle.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -30,6 +25,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -79,14 +75,6 @@ uint32_t DragOperationsToDndActions(int operations) {
 const SkBitmap* GetDragImage(const OSExchangeData& data) {
   const SkBitmap* icon_bitmap = data.provider().GetDragImage().bitmap();
   return icon_bitmap && !icon_bitmap->empty() ? icon_bitmap : nullptr;
-}
-
-// TODO(crbug.com/1247063): This duplicates code in bookmarks::BookmarkNodeData.
-// Remove once a generic mechanism for retrieving mime types is implemented.
-const ClipboardFormatType& GetChromiumBookmarkFormat() {
-  static const base::NoDestructor<ClipboardFormatType> format(
-      ClipboardFormatType::GetType("chromium/x-bookmark-entries"));
-  return *format;
 }
 
 }  // namespace
@@ -150,11 +138,11 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       // Corresponds to actual scale factor of the origin surface.
       icon_surface_->SetSurfaceBufferScale(origin_window_->window_scale());
     } else {
-      LOG(ERROR) << "Failed to create wl_surface";
+      LOG(ERROR) << "Failed to create drag icon surface.";
       icon_surface_.reset();
     }
   }
-  data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
+  offered_data_ = std::make_unique<OSExchangeData>(data.provider().Clone());
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
@@ -167,9 +155,9 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 }
 
 // Sessions initiated from Chromium, will have |data_source_| set. In which
-// case, |data_| is expected to be non-null as well.
+// case, |offered_data_| is expected to be non-null as well.
 bool WaylandDataDragController::IsDragSource() const {
-  DCHECK(!data_source_ || data_);
+  DCHECK(!data_source_ || offered_data_);
   return !!data_source_;
 }
 
@@ -214,12 +202,12 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
   }
 
   if (IsDragSource()) {
-    // If the DND session was initiated from a Chromium window, |data_| already
-    // holds the data to be exchanged, so we don't need to read it through
-    // Wayland and can just copy it here.
-    DCHECK(data_);
-    PropagateOnDragEnter(
-        location, std::make_unique<OSExchangeData>(data_->provider().Clone()));
+    // If the DND session was initiated from a Chromium window, |offered_data_|
+    // already holds the data to be exchanged, so we don't need to read it
+    // through Wayland and can just copy it here.
+    DCHECK(offered_data_);
+    PropagateOnDragEnter(location, std::make_unique<OSExchangeData>(
+                                       offered_data_->provider().Clone()));
   } else {
     // Otherwise, we are about to accept data dragged from another application.
     // Reading the data may take some time so set |state_| to |kTrasferring|,
@@ -227,7 +215,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     // is ready.
     state_ = State::kTransferring;
     received_data_ = std::make_unique<OSExchangeData>(
-        std::make_unique<OSExchangeDataProviderNonBacked>());
+        std::make_unique<WaylandExchangeDataProvider>());
     last_drag_location_ = location;
     HandleUnprocessedMimeTypes(base::TimeTicks::Now());
   }
@@ -294,7 +282,7 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   window_manager_->RemoveObserver(this);
   data_source_.reset();
   data_offer_.reset();
-  data_.reset();
+  offered_data_.reset();
   data_device_->ResetDragDelegate();
   state_ = State::kIdle;
 }
@@ -303,8 +291,8 @@ void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
                                                  std::string* buffer) {
   DCHECK(data_source_);
   DCHECK(buffer);
-  DCHECK(data_);
-  if (!wl::ExtractOSExchangeData(*data_, mime_type, buffer)) {
+  DCHECK(offered_data_);
+  if (!wl::ExtractOSExchangeData(*offered_data_, mime_type, buffer)) {
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
                  << " and no text representation is available.";
   }
@@ -321,67 +309,9 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
 void WaylandDataDragController::Offer(const OSExchangeData& data,
                                       int operations) {
   DCHECK(data_source_);
-
-  // Drag'n'drop manuals usually suggest putting data in order so the more
-  // specific a MIME type is, the earlier it occurs in the list.  Wayland
-  // specs don't say anything like that, but here we follow that common
-  // practice: begin with URIs and end with plain text.  Just in case.
-  std::vector<std::string> mime_types;
-  if (data.HasFile()) {
-    mime_types.push_back(kMimeTypeURIList);
-  }
-  if (data.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES)) {
-    mime_types.push_back(kMimeTypeMozillaURL);
-  }
-  if (data.HasHtml()) {
-    mime_types.push_back(kMimeTypeHTML);
-  }
-  if (data.HasString()) {
-    mime_types.push_back(kMimeTypeTextUtf8);
-    mime_types.push_back(kMimeTypeText);
-  }
-  if (data.HasFileContents()) {
-    base::FilePath file_contents_filename;
-    std::string file_contents;
-    data.GetFileContents(&file_contents_filename, &file_contents);
-
-    std::string filename = file_contents_filename.value();
-    base::ReplaceChars(filename, "\\", "\\\\", &filename);
-    base::ReplaceChars(filename, "\"", "\\\"", &filename);
-    const std::string mime_type =
-        base::StrCat({kMimeTypeOctetStream, ";name=\"", filename, "\""});
-    mime_types.push_back(mime_type);
-  }
-  if (data.HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
-    base::Pickle pickle;
-    data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
-    base::PickleIterator iter(pickle);
-    uint32_t entry_count = 0;
-    if (iter.ReadUInt32(&entry_count)) {
-      for (uint32_t i = 0; i < entry_count; ++i) {
-        base::StringPiece16 type;
-        base::StringPiece16 data;
-        if (!iter.ReadStringPiece16(&type) || !iter.ReadStringPiece16(&data))
-          break;
-
-        // TODO(https://crbug.com/1236708): This logic duplicates the logic in
-        // tab_strip_ui::IsDraggedTab(). Factor it out to a common place.
-        const std::u16string kWebUITabIdDataType =
-            u"application/vnd.chromium.tab";
-        const std::u16string kWebUITabGroupIdDataType =
-            u"application/vnd.chromium.tabgroup";
-        if (type == kWebUITabIdDataType) {
-          mime_types.push_back(base::UTF16ToASCII(kWebUITabIdDataType));
-        } else if (type == kWebUITabGroupIdDataType) {
-          mime_types.push_back(base::UTF16ToASCII(kWebUITabIdDataType));
-        }
-      }
-    }
-  }
-  if (data.HasCustomFormat(GetChromiumBookmarkFormat()))
-    mime_types.push_back(GetChromiumBookmarkFormat().GetName());
-
-  data_source_->Offer(mime_types);
+  const auto* provider =
+      static_cast<const WaylandExchangeDataProvider*>(&data.provider());
+  data_source_->Offer(provider->BuildMimeTypesList());
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 }
 
@@ -437,7 +367,7 @@ void WaylandDataDragController::OnDataTransferFinished(
       data_offer_->FinishOffer();
       data_offer_.reset();
     }
-    data_.reset();
+    offered_data_.reset();
     data_device_->ResetDragDelegate();
     is_leave_pending_ = false;
     return;

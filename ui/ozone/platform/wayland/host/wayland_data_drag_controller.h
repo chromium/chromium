@@ -150,9 +150,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
 
-  // When dragging is started from Chromium, |data_| holds the data to be sent
-  // through wl_data_device instance.
-  std::unique_ptr<ui::OSExchangeData> data_;
+  // When dragging is started from Chromium, |offered_data_| holds the data to
+  // be sent through wl_data_device instance.
+  std::unique_ptr<ui::OSExchangeData> offered_data_;
 
   // Offer to receive data from another process via drag-and-drop, or null if
   // no drag-and-drop from another process is in progress.

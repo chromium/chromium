@@ -316,12 +316,10 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
   bool restored_focus = window_->has_pointer_focus();
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
   OSExchangeData data(OSExchangeDataProviderFactory::CreateProvider());
-
-  // TODO(crbug.com/1247063): Add more custom formats once generic mechanism for
-  // retrieving mime types is implemented.
   ClipboardFormatType kCustomFormats[] = {
       ClipboardFormatType::WebCustomDataType(),
-      ClipboardFormatType::GetType("chromium/x-bookmark-entries")};
+      ClipboardFormatType::GetType("chromium/x-bookmark-entries"),
+      ClipboardFormatType::GetType("xyz/arbitrary-custom-type")};
   for (auto format : kCustomFormats)
     data.SetPickledData(format, {});
 
@@ -332,7 +330,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCustomFormats) {
 
   ASSERT_TRUE(data_device_manager_->data_source());
   auto mime_types = data_device_manager_->data_source()->mime_types();
-  EXPECT_EQ(1u, mime_types.size());
+  EXPECT_EQ(2u, mime_types.size());
 
   for (auto format : kCustomFormats) {
     // TODO(crbug.com/1247063): Double-check whether offering custom format name

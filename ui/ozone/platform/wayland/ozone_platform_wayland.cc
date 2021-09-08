@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
 #include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -33,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_exchange_data_provider.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -74,7 +76,8 @@ namespace ui {
 
 namespace {
 
-class OzonePlatformWayland : public OzonePlatform {
+class OzonePlatformWayland : public OzonePlatform,
+                             public OSExchangeDataProviderFactoryOzone {
  public:
   OzonePlatformWayland()
       : old_synthesize_key_repeat_enabled_(
@@ -336,6 +339,11 @@ class OzonePlatformWayland : public OzonePlatform {
       base::OnceCallback<void()> shutdown_cb) override {
     DCHECK(connection_);
     connection_->SetShutdownCb(std::move(shutdown_cb));
+  }
+
+  // OSExchangeDataProviderFactoryOzone:
+  std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
+    return std::make_unique<WaylandExchangeDataProvider>();
   }
 
  private:
