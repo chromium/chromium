@@ -35,6 +35,22 @@
 
 namespace feed {
 const char kFeedv2Folder[] = "feedv2";
+namespace internal {
+const base::StringPiece GetFollowingFeedFollowCountGroupName(
+    size_t follow_count) {
+  if (follow_count == 0)
+    return "None";
+  if (follow_count <= 4)
+    return "1-4";
+  if (follow_count <= 8)
+    return "5-8";
+  if (follow_count <= 12)
+    return "9-12";
+  if (follow_count <= 20)
+    return "13-20";
+  return "21+";
+}
+}  // namespace internal
 
 class FeedServiceDelegateImpl : public FeedService::Delegate {
  public:
@@ -60,6 +76,12 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
       ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(exp.first,
                                                                 exp.second);
     }
+  }
+  void RegisterFollowingFeedFollowCountFieldTrial(
+      size_t follow_count) override {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "FollowingFeedFollowCount",
+        internal::GetFollowingFeedFollowCountGroupName(follow_count));
   }
 };
 

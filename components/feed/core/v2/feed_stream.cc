@@ -150,7 +150,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
 
   web_feed_subscription_coordinator_ =
-      std::make_unique<WebFeedSubscriptionCoordinator>(this);
+      std::make_unique<WebFeedSubscriptionCoordinator>(delegate, this);
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.

@@ -793,6 +793,11 @@ bool FeedApiTest::IsOffline() {
 std::string FeedApiTest::GetSyncSignedInGaia() {
   return signed_in_gaia_;
 }
+void FeedApiTest::RegisterFollowingFeedFollowCountFieldTrial(
+    size_t follow_count) {
+  register_following_feed_follow_count_field_trial_calls_.push_back(
+      follow_count);
+}
 DisplayMetrics FeedApiTest::GetDisplayMetrics() {
   DisplayMetrics result;
   result.density = 200;

@@ -13,6 +13,10 @@ class BrowserContext;
 }
 
 namespace feed {
+namespace internal {
+const base::StringPiece GetFollowingFeedFollowCountGroupName(
+    size_t follow_count);
+}
 
 class FeedService;
 

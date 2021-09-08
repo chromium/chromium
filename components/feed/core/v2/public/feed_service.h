@@ -72,6 +72,9 @@ class FeedService : public KeyedService {
     virtual void PrefetchImage(const GURL& url) = 0;
     // Register the synthetic field experiments for UMA.
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
+    // Registers a synthetic field trial "FollowingFeedFollowCount".
+    virtual void RegisterFollowingFeedFollowCountFieldTrial(
+        size_t follow_count) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.

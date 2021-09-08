@@ -201,8 +201,9 @@ class WebFeedSubscriptionModel {
 }  // namespace internal
 
 WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
+    Delegate* delegate,
     FeedStream* feed_stream)
-    : feed_stream_(feed_stream) {
+    : delegate_(delegate), feed_stream_(feed_stream) {
   base::TimeDelta delay = GetFeedConfig().fetch_web_feed_info_delay;
   if (IsSignedInAndWebFeedsEnabled() && !delay.is_zero()) {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -233,6 +234,11 @@ void WebFeedSubscriptionCoordinator::Populate(
   index_.Populate(startup_data.recommended_feed_index);
   index_.Populate(startup_data.subscribed_web_feeds);
   populated_ = true;
+
+  if (IsSignedInAndWebFeedsEnabled()) {
+    delegate_->RegisterFollowingFeedFollowCountFieldTrial(
+        startup_data.subscribed_web_feeds.feeds_size());
+  }
 
   auto on_populated = std::move(on_populated_);
   for (base::OnceClosure& callback : on_populated) {

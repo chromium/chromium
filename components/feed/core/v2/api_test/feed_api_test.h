@@ -439,6 +439,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::string GetSyncSignedInGaia() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
+  void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
 
   // For tests.
 
@@ -489,6 +490,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
+  std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

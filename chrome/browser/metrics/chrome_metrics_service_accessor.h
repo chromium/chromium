@@ -78,6 +78,7 @@ class MetricsReportingHandler;
 namespace feed {
 class FeedServiceBridge;
 class FeedServiceDelegateImpl;
+class WebFeedSubscriptionCoordinator;
 }  // namespace feed
 
 namespace browser_sync {
@@ -135,6 +136,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::FeedServiceDelegateImpl;
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::FeedServiceBridge;
+  friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -62,7 +62,7 @@ class FeedStream : public FeedApi,
                    public MetricsReporter::Delegate,
                    public StreamModel::StoreObserver {
  public:
-  class Delegate {
+  class Delegate : public WebFeedSubscriptionCoordinator::Delegate {
    public:
     virtual ~Delegate() = default;
     // Returns true if Chrome's EULA has been accepted.

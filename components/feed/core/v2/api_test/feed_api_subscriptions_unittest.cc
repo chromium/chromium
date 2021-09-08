@@ -972,6 +972,23 @@ TEST_F(FeedApiSubscriptionsTest, RefreshSubscriptionsDuringRefresh) {
       PrintToString(CheckAllSubscriptions()));
 }
 
+TEST_F(FeedApiSubscriptionsTest, FieldTrialRegistered_OneFollow) {
+  // Follow one web feed, and recreate FeedStream to simulate a Chrome restart.
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+
+  subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
+                                base::DoNothing());
+
+  WaitForIdleTaskQueue();
+  CreateStream();
+
+  // RegisterFollowingFeedFollowCountFieldTrial is called twice, one before and
+  // one after CreateStream().
+  EXPECT_EQ(std::vector<size_t>({0, 1}),
+            register_following_feed_follow_count_field_trial_calls_);
+}
+
 }  // namespace
 }  // namespace test
 }  // namespace feed
