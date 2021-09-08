@@ -12,7 +12,6 @@ proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
     "common_types.proto",
-    "delay_async_script_execution_metadata.proto",
     "hint_cache.proto",
     "hints.proto",
     "lite_video_metadata.proto",
@@ -30,7 +29,6 @@ if (is_android) {
     proto_path = "//"
     sources = [
       "common_types.proto",
-      "delay_async_script_execution_metadata.proto",
       "hints.proto",
       "lite_video_metadata.proto",
       "loading_predictor_metadata.proto",
