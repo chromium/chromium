@@ -27,6 +27,7 @@ ManagedSessionService::ManagedSessionService(base::Clock* clock)
   }
   if (user_manager::UserManager::IsInitialized()) {
     authenticator_observation_.Observe(ash::UserSessionManager::GetInstance());
+    user_manager_observation_.Observe(user_manager::UserManager::Get());
   }
   power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
 }
@@ -102,6 +103,20 @@ void ManagedSessionService::OnSessionWillBeTerminated() {
         user_manager::UserManager::Get()->GetPrimaryUser());
   }
   chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+}
+
+void ManagedSessionService::OnUserToBeRemoved(const AccountId& account_id) {
+  for (auto& observer : observers_) {
+    observer.OnUserToBeRemoved(account_id);
+  }
+}
+
+void ManagedSessionService::OnUserRemoved(
+    const AccountId& account_id,
+    user_manager::UserRemovalReason reason) {
+  for (auto& observer : observers_) {
+    observer.OnUserRemoved(account_id, reason);
+  }
 }
 
 void ManagedSessionService::SuspendDone(base::TimeDelta sleep_duration) {

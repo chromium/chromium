@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_USER_ADDED_REMOVED_USER_ADDED_REMOVED_REPORTER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_record.pb.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
@@ -37,9 +38,19 @@ class UserAddedRemovedReporter
   // ManagedSessionService::Observer overrides.
   // Check if login was to a new account.
   void OnLogin(Profile* profile) override;
+  // Track that a user will be deleted. This should be done before users are
+  // removed so that it can be checked if they are affiliated.
+  void OnUserToBeRemoved(const AccountId& account_id) override;
+  // Report that a user has been removed.
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reason) override;
 
  private:
   std::unique_ptr<UserEventReporterHelper> helper_;
+
+  // Maps a user's email to if they are affiliated. This is needed to determine
+  // if their email may be reported.
+  base::flat_map<AccountId, bool> users_to_be_deleted_;
 
   policy::ManagedSessionService managed_session_service_;
 

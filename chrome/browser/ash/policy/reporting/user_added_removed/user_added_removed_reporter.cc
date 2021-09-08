@@ -58,4 +58,45 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
 
   helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
 }
+
+void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
+  if (!helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+    return;
+  }
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  if (!user || user->IsKioskType() ||
+      user->GetType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
+      user->GetType() == user_manager::USER_TYPE_GUEST) {
+    return;
+  }
+
+  const std::string email = account_id.GetUserEmail();
+  users_to_be_deleted_.insert_or_assign(account_id,
+                                        helper_->ShouldReportUser(email));
+}
+
+void UserAddedRemovedReporter::OnUserRemoved(
+    const AccountId& account_id,
+    user_manager::UserRemovalReason reason) {
+  if (!helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+    return;
+  }
+  auto it = users_to_be_deleted_.find(account_id);
+  if (it == users_to_be_deleted_.end()) {
+    return;
+  }
+
+  bool is_affiliated_user = it->second;
+  users_to_be_deleted_.erase(it);
+
+  UserAddedRemovedRecord record;
+  record.mutable_user_removed_event()->set_reason(UserRemovalReason(reason));
+  if (is_affiliated_user) {
+    record.mutable_user()->set_email(account_id.GetUserEmail());
+  }
+  record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
+
+  helper_->ReportEvent(&record, ::reporting::Priority::IMMEDIATE);
+}
 }  // namespace reporting

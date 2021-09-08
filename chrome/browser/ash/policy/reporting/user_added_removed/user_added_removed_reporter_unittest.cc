@@ -83,7 +83,8 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
 
   std::unique_ptr<TestingProfile> CreateRegularProfile(
       base::StringPiece user_email) {
-    AccountId account_id = AccountId::FromUserEmail(std::string(user_email));
+    const AccountId account_id =
+        AccountId::FromUserEmail(std::string(user_email));
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     auto profile = profile_builder.Build();
@@ -102,7 +103,8 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
 
   std::unique_ptr<TestingProfile> CreateKioskProfile(
       base::StringPiece user_email) {
-    AccountId account_id = AccountId::FromUserEmail(std::string(user_email));
+    const AccountId account_id =
+        AccountId::FromUserEmail(std::string(user_email));
     TestingProfile::Builder profile_builder;
     auto profile = profile_builder.Build();
     user_manager_->AddKioskAppUser(account_id);
@@ -190,6 +192,9 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
 
 TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
   static constexpr char user_email[] = "unaffiliated@managed.org";
+  const AccountId account_id =
+      AccountId::FromUserEmail(std::string(user_email));
+
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr,
@@ -202,6 +207,9 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
 
   auto profile = CreateRegularProfile(user_email);
   reporter.OnLogin(profile.get());
+  reporter.OnUserToBeRemoved(account_id);
+  reporter.OnUserRemoved(account_id,
+                         user_manager::UserRemovalReason::GAIA_REMOVED);
 
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 }
@@ -243,6 +251,8 @@ TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
 
 TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
   static constexpr char user_email[] = "kiosk@managed.org";
+  const AccountId account_id =
+      AccountId::FromUserEmail(std::string(user_email));
   auto dummy_queue =
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr,
@@ -255,6 +265,104 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
 
   auto profile = CreateKioskProfile(user_email);
   reporter.OnLogin(profile.get());
+
+  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+}
+
+TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
+  static constexpr char user_email[] = "affiliated@managed.org";
+  const AccountId account_id =
+      AccountId::FromUserEmail(std::string(user_email));
+  auto dummy_queue =
+      std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
+
+  ::reporting::UserAddedRemovedRecord record;
+  ::reporting::Priority priority;
+  EXPECT_CALL(*mock_queue, AddRecord)
+      .WillOnce(
+          [&record, &priority](base::StringPiece record_string,
+                               ::reporting::Priority event_priority,
+                               ::reporting::ReportQueue::EnqueueCallback) {
+            record.ParseFromString(std::string(record_string));
+            priority = event_priority;
+          });
+
+  UserAddedRemovedReporter reporter(std::make_unique<TestHelper>(
+      std::move(dummy_queue), mock_queue, /* report_event */ true,
+      /* report_user */ true, /* user_new */ true));
+
+  auto profile = CreateRegularProfile(user_email);
+  reporter.OnUserToBeRemoved(account_id);
+  reporter.OnUserRemoved(account_id,
+                         user_manager::UserRemovalReason::GAIA_REMOVED);
+
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.has_user_removed_event());
+  EXPECT_TRUE(record.has_user());
+  EXPECT_THAT(record.user().email(), ::testing::StrEq(user_email));
+  EXPECT_THAT(record.user_removed_event().reason(),
+              ::testing::Eq(UserRemovalReason::GAIA_REMOVED));
+}
+
+TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
+  static constexpr char user_email[] = "unaffiliated@managed.org";
+  const AccountId account_id =
+      AccountId::FromUserEmail(std::string(user_email));
+  auto dummy_queue =
+      std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
+
+  ::reporting::UserAddedRemovedRecord record;
+  ::reporting::Priority priority;
+  EXPECT_CALL(*mock_queue, AddRecord)
+      .WillOnce(
+          [&record, &priority](base::StringPiece record_string,
+                               ::reporting::Priority event_priority,
+                               ::reporting::ReportQueue::EnqueueCallback) {
+            record.ParseFromString(std::string(record_string));
+            priority = event_priority;
+          });
+
+  UserAddedRemovedReporter reporter(std::make_unique<TestHelper>(
+      std::move(dummy_queue), mock_queue, /* report_event */ true,
+      /* report_user */ false, /* user_new */ true));
+
+  auto profile = CreateRegularProfile(user_email);
+  reporter.OnUserToBeRemoved(account_id);
+  reporter.OnUserRemoved(account_id,
+                         user_manager::UserRemovalReason::GAIA_REMOVED);
+
+  EXPECT_THAT(priority, testing::Eq(::reporting::Priority::IMMEDIATE));
+  EXPECT_TRUE(record.has_event_timestamp_sec());
+  EXPECT_TRUE(record.has_user_removed_event());
+  EXPECT_FALSE(record.has_user());
+  EXPECT_THAT(record.user_removed_event().reason(),
+              ::testing::Eq(UserRemovalReason::GAIA_REMOVED));
+}
+
+TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
+  static constexpr char user_email[] = "kiosk@managed.org";
+  const AccountId account_id =
+      AccountId::FromUserEmail(std::string(user_email));
+  auto dummy_queue =
+      std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
+          nullptr,
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
+
+  UserAddedRemovedReporter reporter(std::make_unique<TestHelper>(
+      std::move(dummy_queue), mock_queue, /* report_event */ true,
+      /* report_user */ true, /* user_new */ true));
+  auto profile = CreateKioskProfile(user_email);
+  reporter.OnUserToBeRemoved(account_id);
+  reporter.OnUserRemoved(account_id,
+                         user_manager::UserRemovalReason::GAIA_REMOVED);
 
   EXPECT_CALL(*mock_queue, AddRecord).Times(0);
 }
