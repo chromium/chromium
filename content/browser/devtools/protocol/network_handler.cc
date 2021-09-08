@@ -929,10 +929,7 @@ class BackgroundSyncRestorer {
  public:
   BackgroundSyncRestorer(const std::string& host_id,
                          StoragePartition* storage_partition)
-      : host_id_(host_id),
-        storage_partition_(storage_partition),
-        offline_sw_registration_id_(
-            new int64_t(blink::mojom::kInvalidServiceWorkerRegistrationId)) {
+      : host_id_(host_id), storage_partition_(storage_partition) {
     SetServiceWorkerOfflineStatus(true);
   }
 
@@ -957,55 +954,25 @@ class BackgroundSyncRestorer {
         static_cast<StoragePartitionImpl*>(storage_partition_)
             ->GetBackgroundSyncContext();
     if (offline) {
-      RunOrPostTaskOnThread(
-          FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-          base::BindOnce(
-              &SetServiceWorkerOfflineOnServiceWorkerCoreThread, sync_context,
-              base::WrapRefCounted(static_cast<ServiceWorkerContextWrapper*>(
-                  storage_partition_->GetServiceWorkerContext())),
-              service_worker_host->version_id(),
-              offline_sw_registration_id_.get()));
-    } else {
-      RunOrPostTaskOnThread(
-          FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-          base::BindOnce(&SetServiceWorkerOnlineOnServiceWorkerCoreThread,
-                         sync_context, offline_sw_registration_id_.get()));
+      auto* swcontext = static_cast<ServiceWorkerContextWrapper*>(
+          storage_partition_->GetServiceWorkerContext());
+      ServiceWorkerVersion* version =
+          swcontext->GetLiveVersion(service_worker_host->version_id());
+      if (!version)
+        return;
+      offline_sw_registration_id_ = version->registration_id();
     }
-  }
-
-  static void SetServiceWorkerOfflineOnServiceWorkerCoreThread(
-      scoped_refptr<BackgroundSyncContextImpl> sync_context,
-      scoped_refptr<ServiceWorkerContextWrapper> swcontext,
-      int64_t version_id,
-      int64_t* offline_sw_registration_id) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-    ServiceWorkerVersion* version = swcontext.get()->GetLiveVersion(version_id);
-    if (!version)
-      return;
-    int64_t registration_id = version->registration_id();
-    *offline_sw_registration_id = registration_id;
-    if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId)
+    if (offline_sw_registration_id_ ==
+        blink::mojom::kInvalidServiceWorkerRegistrationId)
       return;
     sync_context->background_sync_manager()->EmulateServiceWorkerOffline(
-        registration_id, true);
-  }
-
-  static void SetServiceWorkerOnlineOnServiceWorkerCoreThread(
-      scoped_refptr<BackgroundSyncContextImpl> sync_context,
-      int64_t* offline_sw_registration_id) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-    if (*offline_sw_registration_id ==
-        blink::mojom::kInvalidServiceWorkerRegistrationId) {
-      return;
-    }
-    sync_context->background_sync_manager()->EmulateServiceWorkerOffline(
-        *offline_sw_registration_id, false);
+        offline_sw_registration_id_, offline);
   }
 
   std::string host_id_;
   StoragePartition* storage_partition_;
-  std::unique_ptr<int64_t, content::BrowserThread::DeleteOnIOThread>
-      offline_sw_registration_id_;
+  int64_t offline_sw_registration_id_ =
+      blink::mojom::kInvalidServiceWorkerRegistrationId;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundSyncRestorer);
 };
