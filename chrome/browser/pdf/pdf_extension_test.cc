@@ -1887,6 +1887,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   EXPECT_NE(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, Jitless) {
+  WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(guest_contents);
+
+  // PDF content should always be in JIT-less processes.
+  std::vector<content::RenderFrameHost*> pdf_frames =
+      GetUnseasonedPdfFrames(guest_contents);
+  ASSERT_EQ(pdf_frames.size(), 1u);
+  EXPECT_TRUE(pdf_frames[0]->GetProcess()->IsJitDisabled());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PDFExtensionIsolatedContentTest,
                          testing::Values(true));
