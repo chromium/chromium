@@ -127,6 +127,10 @@ class PageLoadMetricsObserverDelegate {
   // finished.
   virtual absl::optional<base::TimeDelta> GetTimeToPageEnd() const = 0;
 
+  // The absolute time at which the page's lifetime ended. See the comment
+  // on GetTimeToPageEnd for the definition of when a page's lifetime ends.
+  virtual const base::TimeTicks& GetPageEndTime() const = 0;
+
   // Extra information supplied to the page load metrics system from the
   // renderer for the main frame.
   virtual const mojom::FrameMetadata& GetMainFrameMetadata() const = 0;

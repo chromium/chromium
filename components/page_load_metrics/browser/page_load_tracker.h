@@ -234,6 +234,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   PageEndReason GetPageEndReason() const override;
   const UserInitiatedInfo& GetPageEndUserInitiatedInfo() const override;
   absl::optional<base::TimeDelta> GetTimeToPageEnd() const override;
+  const base::TimeTicks& GetPageEndTime() const override;
   const mojom::FrameMetadata& GetMainFrameMetadata() const override;
   const mojom::FrameMetadata& GetSubframeMetadata() const override;
   const PageRenderData& GetPageRenderData() const override;

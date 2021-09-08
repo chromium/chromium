@@ -955,6 +955,10 @@ absl::optional<base::TimeDelta> PageLoadTracker::GetTimeToPageEnd() const {
   return absl::optional<base::TimeDelta>();
 }
 
+const base::TimeTicks& PageLoadTracker::GetPageEndTime() const {
+  return page_end_time_;
+}
+
 const mojom::FrameMetadata& PageLoadTracker::GetMainFrameMetadata() const {
   return metrics_update_dispatcher_.main_frame_metadata();
 }

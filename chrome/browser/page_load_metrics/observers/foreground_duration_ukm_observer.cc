@@ -66,10 +66,10 @@ void ForegroundDurationUKMObserver::OnComplete(
   // current time. Note that we expect page_end_time.has_value() to always be
   // true in OnComplete (the PageLoadTracker destructor is supposed to guarantee
   // it), but we use Now() as a graceful fallback just in case.
-  base::TimeTicks end_time = GetDelegate().GetTimeToPageEnd().has_value()
-                                 ? GetDelegate().GetNavigationStart() +
-                                       GetDelegate().GetTimeToPageEnd().value()
-                                 : base::TimeTicks::Now();
+  base::TimeTicks end_time =
+      GetDelegate().GetPageEndReason() != page_load_metrics::END_NONE
+          ? GetDelegate().GetPageEndTime()
+          : base::TimeTicks::Now();
   RecordUkmIfInForeground(end_time);
 }
 
