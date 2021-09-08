@@ -200,9 +200,6 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   EXPECT_TRUE(
       CGRectEqualToRect(fake_origin_view_.bounds, activityHandler.sourceRect));
 
-  // Verify that the presentation protocol works too.
-  [[vc_partial_mock expect] dismissViewControllerAnimated:YES completion:nil];
-
   [activityHandler activityServiceDidEndPresenting];
 
   [vc_partial_mock verify];
