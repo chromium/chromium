@@ -23,7 +23,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
 #include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
@@ -33,9 +32,11 @@
 
 namespace blink {
 
-DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window)
+DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window,
+                                   bool should_return_fixed_plugin_data)
     : ExecutionContextLifecycleObserver(window),
-      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr) {
+      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr),
+      should_return_fixed_plugin_data_(should_return_fixed_plugin_data) {
   UpdatePluginData();
 }
 
@@ -60,25 +61,8 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
   return dom_mime_types_[index];
 }
 
-bool DOMMimeTypeArray::ShouldReturnFixedPluginData(Frame* frame) {
-  // See https://crbug.com/1171373 for more context. P/Nacl plugins will
-  // be supported on some platforms through at least June, 2022. Since
-  // some apps need to use feature detection, we need to continue returning
-  // plugin data for those.
-  if (frame && frame->GetSettings()->GetAllowNonEmptyNavigatorPlugins())
-    return false;
-  // Otherwise, depend on the feature flag, which can be disabled via
-  // Finch killswitch.
-  return RuntimeEnabledFeatures::NavigatorPluginsFixedEnabled();
-}
-
-bool DOMMimeTypeArray::ShouldReturnFixedPluginData() const {
-  return ShouldReturnFixedPluginData(DomWindow() ? DomWindow()->GetFrame()
-                                                 : nullptr);
-}
-
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     // I don't know why namedItem() and NamedPropertyEnumerator go directly to
     // the plugin data, rather than using dom_mime_types_.
     for (const auto& mimetype : dom_mime_types_) {
@@ -102,7 +86,7 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     property_names.ReserveInitialCapacity(dom_mime_types_.size());
     for (const auto& mimetype : dom_mime_types_)
       property_names.UncheckedAppend(mimetype->type());
@@ -133,7 +117,7 @@ PluginData* DOMMimeTypeArray::GetPluginData() const {
 
 void DOMMimeTypeArray::UpdatePluginData() {
   dom_mime_types_.clear();
-  if (ShouldReturnFixedPluginData()) {
+  if (should_return_fixed_plugin_data_) {
     if (DomWindow()) {
       dom_mime_types_ = NavigatorPlugins::plugins(*DomWindow()->navigator())
                             ->GetFixedMimeTypeArray();
