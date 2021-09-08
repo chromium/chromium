@@ -138,8 +138,6 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
     const gfx::Rect& visible_rect,
     gfx::BufferUsage buffer_usage,
     base::ScopedClosureRunner& destroy_cb) {
-  DCHECK(factory ||
-         buffer_usage == gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
   gfx::GpuMemoryBufferHandle gmb_handle;
   auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
   if (!buffer_format)
