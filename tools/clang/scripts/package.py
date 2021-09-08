@@ -306,12 +306,6 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
 
-        # Builtins for Android.
-        'lib/clang/$V/lib/linux/libclang_rt.builtins-aarch64-android.a',
-        'lib/clang/$V/lib/linux/libclang_rt.builtins-arm-android.a',
-        'lib/clang/$V/lib/linux/libclang_rt.builtins-i686-android.a',
-        'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
-
         # HWASAN Android runtime.
         'lib/clang/$V/lib/linux/libclang_rt.hwasan-aarch64-android.so',
 
