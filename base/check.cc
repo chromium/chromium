@@ -112,4 +112,8 @@ void RawCheck(const char* message) {
   RawLog(LOGGING_FATAL, message);
 }
 
+void RawError(const char* message) {
+  RawLog(LOGGING_ERROR, message);
+}
+
 }  // namespace logging

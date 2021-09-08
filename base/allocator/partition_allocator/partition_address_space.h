@@ -15,10 +15,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/base_export.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -102,7 +102,7 @@ class BASE_EXPORT PartitionAddressSpace {
       base = brp_pool_base_address_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     } else {
-      NOTREACHED();
+      PA_NOTREACHED();
     }
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
     return std::make_pair(pool, address_as_uintptr - base);

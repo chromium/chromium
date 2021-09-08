@@ -17,10 +17,10 @@
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/notreached.h"
 
 namespace base {
 namespace internal {
@@ -61,7 +61,7 @@ pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
       return i + 1;
     }
   }
-  NOTREACHED();
+  PA_NOTREACHED();
   return 0;
 }
 
@@ -206,7 +206,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
     }
   }
 
-  NOTREACHED();
+  PA_NOTREACHED();
   return 0;
 }
 
