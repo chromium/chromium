@@ -1767,6 +1767,8 @@ class ThreadCheckingInputHandlerClient : public InputHandlerClient {
     }
   }
 
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override {}
+
   void UpdateRootLayerStateForSynchronousInputHandler(
       const gfx::ScrollOffset& total_scroll_offset,
       const gfx::ScrollOffset& max_scroll_offset,
@@ -2235,6 +2237,7 @@ class MockInputHandlerClient : public InputHandlerClient {
 
   void WillShutdown() override {}
   void Animate(base::TimeTicks) override {}
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override {}
   void UpdateRootLayerStateForSynchronousInputHandler(
       const gfx::ScrollOffset& total_scroll_offset,
       const gfx::ScrollOffset& max_scroll_offset,

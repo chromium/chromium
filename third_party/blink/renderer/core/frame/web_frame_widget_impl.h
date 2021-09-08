@@ -430,6 +430,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // paint into another widget which has a background color of its own.
   void SetBackgroundColor(SkColor color);
 
+  // Sets whether the prefers-reduced-motion hint has been enabled.
+  void SetPrefersReducedMotion(bool prefers_reduced_motion);
+
   // Starts an animation of the page scale to a target scale factor and scroll
   // offset.
   // If use_anchor is true, destination is a point on the screen that will

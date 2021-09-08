@@ -1400,6 +1400,13 @@ void LayerTreeHost::UpdateViewportIsMobileOptimized(
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetPrefersReducedMotion(bool prefers_reduced_motion) {
+  if (prefers_reduced_motion_ == prefers_reduced_motion)
+    return;
+  prefers_reduced_motion_ = prefers_reduced_motion;
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::SetExternalPageScaleFactor(
     float page_scale_factor,
     bool is_external_pinch_gesture_active) {
@@ -1711,6 +1718,7 @@ void LayerTreeHost::PushLayerTreeHostPropertiesTo(
   host_impl->SetDebugState(debug_state_);
   host_impl->SetVisualDeviceViewportSize(visual_device_viewport_size_);
   host_impl->set_viewport_mobile_optimized(is_viewport_mobile_optimized_);
+  host_impl->SetPrefersReducedMotion(prefers_reduced_motion_);
 }
 
 Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {

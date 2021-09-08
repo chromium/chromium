@@ -106,6 +106,7 @@ class CC_EXPORT InputHandlerClient {
   virtual void WillShutdown() = 0;
   virtual void Animate(base::TimeTicks time) = 0;
   virtual void ReconcileElasticOverscrollAndRootScroll() = 0;
+  virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
   virtual void UpdateRootLayerStateForSynchronousInputHandler(
       const gfx::ScrollOffset& total_scroll_offset,
       const gfx::ScrollOffset& max_scroll_offset,
@@ -352,6 +353,7 @@ class CC_EXPORT InputHandler {
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) = 0;
 
   virtual ScrollElasticityHelper* CreateScrollElasticityHelper() = 0;
+  virtual void DestroyScrollElasticityHelper() = 0;
 
   // Called by the single-threaded UI Compositor to get or set the scroll offset
   // on the impl side. Returns false if |element_id| isn't in the active tree.

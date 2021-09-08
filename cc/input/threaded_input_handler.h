@@ -91,6 +91,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;
   ScrollElasticityHelper* CreateScrollElasticityHelper() override;
+  void DestroyScrollElasticityHelper() override;
   bool GetScrollOffsetForLayer(ElementId element_id,
                                gfx::ScrollOffset* offset) override;
   bool ScrollLayerTo(ElementId element_id,
@@ -117,6 +118,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   void DidUnregisterScrollbar(ElementId scroll_element_id,
                               ScrollbarOrientation orientation) override;
   void ScrollOffsetAnimationFinished() override;
+  void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   bool IsCurrentlyScrolling() const override;
   ActivelyScrollingType GetActivelyScrollingType() const override;
 
@@ -442,6 +444,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   bool has_scrolled_by_touch_ = false;
   bool has_scrolled_by_precisiontouchpad_ = false;
   bool has_scrolled_by_scrollbar_ = false;
+
+  bool prefers_reduced_motion_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
