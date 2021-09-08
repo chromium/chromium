@@ -400,10 +400,14 @@ void SerialConnection::StartPolling(const ReceiveEventCallback& callback) {
   SetPaused(false);
 }
 
-bool SerialConnection::Send(const std::vector<uint8_t>& data,
+void SerialConnection::Send(const std::vector<uint8_t>& data,
                             SendCompleteCallback callback) {
-  if (send_complete_)
-    return false;
+  if (send_complete_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), 0,
+                                  api::serial::SEND_ERROR_PENDING));
+    return;
+  }
 
   DCHECK(serial_port_);
   bytes_written_ = 0;
@@ -424,7 +428,6 @@ bool SerialConnection::Send(const std::vector<uint8_t>& data,
         FROM_HERE, send_timeout_task_.callback(),
         base::TimeDelta::FromMilliseconds(send_timeout_));
   }
-  return true;
 }
 
 void SerialConnection::Configure(const api::serial::ConnectionOptions& options,

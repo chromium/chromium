@@ -244,15 +244,8 @@ ExtensionFunction::ResponseAction SerialSendFunction::Run() {
   if (!connection)
     return RespondNow(Error(kErrorSerialConnectionNotFound));
 
-  if (!connection->Send(
-          params->data,
-          base::BindOnce(&SerialSendFunction::OnSendComplete, this))) {
-    serial::SendInfo send_info;
-    send_info.bytes_sent = 0;
-    send_info.error = serial::SEND_ERROR_PENDING;
-    return RespondNow(
-        OneArgument(base::Value::FromUniquePtrValue(send_info.ToValue())));
-  }
+  connection->Send(params->data,
+                   base::BindOnce(&SerialSendFunction::OnSendComplete, this));
   return RespondLater();
 }
 

@@ -105,9 +105,8 @@ class SerialConnection : public ApiResource,
                     OpenCompleteCallback callback);
 
   // Begins an asynchronous send operation. Calling this while a Send
-  // is already pending is a no-op and returns |false| without calling
-  // |callback|.
-  virtual bool Send(const std::vector<uint8_t>& data,
+  // is already pending will result in a serial::SEND_ERROR_PENDING error.
+  virtual void Send(const std::vector<uint8_t>& data,
                     SendCompleteCallback callback);
 
   // Start to the polling process from |receive_pipe_|.
