@@ -1,4 +1,4 @@
-<style>
+<style include="mwb-element-shared-style">
   :host {
     --row-height: 40px;
     display: block;
@@ -86,12 +86,29 @@
     background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
   }
 
+  /**
+   * Folder icons are OS-specific. On Mac, there is a separate folder icon
+   * for dark mode; on non-Mac, there is a separate folder icon for open states
+   * and the icon for that is slightly larger. This is mirroring the icons
+   * used in chrome://bookmarks.
+   */
 <if expr="is_macosx">
   @media (prefers-color-scheme: dark) {
     #folderIcon {
       background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
     }
   }
+</if>
+
+<if expr="not is_macosx">
+    #folderIcon {
+      height: 20px;
+      width: 20px;
+    }
+
+    #folderIcon[open] {
+      background-image: url(chrome://theme/IDR_FOLDER_OPEN);
+    }
 </if>
 
   .title {
@@ -152,7 +169,7 @@
           tabindex="-1">
       </cr-icon-button>
     </div>
-    <div id="folderIcon" class="icon"></div>
+    <div id="folderIcon" class="icon" open$="[[open_]]"></div>
     <div class="title">[[folder.title]]</div>
   </button>
 

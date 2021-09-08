@@ -77,12 +77,14 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         browser_(browser),
         reading_list_model_(reading_list_model),
         url_(url) {
+    // Context menus have bookmark strings to keep consistent with Bookmark tab
+    // in the side panel.
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-                        IDS_CONTENT_CONTEXT_OPENLINKNEWTAB);
+                        IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                        IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
+                        IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW);
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-                        IDS_CONTENT_CONTEXT_OPENLINKOFFTHERECORD);
+                        IDS_BOOKMARK_BAR_OPEN_INCOGNITO);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
     if (reading_list_model->GetEntryByURL(url)->IsRead()) {
@@ -103,7 +105,6 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
                                       WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
         browser_->OpenURL(params);
-        reading_list_model_->SetReadStatus(url_, true);
         break;
       }
 
@@ -112,7 +113,6 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
                                       WindowOpenDisposition::NEW_WINDOW,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
         browser_->OpenURL(params);
-        reading_list_model_->SetReadStatus(url_, true);
         break;
       }
 
