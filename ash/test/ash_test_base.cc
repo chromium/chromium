@@ -329,6 +329,14 @@ void AshTestBase::SimulateUserLogin(const std::string& user_email,
   session->SetSessionState(SessionState::ACTIVE);
 }
 
+void AshTestBase::SimulateUserLogin(const AccountId& account_id,
+                                    user_manager::UserType user_type) {
+  TestSessionControllerClient* session = GetSessionControllerClient();
+  session->AddUserSession(account_id, account_id.GetUserEmail(), user_type);
+  session->SwitchActiveUser(account_id);
+  session->SetSessionState(SessionState::ACTIVE);
+}
+
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
   TestSessionControllerClient* session = GetSessionControllerClient();
   session->AddUserSession(user_email, user_manager::USER_TYPE_REGULAR,
