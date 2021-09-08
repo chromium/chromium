@@ -860,7 +860,14 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
   EXPECT_EQ(received_type, content::SAVE_PAGE_TYPE_AS_MHTML);
 }
 
-IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SavePageBrowserTest_NonMHTML) {
+// Flaky on Windows: https://crbug.com/1247404.
+#if defined(OS_WIN)
+#define MAYBE_SavePageBrowserTest_NonMHTML DISABLED_SavePageBrowserTest_NonMHTML
+#else
+#define MAYBE_SavePageBrowserTest_NonMHTML SavePageBrowserTest_NonMHTML
+#endif
+IN_PROC_BROWSER_TEST_F(SavePageBrowserTest,
+                       MAYBE_SavePageBrowserTest_NonMHTML) {
   SavePackageFilePicker::SetShouldPromptUser(false);
   GURL url("data:text/plain,foo");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
