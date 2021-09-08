@@ -856,6 +856,12 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
 
   const UChar kTextCombineItemMarker = 0x3042;  // U+3042 Hiragana Letter A
 
+  // Note: |line_info->StartOffset()| can be different from
+  // |NGItemsResults[0].StartOffset()|, e.g. <b><input> <input></b> when
+  // line break before space (leading space). See http://crbug.com/1240791
+  const unsigned line_text_start_offset =
+      line_info->Results().front().StartOffset();
+
   // Construct the line text to compute spacing for.
   StringBuilder line_text_builder;
   if (UNLIKELY(line_info->MayHaveTextCombineItem())) {
@@ -878,8 +884,8 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     }
   } else {
     line_text_builder.Append(StringView(line_info->ItemsData().text_content,
-                                        line_info->StartOffset(),
-                                        end_offset - line_info->StartOffset()));
+                                        line_text_start_offset,
+                                        end_offset - line_text_start_offset));
   }
 
   // Append a hyphen if the last word is hyphenated. The hyphen is in
@@ -930,10 +936,10 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
     if (item_result.shape_result) {
       scoped_refptr<ShapeResult> shape_result =
           item_result.shape_result->CreateShapeResult();
-      DCHECK_GE(item_result.StartOffset(), line_info->StartOffset());
+      DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
       DCHECK_EQ(shape_result->NumCharacters(), item_result.Length());
       shape_result->ApplySpacing(spacing, item_result.StartOffset() -
-                                              line_info->StartOffset() -
+                                              line_text_start_offset -
                                               shape_result->StartIndex());
       item_result.inline_size = shape_result->SnappedWidth();
       if (UNLIKELY(item_result.is_hyphenated))
@@ -941,9 +947,9 @@ absl::optional<LayoutUnit> NGInlineLayoutAlgorithm::ApplyJustify(
       item_result.shape_result = ShapeResultView::Create(shape_result.get());
     } else if (item_result.item->Type() == NGInlineItem::kAtomicInline) {
       float spacing_before = 0.0f;
-      DCHECK_LE(line_info->StartOffset(), item_result.StartOffset());
+      DCHECK_LE(line_text_start_offset, item_result.StartOffset());
       const unsigned line_text_offset =
-          item_result.StartOffset() - line_info->StartOffset();
+          item_result.StartOffset() - line_text_start_offset;
       const float spacing_after =
           spacing.ComputeSpacing(line_text_offset, spacing_before);
       if (UNLIKELY(item_result.item->IsTextCombine())) {
