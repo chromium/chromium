@@ -201,86 +201,93 @@ class PermissionsSecurityModelInteractiveUITest
 
   bool IsRevisedOriginHandlingEnabled() { return GetParam(); }
 
-  void VerifyPermissions(content::WebContents* opener_or_embedder_contents,
-                         content::RenderFrameHost* test_rfh) {
+  void VerifyPermission(content::WebContents* opener_or_embedder_contents,
+                        content::RenderFrameHost* test_rfh,
+                        const std::string& request_permission_script,
+                        const std::string& check_permission_script) {
     content::RenderFrameHost* opener_rfh =
         opener_or_embedder_contents->GetMainFrame();
+    bool is_notification = request_permission_script == kRequestNotifications;
+    ASSERT_FALSE(
+        content::EvalJs(opener_rfh, check_permission_script).value.GetBool());
+    ASSERT_FALSE(
+        content::EvalJs(test_rfh, check_permission_script).value.GetBool());
+
+    const bool is_embedder = test_rfh->IsDescendantOf(opener_rfh);
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(
+            opener_or_embedder_contents);
+    std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Enable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    // Move the web contents to the foreground.
+    opener_rfh->GetView()->Focus();
+    ASSERT_TRUE(opener_rfh->GetView()->HasFocus());
+    // Request permission on the opener or embedder contents.
+    EXPECT_EQ("granted",
+              content::EvalJs(opener_rfh, request_permission_script,
+                              is_notification
+                                  ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                  : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+    EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+
+    // Disable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    EXPECT_TRUE(
+        content::EvalJs(opener_rfh, check_permission_script).value.GetBool());
+
+    // Verify permissions on the test RFH.
+    {
+      // If `test_rfh` is not a descendant of `opener_or_embedder_contents`,
+      // in other words if `test_rfh` was created via `Window.open()`,
+      // permissions are propagated from an opener WebContents only if
+      // `RevisedOriginHandlingEnabled` is enabled.
+      const bool expect_granted =
+          IsRevisedOriginHandlingEnabled() || is_embedder;
+
+      EXPECT_EQ(
+          expect_granted,
+          content::EvalJs(test_rfh, check_permission_script).value.GetBool());
+    }
+
+    const bool expect_granted = IsRevisedOriginHandlingEnabled() || is_embedder;
+
+    // Request permission on the test RFH.
+    test_rfh->GetView()->Focus();
+    ASSERT_TRUE(test_rfh->GetView()->HasFocus());
+    EXPECT_EQ(expect_granted ? "granted" : "denied",
+              content::EvalJs(test_rfh, request_permission_script,
+                              is_notification
+                                  ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
+                                  : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractString());
+
+    // There should not be the 2nd prompt.
+    EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+  }
+
+  void VerifyPermissionsExceptGetUserMedia(
+      content::WebContents* opener_or_embedder_contents,
+      content::RenderFrameHost* test_rfh) {
     const struct {
       std::string check_permission;
       std::string request_permission;
     } kTests[] = {
         {kCheckNotifications, kRequestNotifications},
-        {kCheckCamera, kRequestCamera},
         {kCheckGeolocation, kRequestGeolocation},
     };
 
     for (const auto& test : kTests) {
-      bool is_notification = test.request_permission == kRequestNotifications;
-      ASSERT_FALSE(
-          content::EvalJs(opener_rfh, test.check_permission).value.GetBool());
-      ASSERT_FALSE(
-          content::EvalJs(test_rfh, test.check_permission).value.GetBool());
-
-      const bool is_embedder = test_rfh->IsDescendantOf(opener_rfh);
-
-      permissions::PermissionRequestManager* manager =
-          permissions::PermissionRequestManager::FromWebContents(
-              opener_or_embedder_contents);
-      std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
-          std::make_unique<permissions::MockPermissionPromptFactory>(manager);
-
-      // Enable auto-accept of a permission request.
-      bubble_factory->set_response_type(
-          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-
-      // Move the web contents to the foreground.
-      opener_rfh->GetView()->Focus();
-      ASSERT_TRUE(opener_rfh->GetView()->HasFocus());
-      // Request permission on the opener or embedder contents.
-      EXPECT_EQ("granted",
-                content::EvalJs(opener_rfh, test.request_permission,
-                                is_notification
-                                    ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
-                                    : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                    .ExtractString());
-      EXPECT_EQ(1, bubble_factory->TotalRequestCount());
-
-      // Disable auto-accept of a permission request.
-      bubble_factory->set_response_type(
-          permissions::PermissionRequestManager::AutoResponseType::NONE);
-
-      EXPECT_TRUE(
-          content::EvalJs(opener_rfh, test.check_permission).value.GetBool());
-
-      // Verify permissions on the test RFH.
-      {
-        // If `test_rfh` is not a descendant of `opener_or_embedder_contents`,
-        // in other words if `test_rfh` was created via `Window.open()`,
-        // permissions are propagated from an opener WebContents only if
-        // `RevisedOriginHandlingEnabled` is enabled.
-        const bool expect_granted =
-            IsRevisedOriginHandlingEnabled() || is_embedder;
-
-        EXPECT_EQ(
-            expect_granted,
-            content::EvalJs(test_rfh, test.check_permission).value.GetBool());
-      }
-
-      const bool expect_granted =
-          IsRevisedOriginHandlingEnabled() || is_embedder;
-
-      // Request permission on the test RFH.
-      test_rfh->GetView()->Focus();
-      ASSERT_TRUE(test_rfh->GetView()->HasFocus());
-      EXPECT_EQ(expect_granted ? "granted" : "denied",
-                content::EvalJs(test_rfh, test.request_permission,
-                                is_notification
-                                    ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
-                                    : content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                    .ExtractString());
-
-      // There should not be the 2nd prompt.
-      EXPECT_EQ(1, bubble_factory->TotalRequestCount());
+      VerifyPermission(opener_or_embedder_contents, test_rfh,
+                       test.request_permission, test.check_permission);
     }
   }
 
@@ -335,7 +342,9 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
                                                    "about_blank_iframe"));
   ASSERT_TRUE(about_blank_iframe);
 
-  VerifyPermissions(embedder_contents, about_blank_iframe);
+  VerifyPermissionsExceptGetUserMedia(embedder_contents, about_blank_iframe);
+  VerifyPermission(embedder_contents, about_blank_iframe, kRequestCamera,
+                   kCheckCamera);
 }
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
@@ -351,7 +360,10 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
       OpenPopup(browser(), GURL("about:blank"));
   ASSERT_TRUE(popup_contents);
 
-  VerifyPermissions(opener_contents, popup_contents->GetMainFrame());
+  // TODO(crbug.com/1242047): Add back the camera access tests when they are
+  // no longer flaky on Linux.
+  VerifyPermissionsExceptGetUserMedia(opener_contents,
+                                      popup_contents->GetMainFrame());
 }
 
 // `about:srcdoc` supports only embedder WebContents, hence no test for opener.
@@ -372,7 +384,9 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
       base::BindRepeating(&content::FrameMatchesName, "srcdoc_iframe"));
   ASSERT_TRUE(srcdoc_iframe);
 
-  VerifyPermissions(embedder_contents, srcdoc_iframe);
+  VerifyPermissionsExceptGetUserMedia(embedder_contents, srcdoc_iframe);
+  VerifyPermission(embedder_contents, srcdoc_iframe, kRequestCamera,
+                   kCheckCamera);
 }
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
@@ -393,17 +407,15 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(blob_iframe_rfh);
   EXPECT_TRUE(blob_iframe_rfh->GetLastCommittedURL().SchemeIsBlob());
 
-  VerifyPermissions(embedder_contents, blob_iframe_rfh);
+  VerifyPermissionsExceptGetUserMedia(embedder_contents, blob_iframe_rfh);
+  VerifyPermission(embedder_contents, blob_iframe_rfh, kRequestCamera,
+                   kCheckCamera);
 }
 
-// TODO(crbug.com/1242047): Flaky on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_WindowOpenBlob DISABLED_WindowOpenBlob
-#else
-#define MAYBE_WindowOpenBlob WindowOpenBlob
-#endif
+// TODO(crbug.com/1242047): Add back the camera access tests when they are
+// no longer flaky on Linux.
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       MAYBE_WindowOpenBlob) {
+                       WindowOpenBlob) {
   if (GetParam()) {
     // Blob iframe on an opener contents does not work if
     // `kRevisedOriginHandling` feature enabled.
@@ -426,7 +438,8 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(blob_popup_contents);
   EXPECT_TRUE(blob_popup_contents->GetLastCommittedURL().SchemeIsBlob());
 
-  VerifyPermissions(opener_contents, blob_popup_contents->GetMainFrame());
+  VerifyPermissionsExceptGetUserMedia(opener_contents,
+                                      blob_popup_contents->GetMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
@@ -445,7 +458,9 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
       EmbedIframeFromURL(main_rfh, CreateFilesystemURL(main_rfh));
   ASSERT_TRUE(embedded_iframe_rfh);
 
-  VerifyPermissions(embedder_contents, embedded_iframe_rfh);
+  VerifyPermissionsExceptGetUserMedia(embedder_contents, embedded_iframe_rfh);
+  VerifyPermission(embedder_contents, embedded_iframe_rfh, kRequestCamera,
+                   kCheckCamera);
 }
 
 // Renderer navigation for "filesystem:" is not allowed.
@@ -469,16 +484,10 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
 }
 
-// TODO(crbug.com/1242046): Flaky on Linux and Mac.
-#if defined(OS_LINUX) || defined(OS_MAC)
-#define MAYBE_WindowOpenFileSystemBrowserNavigation \
-  DISABLED_WindowOpenFileSystemBrowserNavigation
-#else
-#define MAYBE_WindowOpenFileSystemBrowserNavigation \
-  WindowOpenFileSystemBrowserNavigation
-#endif
+// TODO(crbug.com/1242046): Add back the camera access tests when they are
+// no longer flaky on Linux and Mac.
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       MAYBE_WindowOpenFileSystemBrowserNavigation) {
+                       WindowOpenFileSystemBrowserNavigation) {
   if (!GetParam()) {
     // Filesystem iframe on an opener contents does not work if
     // `kRevisedOriginHandling` feature disabled.
@@ -509,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
 
   EXPECT_TRUE(popup_rfh->GetLastCommittedURL().SchemeIsFileSystem());
 
-  VerifyPermissions(opener_contents, popup_rfh);
+  VerifyPermissionsExceptGetUserMedia(opener_contents, popup_rfh);
 }
 
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
@@ -595,14 +604,8 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
   VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
 }
 
-// TODO(crbug.com/1242048): Flaky on Linux and Mac.
-#if defined(OS_LINUX) || defined(OS_MAC)
-#define MAYBE_UniversalAccessFromFileUrls DISABLED_UniversalAccessFromFileUrls
-#else
-#define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls
-#endif
 IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
-                       MAYBE_UniversalAccessFromFileUrls) {
+                       UniversalAccessFromFileUrls) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* embedder_contents =
@@ -647,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelInteractiveUITest,
     std::string check_permission;
     std::string request_permission;
   } kTests[] = {
-      {kCheckCamera, kRequestCamera},
+      // TODO(crbug.com/1242048): Add back the camera access tests when they are
+      // no longer flaky on Linux and Mac.
       {kCheckGeolocation, kRequestGeolocation},
   };
 
