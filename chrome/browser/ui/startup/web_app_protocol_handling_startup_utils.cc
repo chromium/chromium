@@ -41,6 +41,64 @@ namespace {
 
 using content::ProtocolHandler;
 
+void LaunchApp(Profile* profile,
+               const web_app::AppId& app_id,
+               const base::CommandLine& command_line,
+               const base::FilePath& cur_dir,
+               const GURL& protocol_url,
+               web_app::startup::FinalizeWebAppLaunchCallback callback) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithCallback(app_id, command_line, cur_dir,
+                              /*url_handler_launch_url=*/absl::nullopt,
+                              protocol_url, std::move(callback));
+}
+
+void OnProtocolHandlerAppLaunched(
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
+    web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
+    Browser* browser,
+    apps::mojom::LaunchContainer container) {
+  std::move(app_launched_callback).Run(browser, container);
+  // The KeepAlives can now go out of scope, because the app is launched which
+  // will keep the process alive.
+}
+
+void OnProtocolHandlerDialogCompleted(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    Profile* profile,
+    const GURL& protocol_url,
+    const web_app::AppId& app_id,
+    std::unique_ptr<ScopedKeepAlive> keep_alive,
+    std::vector<std::unique_ptr<ScopedProfileKeepAlive>> profile_keep_alives,
+    web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
+    bool accepted) {
+  // Allow the process to exit without opening a browser.
+  if (!accepted)
+    return;
+
+  {
+    web_app::WebAppProvider* const provider =
+        web_app::WebAppProvider::GetForWebApps(profile);
+    DCHECK(provider);
+    web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
+    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    std::vector<std::string> protocol_handlers(
+        app_to_update->approved_launch_protocols());
+
+    DCHECK(!base::Contains(protocol_handlers, protocol_url.scheme()));
+    protocol_handlers.push_back(protocol_url.scheme());
+    app_to_update->SetApprovedLaunchProtocols(std::move(protocol_handlers));
+  }
+
+  LaunchApp(profile, app_id, command_line, cur_dir, protocol_url,
+            base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),
+                           std::move(profile_keep_alives),
+                           std::move(app_launched_callback)));
+}
+
 // Tries to launch the web app when the `provider` is ready. `startup_callback`
 // will run if there is no web app registered for `profile` that can handle
 // `protocol_url`. If os_integration_manager finds a web app, then check if the
@@ -79,60 +137,20 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
     return;
   }
 
-  auto launch_callback = base::BindOnce(
-      [](const base::CommandLine& command_line, const base::FilePath& cur_dir,
-         Profile* profile, const GURL& protocol_url,
-         const web_app::AppId& app_id,
-         std::unique_ptr<ScopedKeepAlive> keep_alive,
-         std::vector<std::unique_ptr<ScopedProfileKeepAlive>>
-             profile_keep_alives,
-         web_app::startup::FinalizeWebAppLaunchCallback app_launched_callback,
-         bool accepted) {
-        if (accepted) {
-          web_app::WebAppProvider* const provider =
-              web_app::WebAppProvider::GetForWebApps(profile);
-          DCHECK(provider);
-          {
-            web_app::ScopedRegistryUpdate update(&provider->sync_bridge());
-            web_app::WebApp* app_to_update = update->UpdateApp(app_id);
-            std::vector<std::string> protocol_handlers(
-                app_to_update->approved_launch_protocols());
-            protocol_handlers.push_back(protocol_url.scheme());
-            app_to_update->SetApprovedLaunchProtocols(
-                std::move(protocol_handlers));
-          }
-
-          auto app_launched_callback_with_keepalive = base::BindOnce(
-              [](std::unique_ptr<ScopedKeepAlive> keep_alive,
-                 std::vector<std::unique_ptr<ScopedProfileKeepAlive>>
-                     profile_keep_alives,
-                 web_app::startup::FinalizeWebAppLaunchCallback
-                     app_launched_callback,
-                 Browser* browser, apps::mojom::LaunchContainer container) {
-                std::move(app_launched_callback).Run(browser, container);
-                // The KeepAlives can now go out of scope, because the app is
-                // launched which will keep the process alive.
-              },
-              std::move(keep_alive), std::move(profile_keep_alives),
-              std::move(app_launched_callback));
-
-          apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->BrowserAppLauncher()
-              ->LaunchAppWithCallback(
-                  app_id, command_line, cur_dir,
-                  /*url_handler_launch_url=*/absl::nullopt, protocol_url,
-                  std::move(app_launched_callback_with_keepalive));
-        }  // else allow the process to exit without opening a browser.
-      },
-      command_line, cur_dir, profile, protocol_url, app_id,
-      std::move(keep_alive), std::move(profile_keep_alives),
-      std::move(app_launched_callback));
-
   // Check if we have permission to launch the app directly.
   web_app::WebAppRegistrar& registrar = provider->registrar();
   if (registrar.IsApprovedLaunchProtocol(app_id, protocol_url.scheme())) {
-    std::move(launch_callback).Run(true);
+    LaunchApp(
+        profile, app_id, command_line, cur_dir, protocol_url,
+        base::BindOnce(&OnProtocolHandlerAppLaunched, std::move(keep_alive),
+                       std::move(profile_keep_alives),
+                       std::move(app_launched_callback)));
   } else {
+    auto launch_callback = base::BindOnce(
+        &OnProtocolHandlerDialogCompleted, command_line, cur_dir, profile,
+        protocol_url, app_id, std::move(keep_alive),
+        std::move(profile_keep_alives), std::move(app_launched_callback));
+
     // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
     // running of `launch_callback`.
     chrome::ShowWebAppProtocolHandlerIntentPicker(protocol_url, profile, app_id,
