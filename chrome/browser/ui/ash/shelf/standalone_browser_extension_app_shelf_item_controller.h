@@ -1,0 +1,119 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_
+
+#include <memory>
+#include <set>
+
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_model_observer.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "components/services/app_service/public/cpp/icon_loader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
+
+// This class controls both the appearance and behavior of shelf items for
+// lacros-based extension apps -- aka packaged v2 apps / chrome apps.
+//
+// This class is considered the source of truth for information about running
+// chrome apps. It's responsible for updating the InstanceRegistry.
+class StandaloneBrowserExtensionAppShelfItemController
+    : public ash::ShelfItemDelegate,
+      ash::ShelfModelObserver,
+      public aura::WindowObserver {
+ public:
+  // This constructor is used for a shelf item controller for a pinned item.
+  explicit StandaloneBrowserExtensionAppShelfItemController(
+      const ash::ShelfID& shelf_id);
+
+  // This constructor is used for a shelf item controller for a running
+  // instance.
+  StandaloneBrowserExtensionAppShelfItemController(const ash::ShelfID& shelf_id,
+                                                   aura::Window* window);
+
+  StandaloneBrowserExtensionAppShelfItemController(
+      const StandaloneBrowserExtensionAppShelfItemController&) = delete;
+  StandaloneBrowserExtensionAppShelfItemController& operator=(
+      const StandaloneBrowserExtensionAppShelfItemController&) = delete;
+  ~StandaloneBrowserExtensionAppShelfItemController() override;
+
+  // ash::ShelfItemDelegate overrides:
+  void ItemSelected(std::unique_ptr<ui::Event> event,
+                    int64_t display_id,
+                    ash::ShelfLaunchSource source,
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override;
+  void GetContextMenu(int64_t display_id,
+                      GetContextMenuCallback callback) override;
+  void ExecuteCommand(bool from_context_menu,
+                      int64_t command_id,
+                      int32_t event_flags,
+                      int64_t display_id) override;
+  void Close() override;
+
+  // ash::ShelfModelObserver overrides:
+  // This instance is guaranteed to be constructed before the corresponding
+  // shelf item is added to the ShelfModel. That's because all shelf items must
+  // be added atomically with a delegate to the shelf model. That means that the
+  // delegate must be constructed before the insertion happens.
+  // This class listens for the addition so that it can set the correct initial
+  // state on the shelf item.
+  void ShelfItemAdded(int index) override;
+
+  // This method is called by ChromeAppWindowTrackerAsh to inform this member of
+  // a newly running instance associated with this app. This class is
+  // responsible for tracking destruction of that instance.
+  void StartTrackingInstance(aura::Window* window);
+
+ private:
+  using ShelfItem = ash::ShelfItem;
+
+  // Called by AppServiceProxy once an icon has been loaded.
+  void DidLoadIcon(apps::mojom::IconValuePtr icon_value);
+
+  // aura::WindowObserver overrides:
+  void OnWindowDestroying(aura::Window* window) override;
+
+  // Returns the shelf index of the corresponding shelf item. Guaranteed to be a
+  // valid index since this instance exists if and only if a shelf item exists.
+  int GetShelfIndex();
+
+  // Returns whether the corresponding shelf item has been added to the shelf.
+  // There is a brief period of time after construction of this instance when
+  // this has not occurred yet.
+  bool ItemAddedToShelf();
+
+  // The set of windows associated with the shelf item. This can be the empty
+  // set if the item is pinned and there are no running instances. Otherwise,
+  // there should be exactly one window per instance.
+  std::set<aura::Window*> windows_;
+
+  // This member lets the IconLoader know that we still need the icon.
+  std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;
+
+  // Temporary storage for the icon if it's loaded before the item is added to
+  // the shelf.
+  absl::optional<gfx::ImageSkia> icon_;
+
+  // Observes the shelf model for item additions in order to set initial state
+  // on the corresponding ShelfItem.
+  base::ScopedObservation<ash::ShelfModel, ash::ShelfModelObserver>
+      shelf_model_observation_{this};
+
+  // Observes windows in |pending_windows_| for destruction.
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+
+  base::WeakPtrFactory<StandaloneBrowserExtensionAppShelfItemController>
+      weak_factory_{this};
+};
+
+#endif  // CHROME_BROWSER_UI_ASH_SHELF_STANDALONE_BROWSER_EXTENSION_APP_SHELF_ITEM_CONTROLLER_H_

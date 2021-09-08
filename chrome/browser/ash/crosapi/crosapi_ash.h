@@ -23,6 +23,7 @@ class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
 class CertDatabaseAsh;
+class ChromeAppWindowTrackerAsh;
 class ClipboardAsh;
 class ClipboardHistoryAsh;
 class ContentProtectionAsh;
@@ -204,6 +205,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
+  std::unique_ptr<ChromeAppWindowTrackerAsh> chrome_app_window_tracker_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;

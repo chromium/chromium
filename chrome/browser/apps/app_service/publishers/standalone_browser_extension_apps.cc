@@ -58,8 +58,8 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
                                               int32_t size_hint_in_dip,
                                               bool allow_placeholder_icon,
                                               LoadIconCallback callback) {
-  // TODO(https://crbug.com/1225848): Implement.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  controller_->LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+                        size_hint_in_dip, std::move(callback));
 }
 
 void StandaloneBrowserExtensionApps::Launch(

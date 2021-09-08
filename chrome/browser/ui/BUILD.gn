@@ -2180,6 +2180,8 @@ static_library("ui") {
       "ash/shelf/shelf_spinner_controller.h",
       "ash/shelf/shelf_spinner_item_controller.cc",
       "ash/shelf/shelf_spinner_item_controller.h",
+      "ash/shelf/standalone_browser_extension_app_shelf_item_controller.cc",
+      "ash/shelf/standalone_browser_extension_app_shelf_item_controller.h",
       "ash/system_tray_client_impl.cc",
       "ash/system_tray_client_impl.h",
       "ash/tab_cluster_ui_client.cc",
