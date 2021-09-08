@@ -134,7 +134,7 @@ struct CONTENT_EXPORT UrlInfo {
 
   // Indicates that the URL directs to PDF content, which should be isolated
   // from other types of content.
-  bool is_pdf;
+  bool is_pdf = false;
 
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
