@@ -10,7 +10,6 @@
     --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
-    --emoji-divider-color: var(--google-grey-200);
     --emoji-group-tabs-left: 0;
     --emoji-picker-bottom-padding: 14px;
     --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
@@ -26,12 +25,6 @@
     padding-top: var(--emoji-picker-top-padding);
     width: var(--emoji-picker-width);
     background-color: var(--cros-bg-color);
-  }
-
-  @media (prefers-color-scheme-dark) {
-    :host {
-      --emoji-divider-color: var(--google-grey-900);
-    }
   }
 
   .side-padding {
@@ -118,7 +111,7 @@
   }
 
   .divider {
-    border-top: 1px solid var(--emoji-divider-color);
+    border-top: 1px solid var(--cros-separator-color);
     width: var(--emoji-picker-width);
   }
 
