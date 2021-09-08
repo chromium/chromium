@@ -39,7 +39,7 @@ namespace {
 bool decorations_allowed_for_test_ = true;
 }
 
-constexpr int kToggleVisibleOnAllWorkspaces = -1;
+constexpr int kVisibleOnAllWorkspaces = -1;
 
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                                              WaylandConnection* connection)
@@ -464,7 +464,7 @@ bool WaylandToplevelWindow::OnInitialize(
     base::StringToInt(properties.workspace, &workspace);
     workspace_ = workspace;
   } else if (properties.visible_on_all_workspaces) {
-    workspace_ = kToggleVisibleOnAllWorkspaces;
+    workspace_ = kVisibleOnAllWorkspaces;
   }
 
   return true;
@@ -649,16 +649,10 @@ int WaylandToplevelWindow::GetNumberOfDesks() const {
 }
 
 int WaylandToplevelWindow::GetActiveDeskIndex() const {
-  if (auto* zaura_shell =
-          const_cast<WaylandToplevelWindow*>(this)->connection()->zaura_shell()) {
-    return zaura_shell->GetActiveDeskIndex();
-  }
-
-  // GetActiveDeskIndex() won't ever be called if a Wayland compositor doesn't
-  // support protocols that provides
-  // OnDeskChanged/OnDesksChanged/OnDeskActivationChanaged.
-  NOTREACHED();
-  return 0;
+  auto* zaura_shell =
+      const_cast<WaylandToplevelWindow*>(this)->connection()->zaura_shell();
+  // The index of the active desk is 0 when there is no virtual desk supported.
+  return zaura_shell ? zaura_shell->GetActiveDeskIndex() : 0;
 }
 
 std::u16string WaylandToplevelWindow::GetDeskName(int index) const {
@@ -681,16 +675,15 @@ std::string WaylandToplevelWindow::GetWorkspace() const {
 }
 
 void WaylandToplevelWindow::SetVisibleOnAllWorkspaces(bool always_visible) {
-  if (always_visible && aura_surface_ &&
-      zaura_surface_get_version(aura_surface_.get()) >=
-          ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
-    zaura_surface_move_to_desk(aura_surface_.get(),
-                               kToggleVisibleOnAllWorkspaces);
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_MOVE_TO_DESK_SINCE_VERSION) {
+    SendToDeskAtIndex(always_visible ? kVisibleOnAllWorkspaces
+                                     : GetActiveDeskIndex());
   }
 }
 
 bool WaylandToplevelWindow::IsVisibleOnAllWorkspaces() const {
-  return workspace_ == kToggleVisibleOnAllWorkspaces;
+  return workspace_ == kVisibleOnAllWorkspaces;
 }
 
 void WaylandToplevelWindow::SetWorkspaceExtensionDelegate(
