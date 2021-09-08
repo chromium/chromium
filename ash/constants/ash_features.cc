@@ -612,6 +612,9 @@ const base::Feature kHoldingSpaceIncognitoProfileIntegration{
     "HoldingSpaceIncognitoProfileIntegration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether the HPS notify prototype is enabled.
+const base::Feature kHpsNotify{"HpsNotify", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable IME decoder via Mojo connection on Chrome OS.
 const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1380,6 +1383,10 @@ bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
 
 bool IsHostnameSettingEnabled() {
   return base::FeatureList::IsEnabled(kEnableHostnameSetting);
+}
+
+bool IsHpsNotifyEnabled() {
+  return base::FeatureList::IsEnabled(kHpsNotify);
 }
 
 bool IsInputInDiagnosticsAppEnabled() {

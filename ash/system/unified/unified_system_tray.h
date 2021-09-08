@@ -29,6 +29,7 @@ class TimeTrayItemView;
 class AshMessagePopupCollection;
 class CurrentLocaleView;
 class ImeModeView;
+class HpsNotifyView;
 class ManagedDeviceTrayItemView;
 class NotificationIconsController;
 class PrivacyScreenToastController;
@@ -213,6 +214,7 @@ class ASH_EXPORT UnifiedSystemTray : public TrayBackgroundView,
   const std::unique_ptr<NotificationIconsController>
       notification_icons_controller_;
 
+  HpsNotifyView* const hps_notify_view_;
   CurrentLocaleView* const current_locale_view_;
   ImeModeView* const ime_mode_view_;
   ManagedDeviceTrayItemView* const managed_device_view_;

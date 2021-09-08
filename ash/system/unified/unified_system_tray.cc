@@ -29,6 +29,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/unified/camera_mic_tray_item_view.h"
 #include "ash/system/unified/current_locale_view.h"
+#include "ash/system/unified/hps_notify_view.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/managed_device_tray_item_view.h"
 #include "ash/system/unified/notification_counter_view.h"
@@ -150,6 +151,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           std::make_unique<PrivacyScreenToastController>(this)),
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(this)),
+      hps_notify_view_(features::IsHpsNotifyEnabled() ? new HpsNotifyView(shelf)
+                                                      : nullptr),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
@@ -170,6 +173,10 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   tray_items_.push_back(
       notification_icons_controller_->notification_counter_view());
   tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
+
+  if (features::IsHpsNotifyEnabled())
+    AddTrayItemToContainer(hps_notify_view_);
+
   AddTrayItemToContainer(current_locale_view_);
   AddTrayItemToContainer(ime_mode_view_);
   AddTrayItemToContainer(managed_device_view_);

@@ -1455,6 +1455,8 @@ component("ash") {
     "system/unified/feature_pod_controller_base.h",
     "system/unified/feature_pods_container_view.cc",
     "system/unified/feature_pods_container_view.h",
+    "system/unified/hps_notify_view.cc",
+    "system/unified/hps_notify_view.h",
     "system/unified/ime_mode_view.cc",
     "system/unified/ime_mode_view.h",
     "system/unified/managed_device_tray_item_view.cc",
