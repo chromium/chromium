@@ -88,9 +88,9 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 // Model item for sync everything.
 @property(nonatomic, strong) TableViewItem* syncEverythingItem;
 // Model item for each data types.
-@property(nonatomic, strong) NSArray<SyncSwitchItem*>* syncSwitchItems;
+@property(nonatomic, strong) NSArray<TableViewItem*>* syncSwitchItems;
 // Autocomplete wallet item.
-@property(nonatomic, strong) SyncSwitchItem* autocompleteWalletItem;
+@property(nonatomic, strong) TableViewItem* autocompleteWalletItem;
 // Encryption item.
 @property(nonatomic, strong) TableViewImageItem* encryptionItem;
 // Sync error item.
@@ -147,16 +147,27 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
   for (SyncSetupService::SyncableDatatype dataType : kSyncSwitchItems) {
-    SyncSwitchItem* switchItem = [self switchItemWithDataType:dataType];
+    TableViewItem* switchItem = [self tableViewItemWithDataType:dataType];
     [syncSwitchItems addObject:switchItem];
     [model addItem:switchItem
         toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   }
   self.syncSwitchItems = syncSwitchItems;
-  self.autocompleteWalletItem =
-      [[SyncSwitchItem alloc] initWithType:AutocompleteWalletItemType];
-  self.autocompleteWalletItem.text =
-      GetNSString(IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL);
+
+  if (![self isManagedSyncSettingsDataType:SyncSetupService::kSyncAutofill]) {
+    SyncSwitchItem* button =
+        [[SyncSwitchItem alloc] initWithType:AutocompleteWalletItemType];
+    button.text =
+        GetNSString(IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL);
+    self.autocompleteWalletItem = button;
+  } else {
+    TableViewInfoButtonItem* button = [[TableViewInfoButtonItem alloc]
+        initWithType:AutocompleteWalletItemType];
+    button.text =
+        GetNSString(IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL);
+    button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    self.autocompleteWalletItem = button;
+  }
   [model addItem:self.autocompleteWalletItem
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   [self updateSyncItemsNotifyConsumer:NO];
@@ -202,7 +213,11 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 // Updates all the sync data type items, and notify the consumer if
 // |notifyConsumer| is set to YES.
 - (void)updateSyncDataItemsNotifyConsumer:(BOOL)notifyConsumer {
-  for (SyncSwitchItem* syncSwitchItem in self.syncSwitchItems) {
+  for (TableViewItem* item in self.syncSwitchItems) {
+    if ([item isKindOfClass:[TableViewInfoButtonItem class]])
+      continue;
+
+    SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
     SyncSetupService::SyncableDatatype dataType =
         static_cast<SyncSetupService::SyncableDatatype>(
             syncSwitchItem.dataType);
@@ -211,7 +226,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         self.syncSetupService->IsSyncRequested() &&
         self.syncSetupService->IsDataTypePreferred(modelType);
     BOOL isEnabled = self.shouldSyncDataItemEnabled &&
-                     ![self isManagedSyncSettingsItemType:dataType];
+                     ![self isManagedSyncSettingsDataType:dataType];
     BOOL needsUpdate = (syncSwitchItem.on != isDataTypeSynced) ||
                        (syncSwitchItem.isEnabled != isEnabled);
     syncSwitchItem.on = isDataTypeSynced;
@@ -225,6 +240,12 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 // Updates the autocomplete wallet item. The consumer is notified if
 // |notifyConsumer| is set to YES.
 - (void)updateAutocompleteWalletItemNotifyConsumer:(BOOL)notifyConsumer {
+  if ([self.autocompleteWalletItem
+          isKindOfClass:[TableViewInfoButtonItem class]])
+    return;
+
+  SyncSwitchItem* syncSwitchItem =
+      base::mac::ObjCCast<SyncSwitchItem>(self.autocompleteWalletItem);
   syncer::ModelType autofillModelType =
       self.syncSetupService->GetModelType(SyncSetupService::kSyncAutofill);
   BOOL isAutofillOn =
@@ -234,11 +255,10 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
       isAutofillOn && self.shouldSyncDataItemEnabled;
   BOOL autocompleteWalletOn = self.syncSetupService->IsSyncRequested() &&
                               self.autocompleteWalletPreference.value;
-  BOOL needsUpdate =
-      (self.autocompleteWalletItem.enabled != autocompleteWalletEnabled) ||
-      (self.autocompleteWalletItem.on != autocompleteWalletOn);
-  self.autocompleteWalletItem.enabled = autocompleteWalletEnabled;
-  self.autocompleteWalletItem.on = autocompleteWalletOn;
+  BOOL needsUpdate = (syncSwitchItem.enabled != autocompleteWalletEnabled) ||
+                     (syncSwitchItem.on != autocompleteWalletOn);
+  syncSwitchItem.enabled = autocompleteWalletEnabled;
+  syncSwitchItem.on = autocompleteWalletOn;
   if (needsUpdate && notifyConsumer) {
     [self.consumer reloadItem:self.autocompleteWalletItem];
   }
@@ -356,8 +376,9 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 
 #pragma mark - Private
 
-// Creates a SyncSwitchItem instance.
-- (SyncSwitchItem*)switchItemWithDataType:
+// Creates a SyncSwitchItem or TableViewInfoButtonItem instance if the item is
+// managed.
+- (TableViewItem*)tableViewItemWithDataType:
     (SyncSetupService::SyncableDatatype)dataType {
   NSInteger itemType = 0;
   int textStringID = 0;
@@ -396,10 +417,18 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   }
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
-  SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
-  switchItem.text = GetNSString(textStringID);
-  switchItem.dataType = dataType;
-  return switchItem;
+  if (![self isManagedSyncSettingsDataType:dataType]) {
+    SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
+    switchItem.text = GetNSString(textStringID);
+    switchItem.dataType = dataType;
+    return switchItem;
+  } else {
+    TableViewInfoButtonItem* button =
+        [[TableViewInfoButtonItem alloc] initWithType:itemType];
+    button.text = GetNSString(textStringID);
+    button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    return button;
+  }
 }
 
 #pragma mark - Properties
@@ -524,7 +553,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         SyncSetupService::SyncableDatatype dataType =
             static_cast<SyncSetupService::SyncableDatatype>(
                 syncSwitchItem.dataType);
-        if ([self isManagedSyncSettingsItemType:dataType])
+        if ([self isManagedSyncSettingsDataType:dataType])
           break;
         syncer::ModelType modelType =
             self.syncSetupService->GetModelType(dataType);
@@ -540,6 +569,9 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
         break;
       }
       case AutocompleteWalletItemType:
+        if ([self
+                isManagedSyncSettingsDataType:SyncSetupService::kSyncAutofill])
+          break;
         self.autocompleteWalletPreference.value = value;
         break;
       case SignOutItemType:
@@ -783,7 +815,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 }
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
-- (BOOL)isManagedSyncSettingsItemType:(SyncSetupService::SyncableDatatype)type {
+- (BOOL)isManagedSyncSettingsDataType:(SyncSetupService::SyncableDatatype)type {
   return self.userPrefService->FindPreference(kSyncableItemTypes.at(type))
       ->IsManaged();
 }
@@ -799,7 +831,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 - (BOOL)allItemsAreSynceable {
   for (auto iter = kSyncableItemTypes.begin(); iter != kSyncableItemTypes.end();
        ++iter) {
-    if ([self isManagedSyncSettingsItemType:iter->first])
+    if ([self isManagedSyncSettingsDataType:iter->first])
       return NO;
   }
   return YES;

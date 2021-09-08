@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
@@ -433,12 +434,14 @@ TEST_F(ManageSyncSettingsMediatorTest,
     if (item.type == SyncEverythingItemType) {
       ASSERT_FALSE([item isKindOfClass:[SyncSwitchItem class]]);
       continue;
+    } else if (item.type == BookmarksDataTypeItemType ||
+               item.type == PasswordsDataTypeItemType) {
+      ASSERT_TRUE([item isKindOfClass:[TableViewInfoButtonItem class]]);
+      continue;
     }
     SyncSwitchItem* switch_item =
         base::mac::ObjCCastStrict<SyncSwitchItem>(item);
-    if (switch_item.type == BookmarksDataTypeItemType ||
-        switch_item.type == PasswordsDataTypeItemType ||
-        switch_item.type == AutocompleteWalletItemType) {
+    if (switch_item.type == AutocompleteWalletItemType) {
       ASSERT_FALSE(switch_item.enabled);
     } else {
       ASSERT_TRUE(switch_item.enabled);
