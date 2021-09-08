@@ -175,15 +175,21 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
 void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
   AtomicString name = rule->GetName();
 
-  if (rule->IsVendorPrefixed()) {
-    KeyframesRuleMap::iterator it = keyframes_rule_map_.find(name);
-    if (it == keyframes_rule_map_.end())
-      keyframes_rule_map_.Set(name, rule);
-    else if (it->value->IsVendorPrefixed())
-      keyframes_rule_map_.Set(name, rule);
-  } else {
+  KeyframesRuleMap::iterator it = keyframes_rule_map_.find(name);
+  if (it == keyframes_rule_map_.end() ||
+      KeyframeStyleShouldOverride(rule, it->value)) {
     keyframes_rule_map_.Set(name, rule);
   }
+}
+
+bool ScopedStyleResolver::KeyframeStyleShouldOverride(
+    const StyleRuleKeyframes* new_rule,
+    const StyleRuleKeyframes* existing_rule) const {
+  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed())
+    return existing_rule->IsVendorPrefixed();
+  return !cascade_layer_map_ || cascade_layer_map_->CompareLayerOrder(
+                                    existing_rule->GetCascadeLayer(),
+                                    new_rule->GetCascadeLayer()) <= 0;
 }
 
 Element& ScopedStyleResolver::InvalidationRootForTreeScope(

@@ -1915,15 +1915,21 @@ void StyleEngine::AddUserKeyframeRules(const RuleSet& rule_set) {
 void StyleEngine::AddUserKeyframeStyle(StyleRuleKeyframes* rule) {
   AtomicString animation_name(rule->GetName());
 
-  if (rule->IsVendorPrefixed()) {
-    KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
-    if (it == keyframes_rule_map_.end())
-      keyframes_rule_map_.Set(animation_name, rule);
-    else if (it->value->IsVendorPrefixed())
-      keyframes_rule_map_.Set(animation_name, rule);
-  } else {
+  KeyframesRuleMap::iterator it = keyframes_rule_map_.find(animation_name);
+  if (it == keyframes_rule_map_.end() ||
+      UserKeyframeStyleShouldOverride(rule, it->value)) {
     keyframes_rule_map_.Set(animation_name, rule);
   }
+}
+
+bool StyleEngine::UserKeyframeStyleShouldOverride(
+    const StyleRuleKeyframes* new_rule,
+    const StyleRuleKeyframes* existing_rule) const {
+  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed())
+    return existing_rule->IsVendorPrefixed();
+  return !user_cascade_layer_map_ || user_cascade_layer_map_->CompareLayerOrder(
+                                         existing_rule->GetCascadeLayer(),
+                                         new_rule->GetCascadeLayer()) <= 0;
 }
 
 void StyleEngine::AddPropertyRules(const RuleSet& rule_set) {

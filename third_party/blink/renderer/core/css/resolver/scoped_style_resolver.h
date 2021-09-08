@@ -97,6 +97,9 @@ class CORE_EXPORT ScopedStyleResolver final
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
   void AddKeyframeStyle(StyleRuleKeyframes*);
+  bool KeyframeStyleShouldOverride(
+      const StyleRuleKeyframes* new_rule,
+      const StyleRuleKeyframes* existing_rule) const;
 
   CounterStyleMap& EnsureCounterStyleMap();
 

@@ -24,6 +24,11 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
     return layer_order_map_.at(&layer);
   }
 
+  // Compare the layer orders of two CascadeLayer objects, possibly from
+  // different sheets. Callers may pass nullptr to represent the implicit outer
+  // layer.
+  int CompareLayerOrder(const CascadeLayer* lhs, const CascadeLayer* rhs) const;
+
   void Trace(blink::Visitor*) const;
 
  private:

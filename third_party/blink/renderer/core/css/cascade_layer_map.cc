@@ -66,6 +66,13 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   }
 }
 
+int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
+                                       const CascadeLayer* rhs) const {
+  unsigned lhs_order = lhs ? GetLayerOrder(*lhs) : kImplicitOuterLayerOrder;
+  unsigned rhs_order = rhs ? GetLayerOrder(*rhs) : kImplicitOuterLayerOrder;
+  return lhs_order < rhs_order ? -1 : (lhs_order > rhs_order ? 1 : 0);
+}
+
 void CascadeLayerMap::Trace(blink::Visitor* visitor) const {
   visitor->Trace(layer_order_map_);
 }
