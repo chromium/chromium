@@ -95,7 +95,7 @@ class NET_EXPORT URLRequestContext
       URLRequest::Delegate* delegate) const;
 #endif
 
-  // |traffic_annotation| is metadata about the network traffic send via this
+  // `traffic_annotation` is metadata about the network traffic send via this
   // URLRequest, see net::DefineNetworkTrafficAnnotation. Note that:
   // - net provides the API for tagging requests with an opaque identifier.
   // - chrome/browser/privacy/traffic_annotation.proto contains the Chrome
@@ -103,11 +103,16 @@ class NET_EXPORT URLRequestContext
   // callsites are expected to follow.
   // - tools/traffic_annotation/ contains sample and template for annotation and
   // tools will be added for verification following crbug.com/690323.
+  //
+  // `is_for_websockets` should be true iff this was created for use by a
+  // websocket. HTTP/HTTPS requests fail if it's true, and WS/WSS requests fail
+  // if it's false. This is to protect against broken consumers.
   std::unique_ptr<URLRequest> CreateRequest(
       const GURL& url,
       RequestPriority priority,
       URLRequest::Delegate* delegate,
-      NetworkTrafficAnnotationTag traffic_annotation) const;
+      NetworkTrafficAnnotationTag traffic_annotation,
+      bool is_for_websockets = false) const;
 
   NetLog* net_log() const { return net_log_; }
 

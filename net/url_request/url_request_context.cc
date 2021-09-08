@@ -99,7 +99,8 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     const GURL& url,
     RequestPriority priority,
     URLRequest::Delegate* delegate) const {
-  return CreateRequest(url, priority, delegate, MISSING_TRAFFIC_ANNOTATION);
+  return CreateRequest(url, priority, delegate, MISSING_TRAFFIC_ANNOTATION,
+                       /*is_for_websockets=*/false);
 }
 #endif
 
@@ -107,9 +108,10 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     const GURL& url,
     RequestPriority priority,
     URLRequest::Delegate* delegate,
-    NetworkTrafficAnnotationTag traffic_annotation) const {
-  return base::WrapUnique(
-      new URLRequest(url, priority, delegate, this, traffic_annotation));
+    NetworkTrafficAnnotationTag traffic_annotation,
+    bool is_for_websockets) const {
+  return base::WrapUnique(new URLRequest(
+      url, priority, delegate, this, traffic_annotation, is_for_websockets));
 }
 
 void URLRequestContext::set_cookie_store(CookieStore* cookie_store) {

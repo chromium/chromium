@@ -749,6 +749,46 @@ TEST_F(URLRequestTest, InvalidUrlTest) {
   }
 }
 
+// Test that URLRequest rejects WS URLs by default.
+TEST_F(URLRequestTest, WsUrlTest) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://foo.test/"));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> r(
+      default_context().CreateRequest(GURL("ws://foo.test/"), DEFAULT_PRIORITY,
+                                      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  // This is not strictly necessary for this test, but used to trigger a DCHECK.
+  // See https://crbug.com/1245115.
+  r->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+
+  r->Start();
+  d.RunUntilComplete();
+  EXPECT_TRUE(d.request_failed());
+  EXPECT_THAT(d.request_status(), IsError(ERR_UNKNOWN_URL_SCHEME));
+}
+
+// Test that URLRequest rejects WSS URLs by default.
+TEST_F(URLRequestTest, WssUrlTest) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> r(
+      default_context().CreateRequest(GURL("wss://foo.test/"), DEFAULT_PRIORITY,
+                                      &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  // This is not strictly necessary for this test, but used to trigger a DCHECK.
+  // See https://crbug.com/1245115.
+  r->set_isolation_info(
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                            kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+
+  r->Start();
+  d.RunUntilComplete();
+  EXPECT_TRUE(d.request_failed());
+  EXPECT_THAT(d.request_status(), IsError(ERR_UNKNOWN_URL_SCHEME));
+}
+
 TEST_F(URLRequestTest, InvalidReferrerTest) {
   TestURLRequestContext context;
   TestNetworkDelegate network_delegate;

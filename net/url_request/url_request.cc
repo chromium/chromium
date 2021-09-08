@@ -546,7 +546,8 @@ URLRequest::URLRequest(const GURL& url,
                        RequestPriority priority,
                        Delegate* delegate,
                        const URLRequestContext* context,
-                       NetworkTrafficAnnotationTag traffic_annotation)
+                       NetworkTrafficAnnotationTag traffic_annotation,
+                       bool is_for_websockets)
     : context_(context),
       net_log_(NetLogWithSource::Make(context->net_log(),
                                       NetLogSourceType::URL_REQUEST)),
@@ -566,6 +567,7 @@ URLRequest::URLRequest(const GURL& url,
       reporting_upload_depth_(0),
 #endif
       delegate_(delegate),
+      is_for_websockets_(is_for_websockets),
       status_(OK),
       is_pending_(false),
       is_redirecting_(false),

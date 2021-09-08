@@ -559,7 +559,8 @@ class WebSocketHstsTest : public TestWithTaskEnvironment {
     socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
 
     req_ = context_.CreateRequest(url, DEFAULT_PRIORITY, &delegate_,
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+                                  TRAFFIC_ANNOTATION_FOR_TESTS,
+                                  /*is_for_websockets=*/false);
 
     MockWrite writes[] = {
         MockWrite("GET / HTTP/1.1\r\n"
@@ -592,7 +593,8 @@ class WebSocketHstsTest : public TestWithTaskEnvironment {
     socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
 
     req_ = context_.CreateRequest(url, DEFAULT_PRIORITY, &delegate_,
-                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+                                  TRAFFIC_ANNOTATION_FOR_TESTS,
+                                  /*is_for_websockets=*/true);
 
     HttpRequestHeaders headers;
     headers.SetHeader("Connection", "Upgrade");

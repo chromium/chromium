@@ -303,7 +303,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context->CreateRequest(
         GURL("https://www.example.org/"), DEFAULT_PRIORITY, &delegate,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        TRAFFIC_ANNOTATION_FOR_TESTS, /*is_for_websockets=*/false);
     // The IsolationInfo has to match for a socket to be reused.
     request->set_isolation_info(CreateIsolationInfo());
     request->Start();

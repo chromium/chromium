@@ -96,7 +96,8 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
         url_request_(context->CreateRequest(url,
                                             DEFAULT_PRIORITY,
                                             &delegate_,
-                                            traffic_annotation)),
+                                            traffic_annotation,
+                                            /*is_for_websockets=*/true)),
         connect_delegate_(std::move(connect_delegate)),
         api_delegate_(std::move(api_delegate)) {
     DCHECK_EQ(IsolationInfo::RequestType::kOther,

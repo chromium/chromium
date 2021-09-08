@@ -773,6 +773,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     send_client_certs_ = send_client_certs;
   }
 
+  bool is_for_websockets() const { return is_for_websockets_; }
+
   void SetIdempotency(Idempotency idempotency) { idempotency_ = idempotency; }
   Idempotency GetIdempotency() const { return idempotency_; }
 
@@ -817,7 +819,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
              RequestPriority priority,
              Delegate* delegate,
              const URLRequestContext* context,
-             NetworkTrafficAnnotationTag traffic_annotation);
+             NetworkTrafficAnnotationTag traffic_annotation,
+             bool is_for_websockets);
 
   // Resumes or blocks a request paused by the NetworkDelegate::OnBeforeRequest
   // handler. If |blocked| is true, the request is blocked and an error page is
@@ -935,6 +938,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Never access methods of the |delegate_| directly. Always use the
   // Notify... methods for this.
   Delegate* delegate_;
+
+  const bool is_for_websockets_;
 
   // Current error status of the job, as a net::Error code. When the job is
   // busy, it is ERR_IO_PENDING. When the job is idle (either completed, or
