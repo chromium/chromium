@@ -194,7 +194,8 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
   // the buffer to root_surface of wayland window.
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
-      bounds_rect, gfx::RectF(), damage_region, false, gfx::GpuFenceHandle()));
+      bounds_rect, gfx::RectF(1.f, 1.f) /* no crop */, damage_region, false,
+      gfx::GpuFenceHandle()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }
