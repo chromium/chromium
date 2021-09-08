@@ -92,6 +92,14 @@ bool ExternallyInstalledWebAppPrefs::HasAppId(const PrefService* pref_service,
 }
 
 // static
+// TODO(crbug.com/1236159): Can be removed after M99.
+void ExternallyInstalledWebAppPrefs::RemoveTerminalPWA(
+    PrefService* pref_service) {
+  DictionaryPrefUpdate update(pref_service, prefs::kWebAppsExtensionIDs);
+  update->RemoveKey("chrome-untrusted://terminal/html/pwa.html");
+}
+
+// static
 bool ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
     const PrefService* pref_service,
     const AppId& app_id,
