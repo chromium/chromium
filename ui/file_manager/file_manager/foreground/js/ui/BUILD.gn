@@ -311,6 +311,7 @@ js_unittest("file_list_selection_model_unittest.m") {
 js_library("file_manager_dialog_base") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
 }

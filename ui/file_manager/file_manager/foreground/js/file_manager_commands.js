@@ -18,6 +18,7 @@ import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_ce
 import {TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {xfm} from '../../common/js/xfm.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -2819,7 +2820,7 @@ CommandHandler.COMMANDS_['browser-back'] = new class extends FilesCommand {
     // TODO(fukino): It should be better to minimize Files app only when there
     // is no back stack, and otherwise use BrowserBack for history navigation.
     // https://crbug.com/624100.
-    const currentWindow = chrome.app.window.current();
+    const currentWindow = xfm.getCurrentWindow();
     if (currentWindow) {
       currentWindow.minimize();
     }
