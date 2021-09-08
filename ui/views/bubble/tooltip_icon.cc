@@ -5,6 +5,7 @@
 #include "ui/views/bubble/tooltip_icon.h"
 
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -56,6 +57,10 @@ bool TooltipIcon::OnMousePressed(const ui::MouseEvent& event) {
 
 void TooltipIcon::OnFocus() {
   ShowBubble();
+#if defined(OS_WIN)
+  // Tooltip text does not announce on Windows; crbug.com/1245470
+  NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
+#endif
 }
 
 void TooltipIcon::OnBlur() {
