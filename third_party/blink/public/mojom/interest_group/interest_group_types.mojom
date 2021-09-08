@@ -39,6 +39,7 @@ struct InterestGroup {
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string?        user_bidding_signals;
   array<InterestGroupAd>? ads;
+  array<InterestGroupAd>? ad_components;
 };
 
 // Represents all buyers, the "*" wildcard in JavaScript.

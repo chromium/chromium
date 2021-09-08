@@ -79,6 +79,11 @@ struct BLINK_COMMON_EXPORT
     return interest_group.ads;
   }
 
+  static const absl::optional<std::vector<blink::InterestGroup::Ad>>&
+  ad_components(const blink::InterestGroup& interest_group) {
+    return interest_group.ad_components;
+  }
+
   static bool Read(blink::mojom::InterestGroupDataView data,
                    blink::InterestGroup* out);
 };

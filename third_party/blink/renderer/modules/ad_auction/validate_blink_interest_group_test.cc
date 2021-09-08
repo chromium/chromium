@@ -132,6 +132,21 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/foo?bar#baz2"));
     blink_interest_group->ads->push_back(std::move(mojo_ad2));
 
+    // Add two ad components. Use different URLs, with references.
+    blink_interest_group->ad_components.emplace();
+    auto mojo_ad_component1 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component1->render_url =
+        KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
+    mojo_ad_component1->metadata =
+        String::FromUTF8("\"This field isn't actually validated\"");
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component1));
+    auto mojo_ad_component2 = mojom::blink::InterestGroupAd::New();
+    mojo_ad_component2->render_url =
+        KURL(String::FromUTF8("https://origin.test/foo?component#baz2"));
+    blink_interest_group->ad_components->push_back(
+        std::move(mojo_ad_component2));
+
     return blink_interest_group;
   }
 
@@ -343,6 +358,81 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
       ExpectInterestGroupIsNotValid(
           blink_interest_group,
           "ad[1].renderUrl" /* expected_error_field_name */,
+          test_case_url.GetString().Utf8() /* expected_error_field_value */,
+          kBadAdUrlError /* expected_error */);
+    }
+  }
+}
+
+// Tests valid and invalid ad render URLs.
+TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
+  const char kBadAdUrlError[] =
+      "renderUrls must be HTTPS and have no embedded credentials.";
+
+  const struct {
+    bool expect_allowed;
+    const char* url;
+  } kTestCases[] = {
+      // Same origin URLs are allowed.
+      {true, "https://origin.test/foo?bar"},
+
+      // Cross origin URLs are allowed, as long as they're HTTPS.
+      {true, "https://b.test/"},
+      {true, "https://a.test:1234/"},
+
+      // URLs with the wrong scheme are rejected.
+      {false, "http://a.test/"},
+      {false, "data://text/html,payload"},
+      {false, "filesystem:https://a.test/foo"},
+
+      // URLs with user/ports are rejected.
+      {false, "https://user:pass@a.test/"},
+
+      // References are allowed for ads, though not other requests, since they
+      // only have an effect when loading a page in a renderer.
+      {true, "https://a.test/#foopy"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.url);
+
+    KURL test_case_url = KURL(String::FromUTF8(test_case.url));
+
+    // Add an InterestGroup with the test cases's URL as the only ad
+    // component's URL.
+    mojom::blink::InterestGroupPtr blink_interest_group =
+        CreateMinimalInterestGroup();
+    blink_interest_group->ad_components.emplace();
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(test_case_url,
+                                           String() /* metadata */));
+    if (test_case.expect_allowed) {
+      ExpectInterestGroupIsValid(blink_interest_group);
+    } else {
+      ExpectInterestGroupIsNotValid(
+          blink_interest_group,
+          "adComponent[0].renderUrl" /* expected_error_field_name */,
+          test_case_url.GetString().Utf8() /* expected_error_field_value */,
+          kBadAdUrlError /* expected_error */);
+    }
+
+    // Add an InterestGroup with the test cases's URL as the second ad
+    // component's URL.
+    blink_interest_group = CreateMinimalInterestGroup();
+    blink_interest_group->ad_components.emplace();
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(
+            KURL(String::FromUTF8("https://origin.test/")),
+            String() /* metadata */));
+    blink_interest_group->ad_components->emplace_back(
+        mojom::blink::InterestGroupAd::New(test_case_url,
+                                           String() /* metadata */));
+    if (test_case.expect_allowed) {
+      ExpectInterestGroupIsValid(blink_interest_group);
+    } else {
+      ExpectInterestGroupIsNotValid(
+          blink_interest_group,
+          "adComponent[1].renderUrl" /* expected_error_field_name */,
           test_case_url.GetString().Utf8() /* expected_error_field_value */,
           kBadAdUrlError /* expected_error */);
     }

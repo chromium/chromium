@@ -234,6 +234,37 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
   return true;
 }
 
+bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
+                                   const ScriptState& script_state,
+                                   ExceptionState& exception_state,
+                                   const AuctionAdInterestGroup& input,
+                                   mojom::blink::InterestGroup& output) {
+  if (!input.hasAdComponents())
+    return true;
+  output.ad_components.emplace();
+  for (const auto& ad : input.adComponents()) {
+    auto mojo_ad = mojom::blink::InterestGroupAd::New();
+    KURL render_url = context.CompleteURL(ad->renderUrl());
+    if (!render_url.IsValid()) {
+      exception_state.ThrowTypeError(
+          ErrorInvalidInterestGroup(input, "ad renderUrl", ad->renderUrl(),
+                                    "cannot be resolved to a valid URL."));
+      return false;
+    }
+    mojo_ad->render_url = render_url;
+    if (ad->hasMetadata()) {
+      if (!Jsonify(script_state, ad->metadata().V8Value().As<v8::Object>(),
+                   mojo_ad->metadata)) {
+        exception_state.ThrowTypeError(
+            ErrorInvalidInterestGroupJson(input, "ad metadata"));
+        return false;
+      }
+    }
+    output.ad_components->push_back(std::move(mojo_ad));
+  }
+  return true;
+}
+
 // runAdAuction() copy functions.
 
 bool CopySellerFromIdlToMojo(ExceptionState& exception_state,
@@ -424,6 +455,10 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
   }
   if (!CopyAdsFromIdlToMojo(*context, *script_state, exception_state, *group,
                             *mojo_group)) {
+    return;
+  }
+  if (!CopyAdComponentsFromIdlToMojo(*context, *script_state, exception_state,
+                                     *group, *mojo_group)) {
     return;
   }
 

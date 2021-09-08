@@ -58,7 +58,8 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       absl::optional<GURL> trusted_bidding_signals_url,
       absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
       absl::optional<std::string> user_bidding_signals,
-      absl::optional<std::vector<InterestGroup::Ad>> ads);
+      absl::optional<std::vector<InterestGroup::Ad>> ads,
+      absl::optional<std::vector<InterestGroup::Ad>> ad_components);
 
   ~InterestGroup();
 
@@ -76,7 +77,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<GURL> trusted_bidding_signals_url;
   absl::optional<std::vector<std::string>> trusted_bidding_signals_keys;
   absl::optional<std::string> user_bidding_signals;
-  absl::optional<std::vector<InterestGroup::Ad>> ads;
+  absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
 };
 
 }  // namespace blink

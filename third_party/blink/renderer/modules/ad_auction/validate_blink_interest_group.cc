@@ -98,6 +98,19 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     }
   }
 
+  if (group.ad_components) {
+    for (WTF::wtf_size_t i = 0; i < group.ad_components.value().size(); ++i) {
+      const KURL& render_url = group.ad_components.value()[i]->render_url;
+      if (!IsUrlAllowedForRenderUrls(render_url)) {
+        error_field_name = String::Format("adComponent[%u].renderUrl", i);
+        error_field_value = render_url.GetString();
+        error = String::FromUTF8(
+            "renderUrls must be HTTPS and have no embedded credentials.");
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 

@@ -914,7 +914,8 @@ class AuctionRunnerTest : public testing::Test,
                              /* update_url = */ GURL(),
                              std::move(trusted_bidding_signals_url),
                              std::move(trusted_bidding_signals_keys),
-                             absl::nullopt, std::move(ads)),
+                             absl::nullopt, std::move(ads),
+                             /* ad_components = */ absl::nullopt),
         auction_worklet::mojom::BiddingBrowserSignals::New(
             3, 5, std::move(previous_wins)));
   }
