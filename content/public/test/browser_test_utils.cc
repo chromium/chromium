@@ -2166,6 +2166,13 @@ ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents) {
   return manager->SnapshotAXTreeForTesting();
 }
 
+ui::AXTreeUpdate GetAccessibilityTreeSnapshotFromId(
+    const ui::AXTreeID& tree_id) {
+  BrowserAccessibilityManager* manager =
+      BrowserAccessibilityManager::FromID(tree_id);
+  return manager ? manager->SnapshotAXTreeForTesting() : ui::AXTreeUpdate();
+}
+
 ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(
     WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =

@@ -114,6 +114,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -360,6 +361,26 @@ class PDFExtensionTestWithoutUnseasonedOverride
   int CountPDFProcesses() {
     return IsUnseasoned() ? CountUnseasonedPDFProcesses()
                           : CountPepperPDFProcesses();
+  }
+
+  ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
+      WebContents* web_contents) {
+    ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(web_contents);
+    if (!IsUnseasoned())
+      return ax_tree;
+
+    // In the Unseasoned viewer, the PDF contents are located in a child tree.
+    ui::AXTreeID child_tree_id;
+    for (const ui::AXNodeData& node : ax_tree.nodes) {
+      if (node.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+        child_tree_id = ui::AXTreeID::FromString(
+            node.GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId));
+        break;
+      }
+    }
+
+    EXPECT_NE(child_tree_id, ui::AXTreeIDUnknown());
+    return content::GetAccessibilityTreeSnapshotFromId(child_tree_id);
   }
 
   bool IsUnseasoned() const {
@@ -1506,13 +1527,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #endif
 }
 
-static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
+namespace {
+
+std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
   // Create a string representation of the tree starting with the kPdfRoot
   // object.
   std::string ax_tree_dump;
   std::map<int32_t, int> id_to_indentation;
   bool found_pdf_root = false;
-  for (auto& node : ax_tree.nodes) {
+  for (const ui::AXNodeData& node : ax_tree.nodes) {
     if (node.role == ax::mojom::Role::kPdfRoot)
       found_pdf_root = true;
     if (!found_pdf_root)
@@ -1523,9 +1546,9 @@ static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
     if (indent_found != id_to_indentation.end()) {
       indent = indent_found->second;
     } else if (node.role != ax::mojom::Role::kPdfRoot) {
-      // If this node has no indent and isn't the kPdfRoot object, return, as
-      // this indicates the end of the PDF.
-      return ax_tree_dump;
+      // If this node has no indent and isn't the kPdfRoot object, finish dump
+      // as this indicates the end of the PDF.
+      break;
     }
 
     ax_tree_dump += std::string(2 * indent, ' ');
@@ -1541,14 +1564,14 @@ static std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree) {
       id_to_indentation[node.child_ids[j]] = indent + 1;
   }
 
+  EXPECT_TRUE(found_pdf_root);
   return ax_tree_dump;
 }
 
 // This is a pattern with a few wildcards due to a PDF bug where the
 // fi ligature is not parsed correctly on some systems.
 // http://crbug.com/701427
-
-static const char kExpectedPDFAXTreePattern[] =
+constexpr char kExpectedPDFAXTreePattern[] =
     "pdfRoot 'PDF document containing 3 pages'\n"
     "  region 'Page 1'\n"
     "    paragraph\n"
@@ -1581,8 +1604,9 @@ static const char kExpectedPDFAXTreePattern[] =
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       PdfAccessibility) {
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
 
   WebContents* guest_contents = LoadPdfGetGuestContents(
@@ -1591,14 +1615,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 
   WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
 
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       PdfAccessibilityEnableLater) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityEnableLater) {
   // In this test, load the PDF file first, with accessibility off.
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -1609,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   EnableAccessibilityForWebContents(guest_contents);
   WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
@@ -1621,8 +1644,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 #define MAYBE_PdfAccessibilityInIframe PdfAccessibilityInIframe
 #endif
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       MAYBE_PdfAccessibilityInIframe) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfAccessibilityInIframe) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test-iframe.html"));
@@ -1634,13 +1656,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   WebContents* guest_contents = GetOnlyGuestContents(contents);
   ASSERT_TRUE(guest_contents);
 
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       PdfAccessibilityInOOPIF) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityInOOPIF) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ui_test_utils::NavigateToURL(
       browser(),
@@ -1653,13 +1674,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   WebContents* guest_contents = GetOnlyGuestContents(contents);
   ASSERT_TRUE(guest_contents);
 
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
   std::string ax_tree_dump = DumpPdfAccessibilityTree(ax_tree);
   ASSERT_MULTILINE_STR_MATCHES(kExpectedPDFAXTreePattern, ax_tree_dump);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       PdfAccessibilityWordBoundaries) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityWordBoundaries) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
@@ -1667,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
 
   WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
                                                 "1 First Section\r\n");
-  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+  ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshotForPdf(guest_contents);
 
   bool found = false;
   for (auto& node : ax_tree.nodes) {
@@ -1691,8 +1711,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   ASSERT_TRUE(found);
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
-                       PdfAccessibilitySelection) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilitySelection) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(guest_contents);
@@ -1706,7 +1725,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithoutUnseasonedOverride,
   WaitForAccessibilityTreeToContainNodeWithName(guest_contents,
                                                 "1 First Section\r\n");
   ui::AXTreeUpdate ax_tree_update =
-      GetAccessibilityTreeSnapshot(guest_contents);
+      GetAccessibilityTreeSnapshotForPdf(guest_contents);
   ui::AXTree ax_tree(ax_tree_update);
 
   // Ensure that the selection spans the beginning of the first text
@@ -2995,8 +3014,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
 // internals, breaking lines & paragraphs where appropriate.  Unlike
 // TreeDumpTests, this allows us to verify the kNextOnLine and kPreviousOnLine
 // relationships.
-class PDFExtensionAccessibilityTextExtractionTest
-    : public PDFExtensionTestWithoutUnseasonedOverride {
+class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
  public:
   PDFExtensionAccessibilityTextExtractionTest() = default;
   ~PDFExtensionAccessibilityTextExtractionTest() override = default;
@@ -3016,8 +3034,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
  protected:
   std::vector<base::Feature> GetEnabledFeatures() const override {
-    auto enabled =
-        PDFExtensionTestWithoutUnseasonedOverride::GetEnabledFeatures();
+    auto enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
   }
@@ -3044,7 +3061,8 @@ class PDFExtensionAccessibilityTextExtractionTest
     WaitForAccessibilityTreeToContainNodeWithName(guest_contents, "Page 1");
 
     // Extract the text content.
-    ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
+    ui::AXTreeUpdate ax_tree =
+        GetAccessibilityTreeSnapshotForPdf(guest_contents);
     auto actual_lines = CollectLines(ax_tree);
 
     // Aborts if CollectLines() had a failure.
@@ -3145,56 +3163,56 @@ class PDFExtensionAccessibilityTextExtractionTest
 
 // Test that Previous/NextOnLineId attributes are present and properly linked on
 // InlineTextBoxes within a line.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        NextOnLine) {
   RunTextExtractionTest(FILE_PATH_LITERAL("next-on-line.pdf"));
 }
 
 // Test that a drop-cap is grouped with the correct line.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, DropCap) {
   RunTextExtractionTest(FILE_PATH_LITERAL("drop-cap.pdf"));
 }
 
 // Test that simulated superscripts and subscripts don't cause a line break.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        SuperscriptSubscript) {
   RunTextExtractionTest(FILE_PATH_LITERAL("superscript-subscript.pdf"));
 }
 
 // Test that simple font and font-size changes in the middle of a line don't
 // cause line breaks.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        FontChange) {
   RunTextExtractionTest(FILE_PATH_LITERAL("font-change.pdf"));
 }
 
 // Test one property of pdf_private/accessibility_crash_2.pdf, where a page has
 // only whitespace characters.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        OnlyWhitespaceText) {
   RunTextExtractionTest(FILE_PATH_LITERAL("whitespace.pdf"));
 }
 
 // Test data of inline text boxes for PDF with weblinks.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest, WebLinks) {
   RunTextExtractionTest(FILE_PATH_LITERAL("weblinks.pdf"));
 }
 
 // Test data of inline text boxes for PDF with highlights.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        Highlights) {
   RunTextExtractionTest(FILE_PATH_LITERAL("highlights.pdf"));
 }
 
 // Test data of inline text boxes for PDF with text fields.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        TextFields) {
   RunTextExtractionTest(FILE_PATH_LITERAL("text_fields.pdf"));
 }
 
 // Test data of inline text boxes for PDF with multi-line and various font-sized
 // text.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        ParagraphsAndHeadingUntagged) {
   RunTextExtractionTest(
       FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"));
@@ -3202,13 +3220,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
 
 // Test data of inline text boxes for PDF with text, weblinks, images and
 // annotation links.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        LinksImagesAndText) {
   RunTextExtractionTest(FILE_PATH_LITERAL("text-image-link.pdf"));
 }
 
 // Test data of inline text boxes for PDF with overlapping annotations.
-IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityTextExtractionTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        OverlappingAnnots) {
   RunTextExtractionTest(FILE_PATH_LITERAL("overlapping-annots.pdf"));
 }
@@ -3558,6 +3576,8 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionWebUICodeCacheJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionLinkClickTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInternalLinkClickTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityTextExtractionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionHitTestTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityNavigationTest);

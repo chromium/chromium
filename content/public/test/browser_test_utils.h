@@ -81,6 +81,7 @@ using test_server::EmbeddedTestServer;
 
 namespace ui {
 class AXPlatformNodeDelegate;
+class AXTreeID;
 }
 
 #if defined(OS_WIN)
@@ -984,6 +985,10 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
 
 // Get a snapshot of a web page's accessibility tree.
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents);
+
+// Get a snapshot of an accessibility tree given a `tree_id`.
+ui::AXTreeUpdate GetAccessibilityTreeSnapshotFromId(
+    const ui::AXTreeID& tree_id);
 
 // Returns the root accessibility node for the given WebContents.
 ui::AXPlatformNodeDelegate* GetRootAccessibilityNode(WebContents* web_contents);
