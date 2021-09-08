@@ -253,16 +253,28 @@ class WebContents : public PageNavigator,
       const CreateParams& params,
       const SessionStorageNamespaceMap& session_storage_namespace_map);
 
-  // Returns the WebContents that owns the RenderViewHost, or nullptr if the
-  // render view host's delegate isn't a WebContents.
+  // Returns the WebContents that owns the RenderViewHost.
+  //
+  // WARNING: `rvh` may belong to a prerendered page, a page in the back/forward
+  // cache, or a pending deletion page, so it might be inappropriate for it to
+  // to trigger changes to the WebContents. See also the below comments for
+  // FromRenderFrameHost().
   CONTENT_EXPORT static WebContents* FromRenderViewHost(RenderViewHost* rvh);
 
   // Returns the WebContents for the RenderFrameHost. It is unsafe to call this
   // function with an invalid (e.g. destructed) `rfh`.
-  // Warning: Be careful when `rfh->IsCurrent()` is false, since this implies
-  // that `rfh` may not be visible to the user (in bfcache or pending deletion),
-  // so it should not be triggering state changes that affect the whole
-  // WebContents.
+  //
+  // WARNING: It might be inappropriate for `rfh` to trigger changes to the
+  // WebContents, so be careful when calling this. Some cases to be aware of
+  // are:
+  // * Pages/documents which are not active are not observable by the user
+  //   and therefore should not show UI elements (e.g., a colour picker). These
+  //   features should use `rfh->IsActive()` to determine whether `rfh` is
+  //   active. See the comments there for more information.
+  // * Pages/documents which are not primary generally should not update
+  //   per-WebContents state (e.g., theme colour). Use
+  //   `rfh->GetPage().IsPrimary()` to check for primary. Fenced frames are
+  //   one case where a RenderFrameHost can be active but not primary.
   CONTENT_EXPORT static WebContents* FromRenderFrameHost(RenderFrameHost* rfh);
 
   // Returns the WebContents associated with the |frame_tree_node_id|. This may
