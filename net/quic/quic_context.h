@@ -176,7 +176,7 @@ struct NET_EXPORT QuicParams {
   // smoothed rtt is present.
   base::TimeDelta initial_rtt_for_handshake;
   // If true, QUIC with TLS will not try 0-RTT connection.
-  bool disable_tls_zero_rtt = true;
+  bool disable_tls_zero_rtt = false;
   // If true, gQUIC requests will always require confirmation.
   bool disable_gquic_zero_rtt = false;
   // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE
