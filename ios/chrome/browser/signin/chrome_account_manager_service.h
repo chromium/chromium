@@ -55,6 +55,10 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns true if there is at least one identity known by the service.
   bool HasIdentities() const;
 
+  // Returns true if there is at least one restricted identity known by the
+  // service.
+  bool HasRestrictedIdentities() const;
+
   // Returns whether |identity| is valid and known by the service.
   bool IsValidIdentity(ChromeIdentity* identity) const;
 

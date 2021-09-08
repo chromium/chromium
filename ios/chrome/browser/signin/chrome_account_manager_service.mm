@@ -26,8 +26,10 @@ namespace {
 template <typename T>
 class Functor {
  public:
-  explicit Functor(const PatternAccountRestriction& restriction)
-      : restriction_(restriction) {}
+  explicit Functor(const PatternAccountRestriction& restriction,
+                   const bool applies_to_restriction = false)
+      : restriction_(restriction),
+        applies_to_restriction_(applies_to_restriction) {}
 
   Functor(const Functor&) = delete;
   Functor& operator=(const Functor&) = delete;
@@ -43,13 +45,14 @@ class Functor {
   ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
     // Filtering the ChromeIdentity.
     const std::string email = base::SysNSStringToUTF8(identity.userEmail);
-    if (restriction_.IsAccountRestricted(email))
+    if (restriction_.IsAccountRestricted(email) != applies_to_restriction_)
       return ios::kIdentityIteratorContinueIteration;
 
     return static_cast<T*>(this)->Run(identity);
   }
 
   const PatternAccountRestriction& restriction_;
+  const bool applies_to_restriction_;
 };
 
 // Helper class used to implement HasIdentities().
@@ -128,6 +131,25 @@ class FunctorGetFirstIdentity : public Functor<FunctorGetFirstIdentity> {
   ChromeIdentity* default_identity_ = nil;
 };
 
+// Helper class used to implement HasRestrictedIdentities().
+class FunctorHasRestrictedIdentities
+    : public Functor<FunctorHasRestrictedIdentities> {
+ public:
+  explicit FunctorHasRestrictedIdentities(
+      const PatternAccountRestriction& restriction)
+      : Functor(restriction, /*applies_to_restriction*/ true) {}
+
+  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
+    has_restricted_identities_ = true;
+    return ios::kIdentityIteratorInterruptIteration;
+  }
+
+  bool has_restricted_identities() const { return has_restricted_identities_; }
+
+ private:
+  bool has_restricted_identities_ = false;
+};
+
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
@@ -168,6 +190,14 @@ bool ChromeAccountManagerService::HasIdentities() const {
       .GetChromeIdentityService()
       ->IterateOverIdentities(helper.Callback());
   return helper.has_identities();
+}
+
+bool ChromeAccountManagerService::HasRestrictedIdentities() const {
+  FunctorHasRestrictedIdentities helper(restriction_);
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->IterateOverIdentities(helper.Callback());
+  return helper.has_restricted_identities();
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
