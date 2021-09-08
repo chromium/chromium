@@ -479,7 +479,7 @@ class AutoEnrollmentClientImplTest
     absl::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
         state_dict->FindBoolPath(kDeviceStatePackagedLicense);
-    if (actual_is_license_packaged_with_device) {
+    if (actual_is_license_packaged_with_device.has_value()) {
       EXPECT_EQ(expected_is_license_packaged_with_device,
                 actual_is_license_packaged_with_device.value());
     } else {
@@ -1539,9 +1539,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       /*management_domain=*/std::string(),
       em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      /*device_disabled_message=*/std::string(),
-      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
-          initial_state_response));
+      /*device_disabled_message=*/std::string(), initial_state_response);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1577,9 +1575,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       /*management_domain=*/std::string(),
       em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      /*device_disabled_message=*/std::string(),
-      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
-          initial_state_response));
+      /*device_disabled_message=*/std::string(), initial_state_response);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
@@ -1615,9 +1611,7 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
   ServerWillSendStateForFRE(
       /*management_domain=*/std::string(),
       em::DeviceStateRetrievalResponse::RESTORE_MODE_NONE,
-      /*device_disabled_message=*/std::string(),
-      absl::optional<em::DeviceInitialEnrollmentStateResponse>(
-          initial_state_response));
+      /*device_disabled_message=*/std::string(), initial_state_response);
   client()->Start();
   base::RunLoop().RunUntilIdle();
   ExpectHashDanceRequestStatusHistogram(DM_STATUS_SUCCESS,
