@@ -1690,9 +1690,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210730",
+                    "name": "Enabled_20210901",
                     "params": {
-                        "holdback_chance": "0.5"
+                        "holdback_chance": "0.3"
                     },
                     "enable_features": [
                         "PermissionPredictions"

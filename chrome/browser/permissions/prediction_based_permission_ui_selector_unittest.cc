@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -28,15 +29,27 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
       : testing_profile_(std::make_unique<TestingProfile>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts, features::kPermissionPredictions,
-         features::kPermissionGeolocationPredictions,
-         permissions::features::kPermissionQuietChip},
-        {});
+    InitFeatureList();
 
     safe_browsing::SetSafeBrowsingState(
         testing_profile_->GetPrefs(),
         safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+  }
+
+  void InitFeatureList(const std::string holdback_chance_string = "0") {
+    if (feature_list_)
+      feature_list_->Reset();
+    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    feature_list_->InitWithFeaturesAndParameters(
+        {{features::kQuietNotificationPrompts, {}},
+         {features::kPermissionPredictions,
+          {{features::kPermissionPredictionsHoldbackChance.name,
+            holdback_chance_string}}},
+         {features::kPermissionGeolocationPredictions,
+          {{features::kPermissionGeolocationPredictionsHoldbackChance.name,
+            holdback_chance_string}}},
+         {permissions::features::kPermissionQuietChip, {}}},
+        {} /* disabled_features */);
   }
 
   void RecordHistoryActions(size_t action_count,
@@ -70,7 +83,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
@@ -216,4 +229,31 @@ TEST_F(PredictionBasedPermissionUiSelectorTest,
   EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
                 kPredictedVeryUnlikelyGrant,
             geolocation_decision.quiet_ui_reason);
+}
+
+TEST_F(PredictionBasedPermissionUiSelectorTest, HoldbackChanceTakesEffect) {
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      "prediction-service-mock-likelihood", "very-unlikely");
+
+  PredictionBasedPermissionUiSelector prediction_selector(profile());
+
+  for (const auto type : {permissions::RequestType::kNotifications,
+                          permissions::RequestType::kGeolocation}) {
+    RecordHistoryActions(/*action_count=*/4, type);
+
+    EXPECT_EQ(PredictionBasedPermissionUiSelector::QuietUiReason::
+                  kPredictedVeryUnlikelyGrant,
+              SelectUiToUseAndGetDecision(&prediction_selector, type)
+                  .quiet_ui_reason);
+  }
+
+  InitFeatureList("1" /* holdback_chance_string */);
+
+  for (const auto type : {permissions::RequestType::kNotifications,
+                          permissions::RequestType::kGeolocation}) {
+    EXPECT_EQ(Decision::UseNormalUi(),
+              SelectUiToUseAndGetDecision(&prediction_selector, type)
+                  .quiet_ui_reason);
+  }
 }
