@@ -36,15 +36,15 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
 #if defined(OS_WIN)

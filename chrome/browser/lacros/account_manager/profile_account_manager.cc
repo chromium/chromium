@@ -8,8 +8,8 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 
 ProfileAccountManager::ProfileAccountManager(const base::FilePath& profile_path)

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCOUNT_MANAGER_FACADE_FACTORY_H_
-#define CHROME_BROWSER_ACCOUNT_MANAGER_FACADE_FACTORY_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_FACADE_FACTORY_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_FACADE_FACTORY_H_
 
 #include <string>
+
+#include "base/component_export.h"
 
 namespace account_manager {
 class AccountManagerFacade;
@@ -16,7 +18,7 @@ class AccountManagerFacade;
 // Returns the |AccountManagerFacade| for the given |profile_path|.
 // Note that |AccountManagerFacade| is independent of a |Profile|, and this is
 // needed only because of Multi-Login on Chrome OS, and will be removed soon.
-account_manager::AccountManagerFacade* GetAccountManagerFacade(
-    const std::string& profile_path);
+account_manager::AccountManagerFacade* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+    GetAccountManagerFacade(const std::string& profile_path);
 
-#endif  // CHROME_BROWSER_ACCOUNT_MANAGER_FACADE_FACTORY_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_FACADE_FACTORY_H_
