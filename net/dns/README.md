@@ -67,7 +67,7 @@ resolution requests, but never complete them until cancellation.
 Used by most browser tests (via [`content::BrowserTestBase`](/content/public/test/browser_test_base.h)),
 `content::TestHostResolver` installs itself on creation globally into all host
 resolvers in the process. By default, only allows resolution of the local host
-and returns `net::ERR_NOT_IMPLEMENTED` for other hostnames. Allows setting rules
+and returns `net::ERR_NAME_NOT_RESOLVED` for other hostnames. Allows setting rules
 for other results using a [net::RuleBasedHostResolverProc](/net/dns/mock_host_resolver.h).
 
 *** note

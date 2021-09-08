@@ -18,6 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/error_page/common/net_error_info.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
@@ -424,7 +425,8 @@ class TypedNavigationUpgradeThrottleBrowserTest
     // Should never hit an error page.
     histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                 0);
-    histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+    histograms.ExpectBucketCount(kNetErrorHistogram,
+                                 error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -604,7 +606,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -647,7 +650,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -693,7 +697,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
   // Should never hit an error page.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
 
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
                               2);
@@ -908,7 +913,8 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
     // Should never hit an error page.
     histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(),
                                 0);
-    histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+    histograms.ExpectBucketCount(kNetErrorHistogram,
+                                 error_page::NETWORK_ERROR_PAGE_SHOWN, 0);
     // The http or https version of the URL shouldn't be in history because
     // of the redirect.
     EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
@@ -1062,7 +1068,8 @@ IN_PROC_BROWSER_TEST_P(
   // navigation, and then at the end of the fallback.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 2);
   // SSL errors also record a net error histogram.
-  histograms.ExpectTotalCount(kNetErrorHistogram, 1);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 1);
 
   // Try again, histogram numbers should double.
   TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
@@ -1082,7 +1089,8 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 
   // Regression test for crbug.com/1182760: This time type the hostname of the
   // redirect target (site-with-bad-https.com). This should attempt an HTTPS
@@ -1105,7 +1113,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(base::Contains(enumerator.urls(), http_url));
   EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 4);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 
   // Throttle histogram numbers should update for the HTTP fallback:
   histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
@@ -1158,7 +1167,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // The navigation ends up on a net error.
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 1);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 1);
 
   // Try again, histogram numbers should double.
   TypeUrlAndCheckRedirectToBadHttps(GetURLWithoutScheme(url), target_url);
@@ -1178,7 +1188,8 @@ IN_PROC_BROWSER_TEST_P(
       TypedNavigationUpgradeThrottle::Event::kRedirected, 2);
 
   histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
-  histograms.ExpectTotalCount(kNetErrorHistogram, 2);
+  histograms.ExpectBucketCount(kNetErrorHistogram,
+                               error_page::NETWORK_ERROR_PAGE_SHOWN, 2);
 }
 
 // TODO(crbug.com/1141691): Test the following cases:
