@@ -142,3 +142,10 @@ void LacrosExtensionAppsController::Launch(
     LaunchCallback callback) {
   NOTIMPLEMENTED();
 }
+
+void LacrosExtensionAppsController::ExecuteContextMenuCommand(
+    const std::string& app_id,
+    const std::string& id,
+    ExecuteContextMenuCommandCallback callback) {
+  NOTIMPLEMENTED();
+}

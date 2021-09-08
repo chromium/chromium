@@ -77,11 +77,9 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
 
-  void ExecuteContextMenuCommand(const std::string& app_id,
-                                 int32_t item_id,
-                                 int64_t display_id);
-
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest,
+                           ExecuteContextMenuCommand);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, PauseUnpause);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, OpenNativeSettings);
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, WindowMode);
@@ -107,6 +105,10 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                      apps::mojom::WindowMode window_mode) override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
               LaunchCallback callback) override;
+  void ExecuteContextMenuCommand(
+      const std::string& app_id,
+      const std::string& id,
+      ExecuteContextMenuCommandCallback callback) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

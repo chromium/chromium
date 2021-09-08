@@ -481,9 +481,25 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest,
       *apps::AppServiceProxyFactory::GetForProfile(profile())
            ->WebAppsPublisherHostForTesting();
 
-  web_apps_publisher_host.ExecuteContextMenuCommand(app_id,
-                                                    /*item_id=*/5,
-                                                    display::kDefaultDisplayId);
+  crosapi::mojom::MenuItemsPtr menu_items;
+  {
+    base::RunLoop run_loop;
+    web_apps_publisher_host.GetMenuModel(
+        app_id,
+        base::BindLambdaForTesting(
+            [&run_loop, &menu_items](crosapi::mojom::MenuItemsPtr items) {
+              menu_items = std::move(items);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+  ASSERT_TRUE(menu_items);
+  ASSERT_EQ(6U, menu_items->items.size());
+
+  auto id = *menu_items->items[5]->id;
+
+  web_apps_publisher_host.ExecuteContextMenuCommand(app_id, id,
+                                                    base::DoNothing());
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()

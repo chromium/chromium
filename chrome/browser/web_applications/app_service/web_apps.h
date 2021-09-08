@@ -135,7 +135,6 @@ class WebApps : public apps::PublisherBase,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
   void GetMenuModelFromWebAppProvider(const std::string& app_id,
-                                      apps::mojom::MenuType menu_type,
                                       apps::mojom::MenuItemsPtr menu_items,
                                       GetMenuModelCallback callback);
   // menu_type is stored as |shortcut_id|.
@@ -148,7 +147,6 @@ class WebApps : public apps::PublisherBase,
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
-      apps::mojom::MenuType menu_type,
       apps::mojom::MenuItemsPtr menu_items,
       GetMenuModelCallback callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);

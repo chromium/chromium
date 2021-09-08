@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -180,15 +181,12 @@ void WebAppsCrosapi::OnGetMenuModelFromCrosapi(
 
     // Uses integer |command_id| to store menu item index.
     const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + item_index;
-    // Passes menu_type argument as shortcut_id to use it in
-    // ExecuteContextMenuCommand().
-    std::string shortcut_id{apps::MenuTypeToString(menu_type)};
 
     auto& icon_image = crosapi_menu_item->image;
 
     icon_image = apps::ApplyBackgroundAndMask(icon_image);
 
-    apps::AddShortcutCommandItem(command_id, shortcut_id,
+    apps::AddShortcutCommandItem(command_id, crosapi_menu_item->id.value_or(""),
                                  crosapi_menu_item->label, icon_image,
                                  &menu_items);
   }
@@ -211,6 +209,14 @@ void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
 void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
                                    apps::mojom::WindowMode window_mode) {
   controller_->SetWindowMode(app_id, window_mode);
+}
+
+void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
+                                               int command_id,
+                                               const std::string& shortcut_id,
+                                               int64_t display_id) {
+  controller_->ExecuteContextMenuCommand(app_id, shortcut_id,
+                                         base::DoNothing());
 }
 
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {

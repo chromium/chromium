@@ -31,6 +31,33 @@
 
 using apps::IconEffects;
 
+namespace {
+
+using LaunchResultCallback =
+    base::OnceCallback<void(::crosapi::mojom::LaunchResultPtr)>;
+
+void ReturnLaunchResult(Profile* profile,
+                        content::WebContents* web_contents,
+                        LaunchResultCallback callback) {
+  // TODO(crbug.com/1144877): Run callback when the window is ready.
+  auto* app_instance_tracker =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->BrowserAppInstanceTracker();
+  auto launch_result = crosapi::mojom::LaunchResult::New();
+  if (app_instance_tracker) {
+    launch_result->instance_id =
+        app_instance_tracker->GetAppInstance(web_contents)->id;
+  } else {
+    // TODO(crbug.com/1144877): This part of code should not be reached
+    // after the instance tracker flag is turn on. Replaced with DCHECK when
+    // the app instance tracker flag is turned on.
+    launch_result->instance_id = base::UnguessableToken::Create();
+  }
+  std::move(callback).Run(std::move(launch_result));
+}
+
+}  // namespace
+
 namespace web_app {
 
 WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
@@ -191,12 +218,14 @@ void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
   }
 }
 
-void WebAppsPublisherHost::ExecuteContextMenuCommand(const std::string& app_id,
-                                                     int32_t item_id,
-                                                     int64_t display_id) {
-  publisher_helper().ExecuteContextMenuCommand(
-      app_id, item_id, apps::mojom::AppLaunchSource::kSourceAppLauncher,
-      display_id);
+void WebAppsPublisherHost::ExecuteContextMenuCommand(
+    const std::string& app_id,
+    const std::string& id,
+    ExecuteContextMenuCommandCallback callback) {
+  auto* web_contents = publisher_helper().ExecuteContextMenuCommand(
+      app_id, id, display::kDefaultDisplayId);
+
+  ReturnLaunchResult(profile_, web_contents, std::move(callback));
 }
 
 void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
@@ -213,21 +242,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
                                   launch_params->launch_source, nullptr);
   }
 
-  // TODO(crbug.com/1144877): Run callback when the window is ready.
-  auto* app_instance_tracker =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->BrowserAppInstanceTracker();
-  auto launch_result = crosapi::mojom::LaunchResult::New();
-  if (app_instance_tracker) {
-    launch_result->instance_id =
-        app_instance_tracker->GetAppInstance(web_contents)->id;
-  } else {
-    // TODO(crbug.com/1144877): This part of code should not be reached
-    // after the instance tracker flag turned on. Replaced with DCHECK when
-    // the app instance tracker flag is turned on.
-    launch_result->instance_id = base::UnguessableToken::Create();
-  }
-  std::move(callback).Run(std::move(launch_result));
+  ReturnLaunchResult(profile_, web_contents, std::move(callback));
 }
 
 void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
@@ -266,6 +281,9 @@ void WebAppsPublisherHost::OnShortcutsMenuIconsRead(
     auto menu_item = crosapi::mojom::MenuItem::New();
     menu_item->label = base::UTF16ToUTF8(menu_item_info.name);
     menu_item->image = icon;
+    std::string shortcut_id = publisher_helper().GenerateShortcutId();
+    publisher_helper().StoreShortcutId(shortcut_id, menu_item_info);
+    menu_item->id = shortcut_id;
     menu_items->items.push_back(std::move(menu_item));
 
     ++menu_item_index;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 12
+// Next MinVersion: 13
 
 module crosapi.mojom;
 
@@ -107,6 +107,17 @@ interface AppController {
   // running in.
   [MinVersion=10]
   Launch@8(LaunchParams params) => (LaunchResult launch_result);
+
+  // Sends the execution command to Lacros when user selects an item in the
+  // context menu to execute for an app with |app_id|. Current only the
+  // shortcut items in context menu need to be executed in lacros-chrome.
+  // The |id| represent which item user selected.
+  // This method will launch the app with selected shortcut and return
+  // |launch_result| to allow us find out which instance the app is running in.
+  [MinVersion=12]
+  ExecuteContextMenuCommand@9(
+      string app_id,
+      string id) => (LaunchResult launch_result);
 };
 
 // Interacts with the app service. Implemented in ash-chrome and called in

@@ -115,13 +115,12 @@ void WebApps::GetMenuModel(const std::string& app_id,
                          &menu_items);
   }
 
-  GetMenuModelFromWebAppProvider(app_id, menu_type, std::move(menu_items),
+  GetMenuModelFromWebAppProvider(app_id, std::move(menu_items),
                                  std::move(callback));
 }
 
 void WebApps::GetMenuModelFromWebAppProvider(
     const std::string& app_id,
-    apps::mojom::MenuType menu_type,
     apps::mojom::MenuItemsPtr menu_items,
     GetMenuModelCallback callback) {
   const WebApp* web_app = GetWebApp(app_id);
@@ -135,10 +134,9 @@ void WebApps::GetMenuModelFromWebAppProvider(
           features::kDesktopPWAsAppIconShortcutsMenuUI) &&
       !web_app->shortcuts_menu_item_infos().empty()) {
     provider()->icon_manager().ReadAllShortcutsMenuIcons(
-        app_id,
-        base::BindOnce(&WebApps::OnShortcutsMenuIconsRead,
-                       base::AsWeakPtr<WebApps>(this), app_id, menu_type,
-                       std::move(menu_items), std::move(callback)));
+        app_id, base::BindOnce(&WebApps::OnShortcutsMenuIconsRead,
+                               base::AsWeakPtr<WebApps>(this), app_id,
+                               std::move(menu_items), std::move(callback)));
   } else {
     std::move(callback).Run(std::move(menu_items));
   }
@@ -146,7 +144,6 @@ void WebApps::GetMenuModelFromWebAppProvider(
 
 void WebApps::OnShortcutsMenuIconsRead(
     const std::string& app_id,
-    apps::mojom::MenuType menu_type,
     apps::mojom::MenuItemsPtr menu_items,
     GetMenuModelCallback callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
@@ -192,11 +189,10 @@ void WebApps::OnShortcutsMenuIconsRead(
 
     // Uses integer |command_id| to store menu item index.
     const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + menu_item_index;
-    // Passes menu_type argument as shortcut_id to use it in
-    // ExecuteContextMenuCommand().
-    std::string shortcut_id{apps::MenuTypeToString(menu_type)};
 
     const std::string label = base::UTF16ToUTF8(menu_item_info.name);
+    std::string shortcut_id = publisher_helper().GenerateShortcutId();
+    publisher_helper().StoreShortcutId(shortcut_id, menu_item_info);
 
     apps::AddShortcutCommandItem(command_id, shortcut_id, label, icon,
                                  &menu_items);
@@ -211,19 +207,7 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
                                         int command_id,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  apps::mojom::LaunchSource launch_source;
-  // shortcut_id contains menu_type.
-  switch (apps::MenuTypeFromString(shortcut_id)) {
-    case apps::mojom::MenuType::kShelf:
-      launch_source = apps::mojom::LaunchSource::kFromShelf;
-      break;
-    case apps::mojom::MenuType::kAppList:
-      launch_source = apps::mojom::LaunchSource::kFromAppListGridContextMenu;
-      break;
-  }
-  publisher_helper().ExecuteContextMenuCommand(
-      app_id, command_id - ash::LAUNCH_APP_SHORTCUT_FIRST,
-      apps::GetAppLaunchSource(launch_source), display_id);
+  publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
 }
 
 void WebApps::SetWindowMode(const std::string& app_id,

@@ -693,10 +693,19 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
   delegate_->PublishWebApp(std::move(app));
 }
 
+std::string WebAppPublisherHelper::GenerateShortcutId() {
+  return base::NumberToString(shortcut_id_generator_.GenerateNextId().value());
+}
+
+void WebAppPublisherHelper::StoreShortcutId(
+    const std::string& shortcut_id,
+    const WebApplicationShortcutsMenuItemInfo& menu_item_info) {
+  shortcut_id_map_.emplace(shortcut_id, std::move(menu_item_info));
+}
+
 content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
     const std::string& app_id,
-    int32_t item_id,
-    apps::mojom::AppLaunchSource app_launch_source,
+    const std::string& shortcut_id,
     int64_t display_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
@@ -707,11 +716,12 @@ content::WebContents* WebAppPublisherHelper::ExecuteContextMenuCommand(
 
   apps::AppLaunchParams params(
       app_id, ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::CURRENT_TAB, app_launch_source, display_id);
+      WindowOpenDisposition::CURRENT_TAB,
+      apps::mojom::AppLaunchSource::kSourceAppLauncher, display_id);
 
-  if (static_cast<size_t>(item_id) <
-      web_app->shortcuts_menu_item_infos().size()) {
-    params.override_url = web_app->shortcuts_menu_item_infos()[item_id].url;
+  auto menu_item = shortcut_id_map_.find(shortcut_id);
+  if (menu_item != shortcut_id_map_.end()) {
+    params.override_url = menu_item->second.url;
   }
 
   return LaunchAppWithParams(std::move(params));

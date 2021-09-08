@@ -75,6 +75,10 @@ class WebAppsCrosapi : public KeyedService,
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;
+  void ExecuteContextMenuCommand(const std::string& app_id,
+                                 int command_id,
+                                 const std::string& shortcut_id,
+                                 int64_t display_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;

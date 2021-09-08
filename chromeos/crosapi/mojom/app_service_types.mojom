@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module crosapi.mojom;
 
@@ -263,6 +263,7 @@ struct MenuItems {
 struct MenuItem {
   string label@0;                      // The string label, may be empty.
   gfx.mojom.ImageSkia? image@1;        // The image icon, may be null.
+  [MinVersion=3]string? id@2;          // The id of the item.
 };
 
 [Stable, Extensible]
