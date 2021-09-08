@@ -350,6 +350,12 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
   presenter().RemoveObserver(&observer);
 }
 
+TEST_F(SavedPasswordsPresenterTest, EditPasswordsEmptyList) {
+  EXPECT_FALSE(presenter().EditSavedPasswords(
+      SavedPasswordsPresenter::SavedPasswordsView(), u"test1@gmail.com",
+      u"password"));
+}
+
 TEST_F(SavedPasswordsPresenterTest, EditUpdatesDuplicates) {
   PasswordForm form;
   form.signon_realm = "https://example.com";

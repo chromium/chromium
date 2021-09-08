@@ -146,7 +146,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   std::vector<PasswordForm> passwords_;
 
   // Structure used to deduplicate list of passwords.
-  DuplicatePasswordsMap sort_key_to_password_forms;
+  DuplicatePasswordsMap sort_key_to_password_forms_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };

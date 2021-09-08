@@ -76,7 +76,7 @@ void SavedPasswordsPresenter::Init() {
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
   std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
 
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
@@ -116,7 +116,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
   std::vector<PasswordForm> forms_to_change;
 
   std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
 
   base::ranges::transform(range.first, range.second,
                           std::back_inserter(forms_to_change),
@@ -128,6 +128,8 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     const SavedPasswordsView forms,
     const std::u16string& new_username,
     const std::u16string& new_password) {
+  if (forms.empty())
+    return false;
   IsUsernameChanged username_changed(new_username != forms[0].username_value);
   IsPasswordChanged password_changed(new_password != forms[0].password_value);
 
@@ -172,10 +174,10 @@ std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
     const {
   std::vector<PasswordForm> forms;
 
-  auto it = sort_key_to_password_forms.begin();
+  auto it = sort_key_to_password_forms_.begin();
   std::string current_key;
 
-  while (it != sort_key_to_password_forms.end()) {
+  while (it != sort_key_to_password_forms_.end()) {
     if (current_key != it->first) {
       current_key = it->first;
       forms.push_back(it->second);
@@ -268,9 +270,9 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
                             [](auto& result) { return std::move(*result); });
   }
 
-  sort_key_to_password_forms.clear();
+  sort_key_to_password_forms_.clear();
   base::ranges::for_each(passwords_, [&](const auto& result) {
-    sort_key_to_password_forms.insert(
+    sort_key_to_password_forms_.insert(
         std::make_pair(CreateSortKey(result, IgnoreStore(true)), result));
   });
 
