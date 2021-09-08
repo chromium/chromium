@@ -622,6 +622,26 @@ void ProfilePickerView::SwitchToDiceSignIn(
                      weak_ptr_factory_.GetWeakPtr(), profile_color));
 }
 
+void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
+    base::OnceCallback<void(bool)>& switch_finished_callback,
+    Profile* profile,
+    Profile::CreateStatus status) {
+  DCHECK(signin_util::IsForceSigninEnabled());
+
+  if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
+    std::move(switch_finished_callback).Run(false);
+    return;
+  } else if (status != Profile::CREATE_STATUS_INITIALIZED) {
+    return;
+  }
+
+  DCHECK(profile);
+  std::move(switch_finished_callback).Run(true);
+
+  ProfilePickerForceSigninDialog::ShowForceSigninDialog(
+      web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
+}
+
 void ProfilePickerView::OnDiceSigninFinished(
     absl::optional<SkColor> profile_color,
     Profile* signed_in_profile,
@@ -674,29 +694,6 @@ void ProfilePickerView::CancelSignedInFlow() {
     }
   }
 }
-
-// TODO(crbug.com/1227029): Move up to match the declaration order.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void ProfilePickerView::OnProfileForDiceForcedSigninCreated(
-    base::OnceCallback<void(bool)>& switch_finished_callback,
-    Profile* profile,
-    Profile::CreateStatus status) {
-  DCHECK(signin_util::IsForceSigninEnabled());
-
-  if (status == Profile::CREATE_STATUS_LOCAL_FAIL) {
-    std::move(switch_finished_callback).Run(false);
-    return;
-  } else if (status != Profile::CREATE_STATUS_INITIALIZED) {
-    return;
-  }
-
-  DCHECK(profile);
-  std::move(switch_finished_callback).Run(true);
-
-  ProfilePickerForceSigninDialog::ShowForceSigninDialog(
-      web_view_->GetWebContents()->GetBrowserContext(), profile->GetPath());
-}
-#endif
 
 void ProfilePickerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.

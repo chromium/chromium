@@ -223,16 +223,6 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
   identity_manager_observation_.Observe(
       IdentityManagerFactory::GetForProfile(profile_));
 
-  // TODO(crbug.com/1227029): Remove `entry`, dead code.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-  if (!entry) {
-    NOTREACHED();
-    return;
-  }
-
   // Record that the sign in process starts (its end is recorded automatically
   // by the instance of DiceTurnSyncOnHelper constructed later on in
   // ProfilePickerSignedInFlowController).
