@@ -117,25 +117,39 @@ using base::SysUTF16ToNSString;
 // Creates a new credential but doesn't add it to any stores.
 - (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
                                                 password:(NSString*)password {
-  NSURL* url = [NSURL URLWithString:self.serviceIdentifier.identifier];
+  NSString* identifier = self.serviceIdentifier.identifier;
+
+  // According to Apple
+  // (https://developer.apple.com/documentation/xcode/supporting-associated-domains).
+  // associated domains must have an https:// scheme, and to autofill passwords
+  // an associated domain is needed
+  // (https://developer.apple.com/documentation/security/password_autofill/).
+  // Also iOS strips https:// from passed identifier, Chrome restores it here to
+  // save a valid URL.
+  if (self.serviceIdentifier.type == ASCredentialServiceIdentifierTypeDomain &&
+      ![identifier hasPrefix:@"https://"]) {
+    identifier = [@"https://" stringByAppendingString:identifier];
+  }
+  NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
   NSString* uuid = [[NSUUID UUID] UUIDString];
   if (!StorePasswordInKeychain(password, uuid)) {
     return nil;
   }
-  NSString* validationIdentifier =
+  NSString* validationIdentifierKey =
       AppGroupUserDefaultsCredentialProviderUserID();
+  NSString* validationIdentifier =
+      [app_group::GetGroupUserDefaults() stringForKey:validationIdentifierKey];
 
-  return [[ArchivableCredential alloc]
-           initWithFavicon:nil
-        keychainIdentifier:uuid
-                      rank:1
-          recordIdentifier:recordIdentifier
-         serviceIdentifier:self.serviceIdentifier.identifier
-               serviceName:url.host
-                      user:username
-      validationIdentifier:validationIdentifier];
+  return [[ArchivableCredential alloc] initWithFavicon:nil
+                                    keychainIdentifier:uuid
+                                                  rank:1
+                                      recordIdentifier:recordIdentifier
+                                     serviceIdentifier:identifier
+                                           serviceName:url.host ?: identifier
+                                                  user:username
+                                  validationIdentifier:validationIdentifier];
 }
 
 // Saves the given credential to disk and calls |completion| once the operation
