@@ -828,6 +828,7 @@ bool TabStripModel::IsGroupCollapsed(
 }
 
 bool TabStripModel::IsTabBlocked(int index) const {
+  DCHECK(ContainsIndex(index)) << index;
   return contents_data_[index]->blocked();
 }
 

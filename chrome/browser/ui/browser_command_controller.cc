@@ -1565,7 +1565,10 @@ void BrowserCommandController::UpdateTabRestoreCommandState() {
 
 void BrowserCommandController::UpdateCommandsForFind() {
   TabStripModel* model = browser_->tab_strip_model();
-  bool enabled = !model->IsTabBlocked(model->active_index()) &&
+  int active_index = model->active_index();
+
+  bool enabled = active_index != TabStripModel::kNoTab &&
+                 !model->IsTabBlocked(active_index) &&
                  !browser_->is_type_devtools();
 
   command_updater_.UpdateCommandEnabled(IDC_FIND, enabled);
