@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.download;
 
+import android.content.Context;
+
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.UpdateDelta;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
@@ -46,4 +52,9 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
 
     /** @return Whether the UI is currently showing. */
     boolean isShowing();
+
+    /** Called when activity is launched or configuration is changed. */
+    default void onConfigurationChanged(Context context,
+            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
+            ActivityTabProvider activityTabProvider) {}
 }

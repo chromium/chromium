@@ -286,19 +286,22 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private DownloadLaterDialogHelper mDownloadLaterDialogHelper;
 
     // The associated activity context.
-    private final Context mContext;
+    private Context mContext;
+
+    // The associated OTR profile ID.
+    private final OTRProfileID mOtrProfileID;
 
     // The message dispatcher for showing the message UI.
-    private final Supplier<MessageDispatcher> mMessageDispatcher;
+    private Supplier<MessageDispatcher> mMessageDispatcher;
 
     // Dialog manager used for creating download later dialogs.
-    private final ModalDialogManager mModalDialogManager;
+    private ModalDialogManager mModalDialogManager;
 
     // Provides information about currently focused tab.
-    private final ActivityTabProvider mActivityTabProvider;
+    private ActivityTabProvider mActivityTabProvider;
 
     // Used to get information about whenever current tab is switched.
-    private final ActivityTabTabObserver mActivityTabObserver;
+    private ActivityTabTabObserver mActivityTabObserver;
 
     // The model used to update the UI properties.
     private PropertyModel mPropertyModel;
@@ -306,18 +309,33 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private Runnable mDismissRunnable;
 
     /** Constructor. */
-    public DownloadMessageUiControllerImpl(Context context,
+    public DownloadMessageUiControllerImpl(Context context, OTRProfileID otrProfileID,
             Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
             ActivityTabProvider activityTabProvider) {
         mUseNewDownloadPath =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER);
+        mOtrProfileID = otrProfileID;
         mMessageDispatcher = messageDispatcher;
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mActivityTabProvider = activityTabProvider;
 
         mHandler.post(() -> getOfflineContentProvider().addObserver(this));
+        createActivityTabObserver();
+    }
 
+    @Override
+    public void onConfigurationChanged(Context context,
+            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
+            ActivityTabProvider activityTabProvider) {
+        mContext = context;
+        mMessageDispatcher = messageDispatcher;
+        mModalDialogManager = modalDialogManager;
+        mActivityTabProvider = activityTabProvider;
+        createActivityTabObserver();
+    }
+
+    private void createActivityTabObserver() {
         mActivityTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
             @Override
             protected void onObservingDifferentTab(Tab tab, boolean hint) {
@@ -432,6 +450,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 || offlineItem.isSuggested || offlineItem.isDangerous) {
             return false;
         }
+        String stringOTRProfileID = OTRProfileID.serialize(mOtrProfileID);
+        if (!OTRProfileID.areEqual(stringOTRProfileID, offlineItem.otrProfileId)) return false;
+
         if (LegacyHelpers.isLegacyDownload(offlineItem.id)
                 && TextUtils.isEmpty(offlineItem.filePath)) {
             return false;
@@ -756,7 +777,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         Tab currentTab = mActivityTabProvider.get();
         boolean shouldShowMessage = currentTab != null && currentTab.getWebContents() != null
-                && mMessageDispatcher.get() != null && (info.forceShow || mPropertyModel != null);
+                && mMessageDispatcher.get() != null && (info.forceShow || mPropertyModel != null)
+                && currentTab.isIncognito() == OTRProfileID.isOffTheRecord(mOtrProfileID);
         if (!shouldShowMessage) return;
 
         recordMessageState(state, info);
