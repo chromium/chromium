@@ -30,6 +30,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
@@ -55,6 +56,7 @@ class PasswordCheckMediator
     private static long sStatusUpdateDelayMillis = 1000;
 
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    private final ReauthenticatorBridge mReauthenticatorBridge;
     private final PasswordCheckChangePasswordHelper mChangePasswordDelegate;
     private PropertyModel mModel;
     private PasswordCheckComponentUi.Delegate mDelegate;
@@ -67,11 +69,13 @@ class PasswordCheckMediator
 
     PasswordCheckMediator(PasswordCheckChangePasswordHelper changePasswordDelegate,
             PasswordAccessReauthenticationHelper reauthenticationHelper,
-            SettingsLauncher settingsLauncher, PasswordCheckIconHelper passwordCheckIconHelper) {
+            ReauthenticatorBridge reauthenticatorBridge, SettingsLauncher settingsLauncher,
+            PasswordCheckIconHelper passwordCheckIconHelper) {
         mChangePasswordDelegate = changePasswordDelegate;
         mReauthenticationHelper = reauthenticationHelper;
         mSettingsLauncher = settingsLauncher;
         mIconHelper = passwordCheckIconHelper;
+        mReauthenticatorBridge = reauthenticatorBridge;
     }
 
     void initialize(PropertyModel model, PasswordCheckComponentUi.Delegate delegate,
@@ -318,6 +322,20 @@ class PasswordCheckMediator
 
     @Override
     public void onChangePasswordWithScriptButtonClick(CompromisedCredential credential) {
+        if (!mReauthenticatorBridge.canUseAuthentication()
+                || !ChromeFeatureList.isEnabled(ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL)) {
+            startAutomatedPasswordChange(credential);
+            return;
+        }
+
+        mReauthenticatorBridge.reauthenticate(reauthSucceeded -> {
+            if (reauthSucceeded) {
+                startAutomatedPasswordChange(credential);
+            }
+        });
+    }
+
+    private void startAutomatedPasswordChange(CompromisedCredential credential) {
         assert credential.hasAutoChangeButton();
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY);

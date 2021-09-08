@@ -7868,6 +7868,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Manual fallback sheet"/>
   <int value="3" label="List of all passwords"/>
   <int value="4" label="Account chooser dialog"/>
+  <int value="5" label="Password check - Automated password change"/>
 </enum>
 
 <enum name="BiometricAuthResult">

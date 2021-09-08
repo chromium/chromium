@@ -61,6 +61,7 @@ import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
@@ -120,6 +121,8 @@ public class PasswordCheckControllerTest {
     @Mock
     private PasswordAccessReauthenticationHelper mReauthenticationHelper;
     @Mock
+    private ReauthenticatorBridge mReauthenticatorBridge;
+    @Mock
     private SettingsLauncher mSettingsLauncher;
     @Mock
     private PasswordCheckIconHelper mIconHelper;
@@ -138,8 +141,8 @@ public class PasswordCheckControllerTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(RecordHistogramJni.TEST_HOOKS, mRecordHistogramBridge);
         mModel = PasswordCheckProperties.createDefaultModel();
-        mMediator = new PasswordCheckMediator(
-                mChangePasswordDelegate, mReauthenticationHelper, mSettingsLauncher, mIconHelper);
+        mMediator = new PasswordCheckMediator(mChangePasswordDelegate, mReauthenticationHelper,
+                mReauthenticatorBridge, mSettingsLauncher, mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
         PasswordCheckMediator.setStatusUpdateDelayMillis(0);
@@ -651,7 +654,99 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
     public void testOnAutoChangePasswordButtonClick() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
+        // There is a auto change button, a user clicks it.
+        mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
+    public void testOnAutoChangePasswordCannotReauthContinuesNormally() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(false);
+        // There is a auto change button, a user clicks it.
+        mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY),
+                is(1));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(1));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
+    public void testOnAutoChangePasswordAuthenticationFails() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
+        doAnswer(invocation -> {
+            Callback<Boolean> cb = invocation.getArgument(0);
+            cb.onResult(false);
+            return true;
+        })
+                .when(mReauthenticatorBridge)
+                .reauthenticate(notNull());
+        // There is a auto change button, a user clicks it.
+        mMediator.onChangePasswordWithScriptButtonClick(BOB);
+        verify(mChangePasswordDelegate, never())
+                .launchCctWithScript(any(CompromisedCredential.class));
+
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                           PasswordCheckUserAction.CHANGE_PASSWORD_AUTOMATICALLY),
+                is(0));
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(0));
+        assertThat(RecordHistogram.getHistogramValueCountForTesting(
+                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_FOR_SCRIPTED_SITES,
+                           PasswordCheckResolutionAction.STARTED_SCRIPT),
+                is(0));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
+    public void testOnAutoChangePasswordAuthenticationSucceeds() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
+        doAnswer(invocation -> {
+            Callback<Boolean> cb = invocation.getArgument(0);
+            cb.onResult(true);
+            return true;
+        })
+                .when(mReauthenticatorBridge)
+                .reauthenticate(notNull());
         // There is a auto change button, a user clicks it.
         mMediator.onChangePasswordWithScriptButtonClick(BOB);
         verify(mChangePasswordDelegate).launchCctWithScript(eq(BOB));
@@ -734,7 +829,9 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
     public void testDoesntRecordDidNothingOnLeavingPageIfCctIsOpen() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
         when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
@@ -763,7 +860,9 @@ public class PasswordCheckControllerTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.BIOMETRIC_TOUCH_TO_FILL})
     public void testRecordDidNothingOnLeavingPageIfCctIsClosed() {
+        when(mReauthenticatorBridge.canUseAuthentication()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {ANA, BOB, CHARLIE});
         when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);

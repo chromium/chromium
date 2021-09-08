@@ -55,7 +55,11 @@ enum class BiometricAuthRequester {
   // The dialog displayed via the Credential Management API.
   kAccountChooserDialog = 4,
 
-  kMaxValue = kAccountChooserDialog,
+  // The list displaying all compromised passwords. Reauth is triggered before
+  // starting automated password change.
+  kPasswordCheckAutoPwdChange = 5,
+
+  kMaxValue = kPasswordCheckAutoPwdChange,
 };
 
 // The result of the biometric authentication.
