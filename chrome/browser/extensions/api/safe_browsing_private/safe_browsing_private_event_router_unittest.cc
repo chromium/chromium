@@ -209,11 +209,11 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
   void TriggerOnLoginEvent(
       const GURL& url,
-      absl::optional<GURL> federated_origin = absl::nullopt) {
+      absl::optional<url::Origin> federated_origin = absl::nullopt) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnLoginEvent(
-            url, federated_origin.has_value(),
-            federated_origin.has_value() ? federated_origin.value() : GURL());
+        ->OnLoginEvent(url, federated_origin.has_value(),
+                       federated_origin.has_value() ? federated_origin.value()
+                                                    : url::Origin());
   }
 
   void TriggerOnPasswordBreachEvent(
@@ -765,11 +765,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
 
   safe_browsing::EventReportValidator validator(client_.get());
   validator.ExpectLoginEvent("https://www.example.com/", true,
-                             "https://www.google.com/",
+                             "https://www.google.com",
                              profile_->GetProfileUserName());
 
   TriggerOnLoginEvent(GURL("https://www.example.com/"),
-                      GURL("https://www.google.com/"));
+                      url::Origin::Create(GURL("https://www.google.com")));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {

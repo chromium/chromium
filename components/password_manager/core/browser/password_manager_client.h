@@ -368,6 +368,13 @@ class PasswordManagerClient {
   // Records a Chrome Sync event that GAIA password reuse was detected.
   virtual void LogPasswordReuseDetectedEvent() = 0;
 
+  // If the feature is enabled send an event to the enterprise reporting
+  // connector server indicating that the user signed in to a website.
+  virtual void MaybeReportEnterpriseLoginEvent(
+      const GURL& url,
+      bool is_federated,
+      const url::Origin& federated_origin) const {}
+
   // Gets a ukm::SourceId that is associated with the WebContents object
   // and its last committed main frame navigation.
   virtual ukm::SourceId GetUkmSourceId() = 0;

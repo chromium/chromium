@@ -224,7 +224,7 @@ class SafeBrowsingPrivateEventRouter
 
   void OnLoginEvent(const GURL& url,
                     bool is_federated,
-                    const GURL& federated_origin);
+                    const url::Origin& federated_origin);
 
   void OnPasswordBreach(
       const std::string& trigger,

@@ -153,6 +153,7 @@ class EventReportValidator {
 
  private:
   void ValidateReport(base::Value* report);
+  void ValidateFederatedOrigin(base::Value* value);
   void ValidateIdentities(base::Value* value);
   void ValidateMimeType(base::Value* value);
   void ValidateDlpVerdict(

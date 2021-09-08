@@ -387,10 +387,22 @@ void EventReportValidator::ValidateReport(base::Value* report) {
                 username_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyIsFederated,
                 is_federated_);
-  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin,
-                federated_origin_);
+  ValidateFederatedOrigin(event);
   ValidateIdentities(event);
   ValidateMimeType(event);
+}
+
+void EventReportValidator::ValidateFederatedOrigin(base::Value* value) {
+  absl::optional<bool> is_federated =
+      value->FindBoolKey(SafeBrowsingPrivateEventRouter::kKeyIsFederated);
+  std::string* federated_origin =
+      value->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyFederatedOrigin);
+  if (is_federated.has_value() && is_federated.value()) {
+    EXPECT_NE(nullptr, federated_origin);
+    EXPECT_EQ(federated_origin_, *federated_origin);
+  } else {
+    EXPECT_EQ(nullptr, federated_origin);
+  }
 }
 
 void EventReportValidator::ValidateIdentities(base::Value* value) {

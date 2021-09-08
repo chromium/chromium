@@ -37,6 +37,8 @@ POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
 // Enable Chrome Remote Desktop for Managed Guest Sessions and affiliated users.
 POLICY_EXPORT extern const base::Feature kCRDForManagedUserSessions;
 
+POLICY_EXPORT extern const base::Feature kLoginEventReporting;
+
 }  // namespace features
 }  // namespace policy
 

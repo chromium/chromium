@@ -766,7 +766,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 void SafeBrowsingPrivateEventRouter::OnLoginEvent(
     const GURL& url,
     bool is_federated,
-    const GURL& federated_origin) {
+    const url::Origin& federated_origin) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       GetReportingSettings();
   if (!settings.has_value() ||
@@ -777,7 +777,8 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
   base::Value event(base::Value::Type::DICTIONARY);
   event.SetStringKey(kKeyUrl, url.spec());
   event.SetBoolKey(kKeyIsFederated, is_federated);
-  event.SetStringKey(kKeyFederatedOrigin, federated_origin.spec());
+  if (is_federated)
+    event.SetStringKey(kKeyFederatedOrigin, federated_origin.Serialize());
   event.SetStringKey(kKeyProfileUserName, GetProfileUserName());
 
   ReportRealtimeEvent(kKeyLoginEvent, std::move(settings.value()),
