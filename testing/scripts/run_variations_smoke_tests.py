@@ -53,17 +53,26 @@ _TEST_CASES = [
 def _parse_test_seed():
   """Reads and parses the test variations seed.
 
-  For prototypeing propose, a test seed is hard-coded in the
-  variations_smoke_test_data/ directory, and this function should be updated to
-  use the seed provided by the official variations test recipe once it's ready
-  for integration.
+  There are 2 types of seeds used by this smoke test:
+  1. A provided seed under test, and when the test is running with this seed,
+     it's running as a TRY job and is triggered by the finch_smoke_test recipe
+     to test the Finch GCL config changes. The interface between the recipe and
+     this test is a json file named variations_seed.json located at the root of
+     the checkout.
+  2. A hard-coded seed, and when the test is running with this seed, it's
+     running on CI continuously to prevent regressions to this test itself.
+     These hard-coded seeds live in the //variations_smoke_test_data directory.
 
   Returns:
     A tuple of two strings: the compressed seed and the seed signature.
   """
-  with open(
-      os.path.join(_THIS_DIR, 'variations_smoke_test_data',
-                   'variations_seed_beta_linux.json')) as f:
+  path_seed = os.path.join(_SRC_DIR, 'variations_seed.json')
+  if not os.path.isfile(path_seed):
+    path_seed = os.path.join(_THIS_DIR, 'variations_smoke_test_data',
+                             'variations_seed_beta_mac.json')
+
+  logging.info('Parsing test seed from "%s"', path_seed)
+  with open(path_seed, 'r') as f:
     seed_json = json.load(f)
 
   return (seed_json.get(_LOCAL_STATE_SEED_NAME, None),
