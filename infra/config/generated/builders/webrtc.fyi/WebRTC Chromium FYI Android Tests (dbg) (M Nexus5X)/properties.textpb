@@ -1,0 +1,13 @@
+{
+  "$recipe_engine/isolated": {
+    "server": "https://isolateserver.appspot.com"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "recipe": "chromium"
+}

@@ -769,8 +769,8 @@ def builder(
 
     # Add a bootstrap node for the builder so the _bootstrap_properties
     # generator can determine which builders are being bootstrapped
-    if bootstrap:
-        graph.add_node(_bootstrap_key(bucket, name))
+    if executable in _BOOTSTRAPPABLE_RECIPES:
+        graph.add_node(_bootstrap_key(bucket, name), props = {"bootstrap": bootstrap})
 
     builder_name = "{}/{}".format(bucket, name)
 
@@ -823,15 +823,18 @@ def builder(
 
     return builder
 
-# Bootstrapping is currently under development, it's not for general use yet
-_BOOTSTRAP_ALLOWLIST = {e: True for e in [
-    ("ci", "linux-bootstrap"),
-    ("ci", "linux-bootstrap-tests"),
-    ("try", "linux-bootstrap"),
-    ("ci", "win-bootstrap"),
-    ("ci", "win-bootstrap-tests"),
-    ("try", "win-bootstrap"),
-]}
+# A recipe can (but doesn't have to) be marked as bootstrappable if the
+# following conditions are true:
+# * chromium_bootstrap.update_gclient_config is called to update the gclient
+#   config that is used for bot_update.
+# * If the recipe does analysis to reduce compilation/testing, it skips analysis
+#   and performs a full build if chromium_bootstrap.skip_analysis_reasons is
+#   non-empty.
+_BOOTSTRAPPABLE_RECIPES = [
+    "recipe:chromium",
+    "recipe:chromium/orchestrator",
+    "recipe:chromium_trybot",
+]
 
 _NON_BOOTSTRAPPED_PROPERTIES = [
     # Sheriff-o-Matic queries for builder_group in the input properties to find
@@ -849,11 +852,15 @@ def _bootstrap_key(bucket_name, builder_name):
 def _bootstrap_properties(ctx):
     """Update builder properties for bootstrapping.
 
-    For builders that have opted in to bootstrapping, their properties will be
-    moved to a separate file. The bootstrapper will read this file at build-time
-    and update the build's properties with the contents of the file. The
-    builder's properties within the buildbucket configuration will be modified
-    with the properties that control the bootstrapper itself.
+    For builders whose recipe supports bootstrapping, their properties will be
+    written out to a separate file. This is done even if the builder is not
+    being bootstrapped so that the properties file will exist already when it is
+    flipped to being bootstrapped.
+
+    For builders that have opted in to bootstrapping, this file will be read at
+    build-time and update the build's properties with the contents of the file.
+    The builder's properties within the buildbucket configuration will be
+    modified with the properties that control the bootstrapper itself.
 
     The builders that have opted in to bootstrapping is determined by examining
     the lucicfg graph to find a bootstrap node for a given builder. These nodes
@@ -874,13 +881,11 @@ def _bootstrap_properties(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
-            bootstrap = graph.node(_bootstrap_key(bucket_name, builder_name))
-            if not bootstrap:
+            bootstrap_node = graph.node(_bootstrap_key(bucket_name, builder_name))
+            if not bootstrap_node:
                 continue
 
-            if (bucket_name, builder_name) not in _BOOTSTRAP_ALLOWLIST:
-                fail("{}/{} is not approved for bootstrapping at this time"
-                    .format(bucket_name, builder_name))
+            bootstrap = bootstrap_node.props.bootstrap
 
             properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
             non_bootstrapped_properties = {
@@ -903,11 +908,12 @@ def _bootstrap_properties(ctx):
                     non_bootstrapped_properties[p] = builder_properties.pop(p)
             ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
-            builder.properties = json.encode(non_bootstrapped_properties)
+            if bootstrap:
+                builder.properties = json.encode(non_bootstrapped_properties)
 
-            builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
-            builder.exe.cipd_version = "latest"
-            builder.exe.cmd = ["bootstrapper"]
+                builder.exe.cipd_package = "infra/chromium/bootstrapper/${platform}"
+                builder.exe.cipd_version = "latest"
+                builder.exe.cmd = ["bootstrapper"]
 
 lucicfg.generator(_bootstrap_properties)
 

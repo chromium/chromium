@@ -1,0 +1,26 @@
+{
+  "$build/code_coverage": {
+    "use_clang_coverage": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-gvisor-shadow",
+    "jobs": 150,
+    "metrics_project": "chromium-reclient-metrics"
+  },
+  "$kitchen": {
+    "devshell": true,
+    "emulate_gce": true,
+    "git_auth": true
+  },
+  "$recipe_engine/isolated": {
+    "server": "https://isolateserver.appspot.com"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "recipe": "chromium_trybot"
+}
