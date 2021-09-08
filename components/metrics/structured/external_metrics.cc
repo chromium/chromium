@@ -70,19 +70,8 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
     std::string proto_str;
     EventsProto proto;
 
-    // We may try to read a file as it's being written by cros. To avoid this,
-    // cros locks each file exclusively before writing. Check we can get a
-    // shared lock for reading, and otherwise ignore the file. Note these are
-    // advisory POSIX locks. We don't actually use the file object for reading.
-    static const uint32_t open_flags =
-        base::File::FLAG_OPEN | base::File::FLAG_READ;
-    base::File file(path, open_flags);
-    if (file.Lock(base::File::LockMode::kShared) != base::File::FILE_OK)
-      continue;
-
     bool read_ok = base::ReadFileToString(path, &proto_str) &&
                    proto.ParseFromString(proto_str);
-    file.Unlock();
     base::DeleteFile(path);
 
     if (!read_ok)
