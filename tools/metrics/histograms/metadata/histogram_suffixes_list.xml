@@ -1065,6 +1065,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="AutofillSaveCreditCardPromptPreviousUserDecision"
     separator=".">
+  <obsolete>
+    Removed 2021/09.
+  </obsolete>
   <suffix name="NoPreviousDecision"
       label="User previous decision not on record"/>
   <suffix name="PreviouslyAccepted"

@@ -104,9 +104,6 @@ class SaveCardMessageControllerAndroid : public SaveCardMessageConfirmDelegate {
   // local credit card offer-to-save prompt (if |upload_| is false).
   AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
 
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
-
   // If the cardholder name is missing, request the name from the user before
   // saving the card. If the expiration date is missing, request the missing
   // data from the user before saving the card.

@@ -662,6 +662,10 @@ const char kNtpSearchSuggestionsImpressions[] =
 const char kNtpSearchSuggestionsOptOut[] = "ntp.search_suggestions_opt_out";
 #endif
 
+// Deprecated 09/2021.
+const char kAutofillAcceptSaveCreditCardPromptState[] =
+    "autofill.accept_save_credit_card_prompt_state";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -858,6 +862,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kNtpSearchSuggestionsImpressions);
   registry->RegisterBooleanPref(kNtpSearchSuggestionsOptOut, false);
 #endif
+
+  registry->RegisterIntegerPref(kAutofillAcceptSaveCreditCardPromptState, 0);
 }
 
 }  // namespace
@@ -1683,6 +1689,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kNtpSearchSuggestionsImpressions);
   profile_prefs->ClearPref(kNtpSearchSuggestionsOptOut);
 #endif
+
+  // Added 09/2021.
+  profile_prefs->ClearPref(kAutofillAcceptSaveCreditCardPromptState);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -19,8 +19,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-class PrefService;
-
 namespace autofill {
 
 enum class BubbleType;
@@ -175,9 +173,6 @@ class SaveCardBubbleControllerImpl
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
-
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt. Will return the cardholder name

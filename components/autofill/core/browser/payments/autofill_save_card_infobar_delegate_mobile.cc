@@ -17,11 +17,9 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,7 +36,6 @@ AutofillSaveCardInfoBarDelegateMobile::AutofillSaveCardInfoBarDelegateMobile(
     AutofillClient::UploadSaveCardPromptCallback
         upload_save_card_prompt_callback,
     AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback,
-    PrefService* pref_service,
     const AccountInfo& displayed_target_account)
     : ConfirmInfoBarDelegate(),
       upload_(upload),
@@ -47,7 +44,6 @@ AutofillSaveCardInfoBarDelegateMobile::AutofillSaveCardInfoBarDelegateMobile(
           std::move(upload_save_card_prompt_callback)),
       local_save_card_prompt_callback_(
           std::move(local_save_card_prompt_callback)),
-      pref_service_(pref_service),
       had_user_interaction_(false),
       issuer_icon_id_(CreditCard::IconResourceId(card.network())),
       card_label_(card.CardIdentifierStringForAutofillDisplay()),
@@ -67,10 +63,8 @@ AutofillSaveCardInfoBarDelegateMobile::AutofillSaveCardInfoBarDelegateMobile(
     DCHECK(displayed_target_account_avatar_.IsEmpty());
   }
 
-  AutofillMetrics::LogCreditCardInfoBarMetric(
-      AutofillMetrics::INFOBAR_SHOWN, upload_, options_,
-      pref_service_->GetInteger(
-          prefs::kAutofillAcceptSaveCreditCardPromptState));
+  AutofillMetrics::LogCreditCardInfoBarMetric(AutofillMetrics::INFOBAR_SHOWN,
+                                              upload_, options_);
 }
 
 AutofillSaveCardInfoBarDelegateMobile::
@@ -228,12 +222,7 @@ void AutofillSaveCardInfoBarDelegateMobile::LogUserAction(
     AutofillMetrics::InfoBarMetric user_action) {
   DCHECK(!had_user_interaction_);
 
-  AutofillMetrics::LogCreditCardInfoBarMetric(
-      user_action, upload_, options_,
-      pref_service_->GetInteger(
-          prefs::kAutofillAcceptSaveCreditCardPromptState));
-  UpdateAutofillAcceptSaveCreditCardPromptState(
-      pref_service_, user_action == AutofillMetrics::INFOBAR_ACCEPTED);
+  AutofillMetrics::LogCreditCardInfoBarMetric(user_action, upload_, options_);
   had_user_interaction_ = true;
 }
 

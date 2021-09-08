@@ -109,25 +109,6 @@ enum FieldTypeGroupForMetrics {
   NUM_FIELD_TYPE_GROUPS_FOR_METRICS
 };
 
-std::string PreviousSaveCreditCardPromptUserDecisionToString(
-    int previous_save_credit_card_prompt_user_decision) {
-  DCHECK_LT(previous_save_credit_card_prompt_user_decision,
-            prefs::NUM_PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISIONS);
-  std::string previous_response;
-  if (previous_save_credit_card_prompt_user_decision ==
-      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED) {
-    previous_response = ".PreviouslyAccepted";
-  } else if (previous_save_credit_card_prompt_user_decision ==
-             prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED) {
-    previous_response = ".PreviouslyDenied";
-  } else {
-    DCHECK_EQ(previous_save_credit_card_prompt_user_decision,
-              prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
-    previous_response = ".NoPreviousDecision";
-  }
-  return previous_response;
-}
-
 // Converts a server field type that can be edited in the settings to an enum
 // used for metrics.
 AutofillMetrics::SettingsVisibleFieldTypeForMetrics
@@ -868,8 +849,7 @@ void AutofillMetrics::LogCardUploadDecisionMetrics(
 void AutofillMetrics::LogCreditCardInfoBarMetric(
     InfoBarMetric metric,
     bool is_uploading,
-    AutofillClient::SaveCreditCardOptions options,
-    int previous_save_credit_card_prompt_user_decision) {
+    AutofillClient::SaveCreditCardOptions options) {
   DCHECK_LT(metric, NUM_INFO_BAR_METRICS);
 
   std::string destination = is_uploading ? ".Server" : ".Local";
@@ -898,12 +878,6 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
         "Autofill.CreditCardInfoBar" + destination + ".FromNonFocusableForm",
         metric, NUM_INFO_BAR_METRICS);
   }
-
-  base::UmaHistogramEnumeration(
-      "Autofill.CreditCardInfoBar" + destination +
-          PreviousSaveCreditCardPromptUserDecisionToString(
-              previous_save_credit_card_prompt_user_decision),
-      metric, NUM_INFO_BAR_METRICS);
 }
 
 // static
@@ -927,7 +901,6 @@ void AutofillMetrics::LogSaveCardPromptOfferMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    int previous_save_credit_card_prompt_user_decision,
     security_state::SecurityLevel security_level,
     AutofillSyncSigninState sync_state) {
   DCHECK_LT(metric, NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
@@ -964,12 +937,6 @@ void AutofillMetrics::LogSaveCardPromptOfferMetric(
         NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
   }
 
-  base::UmaHistogramEnumeration(
-      metric_with_destination_and_show +
-          PreviousSaveCreditCardPromptUserDecisionToString(
-              previous_save_credit_card_prompt_user_decision),
-      metric, NUM_SAVE_CARD_PROMPT_OFFER_METRICS);
-
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(
         security_state::GetSecurityLevelHistogramName(
@@ -984,7 +951,6 @@ void AutofillMetrics::LogSaveCardPromptResultMetric(
     bool is_uploading,
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
-    int previous_save_credit_card_prompt_user_decision,
     security_state::SecurityLevel security_level,
     AutofillSyncSigninState sync_state) {
   DCHECK_LT(metric, NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
@@ -1021,12 +987,6 @@ void AutofillMetrics::LogSaveCardPromptResultMetric(
         metric_with_destination_and_show + ".FromDynamicChangeForm", metric,
         NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
   }
-
-  base::UmaHistogramEnumeration(
-      metric_with_destination_and_show +
-          PreviousSaveCreditCardPromptUserDecisionToString(
-              previous_save_credit_card_prompt_user_decision),
-      metric, NUM_SAVE_CARD_PROMPT_RESULT_METRICS);
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(

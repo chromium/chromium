@@ -14,7 +14,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -121,11 +120,7 @@ void SaveCardMessageControllerAndroidTest::SetUp() {
       profile(), BrowserContextKeyedServiceFactory::TestingFactory());
 
   personal_data_ = std::make_unique<TestPersonalDataManager>();
-  personal_data_->SetPrefService(profile()->GetPrefs());
 
-  profile()->GetPrefs()->SetInteger(
-      prefs::kAutofillAcceptSaveCreditCardPromptState,
-      prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
   NavigateAndCommit(GURL(kDefaultUrl));
 }
 

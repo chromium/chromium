@@ -18,7 +18,6 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/messages/android/messages_feature.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,8 +47,6 @@ void SaveCardMessageControllerAndroid::Show(
     DismissMessage();
   }
   web_contents_ = web_contents;
-  pref_service_ = Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                      ->GetPrefs();
   options_ = options;
   inferred_name_ = inferred_name;
 
@@ -253,8 +250,6 @@ void SaveCardMessageControllerAndroid::OnPromptCompleted(
       break;
   }
   LogAutofillCreditCardMessageMetrics(message_state, is_upload_, options_);
-  UpdateAutofillAcceptSaveCreditCardPromptState(
-      pref_service_, message_state == MessageMetrics::kAccepted);
   if (is_upload_) {
     std::move(upload_save_card_prompt_callback_)
         .Run(user_decision, user_provided_details);

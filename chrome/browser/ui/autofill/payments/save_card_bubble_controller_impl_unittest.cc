@@ -31,8 +31,6 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,10 +94,6 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     TestSaveCardBubbleControllerImpl::CreateForTesting(web_contents);
-    user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())
-        ->SetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState,
-            prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_NONE);
     test_clock_.SetNow(kArbitraryTime);
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()

@@ -1160,8 +1160,7 @@ class AutofillMetrics {
   static void LogCreditCardInfoBarMetric(
       InfoBarMetric metric,
       bool is_uploading,
-      AutofillClient::SaveCreditCardOptions options,
-      int previous_save_credit_card_prompt_user_decision);
+      AutofillClient::SaveCreditCardOptions options);
   static void LogCreditCardFillingInfoBarMetric(InfoBarMetric metric);
   static void LogSaveCardRequestExpirationDateReasonMetric(
       SaveCardRequestExpirationDateReasonMetric metric);
@@ -1170,7 +1169,6 @@ class AutofillMetrics {
       bool is_uploading,
       bool is_reshow,
       AutofillClient::SaveCreditCardOptions options,
-      int previous_save_credit_card_prompt_user_decision,
       security_state::SecurityLevel security_level,
       AutofillSyncSigninState sync_state);
   static void LogSaveCardPromptResultMetric(
@@ -1178,7 +1176,6 @@ class AutofillMetrics {
       bool is_uploading,
       bool is_reshow,
       AutofillClient::SaveCreditCardOptions options,
-      int previous_save_credit_card_prompt_user_decision,
       security_state::SecurityLevel security_level,
       AutofillSyncSigninState sync_state);
   static void LogCreditCardUploadLegalMessageLinkClicked();

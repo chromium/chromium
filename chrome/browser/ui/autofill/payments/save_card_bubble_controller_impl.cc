@@ -36,14 +36,11 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -51,9 +48,7 @@ namespace autofill {
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
-    : AutofillBubbleControllerBase(web_contents),
-      pref_service_(
-          user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())) {
+    : AutofillBubbleControllerBase(web_contents) {
   security_level_ =
       SecurityStateTabHelper::FromWebContents(web_contents)->GetSecurityLevel();
 
@@ -351,15 +346,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     switch (closed_reason) {
       case PaymentsBubbleClosedReason::kAccepted:
         metric = AutofillMetrics::SAVE_CARD_PROMPT_ACCEPTED;
-        pref_service_->SetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState,
-            prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED);
         break;
       case PaymentsBubbleClosedReason::kCancelled:
         metric = AutofillMetrics::SAVE_CARD_PROMPT_CANCELLED;
-        pref_service_->SetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState,
-            prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED);
         break;
       case PaymentsBubbleClosedReason::kClosed:
         metric = AutofillMetrics::SAVE_CARD_PROMPT_CLOSED;
@@ -376,8 +365,6 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     }
     AutofillMetrics::LogSaveCardPromptResultMetric(
         metric, is_upload_save_, is_reshow_, options_,
-        pref_service_->GetInteger(
-            prefs::kAutofillAcceptSaveCreditCardPromptState),
         GetSecurityLevel(), GetSyncState());
   }
 
@@ -505,8 +492,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
       AutofillMetrics::LogSaveCardPromptOfferMetric(
           AutofillMetrics::SAVE_CARD_PROMPT_SHOWN, is_upload_save_, is_reshow_,
           options_,
-          pref_service_->GetInteger(
-              prefs::kAutofillAcceptSaveCreditCardPromptState),
           GetSecurityLevel(), GetSyncState());
       break;
     case BubbleType::MANAGE_CARDS:
@@ -574,8 +559,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       AutofillMetrics::LogSaveCardPromptOfferMetric(
           AutofillMetrics::SAVE_CARD_PROMPT_NOT_SHOWN_MAX_STRIKES_REACHED,
           is_upload_save_, is_reshow_, options_,
-          pref_service_->GetInteger(
-              prefs::kAutofillAcceptSaveCreditCardPromptState),
           GetSecurityLevel(), GetSyncState());
       break;
     case BubbleType::FAILURE:

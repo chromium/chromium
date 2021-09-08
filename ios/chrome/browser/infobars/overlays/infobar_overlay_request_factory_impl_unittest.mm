@@ -53,8 +53,7 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
 class InfobarOverlayRequestFactoryImplTest : public PlatformTest {
  public:
   InfobarOverlayRequestFactoryImplTest()
-      : prefs_(autofill::test::PrefServiceForTesting()),
-        card_(base::GenerateGUID(), "https://www.example.com/"),
+      : card_(base::GenerateGUID(), "https://www.example.com/"),
         profile_(base::GenerateGUID(), "https://www.example.com/"),
         translate_delegate_factory_("fr", "en") {}
 
@@ -62,7 +61,6 @@ class InfobarOverlayRequestFactoryImplTest : public PlatformTest {
 
  protected:
   InfobarOverlayRequestFactoryImpl factory_;
-  std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard card_;
   autofill::AutofillProfile profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
@@ -136,10 +134,10 @@ TEST_F(InfobarOverlayRequestFactoryImplTest, Confirm) {
 // Tests that the factory creates a save card request.
 TEST_F(InfobarOverlayRequestFactoryImplTest, SaveCard) {
   GURL url("https://chromium.test");
-  InfoBarIOS infobar(InfobarType::kInfobarTypeSaveCard,
-                     MockAutofillSaveCardInfoBarDelegateMobileFactory::
-                         CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
-                             false, prefs_.get(), card_));
+  InfoBarIOS infobar(
+      InfobarType::kInfobarTypeSaveCard,
+      MockAutofillSaveCardInfoBarDelegateMobileFactory::
+          CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(false, card_));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =
