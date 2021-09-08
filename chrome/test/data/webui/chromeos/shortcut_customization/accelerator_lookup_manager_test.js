@@ -5,7 +5,7 @@
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorSource, LayoutInfoList,} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -25,6 +25,24 @@ export function acceleratorLookupManagerTest() {
     manager.reset();
     provider = null;
   });
+
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {!AcceleratorKeys} oldKeys
+   * @param {!AcceleratorKeys} newKeys
+   */
+  function replaceAndVerify(source, action, oldKeys, newKeys) {
+    const uuid = manager.getAcceleratorFromKeys(JSON.stringify(oldKeys));
+    manager.replaceAccelerator(source, action, oldKeys, newKeys);
+
+    // Verify that the old accelerator is no longer part of the reverse
+    // lookup.
+    assertEquals(
+        undefined, manager.getAcceleratorFromKeys(JSON.stringify(oldKeys)));
+    // Verify the replacement accelerator is in the reverse lookup.
+    assertEquals(uuid, manager.getAcceleratorFromKeys(JSON.stringify(newKeys)));
+  }
 
   test('AcceleratorLookupDefaultFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
@@ -55,6 +73,124 @@ export function acceleratorLookupManagerTest() {
       assertEquals(2, manager.getSubcategories(/*ChromeOS=*/ 0).size);
       // 1 layout infos for Browser (Tabs).
       assertEquals(1, manager.getSubcategories(/*Browser=*/ 1).size);
+    });
+  });
+
+  test('ReplaceBasicAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Right accelerator.
+      const expectedAction = 1;
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const snapWindowRightAccels = ashMap.get(expectedAction);
+      // Modifier.Alt + key::221 (']')
+      const oldAccel = snapWindowRightAccels[0].accelerator;
+
+      const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
+        modifiers: Modifier.CONTROL,
+        key: 79,
+        key_display: 'o',
+      });
+
+      // Sanity check that new accel is not in the reverse lookup.
+      assertEquals(
+          undefined,
+          manager.getAcceleratorFromKeys(JSON.stringify(expectedNewAccel)));
+
+      replaceAndVerify(
+          AcceleratorSource.kAsh, expectedAction, oldAccel, expectedNewAccel);
+
+      // Check that the accelerator got updated in the lookup.
+      const lookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      assertEquals(1, lookup.length);
+      assertEquals(
+          JSON.stringify(expectedNewAccel),
+          JSON.stringify(lookup[0].accelerator));
+    });
+  });
+
+  test('ReplacePreexistingAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Right accelerator, the action that will be overridden.
+      const snapWindowRightAction = 1;
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const snapWindowRightAccels = ashMap.get(snapWindowRightAction);
+      // Modifier.Alt + key::221 (']')
+      const overridenAccel = snapWindowRightAccels[0].accelerator;
+
+      // Replace New Desk shortcut with Alt+']'.
+      const newDeskAction = 2;
+      const oldNewDeskAccel = ashMap.get(newDeskAction)[0].accelerator;
+
+      replaceAndVerify(
+          AcceleratorSource.kAsh, newDeskAction, oldNewDeskAccel,
+          overridenAccel);
+
+      // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
+      const newDeskLookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+      assertEquals(1, newDeskLookup.length);
+      assertEquals(
+          JSON.stringify(overridenAccel),
+          JSON.stringify(newDeskLookup[0].accelerator));
+
+      // Verify that Snap Window Right's has no accelerators since it got
+      // overridden by New Desk.
+      const snapWindowRightLookup = manager.getAccelerators(
+          AcceleratorSource.kAsh, snapWindowRightAction);
+      assertEquals(0, snapWindowRightLookup.length);
+    });
+  });
+
+  test('ReplacePreexistingLockedAccelerator', () => {
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    return provider.getAllAcceleratorConfig().then((result) => {
+      assertDeepEquals(fakeAcceleratorConfig, result);
+
+      manager.setAcceleratorLookup(result);
+
+      // Get Snap Window Left accelerator, which has a locked accelerator.
+      const snapWindowLeftAction = 0;
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const snapWindowLeftAccels = ashMap.get(snapWindowLeftAction);
+      // Modifier.Alt + key::219 ('[')
+      const overridenAccel = snapWindowLeftAccels[0].accelerator;
+      // Verify state is kEnabled.
+      assertEquals(AcceleratorState.kEnabled, snapWindowLeftAccels[0].state);
+
+      // Replace New Desk shortcut with Alt+'['.
+      const newDeskAction = 2;
+      const oldNewDeskAccel = ashMap.get(newDeskAction)[0].accelerator;
+
+      replaceAndVerify(
+          AcceleratorSource.kAsh, newDeskAction, oldNewDeskAccel,
+          overridenAccel);
+
+      // Verify that the New Desk shortcut now has the ALT + '[' accelerator.
+      const newDeskLookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+      assertEquals(1, newDeskLookup.length);
+      assertEquals(
+          JSON.stringify(overridenAccel),
+          JSON.stringify(newDeskLookup[0].accelerator));
+
+      // Verify that Snap Window Left's accelerator is not removed (since it is,
+      // locked). But it's state is updated to kDisabledByUser.
+      const snapWindowLeftLookup =
+          manager.getAccelerators(AcceleratorSource.kAsh, snapWindowLeftAction);
+      assertEquals(1, snapWindowLeftLookup.length);
+      assertEquals(
+          AcceleratorState.kDisabledByUser, snapWindowLeftLookup[0].state);
     });
   });
 }

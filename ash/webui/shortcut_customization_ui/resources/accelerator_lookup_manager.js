@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 import {fakeActionNames} from './fake_data.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, LayoutInfo, LayoutInfoList} from './shortcut_types.js';
 
 /**
  * A singleton class that manages the fetched accelerators and layout
@@ -146,6 +147,86 @@ export class AcceleratorLookupManager {
     }
   }
 
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {AcceleratorKeys} oldAccelerator
+   * @param {AcceleratorKeys} newAccelerator
+   */
+  replaceAccelerator(source, action, oldAccelerator, newAccelerator) {
+    const foundIdx =
+        this.getAcceleratorInfoIndex_(source, action, oldAccelerator);
+
+    if (foundIdx === -1) {
+      // Should only be able to call this function with a valid
+      // |oldAccelerator|.
+      assertNotReached();
+    }
+
+    // Check to see if there is a pre-existing accelerator to remove first.
+    this.maybeRemoveOrDisableAccelerator_(newAccelerator);
+
+    // Update the old accelerator with the new one.
+    const accelInfos = this.getAccelerators(source, action);
+    accelInfos[foundIdx].accelerator = newAccelerator;
+
+    // Update the reverse look up maps.
+    this.reverseAcceleratorLookup_
+        .set(JSON.stringify(newAccelerator), `${source}-${action}`);
+    this.reverseAcceleratorLookup_.delete(JSON.stringify(oldAccelerator));
+  }
+
+  /**
+   * Called to either remove or disable (if locked) an accelerator.
+   * @param {!AcceleratorKeys} accelKeys
+   * @private
+   */
+  maybeRemoveOrDisableAccelerator_(accelKeys) {
+    const uuid = this.getAcceleratorFromKeys(JSON.stringify(accelKeys));
+    if (uuid === undefined) {
+      // Not replacing a pre-existing accelerator.
+      return;
+    }
+
+    // Split '{source}-{action}` into [source][action].
+    const uuidSplit = uuid.split('-');
+    const source = /** @type {AcceleratorSource}*/ (parseInt(uuidSplit[0], 10));
+    const action = parseInt(uuidSplit[1], 10);
+    const accelInfos = this.getAccelerators(source, action);
+    const foundIdx = this.getAcceleratorInfoIndex_(source, action, accelKeys);
+
+    // Check if the accelerator is locked, disable if locked.
+    if (accelInfos[foundIdx].locked) {
+      accelInfos[foundIdx].state = AcceleratorState.kDisabledByUser;
+      return;
+    }
+
+    // Otherwise, remove the accelerator.
+    accelInfos.splice(foundIdx, 1);
+  }
+
+  /**
+   * @param {AcceleratorSource} source
+   * @param {number} action
+   * @param {AcceleratorKeys} acceleratorKeys
+   * @return {number} the index of the AcceleratorInfo with the matching
+   * |acceleratorKeys| in |acceleratorLookup|. Returns -1 if no match can be
+   * found.
+   * @private
+   */
+  getAcceleratorInfoIndex_(source, action, acceleratorKeys) {
+    // Stingify the Object so that it compared to other objects.
+    const accelKey = JSON.stringify(acceleratorKeys);
+    const accelInfos = this.getAccelerators(source, action);
+    for (let i = 0; i < accelInfos.length; ++i) {
+      const accelCompare = JSON.stringify(accelInfos[i].accelerator);
+      if (accelKey === accelCompare) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   reset() {
     this.acceleratorLookup_.clear();
     this.acceleratorLayoutLookup_.clear();
@@ -153,3 +234,4 @@ export class AcceleratorLookupManager {
 }
 
 addSingletonGetter(AcceleratorLookupManager);
+;
