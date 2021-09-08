@@ -319,7 +319,6 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
 
   // Overridden from QueryManager::Query:
   void Begin() override {
-    DCHECK(!begin_time_);
     MarkAsActive();
     begin_time_.emplace(base::TimeTicks::Now());
   }
