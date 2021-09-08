@@ -2675,6 +2675,17 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     if (line_box.IsEmptyLineBox())
       return;
 
+    if (UNLIKELY(line_box.IsBlockInInline())) {
+      // Block-in-inline may have different first/last baselines.
+      DCHECK(container_builder_.ItemsBuilder());
+      const NGLogicalLineItems& items =
+          container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
+      const NGLayoutResult* result = items.BlockInInlineLayoutResult();
+      DCHECK(result);
+      PropagateBaselineFromBlockChild(result->PhysicalFragment(), block_offset);
+      return;
+    }
+
     FontHeight metrics = line_box.BaselineMetrics();
     DCHECK(!metrics.IsEmpty());
     LayoutUnit baseline =
@@ -2691,6 +2702,14 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
 
     return;
   }
+
+  PropagateBaselineFromBlockChild(child, block_offset);
+}
+
+void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
+    const NGPhysicalFragment& child,
+    LayoutUnit block_offset) {
+  DCHECK(child.IsBox());
 
   // When computing the baseline for an inline-block, table's don't contribute
   // to any baselines.

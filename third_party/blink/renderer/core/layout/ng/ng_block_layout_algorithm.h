@@ -246,6 +246,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Propagates the baseline from the given |child| if needed.
   void PropagateBaselineFromChild(const NGPhysicalFragment& child,
                                   LayoutUnit block_offset);
+  void PropagateBaselineFromBlockChild(const NGPhysicalFragment& child,
+                                       LayoutUnit block_offset);
 
   // If still unresolved, resolve the fragment's BFC block offset.
   //
