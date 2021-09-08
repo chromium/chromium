@@ -51,6 +51,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& original_request,
       bool tainted,
       absl::optional<CorsErrorStatus>* detected_error_status);
+  // Checks CORS aceess on the CORS-preflight response parameters for testing.
+  static absl::optional<CorsErrorStatus> CheckPreflightAccessForTesting(
+      const GURL& response_url,
+      const int response_status_code,
+      const absl::optional<std::string>& allow_origin_header,
+      const absl::optional<std::string>& allow_credentials_header,
+      mojom::CredentialsMode actual_credentials_mode,
+      const url::Origin& origin);
 
   explicit PreflightController(NetworkService* network_service);
   ~PreflightController();

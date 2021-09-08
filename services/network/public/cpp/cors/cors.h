@@ -47,10 +47,31 @@ extern const char kAccessControlRequestMethod[];
 
 }  // namespace header_names
 
+// These values are used for logging to UMA. Entries should not be renumbered
+// and numeric values should never be reused. Please keep in sync with
+// "CorsAccessCheckResult" in src/tools/metrics/histograms/enums.xml.
+enum class AccessCheckResult {
+  kPermitted = 0,
+  kNotPermitted = 1,
+  kPermittedInPreflight = 2,
+  kNotPermittedInPreflight = 3,
+
+  kMaxValue = kNotPermittedInPreflight,
+};
+
 // Performs a CORS access check on the response parameters.
 // This implements https://fetch.spec.whatwg.org/#concept-cors-check
 COMPONENT_EXPORT(NETWORK_CPP)
 absl::optional<CorsErrorStatus> CheckAccess(
+    const GURL& response_url,
+    const absl::optional<std::string>& allow_origin_header,
+    const absl::optional<std::string>& allow_credentials_header,
+    mojom::CredentialsMode credentials_mode,
+    const url::Origin& origin);
+
+// Performs a CORS access check and reports result and error.
+COMPONENT_EXPORT(NETWORK_CPP)
+absl::optional<CorsErrorStatus> CheckAccessAndReportMetrics(
     const GURL& response_url,
     const absl::optional<std::string>& allow_origin_header,
     const absl::optional<std::string>& allow_credentials_header,
@@ -65,19 +86,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool ShouldCheckCors(const GURL& request_url,
                      const absl::optional<url::Origin>& request_initiator,
                      mojom::RequestMode request_mode);
-
-// Performs a CORS access check on the CORS-preflight response parameters.
-// According to the note at https://fetch.spec.whatwg.org/#cors-preflight-fetch
-// step 6, even for a preflight check, |credentials_mode| should be checked on
-// the actual request rather than preflight one.
-COMPONENT_EXPORT(NETWORK_CPP)
-absl::optional<CorsErrorStatus> CheckPreflightAccess(
-    const GURL& response_url,
-    const int response_status_code,
-    const absl::optional<std::string>& allow_origin_header,
-    const absl::optional<std::string>& allow_credentials_header,
-    mojom::CredentialsMode actual_credentials_mode,
-    const url::Origin& origin);
 
 // Given a redirected-to URL, checks if the location is allowed
 // according to CORS. That is:
