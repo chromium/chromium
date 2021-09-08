@@ -69,6 +69,7 @@
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
     <style name="Base.OverflowMenuThemeOverlay" parent="">
+        <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
