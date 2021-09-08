@@ -11783,7 +11783,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader"
@@ -15653,7 +15652,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader"
@@ -17631,7 +17629,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader"
@@ -19593,7 +19590,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--flag-specific=skia-vulkan-swiftshader"
