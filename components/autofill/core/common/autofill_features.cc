@@ -436,6 +436,12 @@ const base::Feature kAutofillManualFallbackAndroid{
 const base::Feature kAutofillRefreshStyleAndroid{
     "AutofillRefreshStyleAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the touch to fill surface is shown for credit cards on
+// Android.
+const base::Feature kAutofillTouchToFillForCreditCardsAndroid{
+    "AutofillTouchToFillForCreditCardsAndroid",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID) || defined(OS_IOS)

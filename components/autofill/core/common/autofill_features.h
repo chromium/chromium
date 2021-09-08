@@ -172,6 +172,8 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillManualFallbackAndroid;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillRefreshStyleAndroid;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillTouchToFillForCreditCardsAndroid;
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
