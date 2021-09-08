@@ -5,6 +5,8 @@
 
 %define ARCH_X86_64 1
 
+%define FORCE_VEX_ENCODING 0
+
 %define HAVE_AVX512ICL 1
 
 %define PIC 1

@@ -37,6 +37,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/mc_avx512.asm",
   "libdav1d/src/x86/mc_sse.asm",
   "libdav1d/src/x86/msac.asm",
+  "libdav1d/src/x86/refmvs.asm",
 ]
 
 x86_template_sources = [
@@ -68,6 +69,7 @@ arm32_asm_sources = [
   "libdav1d/src/arm/32/mc.S",
   "libdav1d/src/arm/32/mc16.S",
   "libdav1d/src/arm/32/msac.S",
+  "libdav1d/src/arm/32/refmvs.S",
   "libdav1d/src/arm/32/util.S",
 ]
 
@@ -90,6 +92,7 @@ arm64_asm_sources = [
   "libdav1d/src/arm/64/mc.S",
   "libdav1d/src/arm/64/mc16.S",
   "libdav1d/src/arm/64/msac.S",
+  "libdav1d/src/arm/64/refmvs.S",
   "libdav1d/src/arm/64/util.S",
 ]
 
