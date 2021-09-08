@@ -2763,6 +2763,7 @@ bool LocalFrameView::AnyFrameIsPrintingOrPaintingPreview() {
 }
 
 void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
+  ScriptForbiddenScope forbid_script;
   DCHECK(LocalFrameTreeAllowsThrottling());
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPaintLifecyclePhase");
   // While printing or capturing a paint preview of a document, the paint walk
@@ -2798,15 +2799,9 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
             area->UpdateCompositorScrollAnimations();
         }
         Document& document = frame_view.GetLayoutView()->GetDocument();
-        {
-          // Updating animations can notify ready promises which could mutate
-          // the DOM. We should delay these until we have finished the lifecycle
-          // update. https://crbug.com/1196781
-          ScriptForbiddenScope forbid_script;
-          document.GetDocumentAnimations().UpdateAnimations(
-              DocumentLifecycle::kPaintClean, paint_artifact_compositor_.get(),
-              needed_update);
-        }
+        document.GetDocumentAnimations().UpdateAnimations(
+            DocumentLifecycle::kPaintClean, paint_artifact_compositor_.get(),
+            needed_update);
         total_animations_count +=
             document.GetDocumentAnimations().GetAnimationsCount();
       });
