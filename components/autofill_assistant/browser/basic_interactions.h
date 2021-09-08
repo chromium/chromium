@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 
@@ -26,6 +27,9 @@ class BasicInteractions {
   BasicInteractions& operator=(const BasicInteractions&) = delete;
 
   base::WeakPtr<BasicInteractions> GetWeakPtr();
+
+  // Returns ClientSettings from the ScriptExecutorDelegate.
+  const ClientSettings& GetClientSettings();
 
   // Performs the computation specified by |proto| and writes the result to
   // |user_model_|. Returns true on success, false on error.

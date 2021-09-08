@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClearPersistentUiProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClearViewContainerProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientDimensionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClientSettingsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResultProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ColorProto;
@@ -778,8 +779,19 @@ public class AutofillAssistantGenericUiTest {
                         .build(),
                 list);
 
-        AutofillAssistantTestService testService =
-                new AutofillAssistantTestService(Collections.singletonList(script));
+        AutofillAssistantTestService testService = new AutofillAssistantTestService(
+                Collections.singletonList(script),
+                ClientSettingsProto.newBuilder()
+                        .setIntegrationTestSettings(
+                                ClientSettingsProto.IntegrationTestSettings.newBuilder()
+                                        .setDisableHeaderAnimations(true)
+                                        .setDisableCarouselChangeAnimations(true))
+                        .setDisplayStringsLocale("fr-FR")
+                        .addDisplayStrings(ClientSettingsProto.DisplayString.newBuilder()
+                                                   .setId(ClientSettingsProto.DisplayStringId.CLOSE)
+                                                   .setValue("fr_close")
+                                                   .build())
+                        .build());
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
@@ -787,7 +799,7 @@ public class AutofillAssistantGenericUiTest {
         onView(withText("Shows an info popup when clicked")).perform(click());
         onView(withText("Some title")).check(matches(isDisplayed()));
         onView(withText("Info message here")).check(matches(isDisplayed()));
-        onView(withText(mTestRule.getActivity().getString(R.string.close))).perform(click());
+        onView(withText("fr_close")).perform(click());
     }
 
     @Test

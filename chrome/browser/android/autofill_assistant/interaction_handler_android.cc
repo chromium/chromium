@@ -13,6 +13,7 @@
 #include "chrome/browser/android/autofill_assistant/generic_ui_nested_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/view_handler_android.h"
 #include "components/autofill_assistant/browser/basic_interactions.h"
+#include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 #include "components/autofill_assistant/browser/generic_ui_replace_placeholders.h"
 #include "components/autofill_assistant/browser/ui_delegate.h"
@@ -192,9 +193,11 @@ InteractionHandlerAndroid::CreateInteractionCallbackFromProto(
           &android_interactions::SetValue, basic_interactions_->GetWeakPtr(),
           proto.set_value()));
     case CallbackProto::kShowInfoPopup: {
-      return absl::optional<InteractionCallback>(
-          base::BindRepeating(&android_interactions::ShowInfoPopup,
-                              proto.show_info_popup().info_popup(), jcontext_));
+      return absl::optional<InteractionCallback>(base::BindRepeating(
+          &android_interactions::ShowInfoPopup,
+          proto.show_info_popup().info_popup(), jcontext_,
+          GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
+                               basic_interactions_->GetClientSettings())));
     }
     case CallbackProto::kShowListPopup:
       if (!proto.show_list_popup().has_item_names()) {

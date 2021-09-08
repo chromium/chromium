@@ -102,13 +102,15 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDate(
 // Creates the Java equivalent to |login_choices|.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaLoginChoiceList(
     JNIEnv* env,
-    const std::vector<LoginChoice>& login_choices) {
+    const std::vector<LoginChoice>& login_choices,
+    const ClientSettings& client_settings) {
   auto jlist = Java_AssistantCollectUserDataModel_createLoginChoiceList(env);
   for (const auto& login_choice : login_choices) {
     base::android::ScopedJavaLocalRef<jobject> jinfo_popup = nullptr;
     if (login_choice.info_popup.has_value()) {
       jinfo_popup = ui_controller_android_utils::CreateJavaInfoPopup(
-          env, *login_choice.info_popup);
+          env, *login_choice.info_popup,
+          GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings));
     }
     base::android::ScopedJavaLocalRef<jstring> jsublabel_accessibility_hint =
         nullptr;
@@ -1285,8 +1287,9 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
       base::android::ToJavaArrayOfStrings(
           env, collect_user_data_options->supported_basic_card_networks));
   if (collect_user_data_options->request_login_choice) {
-    auto jlist = CreateJavaLoginChoiceList(
-        env, collect_user_data_options->login_choices);
+    auto jlist =
+        CreateJavaLoginChoiceList(env, collect_user_data_options->login_choices,
+                                  ui_delegate_->GetClientSettings());
     Java_AssistantCollectUserDataModel_setLoginChoices(env, jmodel, jlist);
   }
   Java_AssistantCollectUserDataModel_setRequestDateRange(
@@ -1732,8 +1735,10 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
   if (form->has_info_popup()) {
     Java_AssistantFormModel_setInfoPopup(
         env, GetFormModel(),
-        ui_controller_android_utils::CreateJavaInfoPopup(env,
-                                                         form->info_popup()));
+        ui_controller_android_utils::CreateJavaInfoPopup(
+            env, form->info_popup(),
+            GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
+                                 ui_delegate_->GetClientSettings())));
   } else {
     Java_AssistantFormModel_clearInfoPopup(env, GetFormModel());
   }
