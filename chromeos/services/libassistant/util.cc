@@ -195,6 +195,14 @@ std::string CreateLibAssistantConfig(
   device.SetKey("model_revision", Value(1));
   config.SetKey("device", std::move(device));
 
+  // Enables Libassistant gRPC server for V2.
+  if (chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    Value libas_server(Type::DICTIONARY);
+    libas_server.SetKey("libas_server_address",
+                        Value(assistant::kLibassistantServiceAddress));
+    config.SetKey("libas_server", std::move(libas_server));
+  }
+
   Value discovery(Type::DICTIONARY);
   discovery.SetKey("enable_mdns", Value(false));
   config.SetKey("discovery", std::move(discovery));
