@@ -671,4 +671,24 @@ TEST(CSSParserImplTest, EmptyLayerStatementsAtWrongPositions) {
   }
 }
 
+TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
+  ScopedCSSCascadeLayersForTest enabled_scope(true);
+
+  // Empty @layer statements after regular rules are parsed as regular rules.
+
+  String sheet_text = R"CSS(
+    .element { color: green; }
+    @layer foo, bar;
+  )CSS";
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  CSSParserImpl::ParseStyleSheet(sheet_text, context, sheet);
+
+  EXPECT_EQ(0u, sheet->PreImportLayerStatementRules().size());
+  EXPECT_EQ(2u, sheet->ChildRules().size());
+  EXPECT_TRUE(sheet->ChildRules()[0]->IsStyleRule());
+  EXPECT_TRUE(sheet->ChildRules()[1]->IsLayerStatementRule());
+}
+
 }  // namespace blink

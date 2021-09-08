@@ -160,8 +160,8 @@ bool StyleSheetContents::IsCacheableForStyleElement() const {
 
 void StyleSheetContents::ParserAppendRule(StyleRuleBase* rule) {
   if (auto* layer_statement_rule = DynamicTo<StyleRuleLayerStatement>(rule)) {
-    if (import_rules_.IsEmpty() && namespace_rules_.IsEmpty()) {
-      DCHECK(child_rules_.IsEmpty());
+    if (import_rules_.IsEmpty() && namespace_rules_.IsEmpty() &&
+        child_rules_.IsEmpty()) {
       pre_import_layer_statement_rules_.push_back(layer_statement_rule);
       return;
     }
