@@ -49,14 +49,12 @@ class QRView : public views::View {
       kMid - (dino_image::kDinoHeight * kDinoTilePixels) / 2;
 
   explicit QRView(const std::string& qr_string) {
-    CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
-
     absl::optional<QRCode::GeneratedCode> code = qr_.Generate(
         base::as_bytes(base::make_span(qr_string)), kMinimumQRVersion);
     DCHECK(code);
     // The QR Encoder supports dynamic sizing but we expect our data to fit in
     // a version five code.
-    DCHECK(code->qr_size == QRCode::V5::kSize);
+    CHECK_EQ(code->qr_size, QRCode::V5::kSize);
     qr_tiles_ = code->data;
   }
 
@@ -65,13 +63,12 @@ class QRView : public views::View {
   ~QRView() override = default;
 
   void RefreshQRCode(const std::string& qr_string) {
-    CHECK_LE(qr_string.size(), QRCodeGenerator::V5::kInputBytes);
-
     state_ = (state_ + 1) % 6;
     absl::optional<QRCode::GeneratedCode> code =
         qr_.Generate(base::as_bytes(base::make_span(qr_string)),
                      kMinimumQRVersion, /*mask=*/state_);
     DCHECK(code);
+    CHECK_EQ(code->qr_size, QRCode::V5::kSize);
     qr_tiles_ = code->data;
     SchedulePaint();
   }

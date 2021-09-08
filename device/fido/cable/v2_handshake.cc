@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_handshake.h"
 
+#include <inttypes.h>
 #include <array>
 #include <type_traits>
 
@@ -14,6 +15,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -304,7 +306,7 @@ Components ToComponents(const CableEidArray& eid) {
 
 namespace qr {
 
-constexpr char kPrefix[] = "fido://";
+constexpr char kPrefix[] = "FIDO:/";
 
 // DecompressPublicKey converts a compressed public key (from a scanned QR
 // code) into a standard, uncompressed one.
@@ -345,23 +347,19 @@ SeedToCompressedPublicKey(base::span<const uint8_t, 32> seed) {
 
 // static
 absl::optional<Components> Parse(const std::string& qr_url) {
-  if (qr_url.find(kPrefix) != 0) {
+  if (qr_url.size() < sizeof(kPrefix) - 1 ||
+      base::CompareCaseInsensitiveASCII(
+          kPrefix, qr_url.substr(0, sizeof(kPrefix) - 1)) != 0) {
     return absl::nullopt;
   }
 
-  base::StringPiece qr_url_base64(qr_url);
-  qr_url_base64 = qr_url_base64.substr(sizeof(kPrefix) - 1);
-  std::string qr_data_str;
-  if (!base::Base64UrlDecode(qr_url_base64,
-                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                             &qr_data_str)) {
+  absl::optional<std::vector<uint8_t>> qr_bytes =
+      DigitsToBytes(qr_url.substr(sizeof(kPrefix) - 1));
+  if (!qr_bytes) {
     return absl::nullopt;
   }
 
-  absl::optional<cbor::Value> qr_contents =
-      cbor::Reader::Read(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(qr_data_str.data()),
-          qr_data_str.size()));
+  absl::optional<cbor::Value> qr_contents = cbor::Reader::Read(*qr_bytes);
   if (!qr_contents || !qr_contents->is_map()) {
     return absl::nullopt;
   }
@@ -409,16 +407,110 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
   qr_contents.emplace(
       2, static_cast<int64_t>(base::size(tunnelserver::kAssignedDomains)));
 
+  qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
+
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
+  return std::string(kPrefix) + BytesToDigits(*qr_data);
+}
 
-  std::string base64_qr_data;
-  base::Base64UrlEncode(
-      base::StringPiece(reinterpret_cast<const char*>(qr_data->data()),
-                        qr_data->size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &base64_qr_data);
+// When converting between bytes and digits, chunks of 7 bytes are turned into
+// 17 digits. See https://www.imperialviolet.org/2021/08/26/qrencoding.html.
+constexpr size_t kChunkSize = 7;
+constexpr size_t kChunkDigits = 17;
 
-  return std::string(kPrefix) + base64_qr_data;
+std::string BytesToDigits(base::span<const uint8_t> in) {
+  std::string ret;
+  ret.reserve(((in.size() + kChunkSize - 1) / kChunkSize) * kChunkDigits);
+
+  while (in.size() >= kChunkSize) {
+    uint64_t v = 0;
+    static_assert(sizeof(v) >= kChunkSize, "");
+    memcpy(&v, in.data(), kChunkSize);
+
+    char digits[kChunkDigits + 1];
+    static_assert(kChunkDigits == 17, "Need to change next line");
+    CHECK_LT(snprintf(digits, sizeof(digits), "%017" PRIu64, v),
+             static_cast<int>(sizeof(digits)));
+    ret += digits;
+
+    in = in.subspan(kChunkSize);
+  }
+
+  if (in.size()) {
+    char format[16];
+    // kPartialChunkDigits is the number of digits needed to encode each length
+    // of trailing data from 6 bytes down to zero. I.e. it's 15, 13, 10, 8, 5,
+    // 3, 0 written in hex.
+    constexpr uint32_t kPartialChunkDigits = 0x0fda8530;
+    CHECK_LT(snprintf(format, sizeof(format), "%%0%d" PRIu64,
+                      15 & (kPartialChunkDigits >> (4 * in.size()))),
+             static_cast<int>(sizeof(format)));
+
+    uint64_t v = 0;
+    CHECK_LE(in.size(), sizeof(v));
+    memcpy(&v, in.data(), in.size());
+
+    char digits[kChunkDigits + 1];
+    CHECK_LT(snprintf(digits, sizeof(digits), format, v),
+             static_cast<int>(sizeof(digits)));
+    ret += digits;
+  }
+
+  return ret;
+}
+
+absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in) {
+  std::vector<uint8_t> ret;
+  ret.reserve(((in.size() + kChunkDigits - 1) / kChunkDigits) * kChunkSize);
+
+  while (in.size() >= kChunkDigits) {
+    uint64_t v;
+    if (!base::StringToUint64(in.substr(0, kChunkDigits), &v) ||
+        v >> (kChunkSize * 8) != 0) {
+      return absl::nullopt;
+    }
+    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
+    ret.insert(ret.end(), v_bytes, v_bytes + kChunkSize);
+
+    in = in.substr(kChunkDigits);
+  }
+
+  if (in.size()) {
+    size_t remaining_bytes;
+    switch (in.size()) {
+      case 3:
+        remaining_bytes = 1;
+        break;
+      case 5:
+        remaining_bytes = 2;
+        break;
+      case 8:
+        remaining_bytes = 3;
+        break;
+      case 10:
+        remaining_bytes = 4;
+        break;
+      case 13:
+        remaining_bytes = 5;
+        break;
+      case 15:
+        remaining_bytes = 6;
+        break;
+      default:
+        return absl::nullopt;
+    }
+
+    uint64_t v;
+    if (!base::StringToUint64(in, &v) || v >> (remaining_bytes * 8) != 0) {
+      return absl::nullopt;
+    }
+
+    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
+    ret.insert(ret.end(), v_bytes, v_bytes + remaining_bytes);
+  }
+
+  return ret;
 }
 
 }  // namespace qr

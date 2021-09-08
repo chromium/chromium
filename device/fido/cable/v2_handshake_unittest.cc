@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "device/fido/cable/v2_handshake.h"
+#include "base/rand_util.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -78,9 +79,8 @@ TEST(CableV2Encoding, QRs) {
   std::array<uint8_t, kQRKeySize> qr_key;
   crypto::RandBytes(qr_key);
   std::string url = qr::Encode(qr_key);
-  EXPECT_LE(url.size(), 84u) << "QR code doesn't fit into version five";
   const absl::optional<qr::Components> decoded = qr::Parse(url);
-  ASSERT_TRUE(decoded.has_value());
+  ASSERT_TRUE(decoded.has_value()) << url;
   static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
   EXPECT_EQ(memcmp(decoded->secret.data(),
                    &qr_key[qr_key.size() - decoded->secret.size()],
@@ -186,6 +186,49 @@ std::array<uint8_t, kP256X962Length> PublicKeyOf(const EC_KEY* private_key) {
                               POINT_CONVERSION_UNCOMPRESSED, ret.data(),
                               ret.size(), /*ctx=*/nullptr));
   return ret;
+}
+
+TEST(CableV2Encoding, Digits) {
+  uint8_t test_data[24];
+  base::RandBytes(test_data, sizeof(test_data));
+
+  // |BytesToDigits| and |DigitsToBytes| should round-trip.
+  for (size_t i = 0; i < sizeof(test_data); i++) {
+    std::string digits =
+        qr::BytesToDigits(base::span<const uint8_t>(test_data, i));
+    absl::optional<std::vector<uint8_t>> test_data_again =
+        qr::DigitsToBytes(digits);
+    ASSERT_TRUE(test_data_again.has_value());
+    ASSERT_EQ(test_data_again->size(), i);
+    ASSERT_EQ(0, memcmp(test_data_again->data(), test_data, i));
+  }
+
+  // |DigitsToBytes| should reject non-digit inputs.
+  EXPECT_FALSE(qr::DigitsToBytes("a"));
+  EXPECT_FALSE(qr::DigitsToBytes("ab"));
+  EXPECT_FALSE(qr::DigitsToBytes("abc"));
+
+  // |DigitsToBytes| should reject digits that can't be correct. Here three
+  // digits translates into one byte, but 999 > 0xff.
+  EXPECT_FALSE(qr::DigitsToBytes("999"));
+
+  // |DigitsToBytes| should reject impossible input lengths.
+  char digits[20];
+  memset(digits, '0', sizeof(digits));
+  for (size_t i = 0; i < sizeof(digits); i++) {
+    absl::optional<std::vector<uint8_t>> bytes =
+        qr::DigitsToBytes(base::StringPiece(digits, i));
+    if (!bytes.has_value()) {
+      continue;
+    }
+    EXPECT_TRUE(std::all_of(bytes->begin(), bytes->end(),
+                            [](uint8_t v) -> bool { return v == 0; }));
+  }
+
+  // The encoding is used as part of an external protocol and so should not
+  // change.
+  static const uint8_t kTestBytes[3] = {'a', 'b', 255};
+  EXPECT_EQ(qr::BytesToDigits(kTestBytes), "16736865");
 }
 
 TEST(CableV2Encoding, HandshakeSignatures) {

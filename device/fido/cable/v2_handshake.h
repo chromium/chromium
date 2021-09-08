@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/values.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
@@ -115,6 +116,14 @@ absl::optional<Components> Parse(const std::string& qr_url);
 // Encode returns the contents of a QR code that represents |qr_key|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key);
+
+// BytesToDigits returns a base-10 encoding of |in|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::string BytesToDigits(base::span<const uint8_t> in);
+
+// DigitsToBytes reverses the actions of |BytesToDigits|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+absl::optional<std::vector<uint8_t>> DigitsToBytes(base::StringPiece in);
 
 }  // namespace qr
 
