@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
@@ -16,6 +17,9 @@ using ProtoRmadState = rmad::RmadState::StateCase;
 
 using MojomRmadErrorCode = ash::shimless_rma::mojom::RmadErrorCode;
 using ProtoRmadErrorCode = rmad::RmadErrorCode;
+
+using MojomOsUpdateOperation = ash::shimless_rma::mojom::OsUpdateOperation;
+using ProtoOsUpdateOperation = update_engine::Operation;
 
 using MojomComponentType = ash::shimless_rma::mojom::ComponentType;
 using ProtoComponentType = rmad::RmadComponent;
@@ -295,6 +299,85 @@ bool EnumTraits<MojomRmadErrorCode, ProtoRmadErrorCode>::FromMojom(
     case MojomRmadErrorCode::kNotSet:
       NOTREACHED();
       return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+MojomOsUpdateOperation
+EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::ToMojom(
+    ProtoOsUpdateOperation operation) {
+  switch (operation) {
+    case update_engine::IDLE:
+      return MojomOsUpdateOperation::kIdle;
+    case update_engine::CHECKING_FOR_UPDATE:
+      return MojomOsUpdateOperation::kCheckingForUpdate;
+    case update_engine::UPDATE_AVAILABLE:
+      return MojomOsUpdateOperation::kUpdateAvailable;
+    case update_engine::DOWNLOADING:
+      return MojomOsUpdateOperation::kDownloading;
+    case update_engine::VERIFYING:
+      return MojomOsUpdateOperation::kVerifying;
+    case update_engine::FINALIZING:
+      return MojomOsUpdateOperation::kFinalizing;
+    case update_engine::UPDATED_NEED_REBOOT:
+      return MojomOsUpdateOperation::kUpdatedNeedReboot;
+    case update_engine::REPORTING_ERROR_EVENT:
+      return MojomOsUpdateOperation::kReportingErrorEvent;
+    case update_engine::ATTEMPTING_ROLLBACK:
+      return MojomOsUpdateOperation::kAttemptingRollback;
+    case update_engine::DISABLED:
+      return MojomOsUpdateOperation::kDisabled;
+    case update_engine::NEED_PERMISSION_TO_UPDATE:
+      return MojomOsUpdateOperation::kNeedPermissionToUpdate;
+    case update_engine::ERROR:
+    case update_engine::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case update_engine::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return MojomOsUpdateOperation::kIdle;
+  }
+  NOTREACHED();
+  return MojomOsUpdateOperation::kIdle;
+}
+
+// static
+bool EnumTraits<MojomOsUpdateOperation, ProtoOsUpdateOperation>::FromMojom(
+    MojomOsUpdateOperation input,
+    ProtoOsUpdateOperation* out) {
+  switch (input) {
+    case MojomOsUpdateOperation::kIdle:
+      *out = update_engine::IDLE;
+      return true;
+    case MojomOsUpdateOperation::kCheckingForUpdate:
+      *out = update_engine::CHECKING_FOR_UPDATE;
+      return true;
+    case MojomOsUpdateOperation::kUpdateAvailable:
+      *out = update_engine::UPDATE_AVAILABLE;
+      return true;
+    case MojomOsUpdateOperation::kDownloading:
+      *out = update_engine::DOWNLOADING;
+      return true;
+    case MojomOsUpdateOperation::kVerifying:
+      *out = update_engine::VERIFYING;
+      return true;
+    case MojomOsUpdateOperation::kFinalizing:
+      *out = update_engine::FINALIZING;
+      return true;
+    case MojomOsUpdateOperation::kUpdatedNeedReboot:
+      *out = update_engine::UPDATED_NEED_REBOOT;
+      return true;
+    case MojomOsUpdateOperation::kReportingErrorEvent:
+      *out = update_engine::REPORTING_ERROR_EVENT;
+      return true;
+    case MojomOsUpdateOperation::kAttemptingRollback:
+      *out = update_engine::ATTEMPTING_ROLLBACK;
+      return true;
+    case MojomOsUpdateOperation::kDisabled:
+      *out = update_engine::DISABLED;
+      return true;
+    case MojomOsUpdateOperation::kNeedPermissionToUpdate:
+      *out = update_engine::NEED_PERMISSION_TO_UPDATE;
+      return true;
   }
   NOTREACHED();
   return false;

@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "ash/webui/shimless_rma/backend/version_updater.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
+#include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -118,7 +120,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
 
-  void OsUpdateProgress(mojom::OsUpdateOperation operation, double progress);
+  void OsUpdateProgress(update_engine::Operation operation, double progress);
 
  private:
   template <class Callback>
@@ -133,6 +135,13 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           response);
 
+  void OnOsUpdateStatusCallback(update_engine::Operation operation,
+                                double progress,
+                                bool rollback,
+                                bool powerwash,
+                                const std::string& version,
+                                int64_t update_size);
+
   rmad::RmadState state_proto_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
@@ -146,6 +155,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
+
+  VersionUpdater version_updater_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

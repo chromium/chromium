@@ -13,6 +13,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "ash.shimless_rma.mojom.OsUpdateOperation"
+          cpp = "::update_engine::Operation"
+        },
+        {
           mojom = "ash.shimless_rma.mojom.ComponentRepairStatus"
           cpp =
               "::rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus"
@@ -46,9 +50,13 @@ mojom("mojom") {
       traits_headers = [
         "shimless_rma_mojom_traits.h",
         "//chromeos/dbus/rmad/rmad.pb.h",
+        "//chromeos/dbus/update_engine/update_engine.pb.h",
       ]
       traits_sources = [ "shimless_rma_mojom_traits.cc" ]
-      traits_public_deps = [ "//chromeos/dbus/rmad:rmad_proto" ]
+      traits_public_deps = [
+        "//chromeos/dbus/rmad:rmad_proto",
+        "//chromeos/dbus/update_engine:proto",
+      ]
     },
   ]
 }
@@ -64,6 +72,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/rmad",
     "//chromeos/dbus/rmad:rmad_proto",
+    "//chromeos/dbus/update_engine",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",

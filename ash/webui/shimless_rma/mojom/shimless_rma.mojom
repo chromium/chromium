@@ -187,7 +187,7 @@ struct QrCode {
 
 // Keep in sync with:
 // platform2/system_api/dbus/update_engine/update_engine.proto:Operation
-// Note: ERROR removed - see crbug.com/977320
+// Note: ERROR removed as it is not used by UpdateEngine - see crbug.com/977320
 enum OsUpdateOperation {
   kIdle = 0,
   kCheckingForUpdate = 1,

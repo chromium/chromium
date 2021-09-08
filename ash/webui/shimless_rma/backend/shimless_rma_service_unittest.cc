@@ -5,29 +5,17 @@
 #include "ash/webui/shimless_rma/backend/shimless_rma_service.h"
 
 #include <map>
+#include <memory>
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/rmad/fake_rmad_client.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
-#include "chromeos/network/managed_network_configuration_handler.h"
-#include "chromeos/network/network_cert_loader.h"
-#include "chromeos/network/network_certificate_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
-#include "chromeos/network/network_device_handler.h"
-#include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/onc/onc_utils.h"
-#include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
-#include "components/onc/onc_constants.h"
-#include "components/onc/onc_pref_names.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
-#include "components/proxy_config/proxy_config_pref_names.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -74,37 +62,34 @@ class FakeRmadClientForTest : public FakeRmadClient {
 
 class ShimlessRmaServiceTest : public testing::Test {
  public:
-  ShimlessRmaServiceTest() {
-    // InitializeManagedNetworkConfigurationHandler();
-    cros_network_config_test_helper().Initialize(
-        managed_network_configuration_handler_.get());
-    // Wait until |cros_network_config_test_helper_| has initialized.
-    base::RunLoop().RunUntilIdle();
-  }
+  ShimlessRmaServiceTest() {}
 
-  ~ShimlessRmaServiceTest() override {
-    base::RunLoop().RunUntilIdle();
-    // managed_network_configuration_handler should come first to avoid dcheck
-    // on remaining observers.
-    managed_network_configuration_handler_.reset();
-    network_configuration_handler_.reset();
-    network_profile_handler_.reset();
-    ui_proxy_config_service_.reset();
-  }
+  ~ShimlessRmaServiceTest() override {}
 
   void SetUp() override {
+    chromeos::DBusThreadManager::Initialize();
+    cros_network_config_test_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
+    cros_network_config_test_helper().Initialize(nullptr);
+
     FakeRmadClientForTest::Initialize();
     rmad_client_ = chromeos::RmadClient::Get();
     // ShimlessRmaService has to be created after RmadClient or there will be a
     // null ptr dereference in the service constructor.
     shimless_rma_provider_ = std::make_unique<ShimlessRmaService>();
+
+    // Wait until |cros_network_config_test_helper_| has initialized.
+    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
+    base::RunLoop().RunUntilIdle();
     // ShimlessRmaService has to be shutdown before RmadClient or there will be
     // a null ptr dereference in the service destructor.
     shimless_rma_provider_.reset();
     chromeos::RmadClient::Shutdown();
+    cros_network_config_test_helper_.reset();
+    chromeos::DBusThreadManager::Shutdown();
   }
 
   rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
@@ -184,43 +169,6 @@ class ShimlessRmaServiceTest : public testing::Test {
     return reply;
   }
 
-  void InitializeManagedNetworkConfigurationHandler() {
-    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
-    network_configuration_handler_ =
-        base::WrapUnique<NetworkConfigurationHandler>(
-            NetworkConfigurationHandler::InitializeForTest(
-                network_state_helper().network_state_handler(),
-                cros_network_config_test_helper().network_device_handler()));
-
-    PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
-    PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-
-    ui_proxy_config_service_ = std::make_unique<chromeos::UIProxyConfigService>(
-        &user_prefs_, &local_state_,
-        network_state_helper().network_state_handler(),
-        network_profile_handler_.get());
-
-    managed_network_configuration_handler_ =
-        ManagedNetworkConfigurationHandler::InitializeForTesting(
-            network_state_helper().network_state_handler(),
-            network_profile_handler_.get(),
-            cros_network_config_test_helper().network_device_handler(),
-            network_configuration_handler_.get(),
-            ui_proxy_config_service_.get());
-
-    managed_network_configuration_handler_->SetPolicy(
-        ::onc::ONC_SOURCE_DEVICE_POLICY,
-        /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::ListValue(),
-        /*global_network_config=*/base::DictionaryValue());
-
-    // Wait until the |managed_network_configuration_handler_| is initialized
-    // and set up.
-    base::RunLoop().RunUntilIdle();
-  }
-
   FakeRmadClientForTest* fake_rmad_client_() {
     return google::protobuf::down_cast<FakeRmadClientForTest*>(rmad_client_);
   }
@@ -234,32 +182,22 @@ class ShimlessRmaServiceTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<ManagedNetworkConfigurationHandler>
-      managed_network_configuration_handler_;
-  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
-  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
-  std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
-  sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
-
   network_config::CrosNetworkConfigTestHelper&
   cros_network_config_test_helper() {
-    return cros_network_config_test_helper_;
+    return *cros_network_config_test_helper_;
   }
 
   chromeos::NetworkStateTestHelper& network_state_helper() {
-    return cros_network_config_test_helper_.network_state_helper();
+    return cros_network_config_test_helper_->network_state_helper();
   }
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
   chromeos::RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
 
  private:
-  // TaskEnvironment must be declared before CrosNetworkConfigTestHelper so the
-  // single threaded test environment is set up when needed.
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_test_helper_;
   base::test::TaskEnvironment task_environment_;
-  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_{
-      false};
 };
 
 TEST_F(ShimlessRmaServiceTest, WelcomeHasNetworkConnection) {
@@ -311,6 +249,83 @@ TEST_F(ShimlessRmaServiceTest, WelcomeHasNoNetworkConnection) {
   shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
       [&](mojom::RmaState state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  LOG(ERROR) << "Waiting to get current state";
+  run_loop.RunUntilIdle();
+
+  // No network should prompt select network page
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  LOG(ERROR) << "Waiting to begin finalization";
+  run_loop.RunUntilIdle();
+  SetupWiFiNetwork();
+
+  // With a WiFi network it should redirect to kUpdateOs
+  shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  LOG(ERROR) << "Waiting for network selection";
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNoNetworkConnection) {
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // No network should prompt select network page
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // TODO(gavindodd): Once the component validation works this should only
+  // redirect to update screen if validation fails, so that a warning
+  // that updating may fix validation issues can be displayed.
+  // With no network it should still redirect to kUpdateOs
+  shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
+      [&](mojom::RmaState state, rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::RmaState::kUpdateOs);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
       }));
