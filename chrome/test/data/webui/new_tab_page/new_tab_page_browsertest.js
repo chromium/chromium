@@ -331,6 +331,22 @@ var NewTabPageModulesChromeCartV2ModuleTest =
   }
 };
 
+GEN('#if !defined(OFFICIAL_BUILD)');
+
+// eslint-disable-next-line no-var
+var NewTabPageModulesPhotosModuleTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/photos/module_test.js';
+  }
+};
+
+TEST_F('NewTabPageModulesPhotosModuleTest', 'All', function() {
+  mocha.run();
+});
+
+GEN('#endif  // !defined(OFFICIAL_BUILD)');
+
 // https://crbug.com/1227564: Flaky on Chrome OS.
 GEN('#if defined(OS_CHROMEOS)');
 GEN('#define MAYBE_All DISABLED_All');
