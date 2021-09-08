@@ -372,7 +372,7 @@ void QuicTransportClient::TransitionToState(WebTransportState next_state) {
   }
 }
 
-void QuicTransportClient::OnSessionReady() {
+void QuicTransportClient::OnSessionReady(const spdy::SpdyHeaderBlock&) {
   DCHECK_EQ(next_connect_state_, CONNECT_STATE_CONFIRM_CONNECTION);
   DoLoop(OK);
 }

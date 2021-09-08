@@ -68,7 +68,7 @@ class NET_EXPORT QuicTransportClient
   quic::QuicTransportClientSession* quic_session();
 
   // QuicTransportClientSession::ClientVisitor methods.
-  void OnSessionReady() override;
+  void OnSessionReady(const spdy::SpdyHeaderBlock&) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
   void OnDatagramReceived(absl::string_view datagram) override;

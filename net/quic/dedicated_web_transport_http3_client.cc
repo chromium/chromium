@@ -156,7 +156,9 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   explicit WebTransportVisitorProxy(quic::WebTransportVisitor* visitor)
       : visitor_(visitor) {}
 
-  void OnSessionReady() override { visitor_->OnSessionReady(); }
+  void OnSessionReady(const spdy::SpdyHeaderBlock& block) override {
+    visitor_->OnSessionReady(block);
+  }
   void OnIncomingBidirectionalStreamAvailable() override {
     visitor_->OnIncomingBidirectionalStreamAvailable();
   }
@@ -548,7 +550,8 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
   }
 }
 
-void DedicatedWebTransportHttp3Client::OnSessionReady() {
+void DedicatedWebTransportHttp3Client::OnSessionReady(
+    const spdy::SpdyHeaderBlock&) {
   session_ready_ = true;
 }
 

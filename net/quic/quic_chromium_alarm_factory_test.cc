@@ -12,7 +12,7 @@ namespace net {
 namespace test {
 namespace {
 
-class TestDelegate : public quic::QuicAlarm::Delegate {
+class TestDelegate : public quic::QuicAlarm::DelegateWithoutContext {
  public:
   TestDelegate() : fired_(false) {}
 
