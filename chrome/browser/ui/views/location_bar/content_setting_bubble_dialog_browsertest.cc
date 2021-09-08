@@ -26,6 +26,7 @@
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
@@ -78,8 +79,9 @@ using ImageType = ContentSettingImageModel::ImageType;
 class ContentSettingBubbleDialogTest : public DialogBrowserTest {
  public:
   ContentSettingBubbleDialogTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kQuietNotificationPrompts);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQuietNotificationPrompts},
+        {permissions::features::kPermissionQuietChip});
   }
 
   void ApplyMediastreamSettings(bool mic_accessed, bool camera_accessed);

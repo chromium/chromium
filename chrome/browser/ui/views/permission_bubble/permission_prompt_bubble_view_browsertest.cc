@@ -580,8 +580,9 @@ class PermissionPromptBubbleViewQuietUiBrowserTest
     : public PermissionPromptBubbleViewBrowserTest {
  public:
   PermissionPromptBubbleViewQuietUiBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kQuietNotificationPrompts, true);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQuietNotificationPrompts},
+        {permissions::features::kPermissionQuietChip});
   }
 
  protected:

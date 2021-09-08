@@ -6621,6 +6621,25 @@
             ]
         }
     ],
+    "PermissionQuietChip": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_1",
+                    "enable_features": [
+                        "PermissionQuietChip"
+                    ]
+                }
+            ]
+        }
+    ],
     "PersistentHistograms": [
         {
             "platforms": [
