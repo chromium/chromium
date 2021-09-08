@@ -235,6 +235,20 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   ASSERT_TRUE(tester.IsRejected());
 }
 
+TEST_F(ImageDecoderTest, DecoderContextDestroyedBeforeCreation) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(ImageDecoderExternal::canDecodeType(kImageType));
+
+  // Destroying the context prior to construction should fail creation.
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  auto* decoder =
+      CreateDecoder(&v8_scope, "images/resources/animated.gif", kImageType);
+  ASSERT_FALSE(decoder);
+  ASSERT_TRUE(v8_scope.GetExceptionState().HadException());
+}
+
 // TODO(crbug.com/1073995): Add tests for each format, selectTrack(), partial
 // decoding, and ImageBitmapOptions.
 

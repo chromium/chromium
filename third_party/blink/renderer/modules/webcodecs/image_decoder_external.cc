@@ -64,6 +64,14 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
                                            ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state) {
+  // If the context is already destroyed we will never get an OnContextDestroyed
+  // callback, which is critical to invalidating any pending WeakPtr operations.
+  if (GetExecutionContext()->IsContextDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid context.");
+    return;
+  }
+
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kWebCodecs);
 
