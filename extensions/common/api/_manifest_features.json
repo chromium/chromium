@@ -154,10 +154,7 @@
   "file_handlers": [
     {
       "channel": "stable",
-      "extension_types": [
-        "platform_app",
-        "hosted_app"  // This should be removed when bookmark apps have migrated off hosted apps.
-      ]
+      "extension_types": ["platform_app"]
     }, {
       "channel": "stable",
       "extension_types": [ "extension"],

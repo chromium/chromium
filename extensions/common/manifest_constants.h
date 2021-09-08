@@ -298,7 +298,6 @@ extern const char kInvalidFileBrowserHandlerMissingPermission[];
 extern const char kInvalidFileFiltersList[];
 extern const char kInvalidFileFilterValue[];
 extern const char kInvalidFileHandlers[];
-extern const char kInvalidFileHandlersHostedAppsNotSupported[];
 extern const char kInvalidFileHandlersTooManyTypesAndExtensions[];
 extern const char kInvalidFileHandlerExtension[];
 extern const char kInvalidFileHandlerExtensionElement[];

@@ -380,8 +380,6 @@ const char kInvalidFileFilterValue[] =
     "Invalid value for 'file_filters[*]'.";
 const char kInvalidFileHandlers[] =
     "Invalid value for 'file_handlers'.";
-const char kInvalidFileHandlersHostedAppsNotSupported[] =
-    "Hosted apps do not support file handlers";
 const char kInvalidFileHandlersTooManyTypesAndExtensions[] =
     "Too many MIME and extension file_handlers have been declared.";
 const char kInvalidFileHandlerExtension[] =
