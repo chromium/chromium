@@ -7,11 +7,14 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -42,6 +45,12 @@ namespace gpu {
 namespace raster {
 
 namespace {
+
+size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
+  size_t estimated_size = 0;
+  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
+  return estimated_size;
+}
 
 SkImageInfo MakeSkImageInfo(const gfx::Size& size, viz::ResourceFormat format) {
   return SkImageInfo::Make(size.width(), size.height(),
@@ -97,9 +106,18 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     auto client_guid = GetSharedImageGUIDForTracing(mailbox());
     auto service_guid = gl::GetGLTextureServiceGUIDForTracing(tracing_id_);
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
+
+    std::string format_dump_name =
+        base::StringPrintf("%s/format=%d", dump_name.c_str(), format());
+    base::trace_event::MemoryAllocatorDump* format_dump =
+        pmd->CreateAllocatorDump(format_dump_name);
+    format_dump->AddScalar(
+        base::trace_event::MemoryAllocatorDump::kNameSize,
+        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+        static_cast<uint64_t>(EstimatedSizeForMemTracking()));
+
     // TODO(piman): coalesce constant with TextureManager::DumpTextureRef.
     int importance = 2;  // This client always owns the ref.
-
     pmd->AddOwnershipEdge(client_guid, service_guid, importance);
   }
 
@@ -420,7 +438,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     uint32_t usage,
     base::span<const uint8_t> data) {
   auto info = MakeSkImageInfo(size, format);
-  size_t estimated_size = info.computeMinByteSize();
+  size_t estimated_size = EstimatedSize(format, size);
   std::unique_ptr<WrappedSkImage> texture(
       new WrappedSkImage(mailbox, format, size, color_space, surface_origin,
                          alpha_type, usage, estimated_size, context_state_));
