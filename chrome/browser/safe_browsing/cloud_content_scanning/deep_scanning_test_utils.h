@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

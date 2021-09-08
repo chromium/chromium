@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_IMAGE_WRITER_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_IMAGE_WRITER_PRIVATE_API_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 #include "chrome/common/extensions/api/image_writer_private.h"
 #include "extensions/browser/extension_function.h"

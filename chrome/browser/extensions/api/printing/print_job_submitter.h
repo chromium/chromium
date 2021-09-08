@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"

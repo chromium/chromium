@@ -5,7 +5,6 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "ui/gfx/image/image_unittest_util.h"

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/profiles/profile.h"

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/window_open_disposition.h"

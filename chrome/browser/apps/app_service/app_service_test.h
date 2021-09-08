@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
 

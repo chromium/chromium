@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"

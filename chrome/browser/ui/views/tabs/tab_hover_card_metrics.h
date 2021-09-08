@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/metrics_util.h"

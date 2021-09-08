@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_BUBBLE_VIEW_DELEGATE_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
 
 namespace sharesheet {

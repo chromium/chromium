@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"

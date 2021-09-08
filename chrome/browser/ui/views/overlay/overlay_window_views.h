@@ -8,6 +8,7 @@
 #include "content/public/browser/overlay_window.h"
 
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/download_stats.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"

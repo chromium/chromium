@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

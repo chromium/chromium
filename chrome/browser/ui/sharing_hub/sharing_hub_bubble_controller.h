@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_SHARING_HUB_SHARING_HUB_BUBBLE_CONTROLLER_H_
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/view_tracker.h"

@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"

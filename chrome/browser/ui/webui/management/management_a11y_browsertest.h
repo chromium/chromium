@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 

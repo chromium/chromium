@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/download/download_stats.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "components/safe_browsing/content/browser/download/download_stats.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "components/safe_browsing/content/browser/download/download_stats.h"
 
 void RecordDownloadCount(ChromeDownloadCountTypes type) {
   base::UmaHistogramEnumeration("Download.CountsChrome", type,
