@@ -1346,6 +1346,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.HasPasswordFieldDuration" units="microseconds"
+    expires_after="2022-08-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time spent to determine if there is a password field in the web
+    frame. It is done by measuring the time it takes for HasPasswordField() to
+    execute.
+
+    Note that histogram samples for clients without high-resolution clocks are
+    dropped.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.HiddenOrPresentationalSelectFieldsFilled"
     enum="BooleanHiddenPresentationalAutofilled" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

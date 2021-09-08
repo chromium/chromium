@@ -296,20 +296,40 @@ void AnnotateFieldsWithSignatures(
 }
 
 // Returns true iff there is a password field in |frame|.
+// We don't have to iterate through the whole DOM to find password fields.
+// Instead, we can iterate through the fields of the forms and the unowned
+// fields, both of which are cached in the Document.
 bool HasPasswordField(const WebLocalFrame& frame) {
-  static base::NoDestructor<WebString> kPassword("password");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Autofill.HasPasswordFieldDuration");
 
-  const WebElementCollection elements = frame.GetDocument().All();
-  for (WebElement element = elements.FirstItem(); !element.IsNull();
-       element = elements.NextItem()) {
-    if (element.IsFormControlElement()) {
-      const WebFormControlElement& control =
-          element.To<WebFormControlElement>();
-      if (control.FormControlTypeForAutofill() == *kPassword)
-        return true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseUnassociatedListedElements)) {
+    static base::NoDestructor<WebString> kPassword("password");
+
+    auto ContainsPasswordField = [&](const auto& fields) {
+      return base::Contains(fields, *kPassword,
+                            &WebFormControlElement::FormControlTypeForAutofill);
+    };
+
+    WebDocument doc = frame.GetDocument();
+    return base::ranges::any_of(doc.Forms(), ContainsPasswordField,
+                                &WebFormElement::GetFormControlElements) ||
+           ContainsPasswordField(doc.UnassociatedFormControls());
+  } else {
+    static base::NoDestructor<WebString> kPassword("password");
+
+    const WebElementCollection elements = frame.GetDocument().All();
+    for (WebElement element = elements.FirstItem(); !element.IsNull();
+         element = elements.NextItem()) {
+      if (element.IsFormControlElement()) {
+        const WebFormControlElement& control =
+            element.To<WebFormControlElement>();
+        if (control.FormControlTypeForAutofill() == *kPassword)
+          return true;
+      }
     }
+    return false;
   }
-  return false;
 }
 
 // Returns the closest visible autocompletable non-password text element
@@ -1191,7 +1211,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     TryFixAutofilledForm(&control_elements);
   }
 
-  // See if there are any unattached input elements that could be used for
+  // See if there are any unassociated input elements that could be used for
   // password submission.
   // TODO(crbug/898109): Consider using TryFixAutofilledForm for the cases when
   // there is no form tag.
