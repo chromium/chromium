@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/network_time/network_time_tracker.h"
@@ -441,4 +442,13 @@ CertificateErrorReport::CertificateErrorReport(
   features_info->set_android_aia_fetching_status(
       chrome_browser_ssl::CertLoggerFeaturesInfo::ANDROID_AIA_FETCHING_ENABLED);
 #endif
+
+  cert_report_->set_chrome_version(version_info::GetVersionNumber());
+  cert_report_->set_os_type(version_info::GetOSType());
+  cert_report_->set_os_version(base::SysInfo::OperatingSystemVersion());
+  cert_report_->set_hardware_model_name(base::SysInfo::HardwareModelName());
+  cert_report_->set_os_architecture(
+      base::SysInfo::OperatingSystemArchitecture());
+  cert_report_->set_process_architecture(
+      base::SysInfo::ProcessCPUArchitecture());
 }

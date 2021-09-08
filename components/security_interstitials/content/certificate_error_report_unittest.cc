@@ -96,6 +96,22 @@ std::string GetPEMEncodedChain() {
   return cert_data;
 }
 
+void VerifyDeserializedReportSystemInfo(
+    const chrome_browser_ssl::CertLoggerRequest& parsed) {
+  ASSERT_TRUE(parsed.has_chrome_version());
+  EXPECT_FALSE(parsed.chrome_version().empty());
+  ASSERT_TRUE(parsed.has_os_type());
+  EXPECT_FALSE(parsed.os_type().empty());
+  ASSERT_TRUE(parsed.has_os_version());
+  EXPECT_FALSE(parsed.os_version().empty());
+  ASSERT_TRUE(parsed.has_hardware_model_name());
+  // HardwareModelName() may return empty string on some platforms.
+  ASSERT_TRUE(parsed.has_os_architecture());
+  EXPECT_FALSE(parsed.os_architecture().empty());
+  ASSERT_TRUE(parsed.has_process_architecture());
+  EXPECT_FALSE(parsed.process_architecture().empty());
+}
+
 void VerifyErrorReportSerialization(
     const CertificateErrorReport& report,
     const SSLInfo& ssl_info,
@@ -114,6 +130,8 @@ void VerifyErrorReportSerialization(
             deserialized_report.is_issued_by_known_root());
   EXPECT_THAT(deserialized_report.cert_error(),
               UnorderedElementsAreArray(cert_errors));
+
+  VerifyDeserializedReportSystemInfo(deserialized_report);
 }
 
 // Test that a serialized CertificateErrorReport can be deserialized as
@@ -390,6 +408,8 @@ TEST(ErrorReportTest, TrialDebugInfo) {
   EXPECT_EQ("ocsp", trial_info.stapled_ocsp());
   ASSERT_TRUE(trial_info.has_sct_list());
   EXPECT_EQ("sct", trial_info.sct_list());
+
+  VerifyDeserializedReportSystemInfo(parsed);
 
 #if defined(OS_APPLE)
   ASSERT_TRUE(trial_info.has_mac_platform_debug_info());
