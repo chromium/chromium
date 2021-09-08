@@ -1888,10 +1888,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateMemoryFootprint"
-    units="MB" expires_after="2021-10-17">
+    units="MB" expires_after="2021-12-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the paint preview
     compositor process.
@@ -1909,10 +1909,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateSwapFootprint" units="MB"
-    expires_after="2021-10-17">
+    expires_after="2021-12-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
   <summary>
     An amount of private memory of the paint preview compositor process placed
     in swap (VmSwap).
@@ -1923,10 +1923,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.ResidentSet" units="MiB"
-    expires_after="2021-10-17">
+    expires_after="2021-12-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
   <summary>
     The size of the resident memory in a paint preview compositor process. This
     is influenced by factors we control (e.g. memory that is not accessed can be
@@ -1947,10 +1947,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.SharedMemoryFootprint"
-    units="MB" expires_after="2021-10-17">
+    units="MB" expires_after="2021-12-17">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the paint preview
     compositor process.
