@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/storage_partition_impl.h"
@@ -32,6 +33,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
@@ -45,14 +47,61 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/test/udp_socket_test_util.h"
+#include "sql/database.h"
+#include "sql/sql_features.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
+#if defined(OS_WIN)
+#include "sandbox/policy/features.h"
+#endif
+
 namespace content {
 
 namespace {
+
+constexpr char kCookieName[] = "Name";
+constexpr char kCookieValue[] = "Value";
+
+net::CookieList GetCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  net::CookieList cookies_out;
+  cookie_manager->GetAllCookies(
+      base::BindLambdaForTesting([&](const net::CookieList& cookies) {
+        cookies_out = cookies;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return cookies_out;
+}
+
+void SetCookie(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::Time t = base::Time::Now();
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      kCookieName, kCookieValue, "example.test", "/", t,
+      t + base::TimeDelta::FromDays(1), base::Time(), true /* secure */,
+      false /* http-only*/, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_DEFAULT, false /* same_party */);
+  base::RunLoop run_loop;
+  cookie_manager->SetCanonicalCookie(
+      *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+      net::CookieOptions(),
+      base::BindLambdaForTesting(
+          [&](net::CookieAccessResult result) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+void FlushCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  cookie_manager->FlushCookieStore(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  run_loop.Run();
+}
 
 class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
  public:
@@ -596,6 +645,187 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_TRUE(test_loader_factory->has_received_preflight());
   EXPECT_TRUE(test_loader_factory->has_received_request());
 }
+
+class NetworkServiceDataMigrationBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  NetworkServiceDataMigrationBrowserTest() {
+    std::vector<base::Feature> enabled_features, disabled_features;
+    if (IsNetworkServiceRunningInProcess())
+      enabled_features.push_back(features::kNetworkServiceInProcess);
+#if defined(OS_WIN)
+    // On Windows, the network sandbox needs to be disabled. This is because the
+    // code that performs the migration on Windows does a DCHECK if network
+    // sandbox is enabled and `unsandboxed_data_path` is not set, but this is
+    // used in the test to verify the behavior.
+    disabled_features.push_back(
+        sandbox::policy::features::kNetworkServiceSandbox);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ protected:
+  mojo::PendingRemote<network::mojom::NetworkContext>
+  CreateNetworkContextForPaths(
+      network::mojom::NetworkContextFilePathsPtr paths) {
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::mojom::NetworkContextParams::New();
+    context_params->file_paths = std::move(paths);
+    context_params->cert_verifier_params = GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+    // Not passing in a key for simplicity, so disable encryption.
+    context_params->enable_encrypted_cookies = false;
+    mojo::PendingRemote<network::mojom::NetworkContext> network_context;
+    content::CreateNetworkContextInNetworkService(
+        network_context.InitWithNewPipeAndPassReceiver(),
+        std::move(context_params));
+    return network_context;
+  }
+
+  bool IsNetworkServiceRunningInProcess() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A test to verify that data files move during migration to sandboxed data dir.
+// This test uses three directories to verify the behavior. It uses the
+// cookies file to verify the migration occurs correctly.
+//
+// Testing takes place under the browser context path. First, a network context
+// is created in temp dir 'one' and then a cookie is written and flushed to
+// disk. This results in cookie files(s) being created on disk.
+//
+// BrowserContext/
+// |- tempdir 'one'/ (`tempdir_one` FilePath)
+// |  |- Cookies
+// |  |- Cookies-journal
+//
+// The entire 'one' dir is then copied into a new 'two' temp folder to create
+// the directory structure used for migration. This is so a second network
+// context can be created in the same network service.
+//
+// BrowserContext/
+// |- tempdir 'one'/
+// |  |- Cookies
+// |  |- Cookies-journal
+// |- tempdir 'two'/ (`tempdir_two` FilePath)
+// |  |- Cookies (copied from above)
+// |  |- Cookies-journal (copied from above)
+//
+// A new network context is then created with `unsandboxed_data_path` set to
+// root of tempdir 'two' and `data_path` set to a directory underneath tempdir
+// 'two' called 'Network' to initiate the migration. After a successful
+// migration, the structure should look like this:
+//
+// BrowserContext/
+// |- tempdir 'one'/
+// |  |- Cookies
+// |  |- Cookies-journal
+// |- tempdir 'two'/
+// |  |- Network/
+// |  |  |- Cookies (migrated from tempdir 'two')
+// |  |  |- Cookies-journal (migrated from tempdir 'two')
+//
+
+IN_PROC_BROWSER_TEST_P(NetworkServiceDataMigrationBrowserTest,
+                       MigrateDataTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Migration only supports non-WAL sqlite databases. If this feature is
+  // switched on by default before migration has been completed then the code in
+  // MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
+  EXPECT_FALSE(
+      base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
+
+  const base::FilePath kCookieDatabaseName(FILE_PATH_LITERAL("TestCookies"));
+  base::FilePath tempdir_one;
+  EXPECT_TRUE(base::CreateTemporaryDirInDir(
+      shell()->web_contents()->GetBrowserContext()->GetPath(),
+      /*prefix=*/FILE_PATH_LITERAL("one"), &tempdir_one));
+
+  EXPECT_FALSE(base::PathExists(tempdir_one.Append(kCookieDatabaseName)));
+
+  auto file_paths = network::mojom::NetworkContextFilePaths::New();
+  file_paths->data_path = tempdir_one;
+  file_paths->cookie_database_name = kCookieDatabaseName;
+
+  mojo::Remote<network::mojom::NetworkContext> network_context_one(
+      CreateNetworkContextForPaths(std::move(file_paths)));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_one;
+  network_context_one->GetCookieManager(
+      cookie_manager_one.BindNewPipeAndPassReceiver());
+
+  SetCookie(cookie_manager_one);
+  FlushCookies(cookie_manager_one);
+
+  // Verify that the cookie file exists in tempdir 'one'.
+  EXPECT_TRUE(base::PathExists(tempdir_one.Append(kCookieDatabaseName)));
+
+  base::FilePath tempdir_two;
+  EXPECT_TRUE(base::CreateTemporaryDirInDir(
+      shell()->web_contents()->GetBrowserContext()->GetPath(),
+      /*prefix=*/FILE_PATH_LITERAL("two"), &tempdir_two));
+
+  // Now, copy the entire directory to tempdir 'two' to verify the migration.
+  EXPECT_TRUE(base::CopyDirectory(tempdir_one, tempdir_two, true));
+  // base::CopyDirectory copies the directory into a new directory if the target
+  // directory already exists, so fix up the directory name here.
+  tempdir_two = tempdir_two.Append(tempdir_one.BaseName());
+
+  // Verify cookie file is there, copied across from the tempdir 'one'.
+  EXPECT_TRUE(base::PathExists(tempdir_two.Append(kCookieDatabaseName)));
+
+  // Create a new network context that will migrate the files from the tempdir
+  // 'two' into the new 'Network' directory underneath.
+  auto new_file_paths = network::mojom::NetworkContextFilePaths::New();
+  // Data path is now a new 'Network' directory under the tempdir 'two'.
+  new_file_paths->data_path =
+      tempdir_two.Append(base::FilePath(FILE_PATH_LITERAL("Network")));
+  new_file_paths->cookie_database_name = kCookieDatabaseName;
+  // Migrate data from the tempdir 'two' to the new path under 'Network'.
+  new_file_paths->unsandboxed_data_path = tempdir_two;
+
+  base::HistogramTester histogram_tester;
+  mojo::Remote<network::mojom::NetworkContext> network_context_two(
+      CreateNetworkContextForPaths(std::move(new_file_paths)));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_two;
+  network_context_two->GetCookieManager(
+      cookie_manager_two.BindNewPipeAndPassReceiver());
+
+  net::CookieList cookies = GetCookies(cookie_manager_two);
+  // Cookie should be there.
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_EQ(kCookieName, cookies[0].Name());
+  EXPECT_EQ(kCookieValue, cookies[0].Value());
+
+  // Cookie file should have moved from the original `unsandboxed_data_path` to
+  // the new 'Network' path.
+  EXPECT_FALSE(base::PathExists(tempdir_two.Append(kCookieDatabaseName)));
+  // Into the new directory.
+  EXPECT_TRUE(base::PathExists(tempdir_two.Append(FILE_PATH_LITERAL("Network"))
+                                   .Append(kCookieDatabaseName)));
+  // If there was a journal file in the original `unsandboxed_data_path`, check
+  // that it has also moved.
+  if (base::PathExists(tempdir_one.Append(
+          sql::Database::JournalPath(kCookieDatabaseName)))) {
+    EXPECT_FALSE(base::PathExists(
+        tempdir_two.Append(sql::Database::JournalPath(kCookieDatabaseName))));
+    EXPECT_TRUE(base::PathExists(
+        tempdir_two.Append(FILE_PATH_LITERAL("Network"))
+            .Append(sql::Database::JournalPath(kCookieDatabaseName))));
+  }
+  histogram_tester.ExpectUniqueSample("NetworkService.GrantSandboxResult",
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(InProcess,
+                         NetworkServiceDataMigrationBrowserTest,
+                         ::testing::Values(true));
+INSTANTIATE_TEST_SUITE_P(OutOfProcess,
+                         NetworkServiceDataMigrationBrowserTest,
+                         ::testing::Values(false));
 
 class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
  public:

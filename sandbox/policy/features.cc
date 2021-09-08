@@ -59,17 +59,25 @@ const base::Feature kForceSpectreVariant2Mitigation{
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
+bool IsNetworkServiceSandboxLPACSupported() {
+  // Since some APIs used for LPAC are unsupported below Windows 10, place a
+  // check here in a central place.
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return false;
+  return true;
+}
+
 bool IsNetworkServiceSandboxLPACEnabled() {
   // Use LPAC for network sandbox instead of restricted token. Relies on
   // NetworkServiceSandbox being also enabled.
   const base::Feature kNetworkServiceSandboxLPAC{
       "NetworkServiceSandboxLPAC", base::FEATURE_DISABLED_BY_DEFAULT};
 
-  // Since some APIs used for LPAC are unsupported below Windows 10, place a
-  // check here in a central place.
-  if (base::win::GetVersion() < base::win::Version::WIN10)
+  // Check platform support.
+  if (!IsNetworkServiceSandboxLPACSupported())
     return false;
 
+  // Check feature status.
   return base::FeatureList::IsEnabled(kNetworkServiceSandbox) &&
          base::FeatureList::IsEnabled(kNetworkServiceSandboxLPAC);
 }
