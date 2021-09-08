@@ -112,10 +112,19 @@ SiteInstanceId::Generator g_site_instance_id_generator;
 }  // namespace
 
 UrlInfo::UrlInfo(const UrlInfo& other) = default;
+
 UrlInfo::UrlInfo()
-    : origin_isolation_request(OriginIsolationRequest::kNone),
-      web_exposed_isolation_info(WebExposedIsolationInfo::CreateNonIsolated()) {
+    : web_exposed_isolation_info(WebExposedIsolationInfo::CreateNonIsolated()) {
 }
+
+UrlInfo::UrlInfo(const UrlInfoInit& init)
+    : url(init.url_),
+      origin_isolation_request(init.origin_isolation_request_),
+      origin(init.origin_),
+      storage_partition_config(init.storage_partition_config_),
+      web_exposed_isolation_info(init.web_exposed_isolation_info_),
+      is_pdf(init.is_pdf_) {}
+
 UrlInfo::~UrlInfo() = default;
 
 // static
@@ -133,14 +142,6 @@ UrlInfo UrlInfo::CreateCopyWithStoragePartitionConfig(
   copy.storage_partition_config = storage_partition_config_in;
   return copy;
 }
-
-UrlInfo::UrlInfo(const UrlInfoInit& init)
-    : url(init.url_),
-      origin_isolation_request(init.origin_isolation_request_),
-      origin(init.origin_),
-      storage_partition_config(init.storage_partition_config_),
-      web_exposed_isolation_info(init.web_exposed_isolation_info_),
-      is_pdf(init.is_pdf_) {}
 
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 

@@ -107,7 +107,8 @@ struct CONTENT_EXPORT UrlInfo {
   // be set to kNone. This field is only relevant (1) during a navigation
   // request, (2) up to the point where the origin is placed into a
   // SiteInstance.  Other than these cases, this should be set to kNone.
-  OriginIsolationRequest origin_isolation_request;
+  OriginIsolationRequest origin_isolation_request =
+      OriginIsolationRequest::kNone;
 
   // If |url| represents a resource inside another resource (e.g. a resource
   // with a urn: URL in WebBundle), origin of the original resource. Otherwise,
