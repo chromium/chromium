@@ -3891,7 +3891,6 @@ source_set("unit_tests") {
     "../ash/file_manager/path_util_unittest.cc",
     "../ash/file_manager/url_util_unittest.cc",
     "../ash/file_manager/volume_manager_unittest.cc",
-    "../ash/file_manager/web_file_tasks_unittest.cc",
     "../ash/file_system_provider/fake_extension_provider.cc",
     "../ash/file_system_provider/fake_extension_provider.h",
     "../ash/file_system_provider/fake_provided_file_system.cc",

@@ -29,15 +29,19 @@ namespace {
 const char kAppIdText[] = "abcdefg";
 const char kAppIdImage[] = "gfedcba";
 const char kAppIdAny[] = "hijklmn";
+const char kAppIdTextWild[] = "zxcvbn";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeImage[] = "image/jpeg";
+const char kMimeTypeHtml[] = "text/html";
 const char kMimeTypeAny[] = "*/*";
+const char kMimeTypeTextWild[] = "text/*";
 const char kFileExtensionText[] = "txt";
 const char kFileExtensionImage[] = "jpeg";
 const char kFileExtensionAny[] = "fake";
 const char kActivityLabelText[] = "some_text_activity";
 const char kActivityLabelImage[] = "some_image_activity";
 const char kActivityLabelAny[] = "some_any_file";
+const char kActivityLabelTextWild[] = "some_text_wild_file";
 
 GURL test_url(const std::string& file_name) {
   GURL url = GURL("filesystem:https://site.com/isolated/" + file_name);
@@ -82,6 +86,11 @@ class AppServiceFileTasksTest : public testing::Test {
 
     std::vector<FullTaskDescriptor> tasks;
     file_tasks::FindAppServiceTasks(profile(), entries, file_urls, &tasks);
+    // Sort by app ID so we don't rely on ordering.
+    std::sort(
+        tasks.begin(), tasks.end(), [](const auto& left, const auto& right) {
+          return left.task_descriptor.app_id < right.task_descriptor.app_id;
+        });
     return tasks;
   }
 
@@ -125,6 +134,11 @@ class AppServiceFileTasksTest : public testing::Test {
   void AddImageApp() {
     AddFakeWebApp(kAppIdImage, kMimeTypeImage, kFileExtensionImage,
                   kActivityLabelImage);
+  }
+
+  void AddTextWildApp() {
+    AddFakeWebApp(kAppIdTextWild, kMimeTypeTextWild, kFileExtensionAny,
+                  kActivityLabelTextWild);
   }
 
   void AddAnyApp() {
@@ -240,6 +254,33 @@ TEST_F(AppServiceFileTasksTestEnabled,
   std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks(
       {{"foo.txt", kMimeTypeText}, {"bar.jpeg", kMimeTypeImage}});
   ASSERT_EQ(0U, tasks.size());
+}
+
+// Check we get a match for a text file + text wildcard filter.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceWebFileTasksTextWild) {
+  AddTextWildApp();
+  AddTextApp();
+  // Find web apps for a "text/plain" file.
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
+  ASSERT_EQ(2U, tasks.size());
+  EXPECT_EQ(kAppIdText, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelText, tasks[0].task_title);
+  EXPECT_EQ(kAppIdTextWild, tasks[1].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelTextWild, tasks[1].task_title);
+}
+
+// Check we get a match for a text file and HTML file + text wildcard filter.
+TEST_F(AppServiceFileTasksTestEnabled,
+       FindAppServiceWebFileTasksTextWildMultiple) {
+  AddTextWildApp();
+  AddTextApp();   // Should not be matched.
+  AddImageApp();  // Should not be matched.
+  std::vector<FullTaskDescriptor> tasks = FindAppServiceTasks(
+      {{"foo.txt", kMimeTypeText}, {"bar.html", kMimeTypeHtml}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kAppIdTextWild, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ(kActivityLabelTextWild, tasks[0].task_title);
 }
 
 }  // namespace file_tasks

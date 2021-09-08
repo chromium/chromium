@@ -14,8 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "chrome/browser/ash/file_manager/web_file_tasks.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -489,18 +489,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
 // file manager and eligible for opening appropriate files / mime types.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
                        MediaAppEligibleOpenTask) {
-  constexpr bool kIsDirectory = false;
-  const extensions::EntryInfo image_entry(TestFile(kFilePng800x600),
-                                          "image/png", kIsDirectory);
-  const extensions::EntryInfo video_entry(TestFile(kFileVideoVP9), "video/webm",
-                                          kIsDirectory);
+  base::FilePath image_path = TestFile(kFilePng800x600);
+  base::FilePath video_path = TestFile(kFileVideoVP9);
 
   WaitForTestSystemAppInstall();
 
-  for (const auto& single_entry : {video_entry, image_entry}) {
-    SCOPED_TRACE(single_entry.mime_type);
-    std::vector<file_manager::file_tasks::FullTaskDescriptor> result;
-    file_manager::file_tasks::FindWebTasks(profile(), {single_entry}, &result);
+  for (const auto& file_path : {video_path, image_path}) {
+    std::vector<file_manager::file_tasks::FullTaskDescriptor> result =
+        file_manager::test::GetTasksForFile(profile(), file_path);
 
     ASSERT_LT(0u, result.size());
     EXPECT_EQ(1u, result.size());

@@ -11,22 +11,12 @@
 
 class Profile;
 
-namespace extensions {
-struct EntryInfo;
-}
-
 namespace storage {
 class FileSystemURL;
 }
 
 namespace file_manager {
 namespace file_tasks {
-
-// Finds the web app tasks that can handle |entries|, appends them to
-// |result_list|.
-void FindWebTasks(Profile* profile,
-                  const std::vector<extensions::EntryInfo>& entries,
-                  std::vector<FullTaskDescriptor>* result_list);
 
 // Executes the specified web task.
 void ExecuteWebTask(Profile* profile,
