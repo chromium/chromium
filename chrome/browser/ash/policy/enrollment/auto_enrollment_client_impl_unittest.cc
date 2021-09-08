@@ -2193,6 +2193,36 @@ TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
   EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
 }
 
+TEST_P(PsmHelperTest, CancelAndDeleteSoonWithPendingRequest) {
+  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
+
+  // Expect one request to be captured when available in |psm_rlwe_oprf_job|.
+  ServerWillReplyAsyncForPsm(&psm_rlwe_oprf_job);
+
+  // Verify that the PSM RLWE OPRF request has not been captured yet.
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the PSM RLWE OPRF request has been captured.
+  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
+  VerifyPsmRlweOprfRequest();
+  VerifyPsmLastRequestJobType();
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
+
+  // Cancel any running jobs and delete the client by `CancelAndDeleteSoon()`
+  // while PSM RLWE OPRF request is in flight.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+  release_client()->CancelAndDeleteSoon();
+
+  // Verify the client has been deleted immediately and inexistence of any
+  // pending jobs.
+  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
+  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
+}
+
 // PSM is enabled to test initial enrollment case extensively only.
 // Note that: PSM is running only for initial enrollment, and Hash dance for FRE
 // use case.
