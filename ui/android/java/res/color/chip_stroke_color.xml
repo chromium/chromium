@@ -8,5 +8,5 @@
     <item android:color="@color/hairline_stroke_color"
         android:state_enabled="true"
         android:state_selected="false" />
-    <item android:color="@color/default_bg_color" />
+    <item android:color="@android:color/transparent" />
 </selector>
