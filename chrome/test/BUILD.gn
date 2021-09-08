@@ -177,6 +177,8 @@ static_library("test_support") {
     "base/testing_profile_manager.h",
     "base/tracing.cc",
     "base/tracing.h",
+    "base/web_feature_histogram_tester.cc",
+    "base/web_feature_histogram_tester.h",
   ]
 
   if (is_mac) {
@@ -266,6 +268,7 @@ static_library("test_support") {
     "//components/gcm_driver/instance_id:test_support",
     "//components/history/core/test",
     "//components/infobars/core",
+    "//components/metrics:content",
     "//components/metrics:test_support",
     "//components/network_session_configurator/common",
     "//components/network_time",
