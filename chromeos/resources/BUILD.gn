@@ -39,6 +39,11 @@ grit("resources") {
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
     "//chromeos/services/cellular_setup/public/mojom:mojom_js",
     "//chromeos/services/device_sync/public/mojom:mojom_js",
+
+    # Generated ml service js bindings are required by external clients, the
+    # clients are not found within Chromium. The clients pull the generated
+    # js bindings as part of their build process.
+    "//chromeos/services/machine_learning/public/mojom:mojom_js",
     "//chromeos/services/multidevice_setup/public/mojom:mojom_js",
     "//chromeos/services/network_config/public/mojom:mojom_js",
     "//chromeos/services/network_health/public/mojom:mojom_js",
