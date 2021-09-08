@@ -109,4 +109,9 @@ public interface ProcessScopeDependencyProvider {
     default int getChromeChannel() {
         return 0;
     }
+
+    /** Returns the percentage size that the memory cache is allowed to use. */
+    default int getImageMemoryCacheSizePercentage() {
+        return 100;
+    }
 }

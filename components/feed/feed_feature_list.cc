@@ -64,6 +64,8 @@ const base::Feature kReliabilityLogging{"FeedReliabilityLogging",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedInteractiveRefresh{"FeedInteractiveRefresh",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFeedImageMemoryCacheSizePercentage{
+    "FeedImageMemoryCacheSizePercentage", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
 
