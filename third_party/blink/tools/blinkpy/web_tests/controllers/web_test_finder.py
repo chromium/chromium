@@ -196,7 +196,7 @@ class WebTestFinder(object):
             except IOError as error:
                 if error.errno == errno.ENOENT:
                     _log.critical('')
-                    _log.critical('--test-list file "%s" not found', filename)
+                    _log.critical('--test-list file "%s" not found', file)
                 raise
         return positive_matches, negative_matches, positive_globs, negative_globs
 
