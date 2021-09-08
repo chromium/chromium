@@ -26,17 +26,16 @@
 namespace ash {
 
 // Helper function that creates an image for the dictation icon.
-gfx::ImageSkia GetIconImage(bool enabled, session_manager::SessionState state) {
-  const SkColor color = TrayIconColor(state);
+gfx::ImageSkia GetIconImage(bool enabled) {
+  const SkColor color =
+      TrayIconColor(Shell::Get()->session_controller()->GetSessionState());
   return enabled ? gfx::CreateVectorIcon(kDictationOnNewuiIcon, color)
                  : gfx::CreateVectorIcon(kDictationOffNewuiIcon, color);
 }
 
 DictationButtonTray::DictationButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf), icon_(new views::ImageView()) {
-  gfx::ImageSkia icon_image = GetIconImage(
-      false /*enabled*/, Shell::Get()->session_controller()->GetSessionState());
-  icon_->SetImage(icon_image);
+  const gfx::ImageSkia icon_image = GetIconImage(/*enabled=*/false);
   const int vertical_padding = (kTrayItemSize - icon_image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - icon_image.width()) / 2;
   icon_->SetBorder(views::CreateEmptyBorder(
@@ -97,6 +96,12 @@ void DictationButtonTray::HideBubbleWithView(
   // This class has no bubbles to hide.
 }
 
+void DictationButtonTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  icon_->SetImage(GetIconImage(
+      Shell::Get()->accessibility_controller()->dictation_active()));
+}
+
 const char* DictationButtonTray::GetClassName() const {
   return "DictationButtonTray";
 }
@@ -107,8 +112,7 @@ void DictationButtonTray::OnSessionStateChanged(
 }
 
 void DictationButtonTray::UpdateIcon(bool dictation_active) {
-  icon_->SetImage(GetIconImage(
-      dictation_active, Shell::Get()->session_controller()->GetSessionState()));
+  icon_->SetImage(GetIconImage(dictation_active));
   SetIsActive(dictation_active);
 }
 

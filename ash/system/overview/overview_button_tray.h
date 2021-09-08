@@ -78,6 +78,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+  void OnThemeChanged() override;
 
  private:
   friend class OverviewButtonTrayTest;

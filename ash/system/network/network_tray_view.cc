@@ -38,7 +38,6 @@ NetworkTrayView::NetworkTrayView(Shelf* shelf, ActiveNetworkIcon::Type type)
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
   CreateImageView();
-  UpdateNetworkStateHandlerIcon();
   UpdateConnectionStatus(true /* notify_a11y */);
 }
 
@@ -73,6 +72,11 @@ std::u16string NetworkTrayView::GetTooltipText(const gfx::Point& p) const {
 
 void NetworkTrayView::HandleLocaleChange() {
   UpdateConnectionStatus(false /* notify_a11y */);
+}
+
+void NetworkTrayView::OnThemeChanged() {
+  TrayItemView::OnThemeChanged();
+  UpdateNetworkStateHandlerIcon();
 }
 
 void NetworkTrayView::NetworkIconChanged() {

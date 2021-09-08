@@ -35,6 +35,7 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   bool PerformAction(const ui::Event& event) override;
+  void OnThemeChanged() override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
@@ -49,8 +50,6 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   const char* GetClassName() const override;
 
  private:
-  // Updates the icon UI.
-  void UpdateIcon();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;

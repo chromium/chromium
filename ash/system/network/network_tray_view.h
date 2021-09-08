@@ -40,6 +40,7 @@ class NetworkTrayView : public TrayItemView,
 
   // TrayItemView:
   void HandleLocaleChange() override;
+  void OnThemeChanged() override;
 
   // network_icon::AnimationObserver:
   void NetworkIconChanged() override;

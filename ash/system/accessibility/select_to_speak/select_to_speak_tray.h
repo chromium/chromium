@@ -32,6 +32,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   const char* GetClassName() const override;
   bool PerformAction(const ui::Event& event) override;
+  void OnThemeChanged() override;
   // The SelectToSpeakTray does not have a bubble, so these functions are
   // no-ops.
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
@@ -46,16 +47,13 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
  private:
   friend class SelectToSpeakTrayTest;
 
-  // Updates the icons color depending on if the user is logged-in or not.
-  void UpdateIconsForSession();
+  // Updates icon depending on the current status of select-to-speak. And
+  // updates the visibility of the tray depending on whether select-to-speak is
+  // enabled or disabled.
+  void UpdateIconOnCurrentStatus();
 
-  // Sets the icon when select-to-speak is activated (speaking) / deactivated.
-  // Also updates visibility when select-to-speak is enabled / disabled.
-  void CheckStatusAndUpdateIcon();
-
-  gfx::ImageSkia inactive_image_;
-  gfx::ImageSkia selecting_image_;
-  gfx::ImageSkia speaking_image_;
+  // Updates icon if the color of the icon changes.
+  void UpdateIconOnColorChanges();
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;
