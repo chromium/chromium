@@ -68,7 +68,7 @@ void PopulateBrowserMetadata(bool include_device_info,
 void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
                             Profile* profile,
                             ClientMetadata::Device* device_proto) {
-  if (!reporting_settings.per_profile)
+  if (!reporting_settings.per_profile && !device_proto->has_dm_token())
     device_proto->set_dm_token(reporting_settings.dm_token);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string client_id;
