@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_definition.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
@@ -397,6 +398,79 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   // CompositablePaintAnimationChanged() being true will trigger a repaint. See
   // ComputedStyle::UpdatePropertySpecificDifferences().
   EXPECT_TRUE(style->CompositablePaintAnimationChanged());
+}
+
+TEST_F(BackgroundColorPaintDefinitionTest,
+       CompositablePaintAnimationChangedFlagInvalidatesPaint) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML("<div id=target></div>");
+
+  Element* element = GetElementById("target");
+  ASSERT_TRUE(element);
+
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(element, model, timing);
+
+  auto* animation =
+      Animation::Create(effect, &GetDocument().Timeline(), ASSERT_NO_EXCEPTION);
+
+  animation->play();
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Unrelated style change to clear the CompositablePaintAnimationChanged
+  // flag.
+  element->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+
+  // Set compositor pending.
+  animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0.5),
+                          ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(animation->CompositorPending());
+  element->SetNeedsAnimationStyleRecalc();
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+  ASSERT_TRUE(element->GetLayoutObject());
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+
+  // Run paint.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(animation->CompositorPending());
+  EXPECT_FALSE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+
+  // Set compositor pending again. This time the current style already has
+  // CompositablePaintAnimationChanged, hence the old and new styles are
+  // identical, but the new style should still invalidate paint.
+  animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0.7),
+                          ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(animation->CompositorPending());
+  element->SetNeedsAnimationStyleRecalc();
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
+  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
+  ASSERT_TRUE(element->GetLayoutObject());
+  EXPECT_TRUE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
 }
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash

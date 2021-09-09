@@ -1030,10 +1030,11 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetCompositingReasonsChanged();
   }
 
+  // TODO(crbug.com/1246826): Remove CompositablePaintAnimationChanged.
   if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       (HasCurrentBackgroundColorAnimation() !=
            other.HasCurrentBackgroundColorAnimation() ||
-       CompositablePaintAnimationChanged())) {
+       other.CompositablePaintAnimationChanged())) {
     diff.SetCompositablePaintEffectChanged();
   }
 }
