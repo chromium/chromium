@@ -2409,6 +2409,44 @@ TEST_F(ControllerTest, SetTtsMessageStopsAnyOngoingTts) {
   EXPECT_CALL(*mock_tts_controller_, Stop());
   EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
   controller_->SetTtsMessage("tts_message");
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
+TEST_F(ControllerTest, SetTtsMessageReEnablesTtsButtonWithNonStickyStateExp) {
+  EXPECT_CALL(mock_client_, IsSpokenFeedbackAccessibilityServiceEnabled())
+      .WillOnce(Return(false));
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options(
+                   /* experiment_ids= */ "4624822", /* is_cct= */ false,
+                   /* onboarding_shown= */ false, /* is_direct_action= */ false,
+                   /* initial_url= */ "http://a.example.com/path",
+                   /* is_in_chrome_triggered= */ false)));
+  SetTtsButtonStateForTest(TtsButtonState::DISABLED);
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  controller_->SetTtsMessage("tts_message");
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
+TEST_F(ControllerTest,
+       SetTtsMessageKeepsTtsButtonDisabledWithoutNonStickyStateExp) {
+  EXPECT_CALL(mock_client_, IsSpokenFeedbackAccessibilityServiceEnabled())
+      .WillOnce(Return(false));
+  GURL url("http://a.example.com/path");
+  controller_->Start(
+      url, std::make_unique<TriggerContext>(
+               /* parameters = */ std::make_unique<ScriptParameters>(
+                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+               TriggerContext::Options()));
+  SetTtsButtonStateForTest(TtsButtonState::DISABLED);
+
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(_)).Times(0);
+  controller_->SetTtsMessage("tts_message");
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DISABLED);
 }
 
 TEST_F(ControllerTest, TappingTtsButtonInDefaultStateStartsPlayingTts) {
