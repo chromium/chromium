@@ -30,7 +30,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,15 +103,6 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
                               base::DoNothing());
     BrowserList* browser_list = BrowserList::GetInstance();
     return *browser_list->begin_browsers_ordered_by_activation();
-  }
-
-  void EnsureInitialNavigationFinished(Browser* browser) {
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (web_contents->IsLoading()) {
-      content::TestNavigationObserver test_navigation_observer(web_contents);
-      test_navigation_observer.Wait();
-    }
   }
 
   content::ServiceWorkerContext* GetServiceWorkerContext(Browser* browser) {
@@ -252,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
 // simultaneously, the WorkerTaskProvider can still works.
 // Flaky on all platforms. https://crrev.com/1244009.
 IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
-                       CreateTasksForMultiProfiles) {
+                       DISABLED_CreateTasksForMultiProfiles) {
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
@@ -261,7 +251,6 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
       "/service_worker/create_service_worker.html");
 
   Browser* browser_1 = CreateNewProfileAndSwitch();
-  EnsureInitialNavigationFinished(browser_1);
   content::RenderFrameHost* render_frame_host_1 =
       ui_test_utils::NavigateToURL(browser_1, kCreateServiceWorkerURL);
   ASSERT_EQ(render_frame_host_1->GetLastCommittedURL(),
@@ -271,7 +260,6 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   WaitUntilTaskCount(1);
 
   Browser* browser_2 = CreateNewProfileAndSwitch();
-  EnsureInitialNavigationFinished(browser_1);
   content::RenderFrameHost* render_frame_host_2 =
       ui_test_utils::NavigateToURL(browser_2, kCreateServiceWorkerURL);
   ASSERT_EQ(render_frame_host_2->GetLastCommittedURL(),
