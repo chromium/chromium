@@ -31,6 +31,9 @@ const base::Feature kBetterTelemetryAcrossReports{
     "SafeBrowsingBetterTelemetryAcrossReports",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kClientSideDetectionDocumentScanning{
+    "ClientSideDetectionDocumentScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kClientSideDetectionForAndroid{
     "ClientSideDetectionModelOnAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -153,7 +156,6 @@ const base::Feature kVisualFeaturesInPasswordProtectionAndroid{
 
 const base::Feature kVisualFeaturesSizes{"VisualFeaturesSizes",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 
 namespace {
 // List of Safe Browsing features. Boolean value for each list member should

@@ -38,7 +38,7 @@
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
 #ifndef MALDOCA_CHROME
-#include "google/protobuf/text_format.h"
+#include "google/protobuf/text_format.h"  // nogncheck
 #include "maldoca/base/ret_check.h"
 #include "maldoca/base/status_macros.h"
 #include "re2/re2.h"
@@ -46,7 +46,9 @@
 
 using absl::Status;
 
+#ifndef MALDOCA_CHROME
 using ::google::protobuf::Message;
+#endif
 
 namespace maldoca {
 namespace file {

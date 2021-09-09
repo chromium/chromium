@@ -1,5 +1,4 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
-import("//third_party/grpc/grpc_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("maldoca_flags") {
@@ -102,8 +101,9 @@ proto_library("maldoca-service-protos") {
     "${proto_in_dir}/maldoca/service/proto/doc_type.proto",
     "${proto_in_dir}/maldoca/service/proto/document_features.proto",
     "${proto_in_dir}/maldoca/service/proto/exported_features.proto",
+    "${proto_in_dir}/maldoca/service/proto/maldoca_service.proto",
     "${proto_in_dir}/maldoca/service/proto/parsed_document.proto",
-    "${proto_in_dir}/maldoca/service/proto/processing_config.proto",
+    "${proto_in_dir}/maldoca/service/proto/processing_config.proto"
   ]
   import_dirs = ["//third_party/tflite/src/"]
   link_deps = [
@@ -112,17 +112,6 @@ proto_library("maldoca-service-protos") {
     ":maldoca-base-protos",
     ":maldoca-ole-protos",
     ":maldoca-pdf_parser-protos",
-  ]
-}
-
-grpc_library("maldoca-service-grpc-proto") {
-  proto_in_dir = "src"
-  sources = ["${proto_in_dir}/maldoca/service/proto/maldoca_service.proto"]
-  import_dirs = ["//third_party/tflite/src/"]
-  link_deps = [
-    ":example_proto",
-    ":maldoca-base-protos",
-    ":maldoca-service-protos",
   ]
 }
 
@@ -138,7 +127,6 @@ static_library("maldoca-base") {
     "src/maldoca/base/get_runfiles_dir.h",
     "src/maldoca/base/logging.h",
     "src/maldoca/base/map_util.h",
-    "src/maldoca/base/parse_text_proto.h",
     "src/maldoca/base/ret_check.h",
     "src/maldoca/base/source_location.h",
     "src/maldoca/base/status.h",
@@ -230,6 +218,7 @@ source_set("maldoca-ole") {
   ]
   deps = [
     ":zlibwrapper",
+    "//base",
     "//third_party/libxml",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
@@ -258,18 +247,19 @@ source_set("maldoca-public-headers") {
     ":maldoca-base",
     ":maldoca-ole-protos",
     ":maldoca-service-protos",
-    ":maldoca-service-grpc-proto"
   ]
   deps = [
     "//third_party/abseil-cpp:absl",
-    "//third_party/grpc:grpc++",
     "//third_party/libxml",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/zlib",
   ]
 
-  configs += [":maldoca_flags"]
+  configs += [
+    ":maldoca_chromium_config",
+    ":maldoca_flags"
+  ]
 }
 
 static_library("maldoca") {
@@ -284,7 +274,6 @@ static_library("maldoca") {
   deps = [
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
-    "//third_party/grpc:grpc++",
     "//third_party/libxml",
     "//third_party/protobuf:protobuf_lite",
   ]
@@ -293,15 +282,10 @@ static_library("maldoca") {
     ":maldoca-base",
     ":maldoca-ole",
     ":maldoca-public-headers",
-    ":maldoca-service-grpc-proto",
     ":maldoca-service-protos",
   ]
 
   include_dirs = ["//third_party/maldoca/src/"]
-
-  configs += [
-    "//third_party/grpc:grpc_config",
-  ]
 
   public_configs = [
     ":maldoca_chromium_config",

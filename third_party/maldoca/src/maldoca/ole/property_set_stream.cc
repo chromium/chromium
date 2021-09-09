@@ -324,7 +324,7 @@ bool OLEPropertySetStream::VtValueReader(absl::string_view *stream,
       }
       stream->remove_prefix(sizeof(uint16_t));
       return VtValueReader(stream, vt, value);
-    } break;
+    }
 
     case kVtBlob: {
       uint32_t size;

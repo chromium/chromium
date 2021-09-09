@@ -58,7 +58,9 @@
 #include <vector>
 
 #include "absl/container/flat_hash_set.h"
-#include "google/protobuf/message.h"
+#ifndef MALDOCA_CHROME
+#include "google/protobuf/message.h"  // nogncheck
+#endif
 #include "maldoca/service/common/processing_component.h"
 #include "maldoca/service/proto/document_features.pb.h"
 #include "maldoca/service/proto/exported_features.pb.h"

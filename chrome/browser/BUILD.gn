@@ -2190,6 +2190,7 @@ static_library("browser") {
     "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
     "//components/schema_org/common:improved_mojom",
