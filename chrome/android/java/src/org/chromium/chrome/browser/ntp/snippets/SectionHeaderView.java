@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -91,8 +92,8 @@ public class SectionHeaderView extends LinearLayout {
     private Drawable mEnabledIndicatorDrawable;
     private Drawable mNoIndicatorDrawable;
 
-    // BadgeDrawable for badging.
-    private @Nullable BadgeDrawable mBadge;
+    // Non-null only when the indicator should be shown.
+    private @Nullable UnreadIndicator mUnreadIndicator;
 
     public SectionHeaderView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -185,24 +186,22 @@ public class SectionHeaderView extends LinearLayout {
     void setHeaderAt(String text, boolean hasUnreadContent, int index) {
         TabLayout.Tab tab = getTabAt(index);
         if (tab != null) {
+            tab.setText(text);
+            String contentDescription = text;
             if (hasUnreadContent) {
-                if (mBadge == null) {
-                    mBadge = BadgeDrawable.createFromResource(getContext(), R.xml.tab_layout_badge);
-                    mBadge.setContentDescriptionNumberless(getResources().getString(
-                            R.string.accessibility_ntp_following_unread_content));
+                contentDescription = contentDescription + ", "
+                        + getResources().getString(
+                                R.string.accessibility_ntp_following_unread_content);
+                if (mUnreadIndicator == null) {
+                    mUnreadIndicator = new UnreadIndicator(tab.getCustomView());
                 }
-                mBadge.setVisible(true);
-                tab.setTag(mBadge);
-
-                BadgeUtils.attachBadgeDrawable(mBadge, tab.getCustomView());
             } else {
-                if (mBadge != null) {
-                    mBadge.setVisible(false);
-                    tab.setTag(null);
-                    BadgeUtils.detachBadgeDrawable(mBadge, tab.getCustomView());
+                if (mUnreadIndicator != null) {
+                    mUnreadIndicator.destroy();
+                    mUnreadIndicator = null;
                 }
             }
-            tab.setText(text);
+            tab.setContentDescription(contentDescription);
         }
     }
 
@@ -363,8 +362,8 @@ public class SectionHeaderView extends LinearLayout {
             TabLayout.Tab tab = mTabLayout.getTabAt(i);
             tab.view.setClickable(enabled);
             tab.view.setEnabled(enabled);
-            if (tab.getTag() != null) {
-                mBadge.setVisible(enabled);
+            if (mUnreadIndicator != null) {
+                mUnreadIndicator.setVisible(enabled);
             }
         }
         mTitleView.setEnabled(enabled);
@@ -462,5 +461,38 @@ public class SectionHeaderView extends LinearLayout {
         mMenuView.setDelegate(delegate);
         mMenuView.tryToFitLargestItem(true);
         mMenuView.showMenu();
+    }
+
+    private class UnreadIndicator implements ViewTreeObserver.OnGlobalLayoutListener {
+        private View mAnchor;
+        private BadgeDrawable mBadge;
+
+        UnreadIndicator(View anchor) {
+            mAnchor = anchor;
+            mBadge = BadgeDrawable.createFromResource(
+                    SectionHeaderView.this.getContext(), R.xml.tab_layout_badge);
+
+            mBadge.setVisible(true);
+            mAnchor.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        }
+
+        void destroy() {
+            mAnchor.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            setVisible(false);
+            BadgeUtils.detachBadgeDrawable(mBadge, mAnchor);
+        }
+
+        void setVisible(boolean visible) {
+            mBadge.setVisible(visible);
+        }
+
+        @Override
+        public void onGlobalLayout() {
+            // attachBadgeDrawable() will crash if mAnchor has no parent. This can happen after the
+            // views are detached from the window.
+            if (mAnchor.getParent() != null) {
+                BadgeUtils.attachBadgeDrawable(mBadge, mAnchor);
+            }
+        }
     }
 }
