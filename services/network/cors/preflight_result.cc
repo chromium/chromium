@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/cors/cors_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 
 namespace network {
