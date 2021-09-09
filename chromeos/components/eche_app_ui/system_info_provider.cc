@@ -17,6 +17,7 @@ namespace eche_app {
 
 const char kJsonDeviceNameKey[] = "device_name";
 const char kJsonBoardNameKey[] = "board_name";
+const char kJsonTabletModeKey[] = "tablet_mode";
 
 SystemInfoProvider::SystemInfoProvider(std::unique_ptr<SystemInfo> system_info)
     : system_info_(std::move(system_info)) {
@@ -40,6 +41,8 @@ void SystemInfoProvider::GetSystemInfo(
   base::DictionaryValue json_dictionary;
   json_dictionary.SetString(kJsonDeviceNameKey, system_info_->GetDeviceName());
   json_dictionary.SetString(kJsonBoardNameKey, system_info_->GetBoardName());
+  json_dictionary.SetBoolean(kJsonTabletModeKey,
+                             ash::TabletMode::Get()->InTabletMode());
   std::string json_message;
   base::JSONWriter::Write(json_dictionary, &json_message);
   std::move(callback).Run(json_message);

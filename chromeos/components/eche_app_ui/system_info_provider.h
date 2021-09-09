@@ -16,6 +16,7 @@ namespace eche_app {
 
 extern const char kJsonDeviceNameKey[];
 extern const char kJsonBoardNameKey[];
+extern const char kJsonTabletModeKey[];
 
 class SystemInfo;
 

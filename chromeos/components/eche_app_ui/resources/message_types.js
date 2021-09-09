@@ -22,6 +22,7 @@
  * @typedef {{
  *    boardName: string,
  *    deviceName: string,
+ *    tabletMode: boolean,
  * }}
  */
 /* #export */ let SystemInfo;

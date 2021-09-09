@@ -14,16 +14,19 @@ namespace eche_app {
 
 const char kFakeDeviceName[] = "Guanru's Chromebook";
 const char kFakeBoardName[] = "atlas";
+const bool kFakeTabletMode = true;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
-               std::string& board_name) {
+               std::string& board_name,
+               bool& tablet_mode) {
   std::unique_ptr<base::Value> message_value =
       base::JSONReader::ReadDeprecated(json);
   base::DictionaryValue* message_dictionary;
   message_value->GetAsDictionary(&message_dictionary);
   message_dictionary->GetString(kJsonDeviceNameKey, &device_name);
   message_dictionary->GetString(kJsonBoardNameKey, &board_name);
+  message_dictionary->GetBoolean(kJsonTabletModeKey, &tablet_mode);
 }
 
 class FakeTabletMode : public ash::TabletMode {
@@ -113,13 +116,15 @@ class SystemInfoProviderTest : public testing::Test {
 TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   std::string device_name = "";
   std::string board_name = "";
+  bool tablet_mode = false;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
-  ParseJson(json, device_name, board_name);
+  ParseJson(json, device_name, board_name, tablet_mode);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
+  EXPECT_EQ(tablet_mode, kFakeTabletMode);
 }
 
 }  // namespace eche_app
