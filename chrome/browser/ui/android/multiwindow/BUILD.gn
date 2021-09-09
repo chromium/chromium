@@ -28,6 +28,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.multiwindow"
@@ -35,6 +36,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/checkmark_24dp.xml",
     "java/res/drawable/circle_green.xml",
     "java/res/layout/instance_switcher_cmd_item.xml",
     "java/res/layout/instance_switcher_dialog.xml",

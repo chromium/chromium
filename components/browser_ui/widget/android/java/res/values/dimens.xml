@@ -94,7 +94,6 @@
 
     <!-- Default list dimensions -->
     <dimen name="default_list_row_padding">16dp</dimen>
-    <dimen name="default_list_title_margin">24dp</dimen>
 
     <!-- Swipe gesture listener dimensions -->
     <dimen name="swipe_vertical_drag_threshold">5dp</dimen>

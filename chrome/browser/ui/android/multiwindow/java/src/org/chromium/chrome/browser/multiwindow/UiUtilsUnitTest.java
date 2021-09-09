@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DrawableRes;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,7 +65,12 @@ public class UiUtilsUnitTest {
 
         doReturn(CURRENT).when(mResources).getString(R.string.instance_switcher_current_window);
         doReturn(OPEN).when(mResources).getString(R.string.instance_switcher_adjacent_window);
-        mUiUtils = new UiUtils(mContext, mIconBridge);
+        mUiUtils = new UiUtils(mContext, mIconBridge) {
+            @Override
+            Drawable getTintedIcon(@DrawableRes int drawableId) {
+                return null;
+            }
+        };
     }
 
     @Test

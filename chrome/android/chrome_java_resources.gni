@@ -488,7 +488,6 @@ chrome_java_resources = [
   "java/res/drawable/google_pay_with_divider.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",
   "java/res/drawable/ic_add_to_home_screen.xml",
-  "java/res/drawable/ic_arrow_back_24dp.xml",
   "java/res/drawable/ic_arrow_forward_blue_24dp.xml",
   "java/res/drawable/ic_auto_awesome.xml",
   "java/res/drawable/ic_block_red.xml",
