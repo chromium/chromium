@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 
 namespace content {

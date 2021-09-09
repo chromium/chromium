@@ -129,6 +129,8 @@ source_set("platform") {
       sources += [
         "ax_event_intent_mac.h",
         "ax_event_intent_mac.mm",
+        "ax_platform_node_cocoa.h",
+        "ax_platform_node_cocoa.mm",
         "ax_platform_node_mac.h",
         "ax_platform_node_mac.mm",
         "ax_private_webkit_constants_mac.h",

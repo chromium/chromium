@@ -51,25 +51,4 @@ AX_EXPORT bool IsNameExposedInAXValueForRole(ax::mojom::Role role);
 
 }  // namespace ui
 
-AX_EXPORT
-@interface AXPlatformNodeCocoa : NSAccessibilityElement<NSAccessibility>
-
-// Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
-// found.
-+ (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;
-
-// Maps AX roles to native subroles. Returns nil if not found.
-+ (NSString*)nativeSubroleFromAXRole:(ax::mojom::Role)role;
-
-// Maps AX events to native notifications. Returns nil if not found.
-+ (NSString*)nativeNotificationFromAXEvent:(ax::mojom::Event)event;
-
-- (instancetype)initWithNode:(ui::AXPlatformNodeBase*)node;
-- (void)detach;
-
-@property(nonatomic, readonly) NSRect boundsInScreen;
-@property(nonatomic, readonly) ui::AXPlatformNodeBase* node;
-
-@end
-
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_MAC_H_
