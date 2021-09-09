@@ -11671,7 +11671,7 @@ void RenderFrameHostImpl::
       renderer_url_info_
           .document_has_unreachable_url_from_load_data_with_base_url);
   SCOPED_CRASH_KEY_STRING32(
-      "VerifyDidCommit", "history_url_fdu_type",
+      "VerifyDidCommit", "base_url_fdu_type",
       GetURLTypeForCrashKey(request->common_params().base_url_for_data_url));
 #if defined(OS_ANDROID)
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "data_url_empty",
