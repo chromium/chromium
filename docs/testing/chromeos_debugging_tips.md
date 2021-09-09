@@ -80,14 +80,14 @@ Once both isolates have been fetched you must then generate the breakpad
 symbols by pointing the `generate_breakpad_symbols.py` script to the input's
 build dir:
 ```
-python input/components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir input/out/Release/ --binary input/out/Release/chrome
+vpython input/components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir input/out/Release/ --binary input/out/Release/chrome
 ```
 
 That will generate the symbols in the `symbols/` dir. Then to symbolize a Chrome
 crash report present in the task's output (such as
 `chrome.20201211.041043.31022.5747.dmp`):
 ```
-./input/out/Release/minidump_stackwalk output/0/crashes/chrome.20201211.041043.31022.5747.dmp symbols/
+./input/out/Release/minidump_stackwalk output/55e4ed786757bf11/crashes/chrome.20201211.041043.31022.5747.dmp symbols/
 ```
 
 
