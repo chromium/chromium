@@ -53,6 +53,9 @@ class CreditCardAccessoryControllerImpl
  private:
   friend class content::WebContentsUserData<CreditCardAccessoryControllerImpl>;
 
+  using CardOrVirtualCard =
+      absl::variant<const CreditCard*, std::unique_ptr<CreditCard>>;
+
   // Required for construction via |CreateForWebContents|:
   explicit CreditCardAccessoryControllerImpl(content::WebContents* contents);
 
@@ -64,26 +67,27 @@ class CreditCardAccessoryControllerImpl
       autofill::BrowserAutofillManager* af_manager,
       autofill::AutofillDriver* af_driver);
 
-  void FetchSuggestions();
+  // Queries the `personal_data_manager_` for regular and virtual credit cards.
+  // Virtual cards are (re-)created based on the enrollment status of the cards
+  // and only exist temporarily, so in addition to `CreditCard` pointers, the
+  // returned array can contain `unique_ptr<CreditCard>`s for virtual cards.
+  // Recreation works only because CreditCard::CreateVirtualCard is a constant
+  // projection for a card (based only on its GUID and a static suffix).
+  std::vector<CardOrVirtualCard> GetAllCreditCards() const;
+
+  // Cards that are already unmasked by the user. These are shown to the user in
+  // plaintext and won't require any authentication when filling is triggered.
+  std::vector<const CachedServerCardInfo*> GetUnmaskedCreditCards() const;
+
   base::WeakPtr<ManualFillingController> GetManualFillingController();
   autofill::AutofillDriver* GetDriver();
   autofill::BrowserAutofillManager* GetManager() const;
 
-  // Pointers to cards owned by PersonalDataManager.
-  std::vector<CreditCard*> cards_cache_;
-  // Virtual cards that are created based on the enrollment status of the cards
-  // returned by the PersonalDataManager.
-  std::vector<std::unique_ptr<CreditCard>> virtual_cards_cache_;
   content::WebContents* web_contents_;
   base::WeakPtr<ManualFillingController> mf_controller_;
   PersonalDataManager* const personal_data_manager_;
   autofill::BrowserAutofillManager* af_manager_for_testing_ = nullptr;
   autofill::AutofillDriver* af_driver_for_testing_ = nullptr;
-
-  // Cached cards that are already unmasked by the user. These are shown to the
-  // user in plaintext and won't require any authentication when filling is
-  // triggered.
-  std::vector<const CachedServerCardInfo*> cached_server_cards_;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
