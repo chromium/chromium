@@ -3988,6 +3988,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/browser_test_util.h",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
       "../browser/lacros/download_controller_client_lacros_browsertest.cc",
+      "../browser/lacros/field_trial_service_lacros_browsertest.cc",
       "../browser/lacros/file_manager_lacros_browsertest.cc",
       "../browser/lacros/holding_space_service_lacros_browsertest.cc",
       "../browser/lacros/idle_service_lacros_browsertest.cc",

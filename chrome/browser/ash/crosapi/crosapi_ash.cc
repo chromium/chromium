@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
+#include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -117,6 +118,7 @@ CrosapiAsh::CrosapiAsh()
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
+      field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
@@ -222,6 +224,11 @@ void CrosapiAsh::BindChromeAppPublisher(
 void CrosapiAsh::BindChromeAppWindowTracker(
     mojo::PendingReceiver<mojom::AppWindowTracker> receiver) {
   chrome_app_window_tracker_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindFieldTrialService(
+    mojo::PendingReceiver<crosapi::mojom::FieldTrialService> receiver) {
+  field_trial_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileManager(

@@ -143,6 +143,11 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeCameraAppUIDelegate;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For RegisterSyntheticFieldTrial.
+  friend class FieldTrialObserver;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // Testing related friends.
   friend class first_run::FirstRunMasterPrefsVariationsSeedTest;
   friend class ForceFieldTrialsBrowserTest;

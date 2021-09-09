@@ -10,6 +10,7 @@
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
+#include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
@@ -61,4 +62,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   drivefs_cache_ = std::make_unique<DriveFsCache>();
   // After construction finishes, start caching.
   drivefs_cache_->Start();
+
+  field_trial_observer_ = std::make_unique<FieldTrialObserver>();
+  field_trial_observer_->Start();
 }

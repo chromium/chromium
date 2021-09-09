@@ -27,6 +27,7 @@
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
+#include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
@@ -229,6 +230,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::FileManager,
                   &crosapi::mojom::Crosapi::BindFileManager,
                   Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::FieldTrialService,
+      &crosapi::mojom::Crosapi::BindFieldTrialService,
+      Crosapi::MethodMinVersions::kBindFieldTrialServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::GeolocationService,
       &crosapi::mojom::Crosapi::BindGeolocationService,

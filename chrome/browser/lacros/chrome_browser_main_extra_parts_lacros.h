@@ -16,6 +16,7 @@ class DownloadControllerClientLacros;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
 class KioskSessionServiceLacros;
+class FieldTrialObserver;
 
 namespace crosapi {
 class TaskManagerLacros;
@@ -62,6 +63,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends extension app events to ash.
   std::unique_ptr<LacrosExtensionAppsPublisher> extension_apps_publisher_;
+
+  // Receiver of field trial updates.
+  std::unique_ptr<FieldTrialObserver> field_trial_observer_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
