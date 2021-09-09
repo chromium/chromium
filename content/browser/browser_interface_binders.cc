@@ -1086,13 +1086,15 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
 
   // RenderProcessHost binders taking a StorageKey
+  map->Add<blink::mojom::FileSystemAccessManager>(
+      BindWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
+  map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::FileSystemAccessManager>(
-      BindWorkerReceiverForStorageKey(
-          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1103,10 +1105,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  // TODO(https://crbug.com/1242911): replace with
-  // BindWorkerReceiverForStorageKey and group with callers below.
-  map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
@@ -1179,14 +1177,17 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
+
   // RenderProcessHost binders taking a StorageKey
+  map->Add<blink::mojom::FileSystemAccessManager>(
+      BindWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
+  map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
-  map->Add<blink::mojom::FileSystemAccessManager>(
-      BindWorkerReceiverForStorageKey(
-          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
 }
@@ -1195,10 +1196,6 @@ void PopulateBinderMapWithContext(
     SharedWorkerHost* host,
     mojo::BinderMapWithContext<const url::Origin&>* map) {
   // RenderProcessHost binders taking an origin
-  // TODO(https://crbug.com/1242911): replace with
-  // BindWorkerReceiverForStorageKey and group with callers below.
-  map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<payments::mojom::PaymentManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(

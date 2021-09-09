@@ -179,9 +179,8 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
-  // TODO(https://crbug.com/1242911): replace origin with StorageKey param.
   void BindFileSystemManager(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver)
       override {}
   void BindFileSystemAccessManager(

@@ -2161,9 +2161,8 @@ void RenderProcessHostImpl::ForceCrash() {
   child_process_->CrashHungProcess();
 }
 
-// TODO(https://crbug.com/1242911): replace origin with StorageKey param.
 void RenderProcessHostImpl::BindFileSystemManager(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Note, the base::Unretained() is safe because the target object has an IO

@@ -496,9 +496,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
           coep_reporter_remote,
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
-  // TODO(https://crbug.com/1242911): replace origin with StorageKey param.
   virtual void BindFileSystemManager(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) = 0;
   virtual void BindFileSystemAccessManager(
       const blink::StorageKey& storage_key,
