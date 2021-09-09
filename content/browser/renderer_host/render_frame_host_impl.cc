@@ -8940,13 +8940,10 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
-  if (browser_plugin_embedder_ax_tree_id_ != ui::AXTreeIDUnknown())
-    return browser_plugin_embedder_ax_tree_id_;
-
-  if (!frame_tree_node_->IsMainFrame())
-    return GetParent()->GetAXTreeID();
-
-  return ui::AXTreeIDUnknown();
+  auto* parent = ParentOrOuterDelegateFrame();
+  if (!parent)
+    return ui::AXTreeIDUnknown();
+  return parent->GetAXTreeID();
 }
 
 ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {

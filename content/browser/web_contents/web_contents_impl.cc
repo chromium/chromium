@@ -1552,13 +1552,13 @@ void WebContentsImpl::AddAccessibilityMode(ui::AXMode mode) {
 // Handles the callbacks from parallel snapshot requests to each frame,
 // and feeds the results to an AXTreeCombiner, which converts them into a
 // single combined accessibility tree.
-class WebContentsImpl::AXTreeSnapshotCombiner
-    : public base::RefCounted<AXTreeSnapshotCombiner> {
+class AXTreeSnapshotCombiner : public base::RefCounted<AXTreeSnapshotCombiner> {
  public:
-  explicit AXTreeSnapshotCombiner(AXTreeSnapshotCallback callback)
-      : callback_(std::move(callback)) {}
+  AXTreeSnapshotCombiner(WebContents::AXTreeSnapshotCallback callback,
+                         mojom::SnapshotAccessibilityTreeParamsPtr params)
+      : callback_(std::move(callback)), params_(std::move(params)) {}
 
-  AXTreeSnapshotCallback AddFrame(bool is_root) {
+  WebContents::AXTreeSnapshotCallback AddFrame(bool is_root) {
     // Adds a reference to |this|.
     return base::BindOnce(&AXTreeSnapshotCombiner::ReceiveSnapshot, this,
                           is_root);
@@ -1566,6 +1566,13 @@ class WebContentsImpl::AXTreeSnapshotCombiner
 
   void ReceiveSnapshot(bool is_root, const ui::AXTreeUpdate& snapshot) {
     combiner_.AddTree(snapshot, is_root);
+  }
+
+  void AXTreeSnapshotOnFrame(RenderFrameHostImpl* rfhi) {
+    OPTIONAL_TRACE_EVENT0("content",
+                          "AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame");
+    bool is_root = !rfhi->ParentOrOuterDelegateFrame();
+    rfhi->RequestAXTreeSnapshot(AddFrame(is_root), params_.Clone());
   }
 
  private:
@@ -1579,7 +1586,8 @@ class WebContentsImpl::AXTreeSnapshotCombiner
   }
 
   ui::AXTreeCombiner combiner_;
-  AXTreeSnapshotCallback callback_;
+  WebContents::AXTreeSnapshotCallback callback_;
+  mojom::SnapshotAccessibilityTreeParamsPtr params_;
 };
 
 void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
@@ -1593,37 +1601,16 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
   // an accessibility tree snapshot, and AXTreeSnapshotCombiner will combine
   // them into a single tree and call |callback| with that result, then
   // delete |combiner|.
-  FrameTreeNode* root_node = frame_tree_.root();
-  auto combiner =
-      base::MakeRefCounted<AXTreeSnapshotCombiner>(std::move(callback));
-
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
   params->ax_mode = ax_mode.mode();
   params->exclude_offscreen = exclude_offscreen;
   params->max_nodes = max_nodes;
   params->timeout = timeout;
-  RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner.get(),
-                                        std::move(params));
-}
 
-void WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame(
-    FrameTreeNode* root_node,
-    AXTreeSnapshotCombiner* combiner,
-    mojom::SnapshotAccessibilityTreeParamsPtr params) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::RecursiveRequestAXTreeSnapshotOnFrame");
-  for (FrameTreeNode* frame_tree_node : frame_tree_.Nodes()) {
-    WebContentsImpl* inner_contents =
-        node_.GetInnerWebContentsInFrame(frame_tree_node);
-    if (inner_contents) {
-      inner_contents->RecursiveRequestAXTreeSnapshotOnFrame(root_node, combiner,
-                                                            params.Clone());
-    } else {
-      bool is_root = frame_tree_node == root_node;
-      frame_tree_node->current_frame_host()->RequestAXTreeSnapshot(
-          combiner->AddFrame(is_root), params.Clone());
-    }
-  }
+  auto combiner = base::MakeRefCounted<AXTreeSnapshotCombiner>(
+      std::move(callback), std::move(params));
+  GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      &AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame, combiner));
 }
 
 void WebContentsImpl::NotifyViewportFitChanged(
@@ -2446,9 +2433,6 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
 
   RecursivelyRegisterFrameSinkIds();
-  // TODO(adithyas): |browser_plugin_embedder_ax_tree_id| should either not be
-  // used for portals, or it should get a different name.
-  GetMainFrame()->set_browser_plugin_embedder_ax_tree_id(ui::AXTreeIDUnknown());
   GetMainFrame()->UpdateAXTreeData();
 
   // Invoke on the *outer* web contents observers for symmetry.
@@ -2483,8 +2467,6 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
                         "WebContentsImpl::ReattachToOuterWebContentsFrame");
   DCHECK(node_.outer_web_contents());
   auto* render_manager = GetRenderManager();
-  auto* parent_frame =
-      node_.OuterContentsFrameTreeNode()->current_frame_host()->GetParent();
   auto* child_rwhv = render_manager->GetRenderWidgetHostView();
   DCHECK(child_rwhv);
   DCHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
@@ -2492,10 +2474,6 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
   RecursivelyRegisterFrameSinkIds();
-
-  // Set up the the guest's AX tree to point back at the embedder's AX tree.
-  GetMainFrame()->set_browser_plugin_embedder_ax_tree_id(
-      parent_frame->GetAXTreeID());
   GetMainFrame()->UpdateAXTreeData();
 }
 

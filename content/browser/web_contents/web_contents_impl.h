@@ -1715,12 +1715,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // See also UpdateTargetURL.
   void ClearTargetURL();
 
-  class AXTreeSnapshotCombiner;
-  void RecursiveRequestAXTreeSnapshotOnFrame(
-      FrameTreeNode* root_node,
-      AXTreeSnapshotCombiner* combiner,
-      mojom::SnapshotAccessibilityTreeParamsPtr params);
-
   // Called each time |fullscreen_frames_| is updated. Find the new
   // |current_fullscreen_frame_| and notify observers whenever it changes.
   void FullscreenFrameSetUpdated();

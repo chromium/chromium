@@ -1172,11 +1172,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // a renderer.
   void UpdateAXTreeData();
 
-  // Set the AX tree ID of the embedder RFHI, if this is a browser plugin guest.
-  void set_browser_plugin_embedder_ax_tree_id(ui::AXTreeID ax_tree_id) {
-    browser_plugin_embedder_ax_tree_id_ = ax_tree_id;
-  }
-
   // Access the BrowserAccessibilityManager if it already exists.
   BrowserAccessibilityManager* browser_accessibility_manager() const {
     return browser_accessibility_manager_.get();
@@ -3407,9 +3402,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The last AXTreeData for this frame received from the RenderFrame.
   ui::AXTreeData ax_tree_data_;
-
-  // The AX tree ID of the embedder, if this is a browser plugin guest.
-  ui::AXTreeID browser_plugin_embedder_ax_tree_id_ = ui::AXTreeIDUnknown();
 
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
 #if defined(OS_ANDROID)
