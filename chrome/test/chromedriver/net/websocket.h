@@ -81,6 +81,7 @@ class WebSocket {
   net::WebSocketFrameParser parser_;
   net::WebSocketMaskingKey current_masking_key_ = {};
   bool is_current_frame_masked_ = false;
+  bool is_current_message_opcode_text_ = false;
   uint64_t current_frame_offset_ = 0;
   std::string next_message_;
 

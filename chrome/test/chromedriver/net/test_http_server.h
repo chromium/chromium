@@ -33,7 +33,8 @@ class TestHttpServer : public net::HttpServer::Delegate {
 
   enum WebSocketMessageAction {
     kEchoMessage,
-    kCloseOnMessage
+    kCloseOnMessage,
+    kEchoRawMessage
   };
 
   // Creates an http server. By default it accepts WebSockets and echoes

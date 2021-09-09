@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
@@ -20,6 +21,7 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chrome/test/chromedriver/net/test_http_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -70,6 +72,23 @@ class CloseListener : public WebSocketListener {
 
  private:
   base::RunLoop* run_loop_;
+};
+
+class MessageReceivedListener : public WebSocketListener {
+ public:
+  MessageReceivedListener() = default;
+  ~MessageReceivedListener() override = default;
+
+  void OnMessageReceived(const std::string& message) override {
+    messages_.push_back(message);
+  }
+
+  const std::vector<std::string>& Messages() const { return messages_; }
+
+  void OnClose() override {}
+
+ private:
+  std::vector<std::string> messages_;
 };
 
 class WebSocketTest : public testing::Test {
@@ -212,4 +231,77 @@ TEST_F(WebSocketTest, SendReceiveMultiple) {
   messages.push_back("2");
   messages.push_back("3");
   SendReceive(messages);
+}
+
+TEST_F(WebSocketTest, VerifyTextFramelsProcessed) {
+  constexpr uint8_t kFinalBit = 0x80;
+
+  const std::string kOriginalMessage = "hello";
+  std::string frame = {
+      static_cast<char>(net::WebSocketFrameHeader::kOpCodeText | kFinalBit),
+      static_cast<char>(kOriginalMessage.length())};
+  frame += kOriginalMessage;
+  std::string encoded_frame;
+  base::Base64Encode(frame, &encoded_frame);
+
+  server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
+  base::RunLoop run_loop;
+  MessageReceivedListener listener;
+  std::unique_ptr<WebSocket> sock(CreateConnectedWebSocket(&listener));
+  ASSERT_TRUE(sock);
+  ASSERT_TRUE(sock->Send(encoded_frame));
+
+  EXPECT_EQ(listener.Messages().size(), 0u);
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+  run_loop.Run();
+  EXPECT_THAT(listener.Messages(), testing::ElementsAre(kOriginalMessage));
+}
+
+TEST_F(WebSocketTest, VerifyBinaryFramelsNotProcessed) {
+  constexpr uint8_t kFinalBit = 0x80;
+
+  const std::string kOriginalMessage = "hello";
+  std::string frame = {
+      static_cast<char>(net::WebSocketFrameHeader::kOpCodeBinary | kFinalBit),
+      static_cast<char>(kOriginalMessage.length())};
+  frame += kOriginalMessage;
+  std::string encoded_frame;
+  base::Base64Encode(frame, &encoded_frame);
+
+  server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
+  base::RunLoop run_loop;
+  MessageReceivedListener listener;
+  std::unique_ptr<WebSocket> sock(CreateConnectedWebSocket(&listener));
+  ASSERT_TRUE(sock);
+  ASSERT_TRUE(sock->Send(encoded_frame));
+  EXPECT_EQ(listener.Messages().size(), 0u);
+
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+  run_loop.Run();
+  EXPECT_EQ(listener.Messages().size(), 0u);
+}
+
+TEST_F(WebSocketTest, VerifyCloseFramelsNotProcessed) {
+  constexpr uint8_t kFinalBit = 0x80;
+
+  std::string frame = {
+      static_cast<char>(net::WebSocketFrameHeader::kOpCodeClose | kFinalBit),
+      0};
+  std::string encoded_frame;
+  base::Base64Encode(frame, &encoded_frame);
+
+  server_.SetMessageAction(TestHttpServer::kEchoRawMessage);
+  base::RunLoop run_loop;
+  MessageReceivedListener listener;
+  std::unique_ptr<WebSocket> sock(CreateConnectedWebSocket(&listener));
+  ASSERT_TRUE(sock);
+  ASSERT_TRUE(sock->Send(encoded_frame));
+  EXPECT_EQ(listener.Messages().size(), 0u);
+
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+  run_loop.Run();
+  EXPECT_EQ(listener.Messages().size(), 0u);
 }
