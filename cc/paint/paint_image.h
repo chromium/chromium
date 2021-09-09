@@ -320,7 +320,7 @@ class CC_PAINT_EXPORT PaintImage {
     return paint_worklet_input_;
   }
 
-  bool IsOpaque() const { return GetSkImageInfo().isOpaque(); }
+  bool IsOpaque() const;
 
   std::string ToString() const;
 

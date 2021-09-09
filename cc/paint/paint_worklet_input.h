@@ -91,6 +91,10 @@ class CC_PAINT_EXPORT PaintWorkletInput
 
   virtual bool IsCSSPaintWorkletInput() const = 0;
 
+  // True if all the animated frames are opaque. Can be false only if animated
+  // frames are colors.
+  virtual bool KnownToBeOpaque() const;
+
  protected:
   friend class base::RefCountedThreadSafe<PaintWorkletInput>;
   virtual ~PaintWorkletInput() = default;

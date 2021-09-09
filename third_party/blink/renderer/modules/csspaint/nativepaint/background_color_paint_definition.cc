@@ -27,6 +27,14 @@ namespace blink {
 
 namespace {
 
+bool AllColorsOpaque(const Vector<Color>& animated_colors) {
+  for (const auto& color : animated_colors) {
+    if (color.HasAlpha())
+      return false;
+  }
+  return true;
+}
+
 // This class includes information that is required by the compositor thread
 // when painting background color.
 class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
@@ -41,13 +49,15 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
       : PaintWorkletInput(container_size, worklet_id, std::move(property_keys)),
         animated_colors_(animated_colors),
         offsets_(offsets),
-        progress_(progress) {}
+        progress_(progress),
+        is_opaque_(AllColorsOpaque(animated_colors)) {}
 
   ~BackgroundColorPaintWorkletInput() override = default;
 
   const Vector<Color>& AnimatedColors() const { return animated_colors_; }
   const Vector<double>& Offsets() const { return offsets_; }
   const absl::optional<double>& MainThreadProgress() const { return progress_; }
+  bool KnownToBeOpaque() const override { return is_opaque_; }
 
   PaintWorkletInputType GetType() const override {
     return PaintWorkletInputType::kBackgroundColor;
@@ -61,6 +71,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
   Vector<Color> animated_colors_;
   Vector<double> offsets_;
   absl::optional<double> progress_;
+  const bool is_opaque_;
 };
 
 // TODO(crbug.com/1163949): Support animation keyframes without 0% or 100%.

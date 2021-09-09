@@ -165,6 +165,12 @@ gpu::Mailbox PaintImage::GetMailbox() const {
   return texture_backing_->GetMailbox();
 }
 
+bool PaintImage::IsOpaque() const {
+  if (IsPaintWorklet())
+    return paint_worklet_input_->KnownToBeOpaque();
+  return GetSkImageInfo().isOpaque();
+}
+
 void PaintImage::CreateSkImage() {
   DCHECK(!cached_sk_image_);
 
