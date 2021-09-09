@@ -5121,7 +5121,7 @@ RenderFrameHostImpl::GetBackForwardCanStoreNowDebugStringForTesting() {
   return frame_tree()
       ->controller()
       .GetBackForwardCache()
-      .CanStorePageNow(GetMainFrame())
+      .CanRestorePageNowForTesting(GetMainFrame())  // IN-TEST
       .ToString();
 }
 
@@ -5752,7 +5752,9 @@ void RenderFrameHostImpl::EvictFromBackForwardCache(
 
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
-  BackForwardCacheCanStoreDocumentResult can_store;
+  auto can_store =
+      frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
+          GetMainFrame());
   can_store.No(reason);
   EvictFromBackForwardCacheWithReasons(can_store);
 }
@@ -11940,17 +11942,16 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   RenderFrameHostImpl* top_document = this;
   while (RenderFrameHostImpl* parent = top_document->GetParent())
     top_document = parent;
-
-  auto can_store =
+  BackForwardCacheCanStoreDocumentResult can_store =
       frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           top_document);
+
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
               "render_frame_host", this, "can_store", can_store.ToString());
 
   if (can_store)
     return;
-
   EvictFromBackForwardCacheWithReasons(can_store);
 }
 

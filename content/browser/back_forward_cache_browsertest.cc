@@ -11883,15 +11883,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
     MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/main_document");
-  net::test_server::ControllableHttpResponse response2(embedded_test_server(),
-                                                       "/main_document");
-  net::test_server::ControllableHttpResponse response3(embedded_test_server(),
-                                                       "/main_document");
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/main_document"));
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
   GURL url_a_2(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
@@ -11899,13 +11894,8 @@ IN_PROC_BROWSER_TEST_F(
   Shell* tab_to_modify_cookie = CreateBrowser();
 
   // 1) Load the document and specify no-store for the main resource.
-  TestNavigationObserver observer(tab_to_be_bfcached->web_contents());
-  tab_to_be_bfcached->LoadURL(url_a);
+  EXPECT_TRUE(NavigateToURL(tab_to_be_bfcached, url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  response.WaitForRequest();
-  response.Send(kResponseWithNoCache);
-  response.Done();
-  observer.Wait();
 
   // 2) Set a normal cookie from JavaScript.
   EXPECT_TRUE(ExecJs(tab_to_be_bfcached, "document.cookie='foo=bar'"));
@@ -11923,12 +11913,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("foo=baz", EvalJs(tab_to_modify_cookie, "document.cookie"));
 
   // 5) Go back. |rfh_a| should be evicted upon restoration.
-  TestNavigationObserver observer2(tab_to_be_bfcached->web_contents());
   tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  response2.WaitForRequest();
-  response2.Send(kResponseWithNoCache);
-  response2.Done();
-  observer2.Wait();
+  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
 
   EXPECT_EQ("foo=baz", EvalJs(tab_to_be_bfcached, "document.cookie"));
   ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
@@ -11942,12 +11928,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // 7) Navigate back to a.com. This time the cookie change has to be reset and
   // gets evicted with a different reason.
-  TestNavigationObserver observer3(tab_to_be_bfcached->web_contents());
   tab_to_be_bfcached->web_contents()->GetController().GoBack();
-  response3.WaitForRequest();
-  response3.Send(kResponseWithNoCache);
-  response3.Done();
-  observer3.Wait();
+  EXPECT_TRUE(WaitForLoadStop(tab_to_be_bfcached->web_contents()));
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
       {}, {}, FROM_HERE);
@@ -12016,6 +11998,72 @@ IN_PROC_BROWSER_TEST_F(
   ExpectNotRestored(
       {BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore}, {},
       {}, {}, FROM_HERE);
+}
+
+// Test that a page with cache-control:no-store records other not restored
+// reasons along with kCacheControlNoStore when eviction happens.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    PagesWithCacheControlNoStoreRecordOtherReasonsWhenEvictionHappens) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Load the document and specify no-store for the main resource.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate away. At this point the page should be in bfcache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Execute JavaScript and evict the entry.
+  EvictByJavaScript(rfh_a.get());
+
+  // 4) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kJavaScriptExecution,
+       BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
+      {}, {}, {}, FROM_HERE);
+}
+
+// Test that a page with cache-control:no-store records other not restored
+// reasons along with kCacheControlNoStore when there are other blocking reasons
+// upon entering bfcache.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    PagesWithCacheControlNoStoreRecordOtherReasonsUponEntrance) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/set-header?Cache-Control: no-store"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Load the document and specify no-store for the main resource.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a.get());
+  // Use blocklisted feature.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), "window.foo = new BroadcastChannel('foo');"));
+
+  // 2) Navigate away. |rfh_a| should not enter bfcache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  delete_observer_rfh_a.WaitUntilDeleted();
+
+  // 3) Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+       BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore},
+      {blink::scheduler::WebSchedulerTrackedFeature::kBroadcastChannel}, {}, {},
+      FROM_HERE);
 }
 
 namespace {
