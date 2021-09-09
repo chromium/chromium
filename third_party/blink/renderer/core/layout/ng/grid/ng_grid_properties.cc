@@ -46,4 +46,12 @@ bool NGGridProperties::HasAutoMaxTrack(
              : (has_auto_min_row || has_auto_max_row);
 }
 
+bool NGGridPlacementProperties::operator==(
+    const NGGridPlacementProperties& other) const {
+  return column_start_offset == other.column_start_offset &&
+         row_start_offset == other.row_start_offset &&
+         minor_max_end_line == other.minor_max_end_line &&
+         positions == other.positions;
+}
+
 }  // namespace blink

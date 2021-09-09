@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -92,9 +93,6 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
 
 namespace {
 
-using GridItems = NGGridLayoutAlgorithm::GridItems;
-using GridItemData = NGGridLayoutAlgorithm::GridItemData;
-using GridItemIndices = NGGridLayoutAlgorithm::GridItemIndices;
 using SetGeometry = NGGridLayoutAlgorithm::SetGeometry;
 
 LayoutUnit ComputeSetSpanSize(const SetGeometry& set_geometry,
@@ -516,14 +514,13 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
 }
 
-const TrackSpanProperties&
-NGGridLayoutAlgorithm::GridItemData::GetTrackSpanProperties(
+const TrackSpanProperties& GridItemData::GetTrackSpanProperties(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? column_span_properties
                                           : row_span_properties;
 }
 
-void NGGridLayoutAlgorithm::GridItemData::SetTrackSpanProperty(
+void GridItemData::SetTrackSpanProperty(
     TrackSpanProperties::PropertyId property,
     GridTrackSizingDirection track_direction) {
   if (track_direction == kForColumns)
@@ -532,39 +529,39 @@ void NGGridLayoutAlgorithm::GridItemData::SetTrackSpanProperty(
     row_span_properties.SetProperty(property);
 }
 
-bool NGGridLayoutAlgorithm::GridItemData::IsSpanningFlexibleTrack(
+bool GridItemData::IsSpanningFlexibleTrack(
     GridTrackSizingDirection track_direction) const {
   return GetTrackSpanProperties(track_direction)
       .HasProperty(TrackSpanProperties::kHasFlexibleTrack);
 }
 
-bool NGGridLayoutAlgorithm::GridItemData::IsSpanningIntrinsicTrack(
+bool GridItemData::IsSpanningIntrinsicTrack(
     GridTrackSizingDirection track_direction) const {
   return GetTrackSpanProperties(track_direction)
       .HasProperty(TrackSpanProperties::kHasIntrinsicTrack);
 }
 
-bool NGGridLayoutAlgorithm::GridItemData::IsSpanningAutoMinimumTrack(
+bool GridItemData::IsSpanningAutoMinimumTrack(
     GridTrackSizingDirection track_direction) const {
   return GetTrackSpanProperties(track_direction)
       .HasProperty(TrackSpanProperties::kHasAutoMinimumTrack);
 }
 
-bool NGGridLayoutAlgorithm::GridItemData::IsBaselineAlignedForDirection(
+bool GridItemData::IsBaselineAlignedForDirection(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns)
              ? InlineAxisAlignment() == AxisEdge::kBaseline
              : BlockAxisAlignment() == AxisEdge::kBaseline;
 }
 
-bool NGGridLayoutAlgorithm::GridItemData::IsBaselineSpecifiedForDirection(
+bool GridItemData::IsBaselineSpecifiedForDirection(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns)
              ? inline_axis_alignment == AxisEdge::kBaseline
              : block_axis_alignment == AxisEdge::kBaseline;
 }
 
-void NGGridLayoutAlgorithm::GridItemData::SetAlignmentFallback(
+void GridItemData::SetAlignmentFallback(
     const GridTrackSizingDirection track_direction,
     const ComputedStyle& container_style,
     const bool has_synthesized_baseline) {
@@ -632,7 +629,7 @@ void NGGridLayoutAlgorithm::GridItemData::SetAlignmentFallback(
   }
 }
 
-void NGGridLayoutAlgorithm::GridItemData::ComputeSetIndices(
+void GridItemData::ComputeSetIndices(
     const NGGridLayoutAlgorithmTrackCollection& track_collection) {
   DCHECK_EQ(item_type, ItemType::kInGridFlow);
 
@@ -661,21 +658,19 @@ void NGGridLayoutAlgorithm::GridItemData::ComputeSetIndices(
   DCHECK_LT(set_indices.begin, set_indices.end);
 }
 
-const NGGridLayoutAlgorithm::GridItemIndices&
-NGGridLayoutAlgorithm::GridItemData::SetIndices(
+const GridItemIndices& GridItemData::SetIndices(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns) ? column_set_indices
                                           : row_set_indices;
 }
 
-NGGridLayoutAlgorithm::GridItemIndices&
-NGGridLayoutAlgorithm::GridItemData::RangeIndices(
+GridItemIndices& GridItemData::RangeIndices(
     GridTrackSizingDirection track_direction) {
   return (track_direction == kForColumns) ? column_range_indices
                                           : row_range_indices;
 }
 
-void NGGridLayoutAlgorithm::GridItemData::ComputeOutOfFlowItemPlacement(
+void GridItemData::ComputeOutOfFlowItemPlacement(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
     const NGGridPlacement& grid_placement) {
   DCHECK_EQ(item_type, ItemType::kOutOfFlow);
@@ -751,8 +746,7 @@ void NGGridLayoutAlgorithm::GridItemData::ComputeOutOfFlowItemPlacement(
   }
 }
 
-void NGGridLayoutAlgorithm::GridItems::Append(
-    const GridItemData& new_item_data) {
+void GridItems::Append(const GridItemData& new_item_data) {
   reordered_item_indices.push_back(item_data.size());
   item_data.emplace_back(new_item_data);
 }
@@ -765,12 +759,10 @@ NGGridLayoutAlgorithm::GridGeometry::Geometry(
 
 namespace {
 
-using ItemType = NGGridLayoutAlgorithm::ItemType;
-using BaselineType = NGGridLayoutAlgorithm::BaselineType;
 using SetIterator = NGGridLayoutAlgorithmTrackCollection::SetIterator;
 
 SetIterator GetSetIteratorForItem(
-    NGGridLayoutAlgorithm::GridItemData& grid_item,
+    GridItemData& grid_item,
     NGGridLayoutAlgorithmTrackCollection& track_collection) {
   const auto& set_indices = grid_item.SetIndices(track_collection.Direction());
   return track_collection.GetSetIterator(set_indices.begin, set_indices.end);
@@ -1424,8 +1416,6 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
 namespace {
 
-using AxisEdge = NGGridLayoutAlgorithm::AxisEdge;
-
 // Given an |alignment| determines the correct |AxisEdge| alignment.
 // Additionally will determine:
 //  - The behavior of 'auto' via the |auto_behavior| out-parameter.
@@ -1538,7 +1528,7 @@ AxisEdge AxisEdgeFromItemPosition(const ComputedStyle& container_style,
 //
 // TODO(kschmi): Some of these conditions are non-intuitive, so investigate
 // whether these conditions are correct or if the test expectations are off.
-NGGridLayoutAlgorithm::BaselineType DetermineBaselineType(
+BaselineType DetermineBaselineType(
     const GridTrackSizingDirection track_direction,
     const WritingMode container_writing_mode,
     const WritingMode child_writing_mode) {
@@ -1573,7 +1563,7 @@ NGGridLayoutAlgorithm::BaselineType DetermineBaselineType(
 }  // namespace
 
 // static
-NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
+GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
     const NGBlockNode node,
     const ComputedStyle& container_style,
     const WritingMode container_writing_mode) {
@@ -1656,9 +1646,14 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
         track_collection->FinalizeRanges(start_offset);
       };
 
-  Vector<GridArea> resolved_positions =
-      grid_placement->RunAutoPlacementAlgorithm(*grid_items);
-  auto* resolved_position = resolved_positions.begin();
+  const NGGridPlacementProperties& placement_properties =
+      Node().GetPositions(*grid_placement, *grid_items,
+                          grid_placement->AutoRepetitions(kForColumns),
+                          grid_placement->AutoRepetitions(kForRows));
+
+  grid_placement->SetPlacementProperties(placement_properties);
+
+  auto* resolved_position = placement_properties.positions.begin();
   for (auto& grid_item : grid_items->item_data)
     grid_item.resolved_position = *(resolved_position++);
 
@@ -2014,8 +2009,6 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 // Helpers for the track sizing algorithm.
 namespace {
 
-using GridItemContributionType =
-    NGGridLayoutAlgorithm::GridItemContributionType;
 using GridSetVector = Vector<NGGridSet*, 16>;
 
 LayoutUnit DefiniteGrowthLimit(const NGGridSet& set) {

@@ -195,8 +195,8 @@ class NGGridLayoutAlgorithmTest
     return fragment->DumpFragmentTree(flags);
   }
 
-  NGGridLayoutAlgorithm::GridItems grid_items_;
-  NGGridLayoutAlgorithm::GridItemStorageVector out_of_flow_items_;
+  GridItems grid_items_;
+  GridItemStorageVector out_of_flow_items_;
 
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;

@@ -137,6 +137,33 @@ const LayoutNGGridInterface* LayoutNGGrid::ToLayoutNGGridInterface() const {
   return this;
 }
 
+bool LayoutNGGrid::HasCachedPlacements(wtf_size_t column_auto_repititions,
+                                       wtf_size_t row_auto_reptitions) const {
+  if (IsGridPlacementDirty() ||
+      (cached_column_auto_repititions_ != column_auto_repititions) ||
+      (cached_row_auto_repititions_ != row_auto_reptitions)) {
+    return false;
+  }
+
+  return cached_placement_properties_.positions.size() > 0;
+}
+
+const NGGridPlacementProperties& LayoutNGGrid::GetCachedPlacementProperties() {
+  DCHECK(!IsGridPlacementDirty());
+
+  return cached_placement_properties_;
+}
+
+void LayoutNGGrid::SetCachedPlacementProperties(
+    NGGridPlacementProperties&& properties,
+    wtf_size_t column_auto_repititions,
+    wtf_size_t row_auto_reptitions) {
+  cached_placement_properties_ = std::move(properties);
+  cached_column_auto_repititions_ = column_auto_repititions;
+  cached_row_auto_repititions_ = row_auto_reptitions;
+  SetGridPlacementDirty(false);
+}
+
 wtf_size_t LayoutNGGrid::ExplicitGridStartForDirection(
     GridTrackSizingDirection direction) const {
   NOT_DESTROYED();

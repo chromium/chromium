@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PROPERTIES_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 
 namespace blink {
@@ -36,6 +37,15 @@ struct CORE_EXPORT NGGridProperties {
   bool has_intrinsic_column : 1;
   bool has_intrinsic_row : 1;
   bool has_orthogonal_item : 1;
+};
+
+struct CORE_EXPORT NGGridPlacementProperties {
+  wtf_size_t column_start_offset;
+  wtf_size_t row_start_offset;
+  wtf_size_t minor_max_end_line;
+  Vector<GridArea> positions;
+
+  bool operator==(const NGGridPlacementProperties& other) const;
 };
 
 }  // namespace blink

@@ -5,9 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_NODE_H_
 
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 
 namespace blink {
+
+class NGGridPlacement;
+struct GridItems;
 
 // Grid specific extensions to NGBlockNode.
 class CORE_EXPORT NGGridNode final : public NGBlockNode {
@@ -15,6 +19,12 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
   explicit NGGridNode(LayoutBox* box) : NGBlockNode(box) {
     DCHECK(box && box->IsLayoutNGGrid());
   }
+
+  const NGGridPlacementProperties& GetPositions(
+      const NGGridPlacement& grid_placement,
+      const GridItems& grid_items,
+      wtf_size_t column_auto_repetitions,
+      wtf_size_t row_auto_repititions) const;
 };
 
 template <>

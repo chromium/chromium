@@ -1264,6 +1264,11 @@
       status: "stable",
     },
     {
+      name: "LayoutNGGridCaching",
+      depends_on: ["LayoutNGGrid"],
+      status: "stable"
+    },
+    {
       name: "LayoutNGLayoutOverflowRecalc",
       depends_on: ["LayoutNG"],
       status: "stable",

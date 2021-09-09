@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 
@@ -23,6 +24,13 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   const char* GetName() const override { return "LayoutNGGrid"; }
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
+
+  bool HasCachedPlacements(wtf_size_t column_auto_repititions,
+                           wtf_size_t row_auto_reptitions) const;
+  const NGGridPlacementProperties& GetCachedPlacementProperties();
+  void SetCachedPlacementProperties(NGGridPlacementProperties&& properties,
+                                    wtf_size_t column_auto_repititions,
+                                    wtf_size_t row_auto_reptitions);
 
   wtf_size_t ExplicitGridStartForDirection(
       GridTrackSizingDirection direction) const final;
@@ -55,6 +63,18 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject*) override;
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+
+  NGGridPlacementProperties cached_placement_properties_;
+  wtf_size_t cached_row_auto_repititions_;
+  wtf_size_t cached_column_auto_repititions_;
+};
+
+// wtf/casting.h helper.
+template <>
+struct DowncastTraits<LayoutNGGrid> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutNGGrid();
+  }
 };
 
 }  // namespace blink
