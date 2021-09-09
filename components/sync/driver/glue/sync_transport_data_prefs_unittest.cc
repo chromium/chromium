@@ -51,6 +51,14 @@ TEST_F(SyncTransportDataPrefsTest, PollInterval) {
   EXPECT_EQ(sync_prefs_->GetPollInterval().InMinutes(), 30);
 }
 
+TEST_F(SyncTransportDataPrefsTest, ResetsVeryShortPollInterval) {
+  // Set the poll interval to something unreasonably short.
+  sync_prefs_->SetPollInterval(base::TimeDelta::FromMilliseconds(100));
+  // This should reset the pref to "empty", so that callers will use a
+  // reasonable default value.
+  EXPECT_TRUE(sync_prefs_->GetPollInterval().is_zero());
+}
+
 TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
   EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
   const base::Time now = base::Time::Now();
