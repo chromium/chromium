@@ -193,6 +193,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="IOS.CredentialExtension.NewCredentialUsername"
+    units="IOSCredentialProviderNewCredentialUsername"
+    expires_after="2022-03-31">
+  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
+  <summary>
+    Recorded when a new credential is created via the Credential Provider
+    extension and tracks the username state of the new credential. Reported when
+    Chrome is put in the foreground.
+  </summary>
+</histogram>
+
 <histogram name="IOS.CredentialExtension.PasswordCreated"
     units="IOSCredentialProviderPasswordCreated" expires_after="2022-03-31">
   <owner>javierrobles@chromium.org</owner>

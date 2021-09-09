@@ -332,7 +332,13 @@ const CGFloat kTableViewTopSpace = 14;
   return saveButton;
 }
 
-- (void)passwordSaved {
+- (void)credentialSaved:(ArchivableCredential*)credential {
+  CPENewCredentialUsername usernameType =
+      (credential.user.length)
+          ? CPENewCredentialUsername::kCredentialWithUsername
+          : CPENewCredentialUsername::kCredentialWithoutUsername;
+  UpdateHistogramCount(@"IOS.CredentialExtension.NewCredentialUsername",
+                       static_cast<int>(usernameType));
   UpdateHistogramCount(@"IOS.CredentialExtension.PasswordCreated",
                        static_cast<int>(self.passwordCreationType));
 }

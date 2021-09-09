@@ -98,7 +98,7 @@ using base::SysUTF16ToNSString;
                  [self.uiHandler alertSavePasswordFailed];
                  return;
                }
-               [self.uiHandler passwordSaved];
+               [self.uiHandler credentialSaved:credential];
                [self userSelectedCredential:credential];
              }];
 }

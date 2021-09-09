@@ -45,7 +45,7 @@
   self.alertedSaveFailed = YES;
 }
 
-- (void)passwordSaved {
+- (void)credentialSaved:(ArchivableCredential*)credential {
   // No-op.
 }
 

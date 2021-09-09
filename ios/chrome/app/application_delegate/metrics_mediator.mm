@@ -58,10 +58,15 @@ namespace {
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
 
 // Histograms fired in extensions that need to be re-fired from the main app.
-const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {{
-    @"IOS.CredentialExtension.PasswordCreated",
-    static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
-}};
+const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
+    {
+        @"IOS.CredentialExtension.PasswordCreated",
+        static_cast<int>(CPEPasswordCreated::kMaxValue) + 1,
+    },
+    {
+        @"IOS.CredentialExtension.NewCredentialUsername",
+        static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
+    }};
 
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.

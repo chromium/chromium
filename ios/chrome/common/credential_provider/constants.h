@@ -54,4 +54,14 @@ enum class CPEPasswordCreated {
   kMaxValue = kPasswordSuggestedAndChanged,
 };
 
+// Values of the UMA IOS.CredentialExtension.NewCredentialUsername. Must be kept
+// up to date with IOSCredentialProviderNewCredentialUsername in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CPENewCredentialUsername {
+  kCredentialWithUsername = 0,
+  kCredentialWithoutUsername = 1,
+  kMaxValue = kCredentialWithoutUsername,
+};
+
 #endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_CONSTANTS_H_

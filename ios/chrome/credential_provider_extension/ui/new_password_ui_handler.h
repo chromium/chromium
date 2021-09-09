@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_NEW_PASSWORD_UI_HANDLER_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_UI_NEW_PASSWORD_UI_HANDLER_H_
 
+@class ArchivableCredential;
+
 // Protocol to allow the NewPasswordMediator to interact with the UI
 @protocol NewPasswordUIHandler
 
@@ -19,7 +21,7 @@
 - (void)alertSavePasswordFailed;
 
 // Informs the UI that a credential was successfully saved.
-- (void)passwordSaved;
+- (void)credentialSaved:(ArchivableCredential*)credential;
 
 @end
 

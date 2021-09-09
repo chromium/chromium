@@ -43637,6 +43637,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Store Busy"/>
 </enum>
 
+<enum name="IOSCredentialProviderNewCredentialUsername">
+  <int value="0" label="Credential With Username"/>
+  <int value="1" label="Credential Without Username"/>
+</enum>
+
 <enum name="IOSCredentialProviderPasswordCreated">
   <int value="0" label="Password Manually Added"/>
   <int value="1" label="Password Suggested"/>
