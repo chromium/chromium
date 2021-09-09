@@ -18,6 +18,7 @@ export const State = {
   CAMERA_SWITCHING: 'camera-switching',
   CUSTOM_VIDEO_PARAMETERS: 'custom-video-parameters',
   ENABLE_DOCUMENT_MODE_ON_ALL_CAMERAS: 'enable-document-mode-on-all-cameras',
+  ENABLE_GIF_RECORDING: 'enable-gif-recording',
   ENABLE_MULTISTREAM_RECORDING: 'enable-multistream-recording',
   ENABLE_PTZ: 'enable-ptz',
   ENABLE_SCAN_BARCODE: 'enable-scan-barcode',

@@ -34,7 +34,6 @@ import {
   Resolution,
 } from '../../../type.js';
 import {WaitableEvent} from '../../../waitable_event.js';
-
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
@@ -413,51 +412,57 @@ export class Video extends ModeBase {
       throw e;
     }
 
-    this.recordTime_.start({resume: false});
-    let /** ?VideoSaver */ videoSaver = null;
-    const isVideoTooShort = () => this.recordTime_.inMilliseconds() <
-        MINIMUM_VIDEO_DURATION_IN_MILLISECONDS;
+    if (state.get(state.State.ENABLE_GIF_RECORDING)) {
+      // TODO(b:191950622): Capture frames for GIF encoding.
+    } else {
+      this.recordTime_.start({resume: false});
+      let /** ?VideoSaver */ videoSaver = null;
 
-    try {
+      const isVideoTooShort = () => this.recordTime_.inMilliseconds() <
+          MINIMUM_VIDEO_DURATION_IN_MILLISECONDS;
+
       try {
-        videoSaver = await this.captureVideo_();
-      } finally {
-        this.recordTime_.stop({pause: false});
-        sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
-        await this.snapshots_.flush();
+        try {
+          videoSaver = await this.captureVideo_();
+        } finally {
+          this.recordTime_.stop({pause: false});
+          sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
+          await this.snapshots_.flush();
+        }
+      } catch (e) {
+        // Tolerates the error if it is due to the very short duration. Reports
+        // for other errors.
+        if (!(e instanceof NoChunkError && isVideoTooShort())) {
+          toast.show(I18nString.ERROR_MSG_EMPTY_RECORDING);
+          throw e;
+        }
       }
-    } catch (e) {
-      // Tolerates the error if it is due to the very short duration. Reports
-      // for other errors.
-      if (!(e instanceof NoChunkError && isVideoTooShort())) {
-        toast.show(I18nString.ERROR_MSG_EMPTY_RECORDING);
+
+      if (isVideoTooShort()) {
+        toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
+        if (videoSaver !== null) {
+          await videoSaver.cancel();
+        }
+        return;
+      }
+
+      state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
+
+      try {
+        await this.handler_.handleResultVideo(new VideoResult({
+          resolution: this.captureResolution_,
+          duration: this.recordTime_.inMinutes(),
+          videoSaver,
+          everPaused: this.everPaused_,
+        }));
+        state.set(
+            PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
+            {resolution: this.captureResolution_, facing: this.facing_});
+      } catch (e) {
+        state.set(
+            PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
         throw e;
       }
-    }
-
-    if (isVideoTooShort()) {
-      toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
-      if (videoSaver !== null) {
-        await videoSaver.cancel();
-      }
-      return;
-    }
-
-    state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
-    try {
-      await this.handler_.handleResultVideo(new VideoResult({
-        resolution: this.captureResolution_,
-        duration: this.recordTime_.inMinutes(),
-        videoSaver,
-        everPaused: this.everPaused_,
-      }));
-      state.set(
-          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-          {resolution: this.captureResolution_, facing: this.facing_});
-    } catch (e) {
-      state.set(
-          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
-      throw e;
     }
   }
 
@@ -465,13 +470,17 @@ export class Video extends ModeBase {
    * @override
    */
   stop_() {
-    sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
+    if (state.get(state.State.ENABLE_GIF_RECORDING)) {
+      // TODO(b:191950622): Stop Capture GIF Frames.
+    } else {
+      sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
-    if (this.mediaRecorder_ &&
-        (this.mediaRecorder_.state === 'recording' ||
-         this.mediaRecorder_.state === 'paused')) {
-      this.mediaRecorder_.stop();
-      window.removeEventListener('beforeunload', beforeUnloadListener);
+      if (this.mediaRecorder_ &&
+          (this.mediaRecorder_.state === 'recording' ||
+           this.mediaRecorder_.state === 'paused')) {
+        this.mediaRecorder_.stop();
+        window.removeEventListener('beforeunload', beforeUnloadListener);
+      }
     }
   }
 
