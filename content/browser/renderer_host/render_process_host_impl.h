@@ -650,7 +650,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // websockets with a frame. Shared workers and service workers don't have to
   // do it because they don't have a frame.
   void CreateWebSocketConnector(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver)
       override;
 

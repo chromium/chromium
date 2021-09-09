@@ -2288,7 +2288,7 @@ void RenderProcessHostImpl::CreateNotificationService(
 }
 
 void RenderProcessHostImpl::CreateWebSocketConnector(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) {
   // TODO(jam): is it ok to not send extraHeaders for sockets created from
   // shared and service workers?
@@ -2297,12 +2297,19 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
   // frame, so the concept of "top-level frame" does not exist. Can use
   // (origin, origin, origin) for the IsolationInfo for requests because these
   // workers can only be created when the site has cookie access.
+  //
+  // TODO(https://crbug.com/1199077): We should consider using
+  // storage_key().top_frame_origin() instead once that is fully populated.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
-          GetID(), MSG_ROUTING_NONE, origin,
-          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                     origin, origin,
-                                     net::SiteForCookies::FromOrigin(origin))),
+          GetID(), MSG_ROUTING_NONE, storage_key.origin(),
+          net::IsolationInfo::Create(
+              net::IsolationInfo::RequestType::kOther, storage_key.origin(),
+              storage_key.origin(),
+              net::SiteForCookies::FromOrigin(storage_key.origin()),
+              /*party_context=*/absl::nullopt,
+              storage_key.nonce().has_value() ? &storage_key.nonce().value()
+                                              : nullptr)),
       std::move(receiver));
 }
 

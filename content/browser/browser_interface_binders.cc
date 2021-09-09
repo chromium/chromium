@@ -1187,6 +1187,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::FileSystemAccessManager>(
       BindWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
+  map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::CreateWebSocketConnector, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1201,8 +1203,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
@@ -1298,8 +1298,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePaymentManagerForOrigin, host));
   map->Add<blink::mojom::PermissionService>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
-  map->Add<blink::mojom::WebSocketConnector>(BindServiceWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<network::mojom::RestrictedCookieManager>(
       BindServiceWorkerReceiverForOrigin(
           &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
@@ -1315,6 +1313,9 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::FileSystemAccessManager>(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
+  map->Add<blink::mojom::WebSocketConnector>(
+      BindServiceWorkerReceiverForStorageKey(
+          &RenderProcessHostImpl::CreateWebSocketConnector, host));
 
   // RenderProcessHost binders taking a frame id and an origin
   map->Add<blink::mojom::LockManager>(
