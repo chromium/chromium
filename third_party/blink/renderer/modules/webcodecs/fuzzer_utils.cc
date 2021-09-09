@@ -249,8 +249,10 @@ AudioData* MakeAudioData(ScriptState* script_state,
       proto.channels().size() > media::limits::kMaxChannels)
     return nullptr;
 
-  if (!proto.length() || proto.length() > media::limits::kMaxSamplesPerPacket)
+  if (!proto.length() ||
+      proto.length() > media::limits::kMaxSamplesPerPacket / 4) {
     return nullptr;
+  }
 
   V8AudioSampleFormat format =
       V8AudioSampleFormat::Create(ToAudioSampleFormat(proto.format())).value();
