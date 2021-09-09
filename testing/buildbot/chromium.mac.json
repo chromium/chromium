@@ -22491,7 +22491,7 @@
       "all"
     ]
   },
-  "mac-arm64-rel-tests": {
+  "mac11-arm64-rel-tests": {
     "gtest_tests": [
       {
         "merge": {

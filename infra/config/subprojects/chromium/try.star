@@ -1559,7 +1559,7 @@ try_.chromium_mac_builder(
 )
 
 try_.chromium_mac_builder(
-    name = "mac-arm64-rel",
+    name = "mac11-arm64-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     goma_jobs = goma.jobs.J150,
     os = os.MAC_10_15,

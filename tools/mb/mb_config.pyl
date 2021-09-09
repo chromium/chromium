@@ -1125,7 +1125,7 @@
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols',
       'mac-rel-rts': 'gpu_tests_release_trybot_no_symbols',
-      'mac-arm64-rel': 'mac_arm64_release_trybot',
+      'mac11-arm64-rel': 'mac_arm64_release_trybot',
     },
 
     'tryserver.chromium.perf': {
