@@ -634,7 +634,8 @@ void ExtractUnderlines(NSAttributedString* string,
   // If this is a background window, don't handle mouse movement events. This
   // is the expected behavior on the Mac as evidenced by other applications.
   if ([theEvent type] == NSMouseMoved &&
-      ![self acceptsMouseEventsWhenInactive] && ![window isKeyWindow]) {
+      ![self acceptsMouseEventsWhenInactive] && ![window isMainWindow] &&
+      ![window isKeyWindow]) {
     return YES;
   }
 
