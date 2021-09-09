@@ -83,21 +83,26 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     const KURL kurl(String::FromUTF8("https://www.google.com/"));
     preferences.UpdateFromHttpEquivAcceptCH(test_case.header_value, kurl,
                                             nullptr);
-    EXPECT_EQ(test_case.expectation_resource_width,
-              preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kResourceWidth));
-    EXPECT_EQ(test_case.expectation_dpr,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
-    EXPECT_EQ(test_case.expectation_viewport_width,
-              preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kViewportWidth));
-    EXPECT_EQ(test_case.expectation_rtt,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kRtt));
     EXPECT_EQ(
-        test_case.expectation_downlink,
-        preferences.ShouldSend(network::mojom::WebClientHintsType::kDownlink));
+        test_case.expectation_resource_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_dpr,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(
+        test_case.expectation_viewport_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_rtt,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_downlink,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
     EXPECT_EQ(test_case.expectation_ect,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kEct));
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kEct_DEPRECATED));
     EXPECT_EQ(
         test_case.expectation_lang,
         preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
@@ -119,27 +124,33 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     // Calling UpdateFromHttpEquivAcceptCH with an invalid header should
     // have no impact on client hint preferences.
     preferences.UpdateFromHttpEquivAcceptCH("1, 42,", kurl, nullptr);
-    EXPECT_EQ(test_case.expectation_resource_width,
-              preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_EQ(
+        test_case.expectation_resource_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
     EXPECT_EQ(test_case.expectation_dpr,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
-    EXPECT_EQ(test_case.expectation_viewport_width,
               preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kViewportWidth));
+                  network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(
+        test_case.expectation_viewport_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
 
     // Calling UpdateFromHttpEquivAcceptCH with empty header is also a
     // no-op, since ClientHintsPreferences only deals with http-equiv, and
     // hence merge.
     preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
-    EXPECT_EQ(test_case.expectation_resource_width,
-              preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_EQ(
+        test_case.expectation_resource_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
     EXPECT_EQ(test_case.expectation_dpr,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
-    EXPECT_EQ(test_case.expectation_viewport_width,
               preferences.ShouldSend(
-                  network::mojom::WebClientHintsType::kViewportWidth));
+                  network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(
+        test_case.expectation_viewport_width,
+        preferences.ShouldSend(
+            network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
   }
 }
 
@@ -151,16 +162,17 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   preferences.UpdateFromHttpEquivAcceptCH("rtt, downlink", kurl, nullptr);
 
   EXPECT_FALSE(preferences.ShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
+      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth));
-  EXPECT_TRUE(preferences.ShouldSend(network::mojom::WebClientHintsType::kRtt));
-  EXPECT_TRUE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kDownlink));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kEct));
+      network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kEct_DEPRECATED));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
@@ -177,12 +189,13 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   // have no impact on client hint preferences.
   preferences.UpdateFromHttpEquivAcceptCH("1,,42", kurl, nullptr);
   EXPECT_FALSE(preferences.ShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth));
-  EXPECT_TRUE(preferences.ShouldSend(network::mojom::WebClientHintsType::kRtt));
-  EXPECT_TRUE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kDownlink));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kEct));
+      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kEct_DEPRECATED));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
@@ -199,12 +212,13 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   // replace add width to preferences
   preferences.UpdateFromHttpEquivAcceptCH("width", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth));
-  EXPECT_TRUE(preferences.ShouldSend(network::mojom::WebClientHintsType::kRtt));
-  EXPECT_TRUE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kDownlink));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kEct));
+      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kEct_DEPRECATED));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
@@ -221,12 +235,13 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   // change anything.
   preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth));
-  EXPECT_TRUE(preferences.ShouldSend(network::mojom::WebClientHintsType::kRtt));
-  EXPECT_TRUE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kDownlink));
-  EXPECT_FALSE(
-      preferences.ShouldSend(network::mojom::WebClientHintsType::kEct));
+      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kEct_DEPRECATED));
   EXPECT_FALSE(
       preferences.ShouldSend(network::mojom::WebClientHintsType::kLang));
   EXPECT_FALSE(preferences.ShouldSend(network::mojom::WebClientHintsType::kUA));
@@ -248,7 +263,8 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
                           : KURL(String::FromUTF8("http://www.google.com/"));
     preferences.UpdateFromHttpEquivAcceptCH("dpr", kurl, nullptr);
     EXPECT_EQ(use_secure_url,
-              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kDpr_DEPRECATED));
   }
 }
 
@@ -297,19 +313,19 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     ClientHintsPreferences preferences;
     EnabledClientHints enabled_types = preferences.GetEnabledClientHints();
     EXPECT_FALSE(enabled_types.IsEnabled(
-        network::mojom::WebClientHintsType::kDeviceMemory));
-    EXPECT_FALSE(
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kDpr));
+        network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
-        network::mojom::WebClientHintsType::kResourceWidth));
+        network::mojom::WebClientHintsType::kDpr_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
-        network::mojom::WebClientHintsType::kViewportWidth));
-    EXPECT_FALSE(
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kRtt));
-    EXPECT_FALSE(
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kDownlink));
-    EXPECT_FALSE(
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kEct));
+        network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kEct_DEPRECATED));
     EXPECT_FALSE(
         enabled_types.IsEnabled(network::mojom::WebClientHintsType::kLang));
     EXPECT_FALSE(
@@ -329,24 +345,30 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
 
     enabled_types = preferences.GetEnabledClientHints();
 
-    EXPECT_EQ(test.expect_device_memory,
-              enabled_types.IsEnabled(
-                  network::mojom::WebClientHintsType::kDeviceMemory));
-    EXPECT_EQ(test.expect_dpr, enabled_types.IsEnabled(
-                                   network::mojom::WebClientHintsType::kDpr));
-    EXPECT_EQ(test.expect_width,
-              enabled_types.IsEnabled(
-                  network::mojom::WebClientHintsType::kResourceWidth));
-    EXPECT_EQ(test.expect_viewport_width,
-              enabled_types.IsEnabled(
-                  network::mojom::WebClientHintsType::kViewportWidth));
-    EXPECT_EQ(test.expect_rtt, enabled_types.IsEnabled(
-                                   network::mojom::WebClientHintsType::kRtt));
     EXPECT_EQ(
-        test.expect_downlink,
-        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kDownlink));
-    EXPECT_EQ(test.expect_ect, enabled_types.IsEnabled(
-                                   network::mojom::WebClientHintsType::kEct));
+        test.expect_device_memory,
+        enabled_types.IsEnabled(
+            network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED));
+    EXPECT_EQ(test.expect_dpr,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(
+        test.expect_width,
+        enabled_types.IsEnabled(
+            network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+    EXPECT_EQ(
+        test.expect_viewport_width,
+        enabled_types.IsEnabled(
+            network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test.expect_rtt,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED));
+    EXPECT_EQ(test.expect_downlink,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kDownlink_DEPRECATED));
+    EXPECT_EQ(test.expect_ect,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kEct_DEPRECATED));
     EXPECT_EQ(test.expect_lang, enabled_types.IsEnabled(
                                     network::mojom::WebClientHintsType::kLang));
     EXPECT_EQ(test.expect_ua,

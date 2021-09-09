@@ -238,7 +238,8 @@ void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers) {
   const float device_memory =
       blink::ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
   DCHECK_LT(0.0, device_memory);
-  SetHeaderToDouble(headers, WebClientHintsType::kDeviceMemory, device_memory);
+  SetHeaderToDouble(headers, WebClientHintsType::kDeviceMemory_DEPRECATED,
+                    device_memory);
 }
 
 void AddDPRHeader(net::HttpRequestHeaders* headers,
@@ -248,7 +249,7 @@ void AddDPRHeader(net::HttpRequestHeaders* headers,
   DCHECK(context);
   double device_scale_factor = GetDeviceScaleFactor();
   double zoom_factor = GetZoomFactor(context, url);
-  SetHeaderToDouble(headers, WebClientHintsType::kDpr,
+  SetHeaderToDouble(headers, WebClientHintsType::kDpr_DEPRECATED,
                     device_scale_factor * zoom_factor);
 }
 
@@ -272,7 +273,7 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   DCHECK_LT(0, viewport_width);
   // TODO(yoav): Find out why this 0 check is needed...
   if (viewport_width > 0) {
-    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth, viewport_width);
+    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth_DEPRECATED, viewport_width);
   }
 }
 
@@ -312,7 +313,7 @@ void AddRttHeader(net::HttpRequestHeaders* headers,
     http_rtt = net::NetworkQualityEstimatorParams::GetDefaultTypicalHttpRtt(
         net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
   }
-  SetHeaderToInt(headers, WebClientHintsType::kRtt,
+  SetHeaderToInt(headers, WebClientHintsType::kRtt_DEPRECATED,
                  RoundRtt(url.host(), http_rtt));
 }
 
@@ -338,7 +339,7 @@ void AddDownlinkHeader(net::HttpRequestHeaders* headers,
             net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
   }
 
-  SetHeaderToDouble(headers, WebClientHintsType::kDownlink,
+  SetHeaderToDouble(headers, WebClientHintsType::kDownlink_DEPRECATED,
                     RoundKbpsToMbps(url.host(), downlink_throughput_kbps));
 }
 
@@ -366,7 +367,7 @@ void AddEctHeader(net::HttpRequestHeaders* headers,
   }
 
   SetHeaderToString(
-      headers, WebClientHintsType::kEct,
+      headers, WebClientHintsType::kEct_DEPRECATED,
       blink::kWebEffectiveConnectionTypeMapping[effective_connection_type]);
 }
 
@@ -652,13 +653,13 @@ void AddRequestClientHintsHeaders(
   }
 
   // Add Headers
-  if (ShouldAddClientHint(data, WebClientHintsType::kDeviceMemory)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kDeviceMemory_DEPRECATED)) {
     AddDeviceMemoryHeader(headers);
   }
-  if (ShouldAddClientHint(data, WebClientHintsType::kDpr)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kDpr_DEPRECATED)) {
     AddDPRHeader(headers, context, url);
   }
-  if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth_DEPRECATED)) {
     AddViewportWidthHeader(headers, context, url);
   }
   if (ShouldAddClientHint(
@@ -667,13 +668,13 @@ void AddRequestClientHintsHeaders(
   }
   network::NetworkQualityTracker* network_quality_tracker =
       delegate->GetNetworkQualityTracker();
-  if (ShouldAddClientHint(data, WebClientHintsType::kRtt)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kRtt_DEPRECATED)) {
     AddRttHeader(headers, network_quality_tracker, url);
   }
-  if (ShouldAddClientHint(data, WebClientHintsType::kDownlink)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kDownlink_DEPRECATED)) {
     AddDownlinkHeader(headers, network_quality_tracker, url);
   }
-  if (ShouldAddClientHint(data, WebClientHintsType::kEct)) {
+  if (ShouldAddClientHint(data, WebClientHintsType::kEct_DEPRECATED)) {
     AddEctHeader(headers, network_quality_tracker, url);
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kLang)) {

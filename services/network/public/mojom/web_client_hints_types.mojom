@@ -16,13 +16,13 @@ enum WebClientHintsType {
   // Additionally, all client hints headers are considered as CORS-safelisted
   // headers, and as such should not include any user identification or
   // privacy sensitive information.
-  kDeviceMemory = 0,
-  kDpr = 1,
-  kResourceWidth = 2,
-  kViewportWidth = 3,
-  kRtt = 4,
-  kDownlink = 5,
-  kEct = 6,
+  kDeviceMemory_DEPRECATED = 0,
+  kDpr_DEPRECATED = 1,
+  kResourceWidth_DEPRECATED = 2,
+  kViewportWidth_DEPRECATED = 3,
+  kRtt_DEPRECATED = 4,
+  kDownlink_DEPRECATED = 5,
+  kEct_DEPRECATED = 6,
   kLang = 7,
   kUA = 8,
   kUAArch = 9,

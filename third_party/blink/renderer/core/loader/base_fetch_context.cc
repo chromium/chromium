@@ -193,7 +193,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
   // parties, or if PermissionsPolicy delegation says they are allowed.
   if (ShouldSendClientHint(
           ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
-          network::mojom::blink::WebClientHintsType::kDeviceMemory,
+          network::mojom::blink::WebClientHintsType::kDeviceMemory_DEPRECATED,
           hints_preferences)) {
     request.SetHttpHeaderField(
         "Device-Memory",
@@ -203,18 +203,19 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
   // These hints only make sense if the image info is available
   if (image_info) {
-    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
-                             is_1p_origin,
-                             network::mojom::blink::WebClientHintsType::kDpr,
-                             hints_preferences)) {
+    if (ShouldSendClientHint(
+            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kDpr_DEPRECATED,
+            hints_preferences)) {
       request.SetHttpHeaderField("DPR",
                                  AtomicString(String::Number(image_info->dpr)));
     }
 
-    if (ShouldSendClientHint(
-            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
-            network::mojom::blink::WebClientHintsType::kViewportWidth,
-            hints_preferences) &&
+    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
+                             is_1p_origin,
+                             network::mojom::blink::WebClientHintsType::
+                                 kViewportWidth_DEPRECATED,
+                             hints_preferences) &&
         image_info->viewport_width) {
       request.SetHttpHeaderField(
           "Viewport-Width",
@@ -232,10 +233,11 @@ void BaseFetchContext::AddClientHintsIfNecessary(
           AtomicString(String::Number(image_info->viewport_height.value())));
     }
 
-    if (ShouldSendClientHint(
-            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
-            network::mojom::blink::WebClientHintsType::kResourceWidth,
-            hints_preferences)) {
+    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
+                             is_1p_origin,
+                             network::mojom::blink::WebClientHintsType::
+                                 kResourceWidth_DEPRECATED,
+                             hints_preferences)) {
       if (image_info->resource_width.is_set) {
         float physical_width =
             image_info->resource_width.width * image_info->dpr;
@@ -247,7 +249,8 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
   if (ShouldSendClientHint(
           ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
-          network::mojom::blink::WebClientHintsType::kRtt, hints_preferences)) {
+          network::mojom::blink::WebClientHintsType::kRtt_DEPRECATED,
+          hints_preferences)) {
     absl::optional<base::TimeDelta> http_rtt =
         GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
     if (!http_rtt) {
@@ -258,14 +261,14 @@ void BaseFetchContext::AddClientHintsIfNecessary(
         GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
     request.SetHttpHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
-            network::mojom::blink::WebClientHintsType::kRtt)],
+            network::mojom::blink::WebClientHintsType::kRtt_DEPRECATED)],
         AtomicString(String::Number(rtt)));
   }
 
-  if (ShouldSendClientHint(ClientHintsMode::kStandard, policy, resource_origin,
-                           is_1p_origin,
-                           network::mojom::blink::WebClientHintsType::kDownlink,
-                           hints_preferences)) {
+  if (ShouldSendClientHint(
+          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
+          network::mojom::blink::WebClientHintsType::kDownlink_DEPRECATED,
+          hints_preferences)) {
     absl::optional<double> throughput_mbps =
         GetNetworkStateNotifier().GetWebHoldbackDownlinkThroughputMbps();
     if (!throughput_mbps) {
@@ -276,13 +279,14 @@ void BaseFetchContext::AddClientHintsIfNecessary(
                                                       throughput_mbps);
     request.SetHttpHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
-            network::mojom::blink::WebClientHintsType::kDownlink)],
+            network::mojom::blink::WebClientHintsType::kDownlink_DEPRECATED)],
         AtomicString(String::Number(mbps)));
   }
 
   if (ShouldSendClientHint(
           ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
-          network::mojom::blink::WebClientHintsType::kEct, hints_preferences)) {
+          network::mojom::blink::WebClientHintsType::kEct_DEPRECATED,
+          hints_preferences)) {
     absl::optional<WebEffectiveConnectionType> holdback_ect =
         GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
     if (!holdback_ect)
@@ -290,7 +294,7 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
     request.SetHttpHeaderField(
         blink::kClientHintsHeaderMapping[static_cast<size_t>(
-            network::mojom::blink::WebClientHintsType::kEct)],
+            network::mojom::blink::WebClientHintsType::kEct_DEPRECATED)],
         AtomicString(NetworkStateNotifier::EffectiveConnectionTypeToString(
             holdback_ect.value())));
   }

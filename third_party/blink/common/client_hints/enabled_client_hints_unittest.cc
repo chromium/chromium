@@ -96,17 +96,17 @@ class EnabledClientHintsTest : public testing::Test {
 TEST_F(EnabledClientHintsTest, EnabledClientHint) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, true);
-  hints.SetIsEnabled(WebClientHintsType::kRtt, true);
+  hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, true);
   EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAFullVersion));
-  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kRtt));
+  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kRtt_DEPRECATED));
 }
 
 TEST_F(EnabledClientHintsTest, DisabledClientHint) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, false);
-  hints.SetIsEnabled(WebClientHintsType::kRtt, false);
+  hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, false);
   EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAFullVersion));
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kRtt));
+  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kRtt_DEPRECATED));
 }
 
 TEST_F(EnabledClientHintsTest, EnabledClientHintOnDisabledFeature) {
@@ -138,9 +138,9 @@ TEST_F(EnabledClientHintsTest,
 TEST_F(EnabledClientHintsTest, GetEnabledHints) {
   EnabledClientHints hints;
   hints.SetIsEnabled(WebClientHintsType::kUAFullVersion, true);
-  hints.SetIsEnabled(WebClientHintsType::kRtt, true);
+  hints.SetIsEnabled(WebClientHintsType::kRtt_DEPRECATED, true);
   EXPECT_THAT(hints.GetEnabledHints(),
-              ElementsAre(WebClientHintsType::kRtt,
+              ElementsAre(WebClientHintsType::kRtt_DEPRECATED,
                           WebClientHintsType::kUAFullVersion));
 }
 

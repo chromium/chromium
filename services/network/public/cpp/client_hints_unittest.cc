@@ -24,11 +24,11 @@ TEST(ClientHintsTest, ParseAcceptCH) {
   // Normal case.
   result = ParseClientHintsHeader("device-memory,  rtt, lang ");
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(
-      result.value(),
-      UnorderedElementsAre(network::mojom::WebClientHintsType::kDeviceMemory,
-                           network::mojom::WebClientHintsType::kRtt,
-                           network::mojom::WebClientHintsType::kLang));
+  EXPECT_THAT(result.value(),
+              UnorderedElementsAre(
+                  network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                  network::mojom::WebClientHintsType::kLang));
 
   // Must be a list of tokens, not other things.
   result = ParseClientHintsHeader("\"device-memory\", \"rtt\", \"lang\"");
@@ -38,21 +38,21 @@ TEST(ClientHintsTest, ParseAcceptCH) {
   // spec.
   result = ParseClientHintsHeader("device-memory;resolution=GIB, rtt, lang");
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(
-      result.value(),
-      UnorderedElementsAre(network::mojom::WebClientHintsType::kDeviceMemory,
-                           network::mojom::WebClientHintsType::kRtt,
-                           network::mojom::WebClientHintsType::kLang));
+  EXPECT_THAT(result.value(),
+              UnorderedElementsAre(
+                  network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                  network::mojom::WebClientHintsType::kLang));
 
   // Unknown tokens are fine, since this meant to be extensible.
   result = ParseClientHintsHeader(
       "device-memory,  rtt, lang , nosuchtokenwhywhywhy");
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(
-      result.value(),
-      UnorderedElementsAre(network::mojom::WebClientHintsType::kDeviceMemory,
-                           network::mojom::WebClientHintsType::kRtt,
-                           network::mojom::WebClientHintsType::kLang));
+  EXPECT_THAT(result.value(),
+              UnorderedElementsAre(
+                  network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                  network::mojom::WebClientHintsType::kLang));
 }
 
 TEST(ClientHintsTest, ParseAcceptCHCaseInsensitive) {
@@ -61,11 +61,11 @@ TEST(ClientHintsTest, ParseAcceptCHCaseInsensitive) {
   // Matching is case-insensitive.
   result = ParseClientHintsHeader("Device-meMory,  Rtt, lanG ");
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(
-      result.value(),
-      UnorderedElementsAre(network::mojom::WebClientHintsType::kDeviceMemory,
-                           network::mojom::WebClientHintsType::kRtt,
-                           network::mojom::WebClientHintsType::kLang));
+  EXPECT_THAT(result.value(),
+              UnorderedElementsAre(
+                  network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED,
+                  network::mojom::WebClientHintsType::kRtt_DEPRECATED,
+                  network::mojom::WebClientHintsType::kLang));
 }
 
 TEST(ClientHintsTest, ParseAcceptCHLifetime) {
