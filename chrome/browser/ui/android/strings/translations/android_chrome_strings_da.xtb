@@ -1322,6 +1322,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8942627711005830162">Åbn i et andet vindue</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Dette sprog kunne ikke downloades. Prøv igen senere.</translation>
 <translation id="8951232171465285730">Chrome har sparet dig <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Tilbage til toppen</translation>
 <translation id="8965591936373831584">afventer</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>

@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">தற்காலிகச் சேமிப்பு</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
+<translation id="3156846309055100599"><ph name="PAGE_NUMBER" />வது பக்கம் ஸ்கேன் செய்யப்படுகிறது...</translation>
 <translation id="315738237743207937">கேப்டிவ் போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">கடவுச்சொல் காலாவதியாக இன்னும் <ph name="TIME" /></translation>
 <translation id="4238516577297848345">அச்சுப் பணி எதுவும் செயலில் இல்லை</translation>
 <translation id="4244962993387259361">நினைவகச் சோதனையை இயக்க, குறைந்தது 500 MB சேமிப்பிடம் காலியாக இருக்க வேண்டும். சேமிப்பிடத்தைக் காலியாக்க 'அமைப்புகள் &gt; சேமிப்பக நிர்வாகி' என்பதற்குச் செல்லவும்.</translation>
+<translation id="4258281355379922695">HTTP தாமதம்</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. அச்சுப் பணியை ரத்துசெய்ய என்ட்டர் விசையை அழுத்தவும்.</translation>
+<translation id="463791356324567266">ஸ்கேன் செய்வதை ரத்துசெய்கிறது...</translation>
 <translation id="4646949265910132906">பாதுகாப்பான வைஃபை இணைப்பு</translation>
 <translation id="4654549501020883054">தினமும் மாற்று</translation>
 <translation id="4665014895760275686">உற்பத்தியாளர்</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} முயற்சி மீதமுள்ளது}other{{0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
+<translation id="5502931783115429516">Android இயங்கவில்லை</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">செயலாக்குகிறது</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,9 +262,11 @@
 <translation id="5701381305118179107">மையம்</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">போர்டல் நிலை</translation>
+<translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
 <translation id="5849570051105887917">உள்நாட்டு மொபைல் சேவை வழங்குநர் குறியீடு</translation>
+<translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="5866840822086176774">மிக வலிமையானது</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
@@ -349,6 +355,7 @@
 <translation id="7343649194310845056">நெட்வொர்க் சாதனங்கள்</translation>
 <translation id="7359657277149375382">ஃபைல் வகை</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
@@ -356,6 +363,7 @@
 <translation id="7490813197707563893">MAC முகவரி</translation>
 <translation id="7497215489070763236">சேவையக CA சான்றிதழ்</translation>
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">பிழை கண்டறிதலுக்கான வழக்கங்கள்</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

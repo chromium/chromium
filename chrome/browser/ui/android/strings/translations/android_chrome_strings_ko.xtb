@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">다른 창에서 열기</translation>
 <translation id="8945143127965743188"><ph name="LANG" />: 다운로드할 수 없는 언어입니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="8951232171465285730">Chrome을 통해 <ph name="MEGABYTES" />MB를 절약했습니다.</translation>
+<translation id="8955719471735800169">맨위로</translation>
 <translation id="8965591936373831584">보류 중</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="8970887620466824814">문제 발생</translation>

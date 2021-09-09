@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">Открыть в новом окне</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – не удалось скачать этот языковой пакет. Повторите попытку позже.</translation>
 <translation id="8951232171465285730">Благодаря Chrome вы сэкономили <ph name="MEGABYTES" /> МБ свободного места</translation>
+<translation id="8955719471735800169">В начало</translation>
 <translation id="8965591936373831584">ожидание</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>

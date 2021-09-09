@@ -1322,6 +1322,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8942627711005830162">Otwórz w innym oknie</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – nie udało się pobrać tego języka. Spróbuj później.</translation>
 <translation id="8951232171465285730">Chrome pozwolił Ci zaoszczędzić <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Powrót do góry</translation>
 <translation id="8965591936373831584">Oczekiwanie</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_ONE" /> inna}few{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> inne}many{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> innych}other{Zostaną zamknięte karty incognito (<ph name="INCOGNITO_TAB_COUNT" />) i <ph name="TAB_COUNT_MANY" /> innej}}</translation>
 <translation id="8970887620466824814">Coś poszło nie tak.</translation>

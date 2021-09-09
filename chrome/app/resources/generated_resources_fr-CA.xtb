@@ -213,6 +213,7 @@
 <translation id="1218015446623563536">Supprimer Linux</translation>
 <translation id="1218839827383191197"><ph name="BEGIN_PARAGRAPH1" />Les services de localisation de Google utilisent des sources comme les réseaux Wi-Fi et cellulaires, ainsi que des capteurs, pour estimer la position de cet appareil.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez couper ce service en désactivant le paramètre de localisation principal de l'appareil. Vous pouvez également désactiver l'utilisation des réseaux Wi‑Fi, des réseaux cellulaires et des capteurs pour la localisation dans les paramètres de localisation.<ph name="END_PARAGRAPH2" /></translation>
+<translation id="1219115285613502247">Impossible de télécharger les fichiers de synthèse textuelle en <ph name="LANGUAGE" />. Une tentative de téléchargement aura lieu ultérieurement. Pour le moment, le fichier vocal est envoyé à Google pour y être traité.</translation>
 <translation id="122082903575839559">Algorithme de signature du certificat</translation>
 <translation id="1221024147024329929">Algorithme à clé publique PKCS #1 MD2 avec chiffrement RSA</translation>
 <translation id="1221825588892235038">Imprimer seulement la sélection</translation>
@@ -570,6 +571,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1602085790802918092">Démarrage de la machine virtuelle en cours…</translation>
 <translation id="1603914832182249871">(Mode privé)</translation>
 <translation id="1604432177629086300">Impossible d'imprimer le fichier. Vérifiez l'imprimante, puis réessayez.</translation>
+<translation id="1605744057217831567">Afficher toutes les autorisations et les données relatives aux sites</translation>
 <translation id="1606077700029460857">Modifier les paramètres de la souris</translation>
 <translation id="1607139524282324606">Effacer l'entrée</translation>
 <translation id="1607499585984539560">L'utilisateur n'est pas affilié au domaine</translation>
@@ -1332,6 +1334,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2364498172489649528">Vérification réussie</translation>
 <translation id="2365507699358342471">Ce site peut voir le texte et les images copiés dans le presse-papiers.</translation>
 <translation id="2367972762794486313">Afficher les applications</translation>
+<translation id="236939127352773362">Lorsque des appareils partagent des fichiers à proximité</translation>
 <translation id="2371076942591664043">Ouvrir une fois le téléchargement &amp;terminé</translation>
 <translation id="2373666622366160481">Ajuster à la taille du papier</translation>
 <translation id="2375406435414127095">Connectez-vous à votre téléphone</translation>
@@ -2757,6 +2760,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
+<translation id="3883306461188700142">Entrez du texte au moyen de commandes vocales Appuyez sur les touches Rechercher+D, puis commencez à parler.</translation>
 <translation id="3884152383786131369">Le contenu Web offert en plusieurs langues utilisera la première langue prise en charge de cette liste. Ces préférences sont synchronisées avec les paramètres de votre navigateur. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">C'est votre administrateur qui gère les mises à jour</translation>
 <translation id="3886446263141354045">Votre demande d'accès à ce site a été envoyée à <ph name="NAME" /></translation>
@@ -4981,6 +4985,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6344576354370880196">Imprimantes enregistrées</translation>
 <translation id="6345418402353744910">Votre nom d'utilisateur et votre mot de passe sont requis pour le mandataire <ph name="PROXY" /> afin que l'administrateur puisse configurer votre réseau</translation>
 <translation id="6345878117466430440">Marquer comme lu</translation>
+<translation id="6347010704471250799">Afficher une notification</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (aussi appelée ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Navigateur expérimental (qualité de version alpha)! Certaines fonctionnalités sont manquantes ou incomplètes. Signalez tout problème en sélectionnant Aide &gt; « Signaler un problème… ».</translation>
@@ -5308,6 +5313,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6721972322305477112">&amp;Fichier</translation>
 <translation id="672208878794563299">Ce site vous demandera de nouveau la prochaine fois.</translation>
 <translation id="6723661294526996303">Importer les favoris et les paramètres...</translation>
+<translation id="6723839827191551955">Contrôler les fichiers multimédias que vous diffusez</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6725073593266469338">Service d'IU</translation>
 <translation id="6725206449694821596">Protocole IPP d'impression Internet</translation>
@@ -6719,6 +6725,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="819137301779081601">Appuyez sur un nouveau commutateur pour démarrer une nouvelle attribution
 Appuyez sur un commutateur attribué pour retirer l'attribution</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> veut partager le contenu de votre écran.</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Taille sur le disque</translation>
 <translation id="8198323535106903877">Nous allons installer ces <ph name="NUMBER_OF_APPS" /> applications pour vous</translation>
 <translation id="8198456017687137612">Diffusion de l'onglet en cours…</translation>

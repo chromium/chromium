@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">別のウィンドウで開く</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - この言語をダウンロードできませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="8951232171465285730">Chrome で <ph name="MEGABYTES" /> MB の容量を節約しました</translation>
+<translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8965591936373831584">保留中</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>

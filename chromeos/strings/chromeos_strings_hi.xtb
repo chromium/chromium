@@ -183,7 +183,7 @@
 <translation id="458794348635939462">सभी होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक है</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> में से <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट का काम बंद करने के लिए enter का बटन दबाएं.</translation>
-<translation id="463791356324567266">स्कैन करने की प्रोसेस रद्द की जा रही है...</translation>
+<translation id="463791356324567266">स्कैनिंग रद्द की जा रही है...</translation>
 <translation id="4646949265910132906">सुरक्षित वाई-फ़ाई कनेक्शन</translation>
 <translation id="4654549501020883054">रोज़ बदलें</translation>
 <translation id="4665014895760275686">निर्माता</translation>
@@ -266,6 +266,7 @@
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5849570051105887917">'होम' पर काम करने वाली सेवाओं का कोड</translation>
+<translation id="5860033963881614850">बंद</translation>
 <translation id="5866840822086176774">बहुत सशक्त</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5916084858004523819">निषिद्ध</translation>

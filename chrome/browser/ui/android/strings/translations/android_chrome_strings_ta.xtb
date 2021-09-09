@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
 <translation id="1883903952484604915">எனது ஃபைல்கள் </translation>
 <translation id="189358972401248634">பிற மொழிகள்</translation>
+<translation id="1910950723001426294">பகிர்தல் விருப்பங்களுக்கான பட்டியல் மூடப்பட்டது.</translation>
 <translation id="1918175104945982129">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் UI பாதித் திரையில் காட்டப்படுகிறது</translation>
 <translation id="1919130412786645364">Chrome உள்நுழைவை அனுமதித்தல்</translation>
 <translation id="1922362554271624559">பரிந்துரைக்கப்படும் மொழிகள்</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">கடவுச்சொற்களைச் சரிபார்க்க, உங்கள் Google கணக்கில் உள்நுழையவும்</translation>
 <translation id="2278052315791335171">இந்தக் கடவுச்சொல்லை நீக்கினால் <ph name="SITE" /> இணையதளத்தில் உள்ள உங்கள் கணக்கு நீக்கப்படாது</translation>
 <translation id="2286841657746966508">பில்லிங் முகவரி</translation>
+<translation id="228704530595896923">பகிர்தல் விருப்பங்களுக்கான பட்டியல்.</translation>
 <translation id="230115972905494466">இணக்கமான சாதனங்கள் இல்லை</translation>
 <translation id="230155349749732438">இந்த அமைப்பைப் பயன்படுத்த, <ph name="BEGIN_LINK" />தேடலையும் உலாவலையும் இன்னும் சிறப்பாக்கு<ph name="END_LINK" /> என்ற விருப்பத்தை இயக்க வேண்டும்</translation>
 <translation id="2318045970523081853">அழைக்க தட்டவும்</translation>
@@ -214,7 +216,7 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2369533728426058518">திறக்கப்பட்டுள்ள தாவல்கள்</translation>
 <translation id="2386938421315164605">தலைப்புகளை மறைக்கும் &amp; காட்டும்</translation>
-<translation id="2387895666653383613">உரை அளவிடல்</translation>
+<translation id="2387895666653383613">எழுத்து அளவு</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ஃபைலை மீண்டும் பதிவிறக்க வேண்டுமா?</translation>
 <translation id="2394602618534698961">நீங்கள் பதிவிறக்கிய கோப்புகளை இங்கே பார்க்கலாம்</translation>
 <translation id="2407481962792080328">உங்கள் Google கணக்கில் உள்நுழையும்போது இந்த அம்சம் ஆன் செய்யப்படும்</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">சாதனத்தின் தற்போதைய மொழி</translation>
 <translation id="4141536112466364990">Chrome குறித்து அறிந்துகொள்ளுங்கள்</translation>
 <translation id="4149994727733219643">இணையப் பக்கங்களுக்கான எளிதாக்கப்பட்ட காட்சி</translation>
+<translation id="4162867837470729563">பகிர்தல் விருப்பங்களுக்கான பட்டியல் முழுத் திரையில் காட்டப்படுகிறது.</translation>
 <translation id="4165986682804962316">தள அமைப்புகள்</translation>
 <translation id="4170011742729630528">சேவை கிடைக்கவில்லை; பிறகு முயற்சிக்கவும்.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> பயன்படுத்தப்பட்டுள்ளது</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">வைஃபையுடன் இணைக்கப்பட்டதும் பதிவிறக்கம் தொடங்கும்</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
+<translation id="6212786426849242805">பக்கத்திலுள்ள சில வார்த்தைகளையும் தேடலில் Google சேர்த்துக்கொள்ளும்</translation>
 <translation id="6221633008163990886">உங்கள் கடவுச்சொற்களை ஏற்ற, அன்லாக் செய்யவும்</translation>
 <translation id="6232535412751077445">‘கண்காணிக்க வேண்டாம்’ என்பதை இயக்குவதால் உங்கள் உலாவல் டிராஃபிக்குடன் கோரிக்கை ஒன்று இணைக்கப்படும். கோரிக்கைக்கு இணையதளம் எவ்வாறு பதிலளிக்கிறது என்பதையும் கோரிக்கையானது எவ்வாறு புரிந்து கொள்ளப்படுகிறது என்பதையும் பொருத்து எந்தவொரு விளைவும் இருக்கும்.
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">கருத்துக்கணிப்புகள்</translation>
 <translation id="6461962085415701688">கோப்பைத் திறக்க முடியாது</translation>
 <translation id="6464977750820128603">Chromeமில் பார்த்தத் தளங்களைக் காணலாம், அவற்றுக்கு டைமர்களையும் அமைக்கலாம்.\n\nடைமர்களை அமைத்தத் தளங்களைப் பற்றிய விவரங்களையும் அவற்றில் செலவழித்த நேரத்தையும் Google சேகரிக்கும். இந்தத் தகவல் டிஜிட்டல் வெல்பீயிங்கை மேம்படுத்தப் பயன்படுத்தப்படும்.</translation>
+<translation id="6473086018775716761">பகிர்தல் விருப்பங்களுக்கான பட்டியல் பாதித் திரையில் காட்டப்படுகிறது.</translation>
 <translation id="6475951671322991020">வீடியோவைப் பதிவிறக்கு</translation>
 <translation id="6477928892249167417">இந்தத் தளங்கள் உங்களுக்கு முக்கியமானவை எனக் கருதுகிறோம்:</translation>
 <translation id="6482749332252372425">போதுமான சேமிப்பிடம் இல்லாததால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">செயல்பாடு</translation>
 <translation id="7857691613771368249">கோப்புகளை எப்போது சேமிக்க வேண்டும் எனக் கேள்</translation>
 <translation id="7859988229622350291">மொழிபெயர்க்கக்கூடாதவை</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> உங்கள் சாதனத்துடன் இணைய, அருகிலுள்ள சாதனங்களுடன் இணைவதற்கான அனுமதி தேவை</translation>
 <translation id="7875915731392087153">மின்னஞ்சலை உருவாக்கவும்</translation>
 <translation id="7876243839304621966">அனைத்தையும் அகற்று</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{படிக்காத பக்கம் <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> உள்ளது}other{படிக்காத பக்கங்கள் <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> உள்ளன}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" /> ஃபைல்கள்  மீதமுள்ளன</translation>
 <translation id="8189750580333936930">தனியுரிமை சாண்ட்பாக்ஸ்</translation>
 <translation id="8190358571722158785">1 நாள் மீதமுள்ளது</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="8209050860603202033">படத்தைத் திற</translation>
 <translation id="8216351761227087153">காண்</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">உங்கள் சாதனத்துடன் இணைக்கிறது…</translation>
 <translation id="8310344678080805313">நிலையான தாவல்கள்</translation>
 <translation id="831192587911042850">நீங்கள் பின்தொடரும் இணையதளங்களின் பட்டியலில் இதையும் சேர்க்கும்.</translation>
+<translation id="8319544457245040955">பக்கத்தை விட்டு வெளியேறாமலேயே தலைப்பைப் பற்றித் தெரிந்துகொள்ளலாம். ஒன்று அல்லது அதற்கு மேற்பட்ட வார்த்தைகளைப் பற்றித் தேட, அந்தப் பக்கத்தில் அவற்றைத் தேர்ந்தெடுக்கவும். உங்கள் தேடலைத் திருத்த, முடிவுகளைப் பார்த்து அவற்றைப் புதிய பக்கத்தில் திறக்கவும்.</translation>
 <translation id="8327155640814342956">சிறந்த உலாவல் அனுபவத்திற்கு Chromeமைத் திறந்து புதுப்பியுங்கள்</translation>
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>
 <translation id="8349013245300336738">பயன்படுத்திய தரவு அளவின்படி வரிசைப்படுத்தும்</translation>
@@ -1314,6 +1322,7 @@
 <translation id="8942627711005830162">வேறு சாளரத்தில் திற</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - இந்த மொழித் தொகுப்பைப் பதிவிறக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="8951232171465285730">Chrome உங்கள் <ph name="MEGABYTES" /> மெ.பை. அளவைச் சேமித்தது</translation>
+<translation id="8955719471735800169">மேலே செல்க</translation>
 <translation id="8965591936373831584">நிலுவையிலுள்ளது</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_ONE" /> பக்கமும் மூடப்படும்}other{<ph name="INCOGNITO_TAB_COUNT" /> மறைநிலைப் பக்கமும் மேலும் <ph name="TAB_COUNT_MANY" /> பக்கங்களும் மூடப்படும்}}</translation>
 <translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>

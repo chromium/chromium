@@ -1323,6 +1323,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8942627711005830162">Öppna i ett annat fönster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Det gick inte att ladda ned språket. Försök igen senare.</translation>
 <translation id="8951232171465285730">Du har sparat <ph name="MEGABYTES" /> MB med Chrome</translation>
+<translation id="8955719471735800169">Tillbaka till början</translation>
 <translation id="8965591936373831584">väntar</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>

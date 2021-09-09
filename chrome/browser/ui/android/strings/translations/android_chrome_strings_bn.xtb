@@ -1324,6 +1324,7 @@
 <translation id="8942627711005830162">অন্য উইন্ডোতে খুলুন</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটি ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="8951232171465285730">Chrome আপনার জন্য <ph name="MEGABYTES" /> এমবি বাঁচিয়ে দিয়েছে</translation>
+<translation id="8955719471735800169">শীর্ষে ফিরে যান</translation>
 <translation id="8965591936373831584">বাকি আছে</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_ONE" />টি ট্যাব বন্ধ করা হবে}one{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}other{<ph name="INCOGNITO_TAB_COUNT" />টি ছদ্মবেশী এবং আরও<ph name="TAB_COUNT_MANY" />টি ট্যাব বন্ধ করা হবে}}</translation>
 <translation id="8970887620466824814">কিছু সমস্যা হয়েছে।</translation>

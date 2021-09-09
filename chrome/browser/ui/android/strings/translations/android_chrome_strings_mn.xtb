@@ -1321,6 +1321,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8942627711005830162">Өөр цонхонд нээх</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Энэ хэлийг татаж чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="8951232171465285730">Chrome <ph name="MEGABYTES" /> МБ-ыг хэмнэсэн</translation>
+<translation id="8955719471735800169">Дээшээ очих</translation>
 <translation id="8965591936373831584">хүлээгдэж байна</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_ONE" /> табыг хаана}other{<ph name="INCOGNITO_TAB_COUNT" /> нууцлалтай таб болон бусад <ph name="TAB_COUNT_MANY" /> табыг хаана}}</translation>
 <translation id="8970887620466824814">Алдаа гарлаа.</translation>

@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="315116470104423982">Données mobiles</translation>
+<translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4244962993387259361">Vous avez besoin d'au moins 500 Mo d'espace libre pour exécuter un test de mémoire. Pour libérer de l'espace, accédez à Paramètres &gt; Gestionnaire de stockage.</translation>
+<translation id="4258281355379922695">Latence HTTP</translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
+<translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
 <translation id="4654549501020883054">Changer tous les jours</translation>
 <translation id="4665014895760275686">Fabricant</translation>
@@ -251,6 +254,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Il vous reste {0} tentative}one{Il vous reste {0} tentative}other{Il vous reste {0} tentatives}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossible de terminer la numérisation</translation>
+<translation id="5502931783115429516">Android n'est pas en cours d'exécution</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Activation…</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,9 +262,11 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> sur <ph name="TOTAL_PAGES" /></translation>
 <translation id="5760715441271661976">État du portail</translation>
+<translation id="5784136236926853061">Latence HTTP élevée</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5866840822086176774">Très fort</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5916084858004523819">Interdit</translation>
@@ -349,6 +355,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
@@ -356,6 +363,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7490813197707563893">Adresse MAC</translation>
 <translation id="7497215489070763236">Certificat de l'autorité de certification du serveur</translation>
 <translation id="7502658306369382406">Adresse IPv6</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Routines de diagnostic</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

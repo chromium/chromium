@@ -1322,6 +1322,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8942627711005830162">Åpne i et annet vindu</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kunne ikke laste ned dette språket. Prøv igjen senere.</translation>
 <translation id="8951232171465285730">Chrome har spart deg for <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Tilbake til toppen</translation>
 <translation id="8965591936373831584">venter</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>

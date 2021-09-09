@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">కాష్</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
+<translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515"><ph name="TIME" />లో పాస్‌వర్డ్‌ గడువు ముగుస్తుంది</translation>
 <translation id="4238516577297848345">ప్రింట్ టాస్క్‌లు ఏవీ ప్రోగ్రెస్‌లో లేవు</translation>
 <translation id="4244962993387259361">మెమరీ టెస్ట్‌ను రన్ చేయడానికి మీ దగ్గర కనీసం 500 MB ఖాళీగా ఉండాలి. స్పేస్‌ను ఖాళీ చేయడానికి, సెట్టింగ్‌లు &gt; స్టోరేజ్ మేనేజ్‌మెంట్‌కు వెళ్లండి.</translation>
+<translation id="4258281355379922695">HTTP ప్రతిస్పందన సమయం</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />లో <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. ప్రింట్ టాస్క్‌ను రద్దు చేయడానికి ఎంటర్ నొక్కండి.</translation>
+<translation id="463791356324567266">స్కానింగ్ రద్దు అవుతోంది...</translation>
 <translation id="4646949265910132906">సురక్షిత Wi-Fi కనెక్షన్</translation>
 <translation id="4654549501020883054">ప్రతి రోజూ మార్చండి</translation>
 <translation id="4665014895760275686">తయారీదారు</translation>
@@ -250,6 +253,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ప్రయత్నం మిగిలి ఉంది}other{{0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">స్కాన్‌ను పూర్తి చేయడం సాధ్యపడలేదు</translation>
+<translation id="5502931783115429516">Android రన్ అవ్వడం లేదు</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">సక్రియమవుతోంది</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -257,9 +261,11 @@
 <translation id="5701381305118179107">మధ్యకు</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />లో <ph name="CURRENT_PAGE" /></translation>
 <translation id="5760715441271661976">పోర్టల్ స్థితి</translation>
+<translation id="5784136236926853061">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="5832805196449965646">వ్యక్తిని జోడించు</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5849570051105887917">స్వస్థల నెట్‌వర్క్ ప్రదాత కోడ్</translation>
+<translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
 <translation id="5866840822086176774">చాలా బలంగా ఉంది</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="5916084858004523819">నిషేధించబడింది</translation>
@@ -348,6 +354,7 @@
 <translation id="7343649194310845056">నెట్‌వర్క్ పరికరాలు</translation>
 <translation id="7359657277149375382">ఫైల్ రకం</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{స్కాన్ చేయడం పూర్తయింది. 1 పేజీ స్కాన్ చేయబడింది}other{స్కాన్ చేయడం పూర్తయింది. {NUMBER_OF_PAGES} పేజీలు స్కాన్ చేయబడ్డాయి}}</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
@@ -355,6 +362,7 @@
 <translation id="7490813197707563893">MAC అడ్రస్‌</translation>
 <translation id="7497215489070763236">సర్వర్ CA సర్టిఫికేట్</translation>
 <translation id="7502658306369382406">IPv6 అడ్రస్‌</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">సమస్య విశ్లేషణ రొటీన్‌లు</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>

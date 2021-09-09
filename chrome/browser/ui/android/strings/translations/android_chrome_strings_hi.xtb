@@ -849,7 +849,7 @@
 <translation id="6203593061661911168">वाई-फ़ाई से कनेक्ट होने पर डाउनलोड होगा</translation>
 <translation id="6210748933810148297">क्या <ph name="EMAIL" /> नहीं हैं?</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
-<translation id="6212786426849242805">Google को कुछ पेजों के टेक्स्ट को ढूंढने की भी अनुमति दें</translation>
+<translation id="6212786426849242805">Google को भी कुछ पेजों के टेक्स्ट को ढूंढने की अनुमति दें</translation>
 <translation id="6221633008163990886">अपने पासवर्ड निर्यात करने के लिए अनलॉक करें</translation>
 <translation id="6232535412751077445">‘नज़र न रखें’ सुविधा को चालू करने का मतलब है कि आपके ब्राउज़िंग ट्रैफ़िक के साथ कोई अनुरोध शामिल किया जाएगा. कोई भी प्रभाव इस बात पर निर्भर करता है कि वेबसाइट, अनुरोध का जवाब देती है या नहीं और अनुरोध को किस तरह समझा जाता है.
 
@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">दूसरी विंडो में खोलें</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यह भाषा डाउनलोड नहीं की जा सकी. कुछ देर बाद कोशिश करें.</translation>
 <translation id="8951232171465285730">Chrome ने आपके <ph name="MEGABYTES" /> एमबी की बचत की</translation>
+<translation id="8955719471735800169">शीर्ष पर वापस जाएं</translation>
 <translation id="8965591936373831584">डाउनलोड बाकी है</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_ONE" /> अन्य टैब बंद हो जाएगा}one{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएगा}other{<ph name="INCOGNITO_TAB_COUNT" /> गुप्त और <ph name="TAB_COUNT_MANY" /> अन्य टैब बंद हो जाएंगे}}</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>

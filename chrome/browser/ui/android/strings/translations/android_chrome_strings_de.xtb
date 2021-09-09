@@ -1322,6 +1322,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8942627711005830162">In anderem Fenster öffnen</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Diese Sprache konnte nicht heruntergeladen werden. Versuchen Sie es später noch einmal.</translation>
 <translation id="8951232171465285730">Dank Chrome haben Sie <ph name="MEGABYTES" /> MB eingespart</translation>
+<translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8965591936373831584">ausstehend</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> Inkognito- und <ph name="TAB_COUNT_ONE" /> weiterer Tab werden geschlossen}other{<ph name="INCOGNITO_TAB_COUNT" /> Inkognito- und <ph name="TAB_COUNT_MANY" /> weitere Tabs werden geschlossen}}</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>

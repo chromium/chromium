@@ -254,7 +254,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentative restante}one{{0} tentative restante}other{{0} tentatives restantes}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossible de finaliser la numérisation</translation>
-<translation id="5502931783115429516">Android non exécuté</translation>
+<translation id="5502931783115429516">Android n'est pas exécuté</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">Activation</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -266,6 +266,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="583281660410589416">Inconnu</translation>
 <translation id="5849570051105887917">Code du fournisseur personnel</translation>
+<translation id="5860033963881614850">Désactivé</translation>
 <translation id="5866840822086176774">Excellent</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5916084858004523819">Interdit</translation>

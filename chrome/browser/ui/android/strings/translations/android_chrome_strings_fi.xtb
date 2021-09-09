@@ -1322,6 +1322,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8942627711005830162">Avaa uudessa ikkunassa</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Kieltä ei voitu ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="8951232171465285730">Chrome on säästänyt <ph name="MEGABYTES" /> Mt tilaa</translation>
+<translation id="8955719471735800169">Sivun alkuun</translation>
 <translation id="8965591936373831584">odottaa</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehti ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehteä ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>

@@ -2610,6 +2610,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="4097556069183835428">Si estableces la política con el valor "None", se desactivará la lupa.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
+<translation id="4098920079809952737">Permitir la impresión con y sin gráficos de fondo</translation>
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
 <translation id="4103289232974211388">Redireccionar al IdP de SAML después de la confirmación del usuario</translation>

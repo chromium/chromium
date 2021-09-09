@@ -1322,6 +1322,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Impossible de télécharger cette langue. Réessayez plus tard.</translation>
 <translation id="8951232171465285730">Chrome vous a permis de gagner <ph name="MEGABYTES" /> Mo</translation>
+<translation id="8955719471735800169">Haut de page</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront supprimés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront supprimés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront supprimés}}</translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>

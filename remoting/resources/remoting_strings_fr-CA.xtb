@@ -79,6 +79,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4512952200932940229">© 2021 Les auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4563926062592110512">Déconnexion du client : <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> n'est pas configuré correctement. Veuillez choisir un autre navigateur Web par défaut, puis réactivez le transfert d'URL.</translation>
 <translation id="4635770493235256822">Appareils distants</translation>
 <translation id="4660011489602794167">Afficher le clavier</translation>
 <translation id="4703799847237267011">Votre session Chromoting a pris fin.</translation>

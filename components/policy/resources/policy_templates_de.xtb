@@ -4188,9 +4188,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6276624383311206185">
       Legt fest, ob WebAssembly-Module ursprungsübergreifend an ein anderes Fenster oder einen anderen Worker gesendet werden können. Das ursprungsübergreifende Teilen von WebAssembly-Modulen wird im Zuge der Einstellung von document.domain ebenfalls eingestellt, siehe https://github.com/mikewest/deprecating-document-domain. Diese Richtlinie ermöglicht es, das ursprungsübergreifende Teilen von WebAssembly-Modulen wieder zu aktivieren, um den Übergangszeitraum zu verlängern.
 
-      Wenn dieser Parameter auf „True“ gesetzt wird, können Websites WebAssembly-Module auch ohne Einschränkungen ursprungsübergreifend senden.
+      Wenn diese Richtlinie auf „True“ gesetzt wird, können Websites WebAssembly-Module auch ohne Einschränkungen ursprungsübergreifend senden.
 
-      Wird er auf „False“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
+      Wird sie auf „False“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
 <translation id="6277314550042130537">Genehmigung der KDC-Richtlinie bei der HTTP-Authentifizierung berücksichtigen</translation>
 <translation id="6279722058145292462">Wenn die Richtlinie konfiguriert ist, wird in Tagen angegeben, wie häufig ein Client das Computerpasswort ändert. Das Passwort wird vom Client zufällig generiert und ist für den Nutzer nicht sichtbar. Eine Deaktivierung dieser Richtlinie oder die Auswahl einer hohen Anzahl von Tagen kann sich negativ auf die Sicherheit auswirken, da potenzielle Angreifer so mehr Zeit haben, das Computerpasswort herauszufinden und missbräuchlich zu verwenden.
 

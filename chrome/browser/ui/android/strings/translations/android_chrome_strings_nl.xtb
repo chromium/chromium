@@ -1322,6 +1322,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="8942627711005830162">Openen in een ander venster</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Deze taal kan niet worden gedownload. Probeer het later opnieuw.</translation>
 <translation id="8951232171465285730">Chrome bespaart je <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8965591936373831584">in behandeling</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>

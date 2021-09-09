@@ -1321,6 +1321,7 @@
 <translation id="8942627711005830162">अर्को विन्डोमा खोल्नुहोस्</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यो भाषा डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8951232171465285730">Chrome ले तपाईंको <ph name="MEGABYTES" /> एम.बि. बचाएको छ</translation>
+<translation id="8955719471735800169">सबैभन्दा माथि फर्कनुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याबका साथै अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="8970887620466824814">केही चिज गडबड भयो।</translation>

@@ -1322,6 +1322,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8942627711005830162">Megnyitás másik ablakban</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Ezt a nyelvet nem lehetett letölteni. Próbálja újra később.</translation>
 <translation id="8951232171465285730">A Chrome <ph name="MEGABYTES" /> MB-ot spórolt meg Önnek</translation>
+<translation id="8955719471735800169">Vissza az oldal tetejére</translation>
 <translation id="8965591936373831584">függőben</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_ONE" /> további lap lesz bezárva}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_MANY" /> további lap lesz bezárva}}</translation>
 <translation id="8970887620466824814">Hiba történt.</translation>

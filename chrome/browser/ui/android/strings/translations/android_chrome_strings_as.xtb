@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Chromeৰ ম্যাদ উকলিছে</translation>
 <translation id="1883903952484604915">মোৰ ফাইল</translation>
 <translation id="189358972401248634">অন্য ভাষা</translation>
+<translation id="1910950723001426294">শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচীখন বন্ধ কৰা হৈছে।</translation>
 <translation id="1918175104945982129">Assistantৰ কণ্ঠধ্বনিৰদ্বাৰা সন্ধানৰ সন্মতিৰ ইউআই অৰ্ধ উচ্চতাত খোল খাইছে</translation>
 <translation id="1919130412786645364">Chromeত ছাইন ইন কৰিব দিয়ক</translation>
 <translation id="1922362554271624559">পৰামৰ্শ হিচাপে আগবঢ়োৱা ভাষাসমূহ</translation>
@@ -193,6 +194,7 @@
 <translation id="2276696007612801991">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ আপোনাৰ Google একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="2278052315791335171">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
+<translation id="228704530595896923">শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচী।</translation>
 <translation id="230115972905494466">খাপ খোৱা কোনো ডিভাইচ বিচাৰি পোৱা নগ’ল</translation>
 <translation id="230155349749732438">এই ছেটিংটো ব্যৱহাৰ কৰিবলৈ <ph name="BEGIN_LINK" />সন্ধান আৰু ব্ৰাউজিং উন্নত কৰক<ph name="END_LINK" /> অন কৰিবই লাগিব</translation>
 <translation id="2318045970523081853">কল কৰিবলৈ টিপক</translation>
@@ -504,6 +506,7 @@
 <translation id="4137746084635924146">বর্তমানৰ ডিভাইচটোৰ ভাষা</translation>
 <translation id="4141536112466364990">Chromeৰ বিষয়ে জানক</translation>
 <translation id="4149994727733219643">ৱেবপৃষ্ঠাৰ বাবে সৰলকৰণ কৰা ভিউ</translation>
+<translation id="4162867837470729563">পূৰ্ণ উচ্চতাত খোলা শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচী।</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
 <translation id="4170011742729630528">সেৱাটো উপলব্ধ নহয়, পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ব্যৱহাৰ কৰা হৈছে</translation>
@@ -846,6 +849,7 @@
 <translation id="6203593061661911168">ডাউনল’ডটো ৱাই-ফাইৰ মাধ্যমেৰে আৰম্ভ হ’ব</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> নহয় নেকি?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন কৰি আছে</translation>
+<translation id="6212786426849242805">Googleক পৃষ্ঠাৰ কিছুমান পাঠ বিবেচনা কৰিবলৈও দিয়ক</translation>
 <translation id="6221633008163990886">আপোনাৰ পাছৱৰ্ড ৰপ্তানি কৰিবলৈ আনলক কৰক</translation>
 <translation id="6232535412751077445">"ট্ৰেক নকৰিব" সুবিধাটো সক্ষম কৰা মানে আপোনাৰ ব্ৰাউজিং ট্ৰেফিকৰ সৈতে এটা অনুৰোধ অন্তর্ভুক্ত কৰা হ’ব। কোনো ৱেবছাইটে অনুৰোধটোক সঁহাৰি জনোৱা বা নজনোৱা আৰু অনুৰোধটো কেনেকৈ কার্যকৰী কৰে তাৰ ওপৰত ফলাফলসমূহ নির্ভৰ কৰে।
 
@@ -895,6 +899,7 @@
 <translation id="6459045781120991510">সমীক্ষা</translation>
 <translation id="6461962085415701688">ফাইল খুলিব পৰা নাই</translation>
 <translation id="6464977750820128603">আপুনি Chromeত চোৱা ছাইটসমূহ চাব পাৰে আৰু সেইবোৰৰ বাবে টাইমাৰ ছেট কৰিব পাৰে।\n\nআপুনি টাইমাৰ ছেট কৰি থোৱা ছাইটসমূহ আৰু লগতে আপুনি কিমান সময় ধৰি সেইসমূহ চায়, Googleএ তাৰ তথ্য লাভ কৰে। এই তথ্যখিনি ডিজিটেল ৱেলবিইঙ-ক উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হয়।</translation>
+<translation id="6473086018775716761">অৰ্ধ উচ্চতাত খোলা শ্বেয়াৰ কৰাৰ বিকল্পৰ সূচী।</translation>
 <translation id="6475951671322991020">ভিডিঅ’ ডাউনল’ড কৰক</translation>
 <translation id="6477928892249167417">এই ছাইটসমূহ আপোনাৰ বাবে গুৰুত্বপূৰ্ণ যেন লাগিছে:</translation>
 <translation id="6482749332252372425">ষ্ট’ৰেজৰ ঠাই কম হোৱাৰ কাৰণে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল৷</translation>
@@ -1131,6 +1136,7 @@
 <translation id="7853202427316060426">কাৰ্যকলাপ</translation>
 <translation id="7857691613771368249">ফাইল কেতিয়া ছেভ কৰিব লাগে সোধক</translation>
 <translation id="7859988229622350291">কেতিয়াও অনুবাদ কৰিব নলগীয়া</translation>
+<translation id="78707286264420418">আপোনাৰ ডিভাইচৰ সৈতে সংযুক্ত হ’বলৈ <ph name="PRODUCT_NAME" />ক নিকটৱৰ্তী ডিভাইচৰ অনুমতিৰ প্ৰয়োজন</translation>
 <translation id="7875915731392087153">ইমেইল সৃষ্টি কৰক</translation>
 <translation id="7876243839304621966">সকলো আঁতৰাওক</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> খন নপঢ়া পৃষ্ঠা আছে}one{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন নপঢ়া পৃষ্ঠা আছে}other{আপোনাৰ <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> খন নপঢ়া পৃষ্ঠা আছে}}</translation>
@@ -1192,6 +1198,7 @@
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>
 <translation id="8189750580333936930">প্ৰাইভেচি ছেণ্ডবক্স</translation>
 <translation id="8190358571722158785">১ দিন বাকী আছে</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপোনাৰ ডিভাইচ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8209050860603202033">ছবি খোলক</translation>
 <translation id="8216351761227087153">চাওক</translation>
@@ -1210,6 +1217,7 @@
 <translation id="829672787777123339">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="8310344678080805313">মান্য টেব</translation>
 <translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
+<translation id="8319544457245040955">পৃষ্ঠাখন এৰি নোযোৱাকৈ বিষয়বস্তু এটাৰ বিষয়ে জানক। সন্ধান কৰিবলৈ পৃষ্ঠাখনত এটা অথবা ততোধিক শব্দ বাছনি কৰক। আপোনাৰ সন্ধানটো সম্পাদনা কৰিবলৈ ফলাফলসমূহ চাওক আৰু সেইবিলাক এটা নতুন টেবত খোলক।</translation>
 <translation id="8327155640814342956">সকলোতকৈ ভালকৈ ব্ৰাউজিং কৰাৰ অভিজ্ঞতা পাবলৈ Chrome আপডে'ট কৰক</translation>
 <translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8349013245300336738">ব্যৱহাৰ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>
@@ -1314,6 +1322,7 @@
 <translation id="8942627711005830162">অন্য উইণ্ড’ত খোলক</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - এই ভাষাটো ডাউনল'ড কৰিব পৰা নগ'ল। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8951232171465285730">Chromeএ আপোনাৰ <ph name="MEGABYTES" /> এমবি ডেটা ৰাহি কৰিছে</translation>
+<translation id="8955719471735800169">ওপৰলৈ যাওক</translation>
 <translation id="8965591936373831584">বিবেচনাধীন হৈ আছে</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_ONE" /> টা টেব বন্ধ কৰা হ’ব}one{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}other{<ph name="INCOGNITO_TAB_COUNT" /> টা ইনক’গনিট’ আৰু <ph name="TAB_COUNT_MANY" /> টা টেব বন্ধ কৰা হ’ব}}</translation>
 <translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>

@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">Άνοιγμα σε άλλο παράθυρο</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Δεν ήταν δυνατή η λήψη αυτής της γλώσσας. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="8951232171465285730">Το Chrome έχει εξοικονομήσει <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Επιστροφή στην κορυφή</translation>
 <translation id="8965591936373831584">σε εκκρεμότητα</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Πρόκειται να κλείσει <ph name="INCOGNITO_TAB_COUNT" /> καρτέλα ανώνυμης περιήγησης και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα.}other{Πρόκειται να κλείσουν <ph name="INCOGNITO_TAB_COUNT" /> καρτέλες ανώνυμης περιήγησης και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες.}}</translation>
 <translation id="8970887620466824814">Προέκυψε πρόβλημα.</translation>

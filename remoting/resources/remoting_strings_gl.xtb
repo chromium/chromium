@@ -79,6 +79,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="4512952200932940229">Copyright 2021, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non se configurou correctamente. Escolle un navegador web predeterminado distinto e, despois, activa o reenvío de URL de novo.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">A túa sesión de Chromoting finalizou.</translation>

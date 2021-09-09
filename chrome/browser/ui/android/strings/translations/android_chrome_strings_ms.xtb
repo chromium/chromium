@@ -1322,6 +1322,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="8942627711005830162">Buka dalam tetingkap lain</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Bahasa ini tidak dapat dimuat turun. Cuba lagi nanti.</translation>
 <translation id="8951232171465285730">Chrome telah menjimatkan data anda sebanyak <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8965591936373831584">belum selesai</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito dan <ph name="TAB_COUNT_ONE" /> lagi tab akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito and <ph name="TAB_COUNT_MANY" /> lagi tab akan ditutup}}</translation>
 <translation id="8970887620466824814">Kesilapan telah berlaku.</translation>

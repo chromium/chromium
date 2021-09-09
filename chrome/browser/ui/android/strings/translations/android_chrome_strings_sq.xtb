@@ -1322,6 +1322,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8942627711005830162">Hap në një dritare tjetër</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Kjo gjuhë nuk mund të shkarkohet. Provo përsëri më vonë.</translation>
 <translation id="8951232171465285730">Chrome të ka kursyer <ph name="MEGABYTES" /> MB</translation>
+<translation id="8955719471735800169">Kthehu në krye</translation>
 <translation id="8965591936373831584">në pritje</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> skedë "e fshehtë" dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="INCOGNITO_TAB_COUNT" /> skeda "të fshehta" dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>

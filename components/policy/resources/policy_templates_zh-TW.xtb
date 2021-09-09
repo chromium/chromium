@@ -2569,6 +2569,7 @@
 <translation id="4097556069183835428">將這項政策設為 None 時，系統會停用放大鏡。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先停用放大鏡，但使用者隨時可以啟用。</translation>
+<translation id="4098920079809952737">不論是否使用背景圖形一律允許列印</translation>
 <translation id="410068710490553233">允許登入其他 Google 帳戶</translation>
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
 <translation id="4103289232974211388">經使用者確認後重新導向 SAML IdP</translation>

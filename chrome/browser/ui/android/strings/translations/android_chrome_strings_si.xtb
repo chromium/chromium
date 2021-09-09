@@ -1322,6 +1322,7 @@
 <translation id="8942627711005830162">වෙනත් කවුළුවක විවෘත කරන්න</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - මෙම භාෂාව බාගැනීමට නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="8951232171465285730">Chrome ඔබට <ph name="MEGABYTES" /> MB සුරැක ඇත</translation>
+<translation id="8955719471735800169">නැවත මුලටම</translation>
 <translation id="8965591936373831584">අපේක්‍ෂිත</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_ONE" />ක් වැසෙනු ඇත}one{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}other{අප්‍රකට ටැබ <ph name="INCOGNITO_TAB_COUNT" />ක් සහ තව ටැබ <ph name="TAB_COUNT_MANY" />ක් වැසෙනු ඇත}}</translation>
 <translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>

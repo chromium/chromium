@@ -1322,6 +1322,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8942627711005830162">Отваряне в другия прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – този език не бе изтеглен. Опитайте отново по-късно.</translation>
 <translation id="8951232171465285730">Chrome ви спести <ph name="MEGABYTES" /> МБ</translation>
+<translation id="8955719471735800169">Обратно в началото</translation>
 <translation id="8965591936373831584">изчаква</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_ONE" />}other{Следните раздели ще бъдат затворени: <ph name="INCOGNITO_TAB_COUNT" /> в режим „инкогнито“ и още <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8970887620466824814">Нещо се обърка.</translation>

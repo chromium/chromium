@@ -2616,6 +2616,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="4097556069183835428">Nếu bạn đặt chính sách này thành None, thì kính lúp sẽ tắt.
 
       Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi được. Nếu bạn không đặt chính sách này, thì ban đầu, kính lúp sẽ tắt, nhưng người dùng có thể bật tính năng này bất cứ lúc nào.</translation>
+<translation id="4098920079809952737">Cho phép in cả khi có và không có hình đồ họa nền</translation>
 <translation id="410068710490553233">Cho phép đăng nhập vào các Tài khoản Google khác</translation>
 <translation id="4101282687722389021">Dấu thời gian UTC cho lần cập nhật mục này gần đây nhất. Được gửi dưới dạng một chuỗi do dấu thời gian không phù hợp trong một số nguyên</translation>
 <translation id="4103289232974211388">Chuyển hướng tới SAML IdP sau khi xác nhận người dùng</translation>

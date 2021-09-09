@@ -230,6 +230,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> மூலம் அன்லாக் செய்</translation>
 <translation id="3207960819495026254">புக்மார்க் செய்யப்பட்டது</translation>
 <translation id="3224641773458703735">கடவுச்சொற்களை ஏற்ற, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
+<translation id="3230318355092723906">ஒத்திசைவு முடக்கப்பட்டிருந்தாலும் இந்தச் சாதனத்திலுள்ள புக்மார்க்குகள், இதுவரை பார்த்தவை, கடவுச்சொற்கள், பிற அமைப்புகள் ஆகிய அனைத்தையும் உங்களால் பார்க்க முடியும். மாற்றங்களைச் செய்தால் அவை உங்கள் கணக்குடன் ஒத்திசைக்கப்படாது.</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">சமீபத்தில் பார்த்தவை</translation>
 <translation id="5988851877894965432">URLகளை Chromeமில் திற</translation>
 <translation id="6012140227487808125">முறைமையாக்குகிறது...</translation>
+<translation id="6020800238007543967">இணைப்பின் மாதிரிக்காட்சியை காட்டு</translation>
 <translation id="6021332621416007159">இதில் திற...</translation>
 <translation id="6036514205982097558">உங்கள் தாவல்கள் அனைத்தும் ஒரே உலாவியில்</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@
 <translation id="6801927553864092214">தனிப்பட்ட முறையில் உலாவ, மறைநிலைத் தாவலைத் திறக்கவும்</translation>
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
+<translation id="681450999322335505">உங்கள் நிறுவனம் ஒத்திசைவை முடக்கியுள்ளது.</translation>
 <translation id="6830804042318138535">மேலும் காட்டு</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">நீங்கள் சேமித்துள்ள கடவுச்சொற்களை எப்போது வேண்டுமானாலும் அணுக இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
@@ -737,6 +740,7 @@
 <translation id="8105368624971345109">முடக்கு</translation>
 <translation id="8114753159095730575">ஃபைலைப் பதிவிறக்கிக்கொள்ளலாம். திரையின் அடிப்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன.</translation>
 <translation id="8156478151976189188">கடவுச்சொல்லை ஒத்திசைக்க முடியவில்லை</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">பக்கத்தை மொழிபெயர்</translation>
 <translation id="8205564605687841303">ரத்துசெய்</translation>
 <translation id="8206354486702514201">இந்த அமைப்பு உங்கள் நிர்வாகியால் செயலாக்கப்பட்டுள்ளது.</translation>

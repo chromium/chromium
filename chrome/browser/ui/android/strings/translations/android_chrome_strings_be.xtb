@@ -1322,6 +1322,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8942627711005830162">Адкрыць у іншым акне</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – не ўдалося спампаваць гэты моўны пакет. Паўтарыце спробу пазней.</translation>
 <translation id="8951232171465285730">Chrome сэканоміў вам <ph name="MEGABYTES" /> МБ</translation>
+<translation id="8955719471735800169">Наверх</translation>
 <translation id="8965591936373831584">у стане чакання</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_ONE" />}one{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}few{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}many{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}other{Будуць закрыты ўкладкі: <ph name="INCOGNITO_TAB_COUNT" /> у рэжыме інкогніта і яшчэ <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>

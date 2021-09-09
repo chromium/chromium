@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4563926062592110512">ক্লায়েণ্টৰ লগত সংযোগ বিচ্ছিন্ন হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাৱে কনফিগাৰ হৈ থকা নাই। অনুগ্ৰহ কৰি এটা পৃথক ডিফ'ল্ট ৱেব ব্ৰাউজাৰ বাছনি কৰক আৰু তাৰ পাছত পুনৰ URL ফৰৱাৰ্ডিং সক্ষম কৰক।</translation>
 <translation id="4635770493235256822">ৰিম’ট ডিভাইচ</translation>
 <translation id="4660011489602794167">কীব’র্ড দেখুৱাওক</translation>
 <translation id="4703799847237267011">আপোনাৰ Chromoting ছেশ্বন অন্ত পৰিছে।</translation>

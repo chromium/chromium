@@ -1322,6 +1322,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8942627711005830162">Mở trong cửa sổ khác</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – Không thể tải ngôn ngữ này xuống. Hãy thử lại sau.</translation>
 <translation id="8951232171465285730">Chrome đã tiết kiệm <ph name="MEGABYTES" /> MB cho bạn</translation>
+<translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8965591936373831584">đang chờ xử lý</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>

@@ -230,6 +230,7 @@
 <translation id="3184767182050912705">通过<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁</translation>
 <translation id="3207960819495026254">已加书签</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
+<translation id="3230318355092723906">关闭同步功能后，您仍可在此设备上查看自己的所有书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="3240426699337459095">已复制链接</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" />，第 <ph name="INDEX" /> 项建议（共 <ph name="NUM_SUGGESTIONS" /> 项）</translation>
@@ -500,6 +501,7 @@
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
 <translation id="6012140227487808125">正在加密…</translation>
+<translation id="6020800238007543967">显示链接预览</translation>
 <translation id="6021332621416007159">打开方式...</translation>
 <translation id="6036514205982097558">使用 1 款浏览器管理您的所有标签页</translation>
 <translation id="6039429417015973673">标题：<ph name="TITLE" />；发布者：<ph name="PUBLISHER_INFORMATION" />；发布日期：<ph name="PUBLICATION_DATE" /></translation>
@@ -607,6 +609,7 @@
 <translation id="6801927553864092214">若要私密地浏览网页，请打开一个无痕式标签页</translation>
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
+<translation id="681450999322335505">贵组织已关闭同步功能。</translation>
 <translation id="6830804042318138535">了解详情</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
@@ -737,6 +740,7 @@
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
 <translation id="8156478151976189188">无法同步密码</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">翻译网页</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>

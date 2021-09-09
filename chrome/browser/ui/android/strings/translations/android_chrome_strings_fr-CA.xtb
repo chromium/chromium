@@ -126,6 +126,7 @@
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
 <translation id="189358972401248634">Autres langues</translation>
+<translation id="1910950723001426294">La liste d'options de partage est fermée.</translation>
 <translation id="1918175104945982129">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant, ouverte à mi-hauteur</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1922362554271624559">Langues suggérées</translation>
@@ -193,6 +194,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
+<translation id="228704530595896923">Liste d'options de partage.</translation>
 <translation id="230115972905494466">Aucun appareil compatible trouvé</translation>
 <translation id="230155349749732438">Pour utiliser ce paramètre, vous devez activer l'option <ph name="BEGIN_LINK" />Améliorer les recherches et la navigation<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Touchez ici pour faire un appel</translation>
@@ -504,6 +506,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="4141536112466364990">Découvrez Chrome</translation>
 <translation id="4149994727733219643">Affichage simplifié pour les pages Web</translation>
+<translation id="4162867837470729563">Liste d'options de partage à pleine hauteur.</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
 <translation id="4170011742729630528">Le service n'est pas disponible. Veuillez réessayer plus tard.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> utilisé(s)</translation>
@@ -846,6 +849,7 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6203593061661911168">Le téléchargement commencera lorsque vous serez connecté à un réseau Wi-Fi</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
+<translation id="6212786426849242805">Autorisez Google à tenir compte d'une partie du texte de la page</translation>
 <translation id="6221633008163990886">Déverrouillez pour exporter vos mots de passe</translation>
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
@@ -895,6 +899,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6459045781120991510">Sondages</translation>
 <translation id="6461962085415701688">Impossible d'ouvrir le fichier</translation>
 <translation id="6464977750820128603">Vous pouvez afficher les sites que vous avez visités dans Chrome et définir des minuteries pour ceux-ci.\n\nGoogle collecte des renseignements sur les sites pour lesquels vous définissez des minuteries et peut déterminer le temps que vous passez sur ces derniers. Ces données sont utilisées pour améliorer Bien-être numérique.</translation>
+<translation id="6473086018775716761">Liste d'options de partage ouverte à mi-hauteur.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
 <translation id="6477928892249167417">Ces sites semblent importants pour vous :</translation>
 <translation id="6482749332252372425">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'un manque d'espace de stockage.</translation>
@@ -1131,6 +1136,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7857691613771368249">Demander quand enregistrer les fichiers</translation>
 <translation id="7859988229622350291">Ne jamais traduire les pages rédigées en</translation>
+<translation id="78707286264420418"><ph name="PRODUCT_NAME" /> a besoin de l'autorisation Appareils à proximité pour se connecter à votre appareil</translation>
 <translation id="7875915731392087153">Créer un courriel</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7879130110979560610">{READING_LIST_REMINDER_NOTIFICATION_SUBTITLE,plural, =1{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE" /> page non lue}one{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> page non lue}other{Vous avez <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY" /> pages non lues}}</translation>
@@ -1192,6 +1198,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8189750580333936930">Bac à sable de confidentialité</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vos appareils<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8216351761227087153">Visionner</translation>
@@ -1210,6 +1217,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="829672787777123339">Connexion à votre appareil en cours…</translation>
 <translation id="8310344678080805313">Onglets standard</translation>
 <translation id="831192587911042850">Ajoute le site Web actuel à la liste des sites Web que vous suivez.</translation>
+<translation id="8319544457245040955">Apprenez-en plus à propos d'un sujet sans quitter la page. Sélectionnez au moins un mot sur la page pour le rechercher. Pour modifier votre recherche, ouvrez les résultats dans un nouvel onglet pour les consulter.</translation>
 <translation id="8327155640814342956">Pour profiter d'une expérience de navigation optimale, ouvrez Chrome afin de le mettre à jour</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8349013245300336738">Trier par quantité de données utilisées</translation>
@@ -1314,6 +1322,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
 <translation id="8951232171465285730">Chrome vous a fait économiser <ph name="MEGABYTES" /> Mo</translation>
+<translation id="8955719471735800169">Retour en haut de la page</translation>
 <translation id="8965591936373831584">en attente</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_ONE" /> autre onglet seront fermés}one{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autre onglet seront fermés}other{<ph name="INCOGNITO_TAB_COUNT" /> onglet de navigation privée et <ph name="TAB_COUNT_MANY" /> autres onglets seront fermés}}</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>

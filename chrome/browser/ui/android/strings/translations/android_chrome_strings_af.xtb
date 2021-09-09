@@ -1322,6 +1322,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8942627711005830162">Maak in 'n ander venster oop</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – hierdie taal kon nie afgelaai word nie. Probeer later weer.</translation>
 <translation id="8951232171465285730">Chrome het vir jou <ph name="MEGABYTES" /> MB bespaar</translation>
+<translation id="8955719471735800169">Terug na bo</translation>
 <translation id="8965591936373831584">hangende</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_ONE" /> oortjie sal toegemaak word}other{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_MANY" /> oortjies sal toegemaak word}}</translation>
 <translation id="8970887620466824814">Iets is fout.</translation>

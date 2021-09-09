@@ -102,6 +102,7 @@
 <translation id="3102119246920354026">কেশ্ব</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
+<translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বৰৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে…</translation>
 <translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="3188257591659621405">মোৰ ফাইলসমূহ</translation>
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
@@ -157,6 +158,7 @@
 <translation id="4227825898293920515">পাছৱর্ডৰ ম্যাদ উকলাৰ সময় <ph name="TIME" /></translation>
 <translation id="4238516577297848345">কোনো প্ৰিণ্টৰ কাম চলি থকা নাই</translation>
 <translation id="4244962993387259361">মেম’ৰী পৰীক্ষাটো চলাবলৈ আপোনাক অতি কমেও ৫০০ এমবি খালী ঠাই লাগিব। ঠাই খালী কৰিবলৈ, ছেটিং &gt; ষ্ট’ৰেজ পৰিচালনালৈ যাওক</translation>
+<translation id="4258281355379922695">HTTPৰ বিলম্বতা</translation>
 <translation id="4289540628985791613">ৰূপৰেখা</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
@@ -181,6 +183,7 @@
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
+<translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
 <translation id="4654549501020883054">দৈনিক সলনি কৰক</translation>
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
@@ -251,6 +254,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} টা প্ৰয়াস বাকী আছে}one{{0} টা প্ৰয়াস বাকী আছে}other{{0} টা প্ৰয়াস বাকী আছে}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">স্কেন সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>
+<translation id="5502931783115429516">Android চলি থকা নাই</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
@@ -258,9 +262,11 @@
 <translation id="5701381305118179107">কেন্দ্ৰ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /></translation>
 <translation id="5760715441271661976">প’ৰ্টেল ষ্টে’ট</translation>
+<translation id="5784136236926853061">HTTPৰ উচ্চ বিলম্বতা</translation>
 <translation id="5832805196449965646">অন্য লোক যোগ কৰক</translation>
 <translation id="583281660410589416">অজ্ঞাত</translation>
 <translation id="5849570051105887917">হোম প্ৰদানকাৰীৰ ক’ড</translation>
+<translation id="5860033963881614850">অফ আছে</translation>
 <translation id="5866840822086176774">যথেষ্ট ভাল</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
@@ -349,6 +355,7 @@
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">HTTPৰ অতি উচ্চ বিলম্বতা</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
@@ -356,6 +363,7 @@
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
 <translation id="7497215489070763236">ছার্ভাৰ CA প্ৰমাণপত্ৰ</translation>
 <translation id="7502658306369382406">IPv6 ঠিকনা</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">ডায়গন’ষ্টিক ৰুটিন</translation>
 <translation id="7561454561030345039">এই কাৰ্যটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
