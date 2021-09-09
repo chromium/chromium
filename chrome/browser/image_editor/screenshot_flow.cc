@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
@@ -137,6 +138,8 @@ void ScreenshotFlow::RemoveUIOverlay() {
 
 void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
   flow_callback_ = std::move(flow_callback);
+  web_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+      web_contents_.get(), this);
 #if defined(OS_MAC)
   const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
   gfx::Image img;
@@ -164,6 +167,8 @@ void ScreenshotFlow::Start(ScreenshotCaptureCallback flow_callback) {
 void ScreenshotFlow::StartFullscreenCapture(
     ScreenshotCaptureCallback flow_callback) {
   flow_callback_ = std::move(flow_callback);
+  web_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+      web_contents_.get(), this);
 #if defined(OS_MAC)
   const gfx::NativeView& native_view = web_contents_->GetContentNativeView();
   gfx::Image img;
@@ -186,6 +191,10 @@ void ScreenshotFlow::StartFullscreenCapture(
                               gfx::Rect(web_contents_->GetSize()),
                               std::move(screenshot_callback));
 #endif
+}
+
+void ScreenshotFlow::CancelCapture() {
+  CompleteCapture(gfx::Rect());
 }
 
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
@@ -341,5 +350,30 @@ void ScreenshotFlow::SetCursor(ui::mojom::CursorType cursor_type) {
     host->SetCursor(cursor);
   }
 }
+
+// UnderlyingWebContentsObserver monitors the WebContents and exits screen
+// capture mode if a navigation occurs.
+class ScreenshotFlow::UnderlyingWebContentsObserver
+    : public content::WebContentsObserver {
+ public:
+  UnderlyingWebContentsObserver(content::WebContents* web_contents,
+                                ScreenshotFlow* screenshot_flow)
+      : content::WebContentsObserver(web_contents),
+        screenshot_flow_(screenshot_flow) {}
+
+  ~UnderlyingWebContentsObserver() override = default;
+
+  UnderlyingWebContentsObserver(const UnderlyingWebContentsObserver&) = delete;
+  UnderlyingWebContentsObserver& operator=(
+      const UnderlyingWebContentsObserver&) = delete;
+
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override {
+    screenshot_flow_->CancelCapture();
+  }
+
+ private:
+  ScreenshotFlow* screenshot_flow_;
+};
 
 }  // namespace image_editor

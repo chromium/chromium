@@ -74,7 +74,12 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
   // a region selected by the user.
   void StartFullscreenCapture(ScreenshotCaptureCallback flow_callback);
 
+  // Exits capture mode without running any callbacks.
+  void CancelCapture();
+
  private:
+  class UnderlyingWebContentsObserver;
+
   // ui:EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -124,6 +129,9 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
 
   // Web Contents that we are capturing.
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Observer for |web_contents_|.
+  std::unique_ptr<UnderlyingWebContentsObserver> web_contents_observer_;
 
   // Callback provided to Start().
   ScreenshotCaptureCallback flow_callback_;
