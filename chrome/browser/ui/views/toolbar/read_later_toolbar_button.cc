@@ -88,6 +88,7 @@ class ReadLaterSidePanelWebView : public views::WebView,
   // BubbleContentsWrapper::Host:
   void ShowUI() override {
     SetVisible(true);
+    RequestFocus();
     UpdateActiveURL(browser_->tab_strip_model()->GetActiveWebContents());
   }
   void CloseUI() override { close_cb_.Run(); }
