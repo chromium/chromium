@@ -25,9 +25,6 @@ gfx::NativeWindow DesktopScreenOzone::GetNativeWindowFromAcceleratedWidget(
       widget);
 }
 
-// To avoid multiple definitions when use_x11 && use_ozone is true, disable this
-// factory method for OS_LINUX as Linux has a factory method that decides what
-// screen to use based on IsUsingOzonePlatform feature flag.
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 std::unique_ptr<display::Screen> CreateDesktopScreen() {
   return std::make_unique<aura::ScreenOzone>();

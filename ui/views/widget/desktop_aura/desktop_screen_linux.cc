@@ -3,24 +3,15 @@
 // found in the LICENSE file.
 
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-
 #include "base/notreached.h"
-
-#if defined(USE_X11)
-#include "ui/views/widget/desktop_aura/desktop_screen_x11.h"
-#endif
-
-#if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/platform_screen.h"
 #include "ui/views/linux_ui/device_scale_factor_observer.h"
 #include "ui/views/linux_ui/linux_ui.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_ozone.h"
-#endif
 
 namespace views {
 
-#if defined(USE_OZONE)
 // Listens to device scale factor changes that can be provided via "external" to
 // Ozone sources such as toolkits, etc, and provides Ozone with new values.
 class DesktopScreenOzoneLinux : public DesktopScreenOzone,
@@ -56,21 +47,8 @@ class DesktopScreenOzoneLinux : public DesktopScreenOzone,
       display_scale_factor_observer_{this};
 };
 
-#endif
-
 std::unique_ptr<display::Screen> CreateDesktopScreen() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    return std::make_unique<DesktopScreenOzoneLinux>();
-#endif
-#if defined(USE_X11)
-  auto screen = std::make_unique<DesktopScreenX11>();
-  screen->Init();
-  return screen;
-#else
-  NOTREACHED();
-  return nullptr;
-#endif
+  return std::make_unique<DesktopScreenOzoneLinux>();
 }
 
 }  // namespace views

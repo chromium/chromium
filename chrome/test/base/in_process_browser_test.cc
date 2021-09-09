@@ -111,10 +111,6 @@
 #include "ui/events/test/event_generator.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_X11)
-#include "ui/views/test/test_desktop_screen_x11.h"
-#endif
-
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -511,16 +507,6 @@ void InProcessBrowserTest::AddTabAtIndex(int index,
 
 bool InProcessBrowserTest::SetUpUserDataDirectory() {
   return true;
-}
-
-void InProcessBrowserTest::SetScreenInstance() {
-#if defined(USE_X11) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!features::IsUsingOzonePlatform()) {
-    DCHECK(!display::Screen::GetScreen());
-    display::Screen::SetScreenInstance(
-        views::test::TestDesktopScreenX11::GetInstance());
-  }
-#endif
 }
 
 #if !defined(OS_MAC)

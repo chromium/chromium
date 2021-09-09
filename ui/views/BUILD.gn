@@ -805,8 +805,6 @@ component("views") {
           "//ui/base/x",
           "//ui/platform_window/x11",
         ]
-        public += [ "widget/desktop_aura/desktop_screen_x11.h" ]
-        sources += [ "widget/desktop_aura/desktop_screen_x11.cc" ]
       } else if (is_win) {
         public += [ "widget/desktop_aura/desktop_window_tree_host_win.h" ]
         sources += [
@@ -1056,8 +1054,6 @@ source_set("test_support") {
     ]
     if (use_x11) {
       sources += [
-        "test/test_desktop_screen_x11.cc",
-        "test/test_desktop_screen_x11.h",
         "test/ui_controls_factory_desktop_aurax11.cc",
         "test/ui_controls_factory_desktop_aurax11.h",
       ]
@@ -1368,10 +1364,7 @@ test("views_unittests") {
         "widget/desktop_widget_unittest.cc",
       ]
       if (use_x11) {
-        sources += [
-          "widget/desktop_aura/desktop_screen_x11_unittest.cc",
-          "widget/desktop_aura/x11_drag_drop_client_unittest.cc",
-        ]
+        sources += [ "widget/desktop_aura/x11_drag_drop_client_unittest.cc" ]
         deps += [
           "//ui/base/x",
           "//ui/base/x:test_support",
