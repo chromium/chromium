@@ -48258,6 +48258,7 @@ from previous Chrome versions.
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
   <int value="-1272593346" label="NewTabLoadingAnimation:disabled"/>
+  <int value="-1271921284" label="WebViewThreadSafeMedia:enabled"/>
   <int value="-1271563519" label="enable-appcontainer"/>
   <int value="-1271441871" label="AmbientColor:enabled"/>
   <int value="-1270634957" label="PhoneHubUseBle:enabled"/>
@@ -49455,6 +49456,7 @@ from previous Chrome versions.
   <int value="-322827131" label="tab-management-experiment-type-basil"/>
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>
+  <int value="-317758331" label="WebViewThreadSafeMedia:disabled"/>
   <int value="-317195508" label="TabGroupsContinuationAndroid:disabled"/>
   <int value="-315741215"
       label="IntentBlockExternalFormRedirectsNoGesture:enabled"/>

@@ -42,6 +42,10 @@ absl::optional<VideoFrameMetadata::CopyMode> GetVideoFrameCopyMode(
   if (!enable_threaded_texture_mailboxes)
     return absl::nullopt;
 
+  // If we can run thread-safe, we don't need to copy.
+  if (features::NeedThreadSafeAndroidMedia())
+    return absl::nullopt;
+
   return features::IsWebViewZeroCopyVideoEnabled()
              ? VideoFrameMetadata::CopyMode::kCopyMailboxesOnly
              : VideoFrameMetadata::CopyMode::kCopyToNewTexture;

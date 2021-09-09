@@ -92,9 +92,9 @@ void CodecImage::ReleaseTexImage(unsigned target) {}
 bool CodecImage::CopyTexImage(unsigned target) {
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
-  // This method is only called for SurfaceTexture implementation for which DrDc
-  // is disabled.
-  DCHECK(!features::IsDrDcEnabled());
+  // This method is only called for SurfaceTexture implementation which can't be
+  // thread-safe.
+  DCHECK(!features::NeedThreadSafeAndroidMedia());
 
   TRACE_EVENT0("media", "CodecImage::CopyTexImage");
   DCHECK_EQ(COPY, ShouldBindOrCopy());

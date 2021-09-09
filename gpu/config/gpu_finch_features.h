@@ -68,6 +68,7 @@ GPU_EXPORT extern const base::Feature kWebGPUService;
 
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
+GPU_EXPORT bool NeedThreadSafeAndroidMedia();
 GPU_EXPORT bool IsANGLEValidationEnabled();
 
 #if defined(OS_ANDROID)

@@ -98,6 +98,8 @@ public final class ProductionSupportedFlagList {
                             + "support."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_ZERO_COPY_VIDEO,
                     "Avoid extra copy for video frames when possible"),
+            Flag.baseFeature(GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
+                    "Use thread-safe media path, requires Android P."),
             Flag.baseFeature(
                     VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
             Flag.baseFeature(

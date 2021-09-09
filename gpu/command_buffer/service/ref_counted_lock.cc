@@ -11,10 +11,9 @@ namespace gpu {
 RefCountedLockHelperDrDc::RefCountedLockHelperDrDc(
     scoped_refptr<RefCountedLock> lock)
     : lock_(std::move(lock)) {
-  // |lock_| should be present if DrDc feature is enabled and it should not
-  // be present if feature is disabled.
-  DCHECK((features::IsDrDcEnabled() && lock_) ||
-         (!features::IsDrDcEnabled() && !lock_));
+  // |lock_| should be present if Android Media code needs to be thread-safe and
+  // not present otherwise.
+  DCHECK_EQ(features::NeedThreadSafeAndroidMedia(), !!lock_);
 }
 
 RefCountedLockHelperDrDc::~RefCountedLockHelperDrDc() = default;

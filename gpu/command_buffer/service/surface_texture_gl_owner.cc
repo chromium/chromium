@@ -58,7 +58,7 @@ SurfaceTextureGLOwner::SurfaceTextureGLOwner(
       surface_(gl::GLSurface::GetCurrent()) {
   DCHECK(context_);
   DCHECK(surface_);
-  DCHECK(!features::IsDrDcEnabled());
+  DCHECK(!features::NeedThreadSafeAndroidMedia());
 }
 
 SurfaceTextureGLOwner::~SurfaceTextureGLOwner() {
