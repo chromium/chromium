@@ -260,6 +260,8 @@ bool FieldTrial::FieldTrialEntry::ReadStringPair(
 }
 
 void FieldTrial::Disable() {
+  // Group choice has already been reported to observers so we can't disable
+  // the study.
   DCHECK(!group_reported_);
   enable_field_trial_ = false;
 

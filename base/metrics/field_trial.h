@@ -189,19 +189,18 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   FieldTrial(const FieldTrial&) = delete;
   FieldTrial& operator=(const FieldTrial&) = delete;
 
-  // Disables this trial, meaning it always determines the default group
-  // has been selected. May be called immediately after construction, or
-  // at any time after initialization (should not be interleaved with
-  // AppendGroup calls). Once disabled, there is no way to re-enable a
-  // trial.
-  // TODO(mad): http://code.google.com/p/chromium/issues/detail?id=121446
-  // This doesn't properly reset to Default when a group was forced.
+  // Disables this trial, meaning the default group is always selected. May be
+  // called immediately after construction or at any time after initialization;
+  // however, it cannot be called after group(). Once disabled, there is no way
+  // to re-enable a trial.
   void Disable();
 
-  // Establish the name and probability of the next group in this trial.
+  // Establishes the name and probability of the next group in this trial.
   // Sometimes, based on construction randomization, this call may cause the
   // provided group to be *THE* group selected for use in this instance.
-  // The return value is the group number of the new group.
+  // The return value is the group number of the new group. AppendGroup can be
+  // called after calls to group() but it should be avoided if possible. Doing
+  // so may be confusing since it won't change the group selection.
   int AppendGroup(const std::string& name, Probability group_probability);
 
   // Return the name of the FieldTrial (excluding the group name).
