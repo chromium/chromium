@@ -973,6 +973,11 @@ std::u16string TabHoverCardBubbleView::GetDomainTextForTesting() const {
 
 // static
 absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
+  // For consistency, always bail out with a "don't crossfade" response if
+  // animations are disabled.
+  if (!TabHoverCardController::UseAnimations())
+    return absl::nullopt;
+
   static const double start_percent = base::GetFieldTrialParamByFeatureAsDouble(
       features::kTabHoverCardImages,
       features::kTabHoverCardImagesCrossfadePreviewAtParameterName, 0.25);

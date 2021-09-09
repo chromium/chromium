@@ -158,6 +158,12 @@ bool TabHoverCardController::AreHoverCardImagesEnabled() {
   return base::FeatureList::IsEnabled(features::kTabHoverCardImages);
 }
 
+// static
+bool TabHoverCardController::UseAnimations() {
+  return !disable_animations_for_testing_ &&
+         gfx::Animation::ShouldRenderRichAnimation();
+}
+
 bool TabHoverCardController::IsHoverCardVisible() const {
   return hover_card_ != nullptr && hover_card_->GetWidget() &&
          !hover_card_->GetWidget()->IsClosed();
@@ -335,12 +341,6 @@ void TabHoverCardController::HideHoverCard() {
 
   metrics_->CardFadingOut();
   fade_animator_->FadeOut();
-}
-
-// static
-bool TabHoverCardController::UseAnimations() {
-  return !disable_animations_for_testing_ &&
-         gfx::Animation::ShouldRenderRichAnimation();
 }
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
