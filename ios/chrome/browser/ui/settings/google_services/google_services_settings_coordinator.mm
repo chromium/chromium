@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -50,9 +48,7 @@ using signin_metrics::PromoAction;
 
 @interface GoogleServicesSettingsCoordinator () <
     GoogleServicesSettingsCommandHandler,
-    GoogleServicesSettingsViewControllerPresentationDelegate,
-    ManageSyncSettingsCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler>
+    GoogleServicesSettingsViewControllerPresentationDelegate>
 
 // Google services settings mediator.
 @property(nonatomic, strong) GoogleServicesSettingsMediator* mediator;
@@ -65,15 +61,6 @@ using signin_metrics::PromoAction;
 // View controller presented by this coordinator.
 @property(nonatomic, strong, readonly)
     GoogleServicesSettingsViewController* googleServicesSettingsViewController;
-// Coordinator to present the manage sync settings.
-@property(nonatomic, strong)
-    ManageSyncSettingsCoordinator* manageSyncSettingsCoordinator;
-// YES if stop has been called.
-@property(nonatomic, assign) BOOL stopDone;
-// YES if the last sign-in has been interrupted. In that case, the sync UI will
-// be dismissed and the sync setup flag should not be marked as done. The sync
-// should be kept undecided, not marked as disabled.
-@property(nonatomic, assign) BOOL signinInterrupted;
 // Action sheets that provides options for sign out.
 @property(nonatomic, strong) ActionSheetCoordinator* signOutCoordinator;
 @property(nonatomic, strong)
@@ -93,11 +80,6 @@ using signin_metrics::PromoAction;
   return self;
 }
 
-- (void)dealloc {
-  // -[GoogleServicesSettingsCoordinator stop] needs to be called explicitly.
-  DCHECK(self.stopDone);
-}
-
 - (void)start {
   GoogleServicesSettingsViewController* viewController =
       [[GoogleServicesSettingsViewController alloc]
@@ -115,9 +97,6 @@ using signin_metrics::PromoAction;
   self.mediator.identityManager = IdentityManagerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
-  self.mediator.syncErrorHandler = self;
-  self.mediator.syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   viewController.modelDelegate = self.mediator;
   viewController.serviceDelegate = self.mediator;
   viewController.dispatcher = static_cast<
@@ -126,22 +105,6 @@ using signin_metrics::PromoAction;
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
-}
-
-- (void)stop {
-  if (self.stopDone) {
-    return;
-  }
-  // Sync changes should only be commited if the user is authenticated and
-  // the sign-in has not been interrupted.
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      !self.signinInterrupted) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    syncSetupService->CommitSyncChanges();
-  }
-  self.stopDone = YES;
 }
 
 #pragma mark - Private
@@ -169,103 +132,7 @@ using signin_metrics::PromoAction;
       self.browser->GetBrowserState());
 }
 
-#pragma mark - SyncErrorSettingsCommandHandler
-
-- (void)restartAuthenticationFlow {
-  ChromeIdentity* authenticatedIdentity =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  [self.googleServicesSettingsViewController preventUserInteraction];
-  DCHECK(!self.authenticationFlow);
-  self.authenticationFlow =
-      [[AuthenticationFlow alloc] initWithBrowser:self.browser
-                                         identity:authenticatedIdentity
-                                  shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
-                                 postSignInAction:POST_SIGNIN_ACTION_START_SYNC
-                         presentingViewController:self.viewController];
-  self.authenticationFlow.dispatcher = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  __weak GoogleServicesSettingsCoordinator* weakSelf = self;
-  [self.authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    // TODO(crbug.com/889919): Needs to add histogram for |success|.
-    [weakSelf authenticationFlowDidComplete];
-  }];
-}
-
-- (void)openReauthDialogAsSyncIsInAuthError {
-  ChromeIdentity* identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
-    self.authService->ShowMDMErrorDialogForIdentity(identity);
-    return;
-  }
-  // Sync enters in a permanent auth error state when fetching an access token
-  // fails with invalid credentials. This corresponds to Gaia responding with an
-  // "invalid grant" error. The current implementation of the iOS SSOAuth
-  // library user by Chrome removes the identity from the device when receiving
-  // an "invalid grant" response, which leads to the account being also signed
-  // out of Chrome. So the sync permanent auth error is a transient state on
-  // iOS. The decision was to avoid handling this error in the UI, which means
-  // that the reauth dialog is not actually presented on iOS.
-}
-
-- (void)openPassphraseDialog {
-  SyncEncryptionPassphraseTableViewController* controller =
-      [[SyncEncryptionPassphraseTableViewController alloc]
-          initWithBrowser:self.browser];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  controller.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
-  [self.baseNavigationController pushViewController:controller animated:YES];
-}
-
-- (void)openTrustedVaultReauthForFetchKeys {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
-  [applicationCommands
-      showTrustedVaultReauthForFetchKeysFromViewController:
-          self.googleServicesSettingsViewController
-                                                   trigger:
-                                                       syncer::
-                                                           TrustedVaultUserActionTriggerForUMA::
-                                                               kSettings];
-}
-
-- (void)openTrustedVaultReauthForDegradedRecoverability {
-  id<ApplicationCommands> applicationCommands =
-      static_cast<id<ApplicationCommands>>(
-          self.browser->GetCommandDispatcher());
-  [applicationCommands
-      showTrustedVaultReauthForDegradedRecoverabilityFromViewController:
-          self.viewController
-                                                                trigger:
-                                                                    syncer::TrustedVaultUserActionTriggerForUMA::
-                                                                        kSettings];
-}
-
 #pragma mark - GoogleServicesSettingsCommandHandler
-
-- (void)showSignIn {
-  __weak __typeof(self) weakSelf = self;
-  DCHECK(self.handler);
-  signin_metrics::RecordSigninUserActionForAccessPoint(
-      AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS,
-      PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_SIGNIN
-               identity:nil
-            accessPoint:AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS
-            promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(BOOL success) {
-                 [weakSelf signinFinishedWithSuccess:success];
-               }];
-  [self.handler showSignin:command
-        baseViewController:self.googleServicesSettingsViewController];
-}
 
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion {
@@ -363,62 +230,12 @@ using signin_metrics::PromoAction;
       });
 }
 
-- (void)signinFinishedWithSuccess:(BOOL)success {
-  // TODO(crbug.com/1101346): SigninCoordinatorResult should be received instead
-  // of guessing if the sign-in has been interrupted.
-  ChromeIdentity* primaryAccount =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  self.signinInterrupted = !success && primaryAccount;
-}
-
-- (void)openAccountSettings {
-  AccountsTableViewController* controller =
-      [[AccountsTableViewController alloc] initWithBrowser:self.browser
-                                 closeSettingsOnAddAccount:NO];
-  controller.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
-  [self.baseNavigationController pushViewController:controller animated:YES];
-}
-
-- (void)openManageSyncSettings {
-  DCHECK(!self.manageSyncSettingsCoordinator);
-  self.manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
-  self.manageSyncSettingsCoordinator.delegate = self;
-  [self.manageSyncSettingsCoordinator start];
-}
-
-- (void)openManageGoogleAccount {
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->PresentAccountDetailsController(
-          self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin),
-          self.googleServicesSettingsViewController, /*animated=*/YES);
-}
-
 #pragma mark - GoogleServicesSettingsViewControllerPresentationDelegate
 
 - (void)googleServicesSettingsViewControllerDidRemove:
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.viewController, controller);
   [self.delegate googleServicesSettingsCoordinatorDidRemove:self];
-}
-
-#pragma mark - ManageSyncSettingsCoordinatorDelegate
-
-- (void)manageSyncSettingsCoordinatorWasRemoved:
-    (ManageSyncSettingsCoordinator*)coordinator {
-  DCHECK_EQ(self.manageSyncSettingsCoordinator, coordinator);
-  [self.manageSyncSettingsCoordinator stop];
-  self.manageSyncSettingsCoordinator = nil;
-}
-
-- (NSString*)manageSyncSettingsCoordinatorTitle {
-  return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
 }
 
 @end

@@ -19,10 +19,6 @@ class ChromeAccountManagerService;
 class PrefService;
 @protocol SyncErrorSettingsCommandHandler;
 
-namespace syncer {
-class SyncService;
-}  // namespace syncer
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -39,10 +35,6 @@ class IdentityManager;
 // Command handler.
 @property(nonatomic, weak) id<GoogleServicesSettingsCommandHandler>
     commandHandler;
-// Sync error handler.
-@property(nonatomic, weak) id<SyncErrorSettingsCommandHandler> syncErrorHandler;
-// Sync service.
-@property(nonatomic, assign) syncer::SyncService* syncService;
 // Identity manager;
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 

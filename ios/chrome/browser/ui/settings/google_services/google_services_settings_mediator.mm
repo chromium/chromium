@@ -13,7 +13,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "ios/chrome/browser/application_context.h"
@@ -31,7 +30,6 @@
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
@@ -105,11 +103,7 @@ bool IsSigninControllableByUser() {
 
 @interface GoogleServicesSettingsMediator () <
     BooleanObserver,
-    ChromeAccountManagerServiceObserver,
-    IdentityManagerObserverBridgeDelegate> {
-  // Identity manager observer.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityManagerObserverBridge;
+    ChromeAccountManagerServiceObserver> {
   // account manager observer.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
@@ -117,15 +111,6 @@ bool IsSigninControllableByUser() {
 
 // Returns YES if the user is authenticated.
 @property(nonatomic, assign, readonly) BOOL hasPrimaryIdentity;
-// Account item.
-@property(nonatomic, strong) TableViewAccountItem* accountItem;
-// ** Sync section.
-// YES if the impression of the Signin cell has already been recorded.
-@property(nonatomic, assign) BOOL hasRecordedSigninImpression;
-// Sync error item (in the sync section).
-@property(nonatomic, strong) TableViewItem* syncErrorItem;
-// Sync your Chrome data switch item.
-@property(nonatomic, strong) SyncSwitchItem* syncChromeDataSwitchItem;
 // ** Non personalized section.
 // Preference value for the "Allow Chrome Sign-in" feature.
 @property(nonatomic, strong, readonly)
@@ -516,8 +501,6 @@ bool IsSigninControllableByUser() {
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
   [self loadNonPersonalizedSection];
-  _identityManagerObserverBridge.reset(
-      new signin::IdentityManagerObserverBridge(self.identityManager, self));
   _accountManagerServiceObserver.reset(
       new ChromeAccountManagerServiceObserverBridge(
           self, self.accountManagerService));
@@ -579,20 +562,6 @@ bool IsSigninControllableByUser() {
     case BetterSearchAndBrowsingManagedItemType:
     case ImproveChromeManagedItemType:
       NOTREACHED();
-      break;
-  }
-}
-
-#pragma mark - IdentityManagerObserverBridgeDelegate
-
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      [self updateLeakCheckItemAndReload];
-      break;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
 }

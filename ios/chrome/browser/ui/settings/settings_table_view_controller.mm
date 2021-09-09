@@ -1401,7 +1401,6 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       [[GoogleServicesSettingsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:_browser];
-  _googleServicesSettingsCoordinator.handler = self.dispatcher;
   _googleServicesSettingsCoordinator.delegate = self;
   [_googleServicesSettingsCoordinator start];
 }

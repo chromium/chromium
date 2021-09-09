@@ -30,8 +30,6 @@
 // Delegate.
 @property(nonatomic, weak) id<GoogleServicesSettingsCoordinatorDelegate>
     delegate;
-// Presenter which can show signin UI.
-@property(nonatomic, strong) id<ApplicationCommands> handler;
 // Whether the Google services settings view is at the top of the navigation
 // stack. This does not necessarily mean the view is displayed to the user since
 // it can be obstructed by views that are not owned by the navigation stack
