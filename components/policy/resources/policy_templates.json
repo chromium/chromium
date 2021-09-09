@@ -26924,7 +26924,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           'force_enabled'
         ],
       },
-      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      'supported_on': ['chrome.*:94-', 'chrome_os:94-', 'android:94-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
