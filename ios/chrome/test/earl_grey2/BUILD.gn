@@ -74,7 +74,6 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/autofill:eg2_tests",
-    "//ios/chrome/browser/context_menu:eg2_tests",
     "//ios/chrome/browser/device_sharing:eg2_tests",
     "//ios/chrome/browser/feature_engagement:eg2_tests",
     "//ios/chrome/browser/metrics:eg2_tests",
@@ -88,6 +87,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/ui/autofill:eg2_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
+    "//ios/chrome/browser/ui/context_menu:eg2_tests",
     "//ios/chrome/browser/ui/default_promo:eg2_tests",
     "//ios/chrome/browser/ui/integration_tests:eg2_tests",
     "//ios/chrome/browser/variations:eg2_tests",

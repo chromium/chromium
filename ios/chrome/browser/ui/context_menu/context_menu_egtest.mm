@@ -80,6 +80,25 @@ const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
 
+// URL to a page with a link with a javascript: scheme.
+const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
+// HTML content of a page with a javascript link.
+const char kJavaScriptPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
+    "style='margin-left:150px' href=\"javascript:alert('test')\" id='link'>"
+    "link</a></body></html>";
+
+// URL to a page with a link with a magnet scheme.
+const char kMagnetPageUrl[] = "/scenarionContextMenuMagnet";
+// HTML content of a page with a magnet link.
+const char kMagnetPageHtml[] =
+    "<html><head><meta name='viewport' content='width=device-width, "
+    "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
+    "style='margin-left:150px' "
+    "href='magnet:?xt=urn:btih:c12fe1c06bba254a9dc9f519b335aa7c1367a88a' "
+    "id='link'>link</a></body></html>";
+
 // Template HTML, URLs, and link and title values for title truncation tests.
 // (Use NSString for easier format printing and matching).
 // Template params:
@@ -152,6 +171,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    kLongLinkHref, kInitialPageDestinationLinkId,
                                    kLongImgTitle, kLogoPageChromiumImageId];
     http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kJavaScriptPageUrl) {
+    http_response->set_content(kJavaScriptPageHtml);
+  } else if (request.relative_url == kMagnetPageUrl) {
+    http_response->set_content(kMagnetPageHtml);
   } else {
     return nullptr;
   }
@@ -520,6 +543,44 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [ChromeEarlGrey waitForForegroundWindowCount:2];
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText
                              inWindowWithNumber:1];
+}
+
+// Checks that JavaScript links only have the "copy" option.
+- (void)testJavaScriptLinks {
+  const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Check the different buttons.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Make sure that the open action is not displayed.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_CONTENT_CONTEXT_OPEN)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Checks that JavaScript links only have the "copy" option.
+- (void)testMagnetLinks {
+  const GURL initialURL = self.testServer->GetURL(kMagnetPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+
+  LongPressElement(kInitialPageDestinationLinkId);
+
+  // Check the different buttons.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_COPY_LINK_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_COPY)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
