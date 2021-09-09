@@ -165,8 +165,9 @@ void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
   // to turn Bluetooth on or off using the API we should update this to actually
   // enable or disable the toggle.
   button_->SetEnabled(true);
-  button_->SetToggled(system_state_ == BluetoothSystemState::kEnabled ||
-                      system_state_ == BluetoothSystemState::kEnabling);
+  button_->SetToggled(
+      ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
+          system_state_));
   button_->SetVisible(true);
 
   button_->SetVectorIcon(ComputeButtonIcon());

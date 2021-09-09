@@ -5,6 +5,7 @@
 #include "chromeos/services/bluetooth_config/device_cache.h"
 
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -61,8 +62,8 @@ void DeviceCache::NotifyUnpairedDevicesListChanged() {
 bool DeviceCache::IsBluetoothEnabledOrEnabling() const {
   const mojom::BluetoothSystemState adapter_state =
       adapter_state_controller_->GetAdapterState();
-  return adapter_state == mojom::BluetoothSystemState::kEnabled ||
-         adapter_state == mojom::BluetoothSystemState::kEnabling;
+  return ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
+      adapter_state);
 }
 
 }  // namespace bluetooth_config
