@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_switches.h"
@@ -588,6 +589,13 @@ int main(int argc, char** argv) {
   // Add the command line flag for HEVC testing which will be checked by the
   // video decoder to allow clear HEVC decoding.
   cmd_line->AppendSwitch("enable-clear-hevc-for-testing");
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+  // On some platforms bandwidth compression is fully opaque and can not be
+  // read by the cpu.  This prevents MD5 computation as that is done by the
+  // cpu.
+  cmd_line->AppendSwitch("disable-buffer-bw-compression");
+#endif
 
   // Set up our test environment.
   media::test::VideoPlayerTestEnvironment* test_environment =
