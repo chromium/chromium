@@ -184,10 +184,16 @@ AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
 
   format_ = init->format();
 
+  auto channel_layout =
+      init->numberOfChannels() > 8
+          // GuesschannelLayout() doesn't know how to guess above 8 channels.
+          ? media::CHANNEL_LAYOUT_DISCRETE
+          : media::GuessChannelLayout(init->numberOfChannels());
+
   data_ = media::AudioBuffer::CopyFrom(
-      media_format, media::GuessChannelLayout(init->numberOfChannels()),
-      init->numberOfChannels(), sample_rate, init->numberOfFrames(),
-      wrapped_data.data(), base::TimeDelta::FromMicroseconds(timestamp_));
+      media_format, channel_layout, init->numberOfChannels(), sample_rate,
+      init->numberOfFrames(), wrapped_data.data(),
+      base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
 AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)

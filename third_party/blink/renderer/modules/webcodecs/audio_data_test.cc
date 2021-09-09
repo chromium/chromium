@@ -44,12 +44,16 @@ class AudioDataTest : public testing::Test {
   }
 
   AllowSharedBufferSource* CreateDefaultData() {
-    auto* buffer = DOMArrayBuffer::Create(kChannels * kFrames, sizeof(float));
-    for (int ch = 0; ch < kChannels; ++ch) {
+    return CreateCustomData(kChannels, kFrames);
+  }
+
+  AllowSharedBufferSource* CreateCustomData(int channels, int frames) {
+    auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
+    for (int ch = 0; ch < channels; ++ch) {
       float* plane_start =
-          reinterpret_cast<float*>(buffer->Data()) + ch * kFrames;
-      for (int i = 0; i < kFrames; ++i) {
-        plane_start[i] = static_cast<float>((i + ch * kFrames) * kIncrement);
+          reinterpret_cast<float*>(buffer->Data()) + ch * frames;
+      for (int i = 0; i < frames; ++i) {
+        plane_start[i] = static_cast<float>((i + ch * frames) * kIncrement);
       }
     }
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -158,6 +162,26 @@ TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
   EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
   EXPECT_EQ(frame->numberOfChannels(), static_cast<uint32_t>(kChannels));
+  EXPECT_EQ(frame->duration(), kExpectedDuration);
+  EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
+}
+
+TEST_F(AudioDataTest, ConstructFromAudioDataInit_HighChannelCount) {
+  V8TestingScope scope;
+  constexpr int kHighChannelCount = 25;
+  auto* buffer_source = CreateCustomData(kHighChannelCount, kFrames);
+
+  auto* audio_data_init = CreateDefaultAudioDataInit(buffer_source);
+  audio_data_init->setNumberOfChannels(kHighChannelCount);
+
+  auto* frame = MakeGarbageCollected<AudioData>(audio_data_init,
+                                                scope.GetExceptionState());
+
+  EXPECT_EQ(frame->format(), "f32-planar");
+  EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
+  EXPECT_EQ(frame->numberOfFrames(), static_cast<uint32_t>(kFrames));
+  EXPECT_EQ(frame->numberOfChannels(),
+            static_cast<uint32_t>(kHighChannelCount));
   EXPECT_EQ(frame->duration(), kExpectedDuration);
   EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
 }
