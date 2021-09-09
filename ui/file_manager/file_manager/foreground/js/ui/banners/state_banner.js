@@ -67,6 +67,19 @@ export class StateBanner extends Banner {
     const extraButton = this.querySelector('[slot="extra-button"]');
     if (extraButton) {
       extraButton.addEventListener('click', (e) => {
+        const href = extraButton.getAttribute('href');
+        if (!href) {
+          e.preventDefault();
+          return;
+        }
+        const chromeOsSettingsSubpage =
+            href.replace('chrome://os-settings/', '');
+        if (chromeOsSettingsSubpage && chromeOsSettingsSubpage !== href) {
+          chrome.fileManagerPrivate.openSettingsSubpage(
+              chromeOsSettingsSubpage);
+          e.preventDefault();
+          return;
+        }
         util.visitURL(extraButton.getAttribute('href'));
         e.preventDefault();
       });

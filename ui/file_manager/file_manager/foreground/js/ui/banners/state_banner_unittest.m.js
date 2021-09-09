@@ -10,6 +10,33 @@ import {StateBanner} from './state_banner.js';
 /** @type{!StateBanner} */
 let stateBanner;
 
+/**
+ * Mocks out the chrome.fileManagerPrivate.openSettingsSubpage function to
+ * enable interrogation of the subpage that was invoked.
+ * @returns {{ restore: function(), getSubpage: (function(): string)}}
+ */
+function mockOpenSettingsSubpage() {
+  /** @suppress {const} */
+  window.chrome = window.chrome || {};
+
+  /** @suppress {const} */
+  window.chrome.fileManagerPrivate = window.chrome.fileManagerPrivate || {};
+  const actualOpenSettingsSubpage =
+      chrome.fileManagerPrivate.openSettingsSubpage;
+  /** @type {string} */
+  let subpage;
+  chrome.fileManagerPrivate.openSettingsSubpage = settingsSubpage => {
+    subpage = settingsSubpage;
+  };
+  const restore = () => {
+    chrome.fileManagerPrivate.openSettingsSubpage = actualOpenSettingsSubpage;
+  };
+  const getSubpage = () => {
+    return subpage;
+  };
+  return {restore, getSubpage};
+}
+
 export function setUp() {
   const html = `<state-banner>
       <span slot="text">Banner title</span>
@@ -42,4 +69,50 @@ export function testStateBannerDefaults() {
   // Ensure the default allowed volume type is empty. This ensures any
   // banners that don't override this property do not show by default.
   assertEquals(stateBanner.allowedVolumes().length, 0);
+}
+
+/**
+ * Test that extra buttons with a ChromeOS settings href utilise the
+ * chrome.fileManagerPrivate.openSettingsSubpage appropriately. The prefix
+ * chrome://os-settings/ should be stripped and the subpage passed through.
+ */
+export async function testChromeOsSettingsLink() {
+  const mockSettingsSubpage = mockOpenSettingsSubpage();
+  const subpage = 'test/settings/subpage';
+  const html = `<state-banner>
+  <span slot="text">Banner title</span>
+  <button slot="extra-button" href="chrome://os-settings/${subpage}">
+  Test Button
+  </button>
+  </state-banner>
+  `;
+  document.body.innerHTML = html;
+  stateBanner =
+      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
+  stateBanner.querySelector('[slot="extra-button"]').click();
+  assertEquals(mockSettingsSubpage.getSubpage(), subpage);
+  mockSettingsSubpage.restore();
+}
+
+/**
+ * Test that a href with no subpage, still calls util.visitURL as there is no
+ * internal method to make the chrome://os-settings/ page appear except for
+ * link capturing.
+ */
+export async function testChromeOsSettingsNoSubpageLink() {
+  const mockVisitURL = mockUtilVisitURL();
+  const osSettingsLink = 'chrome://os-settings/';
+  const html = `<state-banner>
+      <span slot="text">Banner title</span>
+      <button slot="extra-button" href="${osSettingsLink}">
+        Test Button
+      </button>
+    </state-banner>
+    `;
+  document.body.innerHTML = html;
+  stateBanner =
+      /** @type{!StateBanner} */ (document.body.querySelector('state-banner'));
+  stateBanner.querySelector('[slot="extra-button"]').click();
+  assertEquals(mockVisitURL.getURL(), osSettingsLink);
+  mockVisitURL.restoreVisitURL();
 }
