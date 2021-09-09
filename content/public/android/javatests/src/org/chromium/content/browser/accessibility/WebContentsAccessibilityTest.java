@@ -64,7 +64,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -1110,18 +1109,30 @@ public class WebContentsAccessibilityTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1225255")
-    public void testNodeInfo_extras_unclippedBounds() {
+    public void testNodeInfo_extras_unclippedBounds() throws Throwable {
         // Build a simple web page with a scrollable view.
         setupTestFromFile("content/test/data/android/scroll_element_offscreen.html");
 
         // Find the <div> that contains example paragraphs that can be scrolled.
-        int vvIdDiv = waitForNodeMatching(sClassNameMatcher, "android.view.View");
+        int vvIdDiv = waitForNodeMatching(sViewIdResourceNameMatcher, "scroll_view");
         mNodeInfo = createAccessibilityNodeInfo(vvIdDiv);
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
 
-        // Scroll window up so container goes slightly off-screen.
-        executeJS("scrollUp()");
+        // The page may take a moment to finish onload method, so poll for a child count.
+        CriteriaHelper.pollUiThread(() -> {
+            return createAccessibilityNodeInfo(vvIdDiv).getChildCount() == 100;
+        }, NODE_TIMEOUT_ERROR);
+
+        // Focus the scroll container.
+        focusNode(vvIdDiv);
+
+        // Send a scroll event so some elements will be offscreen and poll for results.
+        performActionOnUiThread(vvIdDiv, WebContentsAccessibilityImpl.ACTION_PAGE_UP, null, () -> {
+            return createAccessibilityNodeInfo(vvIdDiv).getExtras() != null
+                    && createAccessibilityNodeInfo(vvIdDiv).getExtras().getInt(
+                               EXTRAS_KEY_UNCLIPPED_TOP, 1)
+                    < 0;
+        });
 
         // Signal end of test.
         mActivityTestRule.sendEndOfTestSignal();
