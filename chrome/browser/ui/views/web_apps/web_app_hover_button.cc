@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -28,6 +29,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/styled_label.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -54,10 +56,7 @@ WebAppHoverButton::WebAppHoverButton(views::Button::PressedCallback callback,
       base::BindOnce(&WebAppHoverButton::OnIconsRead,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-  subtitle()->SetFontList(base_font_list.Derive(
-      /*font size delta=*/-1, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
-  subtitle()->SetTextStyle(views::style::TextStyle::STYLE_HINT);
+  title()->SetDefaultTextStyle(STYLE_EMPHASIZED);
   Layout();
 }
 
