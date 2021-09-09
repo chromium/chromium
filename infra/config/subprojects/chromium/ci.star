@@ -6118,6 +6118,7 @@ ci.memory_builder(
         short_name = "bld",
     ),
     main_console_view = "main",
+    execution_timeout = 4 * time.hour,
 )
 
 ci.memory_builder(
