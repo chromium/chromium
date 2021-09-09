@@ -100,8 +100,6 @@ class PlayerCompositorDelegate {
   virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-  gfx::Point GetRootFrameOffsets() const { return root_frame_offsets_; }
-
   // Test methods:
 
   // Initializes the compositor without a real service for testing purposes.
@@ -195,7 +193,6 @@ class PlayerCompositorDelegate {
   int32_t next_request_id_{0};
   base::queue<int32_t> bitmap_request_queue_;
   std::map<int32_t, BitmapRequest> pending_bitmap_requests_;
-  gfx::Point root_frame_offsets_;
 
   base::WeakPtrFactory<PlayerCompositorDelegate> weak_factory_{this};
 };
