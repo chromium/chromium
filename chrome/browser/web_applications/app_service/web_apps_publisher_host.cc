@@ -86,6 +86,17 @@ void WebAppsPublisherHost::Init() {
       return;
     }
 
+    remote_publisher_version_ =
+        service->GetInterfaceVersion(crosapi::mojom::AppPublisher::Uuid_);
+
+    if (remote_publisher_version_ <
+        int{crosapi::mojom::AppPublisher::MethodMinVersions::
+                kRegisterAppControllerMinVersion}) {
+      LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
+                   << " does not support RegisterAppController().";
+      return;
+    }
+
     service->GetRemote<crosapi::mojom::AppPublisher>()->RegisterAppController(
         receiver_.BindNewPipeAndPassRemoteWithVersion());
     remote_publisher_ =
@@ -108,6 +119,8 @@ WebAppRegistrar& WebAppsPublisherHost::registrar() const {
 void WebAppsPublisherHost::SetPublisherForTesting(
     crosapi::mojom::AppPublisher* publisher) {
   remote_publisher_ = publisher;
+  // Set the publisher version to the newest version for testing.
+  remote_publisher_version_ = crosapi::mojom::AppPublisher::Version_;
 }
 
 void WebAppsPublisherHost::OnReady() {
@@ -119,7 +132,7 @@ void WebAppsPublisherHost::OnReady() {
   for (const WebApp& web_app : registrar().GetApps()) {
     apps.push_back(publisher_helper().ConvertWebApp(&web_app));
   }
-  remote_publisher_->OnApps(std::move(apps));
+  PublishWebApps(std::move(apps));
 }
 
 void WebAppsPublisherHost::Uninstall(
@@ -302,6 +315,13 @@ void WebAppsPublisherHost::PublishWebApps(
     return;
   }
 
+  if (remote_publisher_version_ <
+      int{crosapi::mojom::AppPublisher::MethodMinVersions::kOnAppsMinVersion}) {
+    LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
+                 << " does not support OnApps().";
+    return;
+  }
+
   remote_publisher_->OnApps(std::move(apps));
 }
 
@@ -312,7 +332,7 @@ void WebAppsPublisherHost::PublishWebApp(apps::mojom::AppPtr app) {
 
   std::vector<apps::mojom::AppPtr> apps;
   apps.push_back(std::move(app));
-  remote_publisher_->OnApps(std::move(apps));
+  PublishWebApps(std::move(apps));
 }
 
 void WebAppsPublisherHost::ModifyWebAppCapabilityAccess(
@@ -344,6 +364,14 @@ void WebAppsPublisherHost::ModifyWebAppCapabilityAccess(
   }
 
   capability_accesses.push_back(std::move(capability_access));
+
+  if (remote_publisher_version_ <
+      int{crosapi::mojom::AppPublisher::MethodMinVersions::
+              kOnCapabilityAccessesMinVersion}) {
+    LOG(WARNING) << "Ash AppPublisher version " << remote_publisher_version_
+                 << " does not support OnCapabilityAccesses().";
+    return;
+  }
   remote_publisher_->OnCapabilityAccesses(std::move(capability_accesses));
 }
 

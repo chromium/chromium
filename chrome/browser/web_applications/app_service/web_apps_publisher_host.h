@@ -130,6 +130,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   WebAppProvider* const provider_;
   WebAppPublisherHelper publisher_helper_;
   crosapi::mojom::AppPublisher* remote_publisher_ = nullptr;
+  int remote_publisher_version_ = 0;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 
