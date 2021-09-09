@@ -77,10 +77,10 @@ interface AppController {
   // to fill to get the required icon.
   // There should always be a return value for this method. If there is an
   // error during the loading, the return value should be a default IconValue
-  // struct, with IconType = kUnknow to indicate it's an error case. If loading
+  // struct, with IconType = kUnknown to indicate it's an error case. If loading
   // succeeded, the size of the returning icon is expected to be as close as
   // possible with the |size_hint_in_dip| set in the interface, but may not be
-  // exactly same.
+  // exactly the same.
   [MinVersion=5]
   LoadIcon@5(
     string app_id,
@@ -135,6 +135,25 @@ interface AppServiceProxy {
   // |launch_source|, and optional |intent| at the moment.
   [MinVersion=11]
   Launch@1(LaunchParams params);
+
+  // Load icon for an app with |app_id| from ash-chrome.
+  // |icon_key|  contains the arguments for an app icon, see
+  // apps::mojom::IconKey for more details. |icon_type| represent the icon
+  // format requested (e.g. compressed, uncompressed. etc). |size_hint_in_dip|
+  // is a hint of how big the icon should be.  All these fields are necessary
+  // to fill to get the required icon.
+  // There should always be a return value for this method. If there is an
+  // error during the loading, the return value should be a default IconValue
+  // struct, with IconType = kUnknown to indicate it's an error case. If loading
+  // succeeded, the size of the returning icon is expected to be as close as
+  // possible with the |size_hint_in_dip| set in the interface, but may not be
+  // exactly the same.
+  [MinVersion=12]
+  LoadIcon@2(
+    string app_id,
+    IconKey icon_key,
+    IconType icon_type,
+    int32 size_hint_in_dip) => (IconValue icon_value);
 };
 
 // Interacts with the app service. Implemented in lacros-chrome and called in

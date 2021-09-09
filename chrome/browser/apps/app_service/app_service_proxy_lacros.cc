@@ -68,6 +68,23 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
         app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
         allow_placeholder_icon, std::move(callback));
   }
+
+  auto* service = chromeos::LacrosService::Get();
+
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+    std::move(callback).Run(apps::mojom::IconValue::New());
+  } else if (host_->crosapi_app_service_proxy_version_ <
+             int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
+                     kLoadIconMinVersion}) {
+    LOG(WARNING) << "Ash AppServiceProxy version "
+                 << host_->crosapi_app_service_proxy_version_
+                 << " does not support LoadIcon().";
+    std::move(callback).Run(apps::mojom::IconValue::New());
+  } else {
+    service->GetRemote<crosapi::mojom::AppServiceProxy>()->LoadIcon(
+        app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+        std::move(callback));
+  }
   return nullptr;
 }
 
@@ -106,11 +123,7 @@ void AppServiceProxyLacros::Initialize() {
 
   auto* service = chromeos::LacrosService::Get();
 
-  if (!service) {
-    return;
-  }
-
-  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
     return;
   }
 
@@ -203,11 +216,7 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
                                    apps::mojom::WindowInfoPtr window_info) {
   auto* service = chromeos::LacrosService::Get();
 
-  if (!service) {
-    return;
-  }
-
-  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
     return;
   }
 
@@ -253,11 +262,7 @@ void AppServiceProxyLacros::LaunchAppWithIntent(
   CHECK(intent);
   auto* service = chromeos::LacrosService::Get();
 
-  if (!service) {
-    return;
-  }
-
-  if (!service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
     return;
   }
 

@@ -61,6 +61,11 @@ class SubscriberCrosapi : public KeyedService,
       mojo::PendingRemote<crosapi::mojom::AppServiceSubscriber> subscriber)
       override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params) override;
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                LoadIconCallback callback) override;
 
   void OnSubscriberDisconnected();
 
