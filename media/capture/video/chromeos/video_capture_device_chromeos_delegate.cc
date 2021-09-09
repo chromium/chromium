@@ -152,7 +152,6 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
     std::unique_ptr<VideoCaptureDevice::Client> client,
     ClientType client_type) {
   DCHECK(capture_task_runner_->BelongsToCurrentThread());
-  DCHECK(!camera_device_delegate_);
   if (!HasDeviceClient()) {
     TRACE_EVENT0("camera", "Start Device");
     if (!camera_device_ipc_thread_.Start()) {
