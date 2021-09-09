@@ -1057,12 +1057,6 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE" desc="Message informing the user that they can make files available offline.">
     You can make files available offline for access when you don't have an internet connection.
   </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_TITLE" desc="Message title of banner informing user they can make files available offline.">
-    Make files available offline
-  </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_SUBTITLE" desc="Message title of banner informing user they can make files available offline.">
-    Select a file, and toggle <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> on for offline access to your files.
-  </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
     Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
   </message>

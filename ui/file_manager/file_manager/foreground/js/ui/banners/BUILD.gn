@@ -21,7 +21,6 @@ group("closure_compile") {
 html_to_js("web_components") {
   visibility += [ "//ui/file_manager/*" ]
   js_files = [
-    "drive_offline_pinning_banner.js",
     "drive_welcome_banner.js",
     "educational_banner.js",
     "holding_space_welcome_banner.js",
@@ -43,7 +42,6 @@ js_type_check("closure_compile_jsmodules") {
                   ]
 
   deps = [
-    ":drive_offline_pinning_banner",
     ":drive_welcome_banner",
     ":educational_banner",
     ":holding_space_welcome_banner",
@@ -67,15 +65,6 @@ js_library("holding_space_welcome_banner") {
 js_library("local_disk_low_space_banner") {
   deps = [
     ":warning_banner",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:banner",
-  ]
-}
-
-js_library("drive_offline_pinning_banner") {
-  deps = [
-    ":educational_banner",
-    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
   ]
