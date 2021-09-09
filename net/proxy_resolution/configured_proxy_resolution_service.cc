@@ -654,7 +654,8 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
         dhcp_pac_file_fetcher_(dhcp_pac_file_fetcher),
         last_error_(init_net_error),
         last_script_data_(init_script_data),
-        last_poll_time_(TimeTicks::Now()) {
+        last_poll_time_(TimeTicks::Now()),
+        net_log_(net_log) {
     // Set the initial poll delay.
     next_poll_mode_ = poll_policy()->GetNextDelay(
         last_error_, TimeDelta::FromSeconds(-1), &next_poll_delay_);
@@ -716,9 +717,8 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
     last_poll_time_ = TimeTicks::Now();
 
     // Start the PAC file decider to see if anything has changed.
-    // TODO(eroman): Pass a proper NetLog rather than nullptr.
     decider_ = std::make_unique<PacFileDecider>(
-        pac_file_fetcher_, dhcp_pac_file_fetcher_, nullptr);
+        pac_file_fetcher_, dhcp_pac_file_fetcher_, net_log_);
     decider_->set_quick_check_enabled(quick_check_enabled_);
     int result = decider_->Start(
         config_, TimeDelta(), proxy_resolver_expects_pac_bytes_,
@@ -800,6 +800,8 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   PacPollPolicy::Mode next_poll_mode_;
 
   TimeTicks last_poll_time_;
+
+  NetLog* const net_log_;
 
   // Polling policy injected by unit-tests. Otherwise this is nullptr and the
   // default policy will be used.
@@ -1130,7 +1132,7 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
           base::Unretained(this)),
       fetched_config_.value(), resolver_factory_->expects_pac_bytes(),
       pac_file_fetcher_.get(), dhcp_pac_file_fetcher_.get(), result,
-      init_proxy_resolver_->script_data(), nullptr);
+      init_proxy_resolver_->script_data(), net_log_);
   script_poller_->set_quick_check_enabled(quick_check_enabled_);
 
   init_proxy_resolver_.reset();
