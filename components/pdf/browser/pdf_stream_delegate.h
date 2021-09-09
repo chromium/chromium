@@ -6,6 +6,7 @@
 #define COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -22,6 +23,9 @@ class PdfStreamDelegate {
   struct StreamInfo {
     GURL stream_url;
     GURL original_url;
+    SkColor background_color;
+    bool full_frame;
+    bool allow_javascript;
   };
 
   PdfStreamDelegate();

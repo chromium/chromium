@@ -7,6 +7,7 @@
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace pdf {
@@ -21,6 +22,9 @@ FakePdfStreamDelegate::FakePdfStreamDelegate()
     : stream_info_({
           .stream_url = GURL(kDefaultStreamUrl),
           .original_url = GURL(kDefaultOriginalUrl),
+          .background_color = SK_ColorTRANSPARENT,
+          .full_frame = false,
+          .allow_javascript = true,
       }) {}
 
 FakePdfStreamDelegate::~FakePdfStreamDelegate() = default;

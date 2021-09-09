@@ -53,6 +53,7 @@ if (enable_pdf) {
       "//pdf:features",
       "//services/network/public/cpp:cpp_base",
       "//services/network/public/mojom",
+      "//skia",
       "//ui/base",
       "//url",
     ]
