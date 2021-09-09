@@ -57,6 +57,13 @@ void TransactionImpl::CreateObjectStore(int64_t object_store_id,
     return;
   }
 
+  if (!transaction_->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "CreateObjectStore was called after committing or aborting the "
+        "transaction");
+    return;
+  }
+
   IndexedDBConnection* connection = transaction_->connection();
   if (!connection->IsConnected())
     return;
@@ -76,6 +83,13 @@ void TransactionImpl::DeleteObjectStore(int64_t object_store_id) {
   if (transaction_->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
     mojo::ReportBadMessage(
         "DeleteObjectStore must be called from a version change transaction.");
+    return;
+  }
+
+  if (!transaction_->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "DeleteObjectStore was called after committing or aborting the "
+        "transaction");
     return;
   }
 
@@ -108,6 +122,12 @@ void TransactionImpl::Put(
     std::move(callback).Run(
         blink::mojom::IDBTransactionPutResult::NewErrorResult(
             blink::mojom::IDBError::New(error.code(), error.message())));
+    return;
+  }
+
+  if (!transaction_->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "Put was called after committing or aborting the transaction");
     return;
   }
 
@@ -167,6 +187,12 @@ void TransactionImpl::PutAll(int64_t object_store_id,
     std::move(callback).Run(
         blink::mojom::IDBTransactionPutAllResult::NewErrorResult(
             blink::mojom::IDBError::New(error.code(), error.message())));
+    return;
+  }
+
+  if (!transaction_->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "PutAll was called after committing or aborting the transaction");
     return;
   }
 
@@ -267,6 +293,12 @@ void TransactionImpl::Commit(int64_t num_errors_handled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!transaction_)
     return;
+
+  if (!transaction_->IsAcceptingRequests()) {
+    mojo::ReportBadMessage(
+        "Commit was called after committing or aborting the transaction");
+    return;
+  }
 
   IndexedDBConnection* connection = transaction_->connection();
   if (!connection->IsConnected())
