@@ -85,6 +85,7 @@ Polymer({
 
   onCloseConfirmDialogButtonPressed_() {
     this.$.osInstallDialogConfirm.hideDialog();
+    this.$.osInstallIntroNextButton.focus();
   },
 
   /**
