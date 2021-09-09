@@ -403,6 +403,8 @@ void PlayerCompositorDelegate::OnProtoAvailable(
 
   paint_preview_compositor_client_->SetRootFrameUrl(proto_url);
   proto_ = std::move(proto);
+  root_frame_offsets_ = gfx::Point(proto_->root_frame().frame_offset_x(),
+                                   proto_->root_frame().frame_offset_y());
 
   // If the current Chrome version doesn't match the one in proto, we can't
   // use the AXTreeUpdate.

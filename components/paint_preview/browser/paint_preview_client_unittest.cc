@@ -163,7 +163,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
 
   auto response = NewMockPaintPreviewCaptureResponse();
   response->embedding_token = absl::nullopt;
-  response->scroll_offsets = gfx::Size(5, 10);
+  response->scroll_offsets = gfx::Point(5, 10);
+  response->frame_offsets = gfx::Point(20, 30);
 
   PaintPreviewProto expected_proto;
   auto* metadata = expected_proto.mutable_metadata();
@@ -178,6 +179,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   main_frame->set_is_main_frame(true);
   main_frame->set_scroll_offset_x(5);
   main_frame->set_scroll_offset_y(10);
+  main_frame->set_frame_offset_x(20);
+  main_frame->set_frame_offset_y(30);
 
   base::RunLoop loop;
   auto callback = base::BindOnce(
