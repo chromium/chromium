@@ -1618,7 +1618,7 @@ TEST_F(LayoutObjectTest,
 }
 
 // crbug.com/1246619
-TEST_F(LayoutObjectTest, SetNeedsCollectInlines) {
+TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgText) {
   SetBodyInnerHTML(R"HTML(
     <div>
     <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">
@@ -1631,6 +1631,22 @@ TEST_F(LayoutObjectTest, SetNeedsCollectInlines) {
     text->SetNeedsCollectInlines();
     EXPECT_TRUE(GetLayoutObjectByElementId("ancestor")->NeedsCollectInlines());
   }
+}
+
+// crbug.com/1247686
+TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgInline) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  SetBodyInnerHTML(R"HTML(
+    <div>
+    <svg xmlns="http://www.w3.org/2000/svg" id="ancestor">
+    <text id="text">Inter<a id="anchor">net</a></text>
+    </svg></div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* anchor = GetLayoutObjectByElementId("anchor");
+  anchor->SetNeedsCollectInlines();
+  EXPECT_TRUE(GetLayoutObjectByElementId("text")->NeedsCollectInlines());
 }
 
 static const char* const kTransformsWith3D[] = {"transform: rotateX(20deg)",
