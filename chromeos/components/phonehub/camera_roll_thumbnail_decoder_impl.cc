@@ -59,7 +59,7 @@ CameraRollThumbnailDecoderImpl::DecoderDelegate::~DecoderDelegate() = default;
 
 void CameraRollThumbnailDecoderImpl::DecoderDelegate::DecodeThumbnail(
     const DecodeRequest& request,
-    data_decoder::mojom::ImageDecoder::DecodeImageCallback callback) {
+    data_decoder::DecodeImageCallback callback) {
   const std::string& encoded_thumbnail = request.GetEncodedThumbnail();
   std::vector<uint8_t> thumbnail_bytes(encoded_thumbnail.begin(),
                                        encoded_thumbnail.end());

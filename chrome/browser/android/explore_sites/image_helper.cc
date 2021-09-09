@@ -86,7 +86,7 @@ void ImageHelper::Job::Start() {
 
 void ImageHelper::Job::DecodeImageBytes(
     std::unique_ptr<EncodedImageBytes> image_bytes) {
-  data_decoder::mojom::ImageDecoder::DecodeImageCallback callback;
+  data_decoder::DecodeImageCallback callback;
   if (job_type_ == ImageJobType::kSiteIcon) {
     callback = base::BindOnce(&ImageHelper::Job::OnDecodeSiteImageDone,
                               weak_ptr_factory_.GetWeakPtr());

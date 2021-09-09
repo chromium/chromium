@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
 namespace chromeos {
@@ -35,7 +35,7 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
   // A pending request to decode the thumbnail of a camera roll item.
   class DecodeRequest {
    public:
-    DecodeRequest(const proto::CameraRollItem& item_proto);
+    explicit DecodeRequest(const proto::CameraRollItem& item_proto);
     virtual ~DecodeRequest();
 
     const proto::CameraRollItemMetadata& GetMetadata() const;
@@ -66,9 +66,8 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
     DecoderDelegate();
     virtual ~DecoderDelegate();
 
-    virtual void DecodeThumbnail(
-        const DecodeRequest& request,
-        data_decoder::mojom::ImageDecoder::DecodeImageCallback callback);
+    virtual void DecodeThumbnail(const DecodeRequest& request,
+                                 data_decoder::DecodeImageCallback callback);
 
    private:
     // The instance of DataDecoder to decode thumbnail images. The underlying

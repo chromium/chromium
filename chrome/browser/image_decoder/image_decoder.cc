@@ -38,20 +38,19 @@ void OnDecodeImageDone(
 }
 
 void RunDecodeCallbackOnTaskRunner(
-    data_decoder::mojom::ImageDecoder::DecodeImageCallback callback,
+    data_decoder::DecodeImageCallback callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const SkBitmap& image) {
   task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), image));
 }
 
-void DecodeImage(
-    std::vector<uint8_t> image_data,
-    data_decoder::mojom::ImageCodec codec,
-    bool shrink_to_fit,
-    const gfx::Size& desired_image_frame_size,
-    data_decoder::mojom::ImageDecoder::DecodeImageCallback callback,
-    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-    data_decoder::DataDecoder* data_decoder) {
+void DecodeImage(std::vector<uint8_t> image_data,
+                 data_decoder::mojom::ImageCodec codec,
+                 bool shrink_to_fit,
+                 const gfx::Size& desired_image_frame_size,
+                 data_decoder::DecodeImageCallback callback,
+                 scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+                 data_decoder::DataDecoder* data_decoder) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (data_decoder) {

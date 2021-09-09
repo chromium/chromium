@@ -2032,15 +2032,14 @@ uint32_t DeleteCookies(BrowserContext* browser_context,
 }
 
 void FetchHistogramsFromChildProcesses() {
-  // Wait for all the renderer processes to be initialized before fetching
-  // histograms for the first time.
+  // Wait for all initialized processes to be ready before fetching histograms
+  // for the first time.
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
-    if (!it.GetCurrentValue()->IsReady()) {
-      RenderProcessHost* render_process_host = it.GetCurrentValue();
+    RenderProcessHost* process = it.GetCurrentValue();
+    if (process->IsInitializedAndNotDead() && !process->IsReady()) {
       RenderProcessHostWatcher ready_watcher(
-          render_process_host,
-          RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+          process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
       ready_watcher.Wait();
     }
   }

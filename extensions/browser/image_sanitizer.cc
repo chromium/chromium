@@ -153,6 +153,7 @@ void ImageSanitizer::ImageFileRead(
 }
 
 void ImageSanitizer::ImageDecoded(const base::FilePath& image_path,
+                                  base::TimeDelta image_decoding_time,
                                   const SkBitmap& decoded_image) {
   if (decoded_image.isNull()) {
     ReportError(Status::kDecodingError, image_path);

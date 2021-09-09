@@ -68,8 +68,7 @@ class FakeDecoderDelegate
 
   void DecodeThumbnail(
       const CameraRollThumbnailDecoderImpl::DecodeRequest& request,
-      data_decoder::mojom::ImageDecoder::DecodeImageCallback callback)
-      override {
+      data_decoder::DecodeImageCallback callback) override {
     pending_callbacks_[request.GetMetadata().key()] = std::move(callback);
   }
 
@@ -95,8 +94,7 @@ class FakeDecoderDelegate
   }
 
  private:
-  base::flat_map<std::string,
-                 data_decoder::mojom::ImageDecoder::DecodeImageCallback>
+  base::flat_map<std::string, data_decoder::DecodeImageCallback>
       pending_callbacks_;
 };
 

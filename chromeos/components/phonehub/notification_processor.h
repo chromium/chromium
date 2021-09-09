@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
 using google::protobuf::RepeatedPtrField;
@@ -33,10 +33,9 @@ class NotificationManager;
 // process asynchronously, but removals are carried out synchronously.
 class NotificationProcessor {
  public:
-  using DecodeImageCallback =
-      data_decoder::mojom::ImageDecoder::DecodeImageCallback;
+  using DecodeImageCallback = data_decoder::DecodeImageCallback;
 
-  NotificationProcessor(NotificationManager* notification_manager);
+  explicit NotificationProcessor(NotificationManager* notification_manager);
   virtual ~NotificationProcessor();
 
   NotificationProcessor(const NotificationProcessor&) = delete;

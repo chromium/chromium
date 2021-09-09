@@ -24,6 +24,12 @@ class DataDecoder;
 
 const uint64_t kDefaultMaxSizeInBytes = 128 * 1024 * 1024;
 
+// DecodeImageIsolated and DecodeImage functions communicate their results over
+// DecodeImageCallback.  The SkBitmap will be null on failure and non-null on
+// success.
+using DecodeImageCallback =
+    base::OnceCallback<void(const SkBitmap& decoded_bitmap)>;
+
 // Helper function to decode an image via the data_decoder service. For images
 // with multiple frames (e.g. ico files), a frame with a size as close as
 // possible to |desired_image_frame_size| is chosen (tries to take one in larger
@@ -41,7 +47,7 @@ void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
                          bool shrink_to_fit,
                          uint64_t max_size_in_bytes,
                          const gfx::Size& desired_image_frame_size,
-                         mojom::ImageDecoder::DecodeImageCallback callback);
+                         DecodeImageCallback callback);
 
 // Same as above but uses |data_decoder| to potentially share a service instance
 // with other operations. |callback| will only be invoked if |data_decoder| is
@@ -52,7 +58,7 @@ void DecodeImage(DataDecoder* data_decoder,
                  bool shrink_to_fit,
                  uint64_t max_size_in_bytes,
                  const gfx::Size& desired_image_frame_size,
-                 mojom::ImageDecoder::DecodeImageCallback callback);
+                 DecodeImageCallback callback);
 
 // Helper function to decode an animation via the data_decoder service. Any
 // image with multiple frames is considered an animation, so long as the frames

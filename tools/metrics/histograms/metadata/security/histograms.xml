@@ -54,6 +54,113 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
+    expires_after="M99">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage` and/or
+    `data_decoder::DecodeImageIsolated`. Logs the time that has elapsed while
+    decoding the image (typically this happens in the Utility process). The time
+    is recorded in all the cases (including empty input which don't require
+    actual image decoding).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
+    expires_after="M99">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImageIsolated`.
+    Logs the time that has elapsed between 1) invocation of DecodeImageIsolated
+    and 2) calling the completion callback (both of these events happen in the
+    Browser process). The elapsed time covers A) spawning the utility process,
+    B) decoding the image, C) IPC overhead.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
+    units="ms" expires_after="M99">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImageIsolated`.
+    Logs the overhead of using a separate process for decoding the images by
+    calculating the difference between ...Image.Isolated.EndToEndTime and the
+    ...Image.DecodingTime metrics.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
+    expires_after="M99">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage`. Logs the
+    time that has elapsed between 1) invocation of DecodeImage and 2) calling
+    the completion callback (both of these events happen in the Browser
+    process). The elapsed time covers A) spawning the utility process (if
+    needed), B) decoding the image, C) IPC overhead.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
+    units="ms" expires_after="M99">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage`. Logs the
+    overhead of using a separate process for decoding the images by calculating
+    the difference between ...Image.Reusable.EndToEndTime and the
+    ...Image.DecodingTime metrics.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
     enum="HttpsFirstModeNavigationEvent" expires_after="2022-01-31">
   <owner>cthomp@chromium.org</owner>

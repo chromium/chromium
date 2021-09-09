@@ -9,6 +9,8 @@
 #include <utility>
 #include "build/chromeos_buildflags.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/web/web_image.h"
@@ -66,8 +68,10 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
                                    int64_t max_size_in_bytes,
                                    const gfx::Size& desired_image_frame_size,
                                    DecodeImageCallback callback) {
+  base::ElapsedTimer timer;
+
   if (encoded_data.size() == 0) {
-    std::move(callback).Run(SkBitmap());
+    std::move(callback).Run(timer.Elapsed(), SkBitmap());
     return;
   }
 
@@ -94,7 +98,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   if (!decoded_image.isNull())
     ResizeImage(&decoded_image, shrink_to_fit, max_size_in_bytes);
 
-  std::move(callback).Run(decoded_image);
+  std::move(callback).Run(timer.Elapsed(), decoded_image);
 }
 
 void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,

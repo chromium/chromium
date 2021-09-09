@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "skia/ext/skia_utils_base.h"
@@ -18,48 +20,47 @@ namespace data_decoder {
 
 namespace {
 
-// Helper callback which owns a mojo::Remote<ImageDecoder> until invoked. This
-// keeps the ImageDecoder pipe open just long enough to dispatch a reply, at
-// which point the reply is forwarded to the wrapped |callback|.
+// Helper which wraps the original `callback` while also:
+// 1) owning a mojo::Remote<ImageDecoder>
+// 2) measuring and recording the end-to-end duration
+// 3) calculating and recording the process+ipc overhead
 void OnDecodeImage(mojo::Remote<mojom::ImageDecoder> decoder,
-                   mojom::ImageDecoder::DecodeImageCallback callback,
+                   DecodeImageCallback callback,
+                   const std::string& uma_name_prefix,
+                   base::ElapsedTimer timer,
+                   base::TimeDelta image_decoding_time,
                    const SkBitmap& bitmap) {
+  base::UmaHistogramMediumTimes("Security.DataDecoder.Image.DecodingTime",
+                                image_decoding_time);
+
+  base::TimeDelta end_to_end_time = timer.Elapsed();
+  base::UmaHistogramMediumTimes(uma_name_prefix + ".EndToEndTime",
+                                end_to_end_time);
+
+  base::TimeDelta process_overhead = end_to_end_time - image_decoding_time;
+  base::UmaHistogramMediumTimes(uma_name_prefix + ".ProcessOverhead",
+                                process_overhead);
+
   std::move(callback).Run(bitmap);
 }
+
+// Helper which wraps the original `callback` while also owning and keeping
+// alive a mojo::Remote<ImageDecoder>.
 void OnDecodeImages(mojo::Remote<mojom::ImageDecoder> decoder,
                     mojom::ImageDecoder::DecodeAnimationCallback callback,
                     std::vector<mojom::AnimationFramePtr> bitmaps) {
   std::move(callback).Run(std::move(bitmaps));
 }
 
-}  // namespace
-
-void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
-                         mojom::ImageCodec codec,
-                         bool shrink_to_fit,
-                         uint64_t max_size_in_bytes,
-                         const gfx::Size& desired_image_frame_size,
-                         mojom::ImageDecoder::DecodeImageCallback callback) {
-  // Create a new DataDecoder that we keep alive until |callback| is invoked.
-  auto data_decoder = std::make_unique<DataDecoder>();
-  auto* raw_decoder = data_decoder.get();
-  auto wrapped_callback = base::BindOnce(
-      [](std::unique_ptr<DataDecoder>,
-         mojom::ImageDecoder::DecodeImageCallback callback,
-         const SkBitmap& bitmap) { std::move(callback).Run(bitmap); },
-      std::move(data_decoder), std::move(callback));
-  DecodeImage(raw_decoder, encoded_bytes, codec, shrink_to_fit,
-              max_size_in_bytes, desired_image_frame_size,
-              std::move(wrapped_callback));
-}
-
-void DecodeImage(DataDecoder* data_decoder,
-                 const std::vector<uint8_t>& encoded_bytes,
-                 mojom::ImageCodec codec,
-                 bool shrink_to_fit,
-                 uint64_t max_size_in_bytes,
-                 const gfx::Size& desired_image_frame_size,
-                 mojom::ImageDecoder::DecodeImageCallback callback) {
+void DecodeImageUsingServiceProcess(DataDecoder* data_decoder,
+                                    const std::vector<uint8_t>& encoded_bytes,
+                                    mojom::ImageCodec codec,
+                                    bool shrink_to_fit,
+                                    uint64_t max_size_in_bytes,
+                                    const gfx::Size& desired_image_frame_size,
+                                    DecodeImageCallback callback,
+                                    const std::string& uma_name_prefix,
+                                    base::ElapsedTimer timer) {
   mojo::Remote<mojom::ImageDecoder> decoder;
   data_decoder->GetService()->BindImageDecoder(
       decoder.BindNewPipeAndPassReceiver());
@@ -75,7 +76,45 @@ void DecodeImage(DataDecoder* data_decoder,
   raw_decoder->DecodeImage(encoded_bytes, codec, shrink_to_fit,
                            max_size_in_bytes, desired_image_frame_size,
                            base::BindOnce(&OnDecodeImage, std::move(decoder),
-                                          std::move(callback_pair.second)));
+                                          std::move(callback_pair.second),
+                                          uma_name_prefix, std::move(timer)));
+}
+
+}  // namespace
+
+void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
+                         mojom::ImageCodec codec,
+                         bool shrink_to_fit,
+                         uint64_t max_size_in_bytes,
+                         const gfx::Size& desired_image_frame_size,
+                         DecodeImageCallback callback) {
+  base::ElapsedTimer timer;
+
+  // Create a new DataDecoder that we keep alive until |callback| is invoked.
+  auto data_decoder = std::make_unique<DataDecoder>();
+  auto* raw_decoder = data_decoder.get();
+  auto wrapped_callback = base::BindOnce(
+      [](std::unique_ptr<DataDecoder>, DecodeImageCallback callback,
+         const SkBitmap& bitmap) { std::move(callback).Run(bitmap); },
+      std::move(data_decoder), std::move(callback));
+
+  DecodeImageUsingServiceProcess(
+      raw_decoder, encoded_bytes, codec, shrink_to_fit, max_size_in_bytes,
+      desired_image_frame_size, std::move(wrapped_callback),
+      "Security.DataDecoder.Image.Isolated", std::move(timer));
+}
+
+void DecodeImage(DataDecoder* data_decoder,
+                 const std::vector<uint8_t>& encoded_bytes,
+                 mojom::ImageCodec codec,
+                 bool shrink_to_fit,
+                 uint64_t max_size_in_bytes,
+                 const gfx::Size& desired_image_frame_size,
+                 DecodeImageCallback callback) {
+  DecodeImageUsingServiceProcess(
+      data_decoder, encoded_bytes, codec, shrink_to_fit, max_size_in_bytes,
+      desired_image_frame_size, std::move(callback),
+      "Security.DataDecoder.Image.Reusable", base::ElapsedTimer());
 }
 
 void DecodeAnimationIsolated(

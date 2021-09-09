@@ -9,6 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -69,7 +70,10 @@ class Request {
   const SkBitmap& bitmap() const { return bitmap_; }
 
  private:
-  void OnRequestDone(const SkBitmap& result_image) { bitmap_ = result_image; }
+  void OnRequestDone(base::TimeDelta ignored_decoding_time,
+                     const SkBitmap& result_image) {
+    bitmap_ = result_image;
+  }
 
   ImageDecoderImpl* decoder_;
   SkBitmap bitmap_;
