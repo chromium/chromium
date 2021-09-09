@@ -24,7 +24,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
@@ -34,14 +35,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/move_to_desks_menu_delegate.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/move_to_desks_menu_delegate_lacros.h"
 #endif
 
 #if defined(USE_OZONE) && \
@@ -49,37 +45,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
-
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShouldShowMoveToDesksMenu(gfx::NativeWindow window) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return MoveToDesksMenuDelegateLacros::ShouldShowMoveToDesksMenu(window);
-#else
-  return false;
-#endif
-}
-
-std::unique_ptr<chromeos::MoveToDesksMenuModel> CreateMoveToDesksMenuModel(
-    gfx::NativeWindow window) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<chromeos::MoveToDesksMenuModel>(
-      std::make_unique<ash::MoveToDesksMenuDelegate>(
-          views::Widget::GetWidgetForNativeWindow(window)));
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return std::make_unique<chromeos::MoveToDesksMenuModel>(
-      std::make_unique<MoveToDesksMenuDelegateLacros>(
-          views::Widget::GetWidgetForNativeWindow(window)));
-#else
-  return nullptr;
-#endif
-}
-#endif
-
-}  // namespace
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
     ui::AcceleratorProvider* provider,
@@ -208,11 +173,13 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   gfx::NativeWindow window =
       menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!ShouldShowMoveToDesksMenu(window))
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window))
     return;
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
-  move_to_desks_model_ = CreateMoveToDesksMenuModel(window);
+  move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
+      std::make_unique<chromeos::MoveToDesksMenuDelegate>(
+          views::Widget::GetWidgetForNativeWindow(window)));
   model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
                                 IDS_MOVE_TO_DESKS_MENU,
                                 move_to_desks_model_.get());

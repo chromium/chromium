@@ -303,6 +303,7 @@ source_set("chromeos") {
     "//chromeos/tpm:buildflags",
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
     "//chromeos/utils",
     "//components/arc",
     "//components/arc/enterprise",

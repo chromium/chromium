@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/desks_client.h"

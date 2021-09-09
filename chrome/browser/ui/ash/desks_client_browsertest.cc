@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -349,9 +348,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate();
   // Test the default template's name is the current desk's name.
-  auto* desks_helper = ash::DesksHelper::Get();
-  EXPECT_EQ(desk_template->template_name(),
-            desks_helper->GetDeskName(desks_helper->GetActiveDeskIndex()));
+  auto* desks_controller = ash::DesksController::Get();
+  EXPECT_EQ(
+      desk_template->template_name(),
+      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()));
 
   const full_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
@@ -406,16 +406,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
   const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
-  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
+  auto* desks_controller = ash::DesksController::Get();
 
-  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   auto desk_template = std::make_unique<ash::DeskTemplate>(kDeskUuid);
   desk_template->set_template_name(kDeskName);
   SetAndLaunchTemplate(std::move(desk_template));
 
-  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
-  EXPECT_EQ(kDeskName, desks_helper->GetDeskName(1));
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+  EXPECT_EQ(kDeskName, desks_controller->GetDeskName(1));
 
   // Verify that user prefs are updated with the correct desk names. This
   // ensures that template created desk names are preserved on restart.
@@ -496,8 +496,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   ASSERT_FALSE(FindBrowserWindow(kSettingsWindowId));
   settings_window = nullptr;
 
-  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
-  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+  auto* desks_controller = ash::DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Set the template we created as the template we want to launch.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   // TODO(sammiequon): Right now the app just launches, so verify the title
   // matches. We should verify the restore id and use
   // `FindBrowserWindow(kSettingsWindowId)` once things are wired up properly.
-  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
   for (auto* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
     if (window->GetTitle() == settings_title) {
@@ -545,15 +545,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
           }));
   run_loop.Run();
 
-  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
-  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+  ash::DesksController* desks_controller = ash::DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Set the template we created as the template we want to launch.
   SetAndLaunchTemplate(std::move(desk_template));
 
   // We launch a new browser window, but not a new settings app.
   EXPECT_EQ(3u, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(ash::DesksHelper::Get()->BelongsToActiveDesk(settings_window));
+  EXPECT_TRUE(desks_controller->BelongsToActiveDesk(settings_window));
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
@@ -589,8 +589,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
   app_widget->CloseNow();
   ASSERT_FALSE(GetFirstAppWindowForApp(extension_id));
 
-  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
-  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+  ash::DesksController* desks_controller = ash::DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // `BrowserAppLauncher::LaunchAppWithParams()` does not launch the chrome app
   // in tests, so here we set up a mock app launch handler and just verify a
@@ -635,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
       CaptureActiveDeskAndSaveTemplate();
   ASSERT_TRUE(desk_template);
 
-  ash::DesksHelper* desks_helper = ash::DesksHelper::Get();
-  ASSERT_EQ(0, desks_helper->GetActiveDeskIndex());
+  ash::DesksController* desks_controller = ash::DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
 
   // Set the template we created as the template we want to launch.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
             new_browser->tab_strip_model()->active_index());
 
   // Verify that the browser window has been launched on the new desk (desk B).
-  EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
   aura::Window* browser_window = new_browser->window()->GetNativeWindow();
   ASSERT_TRUE(browser_window);
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),

@@ -14,11 +14,9 @@ class Browser;
 class TabStripModel;
 class TabMenuModelDelegate;
 
-namespace ash {
-class DesksHelper;
-}  // namespace ash
-
 namespace chromeos {
+
+class DesksHelper;
 
 // ExistingWindowSubMenuModel implementation for chromeos specific code.
 class ExistingWindowSubMenuModelChromeOS : public ExistingWindowSubMenuModel {
@@ -45,7 +43,7 @@ class ExistingWindowSubMenuModelChromeOS : public ExistingWindowSubMenuModel {
   // Returns true if there are at least 2 desks.
   bool ShouldGroupByDesk();
 
-  const ash::DesksHelper* const desks_helper_;
+  const DesksHelper* const desks_helper_;
 };
 
 }  // namespace chromeos

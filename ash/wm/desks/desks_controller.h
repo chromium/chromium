@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/autotest_desks_api.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
@@ -20,6 +19,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/account_id/account_id.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -31,10 +31,11 @@ namespace ash {
 
 class Desk;
 class DeskAnimationBase;
+class DeskTemplate;
 
 // Defines a controller for creating, destroying and managing virtual desks and
 // their windows.
-class ASH_EXPORT DesksController : public DesksHelper,
+class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    public wm::ActivationChangeObserver,
                                    public SessionObserver {
  public:
@@ -238,18 +239,30 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // |target_root|. If desk_index is invalid, it returns nullptr.
   aura::Window* GetDeskContainer(aura::Window* target_root, int desk_index);
 
-  // DesksHelper:
+  // chromeos::DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override;
   int GetActiveDeskIndex() const override;
   std::u16string GetDeskName(int index) const override;
   int GetNumberOfDesks() const override;
   void SendToDeskAtIndex(aura::Window* window, int desk_index) override;
-  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const override;
+
+  // Captures the active desk and returns it as a desk template containing
+  // necessary information that can be used to create a same desk.
+  std::unique_ptr<DeskTemplate> CaptureActiveDeskAsTemplate() const;
+
+  // Creates and activates a new desk for a template with name `template_name`
+  // or `template_name ({counter})` to resolve naming conflicts. Runs `callback`
+  // with true if creation was successful, false otherwise.
   void CreateAndActivateNewDeskForTemplate(
       const std::u16string& template_name,
-      base::OnceCallback<void(bool)> callback) override;
-  bool OnSingleInstanceAppLaunchingFromTemplate(
-      const std::string& app_id) override;
+      base::OnceCallback<void(bool)> callback);
+
+  // Called when an app with `app_id` is a single instance app which is about to
+  // get launched from a saved template. Moves the existing app instance to the
+  // active desk without animation if it exists. Returns true if we should
+  // launch the app (i.e. the app was not found and thus should be launched),
+  // and false otherwise.
+  bool OnSingleInstanceAppLaunchingFromTemplate(const std::string& app_id);
 
   // Updates the default names (e.g. "Desk 1", "Desk 2", ... etc.) given to the
   // desks. This is called when desks are added, removed or reordered to update

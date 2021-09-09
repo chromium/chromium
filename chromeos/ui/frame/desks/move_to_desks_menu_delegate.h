@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_LACROS_MOVE_TO_DESKS_MENU_DELEGATE_LACROS_H_
-#define CHROME_BROWSER_LACROS_MOVE_TO_DESKS_MENU_DELEGATE_LACROS_H_
+#ifndef CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_DELEGATE_H_
+#define CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_DELEGATE_H_
 
 #include "ui/base/models/simple_menu_model.h"
 
@@ -15,15 +15,15 @@ namespace views {
 class Widget;
 }
 
-// Provides the SimpleMenuModel::Delegate implementation for Move window to desk
-// menu.
-class MoveToDesksMenuDelegateLacros : public ui::SimpleMenuModel::Delegate {
+namespace chromeos {
+
+// A `ui::SimpleMenuModel::Delegate` for the Move to Desks menu.
+class MoveToDesksMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
-  explicit MoveToDesksMenuDelegateLacros(views::Widget* widget);
-  MoveToDesksMenuDelegateLacros(const MoveToDesksMenuDelegateLacros&) = delete;
-  MoveToDesksMenuDelegateLacros& operator=(
-      const MoveToDesksMenuDelegateLacros&) = delete;
-  ~MoveToDesksMenuDelegateLacros() override = default;
+  explicit MoveToDesksMenuDelegate(views::Widget* widget);
+  MoveToDesksMenuDelegate(const MoveToDesksMenuDelegate&) = delete;
+  MoveToDesksMenuDelegate& operator=(const MoveToDesksMenuDelegate&) = delete;
+  ~MoveToDesksMenuDelegate() override = default;
 
   // Returns whether the move to desks menu should be shown, i.e. there are more
   // than two desks.
@@ -38,9 +38,11 @@ class MoveToDesksMenuDelegateLacros : public ui::SimpleMenuModel::Delegate {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  // MoveToDesksMenuDelegateLacros is indirectly owned by BrowserFrame,
-  // and guaranteed to be destroyed before Widget.
+  // This is indirectly owned by BrowserFrame, and guaranteed to be destroyed
+  // before Widget.
   views::Widget* const widget_;
 };
 
-#endif  // CHROME_BROWSER_LACROS_MOVE_TO_DESKS_MENU_DELEGATE_LACROS_H_
+}  // namespace chromeos
+
+#endif  // CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_DELEGATE_H_

@@ -228,10 +228,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/accelerators.h"
-#include "ash/public/cpp/desks_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "chrome/browser/ui/ash/window_properties.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/compositor/throughput_tracker.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -1034,7 +1034,8 @@ bool BrowserView::IsOnCurrentWorkspace() const {
     return true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::DesksHelper::Get()->BelongsToActiveDesk(native_win);
+  return chromeos::DesksHelper::Get(native_win)
+      ->BelongsToActiveDesk(native_win);
 #elif defined(OS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return true;

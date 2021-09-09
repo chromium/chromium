@@ -1970,6 +1970,7 @@ component("ash") {
     "//chromeos/system",
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
+    "//chromeos/ui/wm",
     "//components/account_id",
     "//components/country_codes",
     "//components/device_event_log",

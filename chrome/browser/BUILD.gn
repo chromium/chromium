@@ -4955,8 +4955,6 @@ static_library("browser") {
       "lacros/lacros_url_handling.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
-      "lacros/move_to_desks_menu_delegate_lacros.cc",
-      "lacros/move_to_desks_menu_delegate_lacros.h",
       "lacros/prefs_ash_observer.cc",
       "lacros/prefs_ash_observer.h",
       "lacros/snap_controller_lacros.cc",
@@ -4987,8 +4985,8 @@ static_library("browser") {
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
-      "//chromeos/strings:strings_grit",
       "//chromeos/ui/frame",
+      "//chromeos/ui/wm",
       "//ui/platform_window",
     ]
   }

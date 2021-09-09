@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_MOVE_TO_DESKS_MENU_MODEL_H_
-#define CHROMEOS_UI_FRAME_MOVE_TO_DESKS_MENU_MODEL_H_
+#ifndef CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_MODEL_H_
+#define CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_MODEL_H_
 
 #include "ui/base/models/simple_menu_model.h"
 
@@ -55,4 +55,4 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_FRAME_MOVE_TO_DESKS_MENU_MODEL_H_
+#endif  // CHROMEOS_UI_FRAME_DESKS_MOVE_TO_DESKS_MENU_MODEL_H_

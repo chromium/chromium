@@ -2882,6 +2882,7 @@ static_library("ui") {
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//chromeos/ui/vector_icons",
+      "//chromeos/ui/wm",
       "//components/arc",
       "//components/assist_ranker",
       "//components/assist_ranker/proto",
@@ -3004,6 +3005,7 @@ static_library("ui") {
       "//chromeos/lacros",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
+      "//chromeos/ui/wm",
     ]
   }
 

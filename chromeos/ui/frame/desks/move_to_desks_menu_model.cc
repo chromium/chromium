@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ui/frame/move_to_desks_menu_model.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"

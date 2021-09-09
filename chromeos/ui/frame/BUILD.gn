@@ -26,6 +26,10 @@ source_set("frame") {
     "caption_buttons/snap_controller.h",
     "default_frame_header.cc",
     "default_frame_header.h",
+    "desks/move_to_desks_menu_delegate.cc",
+    "desks/move_to_desks_menu_delegate.h",
+    "desks/move_to_desks_menu_model.cc",
+    "desks/move_to_desks_menu_model.h",
     "frame_header.cc",
     "frame_header.h",
     "frame_utils.cc",
@@ -41,8 +45,6 @@ source_set("frame") {
     "immersive/immersive_revealed_lock.h",
     "interior_resize_handler_targeter.cc",
     "interior_resize_handler_targeter.h",
-    "move_to_desks_menu_model.cc",
-    "move_to_desks_menu_model.h",
   ]
 
   deps = [
@@ -50,6 +52,7 @@ source_set("frame") {
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/base",
     "//chromeos/ui/vector_icons",
+    "//chromeos/ui/wm",
     "//skia",
     "//ui/aura",
     "//ui/base",

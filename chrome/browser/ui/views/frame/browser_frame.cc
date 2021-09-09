@@ -38,7 +38,7 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/desks_helper.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -292,7 +292,7 @@ ui::MenuModel* BrowserFrame::GetSystemMenuModel() {
     // changes happened since the last invocation.
     menu_model_builder_.reset();
   }
-  auto* desks_helper = ash::DesksHelper::Get();
+  auto* desks_helper = chromeos::DesksHelper::Get(GetNativeWindow());
   int current_num_desks = desks_helper ? desks_helper->GetNumberOfDesks() : -1;
   if (current_num_desks != num_desks_) {
     // Since the number of desks can change, the model must update to show any

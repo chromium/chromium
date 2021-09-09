@@ -327,9 +327,9 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
   // Set restore in progress to avoid activating desk activation during
   // `window->Show()` in `CreateTestWidget()`.
   test_shell_delegate->SetSessionRestoreInProgress(true);
-  auto* desks_helper = ash::DesksHelper::Get();
+  auto* desks_controller = ash::DesksController::Get();
   const int kActiveDeskIndex = 0;
-  for (int i = 0; i < desks_helper->GetNumberOfDesks(); i++) {
+  for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     widgets.push_back(
         CreateTestWidget(nullptr, container_ids[i], gfx::Rect(700, 0, 50, 50)));
     aura::Window* win = widgets[i]->GetNativeWindow();
@@ -343,7 +343,7 @@ MultiProfileSupportTest::SetUpOneWindowEachDeskForUser(AccountId account_id) {
     EXPECT_TRUE(ash::AutotestDesksApi().IsWindowInDesk(win,
                                                        /*desk_index=*/i));
   }
-  EXPECT_EQ(kActiveDeskIndex, desks_helper->GetActiveDeskIndex());
+  EXPECT_EQ(kActiveDeskIndex, desks_controller->GetActiveDeskIndex());
   test_shell_delegate->SetSessionRestoreInProgress(false);
   return widgets;
 }

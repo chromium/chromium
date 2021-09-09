@@ -16,8 +16,8 @@
 class DeskTemplateAppLaunchHandler;
 
 namespace ash {
-class DesksHelper;
 class DeskTemplate;
+class DesksController;
 }  // namespace ash
 
 namespace desks_storage {
@@ -27,8 +27,7 @@ class LocalDeskDataManager;
 class Profile;
 
 // Class to handle all Desks in-browser functionalities. Will call into
-// ash::DesksController (via ash::DesksHelper) to do actual desk related
-// operations.
+// ash::DesksController to do actual desk related operations.
 class DesksClient : public ash::SessionObserver {
  public:
   DesksClient();
@@ -148,9 +147,9 @@ class DesksClient : public ash::SessionObserver {
                          desks_storage::DeskModel::GetAllEntriesStatus status,
                          std::vector<ash::DeskTemplate*> entries);
 
-  // Convenience pointer to the desks helper which is `ash::DesksController`.
+  // Convenience pointer to ash::DesksController.
   // Guaranteed to be not null for the duration of `this`.
-  ash::DesksHelper* const desks_helper_;
+  ash::DesksController* const desks_controller_;
 
   Profile* active_profile_ = nullptr;
 

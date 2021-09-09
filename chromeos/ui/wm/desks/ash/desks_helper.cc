@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/desks_helper.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 
 #include "base/check_op.h"
+#include "ui/aura/window.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 DesksHelper* g_instance = nullptr;
 }  // namespace
 
 // static
-DesksHelper* DesksHelper::Get() {
+DesksHelper* DesksHelper::Get(aura::Window* window) {
   return g_instance;
 }
 
@@ -27,4 +28,4 @@ DesksHelper::~DesksHelper() {
   g_instance = nullptr;
 }
 
-}  // namespace ash
+}  // namespace chromeos

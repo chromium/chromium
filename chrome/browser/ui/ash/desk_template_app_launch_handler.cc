@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/desks_helper.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -165,7 +165,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   if (is_multi_instance_window)
     return true;
 
-  return ash::DesksHelper::Get()->OnSingleInstanceAppLaunchingFromTemplate(
+  return ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
       app_id);
 }
 

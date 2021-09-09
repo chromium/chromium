@@ -282,7 +282,7 @@ DesksController* DesksController::Get() {
   // |DesksController::NotifyDeskNameChanged())| could be called
   // during the construction of |DesksController|, and at this point
   // |Shell::desks_controller_| has not been assigned yet.
-  return static_cast<DesksController*>(DesksHelper::Get());
+  return static_cast<DesksController*>(chromeos::DesksHelper::Get(nullptr));
 }
 
 // static

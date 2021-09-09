@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/tabs/existing_window_sub_menu_model_chromeos.h"
 
-#include "ash/public/cpp/desks_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
@@ -37,7 +37,11 @@ ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
                                  tab_menu_model_delegate,
                                  model,
                                  context_index),
-      desks_helper_(ash::DesksHelper::Get()) {
+      // This is currently ash only, but it might be under transion.
+      // When this sub menu model is ported to Lacros in the future,
+      // the corresponding aura::Window has to be passed for
+      // DesksHelper::Get(window).
+      desks_helper_(DesksHelper::Get(nullptr)) {
   // If we shouldn't group by desk, ExistingWindowSubMenuModel's ctor has
   // already built the menu.
   if (!ShouldGroupByDesk())
