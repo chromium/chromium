@@ -269,6 +269,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayLaunchOnLocalFolder")
             .DontObserveFileTasks()
             .FilesSwa(),
+        TestCase("fileDisplayLaunchOnLocalFile").DontObserveFileTasks(),
+        TestCase("fileDisplayLaunchOnLocalFile")
+            .DontObserveFileTasks()
+            .FilesSwa(),
         TestCase("fileDisplayDrive").TabletMode(),
         TestCase("fileDisplayDrive"),
         TestCase("fileDisplayDriveOffline").Offline(),

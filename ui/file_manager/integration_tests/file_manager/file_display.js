@@ -65,6 +65,35 @@ testcase.fileDisplayLaunchOnLocalFolder = async () => {
 };
 
 /**
+ * Tests opening the files app navigating to a local folder. Uses
+ * platform_util::OpenItem, a call to an API distinct from the one commonly used
+ * in other tests for the same operation.
+ */
+testcase.fileDisplayLaunchOnLocalFile = async () => {
+  // Add a file to Downloads.
+  await addEntries(['local'], [ENTRIES.hello, ENTRIES.world]);
+
+  // Open Files app on the Downloads directory selecting the target file.
+  await sendTestMessage(
+      {name: 'showItemInFolder', localPath: 'Downloads/hello.txt'});
+
+  // Wait for app window to open.
+  const appId = await remoteCall.waitForWindow('files#');
+
+  // Check: The current directory is MyFiles/Downloads.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My files/Downloads');
+
+  // Check: The target file is selected.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="hello.txt"][selected]');
+
+  // The API used to launch the Files app does not set the IN_TEST flag to true:
+  // error when attempting to retrieve Web Store access token.
+  return IGNORE_APP_ERRORS;
+};
+
+/**
  * Tests opening the files app navigating to the My Drive folder. Uses
  * platform_util::OpenItem, a call to an API distinct from the one commonly used
  * in other tests for the same operation.

@@ -2038,6 +2038,17 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "showItemInFolder") {
+    std::string relative_path;
+    ASSERT_TRUE(value.GetString("localPath", &relative_path));
+    base::FilePath full_path =
+        file_manager::util::GetMyFilesFolderForProfile(profile());
+    full_path = full_path.AppendASCII(relative_path);
+
+    platform_util::ShowItemInFolder(profile(), full_path);
+    return;
+  }
+
   if (name == "launchAppOnLocalFolder") {
     GetLocalPathMessage message;
     ASSERT_TRUE(GetLocalPathMessage::ConvertJSONValue(value, &message));

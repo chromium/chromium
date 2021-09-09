@@ -570,12 +570,13 @@ bool ExecuteFileTask(Profile* profile,
   if (ash::features::IsFileManagerSwaEnabled() &&
       task.app_id == kFileManagerAppId) {
     std::u16string title;
-    const GURL destination_folder =
+    const GURL destination_entry =
         file_urls.size() ? file_urls[0].ToGURL() : GURL();
-    GURL filesSwaURL =
+    GURL files_swa_url =
         ::file_manager::util::GetFileManagerMainPageUrlWithParams(
-            ui::SelectFileDialog::SELECT_NONE, title, destination_folder,
-            /*selection_url=*/{},
+            ui::SelectFileDialog::SELECT_NONE, title,
+            /*current_directory_url=*/{},
+            /*selection_url=*/destination_entry,
             /*target_name=*/{},
             /*file_types=*/nullptr,
             /*file_type_index=*/0,
@@ -583,7 +584,7 @@ bool ExecuteFileTask(Profile* profile,
             /*show_android_picker_apps=*/false);
 
     web_app::SystemAppLaunchParams params;
-    params.url = filesSwaURL;
+    params.url = files_swa_url;
 
     web_app::LaunchSystemWebAppAsync(
         profile, web_app::SystemAppType::FILE_MANAGER, params);
