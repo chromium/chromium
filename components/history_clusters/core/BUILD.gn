@@ -11,10 +11,8 @@ declare_args() {
   # to use the on-device clustering backend even in a developer build.  Setting
   # this variable explicitly to true will cause your build to fail if the
   # internal files are missing.
-  # TODO(tommycli): Change back to the following build args after we fix
-  #  update src-internal to use the updated struct names:
-  #    is_chrome_branded && !is_android && !is_ios
-  build_with_on_device_clustering_backend = false
+  build_with_on_device_clustering_backend =
+      is_chrome_branded && !is_android && !is_ios
 }
 
 buildflag_header("history_clusters_buildflags") {
