@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/media_sink.h"
 
 class Profile;
 
@@ -43,7 +44,8 @@ class CastDialogMetrics {
   // sink) was taken prior to that.
   void OnStartCasting(const base::Time& start_time,
                       int selected_sink_index,
-                      MediaCastMode cast_mode);
+                      MediaCastMode cast_mode,
+                      SinkIconType icon_type);
 
   void OnStopCasting(bool is_local_route);
 

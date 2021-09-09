@@ -366,7 +366,9 @@ void CastDialogView::SinkPressed(size_t index) {
     return;
 
   selected_sink_index_ = index;
-  const UIMediaSink& sink = sink_buttons_.at(index)->sink();
+  // sink() may get invalidated during CastDialogController::StartCasting()
+  // due to a model update, so make a copy here.
+  const UIMediaSink sink = sink_buttons_.at(index)->sink();
   if (sink.route) {
     metrics_.OnStopCasting(sink.route->is_local());
     // StopCasting() may trigger a model update and invalidate |sink|.
@@ -374,9 +376,6 @@ void CastDialogView::SinkPressed(size_t index) {
   } else if (sink.issue) {
     controller_->ClearIssue(sink.issue->id());
   } else {
-    // |sink| may get invalidated during CastDialogController::StartCasting()
-    // due to a model update, so we must use a copy of its |id| field.
-    const std::string sink_id = sink.id;
     absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
       // Starting local file casting may open a new tab synchronously on the UI
@@ -384,12 +383,13 @@ void CastDialogView::SinkPressed(size_t index) {
       // closing and getting destroyed.
       if (cast_mode.value() == LOCAL_FILE)
         set_close_on_deactivate(false);
-      controller_->StartCasting(sink_id, cast_mode.value());
+      controller_->StartCasting(sink.id, cast_mode.value());
       // Re-enable close on deactivate so the user can click elsewhere to close
       // the dialog.
       if (cast_mode.value() == LOCAL_FILE)
         set_close_on_deactivate(!keep_shown_for_testing_);
-      metrics_.OnStartCasting(base::Time::Now(), index, cast_mode.value());
+      metrics_.OnStartCasting(base::Time::Now(), index, cast_mode.value(),
+                              sink.icon_type);
     }
   }
 }

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_footer_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "components/media_router/common/media_sink.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -116,7 +117,7 @@ class MediaNotificationDeviceSelectorView
   void RemoveDevicesOfType(DeviceEntryUIType type);
   void StartCastSession(CastDeviceEntryView* entry);
   void DoStartCastSession(const media_router::UIMediaSink& sink);
-  void RecordStartCastingMetrics();
+  void RecordStartCastingMetrics(media_router::SinkIconType sink_icon_type);
   void RecordStopCastingMetrics();
   void RecordCastDeviceCountAfterDelay();
   void RecordCastDeviceCount();

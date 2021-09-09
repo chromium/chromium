@@ -211,6 +211,22 @@ void MediaRouterMetrics::RecordMediaSinkType(SinkIconType sink_icon_type) {
 }
 
 // static
+void MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(
+    SinkIconType sink_icon_type) {
+  UMA_HISTOGRAM_ENUMERATION(
+      base::StrCat({kHistogramMediaSinkType, ".GlobalMediaControls"}),
+      sink_icon_type, SinkIconType::TOTAL_COUNT);
+}
+
+// static
+void MediaRouterMetrics::RecordMediaSinkTypeForCastDialog(
+    SinkIconType sink_icon_type) {
+  UMA_HISTOGRAM_ENUMERATION(
+      base::StrCat({kHistogramMediaSinkType, ".CastHarmony"}), sink_icon_type,
+      SinkIconType::TOTAL_COUNT);
+}
+
+// static
 void MediaRouterMetrics::RecordDeviceCount(int device_count) {
   UMA_HISTOGRAM_COUNTS_100(kHistogramUiDeviceCount, device_count);
 }

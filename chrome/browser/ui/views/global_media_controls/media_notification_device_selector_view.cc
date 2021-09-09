@@ -517,10 +517,14 @@ void MediaNotificationDeviceSelectorView::DoStartCastSession(
                         media_router::MediaCastMode::PRESENTATION));
   cast_controller_->StartCasting(sink.id,
                                  media_router::MediaCastMode::PRESENTATION);
-  RecordStartCastingMetrics();
+  RecordStartCastingMetrics(sink.icon_type);
 }
 
-void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics() {
+void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics(
+    media_router::SinkIconType sink_icon_type) {
+  media_router::MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(
+      sink_icon_type);
+
   GlobalMediaControlsCastActionAndEntryPoint action;
   switch (entry_point_) {
     case GlobalMediaControlsEntryPoint::kToolbarIcon:
