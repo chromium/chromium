@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast/message_port/cast_core/create_message_port_core.h"
@@ -162,23 +163,32 @@ std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
 
 }  // namespace
 
+constexpr base::TimeDelta
+    StreamingReceiverSessionClient::kMaxAVSettingsWaitTime;
+
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     cast_streaming::ReceiverSession::MessagePortProvider message_port_provider,
     Handler* handler)
     : StreamingReceiverSessionClient(
+          std::move(task_runner),
           std::move(network_context_getter),
           base::BindOnce(&CreateReceiverSession,
                          std::move(message_port_provider)),
           handler) {}
 
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     ReceiverSessionFactory receiver_session_factory,
     Handler* handler)
     : handler_(handler),
-      receiver_session_factory_(std::move(receiver_session_factory)) {
+      task_runner_(std::move(task_runner)),
+      receiver_session_factory_(std::move(receiver_session_factory)),
+      weak_factory_(this) {
   DCHECK(handler_);
+  DCHECK(task_runner_);
   DCHECK(receiver_session_factory_);
   DCHECK(!network_context_getter.is_null());
 
@@ -191,6 +201,12 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
   message_port_->SetReceiver(this);
 
   handler_->StartAvSettingsQuery(std::move(server));
+
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&StreamingReceiverSessionClient::VerifyAVSettingsReceived,
+                     weak_factory_.GetWeakPtr()),
+      kMaxAVSettingsWaitTime);
 }
 
 StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
@@ -199,62 +215,99 @@ StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
 
 StreamingReceiverSessionClient::Handler::~Handler() = default;
 
-void StreamingReceiverSessionClient::LaunchStreamingReceiver(
+void StreamingReceiverSessionClient::LaunchStreamingReceiverAsync(
     CastWebContents* cast_web_contents) {
-  DCHECK(av_constraints_);
-  DCHECK(receiver_session_factory_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(cast_web_contents);
+  DCHECK(!is_streaming_launch_pending());
 
-  receiver_session_ =
-      std::move(receiver_session_factory_).Run(av_constraints_.value());
+  streaming_state_ |= LaunchState::kLaunchCalled;
   Observe(cast_web_contents);
 }
 
 void StreamingReceiverSessionClient::MainFrameReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(is_streaming_launch_pending());
   DCHECK(navigation_handle);
 
-  if (has_streaming_started_ || !receiver_session_ ||
+  if ((streaming_state_ & LaunchState::kMojoHandleAcquired) ||
       !cast_streaming::IsCastStreamingMediaSourceUrl(
           navigation_handle->GetURL())) {
     return;
   }
 
-  mojo::AssociatedRemote<::mojom::CastStreamingReceiver>
-      cast_streaming_receiver;
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&cast_streaming_receiver);
-  receiver_session_->SetCastStreamingReceiver(
-      std::move(cast_streaming_receiver));
+      ->GetInterface(&cast_streaming_receiver_);
+  streaming_state_ |= LaunchState::kMojoHandleAcquired;
 
-  has_streaming_started_ = true;
+  if (!TryStartStreamingSession()) {
+    DCHECK(!has_received_av_settings());
+    DLOG(INFO) << "AV Settings not yet received. Waiting...";
+  }
+}
+
+bool StreamingReceiverSessionClient::TryStartStreamingSession() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!has_streaming_launched());
+  if (streaming_state_ != LaunchState::kReady) {
+    return false;
+  }
+
+  DCHECK(av_constraints_);
+  DCHECK(receiver_session_factory_);
+  receiver_session_ =
+      std::move(receiver_session_factory_).Run(av_constraints_.value());
+  DCHECK(receiver_session_);
+  receiver_session_->SetCastStreamingReceiver(
+      std::move(cast_streaming_receiver_));
+
+  streaming_state_ = LaunchState::kLaunched;
   handler_->OnStreamingSessionStarted();
+  return true;
+}
+
+void StreamingReceiverSessionClient::VerifyAVSettingsReceived() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!has_received_av_settings()) {
+    LOG(ERROR) << "AV Settings never received";
+    TriggerError();
+  }
 }
 
 bool StreamingReceiverSessionClient::OnMessage(
     base::StringPiece message,
     std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ports.empty());
+
+  if (streaming_state_ == LaunchState::kError) {
+    LOG(WARNING) << "AV Settings received after an error: " << message;
+    return false;
+  }
 
   absl::optional<PlatformInfoSerializer> deserializer =
       PlatformInfoSerializer::TryParse(message);
   if (!deserializer) {
-    handler_->OnError();
     LOG(ERROR) << "AV Settings with invalid JSON received: " << message;
+    TriggerError();
     return false;
   }
 
   auto constraints = CreateConstraints(deserializer.value());
-  if (!has_streaming_started_) {
+  streaming_state_ |= LaunchState::kAVSettingsReceived;
+  if (!has_streaming_launched()) {
     av_constraints_ = std::move(constraints);
+    TryStartStreamingSession();
     return true;
   }
 
   DCHECK(av_constraints_);
   if (!constraints.IsSupersetOf(av_constraints_.value())) {
-    handler_->OnError();
     LOG(WARNING) << "Device no longer supports capabilities used for "
                  << "cast streaming session negotiation: " << message;
+    TriggerError();
     return false;
   }
 
@@ -263,6 +316,15 @@ bool StreamingReceiverSessionClient::OnMessage(
 
 void StreamingReceiverSessionClient::OnPipeError() {
   DLOG(WARNING) << "Pipe disconnected.";
+  TriggerError();
+}
+
+void StreamingReceiverSessionClient::TriggerError() {
+  if (streaming_state_ == LaunchState::kError) {
+    return;
+  }
+
+  streaming_state_ = LaunchState::kError;
   handler_->OnError();
 }
 

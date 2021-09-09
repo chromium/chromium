@@ -404,6 +404,7 @@ test("cast_cast_core_unittests") {
     "//chromecast/base/metrics",
     "//chromecast/browser:simple_client",
     "//chromecast/browser:simple_main_parts",
+    "//chromecast/browser:test_support",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",
