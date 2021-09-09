@@ -484,7 +484,7 @@ bool SocketsTcpSecureFunction::Prepare() {
 // Override the regular implementation, which would call AsyncWorkCompleted
 // immediately after Work().
 void SocketsTcpSecureFunction::AsyncWorkStart() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ResumableTCPSocket* socket = GetTcpSocket(params_->socket_id);
   if (!socket) {

@@ -76,17 +76,63 @@ SocketAsyncApiFunction::SocketAsyncApiFunction() {}
 
 SocketAsyncApiFunction::~SocketAsyncApiFunction() {}
 
-bool SocketAsyncApiFunction::PrePrepare() {
+ExtensionFunction::ResponseAction SocketAsyncApiFunction::Run() {
   manager_ = CreateSocketResourceManager();
-  return manager_->SetBrowserContext(browser_context());
+  manager_->SetBrowserContext(browser_context());
+  if (!PrePrepare() || !Prepare()) {
+    DCHECK(!results_);
+    DCHECK(!error_.empty());
+    return RespondNow(Error(error_));
+  }
+  AsyncWorkStart();
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-bool SocketAsyncApiFunction::Respond() { return error_.empty(); }
+bool SocketAsyncApiFunction::PrePrepare() {
+  return true;
+}
+
+bool SocketAsyncApiFunction::Prepare() {
+  return true;
+}
+
+void SocketAsyncApiFunction::Work() {}
+
+void SocketAsyncApiFunction::AsyncWorkStart() {
+  Work();
+  AsyncWorkCompleted();
+}
+
+ExtensionFunction::ResponseValue SocketAsyncApiFunction::GetResponseValue() {
+  ResponseValue response;
+  if (error_.empty()) {
+    response = ArgumentList(std::move(results_));
+  } else {
+    response = results_ ? ErrorWithArguments(std::move(results_), error_)
+                        : Error(error_);
+  }
+  return response;
+}
+
+void SocketAsyncApiFunction::AsyncWorkCompleted() {
+  Respond(GetResponseValue());
+}
+
+void SocketAsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
+  results_ = std::make_unique<base::ListValue>();
+  results_->Append(std::move(result));
+}
 
 std::unique_ptr<SocketResourceManagerInterface>
 SocketAsyncApiFunction::CreateSocketResourceManager() {
   return std::unique_ptr<SocketResourceManagerInterface>(
       new SocketResourceManager<Socket>());
+}
+
+// static
+bool SocketAsyncApiFunction::ValidationFailure(
+    SocketAsyncApiFunction* function) {
+  return false;
 }
 
 int SocketAsyncApiFunction::AddSocket(Socket* socket) {
@@ -113,6 +159,7 @@ void SocketAsyncApiFunction::RemoveSocket(int api_resource_id) {
 void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
                                               int socket_id,
                                               Socket* socket) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!net::HostStringIsLocalhost(address)) {
     net::IPEndPoint local_address;
@@ -128,56 +175,31 @@ void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
                                          ? AppFirewallHole::PortType::TCP
                                          : AppFirewallHole::PortType::UDP;
 
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&SocketAsyncApiFunction::OpenFirewallHoleOnUIThread,
-                       this, type, local_address.port(), socket_id));
-    return;
+    AppFirewallHoleManager* manager =
+        AppFirewallHoleManager::Get(browser_context());
+    std::unique_ptr<AppFirewallHole> hole(
+        manager->Open(type, local_address.port(), extension_id()).release());
+
+    if (!hole) {
+      error_ = kFirewallFailure;
+      SetResult(std::make_unique<base::Value>(-1));
+      AsyncWorkCompleted();
+      return;
+    }
+
+    Socket* socket = GetSocket(socket_id);
+    if (!socket) {
+      error_ = kSocketNotFoundError;
+      SetResult(std::make_unique<base::Value>(-1));
+      AsyncWorkCompleted();
+      return;
+    }
+
+    socket->set_firewall_hole(std::move(hole));
   }
 #endif
   AsyncWorkCompleted();
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-void SocketAsyncApiFunction::OpenFirewallHoleOnUIThread(
-    AppFirewallHole::PortType type,
-    uint16_t port,
-    int socket_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  AppFirewallHoleManager* manager =
-      AppFirewallHoleManager::Get(browser_context());
-  std::unique_ptr<AppFirewallHole, BrowserThread::DeleteOnUIThread> hole(
-      manager->Open(type, port, extension_id()).release());
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SocketAsyncApiFunction::OnFirewallHoleOpened,
-                                this, socket_id, std::move(hole)));
-}
-
-void SocketAsyncApiFunction::OnFirewallHoleOpened(
-    int socket_id,
-    std::unique_ptr<AppFirewallHole, BrowserThread::DeleteOnUIThread> hole) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!hole) {
-    error_ = kFirewallFailure;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
-    return;
-  }
-
-  Socket* socket = GetSocket(socket_id);
-  if (!socket) {
-    error_ = kSocketNotFoundError;
-    SetResult(std::make_unique<base::Value>(-1));
-    AsyncWorkCompleted();
-    return;
-  }
-
-  socket->set_firewall_hole(std::move(hole));
-  AsyncWorkCompleted();
-}
-
-#endif  // IS_CHROMEOS_ASH
 
 SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction() =
     default;
@@ -1109,7 +1131,7 @@ bool SocketSecureFunction::Prepare() {
 // Override the regular implementation, which would call AsyncWorkCompleted
 // immediately after Work().
 void SocketSecureFunction::AsyncWorkStart() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   Socket* socket = GetSocket(params_->socket_id);
   if (!socket) {
