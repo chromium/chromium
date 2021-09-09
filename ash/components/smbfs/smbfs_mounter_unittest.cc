@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/smbfs/smbfs_mounter.h"
+#include "ash/components/smbfs/smbfs_mounter.h"
 
 #include <string.h>
 
@@ -141,12 +141,7 @@ class SmbFsMounterTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO,
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-  mojo::core::ScopedIPCSupport ipc_support_{
-      task_environment_.GetMainThreadTaskRunner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   MockDelegate mock_delegate_;
   chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;
@@ -568,12 +563,7 @@ class SmbFsMounterE2eTest : public testing::Test {
  protected:
   // This test performs actual IPC using sockets, and therefore cannot use
   // MOCK_TIME, which automatically advances time when the main loop is idle.
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-  mojo::core::ScopedIPCSupport ipc_support_{
-      task_environment_.GetMainThreadTaskRunner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN};
+  base::test::TaskEnvironment task_environment_;
 
   MockDelegate mock_delegate_;
   chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;

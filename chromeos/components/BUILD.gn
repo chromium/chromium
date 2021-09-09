@@ -34,7 +34,6 @@ test("chromeos_components_unittests") {
     "//chromeos/components/projector_app:unit_tests",
     "//chromeos/components/proximity_auth:unit_tests",
     "//chromeos/components/sensors:unit_tests",
-    "//chromeos/components/smbfs:unit_tests",
     "//chromeos/components/string_matching:unit_tests",
     "//chromeos/components/sync_wifi:unit_tests",
     "//chromeos/components/tether:unit_tests",

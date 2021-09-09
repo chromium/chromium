@@ -1,4 +1,4 @@
-chromeos/components/smbfs
+ash/components/smbfs
 =========================
 
 smbfs is a FUSE-based filesystem for accessing SMB file shares on Chrome OS.

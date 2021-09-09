@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SMBFS_SMBFS_HOST_H_
-#define CHROMEOS_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#ifndef ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#define ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
 
 #include <memory>
 
+#include "ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "chromeos/components/smbfs/mojom/smbfs.mojom.h"
 #include "chromeos/disks/mount_point.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -93,4 +93,4 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
 
 }  // namespace smbfs
 
-#endif  // CHROMEOS_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#endif  // ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_

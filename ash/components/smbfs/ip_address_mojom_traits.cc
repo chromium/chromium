@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/smbfs/ip_address_mojom_traits.h"
+#include "ash/components/smbfs/ip_address_mojom_traits.h"
 
 namespace mojo {
 

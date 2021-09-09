@@ -9,6 +9,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/smbfs/smbfs_host.h"
+#include "ash/components/smbfs/smbfs_mounter.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -39,8 +41,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/components/smbfs/smbfs_host.h"
-#include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/smbprovider/fake_smb_provider_client.h"

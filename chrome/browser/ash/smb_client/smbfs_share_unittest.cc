@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/smbfs/smbfs_host.h"
+#include "ash/components/smbfs/smbfs_mounter.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/smbfs/smbfs_host.h"
-#include "chromeos/components/smbfs/smbfs_mounter.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mount_point.h"
 #include "content/public/test/browser_task_environment.h"

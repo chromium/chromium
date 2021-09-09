@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
-#define CHROMEOS_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#ifndef ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#define ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/components/smbfs/mojom/smbfs.mojom.h"
+#include "ash/components/smbfs/smbfs_host.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
@@ -16,8 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/smbfs/mojom/smbfs.mojom.h"
-#include "chromeos/components/smbfs/smbfs_host.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mount_point.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -141,4 +141,4 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
 
 }  // namespace smbfs
 
-#endif  // CHROMEOS_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#endif  // ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
