@@ -45,6 +45,8 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 12,
   // Image will be used with mipmap enabled
   SHARED_IMAGE_USAGE_MIPMAP = 1 << 13,
+  // Image will be used for CPU Writes by client
+  SHARED_IMAGE_USAGE_CPU_WRITE = 1 << 14,
 };
 
 }  // namespace gpu

@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 
 #include <inttypes.h>
+#include <memory>
 
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "gpu/command_buffer/service/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_shared_memory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/wrapped_sk_image.h"
@@ -134,6 +136,10 @@ SharedImageFactory::SharedImageFactory(
   DCHECK(gr_context_type_ == GrContextType::kGL ||
          gr_context_type_ == GrContextType::kMetal);
 #endif
+
+  auto shared_memory_backing_factory =
+      std::make_unique<SharedImageBackingFactorySharedMemory>();
+  factories_.push_back(std::move(shared_memory_backing_factory));
 
   if (enable_wrapped_sk_image && context_state) {
     auto wrapped_sk_image_factory =
