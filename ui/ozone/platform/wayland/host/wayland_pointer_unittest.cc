@@ -198,6 +198,54 @@ TEST_P(WaylandPointerTest, MotionDragged) {
   EXPECT_EQ(gfx::PointF(400, 500), mouse_event->root_location_f());
 }
 
+// Verifies whether the platform event source handles all types of axis sources.
+// The actual behaviour of each axis source is not tested here.
+TEST_P(WaylandPointerTest, AxisSourceTypes) {
+  uint32_t time = 1001;
+  wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(), 0, 0);
+  Sync();  // We're interested only in checking axis source types events in this
+           // test case, so skip Enter event here.
+
+  std::unique_ptr<Event> event1, event2, event3, event4;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .Times(4)
+      .WillOnce(CloneEvent(&event1))
+      .WillOnce(CloneEvent(&event2))
+      .WillOnce(CloneEvent(&event3))
+      .WillOnce(CloneEvent(&event4));
+
+  SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_WHEEL,
+                 WL_POINTER_AXIS_VERTICAL_SCROLL, rand() % 20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
+  SendAxisEvents(pointer_->resource(), ++time, WL_POINTER_AXIS_SOURCE_FINGER,
+                 WL_POINTER_AXIS_VERTICAL_SCROLL, rand() % 20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
+  SendAxisEvents(pointer_->resource(), ++time,
+                 WL_POINTER_AXIS_SOURCE_CONTINUOUS,
+                 WL_POINTER_AXIS_VERTICAL_SCROLL, rand() % 20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
+  SendAxisEvents(pointer_->resource(), ++time,
+                 WL_POINTER_AXIS_SOURCE_WHEEL_TILT,
+                 WL_POINTER_AXIS_VERTICAL_SCROLL, rand() % 20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  Sync();
+
+  ASSERT_TRUE(event1);
+  ASSERT_TRUE(event1->IsMouseWheelEvent());
+  ASSERT_TRUE(event2);
+  ASSERT_TRUE(event2->IsScrollEvent());
+  ASSERT_TRUE(event3);
+  ASSERT_TRUE(event3->IsScrollEvent());
+  ASSERT_TRUE(event4);
+  ASSERT_TRUE(event4->IsMouseWheelEvent());
+}
+
 TEST_P(WaylandPointerTest, AxisVertical) {
   wl_pointer_send_enter(pointer_->resource(), 1, surface_->resource(),
                         wl_fixed_from_int(0), wl_fixed_from_int(0));

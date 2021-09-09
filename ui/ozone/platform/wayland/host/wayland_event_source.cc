@@ -249,13 +249,17 @@ void WaylandEventSource::OnPointerFrameEvent() {
     DispatchEvent(&event);
     recent_pointer_frames_.clear();
   } else if (current_pointer_frame_.axis_source) {
-    if (*current_pointer_frame_.axis_source == WL_POINTER_AXIS_SOURCE_WHEEL) {
+    if (*current_pointer_frame_.axis_source == WL_POINTER_AXIS_SOURCE_WHEEL ||
+        *current_pointer_frame_.axis_source ==
+            WL_POINTER_AXIS_SOURCE_WHEEL_TILT) {
       MouseWheelEvent event(
           gfx::Vector2d(current_pointer_frame_.dx, current_pointer_frame_.dy),
           pointer_location_, pointer_location_, EventTimeForNow(), flags, 0);
       DispatchEvent(&event);
     } else if (*current_pointer_frame_.axis_source ==
-               WL_POINTER_AXIS_SOURCE_FINGER) {
+                   WL_POINTER_AXIS_SOURCE_FINGER ||
+               *current_pointer_frame_.axis_source ==
+                   WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
       ScrollEvent event(ET_SCROLL, pointer_location_, pointer_location_,
                         EventTimeForNow(), flags, current_pointer_frame_.dx,
                         current_pointer_frame_.dy, current_pointer_frame_.dx,
