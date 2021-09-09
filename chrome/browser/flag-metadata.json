@@ -5482,7 +5482,7 @@
   {
     "name": "trust-tokens",
     "owners": [ "davidvc", "privacy-sandbox-dev" ],
-    "expiry_milestone": 94
+    "expiry_milestone": 105
   },
   {
     "name": "turn-off-streaming-media-caching-always",
