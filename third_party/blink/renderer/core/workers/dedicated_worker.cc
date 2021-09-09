@@ -411,17 +411,14 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
     absl::optional<network::mojom::IPAddressSpace> response_address_space) {
   base::UnguessableToken parent_devtools_token;
   std::unique_ptr<WorkerSettings> settings;
-  ExecutionContext* execution_context = GetExecutionContext();
-
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     auto* frame = window->GetFrame();
-    if (frame) {
+    if (frame)
       parent_devtools_token = frame->GetDevToolsFrameToken();
-    }
     settings = std::make_unique<WorkerSettings>(frame->GetSettings());
   } else {
     WorkerGlobalScope* worker_global_scope =
-        To<WorkerGlobalScope>(execution_context);
+        To<WorkerGlobalScope>(GetExecutionContext());
     parent_devtools_token =
         worker_global_scope->GetThread()->GetDevToolsWorkerToken();
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
@@ -433,26 +430,31 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
           : mojom::blink::ScriptType::kModule;
 
   return std::make_unique<GlobalScopeCreationParams>(
-      script_url, script_type, options_->name(), execution_context->UserAgent(),
-      execution_context->GetUserAgentMetadata(), CreateWebWorkerFetchContext(),
-      mojo::Clone(
-          execution_context->GetContentSecurityPolicy()->GetParsedPolicies()),
-      referrer_policy, execution_context->GetSecurityOrigin(),
-      execution_context->IsSecureContext(), execution_context->GetHttpsState(),
+      script_url, script_type, options_->name(),
+      GetExecutionContext()->UserAgent(),
+      GetExecutionContext()->GetUserAgentMetadata(),
+      CreateWebWorkerFetchContext(),
+      mojo::Clone(GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->GetParsedPolicies()),
+      referrer_policy, GetExecutionContext()->GetSecurityOrigin(),
+      GetExecutionContext()->IsSecureContext(),
+      GetExecutionContext()->GetHttpsState(),
       MakeGarbageCollected<WorkerClients>(), CreateWebContentSettingsClient(),
       response_address_space,
-      OriginTrialContext::GetTokens(execution_context).get(),
+      OriginTrialContext::GetTokens(GetExecutionContext()).get(),
       parent_devtools_token, std::move(settings),
       mojom::blink::V8CacheOptions::kDefault,
       nullptr /* worklet_module_responses_map */,
       std::move(browser_interface_broker_),
       mojo::NullRemote() /* code_cache_host_interface */,
       CreateBeginFrameProviderParams(),
-      execution_context->GetSecurityContext().GetPermissionsPolicy(),
-      execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
-      execution_context->GetExecutionContextToken(),
-      execution_context->CrossOriginIsolatedCapability(),
-      execution_context->DirectSocketCapability());
+      GetExecutionContext()->GetSecurityContext().GetPermissionsPolicy(),
+      GetExecutionContext()->GetAgentClusterID(),
+      GetExecutionContext()->UkmSourceID(),
+      GetExecutionContext()->GetExecutionContextToken(),
+      GetExecutionContext()->CrossOriginIsolatedCapability(),
+      GetExecutionContext()->DirectSocketCapability());
 }
 
 scoped_refptr<WebWorkerFetchContext>

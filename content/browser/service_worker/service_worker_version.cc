@@ -1905,13 +1905,8 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   // more than once.
   params->outside_fetch_client_settings_object =
       outside_fetch_client_settings_object_.Clone();
-
-  ContentBrowserClient* browser_client = GetContentClient()->browser();
-  params->user_agent = (origin_trial_tokens_ &&
-                        origin_trial_tokens_->contains("UserAgentReduction"))
-                           ? browser_client->GetReducedUserAgent()
-                           : browser_client->GetUserAgent();
-  params->ua_metadata = browser_client->GetUserAgentMetadata();
+  params->user_agent = GetContentClient()->browser()->GetUserAgent();
+  params->ua_metadata = GetContentClient()->browser()->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;
   params->main_script_load_params = std::move(main_script_load_params_);

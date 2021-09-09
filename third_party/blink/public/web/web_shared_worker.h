@@ -75,7 +75,6 @@ class BLINK_EXPORT WebSharedWorker {
       const WebString& name,
       WebSecurityOrigin constructor_origin,
       const WebString& user_agent,
-      const WebString& reduced_user_agent,
       const UserAgentMetadata& ua_metadata,
       const WebVector<WebContentSecurityPolicy>& content_security_policies,
       network::mojom::IPAddressSpace,
