@@ -106,7 +106,9 @@ class BLINK_COMMON_EXPORT StorageKey {
              const net::SchemefulSite& top_level_site,
              const base::UnguessableToken* nonce)
       : origin_(origin),
-        top_level_site_(top_level_site),
+        top_level_site_(IsThirdPartyStoragePartitioningEnabled()
+                            ? top_level_site
+                            : net::SchemefulSite(origin)),
         nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {}
 
   BLINK_COMMON_EXPORT
@@ -126,9 +128,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   // this StorageKey was created for (for storage partitioning purposes).
   //
   // Like everything, this too has exceptions:
-  // * If the nonce is populated then this value doesn't matter.
   // * For extensions or related enterprise policies this may not represent the
   // top-level site.
+  //
+  // Note that this value is populated with `origin_`'s site unless the feature
+  // flag `kThirdPartyStoragePartitioning` is enabled.
   net::SchemefulSite top_level_site_;
 
   // An optional nonce, forcing a partitioned storage from anything else. Used

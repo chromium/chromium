@@ -271,4 +271,38 @@ TEST(StorageKeyTest, IsThirdPartyStoragePartitioningEnabled) {
   EXPECT_TRUE(StorageKey::IsThirdPartyStoragePartitioningEnabled());
 }
 
+// Test that StorageKey's top_level_site getter returns origin's site when
+// storage partitioning is disabled.
+TEST(StorageKeyTest, TopLevelSiteGetter) {
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+
+  StorageKey key_origin1 = StorageKey(origin1);
+  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site2.top_level_site());
+}
+
+// Test that StorageKey's top_level_site getter returns the top level site when
+// storage partitioning is enabled.
+TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+
+  StorageKey key_origin1 = StorageKey(origin1);
+  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin2), key_origin1_site2.top_level_site());
+}
+
 }  // namespace blink

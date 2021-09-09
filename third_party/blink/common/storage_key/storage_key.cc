@@ -87,12 +87,8 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
-  if (StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
-    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) ==
-           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
-  }
-
-  return std::tie(lhs.origin_, lhs.nonce_) == std::tie(rhs.origin_, rhs.nonce_);
+  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) ==
+         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
 }
 
 bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
@@ -100,12 +96,8 @@ bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
 }
 
 bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
-  if (StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
-    return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) <
-           std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
-  }
-
-  return std::tie(lhs.origin_, lhs.nonce_) < std::tie(rhs.origin_, rhs.nonce_);
+  return std::tie(lhs.origin_, lhs.top_level_site_, lhs.nonce_) <
+         std::tie(rhs.origin_, rhs.top_level_site_, rhs.nonce_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {

@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "url/gurl.h"
 
@@ -146,6 +149,44 @@ TEST(BlinkStorageKey, CreateFromStringForTesting) {
   EXPECT_EQ(key1, BlinkStorageKey(SecurityOrigin::CreateFromString(example)));
   EXPECT_TRUE(key2.GetSecurityOrigin()->IsOpaque());
   EXPECT_TRUE(key3.GetSecurityOrigin()->IsOpaque());
+}
+
+// Test that BlinkStorageKey's top_level_site getter returns origin's site when
+// storage partitioning is disabled.
+TEST(BlinkStorageKey, TopLevelSiteGetter) {
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
+  url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
+
+  StorageKey key_origin1 = StorageKey(origin1);
+  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
+  EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site2.top_level_site());
+}
+
+// Test that BlinkStorageKey's top_level_site getter returns the top level site
+// when storage partitioning is enabled.
+TEST(BlinkStorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  scoped_refptr<const SecurityOrigin> origin1 =
+      SecurityOrigin::CreateFromString("https://example.com");
+  scoped_refptr<const SecurityOrigin> origin2 =
+      SecurityOrigin::CreateFromString("https://test.example");
+
+  BlinkStorageKey key_origin1 = BlinkStorageKey(origin1);
+  BlinkStorageKey key_origin1_site1 =
+      BlinkStorageKey(origin1, BlinkSchemefulSite(origin1));
+  BlinkStorageKey key_origin1_site2 =
+      BlinkStorageKey(origin1, BlinkSchemefulSite(origin2));
+
+  EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1.GetTopLevelSite());
+  EXPECT_EQ(BlinkSchemefulSite(origin1), key_origin1_site1.GetTopLevelSite());
+  EXPECT_EQ(BlinkSchemefulSite(origin2), key_origin1_site2.GetTopLevelSite());
 }
 
 }  // namespace blink

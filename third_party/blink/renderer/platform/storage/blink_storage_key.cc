@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 
 namespace blink {
 
@@ -24,17 +25,16 @@ BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
 
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                                  const base::UnguessableToken* nonce)
-    : origin_(std::move(origin)),
-      top_level_site_(BlinkSchemefulSite(origin_)),
-      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
-  DCHECK(origin_);
-}
+    : BlinkStorageKey(origin, BlinkSchemefulSite(origin), nonce) {}
 
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
                                  const BlinkSchemefulSite& top_level_site,
                                  const base::UnguessableToken* nonce)
-    : origin_(std::move(origin)),
-      top_level_site_(top_level_site),
+    : origin_(origin),
+      top_level_site_(
+          blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()
+              ? top_level_site
+              : BlinkSchemefulSite(origin)),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
   DCHECK(origin_);
 }
@@ -79,16 +79,10 @@ bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
   DCHECK(lhs.GetSecurityOrigin());
   DCHECK(rhs.GetSecurityOrigin());
 
-  if (blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
-    return lhs.GetSecurityOrigin()->IsSameOriginWith(
-               rhs.GetSecurityOrigin().get()) &&
-           lhs.GetNonce() == rhs.GetNonce() &&
-           lhs.GetTopLevelSite() == rhs.GetTopLevelSite();
-  }
-
   return lhs.GetSecurityOrigin()->IsSameOriginWith(
              rhs.GetSecurityOrigin().get()) &&
-         lhs.GetNonce() == rhs.GetNonce();
+         lhs.GetNonce() == rhs.GetNonce() &&
+         lhs.GetTopLevelSite() == rhs.GetTopLevelSite();
 }
 
 bool operator!=(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
