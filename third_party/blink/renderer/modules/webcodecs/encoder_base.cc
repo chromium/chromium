@@ -201,11 +201,13 @@ void EncoderBase<Traits>::reset(ExceptionState& exception_state) {
 
   TRACE_EVENT0(kCategory, GetTraceNames()->reset.c_str());
 
-  MarkCodecActive();
-
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
   ResetInternal();
   media_encoder_.reset();
+
+  // This codec isn't holding on to any resources, and doesn't need to be
+  // reclaimed.
+  PauseCodecReclamation();
 }
 
 template <typename Traits>
@@ -237,6 +239,7 @@ void EncoderBase<Traits>::HandleError(DOMException* ex) {
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
   ResetInternal();
+  PauseCodecReclamation();
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
@@ -335,6 +338,7 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
 template <typename Traits>
 void EncoderBase<Traits>::OnCodecReclaimed(DOMException* exception) {
   TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+  DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
   HandleError(exception);
 }
 

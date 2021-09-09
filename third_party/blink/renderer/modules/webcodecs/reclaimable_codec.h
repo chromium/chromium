@@ -20,8 +20,22 @@ class MODULES_EXPORT ReclaimableCodec : public GarbageCollectedMixin {
   // GarbageCollectedMixin override.
   void Trace(Visitor*) const override;
 
+  bool IsReclamationTimerActiveForTesting() {
+    return activity_timer_.IsActive();
+  }
+
+  void SimulateCodecReclaimedForTesting();
+
  protected:
+  // Pushes back the time at which |this| can be reclaimed due to inactivity.
+  // Starts a inactivity reclamation timer, if it isn't already running.
   void MarkCodecActive();
+
+  // Called when a codec should no longer be reclaimed, such as when it is not
+  // holding on to any resources.
+  //
+  // Calling MarkCodecActive() will automatically unpause reclamation.
+  void PauseCodecReclamation();
 
   virtual void OnCodecReclaimed(DOMException*) = 0;
 

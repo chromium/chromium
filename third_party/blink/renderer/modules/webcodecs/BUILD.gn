@@ -106,10 +106,12 @@ source_set("unit_tests") {
   sources = [
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
+    "audio_encoder_test.cc",
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",
+    "reclaimable_codec_test.cc",
     "video_decoder_broker_test.cc",
     "video_encoder_test.cc",
     "video_frame_monitor_test.cc",

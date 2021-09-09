@@ -163,6 +163,51 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
   }
 }
 
+// Ensures codecs can be reclaimed in a configured or unconfigured state.
+TYPED_TEST(DecoderTemplateTest, CodecReclamation) {
+  V8TestingScope v8_scope;
+
+  // Create a decoder.
+  auto* output_callback = MockFunction::Create(v8_scope.GetScriptState());
+  auto* error_callback = MockFunction::Create(v8_scope.GetScriptState());
+
+  auto* decoder =
+      this->CreateDecoder(v8_scope.GetScriptState(),
+                          this->CreateInit(output_callback, error_callback),
+                          v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  // Configure the decoder.
+  decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
+
+  // Resets count as activity for decoders.
+  decoder->reset(v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
+
+  // Reclaiming a reset decoder should not call the error callback.
+  EXPECT_CALL(*error_callback, Call(testing::_)).Times(0);
+  decoder->SimulateCodecReclaimedForTesting();
+  ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
+
+  testing::Mock::VerifyAndClearExpectations(error_callback);
+
+  // Configure the decoder once more.
+  decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
+
+  // Reclaiming a configured decoder should call the error callback.
+  EXPECT_CALL(*error_callback, Call(testing::_)).Times(1);
+  decoder->SimulateCodecReclaimedForTesting();
+  ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
+
+  testing::Mock::VerifyAndClearExpectations(error_callback);
+}
+
 // Note: AudioDecoder and VideoDecoder specific tests should be put in
 // audio_decoder_test.cc and video_decoder_test.cc respectively.
 

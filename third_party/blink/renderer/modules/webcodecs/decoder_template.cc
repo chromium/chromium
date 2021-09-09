@@ -423,6 +423,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
 
   // flush() can only be called when state = "configured", in which case we
   // should always have a decoder.
@@ -489,6 +490,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   // Abort all upcoming work.
   ResetAlgorithm();
+  PauseCodecReclamation();
 
   // Store the error callback so that we can use it after clearing state.
   V8WebCodecsErrorCallback* error_cb = error_cb_.Get();
@@ -743,6 +745,17 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnCodecReclaimed(DOMException* exception) {
   TRACE_EVENT0(kCategory, GetTraceNames()->reclaimed.c_str());
+
+  if (state_.AsEnum() == V8CodecState::Enum::kUnconfigured) {
+    decoder_.reset();
+
+    // This codec isn't holding on to any resources, and doesn't need to be
+    // reclaimed.
+    PauseCodecReclamation();
+    return;
+  }
+
+  DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
   Shutdown(exception);
 }
 
