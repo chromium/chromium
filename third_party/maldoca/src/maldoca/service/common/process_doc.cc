@@ -19,9 +19,7 @@
 #include "absl/memory/memory.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/str_cat.h"
-#ifndef MALDOCA_IN_CHROMIUM
-#include "google/protobuf/message.h"  // nogncheck
-#endif
+#include "google/protobuf/message.h"
 #include "maldoca/base/digest.h"
 #include "maldoca/base/status.h"
 #include "maldoca/base/status_macros.h"

@@ -29,9 +29,7 @@
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
 #include "base/files/file_path.h"
-#ifndef MALDOCA_IN_CHROMIUM
-#include "google/protobuf/message.h"  // nogncheck
-#endif
+#include "google/protobuf/message.h"
 #include "maldoca/base/statusor.h"
 #if defined(_WIN32)
 #include "maldoca/base/utf8/unicodetext.h"
@@ -79,9 +77,11 @@ inline absl::Status CreateDir(absl::string_view path) {
 
 std::string CreateTempFileAndCloseOrDie(absl::string_view directory,
                                         const std::string& contents);
+#endif  // MALDOCA_CHROME
 absl::Status GetTextProto(absl::string_view filename,
                           ::google::protobuf::Message* proto);
 
+#ifndef MALDOCA_CHROME
 // Get a temp dir for testing
 inline std::string TestTempDir() {
   auto var = getenv("TEST_TMPDIR");

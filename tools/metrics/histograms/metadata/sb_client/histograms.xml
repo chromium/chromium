@@ -87,16 +87,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DocumentAnalysisSuccess" units="Boolean"
-    expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    For each Office file analyzed by the SafeBrowsing download service, records
-    if analysis by maldoca was successful.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DownloadExtensions"
     enum="SBClientDownloadExtensions" expires_after="2022-01-02">
   <owner>vakh@chromium.org</owner>
@@ -201,16 +191,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
     info from a downloaded DMG file.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
-    expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from an Office document.
   </summary>
 </histogram>
 

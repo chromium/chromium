@@ -21,14 +21,12 @@
 
 // Use third_party/protobuf/text_format.h for oss
 #include "absl/base/call_once.h"
-#ifndef MALDOCA_IN_CHROMIUM
-#include "absl/flags/flag.h"  // nogncheck
-#endif
+#include "absl/flags/flag.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
-#ifndef MALDOCA_IN_CHROMIUM
-#include "google/protobuf/text_format.h"  // nogncheck
-#endif                                    // MALDOCA_IN_CHROMIUM
+#ifndef MALDOCA_CHROME
+#include "google/protobuf/text_format.h"
+#endif  // MALDOCA_CHROME
 #include "libxml/SAX2.h"
 #include "libxml/parserInternals.h"
 

@@ -30,9 +30,6 @@ extern const base::Feature kAdSamplerTriggerFeature;
 // Browsing.
 extern const base::Feature kBetterTelemetryAcrossReports;
 
-// Controls whether Office documents will be scanned using //third_party maldoca
-extern const base::Feature kClientSideDetectionDocumentScanning;
-
 // Enables client side detection on Android.
 extern const base::Feature kClientSideDetectionForAndroid;
 
@@ -94,7 +91,7 @@ extern const base::Feature kPasswordProtectionWithToken;
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;
 
-// Controls whether users will see an account compromise specific warning
+// Contros whether users will see an account compromise specific warning
 // when Safe Browsing determines a file is associated with stealing cookies.
 extern const base::Feature kSafeBrowsingCTDownloadWarning;
 

@@ -28,9 +28,7 @@
 #include "absl/status/statusor.h"
 #include "absl/strings/escaping.h"
 #include "absl/strings/string_view.h"
-#ifndef MALDOCA_IN_CHROMIUM
-#include "google/protobuf/io/tokenizer.h"  // nogncheck
-#endif
+#include "google/protobuf/io/tokenizer.h"
 #include "libxml/tree.h"
 #include "maldoca/base/file.h"
 #include "maldoca/base/logging.h"

@@ -16,9 +16,7 @@
 
 #include <iomanip>
 
-#ifndef MALDOCA_IN_CHROMIUM
-#include "absl/flags/flag.h"  // nogncheck
-#endif
+#include "absl/flags/flag.h"
 #include "absl/strings/match.h"
 #include "maldoca/base/logging.h"
 #include "maldoca/base/status_macros.h"

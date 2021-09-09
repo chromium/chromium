@@ -839,35 +839,6 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
   if (!cdr.access_token().empty())
     dict.SetString("access_token", cdr.access_token());
 
-  if (cdr.has_document_summary()) {
-    base::Value dict_document_summary(base::Value::Type::DICTIONARY);
-    auto document_summary = cdr.document_summary();
-    if (document_summary.has_metadata()) {
-      base::Value dict_document_metadata(base::Value::Type::DICTIONARY);
-      dict_document_metadata.SetBoolKey(
-          "contains_macros", document_summary.metadata().contains_macros());
-      dict_document_summary.SetKey("metadata",
-                                   std::move(dict_document_metadata));
-    }
-
-    if (document_summary.has_processing_info()) {
-      base::Value dict_document_processing_info(base::Value::Type::DICTIONARY);
-      auto processing_info = document_summary.processing_info();
-      if (processing_info.has_maldoca_error_type()) {
-        dict_document_processing_info.SetIntKey(
-            "maldoca_error_type", processing_info.maldoca_error_type());
-      }
-      if (!processing_info.maldoca_error_message().empty()) {
-        dict_document_processing_info.SetStringKey(
-            "maldoca_error_message", processing_info.maldoca_error_message());
-      }
-      dict_document_summary.SetKey("processing_info",
-                                   std::move(dict_document_processing_info));
-    }
-
-    dict.SetKey("document_summary", std::move(dict_document_summary));
-  }
-
   base::Value* request_tree = &dict;
   std::string request_serialized;
   JSONStringValueSerializer serializer(&request_serialized);
