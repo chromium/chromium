@@ -34,7 +34,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const FloatRect& container_rect,
       int worklet_id,
       float zoom,
-      const Vector<scoped_refptr<ShapeClipPathOperation>>& animated_shapes,
+      const Vector<scoped_refptr<BasicShape>>& animated_shapes,
       const Vector<double>& offsets,
       const absl::optional<double>& progress,
       cc::PaintWorkletInput::PropertyKeys property_keys)
@@ -46,9 +46,9 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
         progress_(progress) {
     for (const auto& basic_shape : animated_shapes) {
       InterpolationValue interpolation_value =
-          CreateInterpolationValue(*basic_shape);
+          CreateInterpolationValue(*basic_shape.get());
       DCHECK(interpolation_value);
-      basic_shape_types_.push_back(basic_shape->GetBasicShape()->GetType());
+      basic_shape_types_.push_back(basic_shape->GetType());
       interpolation_values_.push_back(std::move(interpolation_value));
     }
   }
@@ -71,15 +71,14 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   }
 
  private:
-  InterpolationValue CreateInterpolationValue(
-      ShapeClipPathOperation& operation) {
-    if (operation.GetBasicShape()->GetType() == BasicShape::kStylePathType) {
+  InterpolationValue CreateInterpolationValue(const BasicShape& basic_shape) {
+    if (basic_shape.GetType() == BasicShape::kStylePathType) {
       return PathInterpolationFunctions::ConvertValue(
-          To<StylePath>(operation.GetBasicShape()),
+          To<StylePath>(&basic_shape),
           PathInterpolationFunctions::ForceAbsolute);
     }
     return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-        operation.GetBasicShape(), zoom_);
+        &basic_shape, zoom_);
   }
   float zoom_;
   Vector<BasicShape::ShapeType> basic_shape_types_;
@@ -103,34 +102,6 @@ bool ShapesAreCompatible(const NonInterpolableValue& a,
   return false;
 }
 
-void GetAnimatedShapesFromKeyframes(
-    const PropertySpecificKeyframe* frame,
-    Vector<scoped_refptr<ShapeClipPathOperation>>* animated_shapes,
-    const Element* element) {
-  DCHECK(frame->IsCSSPropertySpecificKeyframe());
-  const CSSValue* value =
-      static_cast<const CSSPropertySpecificKeyframe*>(frame)->Value();
-  const CSSPropertyName property_name =
-      CSSPropertyName(CSSPropertyID::kClipPath);
-  const CSSValue* computed_value = StyleResolver::ComputeValue(
-      const_cast<Element*>(element), property_name, *value);
-
-  StyleResolverState state(element->GetDocument(),
-                           *const_cast<Element*>(element));
-  scoped_refptr<ShapeClipPathOperation> basic_shape =
-      ShapeClipPathOperation::Create(
-          BasicShapeForValue(state, *computed_value));
-
-  animated_shapes->push_back(basic_shape);
-}
-
-void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
-                                 Vector<double>& offsets) {
-  const CompositorKeyframeDouble& value =
-      To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()));
-  offsets.push_back(value.ToDouble());
-}
-
 scoped_refptr<BasicShape> CreateBasicShape(
     BasicShape::ShapeType type,
     const InterpolableValue& interpolable_value,
@@ -143,6 +114,52 @@ scoped_refptr<BasicShape> CreateBasicShape(
   CSSToLengthConversionData conversion_data;
   return basic_shape_interpolation_functions::CreateBasicShape(
       interpolable_value, untyped_non_interpolable_value, conversion_data);
+}
+
+void GetAnimatedShapesFromKeyframes(
+    const PropertySpecificKeyframe* frame,
+    const KeyframeEffectModelBase* model,
+    Vector<scoped_refptr<BasicShape>>* animated_shapes,
+    const Element* element) {
+  scoped_refptr<BasicShape> basic_shape;
+  if (model->IsStringKeyframeEffectModel()) {
+    DCHECK(frame->IsCSSPropertySpecificKeyframe());
+    const CSSValue* value =
+        static_cast<const CSSPropertySpecificKeyframe*>(frame)->Value();
+    const CSSPropertyName property_name =
+        CSSPropertyName(CSSPropertyID::kClipPath);
+    const CSSValue* computed_value = StyleResolver::ComputeValue(
+        const_cast<Element*>(element), property_name, *value);
+    StyleResolverState state(element->GetDocument(),
+                             *const_cast<Element*>(element));
+    basic_shape = BasicShapeForValue(state, *computed_value);
+  } else {
+    DCHECK(frame->IsTransitionPropertySpecificKeyframe());
+    const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
+        To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
+    const NonInterpolableValue* non_interpolable_value =
+        keyframe->GetValue()->Value().non_interpolable_value.get();
+    BasicShape::ShapeType type =
+        PathInterpolationFunctions::IsPathNonInterpolableValue(
+            *non_interpolable_value)
+            ? BasicShape::kStylePathType
+            // This can be any shape but kStylePathType. This is needed to
+            // distinguish between Path shape and other shapes in
+            // CreateBasicShape function.
+            : BasicShape::kBasicShapeCircleType;
+    basic_shape = CreateBasicShape(
+        type, *keyframe->GetValue()->Value().interpolable_value.get(),
+        *non_interpolable_value);
+  }
+  DCHECK(basic_shape);
+  animated_shapes->push_back(basic_shape);
+}
+
+void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
+                                 Vector<double>& offsets) {
+  const CompositorKeyframeDouble& value =
+      To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()));
+  offsets.push_back(value.ToDouble());
 }
 
 // TODO(crbug.com/686074): Introduce helper functions commonly used by
@@ -327,7 +344,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   DCHECK(node.IsElementNode());
   const Element* element = static_cast<Element*>(const_cast<Node*>(&node));
 
-  Vector<scoped_refptr<ShapeClipPathOperation>> animated_shapes;
+  Vector<scoped_refptr<BasicShape>> animated_shapes;
   Vector<double> offsets;
   absl::optional<double> progress;
 
@@ -340,15 +357,13 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   const KeyframeEffectModelBase* model =
       static_cast<const KeyframeEffect*>(effect)->Model();
-  // TODO(crbug.com/1223975): handle transition keyframes here.
-  DCHECK(model->IsStringKeyframeEffectModel());
 
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(
           PropertyHandle(GetCSSPropertyClipPath()));
 
   for (const auto& frame : *frames) {
-    GetAnimatedShapesFromKeyframes(frame, &animated_shapes, element);
+    GetAnimatedShapesFromKeyframes(frame, model, &animated_shapes, element);
     GetCompositorKeyframeOffset(frame, offsets);
   }
   progress = effect->Progress();

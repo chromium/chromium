@@ -165,6 +165,11 @@ static bool PathSegTypesMatch(const Vector<SVGPathSegType>& a,
   return true;
 }
 
+bool PathInterpolationFunctions::IsPathNonInterpolableValue(
+    const NonInterpolableValue& value) {
+  return DynamicTo<SVGPathNonInterpolableValue>(value);
+}
+
 bool PathInterpolationFunctions::PathsAreCompatible(
     const NonInterpolableValue& start,
     const NonInterpolableValue& end) {
