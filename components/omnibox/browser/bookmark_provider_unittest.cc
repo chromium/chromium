@@ -711,56 +711,12 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
 }
 
 TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
-  auto trigger_feature =
-      OmniboxTriggeredFeatureService::Feature::kBookmarkPaths;
+  auto trigger_feature = OmniboxTriggeredFeatureService::Feature::
+      kShortBookmarkSuggestionsByTotalInputLength;
 
-  {
-    // When the feature is off, should not return path matched bookmarks nor
-    // trigger counterfactual logging.
-    SCOPED_TRACE("feature disabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {}, {omnibox::kBookmarkPaths,
-             {omnibox::kShortBookmarkSuggestionsByTotalInputLength}});
-    TestNumMatchesAndTriggeredFeature("carefully other", 0);
-  }
+  // Inputs matching only the path should not return bookmarks.
+  TestNumMatchesAndTriggeredFeature("other", 0, trigger_feature);
 
-  {
-    // When enabled without counterfactual logging, should return path matched
-    // bookmark but not trigger counterfactual logging even it path matched.
-    SCOPED_TRACE("feature enabled without counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {omnibox::kBookmarkPaths},
-        {{omnibox::kShortBookmarkSuggestionsByTotalInputLength}});
-    TestNumMatchesAndTriggeredFeature("carefully other", 1);
-  }
-
-  {
-    // When enabled with "control" counterfactual logging, should not return
-    // path matched bookmarks but trigger counterfactual logging if it path
-    // matched.
-    SCOPED_TRACE("feature enabled with control counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kBookmarkPaths,
-          {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}}}},
-        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
-    TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 0, trigger_feature);
-  }
-
-  {
-    // When enabled with "enabled" counterfactual logging, should return path
-    // matched bookmarks and trigger counterfactual logging if it path
-    // matched.
-    SCOPED_TRACE("feature enabled with enabled counterfactual");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kBookmarkPaths,
-          {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}}}},
-        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
-    TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
-  }
+  // Inputs matching both the title and path should return bookmarks.
+  TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
 }

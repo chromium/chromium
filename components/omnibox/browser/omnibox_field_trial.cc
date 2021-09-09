@@ -885,29 +885,6 @@ const base::FeatureParam<bool>
         "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
         false);
 
-// Bookmark paths.
-
-const base::FeatureParam<std::string> kBookmarkPathsCounterfactual(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsCounterfactual",
-    "");
-const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiReplaceTitle",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiReplaceUrl",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiAppendAfterTitle",
-    false);
-const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl(
-    &omnibox::kBookmarkPaths,
-    "OmniboxBookmarkPathsUiDynamicReplaceUrl",
-    false);
-
 // Short bookmarks.
 
 bool IsShortBookmarkSuggestionsEnabled() {

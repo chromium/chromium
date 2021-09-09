@@ -54,13 +54,6 @@ class BookmarkProvider : public AutocompleteProvider {
   // |matches_|.
   void DoAutocomplete(const AutocompleteInput& input);
 
-  // Get the matches from |bookmark_model_| using the appropriate matching
-  // algorithm, determined by |GetMatchingAlgorithm()|, and path matching
-  // algorithm, determined by the |kBookmarkPaths| base::feature.
-  std::vector<bookmarks::TitledUrlMatch> GetMatchesWithBookmarkPaths(
-      const AutocompleteInput& input,
-      size_t kMaxBookmarkMatches);
-
   // There are 2 short bookmark features that determine the matching algorithm
   // used, i.e. whether input words shorter than 3 chars can prefix match.
   // 1) |IsShortBookmarkSuggestionsEnabled()| always allows short input word

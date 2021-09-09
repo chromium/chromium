@@ -10,9 +10,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/cxx17_backports.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -21,7 +19,6 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
 #include "components/search_engines/omnibox_focus_type.h"
@@ -100,8 +97,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //  - Terms must be at least three characters in length in order to perform
   //    partial word matches. Any term of lesser length will only be used as an
   //    exact match. 'def' will match against 'define' but 'de' will not match.
-  //    (Unless either |IsShortBookmarkSuggestionsEnabled()| or
-  //    |IsShortBookmarkSuggestionsByTotalInputLengthEnabled()| is true.)
+  //    (Unless either `IsShortBookmarkSuggestionsEnabled()` or
+  //    `IsShortBookmarkSuggestionsByTotalInputLengthEnabled()` is true.)
   //  - A search containing multiple terms will return results with those words
   //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.
@@ -111,8 +108,9 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
-  std::vector<TitledUrlMatch> matches =
-      GetMatchesWithBookmarkPaths(input, kMaxBookmarkMatches);
+  std::vector<TitledUrlMatch> matches = bookmark_model_->GetBookmarksMatching(
+      input.text(), kMaxBookmarkMatches, GetMatchingAlgorithm(input),
+      /*match_ancestor_titles=*/true);
   if (matches.empty())
     return;  // There were no matches.
   const std::u16string fixed_up_input(FixupUserInput(input).second);
@@ -138,51 +136,6 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   matches_.resize(num_matches);
-}
-
-std::vector<TitledUrlMatch> BookmarkProvider::GetMatchesWithBookmarkPaths(
-    const AutocompleteInput& input,
-    size_t kMaxBookmarkMatches) {
-  // Determining whether the |kBookmarkPaths| feature had, or would have had, an
-  // impact for counterfactual logging is expensive as it requires invoking
-  // |BookmarkModel::GetBookmarksMatching()| twice. Therefore, the param
-  // |kBookmarkPathsCounterfactual| determines whether to counterfactual log:
-  // - When empty, counterfactual logging won't occur.
-  // - When set to "control" counterfactual logging will occur like usual; i.e.
-  //   path matched bookmarks won't be returned but will be compared to
-  //   determine if the feature triggered.
-  // - When set to "enabled", counterfactual logging will occur and path matched
-  //   bookmarks will be returned.
-  std::string counterfactual =
-      OmniboxFieldTrial::kBookmarkPathsCounterfactual.Get();
-
-  bool match_paths = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
-                     counterfactual != "control";
-
-  query_parser::MatchingAlgorithm matching_algorithm =
-      GetMatchingAlgorithm(input);
-
-  if (counterfactual.empty()) {
-    return bookmark_model_->GetBookmarksMatching(
-        input.text(), kMaxBookmarkMatches, matching_algorithm, match_paths);
-  }
-
-  std::vector<TitledUrlMatch> matches_without_paths =
-      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
-                                            matching_algorithm);
-  std::vector<TitledUrlMatch> matches_with_paths =
-      bookmark_model_->GetBookmarksMatching(input.text(), kMaxBookmarkMatches,
-                                            matching_algorithm, true);
-  DCHECK_LE(matches_without_paths.size(), matches_with_paths.size());
-
-  // It's unnecessary to compare the matches themselves because all
-  // |matches_without_paths| should be contained in |matches_with_paths|.
-  if (matches_without_paths.size() != matches_with_paths.size()) {
-    client_->GetOmniboxTriggeredFeatureService()->TriggerFeature(
-        OmniboxTriggeredFeatureService::Feature::kBookmarkPaths);
-  }
-
-  return match_paths ? matches_with_paths : matches_without_paths;
 }
 
 query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(

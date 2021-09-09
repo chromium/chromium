@@ -1174,27 +1174,6 @@ const FeatureEntry::FeatureVariation
         {"Conservative - Title, min 3", kOmniboxRichAutocompletionConservative,
          base::size(kOmniboxRichAutocompletionConservative), nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceTitle[] = {
-    {"OmniboxBookmarkPathsUiReplaceTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiReplaceUrl", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsAppendAfterTitle[] = {
-    {"OmniboxBookmarkPathsUiAppendAfterTitle", "true"}};
-const FeatureEntry::FeatureParam kOmniboxBookmarkPathsDynamicReplaceUrl[] = {
-    {"OmniboxBookmarkPathsUiDynamicReplaceUrl", "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxBookmarkPathsVariations[] = {
-    {"Default UI (Title - URL)", {}, 0, nullptr},
-    {"Replace title (Path/Title - URL)", kOmniboxBookmarkPathsReplaceTitle,
-     base::size(kOmniboxBookmarkPathsReplaceTitle), nullptr},
-    {"Replace URL (Title - Path)", kOmniboxBookmarkPathsReplaceUrl,
-     base::size(kOmniboxBookmarkPathsReplaceUrl), nullptr},
-    {"Append after title (Title : Path - URL)",
-     kOmniboxBookmarkPathsAppendAfterTitle,
-     base::size(kOmniboxBookmarkPathsAppendAfterTitle), nullptr},
-    {"Dynamic Replace URL (Title - Path|URL)",
-     kOmniboxBookmarkPathsDynamicReplaceUrl,
-     base::size(kOmniboxBookmarkPathsDynamicReplaceUrl), nullptr}};
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
 
@@ -4588,11 +4567,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kRichAutocompletion,
          kOmniboxRichAutocompletionPromisingVariations,
          "OmniboxBundledExperimentV1")},
-    {"omnibox-bookmark-paths", flag_descriptions::kOmniboxBookmarkPathsName,
-     flag_descriptions::kOmniboxBookmarkPathsDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kBookmarkPaths,
-                                    kOmniboxBookmarkPathsVariations,
-                                    "OmniboxBundledExperimentV1")},
     {"omnibox-disable-cgi-param-matching",
      flag_descriptions::kOmniboxDisableCGIParamMatchingName,
      flag_descriptions::kOmniboxDisableCGIParamMatchingDescription, kOsDesktop,

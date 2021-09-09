@@ -984,9 +984,6 @@ extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 extern const char kOmniboxAssistantVoiceSearchName[];
 extern const char kOmniboxAssistantVoiceSearchDescription[];
 
-extern const char kOmniboxBookmarkPathsName[];
-extern const char kOmniboxBookmarkPathsDescription[];
-
 extern const char kOmniboxClobberTriggersContextualWebZeroSuggestName[];
 extern const char kOmniboxClobberTriggersContextualWebZeroSuggestDescription[];
 

@@ -204,13 +204,6 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kPreserveLongerShortcutsText{
     "OmniboxPreserveLongerShortcutsText", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, inputs may match bookmark paths. These path matches won't
-// contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
-// 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
-// containing 'planet.'
-const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
                                       enabled_by_default_desktop_only};

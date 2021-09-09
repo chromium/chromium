@@ -522,15 +522,6 @@ extern const base::FeatureParam<bool> kRichAutocompletionCounterfactual;
 extern const base::FeatureParam<bool>
     kRichAutocompletionAutocompletePreferUrlsOverPrefixes;
 
-// Bookmark paths.
-// Parameter names used for bookmark path variations that determine whether
-// bookmark suggestion texts will contain the title, URL, and/or path.
-extern const base::FeatureParam<std::string> kBookmarkPathsCounterfactual;
-extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle;
-extern const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl;
-extern const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle;
-extern const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl;
-
 // Short bookmarks.
 // Determine whether bookmarks should look for exact matches only or prefix
 // matches as well when the input is short.

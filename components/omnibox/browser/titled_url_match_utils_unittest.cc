@@ -15,9 +15,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
@@ -274,9 +272,7 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
       titled_url_match, type, relevance, provider.get(), classifier, input,
       fixed_up_input);
 
-  ACMatchClassifications expected_contents_class = {
-      {0, ACMatchClassification::URL},
-  };
+  ACMatchClassifications expected_contents_class = {};
   ACMatchClassifications expected_description_class = {
       {0, ACMatchClassification::NONE},
       {9, ACMatchClassification::MATCH},
@@ -287,7 +283,8 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_EQ(type, autocomplete_match.type);
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
-  EXPECT_EQ(u"gmail.com", autocomplete_match.contents);
+  // `contents` should be empty because `url_match_positions` is empty.
+  EXPECT_EQ(u"", autocomplete_match.contents);
   EXPECT_TRUE(std::equal(expected_contents_class.begin(),
                          expected_contents_class.end(),
                          autocomplete_match.contents_class.begin()))
@@ -336,69 +333,10 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
               expected_description);
   };
 
-  // Invokes |test()| with the 4 combinations of |has_url_match| true|false x
-  // |has_ancestor_match| true|false.
-  auto test_with_and_without_url_and_ancestor_matches =
-      [&](std::string title, std::string url, std::string expected_contents,
-          std::string expected_description) {
-        for (bool has_url_match : {false, true}) {
-          for (bool has_ancestor_match : {false, true}) {
-            test(title, url, has_url_match, has_ancestor_match,
-                 expected_contents, expected_description);
-          }
-        }
-      };
-
-  {
-    SCOPED_TRACE("Feature disabled");
-    test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
-                                                   "url.com", "title");
-  }
-  {
-    SCOPED_TRACE("Feature enabled");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
-    test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
-                                                   "url.com", "title");
-  }
-  {
-    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiReplaceTitle");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle.name, "true"}});
-    test_with_and_without_url_and_ancestor_matches(
-        "title", "https://url.com", "url.com", "grandparent/parent/title");
-  }
-  {
-    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiReplaceUrl");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl.name, "true"}});
-    test_with_and_without_url_and_ancestor_matches(
-        "title", "https://url.com", "grandparent/parent", "title");
-  }
-  {
-    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiAppendAfterTitle");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle.name, "true"}});
-    test_with_and_without_url_and_ancestor_matches(
-        "title", "https://url.com", "url.com", "title : grandparent/parent");
-  }
-  {
-    SCOPED_TRACE("Feature enabled, kBookmarkPathsUiDynamicReplaceUrl");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kBookmarkPaths,
-        {{OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl.name, "true"}});
     test("title", "https://url.com", false, false, "grandparent/parent",
          "title");
     test("title", "https://url.com", true, false, "url.com", "title");
     test("title", "https://url.com", false, true, "grandparent/parent",
          "title");
     test("title", "https://url.com", true, true, "grandparent/parent", "title");
-  }
 }
