@@ -30,7 +30,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.ClearEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M92">
+    enum="ServiceWorkerStatusCode" expires_after="M99">
   <owner>yangguo@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.GetEvents"
-    enum="ServiceWorkerStatusCode" expires_after="M92">
+    enum="ServiceWorkerStatusCode" expires_after="M99">
   <owner>rayankans@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.LogEvent"
-    enum="ServiceWorkerStatusCode" expires_after="M92">
+    enum="ServiceWorkerStatusCode" expires_after="M99">
   <owner>rayankans@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.BackgroundService.StartRecording"
-    enum="DevToolsBackgroundService" expires_after="2021-08-09">
+    enum="DevToolsBackgroundService" expires_after="2022-07-09">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>

@@ -126,7 +126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.IncompleteFetchesOnStartup" units="units"
-    expires_after="M95">
+    expires_after="M99">
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -137,7 +137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.Manager{BackgroundFetchManagerAPIsDuration}"
-    units="ms" expires_after="M95">
+    units="ms" expires_after="M99">
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -192,7 +192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundFetch.Storage{BackgroundFetchDatabaseStorageErrors}"
-    enum="BackgroundFetchStorageError" expires_after="M95">
+    enum="BackgroundFetchStorageError" expires_after="M99">
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -374,7 +374,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundSync.LaunchTask.PlayServicesAvailable"
-    enum="Boolean" expires_after="2021-09-19">
+    enum="Boolean" expires_after="2022-08-19">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

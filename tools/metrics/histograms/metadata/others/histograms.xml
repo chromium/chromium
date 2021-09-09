@@ -12485,7 +12485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PeriodicBackgroundSync.Event.Time" units="ms"
-    expires_after="2021-10-04">
+    expires_after="2022-09-04">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
