@@ -33,7 +33,12 @@ using MojomProvisioningStep = ash::shimless_rma::mojom::ProvisioningStep;
 using ProtoProvisioningStep = rmad::ProvisionDeviceState::ProvisioningStep;
 }  // namespace
 
-// static
+// The rmad state does not map 1:1 with UI app state, the UI handles more states
+// such as selecting wifi network and updating Chrome OS.
+// Because some states do not exist in rmad a type mapping build rule cannot be
+// added to automate conversion and ToMojom(rmad::RmadState::StateCase) must be
+// used directly.
+// FromMojom is not needed as state is not passed back from javascript.
 MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
     ProtoRmadState state) {
   switch (state) {
@@ -47,6 +52,8 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kChooseWriteProtectDisableMethod;
     case ProtoRmadState::kWpDisableRsu:
       return MojomRmaState::kEnterRSUWPDisableCode;
+    case ProtoRmadState::kVerifyRsu:
+      return MojomRmaState::kVerifyRsu;
     case ProtoRmadState::kWpDisablePhysical:
       return MojomRmaState::kWaitForManualWPDisable;
     case ProtoRmadState::kWpDisableComplete:

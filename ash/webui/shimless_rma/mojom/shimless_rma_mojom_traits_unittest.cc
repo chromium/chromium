@@ -73,6 +73,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
         rmad::RmadState::kWpDisableMethod},
        {mojom::RmaState::kEnterRSUWPDisableCode,
         rmad::RmadState::kWpDisableRsu},
+       {mojom::RmaState::kVerifyRsu, rmad::RmadState::kVerifyRsu},
        {mojom::RmaState::kWaitForManualWPDisable,
         rmad::RmadState::kWpDisablePhysical},
        {mojom::RmaState::kWPDisableComplete,
@@ -91,7 +92,7 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
        {mojom::RmaState::kRepairComplete, rmad::RmadState::kFinalize}});
 
   // rmad::RmadState::STATE_NOT_SET is used when RMA is not active so the
-  // toMojo conversion is reachable, unlike other enums.
+  // toMojo conversion is reachable, unlike most other enums.
   EXPECT_EQ(static_cast<int32_t>(mojom::RmaState::kUnknown), 0);
   EXPECT_EQ(static_cast<int32_t>(rmad::RmadState::STATE_NOT_SET), 0);
   // This test hits a NOTREACHED so it is a release mode only test.
