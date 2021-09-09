@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -199,6 +200,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   bool has_authorization_covered_by_wildcard_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+
+  net::NetLogWithSource net_log_;
 
   // Used to run asynchronous class instance bound callbacks safely.
   base::WeakPtrFactory<CorsURLLoader> weak_factory_{this};

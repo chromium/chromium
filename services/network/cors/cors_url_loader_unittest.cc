@@ -23,6 +23,8 @@
 #include "mojo/public/cpp/system/functions.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -412,6 +414,20 @@ class CorsURLLoaderTest : public testing::Test {
     devtools_observer_for_next_request_ = observer;
   }
 
+  // Returns the list of NetLog entries. All Observed NetLog entries may contain
+  // logs of DNS config or Network quality. This function filters them.
+  std::vector<net::NetLogEntry> GetEntries() const {
+    std::vector<net::NetLogEntry> entries, filtered;
+    entries = net_log_observer_.GetEntries();
+    for (const auto& entry : entries) {
+      if (entry.type == net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED ||
+          entry.type == net::NetLogEventType::CORS_REQUEST) {
+        filtered.push_back(entry.Clone());
+      }
+    }
+    return filtered;
+  }
+
  private:
   // Test environment.
   base::test::TaskEnvironment task_environment_;
@@ -442,6 +458,8 @@ class CorsURLLoaderTest : public testing::Test {
   OriginAccessList origin_access_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderTest);
+
+  net::RecordingNetLogObserver net_log_observer_;
 };
 
 class BadMessageTestHelper {
@@ -2595,10 +2613,111 @@ TEST_F(CorsURLLoaderTest, DevToolsObserverOnCorsErrorCallback) {
             client().completion_status().cors_error_status->cors_error);
   devtools_observer.WaitUntilCorsError();
   EXPECT_TRUE(devtools_observer.cors_error_params());
-  const auto& params = *devtools_observer.cors_error_params();
+  const network::MockDevToolsObserver::OnCorsErrorParams& params =
+      *devtools_observer.cors_error_params();
   EXPECT_EQ(mojom::CorsError::kDisallowedByMode, params.status.cors_error);
   EXPECT_EQ(initiator_origin, params.initiator_origin);
   EXPECT_EQ(url, params.url);
+}
+
+TEST_F(CorsURLLoaderTest, NetLogCorsRequestStartAndEnd) {
+  const GURL url("https://example.com/foo.png");
+  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  EXPECT_EQ(3UL, entries.size());
+  EXPECT_TRUE(
+      LogContainsBeginEvent(entries, 0, net::NetLogEventType::CORS_REQUEST));
+  EXPECT_TRUE(
+      LogContainsEndEvent(entries, -1, net::NetLogEventType::CORS_REQUEST));
+}
+
+TEST_F(CorsURLLoaderTest, NetLogSameOriginRequest) {
+  const GURL url("https://example.com/foo.png");
+  CreateLoaderAndStart(url.GetOrigin(), url, mojom::RequestMode::kSameOrigin);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  EXPECT_EQ(3UL, entries.size());
+  for (const auto& net_log_entry : entries) {
+    if (net_log_entry.type !=
+        net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED) {
+      continue;
+    }
+    EXPECT_FALSE(
+        net::GetBooleanValueFromParams(net_log_entry, "preflight_required"));
+    return;
+  }
+  ADD_FAILURE() << "Log entry not found.";
+}
+
+TEST_F(CorsURLLoaderTest, NetLogCrossOriginSimpleRequest) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  CreateLoaderAndStart(origin.GetOrigin(), url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  EXPECT_EQ(3UL, entries.size());
+  for (const auto& net_log_entry : entries) {
+    if (net_log_entry.type !=
+        net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED) {
+      continue;
+    }
+    EXPECT_FALSE(
+        net::GetBooleanValueFromParams(net_log_entry, "preflight_required"));
+    return;
+  }
+  ADD_FAILURE() << "Log entry not found.";
+}
+
+TEST_F(CorsURLLoaderTest, PreflightRequiredRequest) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  // Set customized header to make preflight required request instead of simple
+  // request.
+  request.headers.SetHeader("Apple", "red");
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+
+  RunUntilComplete();
+  std::vector<net::NetLogEntry> entries = GetEntries();
+  EXPECT_EQ(3UL, entries.size());
+  for (const auto& net_log_entry : entries) {
+    if (net_log_entry.type !=
+        net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED) {
+      continue;
+    }
+    EXPECT_TRUE(
+        net::GetBooleanValueFromParams(net_log_entry, "preflight_required"));
+    EXPECT_EQ(net::GetStringValueFromParams(net_log_entry,
+                                            "preflight_required_reason"),
+              "disallowed_header");
+    return;
+  }
+  ADD_FAILURE() << "Log entry not found.";
 }
 
 }  // namespace

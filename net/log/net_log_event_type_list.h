@@ -3960,3 +3960,34 @@ EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION)
 EVENT_TYPE(TRUST_TOKEN_OPERATION_FINALIZE_REDEMPTION)
 
 EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_SIGNING)
+
+// -----------------------------------------------------------------------------
+// CORS preflight events
+// -----------------------------------------------------------------------------
+
+// The start/end of CORS preflight request. It corresponds with the lifetime of
+// CorsURLLoader.
+//
+// The BEGIN phase contains the following parameters.
+// See network.mojom.ResourceRequest for details.
+//
+//  {
+//    "cors_preflight_policy" : <A policy to decide if CORS-preflight fetch
+//                              should be performed>,
+//    "headers" : <The list of header:value pairs>,
+//    "is_external_request": <Boolean indicating whether request is external>,
+//    "is_revalidating": <Boolean indicating whether request is revalidating>,
+//    "method": <The method ("POST" or "GET" or "HEAD" etc...)>,
+//    "url": <The URL to create a request for>
+//  }
+EVENT_TYPE(CORS_REQUEST)
+
+// This event is logged when CorsURLLoader judges if preflight request is
+// required. If required, the reason of judgement is recorded next.
+// It contains the following parameter:
+//  {
+//    "preflight_required": <Boolean indicating whether preflight request is
+//                          required>
+//    "preflight_required_reason": <The reason why preflight is required>
+//  }
+EVENT_TYPE(CHECK_CORS_PREFLIGHT_REQUIRED)

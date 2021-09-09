@@ -70,6 +70,52 @@ absl::optional<PreflightRequiredReason> NeedsPreflight(
   return absl::nullopt;
 }
 
+base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("url", request.url.possibly_invalid_spec());
+  dict.SetStringKey("method", request.method);
+  dict.SetStringKey("headers", request.headers.ToString());
+  dict.SetBoolKey("is_external_request", request.is_external_request);
+  dict.SetBoolKey("is_revalidating", request.is_revalidating);
+  std::string cors_preflight_policy;
+  switch (request.cors_preflight_policy) {
+    case mojom::CorsPreflightPolicy::kConsiderPreflight:
+      cors_preflight_policy = "consider_preflight";
+      break;
+    case mojom::CorsPreflightPolicy::kPreventPreflight:
+      cors_preflight_policy = "prevent_preflight";
+      break;
+  }
+  dict.SetStringKey("cors_preflight_policy", cors_preflight_policy);
+  return dict;
+}
+
+base::Value NetLogPreflightRequiredParams(
+    absl::optional<PreflightRequiredReason> preflight_required_reason) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("preflight_required", preflight_required_reason.has_value());
+  if (preflight_required_reason) {
+    std::string preflight_required_reason_param;
+    switch (preflight_required_reason.value()) {
+      case PreflightRequiredReason::kExternalRequest:
+        preflight_required_reason_param = "external_request";
+        break;
+      case PreflightRequiredReason::kCorsWithForcedPreflightMode:
+        preflight_required_reason_param = "cors_with_forced_preflight_mode";
+        break;
+      case PreflightRequiredReason::kDisallowedMethod:
+        preflight_required_reason_param = "disallowed_method";
+        break;
+      case PreflightRequiredReason::kDisallowedHeader:
+        preflight_required_reason_param = "disallowed_header";
+        break;
+    }
+    dict.SetStringKey("preflight_required_reason",
+                      preflight_required_reason_param);
+  }
+  return dict;
+}
+
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
 }  // namespace
@@ -107,7 +153,11 @@ CorsURLLoader::CorsURLLoader(
       skip_cors_enabled_scheme_check_(skip_cors_enabled_scheme_check),
       allow_any_cors_exempt_header_(allow_any_cors_exempt_header),
       isolation_info_(isolation_info),
-      devtools_observer_(std::move(devtools_observer)) {
+      devtools_observer_(std::move(devtools_observer)),
+      // TODO(https://crbug.com/1244451): NetLogSourceType may be changed.
+      net_log_(
+          net::NetLogWithSource::Make(net::NetLog::Get(),
+                                      net::NetLogSourceType::CORS_URL_LOADER)) {
   if (ignore_isolated_world_origin)
     request_.isolated_world_origin = absl::nullopt;
 
@@ -136,6 +186,8 @@ void CorsURLLoader::Start() {
       request_.url = request_.url.ReplaceComponents(replacements);
     }
   }
+  net_log_.BeginEvent(net::NetLogEventType::CORS_REQUEST,
+                      [&] { return NetLogCorsURLLoaderStartParams(request_); });
   StartRequest();
 }
 
@@ -499,7 +551,14 @@ void CorsURLLoader::StartRequest() {
   // Note that even when |NeedsPreflight(request_)| holds we don't make a
   // preflight request when |fetch_cors_flag_| is false (e.g., when the origin
   // of the url is equal to the origin of the request.
-  if (!fetch_cors_flag_ || !NeedsPreflight(request_)) {
+
+  absl::optional<PreflightRequiredReason> needs_preflight =
+      NeedsPreflight(request_);
+  bool preflight_required = fetch_cors_flag_ && needs_preflight;
+  net_log_.AddEvent(net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED, [&] {
+    return NetLogPreflightRequiredParams(needs_preflight);
+  });
+  if (!preflight_required) {
     StartNetworkRequest(net::OK, absl::nullopt, false);
     return;
   }
@@ -585,6 +644,7 @@ void CorsURLLoader::HandleComplete(const URLLoaderCompletionStatus& status) {
                                     *status.cors_error_status);
   }
 
+  net_log_.EndEvent(net::NetLogEventType::CORS_REQUEST);
   forwarding_client_->OnComplete(status);
   std::move(delete_callback_).Run(this);
   // |this| is deleted here.
