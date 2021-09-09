@@ -5776,11 +5776,11 @@ ci.mac_builder(
 )
 
 ci.mac_thin_tester(
-    name = "mac-arm64-rel-tests",
+    name = "mac11-arm64-rel-tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "release|arm64",
-        short_name = "tst",
+        short_name = "11",
     ),
     tree_closing = False,
     main_console_view = "main",

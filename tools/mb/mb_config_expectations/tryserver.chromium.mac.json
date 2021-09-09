@@ -415,17 +415,6 @@
       "use_goma": true
     }
   },
-  "mac-arm64-rel": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "use_goma": true
-    }
-  },
   "mac-inverse-fieldtrials-fyi-rel": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
@@ -472,6 +461,17 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac11-arm64-rel": {
+    "gn_args": {
+      "blink_enable_generated_code_formatting": false,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
       "use_goma": true
     }
   },
