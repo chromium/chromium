@@ -157,7 +157,9 @@ IntentHandler = class {
         return true;
       }
         // TODO: implement support.
-      case IntentTextBoundaryType.FORMAT:
+      case IntentTextBoundaryType.FORMAT_END:
+      case IntentTextBoundaryType.FORMAT_START:
+      case IntentTextBoundaryType.FORMAT_START_OR_END:
       case IntentTextBoundaryType.OBJECT:
       case IntentTextBoundaryType.PAGE_END:
       case IntentTextBoundaryType.PAGE_START:

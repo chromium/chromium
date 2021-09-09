@@ -1675,7 +1675,38 @@ class AXPosition {
         }
         break;
 
-      case ax::mojom::TextBoundary::kFormat:
+      case ax::mojom::TextBoundary::kFormatEnd:
+        switch (direction) {
+          case ax::mojom::MoveDirection::kNone:
+            NOTREACHED();
+            break;
+          case ax::mojom::MoveDirection::kBackward:
+            resulting_position =
+                CreatePreviousFormatEndPosition(boundary_behavior);
+            break;
+          case ax::mojom::MoveDirection::kForward:
+            resulting_position = CreateNextFormatEndPosition(boundary_behavior);
+            break;
+        }
+        break;
+
+      case ax::mojom::TextBoundary::kFormatStart:
+        switch (direction) {
+          case ax::mojom::MoveDirection::kNone:
+            NOTREACHED();
+            break;
+          case ax::mojom::MoveDirection::kBackward:
+            resulting_position =
+                CreatePreviousFormatStartPosition(boundary_behavior);
+            break;
+          case ax::mojom::MoveDirection::kForward:
+            resulting_position =
+                CreateNextFormatStartPosition(boundary_behavior);
+            break;
+        }
+        break;
+
+      case ax::mojom::TextBoundary::kFormatStartOrEnd:
         switch (direction) {
           case ax::mojom::MoveDirection::kNone:
             NOTREACHED();
@@ -2686,6 +2717,22 @@ class AXPosition {
       AXBoundaryBehavior boundary_behavior) const {
     return CreateBoundaryStartPosition(
         boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
+  }
+
+  AXPositionInstance CreatePreviousFormatEndPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryEndPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kBackward,
+        base::BindRepeating(&AtStartOfFormatPredicate),
+        base::BindRepeating(&AtEndOfFormatPredicate));
+  }
+
+  AXPositionInstance CreateNextFormatStartPosition(
+      AXBoundaryBehavior boundary_behavior) const {
+    return CreateBoundaryStartPosition(
+        boundary_behavior, ax::mojom::MoveDirection::kForward,
         base::BindRepeating(&AtStartOfFormatPredicate),
         base::BindRepeating(&AtEndOfFormatPredicate));
   }

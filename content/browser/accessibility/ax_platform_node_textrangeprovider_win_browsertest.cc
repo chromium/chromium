@@ -1081,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"plain 1\nplain 2\nplain heading\n",
+      /*expected_text*/ L"plain 1\nplain 2\nplain heading",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"plain 1\nplain 2\n",
+      /*expected_text*/ L"plain 1\nplain 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1180,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
-      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\n",
+      L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\n",
+      L"1\ncolor 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1208,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\n",
+      L"1\ncolor 2\noverline 1\noverline 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1223,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*count*/ -1,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
-      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2\n",
+      L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\n",
+      L"2\nsup 1\nsup 2",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
@@ -1255,7 +1255,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       /*expected_text*/
       L"plain 1\nplain 2\nbackground-color 1\nbackground-color 2\ncolor "
       L"1\ncolor 2\noverline 1\noverline 2\nline-through 1\nline-through "
-      L"2\nsup 1\nsup 2\nbold 1\nbold 2\n",
+      L"2\nsup 1\nsup 2\nbold 1\nbold 2",
       /*expected_count*/ -1);
 }
 
@@ -3071,7 +3071,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"\nOne",
+                  /*expected_text*/ L"One",
                   /*expected_count*/ 1);
 
   // GetAttributeValue calls NormalizeTextRange but should not modify the
@@ -3085,7 +3085,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 
   // The text should be the same as before since the internal endpoints didn't
   // move.
-  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\nOne");
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"One");
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,

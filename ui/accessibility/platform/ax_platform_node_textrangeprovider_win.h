@@ -145,6 +145,7 @@ class AX_EXPORT __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
                                         const int count,
                                         int* units_moved);
   AXPositionInstance MoveEndpointByFormat(const AXPositionInstance& endpoint,
+                                          const bool is_start_endpoint,
                                           const int count,
                                           int* units_moved);
   AXPositionInstance MoveEndpointByDocument(const AXPositionInstance& endpoint,

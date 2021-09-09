@@ -1982,21 +1982,21 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
                   /*expected_count*/ 1);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 2,
-                  /*expected_text*/ L"\nParagraph 1",
+                  /*expected_text*/ L"Paragraph 1",
                   /*expected_count*/ 2);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"\nParagraph 2\nParagraph 3",
+                  /*expected_text*/ L"Paragraph 2\nParagraph 3",
                   /*expected_count*/ 1);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"\nParagraph 4",
+                  /*expected_text*/ L"Paragraph 4",
                   /*expected_count*/ 1);
 
   // Trying to move past the last format should have no effect.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"\nParagraph 4",
+                  /*expected_text*/ L"Paragraph 4",
                   /*expected_count*/ 0);
 
   // Move backward.
@@ -2036,7 +2036,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   // Test degenerate range creation at the end of the document.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 5,
-                  /*expected_text*/ L"\nParagraph 4",
+                  /*expected_text*/ L"Paragraph 4",
                   /*expected_count*/ 5);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Format,
@@ -3093,14 +3093,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       /*count*/ -2,
       /*expected_text*/
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1\n",
+      L"text\nParagraph 1",
       /*expected_count*/ -2);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
-      L"Text with formatting\nStandalone line with no formatting\nbold text\n",
+      L"Text with formatting\nStandalone line with no formatting\nbold text",
       /*expected_count*/ -1);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(

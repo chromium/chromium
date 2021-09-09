@@ -23,7 +23,9 @@ AXTextSelection AXTextSelection::FromDirectionAndGranularity(
     case ax::mojom::TextBoundary::kCharacter:
       granularity = AXTextSelectionGranularity::kCharacter;
       break;
-    case ax::mojom::TextBoundary::kFormat:
+    case ax::mojom::TextBoundary::kFormatEnd:
+    case ax::mojom::TextBoundary::kFormatStart:
+    case ax::mojom::TextBoundary::kFormatStartOrEnd:
       break;  // Not supported on Mac.
     case ax::mojom::TextBoundary::kLineEnd:
       granularity = AXTextSelectionGranularity::kLine;

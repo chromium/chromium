@@ -1253,8 +1253,12 @@ const char* ToString(ax::mojom::TextBoundary text_boundary) {
       return "none";
     case ax::mojom::TextBoundary::kCharacter:
       return "character";
-    case ax::mojom::TextBoundary::kFormat:
-      return "format";
+    case ax::mojom::TextBoundary::kFormatEnd:
+      return "formatEnd";
+    case ax::mojom::TextBoundary::kFormatStart:
+      return "formatStart";
+    case ax::mojom::TextBoundary::kFormatStartOrEnd:
+      return "formatStartOrEnd";
     case ax::mojom::TextBoundary::kLineEnd:
       return "lineEnd";
     case ax::mojom::TextBoundary::kLineStart:

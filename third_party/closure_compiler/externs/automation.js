@@ -580,7 +580,9 @@ chrome.automation.IntentInputEventType = {
  */
 chrome.automation.IntentTextBoundaryType = {
   CHARACTER: 'character',
-  FORMAT: 'format',
+  FORMAT_END: 'formatEnd',
+  FORMAT_START: 'formatStart',
+  FORMAT_START_OR_END: 'formatStartOrEnd',
   LINE_END: 'lineEnd',
   LINE_START: 'lineStart',
   LINE_START_OR_END: 'lineStartOrEnd',
@@ -590,8 +592,7 @@ chrome.automation.IntentTextBoundaryType = {
   PAGE_START_OR_END: 'pageStartOrEnd',
   PARAGRAPH_END: 'paragraphEnd',
   PARAGRAPH_START: 'paragraphStart',
-  PARAGRAPH_START_SKIPPING_EMPTY_PARAGRAPHS:
-      'paragraphStartSkippingEmptyParagraphs',
+  PARAGRAPH_START_SKIPPING_EMPTY_PARAGRAPHS: 'paragraphStartSkippingEmptyParagraphs',
   PARAGRAPH_START_OR_END: 'paragraphStartOrEnd',
   SENTENCE_END: 'sentenceEnd',
   SENTENCE_START: 'sentenceStart',
@@ -1020,6 +1021,11 @@ chrome.automation.AutomationPosition.prototype.moveToNextLineEndPosition = funct
 chrome.automation.AutomationPosition.prototype.moveToPreviousLineEndPosition = function() {};
 
 /**
+ * @see https://developer.chrome.com/extensions/automation#method-moveToNextFormatStartPosition
+ */
+chrome.automation.AutomationPosition.prototype.moveToNextFormatStartPosition = function() {};
+
+/**
  * @see https://developer.chrome.com/extensions/automation#method-moveToPreviousFormatStartPosition
  */
 chrome.automation.AutomationPosition.prototype.moveToPreviousFormatStartPosition = function() {};
@@ -1028,6 +1034,11 @@ chrome.automation.AutomationPosition.prototype.moveToPreviousFormatStartPosition
  * @see https://developer.chrome.com/extensions/automation#method-moveToNextFormatEndPosition
  */
 chrome.automation.AutomationPosition.prototype.moveToNextFormatEndPosition = function() {};
+
+/**
+ * @see https://developer.chrome.com/extensions/automation#method-moveToPreviousFormatEndPosition
+ */
+chrome.automation.AutomationPosition.prototype.moveToPreviousFormatEndPosition = function() {};
 
 /**
  * @see https://developer.chrome.com/extensions/automation#method-moveToNextParagraphStartPosition

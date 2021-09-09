@@ -578,7 +578,9 @@ enum IntentInputEventType {
 // A text boundary associated with an $(ref:automation.AutomationIntent).
 enum IntentTextBoundaryType {
   character,
-  format,
+  formatEnd,
+  formatStart,
+  formatStartOrEnd,
   lineEnd,
   lineStart,
   lineStartOrEnd,
@@ -814,8 +816,10 @@ enum SortDirectionType {
     static void moveToPreviousLineStartPosition();
     static void moveToNextLineEndPosition();
     static void moveToPreviousLineEndPosition();
+    static void moveToNextFormatStartPosition();
     static void moveToPreviousFormatStartPosition();
     static void moveToNextFormatEndPosition();
+    static void moveToPreviousFormatEndPosition();
     static void moveToNextParagraphStartPosition();
     static void moveToPreviousParagraphStartPosition();
     static void moveToNextParagraphEndPosition();

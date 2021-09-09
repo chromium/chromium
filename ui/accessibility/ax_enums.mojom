@@ -1002,13 +1002,15 @@ enum InputEventType {
 // e.g. at the start or end of a text field.
 //
 // TODO(nektar): Split TextBoundary into TextUnit and TextBoundary.
-// Next version: 2
-// Next value: 21
+// Next version: 3
+// Next value: 23
 [Extensible, Stable, Uuid="8e6e10f0-5c0f-4c1e-a67e-9407ee10bd85"]
 enum TextBoundary {
   [Default]kNone = 0,
   kCharacter = 1,
-  kFormat = 2,
+  kFormatEnd = 2,
+  [MinVersion=2] kFormatStart = 21,
+  [MinVersion=2] kFormatStartOrEnd = 22,
   kLineEnd = 3,
   kLineStart = 4,
   kLineStartOrEnd = 5,

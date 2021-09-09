@@ -12107,13 +12107,14 @@ INSTANTIATE_TEST_SUITE_P(
             "TextPosition anchor_id=4 text_offset=8 affinity=downstream "
             "annotated_text=Line 1\nL<i>ne 2"},
         ExpandToEnclosingTextBoundaryTestParam{
-            ax::mojom::TextBoundary::kFormat, AXRangeExpandBehavior::kLeftFirst,
+            ax::mojom::TextBoundary::kFormatEnd,
+            AXRangeExpandBehavior::kLeftFirst,
             "TextPosition anchor_id=4 text_offset=6 affinity=downstream "
             "annotated_text=Line 1<\n>Line 2",
             "TextPosition anchor_id=4 text_offset=7 affinity=downstream "
             "annotated_text=Line 1\n<L>ine 2"},
         ExpandToEnclosingTextBoundaryTestParam{
-            ax::mojom::TextBoundary::kFormat,
+            ax::mojom::TextBoundary::kFormatEnd,
             AXRangeExpandBehavior::kRightFirst,
             "TextPosition anchor_id=4 text_offset=7 affinity=downstream "
             "annotated_text=Line 1\n<L>ine 2",
@@ -12293,13 +12294,13 @@ INSTANTIATE_TEST_SUITE_P(
             "TextPosition anchor_id=8 text_offset=1 affinity=downstream "
             "annotated_text=L<i>ne 2"},
         CreatePositionAtTextBoundaryTestParam{
-            ax::mojom::TextBoundary::kFormat,
+            ax::mojom::TextBoundary::kFormatStart,
             ax::mojom::MoveDirection::kBackward,
             AXBoundaryBehavior::CrossBoundary,
             "TextPosition anchor_id=7 text_offset=0 affinity=downstream "
             "annotated_text=<\n>"},
         CreatePositionAtTextBoundaryTestParam{
-            ax::mojom::TextBoundary::kFormat,
+            ax::mojom::TextBoundary::kFormatEnd,
             ax::mojom::MoveDirection::kForward,
             AXBoundaryBehavior::CrossBoundary,
             "TextPosition anchor_id=8 text_offset=6 affinity=downstream "

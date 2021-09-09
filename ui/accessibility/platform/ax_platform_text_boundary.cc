@@ -73,7 +73,7 @@ ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit) {
     case TextUnit_Character:
       return ax::mojom::TextBoundary::kCharacter;
     case TextUnit_Format:
-      return ax::mojom::TextBoundary::kFormat;
+      return ax::mojom::TextBoundary::kFormatStart;
     case TextUnit_Word:
       return ax::mojom::TextBoundary::kWordStart;
     case TextUnit_Line:
