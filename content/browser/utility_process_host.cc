@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/browser_child_process_host_impl.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/utility_sandbox_delegate.h"
 #include "content/browser/v8_snapshot_files.h"
@@ -320,7 +321,11 @@ bool UtilityProcessHost::StartProcess() {
 #if defined(OS_WIN)
     if (base::FeatureList::IsEnabled(
             media::kMediaFoundationD3D11VideoCapture)) {
-      cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
+      // MediaFoundationD3D11VideoCapture requires Gpu memory buffers,
+      // which are unavailable if the GPU process isn't running.
+      if (!GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {
+        cmd_line->AppendSwitch(switches::kVideoCaptureUseGpuMemoryBuffer);
+      }
     }
 #endif
 
