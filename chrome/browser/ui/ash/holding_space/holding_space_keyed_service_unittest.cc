@@ -2268,6 +2268,9 @@ class HoldingSpaceKeyedServiceAddItemTest
       case HoldingSpaceItem::Type::kScreenshot:
         holding_space_service->AddScreenshot(file_path);
         break;
+      case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+        holding_space_service->AddPhoneHubCameraRollItem(file_path);
+        break;
     }
   }
 };

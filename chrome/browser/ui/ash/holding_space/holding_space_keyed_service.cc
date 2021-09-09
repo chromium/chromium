@@ -265,6 +265,11 @@ void HoldingSpaceKeyedService::AddScreenshot(
   AddItemOfType(HoldingSpaceItem::Type::kScreenshot, screenshot_file);
 }
 
+void HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
+    const base::FilePath& item_path) {
+  AddItemOfType(HoldingSpaceItem::Type::kPhoneHubCameraRoll, item_path);
+}
+
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   std::vector<std::unique_ptr<HoldingSpaceItem>> items;
   items.push_back(std::move(item));

@@ -111,6 +111,10 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Adds a screenshot item backed by the provided absolute file path.
   void AddScreenshot(const base::FilePath& screenshot_path);
 
+  // Adds a photo or video downloaded from a connected Android phone via
+  // PhoneHub.
+  void AddPhoneHubCameraRollItem(const base::FilePath& item_path);
+
   // Adds the specified `item` to the holding space model.
   void AddItem(std::unique_ptr<HoldingSpaceItem> item);
 

@@ -42,7 +42,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
     kDiagnosticsLog = 7,
     kLacrosDownload = 8,
     kScan = 9,
-    kMaxValue = kScan,
+    kPhoneHubCameraRoll = 10,
+    kMaxValue = kPhoneHubCameraRoll,
   };
 
   HoldingSpaceItem(const HoldingSpaceItem&) = delete;

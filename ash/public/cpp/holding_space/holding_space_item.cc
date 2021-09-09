@@ -82,6 +82,7 @@ bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
     case Type::kScan:
     case Type::kScreenRecording:
     case Type::kScreenshot:
+    case Type::kPhoneHubCameraRoll:
       return false;
   }
 }
@@ -225,6 +226,7 @@ bool HoldingSpaceItem::IsScreenCapture() const {
     case Type::kPinnedFile:
     case Type::kPrintedPdf:
     case Type::kScan:
+    case Type::kPhoneHubCameraRoll:
       return false;
   }
 }

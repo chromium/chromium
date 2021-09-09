@@ -20,6 +20,7 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
       max_size =
           gfx::Size(kHoldingSpaceChipIconSize, kHoldingSpaceChipIconSize);
       break;

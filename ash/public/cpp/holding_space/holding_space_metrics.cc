@@ -94,6 +94,8 @@ std::string ItemTypeToString(HoldingSpaceItem::Type type) {
       return "ScreenRecording";
     case HoldingSpaceItem::Type::kScreenshot:
       return "Screenshot";
+    case HoldingSpaceItem::Type::kPhoneHubCameraRoll:
+      return "PhoneHubCameraRoll";
   }
   NOTREACHED();
   return std::string();
