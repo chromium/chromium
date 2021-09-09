@@ -184,6 +184,11 @@ void ContentIndexDatabase::AddEntryOnCoreThread(
     return;
   }
 
+  if (!service_worker_registration->key().origin().IsSameOriginWith(origin)) {
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
+    return;
+  }
+
   auto serialized_icons = std::make_unique<proto::SerializedIcons>();
   proto::SerializedIcons* serialized_icons_ptr = serialized_icons.get();
 
@@ -285,6 +290,15 @@ void ContentIndexDatabase::DeleteEntryOnCoreThread(
     blink::mojom::ContentIndexService::DeleteCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (!service_worker_registration ||
+      !service_worker_registration->key().origin().IsSameOriginWith(origin)) {
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
+    return;
+  }
+
   service_worker_context_->ClearRegistrationUserData(
       service_worker_registration_id, {EntryKey(entry_id), IconsKey(entry_id)},
       base::BindOnce(&ContentIndexDatabase::DidDeleteEntry,
@@ -317,6 +331,7 @@ void ContentIndexDatabase::DidDeleteEntry(
 
 void ContentIndexDatabase::GetDescriptions(
     int64_t service_worker_registration_id,
+    const url::Origin& origin,
     blink::mojom::ContentIndexService::GetDescriptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -334,14 +349,25 @@ void ContentIndexDatabase::GetDescriptions(
       FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(&ContentIndexDatabase::GetDescriptionsOnCoreThread,
                      weak_ptr_factory_core_.GetWeakPtr(),
-                     service_worker_registration_id,
+                     service_worker_registration_id, origin,
                      std::move(wrapped_callback)));
 }
 
 void ContentIndexDatabase::GetDescriptionsOnCoreThread(
     int64_t service_worker_registration_id,
+    const url::Origin& origin,
     blink::mojom::ContentIndexService::GetDescriptionsCallback callback) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (!service_worker_registration ||
+      !service_worker_registration->key().origin().IsSameOriginWith(origin)) {
+    std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR,
+                            /* descriptions= */ {});
+    return;
+  }
 
   service_worker_context_->GetRegistrationUserDataByKeyPrefix(
       service_worker_registration_id, kEntryPrefix,
