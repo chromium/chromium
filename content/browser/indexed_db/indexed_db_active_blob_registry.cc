@@ -27,7 +27,7 @@ bool IndexedDBActiveBlobRegistry::MarkDatabaseDeletedAndCheckIfReferenced(
     int64_t database_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
-  const auto& db_pair = blob_reference_tracker_.find(database_id);
+  auto db_pair = blob_reference_tracker_.find(database_id);
   if (db_pair == blob_reference_tracker_.end())
     return false;
 
@@ -41,7 +41,7 @@ bool IndexedDBActiveBlobRegistry::MarkBlobInfoDeletedAndCheckIfReferenced(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(blob_number, DatabaseMetaDataKey::kAllBlobsNumber);
   DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
-  const auto& db_pair = blob_reference_tracker_.find(database_id);
+  auto db_pair = blob_reference_tracker_.find(database_id);
   if (db_pair == blob_reference_tracker_.end())
     return false;
 
@@ -111,7 +111,7 @@ void IndexedDBActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
 
   DCHECK(KeyPrefix::IsValidDatabaseId(database_id));
   DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
-  const auto& db_pair = blob_reference_tracker_.find(database_id);
+  auto db_pair = blob_reference_tracker_.find(database_id);
   if (db_pair == blob_reference_tracker_.end()) {
     NOTREACHED();
     return;
@@ -123,7 +123,7 @@ void IndexedDBActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
     return;
   }
   bool delete_blob_in_backend = false;
-  const auto& deleted_database_it = deleted_dbs_.find(database_id);
+  auto deleted_database_it = deleted_dbs_.find(database_id);
   bool db_marked_for_deletion = deleted_database_it != deleted_dbs_.end();
   // Don't bother deleting the file if we're going to delete its whole
   // database directory soon.

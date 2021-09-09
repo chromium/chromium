@@ -436,7 +436,7 @@ void IndexedDBContextImpl::GetAllStorageKeysDetails(
 
           base::Value scope(base::Value::Type::LIST);
           for (const auto& id : transaction->scope()) {
-            const auto& stores_it = db->metadata().object_stores.find(id);
+            auto stores_it = db->metadata().object_stores.find(id);
             if (stores_it != db->metadata().object_stores.end())
               scope.Append(stores_it->second.name);
           }

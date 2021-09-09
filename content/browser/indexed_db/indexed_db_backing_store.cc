@@ -3727,7 +3727,7 @@ void IndexedDBBackingStore::Transaction::PutExternalObjects(
     database_id_ = database_id;
   DCHECK_EQ(database_id_, database_id);
 
-  const auto& it = external_object_change_map_.find(object_store_data_key);
+  auto it = external_object_change_map_.find(object_store_data_key);
   IndexedDBExternalObjectChangeRecord* record = nullptr;
   if (it == external_object_change_map_.end()) {
     std::unique_ptr<IndexedDBExternalObjectChangeRecord> new_record =
