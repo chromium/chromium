@@ -49,6 +49,9 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ash::WallpaperController;
+
 constexpr int kLocalImageThumbnailSizeDip = 256;
 
 const gfx::ImageSkia GetResizedImage(const gfx::ImageSkia& image) {
@@ -176,7 +179,7 @@ void ChromePersonalizationAppUiDelegate::OnWallpaperChanged() {
   wallpaper_attribution_info_fetcher_.reset();
   attribution_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  auto* controller = ash::WallpaperController::Get();
+  auto* controller = WallpaperController::Get();
   auto* client = WallpaperControllerClientImpl::Get();
 
   ash::WallpaperInfo info = client->GetActiveUserWallpaperInfo();
@@ -249,9 +252,6 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
     return;
   }
 
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
   WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
   DCHECK(client);
 
@@ -261,7 +261,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
   client->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
-          user->GetAccountId(), absl::make_optional(image_asset_id),
+          GetAccountId(), absl::make_optional(image_asset_id),
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
           /*preview_mode=*/false, /*from_user=*/true),
@@ -283,16 +283,8 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     std::move(pending_select_local_image_callback_).Run(/*success=*/false);
   pending_select_local_image_callback_ = std::move(callback);
 
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
-
-  auto* controller = ash::WallpaperController::Get();
-
-  const auto& account_id = user->GetAccountId();
-
-  controller->SetCustomWallpaper(
-      account_id, it->second.path,
+  WallpaperController::Get()->SetCustomWallpaper(
+      GetAccountId(), it->second.path,
       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
       /*preview_mode=*/false,
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnLocalImageSelected,
@@ -301,24 +293,19 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
 
 void ChromePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
     ash::WallpaperLayout layout) {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
-  auto* controller = ash::WallpaperController::Get();
-
-  const auto& account_id = user->GetAccountId();
-  controller->UpdateCustomWallpaperLayout(account_id, layout);
+  WallpaperController::Get()->UpdateCustomWallpaperLayout(GetAccountId(),
+                                                          layout);
 }
 
 void ChromePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
-  auto* controller = ash::WallpaperController::Get();
-  controller->SetDailyRefreshCollectionId(collection_id);
+  WallpaperController::Get()->SetDailyRefreshCollectionId(GetAccountId(),
+                                                          collection_id);
 }
 
 void ChromePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
     GetDailyRefreshCollectionIdCallback callback) {
-  auto* controller = ash::WallpaperController::Get();
+  auto* controller = WallpaperController::Get();
   std::move(callback).Run(controller->GetDailyRefreshCollectionId());
 }
 
@@ -329,7 +316,7 @@ void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
         .Run(/*success=*/false);
   pending_update_daily_refresh_wallpaper_callback_ = std::move(callback);
 
-  ash::WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
+  WallpaperController::Get()->UpdateDailyRefreshWallpaper(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnDailyRefreshWallpaperUpdated,
       backend_weak_ptr_factory_.GetWeakPtr()));
 }
