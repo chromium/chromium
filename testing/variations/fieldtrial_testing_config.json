@@ -9718,6 +9718,26 @@
             ]
         }
     ],
+    "WebRTC-ZeroPlayoutDelay": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "ios",
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "min_pacing:8ms,max_decode_queue_size:8,_V2"
+                }
+            ]
+        }
+    ],
     "WebRtcDistinctWorkerThread": [
         {
             "platforms": [
