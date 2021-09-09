@@ -112,17 +112,13 @@ class BluetoothDetailedViewTest : public AshTestBase {
   }
 
   views::ToggleButton* FindBluetoothToggleButton() {
-    return static_cast<views::ToggleButton*>(
-        bluetooth_detailed_view_->GetAsView()->GetViewByID(
-            static_cast<int>(BluetoothDetailedViewImpl::
-                                 BluetoothDetailedViewChildId::kToggleButton)));
+    return FindViewById<views::ToggleButton*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kToggleButton);
   }
 
   BluetoothDisabledDetailedView* FindBluetoothDisabledView() {
-    return static_cast<BluetoothDisabledDetailedView*>(
-        bluetooth_detailed_view_->GetAsView()->GetViewByID(
-            static_cast<int>(BluetoothDetailedViewImpl::
-                                 BluetoothDetailedViewChildId::kDisabledView)));
+    return FindViewById<BluetoothDisabledDetailedView*>(
+        BluetoothDetailedViewImpl::BluetoothDetailedViewChildId::kDisabledView);
   }
 
   BluetoothDetailedView* bluetooth_detailed_view() {
@@ -134,6 +130,12 @@ class BluetoothDetailedViewTest : public AshTestBase {
   }
 
  private:
+  template <class T>
+  T FindViewById(BluetoothDetailedViewImpl::BluetoothDetailedViewChildId id) {
+    return static_cast<T>(bluetooth_detailed_view_->GetAsView()->GetViewByID(
+        static_cast<int>(id)));
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
   std::unique_ptr<views::Widget> widget_;
