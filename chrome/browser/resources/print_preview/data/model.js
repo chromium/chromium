@@ -937,7 +937,9 @@ export class PrintPreviewModelElement extends PolymerElement {
       this.setSetting('dpi', matchingOption || defaultOption, true);
     } else if (
         caps && caps.dpi && caps.dpi.option && caps.dpi.option.length > 0) {
-      this.setSettingPath_('dpi.unavailableValue', caps.dpi.option[0]);
+      const unavailableValue =
+          caps.dpi.option.find(o => !!o.is_default) || caps.dpi.option[0];
+      this.setSettingPath_('dpi.unavailableValue', unavailableValue);
     }
 
     if (!this.settings.color.setFromUi && this.settings.color.available) {

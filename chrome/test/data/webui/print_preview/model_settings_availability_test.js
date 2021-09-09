@@ -301,15 +301,19 @@ suite('ModelSettingsAvailabilityTest', function() {
     // The settings are available since the printer has multiple DPI options.
     assertTrue(model.settings.dpi.available);
 
-    // No resolution settings for ARC.
+    // No resolution settings for ARC, but uses the default value.
     model.set('documentSettings.isFromArc', true);
+    let capabilities = getCddTemplate(model.destination.id).capabilities;
+    model.set('destination.capabilities', capabilities);
     assertFalse(model.settings.dpi.available);
+    assertEquals(200, model.settings.dpi.unavailableValue.horizontal_dpi);
+    assertEquals(200, model.settings.dpi.unavailableValue.vertical_dpi);
 
     model.set('documentSettings.isFromArc', false);
     assertTrue(model.settings.dpi.available);
 
     // Remove capability.
-    let capabilities = getCddTemplate(model.destination.id).capabilities;
+    capabilities = getCddTemplate(model.destination.id).capabilities;
     delete capabilities.printer.dpi;
 
     // Section should now be hidden.
