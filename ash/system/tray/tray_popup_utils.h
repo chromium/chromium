@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/ash_export.h"
 #include "ash/login_status.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
@@ -31,7 +32,7 @@ class HoverHighlightView;
 class UnfocusableLabel;
 
 // Factory/utility functions used by the system menu.
-class TrayPopupUtils {
+class ASH_EXPORT TrayPopupUtils {
  public:
   enum class FontStyle {
     // Topmost header rows for default view and detailed view.

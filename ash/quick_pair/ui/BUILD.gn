@@ -7,7 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash,
        "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
 
-component("ui") {
+source_set("ui") {
   output_name = "quick_pair_ui"
 
   defines = [ "IS_QUICK_PAIR_UI_IMPL" ]

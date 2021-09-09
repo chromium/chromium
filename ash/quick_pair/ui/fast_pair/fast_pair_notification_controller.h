@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
                                gfx::Image device_image,
                                base::OnceClosure on_cancel_clicked,
                                base::OnceCallback<void(bool)> on_close);
+  void RemoveNotifications();
 };
 
 }  // namespace quick_pair

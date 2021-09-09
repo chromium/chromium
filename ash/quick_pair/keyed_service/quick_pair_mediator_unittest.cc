@@ -103,5 +103,17 @@ TEST_F(MediatorTest, NotifyPairFailure) {
       device_, PairFailure::kKeyBasedPairingCharacteristicDiscovery);
 }
 
+TEST_F(MediatorTest, RemoveNotificationOnPaired) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  mock_pairer_broker_->NotifyDevicePaired(device_);
+}
+
+TEST_F(MediatorTest, RemoveNotificationOnDeviceLost) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  mock_scanner_broker_->NotifyDeviceLost(device_);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

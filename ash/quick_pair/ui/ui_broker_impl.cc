@@ -76,6 +76,14 @@ void UIBrokerImpl::ShowCompanionApp(scoped_refptr<Device> device) {
   }
 }
 
+void UIBrokerImpl::RemoveNotifications(scoped_refptr<Device> device) {
+  switch (device->protocol) {
+    case Protocol::kFastPair:
+      fast_pair_presenter_->RemoveNotifications(std::move(device));
+      break;
+  }
+}
+
 void UIBrokerImpl::NotifyDiscoveryAction(scoped_refptr<Device> device,
                                          DiscoveryAction action) {
   for (auto& observer : observers_)

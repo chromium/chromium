@@ -6,12 +6,17 @@
 
 #include <string>
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/quick_pair/ui/actions.h"
+#include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/system/tray/tray_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -116,6 +121,13 @@ void FastPairPresenter::OnPairingFailedMetadataRetrieved(
 }
 
 void FastPairPresenter::OnNavigateToSettings(PairingFailedCallback callback) {
+  if (TrayPopupUtils::CanOpenWebUISettings()) {
+    Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
+  } else {
+    QP_LOG(WARNING) << "Cannot open Bluetooth Settings since it's not possible "
+                       "to opening WebUI settings";
+  }
+
   std::move(callback).Run(PairingFailedAction::kNavigateToSettings);
 }
 
@@ -131,6 +143,10 @@ void FastPairPresenter::ShowAssociateAccount(
 
 void FastPairPresenter::ShowCompanionApp(scoped_refptr<Device> device,
                                          CompanionAppCallback callback) {}
+
+void FastPairPresenter::RemoveNotifications(scoped_refptr<Device> device) {
+  notification_controller_->RemoveNotifications();
+}
 
 }  // namespace quick_pair
 }  // namespace ash

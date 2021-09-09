@@ -33,6 +33,7 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl final : public UIBroker {
   void ShowPairingFailed(scoped_refptr<Device> device) override;
   void ShowAssociateAccount(scoped_refptr<Device> device) override;
   void ShowCompanionApp(scoped_refptr<Device> device) override;
+  void RemoveNotifications(scoped_refptr<Device> device) override;
 
  private:
   void NotifyDiscoveryAction(scoped_refptr<Device> device,

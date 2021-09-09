@@ -1917,6 +1917,7 @@ component("ash") {
     "//ash/public/cpp/ambient/proto",
     "//ash/quick_pair",
     "//ash/quick_pair/keyed_service",
+    "//ash/quick_pair/ui",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
@@ -2070,6 +2071,7 @@ component("ash") {
   allow_circular_includes_from = [
     "//ash/app_list",
     "//ash/assistant/ui",
+    "//ash/quick_pair/ui",
   ]
 
   if (enable_cros_ambient_mode_backend) {

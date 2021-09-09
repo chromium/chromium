@@ -80,6 +80,7 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+  ui_broker_->RemoveNotifications(std::move(device));
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
@@ -93,6 +94,7 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
+  ui_broker_->RemoveNotifications(std::move(device));
 }
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,

@@ -39,6 +39,7 @@ class FastPairPresenter {
                             AssociateAccountCallback callback);
   void ShowCompanionApp(scoped_refptr<Device> device,
                         CompanionAppCallback callback);
+  void RemoveNotifications(scoped_refptr<Device> device);
 
  private:
   void OnDiscoveryClicked(DiscoveryCallback action_callback);

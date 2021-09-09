@@ -182,5 +182,9 @@ void FastPairNotificationController::ShowPairingNotification(
   MessageCenter::Get()->AddNotification(std::move(pairing_notification));
 }
 
+void FastPairNotificationController::RemoveNotifications() {
+  MessageCenter::Get()->RemoveNotificationsForNotifierId(kNotifierFastPair);
+}
+
 }  // namespace quick_pair
 }  // namespace ash
