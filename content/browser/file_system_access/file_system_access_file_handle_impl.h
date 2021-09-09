@@ -47,6 +47,12 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void CreateFileWriter(bool keep_existing_data,
                         bool auto_close,
                         CreateFileWriterCallback callback) override;
+  void Move(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                destination_directory,
+            const std::string& new_entry_name,
+            MoveCallback callback) override;
+  void Rename(const std::string& new_entry_name,
+              RenameCallback callback) override;
   void Remove(RemoveCallback callback) override;
   void OpenAccessHandle(OpenAccessHandleCallback callback) override;
   void IsSameEntry(

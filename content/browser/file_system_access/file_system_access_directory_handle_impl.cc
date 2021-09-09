@@ -174,6 +174,39 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
       url());
 }
 
+void FileSystemAccessDirectoryHandleImpl::Move(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+        destination_directory,
+    const std::string& new_entry_name,
+    MoveCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunWithWritePermission(
+      base::BindOnce(&FileSystemAccessHandleBase::DoMove,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(destination_directory), new_entry_name),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        MoveCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
+}
+
+void FileSystemAccessDirectoryHandleImpl::Rename(
+    const std::string& new_entry_name,
+    RenameCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  RunWithWritePermission(
+      base::BindOnce(&FileSystemAccessHandleBase::DoRename,
+                     weak_factory_.GetWeakPtr(), new_entry_name),
+      base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
+                        RenameCallback callback) {
+        std::move(callback).Run(std::move(result));
+      }),
+      std::move(callback));
+}
+
 void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
                                                  RemoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

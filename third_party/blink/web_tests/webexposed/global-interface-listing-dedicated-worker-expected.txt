@@ -558,8 +558,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     method constructor
 [Worker]     method isSameEntry
+[Worker]     method move
 [Worker]     method queryPermission
 [Worker]     method remove
+[Worker]     method rename
 [Worker]     method requestPermission
 [Worker] interface FileSystemSyncAccessHandle
 [Worker]     attribute @@toStringTag

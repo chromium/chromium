@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -87,6 +88,67 @@ ScriptPromise FileSystemHandle::requestPermission(
             resolver->Resolve(MojoPermissionStatusToString(status));
           },
           WrapPersistent(resolver)));
+
+  return result;
+}
+
+ScriptPromise FileSystemHandle::rename(ScriptState* script_state,
+                                       const String& new_entry_name) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  RenameImpl(
+      new_entry_name,
+      WTF::Bind(
+          [](FileSystemHandle* handle, const String& new_name,
+             ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+            if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
+              handle->name_ = new_name;
+            }
+            file_system_access_error::ResolveOrReject(resolver, *result);
+          },
+          WrapPersistent(this), new_entry_name, WrapPersistent(resolver)));
+
+  return result;
+}
+
+ScriptPromise FileSystemHandle::move(
+    ScriptState* script_state,
+    FileSystemDirectoryHandle* destination_directory) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  MoveImpl(
+      destination_directory->Transfer(), name_,
+      WTF::Bind(
+          [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+            file_system_access_error::ResolveOrReject(resolver, *result);
+          },
+          WrapPersistent(resolver)));
+
+  return result;
+}
+
+ScriptPromise FileSystemHandle::move(
+    ScriptState* script_state,
+    FileSystemDirectoryHandle* destination_directory,
+    const String& new_entry_name) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  String dest_name = new_entry_name.IsEmpty() ? name_ : new_entry_name;
+
+  MoveImpl(
+      destination_directory->Transfer(), dest_name,
+      WTF::Bind(
+          [](FileSystemHandle* handle, const String& new_name,
+             ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+            if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
+              handle->name_ = new_name;
+            }
+            file_system_access_error::ResolveOrReject(resolver, *result);
+          },
+          WrapPersistent(this), dest_name, WrapPersistent(resolver)));
 
   return result;
 }

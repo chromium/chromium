@@ -3,15 +3,22 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+#include <memory>
 
+#include "base/files/file_path.h"
 #include "base/task/post_task.h"
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/filename_util.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace content {
 
@@ -180,6 +187,120 @@ void FileSystemAccessHandleBase::DidRequestPermission(
   NOTREACHED();
 }
 
+void FileSystemAccessHandleBase::DoMove(
+    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+        destination_directory,
+    const std::string& new_entry_name,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(GetWritePermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+          new_entry_name)) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidArgument));
+    return;
+  }
+
+  manager()->ResolveTransferToken(
+      std::move(destination_directory),
+      base::BindOnce(&FileSystemAccessHandleBase::DidResolveTokenToMove,
+                     AsWeakPtr(), new_entry_name, std::move(callback)));
+}
+
+void FileSystemAccessHandleBase::DoRename(
+    const std::string& new_entry_name,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(GetWritePermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
+
+  if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
+          new_entry_name)) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidArgument));
+    return;
+  }
+
+  auto dest_parent_url = GetParentURL();
+  auto dir_handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager(), context(), dest_parent_url, handle_state_);
+
+  DidCreateDestinationDirectoryHandle(new_entry_name, std::move(dir_handle),
+                                      std::move(callback));
+}
+
+void FileSystemAccessHandleBase::DidResolveTokenToMove(
+    const std::string& new_entry_name,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+    FileSystemAccessTransferTokenImpl* resolved_destination_directory) {
+  if (!resolved_destination_directory) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidArgument));
+    return;
+  }
+
+  if (resolved_destination_directory->type() !=
+      FileSystemAccessPermissionContext::HandleType::kDirectory) {
+    mojo::ReportBadMessage(
+        "FileSystemHandle::move() was passed a token which is not a directory");
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kInvalidArgument));
+    return;
+  }
+
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
+      resolved_destination_directory->CreateDirectoryHandle(context_);
+
+  DidCreateDestinationDirectoryHandle(new_entry_name, std::move(dir_handle),
+                                      std::move(callback));
+}
+
+void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
+    const std::string& new_entry_name,
+    std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
+  // Must have write access to the target directory.
+  if (dir_handle->GetWritePermissionStatus() !=
+      blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kPermissionDenied));
+    return;
+  }
+
+  storage::FileSystemURL dest_url;
+  blink::mojom::FileSystemAccessErrorPtr error =
+      dir_handle->GetChildURL(new_entry_name, &dest_url);
+  if (error != file_system_access_error::Ok()) {
+    std::move(callback).Run(std::move(error));
+    return;
+  }
+
+  // TODO(crbug.com/1247850): Run safe-browsing checks if moving the
+  // file or directory out of the Origin Private File System.
+
+  DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::Move,
+      base::BindOnce(
+          [](base::WeakPtr<FileSystemAccessHandleBase> handle,
+             storage::FileSystemURL new_url,
+             base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                 callback,
+             base::File::Error result) {
+            if (result == base::File::FILE_OK && handle)
+              handle->url_ = std::move(new_url);
+
+            std::move(callback).Run(
+                file_system_access_error::FromFileError(result));
+          },
+          AsWeakPtr(), dest_url, std::move(callback)),
+      url(), dest_url,
+      storage::FileSystemOperationRunner::CopyOrMoveOption::OPTION_NONE,
+      storage::FileSystemOperationRunner::ErrorBehavior::ERROR_BEHAVIOR_ABORT,
+      storage::FileSystemOperation::CopyOrMoveProgressCallback());
+}
+
 void FileSystemAccessHandleBase::DoRemove(
     const storage::FileSystemURL& url,
     bool recurse,
@@ -199,6 +320,13 @@ void FileSystemAccessHandleBase::DoRemove(
           },
           std::move(callback)),
       url, recurse);
+}
+
+storage::FileSystemURL FileSystemAccessHandleBase::GetParentURL() {
+  const storage::FileSystemURL child = url();
+  return file_system_context()->CreateCrackedFileSystemURL(
+      child.storage_key(), child.mount_type(),
+      storage::VirtualPath::DirName(child.virtual_path()));
 }
 
 }  // namespace content

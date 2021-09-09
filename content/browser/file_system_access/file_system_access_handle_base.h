@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -69,6 +70,19 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
       bool writable,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback);
+
+  // Implementation for the Move method in the
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
+  void DoMove(mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+                  destination_directory,
+              const std::string& new_entry_name,
+              base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                  callback);
+  // Implementation for the Rename method in the
+  // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
+  void DoRename(const std::string& new_entry_name,
+                base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                    callback);
 
   // Implementation for the Remove and RemoveEntry methods in the
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
@@ -174,11 +188,23 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  storage::FileSystemURL GetParentURL();
+
   void DidRequestPermission(
       bool writable,
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                               PermissionStatus)> callback,
       FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome);
+
+  void DidResolveTokenToMove(
+      const std::string& new_entry_name,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback,
+      FileSystemAccessTransferTokenImpl* resolved_token);
+  void DidCreateDestinationDirectoryHandle(
+      const std::string& new_entry_name,
+      std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          callback);
 
   bool ShouldTrackUsage() const {
     return url_.type() != storage::kFileSystemTypeTemporary &&
@@ -189,7 +215,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   FileSystemAccessManagerImpl* const manager_;
   base::WeakPtr<WebContents> web_contents_;
   const BindingContext context_;
-  const storage::FileSystemURL url_;
+  storage::FileSystemURL url_;
   const SharedHandleState handle_state_;
 };
 
