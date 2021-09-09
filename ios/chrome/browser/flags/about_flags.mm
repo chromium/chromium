@@ -634,10 +634,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kDetectFormSubmissionOnFormClear)},
-    {"password-reuse-detection", flag_descriptions::kPasswordReuseDetectionName,
-     flag_descriptions::kPasswordReuseDetectionDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordReuseDetectionEnabled)},
     {"enable-manual-password-generation",
      flag_descriptions::kEnableManualPasswordGenerationName,
      flag_descriptions::kEnableManualPasswordGenerationDescription,
