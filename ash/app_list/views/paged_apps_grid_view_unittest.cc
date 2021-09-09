@@ -42,14 +42,11 @@ class PageFlipWaiter : public PaginationModelObserver {
   PaginationModel* model_ = nullptr;
 };
 
-class PagedAppsGridViewTest : public AshTestBase {
+class PagedAppsGridViewTestBase : public AshTestBase {
  public:
-  PagedAppsGridViewTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_features_.InitWithFeatures(
-        {features::kAppListBubble, features::kLauncherRemoveEmptySpace}, {});
-  }
-  ~PagedAppsGridViewTest() override = default;
+  PagedAppsGridViewTestBase()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~PagedAppsGridViewTestBase() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -72,8 +69,44 @@ class PagedAppsGridViewTest : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
+};
+
+// Tests with AppListBubble enabled.
+class PagedAppsGridViewTest : public PagedAppsGridViewTestBase {
+ public:
+  PagedAppsGridViewTest() {
+    scoped_features_.InitWithFeatures(
+        {features::kAppListBubble, features::kLauncherRemoveEmptySpace}, {});
+  }
+
   base::test::ScopedFeatureList scoped_features_;
 };
+
+// Tests with AppListBubble disabled.
+class PagedAppsGridViewNonBubbleTest : public PagedAppsGridViewTestBase {
+ public:
+  PagedAppsGridViewNonBubbleTest() {
+    scoped_features_.InitAndDisableFeature(features::kAppListBubble);
+  }
+
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_F(PagedAppsGridViewNonBubbleTest, CreatePage) {
+  PagedAppsGridView* apps_grid_view =
+      GetAppListTestHelper()->GetRootPagedAppsGridView();
+
+  // 20 items fills the first page.
+  GetAppListTestHelper()->AddAppItems(20);
+  EXPECT_EQ(1, apps_grid_view->pagination_model()->total_pages());
+  EXPECT_EQ(20, grid_test_api_->AppsOnPage(0));
+
+  // Adding 1 item creates a second page.
+  GetAppListTestHelper()->AddAppItems(1);
+  EXPECT_EQ(2, apps_grid_view->pagination_model()->total_pages());
+  EXPECT_EQ(20, grid_test_api_->AppsOnPage(0));
+  EXPECT_EQ(1, grid_test_api_->AppsOnPage(1));
+}
 
 // Test that the first page of the root level paged apps grid view holds 15 apps
 // while subsequent pages can hold up to 20.

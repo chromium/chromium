@@ -26,6 +26,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
+#include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
@@ -2492,6 +2493,31 @@ TEST_F(AppListViewTest, BackAction) {
   contents_view()->Back();
   EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
   EXPECT_EQ(0, apps_grid_view()->pagination_model()->selected_page());
+}
+
+TEST_F(AppListViewTest, CloseFolderByClickingBackground) {
+  Initialize(/*is_tablet_mode=*/false);
+
+  AppListTestModel* model = delegate_->GetTestModel();
+  model->CreateAndPopulateFolderWithApps(3);
+  EXPECT_EQ(1u, model->top_level_item_list()->item_count());
+  EXPECT_EQ(AppListFolderItem::kItemType,
+            model->top_level_item_list()->item_at(0)->GetItemType());
+
+  // Open the folder.
+  Show();
+  test_api_->PressItemAt(0);
+
+  AppsContainerView* apps_container_view =
+      contents_view()->apps_container_view();
+  EXPECT_TRUE(apps_container_view->IsInFolderView());
+
+  // Simulate mouse press on folder background to close the folder.
+  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  apps_container_view->folder_background_view()->OnMouseEvent(&event);
+  EXPECT_FALSE(apps_container_view->IsInFolderView());
 }
 
 // Tests that, in clamshell mode, the current app list page resets to the
