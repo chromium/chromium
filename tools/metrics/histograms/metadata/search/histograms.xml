@@ -746,6 +746,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearchPrivacyOptInPreferenceStateChange"
+    enum="BooleanOptedIn" expires_after="M98">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    The Contextual Search privacy opt-in preference state after a modification
+    from the preference menu. Recorded when the opt-in switch in Settings page
+    is toggled. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.ContextualSearchPromoCardChoice" enum="BooleanOptedIn"
+    expires_after="M98">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    The user's choice in the Contextual Search promo card. Recorded when the 'No
+    thanks' or 'Turn on' button on the Contextual Search Promo Card is chosen.
+    Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearchPromoOpenCount" units="opens"
     expires_after="M77">
   <owner>donnd@chromium.org</owner>

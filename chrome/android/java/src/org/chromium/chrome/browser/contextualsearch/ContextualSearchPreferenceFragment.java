@@ -49,7 +49,7 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
 
         contextualSearchSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             ContextualSearchPolicy.setContextualSearchState((boolean) newValue);
-            ContextualSearchUma.logPreferenceChange((boolean) newValue);
+            ContextualSearchUma.logMainPreferenceChange((boolean) newValue);
             seeBetterResultsSwitch.setVisible(
                     ContextualSearchPolicy.shouldShowMultilevelSettingsUI() && (boolean) newValue);
             return true;
@@ -61,6 +61,7 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat
 
         seeBetterResultsSwitch.setChecked(ContextualSearchPolicy.isContextualSearchFullyOptedIn());
         seeBetterResultsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            ContextualSearchUma.logPrivacyOptInPreferenceChange((boolean) newValue);
             ContextualSearchPolicy.setContextualSearchFullyOptedIn((boolean) newValue);
             return true;
         });

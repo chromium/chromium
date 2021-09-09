@@ -680,10 +680,27 @@ public class ContextualSearchUma {
      * run flow.
      * @param enabled Whether the preference is being enabled or disabled.
      */
-    public static void logPreferenceChange(boolean enabled) {
+    public static void logMainPreferenceChange(boolean enabled) {
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchPreferenceStateChange",
                 enabled ? ContextualSearchPreference.ENABLED : ContextualSearchPreference.DISABLED,
                 ContextualSearchPreference.NUM_ENTRIES);
+    }
+
+    /**
+     * Logs changes to the Contextual Search privacy opt-in preference.
+     * @param enabled Whether the opt-in preference is being enabled or disabled.
+     */
+    public static void logPrivacyOptInPreferenceChange(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearchPrivacyOptInPreferenceStateChange", enabled);
+    }
+
+    /**
+     * Logs the user's choice for the Contextual Search Promo Card.
+     * @param enabled Whether the opt-in to full privacy is being chosen.
+     */
+    public static void logPromoCardChoice(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram("Search.ContextualSearchPromoCardChoice", enabled);
     }
 
     /**

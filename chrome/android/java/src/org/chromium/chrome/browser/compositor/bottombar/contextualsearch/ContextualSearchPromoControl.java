@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchPromoHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchPreferenceFragment;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -379,6 +380,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         if (!mHasHandledChoice) {
             mHasHandledChoice = true;
             ContextualSearchManager.setContextualSearchPromoCardSelection(hasEnabled);
+            ContextualSearchUma.logPromoCardChoice(hasEnabled);
         }
     }
 
