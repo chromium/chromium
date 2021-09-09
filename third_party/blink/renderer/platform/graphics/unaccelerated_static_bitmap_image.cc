@@ -149,4 +149,8 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
                                         /*x=*/0, /*y=*/0);
 }
 
+SkColorType UnacceleratedStaticBitmapImage::GetSkColorType() const {
+  return paint_image_.GetSkImageInfo().colorType();
+}
+
 }  // namespace blink

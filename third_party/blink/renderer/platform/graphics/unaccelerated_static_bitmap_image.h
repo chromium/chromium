@@ -43,6 +43,8 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
 
   bool CopyToResourceProvider(CanvasResourceProvider*) override;
 
+  SkColorType GetSkColorType() const override;
+
  private:
   UnacceleratedStaticBitmapImage(sk_sp<SkImage>, ImageOrientation);
   UnacceleratedStaticBitmapImage(PaintImage, ImageOrientation);

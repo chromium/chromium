@@ -88,6 +88,12 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
   virtual bool IsPremultiplied() const { return true; }
 
+  // Return resource format for shared image backing.
+  virtual SkColorType GetSkColorType() const {
+    NOTREACHED();
+    return kUnknown_SkColorType;
+  }
+
   // Methods have exactly the same implementation for all sub-classes
   bool OriginClean() const { return is_origin_clean_; }
   void SetOriginClean(bool flag) { is_origin_clean_ = flag; }

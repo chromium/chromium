@@ -114,6 +114,10 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   gpu::MailboxHolder GetMailboxHolder() const final;
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
 
+  SkColorType GetSkColorType() const override {
+    return sk_image_info_.colorType();
+  }
+
   PaintImage PaintImageForCurrentFrame() override;
 
  private:
