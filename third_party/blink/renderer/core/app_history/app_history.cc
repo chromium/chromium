@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -228,13 +229,19 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     return;
   }
 
+  HeapVector<Member<AppHistoryEntry>> disposed_entries;
   if (type == WebFrameLoadType::kStandard) {
     // For a new back/forward entry, truncate any forward entries and prepare to
     // append.
     current_index_++;
-    for (wtf_size_t i = current_index_; i < entries_.size(); i++)
+    for (wtf_size_t i = current_index_; i < entries_.size(); i++) {
       keys_to_indices_.erase(entries_[i]->key());
+      disposed_entries.push_back(entries_[i]);
+    }
     entries_.resize(current_index_ + 1);
+  } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
+    DCHECK_NE(current_index_, -1);
+    disposed_entries.push_back(entries_[current_index_]);
   }
 
   // current_index_ is now correctly set (for type of
@@ -243,6 +250,10 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   entries_[current_index_] =
       MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), &item);
   keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
+
+  for (const auto& disposed_entry : disposed_entries) {
+    disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
+  }
 }
 
 AppHistoryEntry* AppHistory::current() const {

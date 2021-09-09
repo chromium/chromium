@@ -103,6 +103,7 @@
     "dischargingtimechange",
     "disconnect",
     "display",
+    "dispose",
     "downloading",
     "dataavailable",
     "drag",

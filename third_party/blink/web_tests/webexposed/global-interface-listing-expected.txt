@@ -264,10 +264,12 @@ interface AppHistoryEntry : EventTarget
     getter id
     getter index
     getter key
+    getter ondispose
     getter sameDocument
     getter url
     method constructor
     method getState
+    setter ondispose
 interface AppHistoryNavigateEvent : Event
     attribute @@toStringTag
     getter canTransition
