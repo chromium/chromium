@@ -19,6 +19,8 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
+namespace value_store {
+
 namespace {
 
 const char kDatabaseUMAClientName[] = "Test";
@@ -186,3 +188,5 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   EXPECT_TRUE(result.status().ok());
   EXPECT_EQ(0u, result.settings().DictSize());
 }
+
+}  // namespace value_store

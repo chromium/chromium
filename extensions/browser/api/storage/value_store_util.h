@@ -28,25 +28,25 @@ base::FilePath GetValueStoreDir(
 
 // Creates a `ValueStore` to contain settings data for a specific extension
 // namespace and model type.
-std::unique_ptr<ValueStore> CreateSettingsStore(
+std::unique_ptr<value_store::ValueStore> CreateSettingsStore(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
     const ExtensionId& id,
-    scoped_refptr<ValueStoreFactory> factory);
+    scoped_refptr<value_store::ValueStoreFactory> factory);
 
 // Deletes all settings for the given extension in the specified
 // `settings_namespace` and `model_type`.
 void DeleteValueStore(settings_namespace::Namespace settings_namespace,
                       ModelType model_type,
                       const ExtensionId& id,
-                      scoped_refptr<ValueStoreFactory> factory);
+                      scoped_refptr<value_store::ValueStoreFactory> factory);
 
 // Returns whether there is any settings stored in the specified
 // `settings_namespace` and `model_type` for the given extension.
 bool HasValueStore(settings_namespace::Namespace settings_namespace,
                    ModelType model_type,
                    const ExtensionId& id,
-                   scoped_refptr<ValueStoreFactory> factory);
+                   scoped_refptr<value_store::ValueStoreFactory> factory);
 
 }  // namespace value_store_util
 }  // namespace extensions

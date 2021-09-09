@@ -16,6 +16,8 @@
 #include "base/values.h"
 #include "extensions/browser/value_store/value_store_change.h"
 
+namespace value_store {
+
 // Interface for a storage area for Value objects.
 class ValueStore {
  public:
@@ -146,10 +148,10 @@ class ValueStore {
     DEFAULTS = 0,
 
     // Ignore any quota restrictions.
-    IGNORE_QUOTA = 1<<1,
+    IGNORE_QUOTA = 1 << 1,
 
     // Don't generate the changes for a WriteResult.
-    NO_GENERATE_CHANGES = 1<<2,
+    NO_GENERATE_CHANGES = 1 << 2,
   };
   typedef int WriteOptions;
 
@@ -195,5 +197,7 @@ class ValueStore {
   // Clears the storage.
   virtual WriteResult Clear() = 0;
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_H_

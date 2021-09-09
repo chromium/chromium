@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 
+namespace value_store {
+
 // Implementation of Status.
 
 ValueStore::Status::Status() = default;
@@ -69,3 +71,5 @@ ValueStore::WriteResult::~WriteResult() = default;
 
 ValueStore::WriteResult& ValueStore::WriteResult::operator=(WriteResult&& rhs) =
     default;
+
+}  // namespace value_store

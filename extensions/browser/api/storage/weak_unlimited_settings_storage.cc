@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/storage/weak_unlimited_settings_storage.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 
 WeakUnlimitedSettingsStorage::WeakUnlimitedSettingsStorage(

@@ -45,7 +45,7 @@ namespace extensions {
 
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
-      store_factory_(new TestValueStoreFactory()),
+      store_factory_(new value_store::TestValueStoreFactory()),
       state_store_(new StateStore(profile_,
                                   store_factory_,
                                   StateStore::BackendType::RULES,
@@ -128,7 +128,8 @@ StateStore* TestExtensionSystem::rules_store() {
   return state_store_.get();
 }
 
-scoped_refptr<ValueStoreFactory> TestExtensionSystem::store_factory() {
+scoped_refptr<value_store::ValueStoreFactory>
+TestExtensionSystem::store_factory() {
   return store_factory_;
 }
 
@@ -180,10 +181,11 @@ bool TestExtensionSystem::FinishDelayedInstallationIfReady(
   return false;
 }
 
-TestingValueStore* TestExtensionSystem::value_store() {
+value_store::TestingValueStore* TestExtensionSystem::value_store() {
   // These tests use TestingValueStore in a way that ensures it only ever mints
   // instances of TestingValueStore.
-  return static_cast<TestingValueStore*>(store_factory_->LastCreatedStore());
+  return static_cast<value_store::TestingValueStore*>(
+      store_factory_->LastCreatedStore());
 }
 
 // static

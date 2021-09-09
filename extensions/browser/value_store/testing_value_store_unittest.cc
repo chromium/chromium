@@ -6,7 +6,9 @@
 
 #include "extensions/browser/value_store/testing_value_store.h"
 
-namespace extensions {
+namespace value_store {
+
+class ValueStore;
 
 namespace {
 
@@ -20,4 +22,4 @@ INSTANTIATE_TEST_SUITE_P(TestingValueStore,
                          ValueStoreTest,
                          testing::Values(&Param));
 
-}  // namespace extensions
+}  // namespace value_store

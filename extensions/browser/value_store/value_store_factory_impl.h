@@ -13,7 +13,7 @@
 #include "extensions/browser/value_store/value_store.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 
-namespace extensions {
+namespace value_store {
 
 // A factory to create ValueStore instances.
 class ValueStoreFactoryImpl : public ValueStoreFactory {
@@ -37,6 +37,6 @@ class ValueStoreFactoryImpl : public ValueStoreFactory {
   const base::FilePath profile_path_;
 };
 
-}  // namespace extensions
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FACTORY_IMPL_H_

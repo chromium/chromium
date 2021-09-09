@@ -35,6 +35,8 @@ const char kCannotSerialize[] = "Cannot serialize value to JSON";
 
 }  // namespace
 
+namespace value_store {
+
 LeveldbValueStore::LeveldbValueStore(const std::string& uma_client_name,
                                      const base::FilePath& db_path)
     : LazyLevelDb(uma_client_name, db_path) {
@@ -280,3 +282,5 @@ ValueStore::Status LeveldbValueStore::AddToBatch(
 ValueStore::Status LeveldbValueStore::WriteToDb(leveldb::WriteBatch* batch) {
   return ToValueStoreError(db()->Write(write_options(), batch));
 }
+
+}  // namespace value_store

@@ -10,6 +10,8 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 
+namespace value_store {
+
 namespace {
 
 // To save typing ValueStore::DEFAULTS everywhere.
@@ -470,3 +472,5 @@ TEST_P(ValueStoreTest, ComplexChangedKeysScenarios) {
     EXPECT_PRED_FORMAT2(ChangesEq, ValueStoreChangeList(), storage_->Clear());
   }
 }
+
+}  // namespace value_store

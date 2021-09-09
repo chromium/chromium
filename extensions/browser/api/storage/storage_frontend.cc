@@ -123,7 +123,7 @@ StorageFrontend* StorageFrontend::Get(BrowserContext* context) {
 
 // static
 std::unique_ptr<StorageFrontend> StorageFrontend::CreateForTesting(
-    scoped_refptr<ValueStoreFactory> storage_factory,
+    scoped_refptr<value_store::ValueStoreFactory> storage_factory,
     BrowserContext* context) {
   return base::WrapUnique(
       new StorageFrontend(std::move(storage_factory), context));
@@ -133,13 +133,15 @@ StorageFrontend::StorageFrontend(BrowserContext* context)
     : StorageFrontend(ExtensionSystem::Get(context)->store_factory(), context) {
 }
 
-StorageFrontend::StorageFrontend(scoped_refptr<ValueStoreFactory> factory,
-                                 BrowserContext* context)
+StorageFrontend::StorageFrontend(
+    scoped_refptr<value_store::ValueStoreFactory> factory,
+    BrowserContext* context)
     : browser_context_(context) {
   Init(std::move(factory));
 }
 
-void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
+void StorageFrontend::Init(
+    scoped_refptr<value_store::ValueStoreFactory> factory) {
   TRACE_EVENT0("browser,startup", "StorageFrontend::Init");
 
   observers_ = new SettingsObserverList();

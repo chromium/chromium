@@ -14,9 +14,9 @@ namespace base {
 class FilePath;
 }
 
-class ValueStore;
+namespace value_store {
 
-namespace extensions {
+class ValueStore;
 
 // Manages ValueStore instances.
 //
@@ -40,6 +40,6 @@ class ValueStoreFactory : public base::RefCountedThreadSafe<ValueStoreFactory> {
   virtual ~ValueStoreFactory() = default;
 };
 
-}  // namespace extensions
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FACTORY_H_

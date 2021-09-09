@@ -49,7 +49,8 @@ StateStore* MockExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> MockExtensionSystem::store_factory() {
+scoped_refptr<value_store::ValueStoreFactory>
+MockExtensionSystem::store_factory() {
   return nullptr;
 }
 

@@ -106,8 +106,8 @@ ExtensionSystemImpl::Shared::~Shared() {
 }
 
 void ExtensionSystemImpl::Shared::InitPrefs() {
-  store_factory_ =
-      base::MakeRefCounted<ValueStoreFactoryImpl>(profile_->GetPath());
+  store_factory_ = base::MakeRefCounted<value_store::ValueStoreFactoryImpl>(
+      profile_->GetPath());
 
   // Two state stores. The latter, which contains declarative rules, must be
   // loaded immediately so that the rules are ready before we issue network
@@ -315,8 +315,8 @@ StateStore* ExtensionSystemImpl::Shared::rules_store() {
   return rules_store_.get();
 }
 
-scoped_refptr<ValueStoreFactory> ExtensionSystemImpl::Shared::store_factory()
-    const {
+scoped_refptr<value_store::ValueStoreFactory>
+ExtensionSystemImpl::Shared::store_factory() const {
   return store_factory_;
 }
 
@@ -412,7 +412,8 @@ StateStore* ExtensionSystemImpl::rules_store() {
   return shared_->rules_store();
 }
 
-scoped_refptr<ValueStoreFactory> ExtensionSystemImpl::store_factory() {
+scoped_refptr<value_store::ValueStoreFactory>
+ExtensionSystemImpl::store_factory() {
   return shared_->store_factory();
 }
 

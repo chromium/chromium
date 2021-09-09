@@ -17,6 +17,8 @@
 using base::StringPiece;
 using content::BrowserThread;
 
+namespace value_store {
+
 namespace {
 
 const char kInvalidJson[] = "Invalid JSON";
@@ -274,3 +276,5 @@ ValueStore::Status LazyLevelDb::CreateIterator(
   *iterator = base::WrapUnique(db_->NewIterator(read_options));
   return ValueStore::Status();
 }
+
+}  // namespace value_store

@@ -22,11 +22,14 @@ namespace syncer {
 class SyncErrorFactory;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class SettingsSyncProcessor;
 class SyncableSettingsStorage;
-class ValueStoreFactory;
 
 // Manages ValueStore objects for extensions, including routing
 // changes from sync to them.
@@ -35,15 +38,16 @@ class SyncStorageBackend : public syncer::SyncableService {
  public:
   // |storage_factory| is use to create leveldb storage areas.
   // |observers| is the list of observers to settings changes.
-  SyncStorageBackend(scoped_refptr<ValueStoreFactory> storage_factory,
-                     const SettingsStorageQuotaEnforcer::Limits& quota,
-                     scoped_refptr<SettingsObserverList> observers,
-                     syncer::ModelType sync_type,
-                     const syncer::SyncableService::StartSyncFlare& flare);
+  SyncStorageBackend(
+      scoped_refptr<value_store::ValueStoreFactory> storage_factory,
+      const SettingsStorageQuotaEnforcer::Limits& quota,
+      scoped_refptr<SettingsObserverList> observers,
+      syncer::ModelType sync_type,
+      const syncer::SyncableService::StartSyncFlare& flare);
 
   ~SyncStorageBackend() override;
 
-  virtual ValueStore* GetStorage(const std::string& extension_id);
+  virtual value_store::ValueStore* GetStorage(const std::string& extension_id);
   virtual void DeleteStorage(const std::string& extension_id);
 
   // syncer::SyncableService implementation.
@@ -71,7 +75,7 @@ class SyncStorageBackend : public syncer::SyncableService {
       const std::string& extension_id) const;
 
   // The Factory to use for creating new ValueStores.
-  const scoped_refptr<ValueStoreFactory> storage_factory_;
+  const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
 
   // Quota limits (see SettingsStorageQuotaEnforcer).
   const SettingsStorageQuotaEnforcer::Limits quota_;

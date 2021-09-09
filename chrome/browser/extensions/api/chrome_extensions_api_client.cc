@@ -95,7 +95,7 @@ ChromeExtensionsAPIClient::~ChromeExtensionsAPIClient() {}
 
 void ChromeExtensionsAPIClient::AddAdditionalValueStoreCaches(
     content::BrowserContext* context,
-    const scoped_refptr<ValueStoreFactory>& factory,
+    const scoped_refptr<value_store::ValueStoreFactory>& factory,
     const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
         observers,
     std::map<settings_namespace::Namespace, ValueStoreCache*>* caches) {

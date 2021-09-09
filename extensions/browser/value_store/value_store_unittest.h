@@ -13,6 +13,8 @@
 #include "extensions/browser/value_store/value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace value_store {
+
 // Parameter type for the value-parameterized tests.
 typedef ValueStore* (*ValueStoreTestParam)(const base::FilePath& file_path);
 
@@ -65,5 +67,7 @@ class ValueStoreTest : public testing::TestWithParam<ValueStoreTestParam> {
 
   content::BrowserTaskEnvironment task_environment_;
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_UNITTEST_H_

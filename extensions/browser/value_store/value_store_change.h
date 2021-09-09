@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace value_store {
+
 class ValueStoreChange;
 typedef std::vector<ValueStoreChange> ValueStoreChangeList;
 
@@ -49,5 +51,7 @@ class ValueStoreChange {
   absl::optional<base::Value> old_value_;
   absl::optional<base::Value> new_value_;
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_CHANGE_H_

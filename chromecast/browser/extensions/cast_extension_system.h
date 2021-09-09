@@ -19,8 +19,11 @@ namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
+namespace value_store {
 class ValueStoreFactory;
+}
+
+namespace extensions {
 enum class UnloadedExtensionReason;
 
 // A simplified version of ExtensionSystem for cast_shell. Allows
@@ -71,7 +74,7 @@ class CastExtensionSystem : public ExtensionSystem,
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
@@ -127,7 +130,7 @@ class CastExtensionSystem : public ExtensionSystem,
   std::unique_ptr<UserScriptManager> user_script_manager_;
   std::unique_ptr<ExtensionRegistrar> extension_registrar_;
 
-  scoped_refptr<ValueStoreFactory> store_factory_;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory_;
 
   // Signaled when the extension system has completed its startup tasks.
   base::OneShotEvent ready_;

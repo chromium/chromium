@@ -40,11 +40,11 @@ base::FilePath GetValueStoreDir(
   return dir.AppendASCII(id);
 }
 
-std::unique_ptr<ValueStore> CreateSettingsStore(
+std::unique_ptr<value_store::ValueStore> CreateSettingsStore(
     settings_namespace::Namespace settings_namespace,
     ModelType model_type,
     const ExtensionId& id,
-    scoped_refptr<ValueStoreFactory> factory) {
+    scoped_refptr<value_store::ValueStoreFactory> factory) {
   base::FilePath directory =
       GetValueStoreDir(settings_namespace, model_type, id);
   return factory->CreateValueStore(directory, kSettingsDatabaseUMAClientName);
@@ -53,7 +53,7 @@ std::unique_ptr<ValueStore> CreateSettingsStore(
 void DeleteValueStore(settings_namespace::Namespace settings_namespace,
                       ModelType model_type,
                       const ExtensionId& id,
-                      scoped_refptr<ValueStoreFactory> factory) {
+                      scoped_refptr<value_store::ValueStoreFactory> factory) {
   base::FilePath directory =
       GetValueStoreDir(settings_namespace, model_type, id);
   factory->DeleteValueStore(directory);
@@ -62,7 +62,7 @@ void DeleteValueStore(settings_namespace::Namespace settings_namespace,
 bool HasValueStore(settings_namespace::Namespace settings_namespace,
                    ModelType model_type,
                    const ExtensionId& id,
-                   scoped_refptr<ValueStoreFactory> factory) {
+                   scoped_refptr<value_store::ValueStoreFactory> factory) {
   base::FilePath directory =
       GetValueStoreDir(settings_namespace, model_type, id);
   return factory->HasValueStore(directory);

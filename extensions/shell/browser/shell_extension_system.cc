@@ -33,7 +33,8 @@ namespace extensions {
 
 ShellExtensionSystem::ShellExtensionSystem(BrowserContext* browser_context)
     : browser_context_(browser_context),
-      store_factory_(new ValueStoreFactoryImpl(browser_context->GetPath())) {}
+      store_factory_(
+          new value_store::ValueStoreFactoryImpl(browser_context->GetPath())) {}
 
 ShellExtensionSystem::~ShellExtensionSystem() = default;
 
@@ -110,7 +111,8 @@ StateStore* ShellExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> ShellExtensionSystem::store_factory() {
+scoped_refptr<value_store::ValueStoreFactory>
+ShellExtensionSystem::store_factory() {
   return store_factory_;
 }
 

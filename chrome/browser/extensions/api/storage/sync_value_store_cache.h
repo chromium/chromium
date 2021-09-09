@@ -24,16 +24,19 @@ namespace syncer {
 class SyncableService;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class SyncStorageBackend;
-class ValueStoreFactory;
 
 // ValueStoreCache for the SYNC namespace. It owns a backend for apps and
 // another for extensions. Each backend takes care of persistence and syncing.
 class SyncValueStoreCache : public ValueStoreCache {
  public:
-  SyncValueStoreCache(scoped_refptr<ValueStoreFactory> factory,
+  SyncValueStoreCache(scoped_refptr<value_store::ValueStoreFactory> factory,
                       scoped_refptr<SettingsObserverList> observers,
                       const base::FilePath& profile_path);
   ~SyncValueStoreCache() override;
@@ -48,7 +51,7 @@ class SyncValueStoreCache : public ValueStoreCache {
   void DeleteStorageSoon(const std::string& extension_id) override;
 
  private:
-  void InitOnBackend(scoped_refptr<ValueStoreFactory> factory,
+  void InitOnBackend(scoped_refptr<value_store::ValueStoreFactory> factory,
                      scoped_refptr<SettingsObserverList> observers,
                      const base::FilePath& profile_path);
 

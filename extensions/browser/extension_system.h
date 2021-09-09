@@ -28,6 +28,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class AppSorting;
@@ -42,7 +46,6 @@ class RuntimeData;
 class ServiceWorkerManager;
 class StateStore;
 class UserScriptManager;
-class ValueStoreFactory;
 enum class UnloadedExtensionReason;
 
 // ExtensionSystem manages the lifetime of many of the services used by the
@@ -95,7 +98,7 @@ class ExtensionSystem : public KeyedService {
   virtual StateStore* rules_store() = 0;
 
   // Returns the |ValueStore| factory created at startup.
-  virtual scoped_refptr<ValueStoreFactory> store_factory() = 0;
+  virtual scoped_refptr<value_store::ValueStoreFactory> store_factory() = 0;
 
   // Returns the IO-thread-accessible extension data.
   virtual InfoMap* info_map() = 0;

@@ -14,6 +14,8 @@
 #include "base/macros.h"
 #include "extensions/browser/value_store/value_store.h"
 
+namespace value_store {
+
 // ValueStore for testing, with an in-memory storage but the ability to
 // optionally fail all operations.
 class TestingValueStore : public ValueStore {
@@ -57,5 +59,7 @@ class TestingValueStore : public ValueStore {
   int write_count_ = 0;
   ValueStore::Status status_;
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_TESTING_VALUE_STORE_H_

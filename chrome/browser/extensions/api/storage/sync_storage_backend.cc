@@ -50,7 +50,7 @@ value_store_util::ModelType ToFactoryModelType(syncer::ModelType sync_type) {
 }  // namespace
 
 SyncStorageBackend::SyncStorageBackend(
-    scoped_refptr<ValueStoreFactory> storage_factory,
+    scoped_refptr<value_store::ValueStoreFactory> storage_factory,
     const SettingsStorageQuotaEnforcer::Limits& quota,
     scoped_refptr<SettingsObserverList> observers,
     syncer::ModelType sync_type,
@@ -67,7 +67,8 @@ SyncStorageBackend::SyncStorageBackend(
 
 SyncStorageBackend::~SyncStorageBackend() {}
 
-ValueStore* SyncStorageBackend::GetStorage(const std::string& extension_id) {
+value_store::ValueStore* SyncStorageBackend::GetStorage(
+    const std::string& extension_id) {
   DCHECK(IsOnBackendSequence());
   return GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue());
 }
@@ -136,7 +137,7 @@ syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
   for (const auto& storage_obj : storage_objs_) {
     std::string extension_id = storage_obj.first;
 
-    ValueStore::ReadResult maybe_settings =
+    value_store::ValueStore::ReadResult maybe_settings =
         GetOrCreateStorageWithSyncData(extension_id, EmptyDictionaryValue())
             ->Get();
     if (!maybe_settings.status().ok()) {

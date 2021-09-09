@@ -44,7 +44,7 @@ void SettingsSyncProcessor::Init(const base::DictionaryValue& initial_state) {
 }
 
 absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
-    const ValueStoreChangeList& changes) {
+    const value_store::ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 
@@ -94,7 +94,8 @@ absl::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
   return absl::nullopt;
 }
 
-void SettingsSyncProcessor::NotifyChanges(const ValueStoreChangeList& changes) {
+void SettingsSyncProcessor::NotifyChanges(
+    const value_store::ValueStoreChangeList& changes) {
   DCHECK(IsOnBackendSequence());
   CHECK(initialized_) << "Init not called";
 

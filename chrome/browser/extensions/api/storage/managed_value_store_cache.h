@@ -27,10 +27,13 @@ namespace policy {
 class PolicyMap;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class PolicyValueStore;
-class ValueStoreFactory;
 
 // A ValueStoreCache that manages a PolicyValueStore for each extension that
 // uses the storage.managed namespace. This class observes policy changes and
@@ -43,7 +46,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // |observers| is the list of SettingsObservers to notify when a ValueStore
   // changes.
   ManagedValueStoreCache(content::BrowserContext* context,
-                         scoped_refptr<ValueStoreFactory> factory,
+                         scoped_refptr<value_store::ValueStoreFactory> factory,
                          scoped_refptr<SettingsObserverList> observers);
   ~ManagedValueStoreCache() override;
 
@@ -93,7 +96,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   std::unique_ptr<ExtensionTracker> extension_tracker_;
 
   // These live on the FILE thread.
-  scoped_refptr<ValueStoreFactory> storage_factory_;
+  scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
   scoped_refptr<SettingsObserverList> observers_;
 
   // All the PolicyValueStores live on the FILE thread, and |store_map_| can be

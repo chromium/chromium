@@ -41,6 +41,8 @@
 using base::DictionaryValue;
 using base::ListValue;
 using base::Value;
+using value_store::ValueStore;
+
 namespace extensions {
 
 namespace {
@@ -171,7 +173,7 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 class ExtensionSettingsSyncTest : public testing::Test {
  public:
   ExtensionSettingsSyncTest()
-      : storage_factory_(new TestValueStoreFactory()),
+      : storage_factory_(new value_store::TestValueStoreFactory()),
         sync_processor_(new MockSyncChangeProcessor),
         sync_processor_wrapper_(new syncer::SyncChangeProcessorWrapperForTest(
             sync_processor_.get())) {}
@@ -248,8 +250,8 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
   // This class uses it's TestingValueStore in such a way that it always mints
   // new TestingValueStore instances.
-  TestingValueStore* GetExisting(const ExtensionId& extension_id,
-                                 syncer::ModelType type) {
+  value_store::TestingValueStore* GetExisting(const ExtensionId& extension_id,
+                                              syncer::ModelType type) {
     base::FilePath value_store_dir;
     value_store_util::ModelType model_type;
     switch (type) {
@@ -265,7 +267,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
     }
     value_store_dir = value_store_util::GetValueStoreDir(
         settings_namespace::SYNC, model_type, extension_id);
-    return static_cast<TestingValueStore*>(
+    return static_cast<value_store::TestingValueStore*>(
         storage_factory_->GetExisting(value_store_dir));
   }
 
@@ -289,7 +291,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<StorageFrontend> frontend_;
-  scoped_refptr<TestValueStoreFactory> storage_factory_;
+  scoped_refptr<value_store::TestValueStoreFactory> storage_factory_;
   std::unique_ptr<MockSyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncChangeProcessorWrapperForTest>
       sync_processor_wrapper_;

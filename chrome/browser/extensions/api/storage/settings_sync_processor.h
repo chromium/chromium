@@ -38,11 +38,11 @@ class SettingsSyncProcessor {
 
   // Sends |changes| to sync.
   absl::optional<syncer::ModelError> SendChanges(
-      const ValueStoreChangeList& changes);
+      const value_store::ValueStoreChangeList& changes);
 
   // Informs this that |changes| have been receieved from sync. No action will
   // be taken, but this must be notified for internal bookkeeping.
-  void NotifyChanges(const ValueStoreChangeList& changes);
+  void NotifyChanges(const value_store::ValueStoreChangeList& changes);
 
   syncer::ModelType type() { return type_; }
 

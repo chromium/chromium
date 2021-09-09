@@ -706,7 +706,7 @@ class LockScreenItemStorageTest : public ExtensionsTest {
         << "Unexpected value store path " << root.value();
 
     return std::make_unique<LocalValueStoreCache>(
-        base::MakeRefCounted<TestValueStoreFactory>());
+        base::MakeRefCounted<value_store::TestValueStoreFactory>());
   }
 
   // Callback for creating value store migrator - this is the callback passed to

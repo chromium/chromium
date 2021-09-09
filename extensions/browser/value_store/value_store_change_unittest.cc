@@ -11,7 +11,7 @@
 using base::DictionaryValue;
 using base::Value;
 
-namespace {
+namespace value_store {
 
 TEST(ValueStoreChangeTest, NullOldValue) {
   ValueStoreChange change("key", absl::nullopt, base::Value("value"));
@@ -87,4 +87,4 @@ TEST(ValueStoreChangeTest, ToValue) {
   EXPECT_EQ(changes_value, expected_from_json);
 }
 
-}  // namespace
+}  // namespace value_store

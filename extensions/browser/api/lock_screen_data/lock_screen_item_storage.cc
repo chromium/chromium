@@ -57,7 +57,7 @@ std::unique_ptr<LocalValueStoreCache> CreateValueStoreCache(
   if (g_test_value_store_cache_factory_callback)
     return g_test_value_store_cache_factory_callback->Run(storage_root);
   return std::make_unique<LocalValueStoreCache>(
-      new ValueStoreFactoryImpl(storage_root));
+      new value_store::ValueStoreFactoryImpl(storage_root));
 }
 
 std::unique_ptr<LockScreenValueStoreMigrator> CreateValueStoreMigrator(

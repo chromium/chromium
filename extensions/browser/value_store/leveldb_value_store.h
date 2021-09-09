@@ -19,6 +19,8 @@
 #include "extensions/browser/value_store/value_store.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
+namespace value_store {
+
 // Value store area, backed by a leveldb database.
 // All methods must be run on the FILE thread.
 class LeveldbValueStore : public ValueStore,
@@ -76,5 +78,7 @@ class LeveldbValueStore : public ValueStore,
   // Commits the changes in |batch| to the database.
   ValueStore::Status WriteToDb(leveldb::WriteBatch* batch);
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_LEVELDB_VALUE_STORE_H_

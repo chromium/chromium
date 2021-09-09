@@ -31,12 +31,12 @@ namespace extensions {
 class SettingsSyncProcessor;
 
 // Decorates a ValueStore with sync behaviour.
-class SyncableSettingsStorage : public ValueStore {
+class SyncableSettingsStorage : public value_store::ValueStore {
  public:
   SyncableSettingsStorage(scoped_refptr<SettingsObserverList> observers,
                           const std::string& extension_id,
                           // Ownership taken.
-                          ValueStore* delegate,
+                          value_store::ValueStore* delegate,
                           syncer::ModelType sync_type,
                           const syncer::SyncableService::StartSyncFlare& flare);
 
@@ -82,7 +82,7 @@ class SyncableSettingsStorage : public ValueStore {
 
  private:
   // Sends the changes from |result| to sync if it's enabled.
-  void SyncResultIfEnabled(const ValueStore::WriteResult& result);
+  void SyncResultIfEnabled(const value_store::ValueStore::WriteResult& result);
 
   // Analyze the result returned by a call to the delegate, and take appropriate
   // measures.
@@ -104,14 +104,14 @@ class SyncableSettingsStorage : public ValueStore {
   // Called when an Add/Update/Remove comes from sync.
   syncer::SyncError OnSyncAdd(const std::string& key,
                               std::unique_ptr<base::Value> new_value,
-                              ValueStoreChangeList* changes);
+                              value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncUpdate(const std::string& key,
                                  std::unique_ptr<base::Value> old_value,
                                  std::unique_ptr<base::Value> new_value,
-                                 ValueStoreChangeList* changes);
+                                 value_store::ValueStoreChangeList* changes);
   syncer::SyncError OnSyncDelete(const std::string& key,
                                  std::unique_ptr<base::Value> old_value,
-                                 ValueStoreChangeList* changes);
+                                 value_store::ValueStoreChangeList* changes);
 
   // List of observers to settings changes.
   const scoped_refptr<SettingsObserverList> observers_;
@@ -120,7 +120,7 @@ class SyncableSettingsStorage : public ValueStore {
   std::string const extension_id_;
 
   // Storage area to sync.
-  const std::unique_ptr<ValueStore> delegate_;
+  const std::unique_ptr<value_store::ValueStore> delegate_;
 
   // Object which sends changes to sync.
   std::unique_ptr<SettingsSyncProcessor> sync_processor_;

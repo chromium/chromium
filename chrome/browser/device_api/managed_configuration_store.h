@@ -38,13 +38,13 @@ class ManagedConfigurationStore {
 
   // Read/Write operations must be called on |backend_sequence_|.
   void SetCurrentPolicy(const base::DictionaryValue& current_configuration);
-  ValueStore::ReadResult Get(const std::vector<std::string>& keys);
+  value_store::ValueStore::ReadResult Get(const std::vector<std::string>& keys);
 
  private:
   scoped_refptr<base::SequencedTaskRunner> backend_sequence_;
   const url::Origin origin_;
   const base::FilePath path_;
-  std::unique_ptr<ValueStore> store_;
+  std::unique_ptr<value_store::ValueStore> store_;
   scoped_refptr<base::ObserverListThreadSafe<ManagedConfigurationAPI::Observer>>
       observers_;
 };

@@ -16,11 +16,12 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
+#include "extensions/browser/value_store/value_store.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 
 using content::BrowserThread;
 
-namespace extensions {
+namespace value_store {
 
 class ValueStoreFrontend::Backend : public base::RefCountedThreadSafe<Backend> {
  public:
@@ -155,4 +156,4 @@ void ValueStoreFrontend::Remove(const std::string& key) {
       base::BindOnce(&ValueStoreFrontend::Backend::Remove, backend_, key));
 }
 
-}  // namespace extensions
+}  // namespace value_store

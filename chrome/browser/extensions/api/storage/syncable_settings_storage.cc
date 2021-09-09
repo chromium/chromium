@@ -17,6 +17,8 @@
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 
 SyncableSettingsStorage::SyncableSettingsStorage(
@@ -187,13 +189,14 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
     return absl::nullopt;
 
   // Transform the current settings into a list of sync changes.
-  ValueStoreChangeList changes;
+  value_store::ValueStoreChangeList changes;
   while (!local_state->DictEmpty()) {
     // It's not possible to iterate over a DictionaryValue and modify it at the
     // same time, so hack around that restriction.
     std::string key = base::DictionaryValue::Iterator(*local_state).key();
     absl::optional<base::Value> value = local_state->ExtractKey(key);
-    changes.push_back(ValueStoreChange(key, absl::nullopt, std::move(*value)));
+    changes.push_back(
+        value_store::ValueStoreChange(key, absl::nullopt, std::move(*value)));
   }
 
   absl::optional<syncer::ModelError> error =
@@ -265,7 +268,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   }
 
   std::vector<syncer::SyncError> errors;
-  ValueStoreChangeList changes;
+  value_store::ValueStoreChangeList changes;
 
   for (const std::unique_ptr<SettingSyncData>& sync_change : *sync_changes) {
     DCHECK_EQ(extension_id_, sync_change->extension_id());
@@ -339,9 +342,10 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
   sync_processor_->NotifyChanges(changes);
 
-  observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                     extension_id_, StorageAreaNamespace::kSync,
-                     ValueStoreChange::ToValue(std::move(changes)));
+  observers_->Notify(
+      FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id_,
+      StorageAreaNamespace::kSync,
+      value_store::ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())
@@ -352,7 +356,7 @@ absl::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 syncer::SyncError SyncableSettingsStorage::OnSyncAdd(
     const std::string& key,
     std::unique_ptr<base::Value> new_value,
-    ValueStoreChangeList* changes) {
+    value_store::ValueStoreChangeList* changes) {
   DCHECK(new_value);
   WriteResult result =
       HandleResult(delegate_->Set(IGNORE_QUOTA, key, *new_value));
@@ -364,7 +368,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncAdd(
         sync_processor_->type());
   }
   changes->push_back(
-      ValueStoreChange(key, absl::nullopt, std::move(*new_value)));
+      value_store::ValueStoreChange(key, absl::nullopt, std::move(*new_value)));
   return syncer::SyncError();
 }
 
@@ -372,7 +376,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncUpdate(
     const std::string& key,
     std::unique_ptr<base::Value> old_value,
     std::unique_ptr<base::Value> new_value,
-    ValueStoreChangeList* changes) {
+    value_store::ValueStoreChangeList* changes) {
   DCHECK(old_value);
   DCHECK(new_value);
   WriteResult result =
@@ -384,15 +388,15 @@ syncer::SyncError SyncableSettingsStorage::OnSyncUpdate(
                            result.status().message.c_str()),
         sync_processor_->type());
   }
-  changes->push_back(
-      ValueStoreChange(key, std::move(*old_value), std::move(*new_value)));
+  changes->push_back(value_store::ValueStoreChange(key, std::move(*old_value),
+                                                   std::move(*new_value)));
   return syncer::SyncError();
 }
 
 syncer::SyncError SyncableSettingsStorage::OnSyncDelete(
     const std::string& key,
     std::unique_ptr<base::Value> old_value,
-    ValueStoreChangeList* changes) {
+    value_store::ValueStoreChangeList* changes) {
   DCHECK(old_value);
   WriteResult result = HandleResult(delegate_->Remove(key));
   if (!result.status().ok()) {
@@ -403,7 +407,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncDelete(
         sync_processor_->type());
   }
   changes->push_back(
-      ValueStoreChange(key, std::move(*old_value), absl::nullopt));
+      value_store::ValueStoreChange(key, std::move(*old_value), absl::nullopt));
   return syncer::SyncError();
 }
 

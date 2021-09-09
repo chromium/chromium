@@ -22,6 +22,8 @@
 #include "extensions/browser/value_store/value_store_factory_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 
 namespace settings = settings_namespace;
@@ -41,7 +43,8 @@ class ExtensionSettingsFrontendTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    storage_factory_ = new ValueStoreFactoryImpl(temp_dir_.GetPath());
+    storage_factory_ =
+        new value_store::ValueStoreFactoryImpl(temp_dir_.GetPath());
     ResetFrontend();
   }
 
@@ -60,7 +63,7 @@ class ExtensionSettingsFrontendTest : public ExtensionsTest {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<StorageFrontend> frontend_;
-  scoped_refptr<ValueStoreFactoryImpl> storage_factory_;
+  scoped_refptr<value_store::ValueStoreFactoryImpl> storage_factory_;
 
  private:
   ExtensionsAPIClient extensions_api_client_;

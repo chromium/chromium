@@ -21,6 +21,8 @@ namespace leveldb {
 class Iterator;
 }  // namespace leveldb
 
+namespace value_store {
+
 // Manages a lazy connection to a leveldb database. "lazy" means that the
 // leveldb database will be opened, when necessary, when any *public* method is
 // called. Derived classes are responsible for calling EnsureDbIsOpen() before
@@ -99,5 +101,7 @@ class LazyLevelDb {
   base::HistogramBase* db_restore_histogram_ = nullptr;
   base::HistogramBase* value_restore_histogram_ = nullptr;
 };
+
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_LAZY_LEVELDB_H_

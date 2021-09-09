@@ -23,14 +23,17 @@ class SigninScreenPolicyProvider;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace value_store {
+class ValueStoreFactory;
+class ValueStoreFactoryImpl;
+}  // namespace value_store
+
 namespace extensions {
 
 class ExtensionSystemSharedFactory;
 class NavigationObserver;
 class UninstallPingSender;
 class InstallGate;
-class ValueStoreFactory;
-class ValueStoreFactoryImpl;
 class ExtensionsPermissionsTracker;
 
 // The ExtensionSystem for ProfileImpl and OffTheRecordProfileImpl.
@@ -57,7 +60,8 @@ class ExtensionSystemImpl : public ExtensionSystem {
   UserScriptManager* user_script_manager() override;        // shared
   StateStore* state_store() override;                              // shared
   StateStore* rules_store() override;                              // shared
-  scoped_refptr<ValueStoreFactory> store_factory() override;       // shared
+  scoped_refptr<value_store::ValueStoreFactory> store_factory()
+      override;                                                    // shared
   InfoMap* info_map() override;                                    // shared
   QuotaService* quota_service() override;  // shared
   AppSorting* app_sorting() override;  // shared
@@ -108,7 +112,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
 
     StateStore* state_store();
     StateStore* rules_store();
-    scoped_refptr<ValueStoreFactory> store_factory() const;
+    scoped_refptr<value_store::ValueStoreFactory> store_factory() const;
     ExtensionService* extension_service();
     RuntimeData* runtime_data();
     ManagementPolicy* management_policy();
@@ -128,7 +132,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
 
     std::unique_ptr<StateStore> state_store_;
     std::unique_ptr<StateStore> rules_store_;
-    scoped_refptr<ValueStoreFactoryImpl> store_factory_;
+    scoped_refptr<value_store::ValueStoreFactoryImpl> store_factory_;
     std::unique_ptr<NavigationObserver> navigation_observer_;
     std::unique_ptr<ServiceWorkerManager> service_worker_manager_;
     // Shared memory region manager for scripts statically declared in extension

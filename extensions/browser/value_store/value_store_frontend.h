@@ -12,14 +12,13 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
-#include "extensions/browser/value_store/value_store.h"
 
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
 }
 
-namespace extensions {
+namespace value_store {
 class ValueStoreFactory;
 
 // A frontend for a LeveldbValueStore, for use on the UI thread.
@@ -56,6 +55,6 @@ class ValueStoreFrontend {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-}  // namespace extensions
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_VALUE_STORE_FRONTEND_H_

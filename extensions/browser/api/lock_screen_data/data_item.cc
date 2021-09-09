@@ -23,6 +23,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/value_store/value_store.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 namespace lock_screen_data {
 

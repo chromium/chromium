@@ -10,6 +10,8 @@
 #include "base/json/json_writer.h"
 #include "base/stl_util.h"
 
+namespace value_store {
+
 base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
   base::Value changes_value(base::Value::Type::DICTIONARY);
   for (auto& change : changes) {
@@ -46,4 +48,4 @@ const base::Value* ValueStoreChange::new_value() const {
   return base::OptionalOrNullptr(new_value_);
 }
 
-
+}  // namespace value_store

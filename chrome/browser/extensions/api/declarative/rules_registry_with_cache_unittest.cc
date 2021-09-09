@@ -260,7 +260,8 @@ TEST_F(RulesRegistryWithCacheTest, DeclarativeRulesStored) {
   }
   EXPECT_TRUE(cache_delegate->GetDeclarativeRulesStored(extension1_->id()));
   content::RunAllTasksUntilIdle();
-  TestingValueStore* store = env_.GetExtensionSystem()->value_store();
+  value_store::TestingValueStore* store =
+      env_.GetExtensionSystem()->value_store();
   ASSERT_TRUE(store);
   EXPECT_EQ(1, store->write_count());
   int write_count = store->write_count();
@@ -305,7 +306,8 @@ TEST_F(RulesRegistryWithCacheTest, EphemeralCacheIsEphemeral) {
   value.Append(base::Value(true));
   cache_delegate->UpdateRules(extension1_->id(), std::move(value));
   content::RunAllTasksUntilIdle();
-  TestingValueStore* store = env_.GetExtensionSystem()->value_store();
+  value_store::TestingValueStore* store =
+      env_.GetExtensionSystem()->value_store();
   ASSERT_TRUE(store);
   EXPECT_EQ(0, store->write_count());
 }

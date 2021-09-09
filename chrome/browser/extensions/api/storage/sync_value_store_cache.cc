@@ -36,7 +36,7 @@ SettingsStorageQuotaEnforcer::Limits GetSyncQuotaLimits() {
 }  // namespace
 
 SyncValueStoreCache::SyncValueStoreCache(
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers,
     const base::FilePath& profile_path)
     : initialized_(false) {
@@ -92,7 +92,7 @@ void SyncValueStoreCache::DeleteStorageSoon(const std::string& extension_id) {
 }
 
 void SyncValueStoreCache::InitOnBackend(
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers,
     const base::FilePath& profile_path) {
   DCHECK(IsOnBackendSequence());

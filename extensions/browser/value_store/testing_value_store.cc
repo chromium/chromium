@@ -10,6 +10,8 @@
 
 #include "base/notreached.h"
 
+namespace value_store {
+
 namespace {
 
 const char kGenericErrorMessage[] = "TestingValueStore configured to error";
@@ -132,3 +134,5 @@ ValueStore::WriteResult TestingValueStore::Clear() {
   }
   return Remove(keys);
 }
+
+}  // namespace value_store

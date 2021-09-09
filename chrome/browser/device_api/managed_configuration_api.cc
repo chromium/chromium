@@ -240,7 +240,8 @@ ManagedConfigurationAPI::GetConfigurationOnBackend(
   if (!base::Contains(store_map_, origin))
     return nullptr;
 
-  LeveldbValueStore::ReadResult result = store_map_[origin]->Get(keys);
+  value_store::LeveldbValueStore::ReadResult result =
+      store_map_[origin]->Get(keys);
   if (!result.status().ok())
     return nullptr;
 

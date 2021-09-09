@@ -74,7 +74,8 @@ namespace extensions {
 
 CastExtensionSystem::CastExtensionSystem(BrowserContext* browser_context)
     : browser_context_(browser_context),
-      store_factory_(new ValueStoreFactoryImpl(browser_context->GetPath())),
+      store_factory_(
+          new value_store::ValueStoreFactoryImpl(browser_context->GetPath())),
       weak_factory_(this) {}
 
 CastExtensionSystem::~CastExtensionSystem() {}
@@ -222,7 +223,8 @@ StateStore* CastExtensionSystem::rules_store() {
   return nullptr;
 }
 
-scoped_refptr<ValueStoreFactory> CastExtensionSystem::store_factory() {
+scoped_refptr<value_store::ValueStoreFactory>
+CastExtensionSystem::store_factory() {
   return store_factory_;
 }
 

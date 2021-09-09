@@ -10,7 +10,7 @@
 #include "base/files/file_util.h"
 #include "extensions/browser/value_store/leveldb_value_store.h"
 
-namespace extensions {
+namespace value_store {
 
 ValueStoreFactoryImpl::ValueStoreFactoryImpl(const base::FilePath& profile_path)
     : profile_path_(profile_path) {}
@@ -38,4 +38,4 @@ bool ValueStoreFactoryImpl::HasValueStore(const base::FilePath& directory) {
   return base::DirectoryExists(GetDBPath(directory));
 }
 
-}  // namespace extensions
+}  // namespace value_store

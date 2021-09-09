@@ -17,7 +17,7 @@
 #include "extensions/browser/value_store/value_store_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace extensions {
+namespace value_store {
 
 class ValueStoreFrontendTest : public testing::Test {
  public:
@@ -112,4 +112,4 @@ TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
   ASSERT_FALSE(Get("key2", &value));
 }
 
-}  // namespace extensions
+}  // namespace value_store

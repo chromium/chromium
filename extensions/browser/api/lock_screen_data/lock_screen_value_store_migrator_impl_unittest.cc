@@ -35,6 +35,9 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using value_store::TestValueStoreFactory;
+using value_store::ValueStore;
+
 namespace extensions {
 namespace lock_screen_data {
 
@@ -353,8 +356,9 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     base::FilePath value_store_dir = value_store_util::GetValueStoreDir(
         settings_namespace::LOCAL, value_store_util::ModelType::APP,
         extension_id);
-    TestingValueStore* store =
-        static_cast<TestingValueStore*>(factory->GetExisting(value_store_dir));
+    value_store::TestingValueStore* store =
+        static_cast<value_store::TestingValueStore*>(
+            factory->GetExisting(value_store_dir));
     ASSERT_TRUE(store);
 
     store->set_status_code(code);

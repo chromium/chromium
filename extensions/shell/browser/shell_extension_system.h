@@ -23,10 +23,13 @@ namespace content {
 class BrowserContext;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class ShellExtensionLoader;
-class ValueStoreFactory;
 
 // A simplified version of ExtensionSystem for app_shell. Allows
 // app_shell to skip initialization of services it doesn't need.
@@ -67,7 +70,7 @@ class ShellExtensionSystem : public ExtensionSystem {
   UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
@@ -109,7 +112,7 @@ class ShellExtensionSystem : public ExtensionSystem {
 
   std::unique_ptr<ShellExtensionLoader> extension_loader_;
 
-  scoped_refptr<ValueStoreFactory> store_factory_;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory_;
 
   // Signaled when the extension system has completed its startup tasks.
   base::OneShotEvent ready_;

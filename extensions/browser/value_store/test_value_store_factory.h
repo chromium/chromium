@@ -11,9 +11,9 @@
 #include "base/files/file_path.h"
 #include "extensions/browser/value_store/value_store_factory.h"
 
-class ValueStore;
+namespace value_store {
 
-namespace extensions {
+class ValueStore;
 
 // Used for tests when a new test ValueStore is required. Will either open a
 // database on disk (if path provided) returning a |LeveldbValueStore|.
@@ -55,6 +55,6 @@ class TestValueStoreFactory : public ValueStoreFactory {
   std::map<base::FilePath, ValueStore*> value_store_map_;
 };
 
-}  // namespace extensions
+}  // namespace value_store
 
 #endif  // EXTENSIONS_BROWSER_VALUE_STORE_TEST_VALUE_STORE_FACTORY_H_

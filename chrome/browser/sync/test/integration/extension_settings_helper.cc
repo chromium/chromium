@@ -37,7 +37,7 @@ std::string ToJson(const base::Value& value) {
 
 void GetAllSettingsOnBackendSequence(base::DictionaryValue* out,
                                      base::WaitableEvent* signal,
-                                     ValueStore* storage) {
+                                     value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
   out->Swap(&storage->Get().settings());
   signal->Signal();
@@ -86,9 +86,9 @@ bool AreSettingsSame(Profile* expected_profile, Profile* actual_profile) {
 
 void SetSettingsOnBackendSequence(const base::DictionaryValue* settings,
                                   base::WaitableEvent* signal,
-                                  ValueStore* storage) {
+                                  value_store::ValueStore* storage) {
   EXPECT_TRUE(extensions::GetBackendTaskRunner()->RunsTasksInCurrentSequence());
-  storage->Set(ValueStore::DEFAULTS, *settings);
+  storage->Set(value_store::ValueStore::DEFAULTS, *settings);
   signal->Signal();
 }
 

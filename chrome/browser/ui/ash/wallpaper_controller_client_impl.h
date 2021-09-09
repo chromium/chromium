@@ -23,11 +23,14 @@
 #include "url/gurl.h"
 
 class AccountId;
-class ValueStore;
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace value_store {
+class ValueStore;
+}
 
 // Handles chrome-side wallpaper control alongside the ash-side controller.
 class WallpaperControllerClientImpl
@@ -124,8 +127,9 @@ class WallpaperControllerClientImpl
   bool IsActiveUserWallpaperControlledByPolicy();
   ash::WallpaperInfo GetActiveUserWallpaperInfo();
   bool ShouldShowWallpaperSetting();
-  void MigrateCollectionIdFromValueStoreForTesting(const AccountId& account_id,
-                                                   ValueStore* storage);
+  void MigrateCollectionIdFromValueStoreForTesting(
+      const AccountId& account_id,
+      value_store::ValueStore* storage);
 
  private:
   // Initialize the controller for this client and some wallpaper directories.
@@ -149,7 +153,7 @@ class WallpaperControllerClientImpl
   void OnGetWallpaperChromeAppValueStore(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       const AccountId& account_id,
-      ValueStore* value_store);
+      value_store::ValueStore* value_store);
 
   // Passes |collection_id| to wallpaper controller on main task runner.
   void SetDailyRefreshCollectionId(const AccountId& account_id,

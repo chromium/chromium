@@ -36,6 +36,10 @@ namespace guest_view {
 class GuestViewManagerDelegate;
 }  // namespace guest_view
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class AutomationInternalApiDelegate;
@@ -58,7 +62,6 @@ class RulesCacheDelegate;
 class SettingsObserver;
 class SupervisedUserExtensionsDelegate;
 class ValueStoreCache;
-class ValueStoreFactory;
 class VirtualKeyboardDelegate;
 struct WebRequestInfo;
 class WebViewGuest;
@@ -86,7 +89,7 @@ class ExtensionsAPIClient {
   // to |caches|. By default adds nothing.
   virtual void AddAdditionalValueStoreCaches(
       content::BrowserContext* context,
-      const scoped_refptr<ValueStoreFactory>& factory,
+      const scoped_refptr<value_store::ValueStoreFactory>& factory,
       const scoped_refptr<base::ObserverListThreadSafe<SettingsObserver>>&
           observers,
       std::map<settings_namespace::Namespace, ValueStoreCache*>* caches);

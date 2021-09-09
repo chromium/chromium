@@ -230,7 +230,7 @@ void ManagedValueStoreCache::ExtensionTracker::Register(
 
 ManagedValueStoreCache::ManagedValueStoreCache(
     BrowserContext* context,
-    scoped_refptr<ValueStoreFactory> factory,
+    scoped_refptr<value_store::ValueStoreFactory> factory,
     scoped_refptr<SettingsObserverList> observers)
     : profile_(Profile::FromBrowserContext(context)),
       policy_domain_(GetPolicyDomain(profile_)),

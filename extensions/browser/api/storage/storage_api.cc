@@ -26,6 +26,8 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_channel.h"
 
+using value_store::ValueStore;
+
 namespace extensions {
 
 // Concrete settings functions
@@ -225,9 +227,10 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
     return Error(result.status().message);
 
   if (!result.changes().empty()) {
-    observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
-                       extension_id(), storage_area_,
-                       ValueStoreChange::ToValue(result.PassChanges()));
+    observers_->Notify(
+        FROM_HERE, &SettingsObserver::OnSettingsChanged, extension_id(),
+        storage_area_,
+        value_store::ValueStoreChange::ToValue(result.PassChanges()));
   }
 
   return NoArguments();

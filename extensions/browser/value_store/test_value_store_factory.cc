@@ -15,7 +15,7 @@ const char kUMAClientName[] = "Test";
 
 }  // namespace
 
-namespace extensions {
+namespace value_store {
 
 TestValueStoreFactory::TestValueStoreFactory() = default;
 
@@ -69,4 +69,4 @@ std::unique_ptr<ValueStore> TestValueStoreFactory::CreateStore() {
   return store;
 }
 
-}  // namespace extensions
+}  // namespace value_store
