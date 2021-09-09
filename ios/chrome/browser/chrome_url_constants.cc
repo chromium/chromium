@@ -123,7 +123,7 @@ const char kGoogleMyAccountURL[] =
     "https://myaccount.google.com/privacy#activitycontrols";
 
 const char kGoogleMyAccountDeviceActivityURL[] =
-    "https://myaccount.google.com/device-activity";
+    "https://myaccount.google.com/device-activity?utm_source=chrome";
 
 const char kReadingListReferrerURL[] =
     "chrome://do_not_consider_for_most_visited/reading_list";
