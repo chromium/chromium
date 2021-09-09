@@ -118,8 +118,9 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
 
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(OS_ANDROID)
 // Flaky on iOS: crbug.com/672917.
+// Flaky on Android: crbug.com/1223950.
 #define MAYBE_MaximumRequests DISABLED_MaximumRequests
 #else
 #define MAYBE_MaximumRequests MaximumRequests

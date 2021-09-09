@@ -131,8 +131,9 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 }
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) || defined(OS_ANDROID)
 // Flaky on iOS: crbug.com/672917.
+// Flaky on Android: crbug.com/1223950
 #define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
   DISABLED_ReservedHostUncachedWithNetworkIsolationKey
 #else
