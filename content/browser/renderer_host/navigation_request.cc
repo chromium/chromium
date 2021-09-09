@@ -861,40 +861,6 @@ int EstimateHistoryOffset(NavigationController& controller,
   return pending_index - current_index;
 }
 
-// This is the enumeration of the type of URLs set for history_url_for_data_url
-// in CommonNavigationParams ("history URL") and DidCommitProvisionalLoadParams'
-// url ("committed"/"loading" URL) for loadDataWithBaseURL navigations.
-// This enum is used for histograms and should not be renumbered.
-enum URLValueForLoadDataWithBaseURL {
-  kOther = 0,
-  kEmpty = 1,
-  kInvalid = 2,
-  kSameAsBaseURL = 3,
-  kSameAsDataURL = 4,
-  // From WebView documentation, if the history URL is not supplied, it will
-  // be set to about:blank.
-  kAboutBlank = 5,
-  kMaxValue = kAboutBlank
-};
-
-// Used by histogram-recording code to note the relation of a given URL
-// (history URL/DidCommitParams URL) to the supplied base URL/data URL.
-URLValueForLoadDataWithBaseURL CategorizeURLValueForLoadDataWithBaseURL(
-    const GURL& url,
-    const blink::mojom::CommonNavigationParams& common_params) {
-  if (url.is_empty())
-    return URLValueForLoadDataWithBaseURL::kEmpty;
-  if (!url.is_valid())
-    return URLValueForLoadDataWithBaseURL::kInvalid;
-  if (url == common_params.base_url_for_data_url)
-    return URLValueForLoadDataWithBaseURL::kSameAsBaseURL;
-  if (url == common_params.url)
-    return URLValueForLoadDataWithBaseURL::kSameAsDataURL;
-  if (url.IsAboutBlank())
-    return URLValueForLoadDataWithBaseURL::kAboutBlank;
-  return URLValueForLoadDataWithBaseURL::kOther;
-}
-
 bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
                                  bool is_synchronous_about_blank_navigation) {
   RenderFrameHostImpl* current_document = frame->current_frame_host();
@@ -1560,19 +1526,6 @@ NavigationRequest::NavigationRequest(
   }
 
   begin_params_->headers = headers.ToString();
-
-  if (NavigationRequest::IsLoadDataWithBaseURL(*common_params_)) {
-    // Record loadDataWithBaseURL-related histograms.
-    // See https://crbug.com/1223408, https://crbug.com/1223398, and
-    // https://crbug.com/1223394.
-    base::UmaHistogramBoolean(
-        "Android.WebView.LoadDataWithBaseUrl.IsInMainFrame", IsInMainFrame());
-    base::UmaHistogramEnumeration(
-        "Android.WebView.LoadDataWithBaseUrl.HistoryUrl."
-        "NavigationRequestCreated",
-        CategorizeURLValueForLoadDataWithBaseURL(
-            common_params_->history_url_for_data_url, *common_params_));
-  }
 }
 
 NavigationRequest::~NavigationRequest() {
@@ -2068,15 +2021,8 @@ void NavigationRequest::StartNavigation() {
         common_params_->url, *common_params_->referrer);
   }
 
-  bool should_replace_current_entry_for_same_url_nav =
-      ShouldReplaceCurrentEntryForSameUrlNavigation();
-  if (should_replace_current_entry_for_same_url_nav)
+  if (ShouldReplaceCurrentEntryForSameUrlNavigation())
     common_params_->should_replace_current_entry = true;
-  if (NavigationRequest::IsLoadDataWithBaseURL(*common_params_)) {
-    base::UmaHistogramBoolean(
-        "Android.WebView.LoadDataWithBaseUrl.SameUrlReplacement",
-        should_replace_current_entry_for_same_url_nav);
-  }
 
   if (ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
     common_params_->should_replace_current_entry = true;
@@ -5439,19 +5385,6 @@ void NavigationRequest::DidCommitNavigation(
     bool did_replace_entry,
     const GURL& previous_main_frame_url,
     NavigationType navigation_type) {
-  if (NavigationRequest::IsLoadDataWithBaseURL(*common_params_)) {
-    // Record loadDataWithBaseURL-related histograms.
-    // See https://crbug.com/1223408, https://crbug.com/1223398, and
-    // https://crbug.com/1223394.
-    base::UmaHistogramEnumeration(
-        "Android.WebView.LoadDataWithBaseUrl.HistoryUrl.DidCommitNavigation",
-        CategorizeURLValueForLoadDataWithBaseURL(
-            common_params_->history_url_for_data_url, *common_params_));
-    base::UmaHistogramEnumeration(
-        "Android.WebView.LoadDataWithBaseUrl.LoadingUrl",
-        CategorizeURLValueForLoadDataWithBaseURL(params.url, *common_params_));
-  }
-
   common_params_->url = params.url;
   did_replace_entry_ = did_replace_entry;
   should_update_history_ = params.should_update_history;

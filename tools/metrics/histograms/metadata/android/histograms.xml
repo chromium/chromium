@@ -3688,6 +3688,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.HistoryUrl.{Timing}"
     enum="URLValueForLoadDataWithBaseURL" expires_after="M95">
+  <obsolete>
+    Removed Sep 2021. See result in crbug.com/1244746.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3704,6 +3707,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.IsInMainFrame"
     enum="BooleanMainFrame" expires_after="M95">
+  <obsolete>
+    Removed Sep 2021. See result in crbug.com/1244746.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3716,6 +3722,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.LoadingUrl"
     enum="URLValueForLoadDataWithBaseURL" expires_after="M95">
+  <obsolete>
+    Removed Sep 2021. See result in crbug.com/1244746.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3729,6 +3738,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Android.WebView.LoadDataWithBaseUrl.NextNavigationIsSameDocument"
     enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed Sep 2021. See result in crbug.com/1244746.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3740,6 +3752,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.LoadDataWithBaseUrl.SameUrlReplacement"
     enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed Sep 2021. See result in crbug.com/1244746.
+  </obsolete>
   <owner>rakina@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

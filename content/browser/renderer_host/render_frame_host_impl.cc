@@ -10194,16 +10194,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     return false;
   }
 
-  if (frame_tree_node_->current_frame_host()
-          ->renderer_url_info_.is_loaded_from_load_data_with_base_url) {
-    // Whether a navigation that happens on/away from a document loaded
-    // through a loadDataWithBaseURL navigation is a same-document or a
-    // cross-document navigation.
-    base::UmaHistogramBoolean(
-        "Android.WebView.LoadDataWithBaseUrl.NextNavigationIsSameDocument",
-        is_same_document_navigation);
-  }
-
   // TODO(clamy): We should stop having a special case for same-document
   // navigation and just put them in the general map of NavigationRequests.
   if (navigation_request &&
