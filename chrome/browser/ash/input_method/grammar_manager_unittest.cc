@@ -148,6 +148,26 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
                                       0 /*GrammarAction::kUnderlined*/, 1);
 }
 
+TEST_F(GrammarManagerTest, RecordsUnderlinesMetricsWithoutDups) {
+  MockSuggestionHandler mock_suggestion_handler;
+  GrammarManager manager(profile_.get(),
+                         std::make_unique<TestGrammarServiceClient>(),
+                         &mock_suggestion_handler);
+  base::HistogramTester histogram_tester;
+
+  manager.OnFocus(1, /*text_input_flags=*/0);
+  manager.OnSurroundingTextChanged(u"", 0, 0);
+  manager.OnSurroundingTextChanged(u"There is error error", 0, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2500));
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
+                                      0 /*GrammarAction::kUnderlined*/, 2);
+
+  manager.OnSurroundingTextChanged(u"There is error error error", 0, 0);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2500));
+  histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
+                                      0 /*GrammarAction::kUnderlined*/, 3);
+}
+
 TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
   MockSuggestionHandler mock_suggestion_handler;
   GrammarManager manager(profile_.get(),

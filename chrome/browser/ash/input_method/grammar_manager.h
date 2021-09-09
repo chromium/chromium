@@ -70,10 +70,9 @@ class GrammarManager {
  private:
   void Check(const Sentence& sentence);
 
-  void OnGrammarCheckDone(
-      const Sentence& sentence,
-      bool success,
-      const std::vector<ui::GrammarFragment>& results) const;
+  void OnGrammarCheckDone(const Sentence& sentence,
+                          bool success,
+                          const std::vector<ui::GrammarFragment>& results);
 
   void DismissSuggestion();
 
@@ -95,7 +94,9 @@ class GrammarManager {
   Sentence current_sentence_;
   Sentence last_sentence_;
   int text_input_flags_ = 0;
-  std::unordered_map<std::u16string, std::unordered_set<int>> ignored_markers_;
+  std::unordered_map<std::u16string, std::unordered_set<uint64_t>>
+      ignored_marker_hashes_;
+  std::unordered_set<uint64_t> recorded_marker_hashes_;
 };
 
 }  // namespace input_method
