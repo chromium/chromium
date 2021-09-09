@@ -272,6 +272,26 @@ TEST_F(SystemNotificationManagerTest, PartitionFail) {
   EXPECT_EQ(notification_strings.message, kPartitionFailMesssage);
 }
 
+TEST_F(SystemNotificationManagerTest, RenameFail) {
+  GetDeviceEventRouter()->OnRenameCompleted(kDevicePath, kPartitionLabel,
+                                            /*success=*/false);
+  // Get the number of notifications from the NotificationDisplayService.
+  NotificationDisplayServiceFactory::GetForProfile(GetProfile())
+      ->GetDisplayed(base::BindOnce(
+          &SystemNotificationManagerTest::GetNotificationsCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  // Check: We have one notification.
+  ASSERT_EQ(1, notification_count);
+  // Get the strings for the displayed notification.
+  TestNotificationStrings notification_strings;
+  notification_strings =
+      notification_platform_bridge->GetNotificationStringsById("rename_fail");
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Renaming failed");
+  EXPECT_EQ(notification_strings.message,
+            u"Aw, Snap! There was an error during renaming.");
+}
+
 TEST_F(SystemNotificationManagerTest, TestCopyEvents) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(ash::features::kFilesSWA);
