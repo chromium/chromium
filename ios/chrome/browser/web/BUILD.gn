@@ -446,21 +446,6 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("perf_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "early_page_script_perftest.mm" ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/test/base:perf_test_support",
-    "//ios/third_party/webkit",
-    "//ios/web/common:web_view_creation_util",
-    "//ios/web/public/test",
-  ]
-}
-
 source_set("feature_flags") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

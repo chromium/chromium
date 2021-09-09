@@ -279,34 +279,3 @@ bundle_data("resources_unit_tests") {
   outputs = [ "{{bundle_resources_dir}}/" +
               "ios/chrome/test/data/omnibox/{{source_file_part}}" ]
 }
-
-source_set("perf_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "omnibox_perftest.mm" ]
-  deps = [
-    ":omnibox_internal",
-    "//base",
-    "//base/test:test_support",
-    "//components/omnibox/browser:test_support",
-    "//ios/chrome/browser/autocomplete",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/tabs:tabs_internal",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/location_bar:location_bar_model_delegate",
-    "//ios/chrome/browser/ui/toolbar",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
-    "//ios/chrome/test/base:perf_test_support",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//ui/base:test_support",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}

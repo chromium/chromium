@@ -272,20 +272,6 @@ source_set("eg2_tests") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("perf_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "new_tab_page_perftest.mm" ]
-  deps = [
-    "//base/test:test_support",
-    "//ios/chrome/browser/main",
-    "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/test:perf_test_support",
-    "//ios/chrome/browser/ui/browser_view",
-    "//ios/chrome/browser/ui/commands",
-  ]
-}
-
 source_set("feature_flags") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
