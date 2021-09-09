@@ -1953,11 +1953,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-extended-sync-promos-capability",
-    "owners": ["fernandex", "msarda", "aliceywang"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
     "expiry_milestone": 100

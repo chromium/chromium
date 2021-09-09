@@ -614,9 +614,6 @@ extern const char kDownloadLaterDebugOnWifiNameDescription[];
 extern const char kDownloadProgressMessageName[];
 extern const char kDownloadProgressMessageDescription[];
 
-extern const char kEnableExtendedSyncPromosCapabilityName[];
-extern const char kEnableExtendedSyncPromosCapabilityDescription[];
-
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

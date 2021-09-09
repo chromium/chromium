@@ -5814,11 +5814,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enhanced-network-voices", flag_descriptions::kEnhancedNetworkVoicesName,
      flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnhancedNetworkVoices)},
-#else
-    {"enable-extended-sync-promos-capability",
-     flag_descriptions::kEnableExtendedSyncPromosCapabilityName,
-     flag_descriptions::kEnableExtendedSyncPromosCapabilityDescription,
-     flags_ui::kOsAndroid, FEATURE_VALUE_TYPE(switches::kMinorModeSupport)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

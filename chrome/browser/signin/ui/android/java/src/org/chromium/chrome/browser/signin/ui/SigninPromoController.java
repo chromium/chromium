@@ -119,7 +119,6 @@ public class SigninPromoController {
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
         return visibleAccount == null
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
                 || accountManagerFacade.canOfferExtendedSyncPromos(visibleAccount).or(false);
     }
 

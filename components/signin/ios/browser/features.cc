@@ -16,10 +16,6 @@ bool ForceDisableExtendedSyncPromos() {
       switches::kForceDisableExtendedSyncPromos);
 }
 
-bool ExtendedSyncPromosCapabilityEnabled() {
-  return base::FeatureList::IsEnabled(switches::kMinorModeSupport);
-}
-
 const base::Feature kRestoreGaiaCookiesOnUserAction{
     "RestoreGAIACookiesOnUserAction", base::FEATURE_DISABLED_BY_DEFAULT};
 

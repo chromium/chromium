@@ -93,10 +93,7 @@ public final class SigninPromoUtil {
             return false;
         }
 
-        final boolean canDefaultAccountOfferExtendedSyncPromos =
-                accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(false);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MINOR_MODE_SUPPORT)
-                && !canDefaultAccountOfferExtendedSyncPromos) {
+        if (!accountManagerFacade.canOfferExtendedSyncPromos(accounts.get(0)).or(false)) {
             return false;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {

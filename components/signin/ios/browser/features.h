@@ -15,10 +15,6 @@ bool ForceStartupSigninPromo();
 // Returns true if extended sync promos should be disabled unconditionally.
 bool ForceDisableExtendedSyncPromos();
 
-// Returns true if the Chrome client can read the extended sync promo
-// capability.
-bool ExtendedSyncPromosCapabilityEnabled();
-
 // Feature controlling whether to restore GAIA cookies when the user explicitly
 // requests to sign in to a Google service.
 extern const base::Feature kRestoreGaiaCookiesOnUserAction;

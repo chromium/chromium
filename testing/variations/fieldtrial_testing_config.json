@@ -5224,22 +5224,6 @@
             ]
         }
     ],
-    "MobileMinorModeSupport": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MinorModeSupport"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [

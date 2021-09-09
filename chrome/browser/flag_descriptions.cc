@@ -884,12 +884,6 @@ const char kWinrtGeolocationImplementationDescription[] =
     "Enables usage of the Windows.Devices.Geolocation WinRT APIs on Windows "
     "for geolocation";
 
-extern const char kEnableExtendedSyncPromosCapabilityName[] =
-    "Enables reading the extended sync promo account capability";
-extern const char kEnableExtendedSyncPromosCapabilityDescription[] =
-    "When enabled, starts reading the account capability to decide whether "
-    "or not Chrome should display an extended sync promo";
-
 const char kEnableFencedFramesName[] = "Enable the <fencedframe> element.";
 const char kEnableFencedFramesDescription[] =
     "Fenced frames are an experimental web platform feature that allows "

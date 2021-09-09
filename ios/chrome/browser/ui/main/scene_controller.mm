@@ -751,12 +751,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   ChromeIdentity* defaultIdentity = accountManagerService->GetDefaultIdentity();
   DCHECK(defaultIdentity);
 
-  if (!signin::ExtendedSyncPromosCapabilityEnabled()) {
-    // Present the sign-in promo synchronously.
-    [self presentSigninUpgradePromo];
-    return;
-  }
-
   __weak SceneController* weakSelf = self;
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();

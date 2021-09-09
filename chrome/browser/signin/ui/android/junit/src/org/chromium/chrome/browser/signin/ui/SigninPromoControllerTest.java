@@ -40,7 +40,6 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
  * Tests for {@link SigninPromoController}..
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.MINOR_MODE_SUPPORT})
 @Features.DisableFeatures({ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS})
 public class SigninPromoControllerTest {
     @Rule

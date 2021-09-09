@@ -186,12 +186,6 @@ const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
 const char kEnableDiscoverFeedPreviewDescription[] =
     "Enable showing a live preview for discover feed long-press menu.";
 
-const char kEnableExtendedSyncPromosCapabilityName[] =
-    "Enables reading the extended sync promo account capability";
-const char kEnableExtendedSyncPromosCapabilityDescription[] =
-    "When enabled, starts reading the account capability to decide whether "
-    "or not Chrome should display an extended sync promo";
-
 const char kEnableFREDefaultBrowserScreenName[] =
     "Enable FRE default browser screen";
 const char kEnableFREDefaultBrowserScreenDescription[] =

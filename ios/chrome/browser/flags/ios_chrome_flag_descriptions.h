@@ -168,11 +168,6 @@ extern const char
 extern const char kEnableDiscoverFeedPreviewName[];
 extern const char kEnableDiscoverFeedPreviewDescription[];
 
-// Title and description for the flag to enable reading the extended sync promo
-// account capability from IdentityKit libraries.
-extern const char kEnableExtendedSyncPromosCapabilityName[];
-extern const char kEnableExtendedSyncPromosCapabilityDescription[];
-
 // Title and description for the flag to enable FRE default browser screen.
 extern const char kEnableFREDefaultBrowserScreenName[];
 extern const char kEnableFREDefaultBrowserScreenDescription[];
