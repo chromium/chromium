@@ -42,6 +42,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_server_config.h"
+#include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -867,6 +868,110 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
                                  .spec()
                                  .c_str())));
   EXPECT_EQ(kNoCookie, GetReceivedCookie("/echoheader?Cookie"));
+}
+
+class WorkerFromAnonymousIframeNikBrowserTest : public WorkerTest {
+ public:
+  WorkerFromAnonymousIframeNikBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kPartitionConnectionsByNetworkIsolationKey);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Enable parsing the iframe 'anonymous' attribute.
+    command_line->AppendSwitch(switches::kEnableBlinkTestFeatures);
+    WorkerTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    connection_tracker_ = std::make_unique<net::test_server::ConnectionTracker>(
+        embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    WorkerTest::SetUpOnMainThread();
+  }
+
+  void ResetNetworkState() {
+    auto* network_context = shell()
+                                ->web_contents()
+                                ->GetBrowserContext()
+                                ->GetDefaultStoragePartition()
+                                ->GetNetworkContext();
+    base::RunLoop close_all_connections_loop;
+    network_context->CloseAllConnections(
+        close_all_connections_loop.QuitClosure());
+    close_all_connections_loop.Run();
+
+    connection_tracker_->ResetCounts();
+  }
+
+ protected:
+  std::unique_ptr<net::test_server::ConnectionTracker> connection_tracker_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WorkerFromAnonymousIframeNikBrowserTest,
+                         testing::Range(0, 3));
+
+IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
+                       SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
+  if (!SupportsSharedWorker())
+    return;
+
+  GURL main_url = embedded_test_server()->GetURL("/title1.html");
+
+  for (bool anonymous : {false, true}) {
+    SCOPED_TRACE(anonymous ? "anonymous iframe" : "normal iframe");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+    RenderFrameHostImpl* main_rfh = static_cast<RenderFrameHostImpl*>(
+        shell()->web_contents()->GetMainFrame());
+
+    // Create an iframe.
+    EXPECT_TRUE(ExecJs(main_rfh,
+                       JsReplace("let child = document.createElement('iframe');"
+                                 "child.src = $1;"
+                                 "child.anonymous = $2;"
+                                 "document.body.appendChild(child);",
+                                 main_url, anonymous)));
+    WaitForLoadStop(shell()->web_contents());
+    EXPECT_EQ(1U, main_rfh->child_count());
+    RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
+    EXPECT_EQ(anonymous, iframe->anonymous());
+
+    ResetNetworkState();
+
+    GURL worker_url = embedded_test_server()->GetURL("/workers/worker.js");
+
+    // Preconnect a socket with the NetworkIsolationKey of the main frame.
+    shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->PreconnectSockets(1, worker_url.GetOrigin(), true,
+                            main_rfh->GetNetworkIsolationKey());
+
+    connection_tracker_->WaitForAcceptedConnections(1);
+    EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
+    EXPECT_EQ(0u, connection_tracker_->GetReadSocketCount());
+
+    std::string start_worker = JsReplace("new SharedWorker($1);", worker_url);
+
+    ExecuteScriptAsync(iframe, start_worker);
+    connection_tracker_->WaitUntilConnectionRead();
+
+    // The normal iframe should reuse the preconnected socket, the anonymous
+    // iframe should open a new one.
+    if (!anonymous) {
+      EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
+    } else {
+      EXPECT_EQ(2u, connection_tracker_->GetAcceptedSocketCount());
+    }
+    EXPECT_EQ(1u, connection_tracker_->GetReadSocketCount());
+  }
 }
 
 }  // namespace content

@@ -48,6 +48,7 @@
 #include "third_party/blink/public/mojom/worker/shared_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -361,16 +362,29 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // Cloning before std::move() so that the object can be used in two functions.
   auto cloned_outside_fetch_client_settings_object =
       outside_fetch_client_settings_object.Clone();
+
   // TODO(mmenke): The site-for-cookies and NetworkIsolationKey arguments leak
   // data across NetworkIsolationKeys and allow same-site cookies to be sent in
   // cross-site contexts. Fix this.
+  // Also, we should probably use `host->instance().storage_key().origin()`
+  // instead of `worker_origin`, see following DCHECK.
+  DCHECK(host->instance().url().SchemeIs(url::kDataScheme) ||
+         GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
+             host->instance().storage_key().origin().scheme()) ||
+         worker_origin == host->instance().storage_key().origin())
+      << worker_origin << " and " << host->instance().storage_key().origin()
+      << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
       &creator, net::SiteForCookies::FromOrigin(worker_origin),
       host->instance().storage_key().origin(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, worker_origin, worker_origin,
-          net::SiteForCookies::FromOrigin(worker_origin)),
+          net::SiteForCookies::FromOrigin(worker_origin),
+          /*party_context=*/absl::nullopt,
+          host->instance().storage_key().nonce().has_value()
+              ? &host->instance().storage_key().nonce().value()
+              : nullptr),
       credentials_mode, std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,
