@@ -332,8 +332,7 @@ class UserAddingScreenIndicator : public views::View {
     label_->SetText(message);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(
-        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetFillsBoundsOpaquely(false);
   }
 

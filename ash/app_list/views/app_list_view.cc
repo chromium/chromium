@@ -535,8 +535,7 @@ class AppListBackgroundShieldView : public views::View {
     use_blur_ = use_blur;
 
     if (use_blur) {
-      layer()->SetBackgroundBlur(
-          static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     } else {
       layer()->SetBackgroundBlur(0);

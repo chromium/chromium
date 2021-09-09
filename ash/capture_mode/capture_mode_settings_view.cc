@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_settings_entry_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -52,8 +53,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(bool projector_mode)
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(

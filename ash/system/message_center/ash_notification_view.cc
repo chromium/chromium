@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -152,7 +153,7 @@ AshNotificationView::AshNotificationView(
   expand_button_->SetVisible(IsExpandable());
 
   if (shown_in_popup_) {
-    layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 }

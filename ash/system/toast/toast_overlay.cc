@@ -182,8 +182,7 @@ class ToastOverlayView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kToastCornerRounding));
-    layer()->SetBackgroundBlur(
-        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
 
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal));

@@ -58,8 +58,7 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kMenuViewRoundRectRadiusDp);
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenu);
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_ACCESSIBLE));

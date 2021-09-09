@@ -59,8 +59,7 @@ class FullscreenAlertBubbleView : public views::View {
     SetPaintToLayer();
     SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80);
-    layer()->SetBackgroundBlur(
-        static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     SetBackground(views::CreateRoundedRectBackground(background_color,
                                                      kBubbleBorderRadius));
     layer()->SetFillsBoundsOpaquely(false);

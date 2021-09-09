@@ -145,8 +145,7 @@ void LoginBaseBubbleView::EnsureLayer() {
       AshColorProvider::BaseLayerType::kTransparent80);
   SetBackground(views::CreateRoundedRectBackground(background_color,
                                                    kBubbleBorderRadius));
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
 }
 

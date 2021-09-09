@@ -941,8 +941,7 @@ void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
     return;
   }
   icon_->EnsureLayer();
-  icon_->layer()->SetBackgroundBlur(
-      static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+  icon_->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   icon_->layer()->SetBackdropFilterQuality(
       ColorProvider::kBackgroundBlurQuality);
 }

@@ -108,8 +108,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80);
   layer->SetColor(background_color);
-  layer->SetBackgroundBlur(
-      static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   layer->SetName("WindowCycleView");
   layer->SetMasksToBounds(true);

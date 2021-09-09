@@ -7,6 +7,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -147,8 +148,7 @@ CaptureLabelView::CaptureLabelView(CaptureModeSession* capture_mode_session)
       AshColorProvider::BaseLayerType::kTransparent80);
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SkColor text_color = color_provider->GetContentLayerColor(

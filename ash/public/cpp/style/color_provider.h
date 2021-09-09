@@ -27,11 +27,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   };
 
   // Blur sigma for system UI layers.
-  enum class LayerBlurSigma {
-    kBlurDefault = 30,  // Default blur sigma is 30.
-    kBlurSigma20 = 20,
-    kBlurSigma10 = 10,
-  };
+  static constexpr float kBackgroundBlurSigma = 30.f;
 
   // The default blur quality for background blur. Using a value less than 1
   // improves performance.

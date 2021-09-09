@@ -56,8 +56,7 @@ AppDragIconProxy::AppDragIconProxy(
     const float radius = size.width() / 2.0f;
     drag_image->layer()->SetRoundedCornerRadius(
         {radius, radius, radius, radius});
-    drag_image->layer()->SetBackgroundBlur(
-        static_cast<float>(ColorProvider::LayerBlurSigma::kBlurDefault));
+    drag_image->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     drag_image->layer()->SetBackdropFilterQuality(
         ColorProvider::kBackgroundBlurQuality);
   }

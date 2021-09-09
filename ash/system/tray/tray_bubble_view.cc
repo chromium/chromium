@@ -10,6 +10,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -275,7 +276,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
         gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetIsFastRoundedCorner(true);
-    layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   } else {
     // Create a layer so that the layer for FocusRing stays in this view's
     // layer. Without it, the layer for FocusRing goes above the

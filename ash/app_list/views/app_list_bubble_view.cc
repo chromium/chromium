@@ -84,7 +84,7 @@ AppListBubbleView::AppListBubbleView(
       gfx::RoundedCornersF{kUnifiedTrayCornerRadius});
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(kUnifiedMenuBackgroundBlur);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   views::FillLayout* layout =

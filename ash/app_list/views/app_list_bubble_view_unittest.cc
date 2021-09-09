@@ -21,6 +21,7 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -137,7 +138,7 @@ TEST_F(AppListBubbleViewTest, LayerConfiguration) {
   ASSERT_TRUE(layer);
   EXPECT_FALSE(layer->fills_bounds_opaquely());
   EXPECT_TRUE(layer->is_fast_rounded_corner());
-  EXPECT_EQ(layer->background_blur(), kUnifiedMenuBackgroundBlur);
+  EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
   EXPECT_EQ(layer->background_color(),
             AshColorProvider::Get()->GetBaseLayerColor(
                 AshColorProvider::BaseLayerType::kTransparent80));
