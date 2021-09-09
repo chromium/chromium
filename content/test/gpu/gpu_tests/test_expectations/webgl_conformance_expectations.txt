@@ -403,6 +403,7 @@ crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/
 crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
 crbug.com/angleproject/2192 [ win angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
 crbug.com/1191456 [ win angle-d3d9 passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/1248121 [ win angle-d3d9 passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
 
 # Win D3D11 / Passthrough / Intel+AMD
 crbug.com/1215624 [ win angle-d3d11 passthrough intel ] conformance/textures/video/* [ RetryOnFailure ]
