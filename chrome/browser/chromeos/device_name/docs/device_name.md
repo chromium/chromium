@@ -10,7 +10,8 @@ In the case that they are not allowed, the administrator can set a template that
 device name or may prefer to not set a template in which case the default name (“ChromeOS”) is used.
 
 ## Architecture
-![Device Name Architecture Overview](images/device_name_architecture_overview.png)
+<img src="images/device_name_architecture_overview.png" alt="Device Name Architecture Overview" 
+width="600px">
 
 ### Backend
 The backend logic is mainly implemented in the following classes:
@@ -57,7 +58,7 @@ notifies observers when the device name metadata changes.
 #### DeviceNameApplier
 
 * Exposes one API function, `SetDeviceName()`, which uses `NetworkStateHandler` and `
-BluetoothAdapter`to set the name via DHCP and Bluetooth respectively. If calls to the `
+BluetoothAdapter` to set the name via DHCP and Bluetooth respectively. If calls to the `
 BluetoothAdapter` fail, we retry them with an exponential backoff.
 
 ### Middleware
@@ -65,12 +66,12 @@ The backend and frontend communicate to each other through the `DeviceNameHandle
 and `DeviceNameBrowserProxy` on the JS side.
 
 #### DeviceNameHandler
-* Handles messages from `DeviceNameBrowserProxy`` related to getting and setting the device name.
+* Handles messages from `DeviceNameBrowserProxy` related to getting and setting the device name.
 
 * Observes `DeviceNameStore` for changes in the device name metadata.
 
 * When the device name metadata changes or when it receives a message from the proxy that it is
-ready to receive the device name, it fires the `WebUI Listener` with the device name metadata found
+ready to receive the device name, it fires the `WebUIListener` with the device name metadata found
 in the `DeviceNameStore`.
 
 * When it receives a message from the proxy to update the device name, it calls `SetDeviceName()`
@@ -90,21 +91,22 @@ Dialog.
 
 #### Detailed Build Info page
 * Contains the device name setting option.
-![Device Name Setting Option](images/device_name_setting_option.png)
+
+<img src="images/device_name_setting_option.png" alt="Device Name Setting Option" width="600px">
 
 * If the device name cannot be changed because of forbidden policies (either because the
 administrator set a template name or set policy that prohibits the user from changing the name), an
 enterprise icon shows up on the side and the edit button is disabled.
 
-<img src="images/device_name_administrator_restrictions.png" alt="Device Name Administrator
-Restrictions" width="70%">
+<img src="images/device_name_administrator_restrictions.png" alt="Device Name Administrator 
+Restrictions" width="400px">
 
 
 * If the device name cannot be changed because the active user is not the device owner, an owner
 icon shows up on the side and the edit button is disabled.
 
-<img src="images/device_name_owner_restrictions.png" alt="Device Name Owner Restrictions" width="70%
-">
+<img src="images/device_name_owner_restrictions.png" alt="Device Name Owner Restrictions" width=
+"400px">
 
 
 #### Edit Hostname Dialog
@@ -112,20 +114,21 @@ icon shows up on the side and the edit button is disabled.
 an input info box informing the user what type of input is valid and the current count of the name (
 e.g. 5/15).
 
-<img src="images/device_name_valid_input.png" alt="Device Name Valid Input" width="50%">
+<img src="images/device_name_valid_input.png" alt="Device Name Valid Input" width="400px">
 
 * If the input contains any invalid characters or the minimum/maximum number of characters is not
 respected, the input info box turns red and the done button is disabled. If the user attempts to
 enter more than the maximum limit, the input is truncated.
 
-<img src="images/device_name_invalid_input.png" alt="Device Name Invalid Input" width="50%">
+<img src="images/device_name_invalid_input.png" alt="Device Name Invalid Input" width="400px">
 
 * Note: if the user types an emoji, it is removed from the input and does not appear in the text
 field.
 
 ## Admin UI Console
 In the Admin console, the administrator has the option to either allow or disallow managed users to
-specify the device name. Picking the “allow” option will set the `DeviceHostnameUserConfigurable`policy to true, else it is set to false.
+specify the device name. Picking the “allow” option will set the `DeviceHostnameUserConfigurable`
+policy to true, else it is set to false.
 
 If the administrator picks the “disallow” option, another setting option will appear and the
 administrator can decide to set a template for the name, which will set the `DeviceHostnameTemplate`
