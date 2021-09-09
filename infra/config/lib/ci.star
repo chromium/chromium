@@ -110,6 +110,9 @@ def ci_builder(
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
     experiments.setdefault("chromium.resultdb.result_sink.gtests_local", 100)
 
+    # TODO(crbug.com/1135718): Promote out of experiment for all builders.
+    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 5)
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
