@@ -101,7 +101,7 @@ class CORE_EXPORT CSSAnimations final {
                                           const ComputedStyle&,
                                           const ComputedStyle* parent_style);
 
-  static void UpdateAnimationFlags(Element&,
+  static void UpdateAnimationFlags(Element& animating_element,
                                    CSSAnimationUpdate&,
                                    ComputedStyle& style);
 

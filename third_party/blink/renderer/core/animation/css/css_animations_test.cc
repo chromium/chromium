@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
@@ -614,6 +615,40 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
   ASSERT_TRUE(element->GetLayoutObject());
   EXPECT_TRUE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+}
+
+TEST_P(CSSAnimationsTest, UpdateAnimationFlags_AnimatingElement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        from { transform: scale(1); }
+        to { transform: scale(2); }
+      }
+      #test {
+        animation: anim 1s linear;
+      }
+      #test::before {
+        content: "A";
+        /* Ensure that we don't early-out in StyleResolver::
+           ApplyAnimatedStyle */
+        animation: unknown 1s linear;
+      }
+    </style>
+    <div id=test>Test</div>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("test");
+  ASSERT_TRUE(element);
+
+  Element* before = element->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+
+  // The originating element should be marked having a current transform
+  // animation ...
+  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentTransformAnimation());
+
+  // ... but the pseudo-element should not.
+  EXPECT_FALSE(before->ComputedStyleRef().HasCurrentTransformAnimation());
 }
 
 // The following group of tests verify that composited CSS animations are

@@ -903,7 +903,7 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
 
 }  // namespace
 
-void CSSAnimations::UpdateAnimationFlags(Element& element,
+void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
                                          CSSAnimationUpdate& update,
                                          ComputedStyle& style) {
   for (const auto& new_animation : update.NewAnimations())
@@ -915,7 +915,7 @@ void CSSAnimations::UpdateAnimationFlags(Element& element,
   for (const auto& entry : update.NewTransitions())
     UpdateAnimationFlagsForInertEffect(*entry.value->effect, style);
 
-  if (auto* element_animations = element.GetElementAnimations()) {
+  if (auto* element_animations = animating_element.GetElementAnimations()) {
     HeapHashSet<Member<const Animation>> cancelled_transitions =
         CreateCancelledTransitionsSet(element_animations, update);
     const HeapHashSet<Member<const Animation>>& suppressed_animations =

@@ -1308,8 +1308,8 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   CSSAnimations::SnapshotCompositorKeyframes(
       element, state.AnimationUpdate(), *state.Style(), state.ParentStyle());
-  CSSAnimations::UpdateAnimationFlags(element, state.AnimationUpdate(),
-                                      state.StyleRef());
+  CSSAnimations::UpdateAnimationFlags(
+      *animating_element, state.AnimationUpdate(), state.StyleRef());
 
   if (state.AnimationUpdate().IsEmpty())
     return false;
