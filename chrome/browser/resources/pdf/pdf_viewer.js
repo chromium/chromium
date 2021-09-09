@@ -686,15 +686,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   onErrorDialog_() {
-    // The error screen can only reload from a normal tab.
-    if (!chrome.tabs || this.browserApi.getStreamInfo().tabId === -1) {
-      return;
-    }
-
     const errorDialog = /** @type {!ViewerErrorDialogElement} */ (
         this.shadowRoot.querySelector('#error-dialog'));
     errorDialog.reloadFn = () => {
-      chrome.tabs.reload(this.browserApi.getStreamInfo().tabId);
+      location.reload();
     };
   }
 
