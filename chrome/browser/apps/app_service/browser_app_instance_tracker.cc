@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/process/process.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -106,7 +107,13 @@ class BrowserAppInstanceTracker::WebContentsObserver
     // TODO(crbug.com/1229189): Replace this callback with
     // WebContentObserver::PrimaryPageChanged() when fixed.
     if (handle->IsInPrimaryMainFrame() && handle->HasCommitted()) {
-      owner_->OnTabNavigationFinished(web_contents());
+      owner_->OnWebContentsUpdated(web_contents());
+    }
+  }
+
+  void TitleWasSet(content::NavigationEntry* entry) override {
+    if (entry) {
+      owner_->OnWebContentsUpdated(web_contents());
     }
   }
 
@@ -488,7 +495,7 @@ void BrowserAppInstanceTracker::OnTabClosing(Browser* browser,
   RemoveAppInstanceIfExists(contents);
 }
 
-void BrowserAppInstanceTracker::OnTabNavigationFinished(
+void BrowserAppInstanceTracker::OnWebContentsUpdated(
     content::WebContents* contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (browser) {
@@ -526,6 +533,7 @@ void BrowserAppInstanceTracker::CreateAppInstance(
                         : BrowserAppInstance::Type::kAppTab,
                     std::move(app_id),
                     browser->window()->GetNativeWindow(),
+                    base::UTF16ToUTF8(contents->GetTitle()),
                     IsBrowserVisible(browser),
                     IsAppActive(browser, contents),
                 }));
@@ -536,7 +544,8 @@ void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
     Browser* browser,
     content::WebContents* contents) {
   app_instances_.MaybeUpdateInstance(
-      instance, browser->window()->GetNativeWindow(), IsBrowserVisible(browser),
+      instance, browser->window()->GetNativeWindow(),
+      base::UTF16ToUTF8(contents->GetTitle()), IsBrowserVisible(browser),
       IsAppActive(browser, contents));
 }
 
@@ -552,6 +561,7 @@ void BrowserAppInstanceTracker::CreateChromeInstance(Browser* browser) {
                                     BrowserAppInstance::Type::kChromeWindow,
                                     extension_misc::kChromeAppId,
                                     browser->window()->GetNativeWindow(),
+                                    /* title= */ "",
                                     IsBrowserVisible(browser),
                                     IsBrowserActive(browser),
                                 }));
@@ -563,8 +573,8 @@ void BrowserAppInstanceTracker::MaybeUpdateChromeInstance(
   // Browser window does not change for Chrome instances, but other attributes
   // may change.
   chrome_instances_.MaybeUpdateInstance(
-      instance, browser->window()->GetNativeWindow(), IsBrowserVisible(browser),
-      IsBrowserActive(browser));
+      instance, browser->window()->GetNativeWindow(), /* title= */ "",
+      IsBrowserVisible(browser), IsBrowserActive(browser));
 }
 
 void BrowserAppInstanceTracker::RemoveChromeInstanceIfExists(Browser* browser) {

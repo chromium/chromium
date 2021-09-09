@@ -45,13 +45,15 @@ class BrowserAppInstanceSet {
   // was changed. Returns true is the instance was changed.
   bool MaybeUpdateInstance(BrowserAppInstance& instance,
                            aura::Window* window,
+                           const std::string& title,
                            bool visible,
                            bool active) {
-    if (instance.window == window && instance.visible == visible &&
-        instance.active == active) {
+    if (instance.window == window && instance.title == title &&
+        instance.visible == visible && instance.active == active) {
       return false;
     }
     instance.window = window;
+    instance.title = title;
     instance.visible = visible;
     instance.active = active;
     for (auto& observer : observers_) {

@@ -141,7 +141,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
   void OnTabClosing(Browser* browser, content::WebContents* contents);
 
   // Called by |BrowserAppInstanceTracker::WebContentsObserver|.
-  void OnTabNavigationFinished(content::WebContents* contents);
+  void OnWebContentsUpdated(content::WebContents* contents);
 
   // Called on browser window changes. Sends update events for all open tabs.
   void OnBrowserWindowUpdated(Browser* browser);
