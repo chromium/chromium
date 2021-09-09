@@ -21923,14 +21923,14 @@ Called by update_document_policy_enum.py.-->
   <int value="22" label="Completed with content length mismatch"/>
   <int value="23" label="More bytes received after content length mismatch"/>
   <int value="24" label="No bytes received after content length mismatch"/>
-  <int value="25" label="Target determination requeted"/>
+  <int value="25" label="Target determination requested"/>
   <int value="26" label="Target determination completed"/>
   <int value="27"
       label="Cross origin download without content disposition headers"/>
-  <int value="28" label="Download attemps before sending the request"/>
-  <int value="29" label="Download attempts for manual download resumption."/>
-  <int value="30" label="Download attempts for auto download resumption."/>
-  <int value="31" label="Dropped download attempts."/>
+  <int value="28" label="Download attempts before sending the request"/>
+  <int value="29" label="Download attempts for manual download resumption"/>
+  <int value="30" label="Download attempts for auto download resumption"/>
+  <int value="31" label="Dropped download attempts"/>
 </enum>
 
 <enum name="DownloadDatabaseRecordDroppedType">
