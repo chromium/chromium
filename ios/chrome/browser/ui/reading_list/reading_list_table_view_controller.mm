@@ -167,14 +167,15 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [super setEditing:editing animated:animated];
   self.selectedUnreadItemCount = 0;
   self.selectedReadItemCount = 0;
-  [self updateToolbarItems];
   if (!editing) {
+    self.markConfirmationSheet = nil;
     self.editingWithToolbarButtons = NO;
     if (self.needsSectionCleanupAfterEditing) {
       [self removeEmptySections];
       self.needsSectionCleanupAfterEditing = NO;
     }
   }
+  [self updateToolbarItems];
 }
 
 - (void)setSelectedUnreadItemCount:(NSUInteger)selectedUnreadItemCount {
@@ -554,8 +555,13 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - ReadingListToolbarButtonCommands
 
 - (void)enterReadingListEditMode {
-  if (self.editing)
+  if (self.editing && !self.editingWithToolbarButtons) {
+    // Reset swipe editing to trigger button editing
+    [self setEditing:NO animated:NO];
+  }
+  if (self.editing) {
     return;
+  }
   self.editingWithToolbarButtons = YES;
   [self setEditing:YES animated:YES];
 }
@@ -773,7 +779,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 // Updates buttons displayed in the bottom toolbar.
 - (void)updateToolbarItems {
-  self.toolbarManager.editing = self.tableView.editing;
+  self.toolbarManager.editing = self.editingWithToolbarButtons;
   self.toolbarManager.hasReadItems =
       self.dataSource.hasElements && self.dataSource.hasReadElements;
   self.toolbarManager.selectionState = GetSelectionStateForSelectedCounts(
