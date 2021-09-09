@@ -201,4 +201,8 @@ const char kPolicyBlockedScripting[] =
 
 const int kContentVerificationDefaultBlockSize = 4096;
 
+const char kCryptotokenExtensionId[] = "kmendfapggjehodndflmmgagdbamhnfd";
+
+const char kCryptotokenDeprecationTrialName[] = "U2FSecurityKeyAPI";
+
 }  // namespace extension_misc
