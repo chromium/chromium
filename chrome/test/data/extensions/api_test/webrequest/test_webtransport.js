@@ -16,7 +16,7 @@ chrome.tabs.getCurrent(function(tab) {
                   label: 'onBeforeRequest',
                   event: 'onBeforeRequest',
                   details: {
-                    method: 'GET',
+                    method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
                     // TODO(crbug.com/1243196): Return valid frame URL.
@@ -51,6 +51,7 @@ chrome.tabs.getCurrent(function(tab) {
                   label: 'onBeforeRequest',
                   event: 'onBeforeRequest',
                   details: {
+                    method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
                     frameUrl: 'unknown frame URL',
@@ -62,6 +63,7 @@ chrome.tabs.getCurrent(function(tab) {
                   label: 'onErrorOccurred',
                   event: 'onErrorOccurred',
                   details: {
+                    method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
                     fromCache: false,
@@ -93,7 +95,7 @@ chrome.tabs.getCurrent(function(tab) {
                   label: 'onBeforeRequest',
                   event: 'onBeforeRequest',
                   details: {
-                    method: 'GET',
+                    method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
                     frameUrl: 'unknown frame URL',
@@ -104,6 +106,7 @@ chrome.tabs.getCurrent(function(tab) {
                   label: 'onErrorOccurred',
                   event: 'onErrorOccurred',
                   details: {
+                    method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
                     fromCache: false,

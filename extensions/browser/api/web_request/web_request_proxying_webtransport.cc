@@ -162,6 +162,7 @@ void StartWebRequestProxyingWebTransport(
 
   // Filling ResourceRequest fields required to create WebRequestInfoInitParams.
   network::ResourceRequest request;
+  request.method = net::HttpRequestHeaders::kConnectMethod;
   request.url = url;
   request.request_initiator = frame.GetLastCommittedOrigin();
 
