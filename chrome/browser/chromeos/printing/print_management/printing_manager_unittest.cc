@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/print_management/printing_manager.h"
 
+#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/prefs/pref_registry_simple.h"

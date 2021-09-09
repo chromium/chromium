@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/print_management/print_management_ui.h"
+#include "ash/webui/print_management/print_management_ui.h"
 
+#include "ash/grit/ash_print_management_resources.h"
+#include "ash/grit/ash_print_management_resources_map.h"
+#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
+#include "ash/webui/print_management/url_constants.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
-#include "chromeos/components/print_management/url_constants.h"
-#include "chromeos/grit/chromeos_print_management_resources.h"
-#include "chromeos/grit/chromeos_print_management_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -117,8 +117,8 @@ PrintManagementUI::PrintManagementUI(
       "script-src chrome://resources chrome://test 'self';");
   html_source->DisableTrustedTypesCSP();
 
-  const auto resources = base::make_span(kChromeosPrintManagementResources,
-                                         kChromeosPrintManagementResourcesSize);
+  const auto resources = base::make_span(kAshPrintManagementResources,
+                                         kAshPrintManagementResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_PRINT_MANAGEMENT_INDEX_HTML);
 

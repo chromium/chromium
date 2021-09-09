@@ -52,6 +52,7 @@ group("closure_compile") {
     "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
     "//ash/webui/os_feedback_ui:closure_compile",
+    "//ash/webui/print_management:closure_compile",
     "//ash/webui/scanning:closure_compile",
     "//ash/webui/shimless_rma:closure_compile",
     "//ash/webui/shortcut_customization_ui:closure_compile",

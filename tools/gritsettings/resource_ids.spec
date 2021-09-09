@@ -458,7 +458,7 @@
   "ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd": {
     "includes": [2580],
   },
-  "chromeos/components/print_management/resources/print_management_resources.grd": {
+  "ash/webui/print_management/resources/print_management_resources.grd": {
     "META": {"join": 2},
     "includes": [2600],
     "structures": [2620],

@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_H_
 
+#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

@@ -2411,6 +2411,8 @@ static_library("browser") {
       "//ash/webui/help_app_ui/search:mojo_bindings",
       "//ash/webui/media_app_ui",
       "//ash/webui/media_app_ui:mojo_bindings",
+      "//ash/webui/print_management",
+      "//ash/webui/print_management/mojom",
       "//ash/webui/scanning",
       "//ash/webui/scanning/mojom",
       "//ash/webui/shimless_rma",
@@ -2441,8 +2443,6 @@ static_library("browser") {
       "//chromeos/components/multidevice/debug_webui",
       "//chromeos/components/personalization_app",
       "//chromeos/components/personalization_app/mojom",
-      "//chromeos/components/print_management",
-      "//chromeos/components/print_management/mojom",
       "//chromeos/dbus/attestation",
       "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cros_disks",
@@ -6836,7 +6836,7 @@ static_library("browser") {
         "chromeos/printing/printer_error_codes.cc",
         "chromeos/printing/printer_error_codes.h",
       ]
-      deps += [ "//chromeos/components/print_management/mojom" ]
+      deps += [ "//ash/webui/print_management/mojom" ]
     }
     if (is_chromeos_ash) {
       deps += [

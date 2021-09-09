@@ -26,7 +26,7 @@ js_library("icons") {
 js_library("print_job_entry") {
   deps = [
     ":icons",
-    "//chromeos/components/print_management/mojom:mojom_js_library_for_compile",
+    "//ash/webui/print_management/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -60,7 +60,7 @@ js_library("print_job_clear_history_dialog") {
 
 js_library("mojo_interface_provider") {
   deps = [
-    "//chromeos/components/print_management/mojom:mojom_js_library_for_compile",
+    "//ash/webui/print_management/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

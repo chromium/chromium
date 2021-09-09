@@ -13,9 +13,9 @@ static_library("print_management") {
   ]
 
   deps = [
-    "//chromeos/components/print_management/mojom",
+    "//ash/webui/print_management/mojom",
+    "//ash/webui/resources:print_management_resources",
     "//chromeos/components/web_applications",
-    "//chromeos/resources:print_management_resources",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",

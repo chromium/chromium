@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/print_management/mojom/printing_manager.mojom-forward.h"
+#ifndef ASH_WEBUI_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_
+#define ASH_WEBUI_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_
+
+#include "ash/webui/print_management/mojom/printing_manager.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-
-#ifndef CHROMEOS_COMPONENTS_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_
-#define CHROMEOS_COMPONENTS_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_
 
 namespace chromeos {
 namespace printing {
@@ -43,4 +43,4 @@ class PrintManagementUI : public ui::MojoWebUIController {
 }  // namespace printing
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_
+#endif  // ASH_WEBUI_PRINT_MANAGEMENT_PRINT_MANAGEMENT_UI_H_

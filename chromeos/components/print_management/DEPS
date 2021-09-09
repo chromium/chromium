@@ -1,9 +1,0 @@
-include_rules = [
-  "-chrome",
-  "+chromeos/grit/chromeos_print_management_resources.h",
-  "+chromeos/strings/grit/chromeos_strings.h",
-  "+content/public/browser",
-  "+ui/base",
-  "+ui/resources",
-  "+ui/webui",
-]

@@ -234,3 +234,22 @@ grit("media_app_bundle_resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 }
+
+grit("print_management_resources") {
+  source =
+      "//ash/webui/print_management/resources/print_management_resources.grd"
+
+  deps = [
+    "//ash/webui/print_management/mojom:mojom_js",
+    "//ash/webui/print_management/resources:web_components",
+  ]
+
+  outputs = [
+    "grit/ash_print_management_resources.h",
+    "grit/ash_print_management_resources_map.cc",
+    "grit/ash_print_management_resources_map.h",
+    "ash_print_management_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

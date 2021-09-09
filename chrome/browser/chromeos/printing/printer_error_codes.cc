@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
+#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 

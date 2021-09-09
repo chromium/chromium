@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_MANAGEMENT_PRINT_JOB_INFO_MOJOM_CONVERSIONS_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_MANAGEMENT_PRINT_JOB_INFO_MOJOM_CONVERSIONS_H_
 
-#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
+#include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 
 namespace chromeos {
 class CupsPrintJob;
