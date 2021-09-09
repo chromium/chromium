@@ -117,6 +117,9 @@ def try_builder(
     experiments.setdefault("chromium.resultdb.result_sink", 100)
     experiments.setdefault("chromium.resultdb.result_sink.junit_tests", 100)
 
+    # TODO(crbug.com/1135718): Promote out of experiment for all builders.
+    experiments.setdefault("chromium.chromium_tests.use_rdb_results", 5)
+
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.try_test_results",
