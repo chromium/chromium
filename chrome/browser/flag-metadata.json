@@ -1287,7 +1287,7 @@
   {
       "name": "dynamic-color-android",
       "owners": [ "skym", "clank-sbui-team@google.com" ],
-      "expiry_milestone": 95
+      "expiry_milestone": 100
   },
   {
     "name": "dynamic-color-gamut",
