@@ -2528,6 +2528,9 @@
         }
       },
       'Mac Builder Next': {
+        'mixins': [
+          'mac_11_beta_x64',
+        ],
         'additional_compile_targets': [
           'all',
         ],
@@ -3337,9 +3340,8 @@
       },
       'mac-osxbeta-rel': {
         'mixins': [
-          'intel_iris_5100',
           'limited_capacity_bot',
-          'mac_11_beta_x64',
+          'mac_12_beta_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',

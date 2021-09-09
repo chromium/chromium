@@ -467,13 +467,6 @@
       'has_native_resultdb_integration': True,
     },
   },
-  'intel_iris_5100': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '8086:0a2e',
-      },
-    },
-  },
   'ios_custom_webkit': {
     '$mixin_append': {
       'args': [
@@ -716,7 +709,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'os': 'Mac-11.3',
+        'os': 'Mac-11.5',
       },
     },
   },
@@ -725,6 +718,14 @@
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-11|Mac-10.16',
+      },
+    },
+  },
+  'mac_12_beta_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-12',
       },
     },
   },
