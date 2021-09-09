@@ -22,8 +22,7 @@ fetch("http://example.org/path", {
 
 fetch (for nodejs):
 fetch("http://example.org/path", {
-  "method": "GET",
-  "mode": "cors"
+  "method": "GET"
 });
 
 
@@ -57,8 +56,7 @@ fetch("http://example.org/path", {
 fetch (for nodejs):
 fetch("http://example.org/path", {
   "body": "123",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -101,8 +99,7 @@ fetch("http://example.org/path", {
     "content-type": "application/x-www-form-urlencoded"
   },
   "body": "1&b",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -145,8 +142,7 @@ fetch("http://example.org/path", {
     "content-type": "application/json"
   },
   "body": "{\"a\":1}",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -191,8 +187,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "1234\r\n00\u0002\u0003\u0004\u0005'\"!",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -237,8 +232,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "1234\r\n\u000100\u0002\u0003\u0004\u0005'\"!",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -285,8 +279,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "%OS%\r\n%%OS%%\r\n\"\\\"'$&!",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -337,8 +330,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "!@#$%^&*()_+~`1234567890-=[]{};':\",./\r<>?\r\nqwer\nt\n\nyuiopasdfghjklmnbvcxzQWERTYUIOPLKJHGFDSAZXCVBNM",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -381,8 +373,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "ÿ\t܀",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -410,8 +401,7 @@ fetch("http://labs.ft.com/?querystring=[]{}", {
 fetch (for nodejs):
 fetch("http://labs.ft.com/?querystring=[]{}", {
   "body": null,
-  "method": "GET",
-  "mode": "cors"
+  "method": "GET"
 });
 
 
@@ -454,8 +444,7 @@ fetch("http://example.org/path", {
     "content-type": "application/binary"
   },
   "body": "%PATH%$PATH",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -483,8 +472,7 @@ fetch("http://example.org/path", {
 
 fetch (for nodejs):
 fetch("http://example.org/path", {
-  "method": "GET",
-  "mode": "cors"
+  "method": "GET"
 });
 
 
@@ -517,8 +505,7 @@ fetch("http://example.org/path", {
   "headers": {
     "cookie": "_x=fdsfs; aA=fdsfdsf; FOO=ID=BAR:BAZ=FOO:F=d:AO=21.212.2.212-:A=dsadas8d9as8d9a8sd9sa8d9a; AAA=117"
   },
-  "method": "GET",
-  "mode": "cors"
+  "method": "GET"
 });
 
 
@@ -550,8 +537,7 @@ fetch("http://example.org/path", {
 fetch (for nodejs):
 fetch("http://example.org/path", {
   "body": null,
-  "method": "|evilcommand|",
-  "mode": "cors"
+  "method": "|evilcommand|"
 });
 
 
@@ -594,8 +580,43 @@ fetch("http://example.org/path", {
     "content-type": "application/x-www-form-urlencoded"
   },
   "body": "@/etc/passwd",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
+});
+
+
+cURL Windows:
+curl "http://example.org/path" ^
+  -H "Referer: https://example.com" ^
+  --compressed
+
+
+cURL Unix:
+curl 'http://example.org/path' \
+  -H 'Referer: https://example.com' \
+  --compressed
+
+
+Powershell:
+Invoke-WebRequest -UseBasicParsing -Uri "http://example.org/path" -Headers @{
+"Referer"="https://example.com"
+}
+
+
+fetch (for browser):
+fetch("http://example.org/path", {
+  "referrer": "https://example.com",
+  "method": "GET",
+  "mode": "cors",
+  "credentials": "omit"
+});
+
+
+fetch (for nodejs):
+fetch("http://example.org/path", {
+  "headers": {
+    "Referer": "https://example.com"
+  },
+  "method": "GET"
 });
 
 
@@ -698,8 +719,7 @@ fetch("http://example.org/path", {
     "content-type": "foo/bar"
   },
   "body": "baz",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
@@ -742,8 +762,7 @@ fetch("http://example.org/path", {
     "content-type": "foo/bar"
   },
   "body": "baz",
-  "method": "POST",
-  "mode": "cors"
+  "method": "POST"
 });
 
 
