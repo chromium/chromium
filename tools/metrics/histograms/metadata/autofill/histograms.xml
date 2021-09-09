@@ -1046,6 +1046,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FindFormControlElementByUniqueRendererIdDuration"
+    units="microseconds" expires_after="2022-08-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time spent to determine if a form control element, given by its
+    unique renderer id, is in the DOM. It is done by measuring the time it takes
+    for FindFormControlElementByUniqueRendererId() to execute.
+
+    Note that histogram samples for clients without high-resolution clocks are
+    dropped.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FindFormControlElementsByUniqueRendererIdDuration"
+    units="microseconds" expires_after="2022-08-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time spent to determine if a vector of form control elements,
+    given by their unique renderer ids, is in the DOM. It is done by measuring
+    the time it takes for FindFormControlElementsByUniqueRendererId() to
+    execute.
+
+    Note that histogram samples for clients without high-resolution clocks are
+    dropped.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormCacheSize" units="forms"
     expires_after="2022-05-31">
   <owner>evih@google.com</owner>
@@ -1437,6 +1468,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Autofill or payment Autofill is enabled when Chrome launches. It helps
     deduce the overlap by showing what percentage of users have one type of
     Autofill enabled but not the other.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.IsSomeControlElementVisibleDuration"
+    units="microseconds" expires_after="2022-08-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time spent to determine if at least one form control element
+    among the given ones is visible and is in the web frame. It is done by
+    measuring the time it takes for IsSomeControlElementVisible() to execute.
+
+    Note that histogram samples for clients without high-resolution clocks are
+    dropped.
   </summary>
 </histogram>
 
