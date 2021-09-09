@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/cpu.h"
-#include "base/notreached.h"
 
 #include <sys/mman.h>
 
@@ -52,7 +52,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
     case PageReadWriteExecute:
       return PROT_READ | PROT_WRITE | PROT_EXEC;
     default:
-      NOTREACHED();
+      PA_NOTREACHED();
       FALLTHROUGH;
     case PageInaccessible:
       return PROT_NONE;

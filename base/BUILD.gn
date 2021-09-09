@@ -1906,6 +1906,7 @@ component("base") {
         "allocator/partition_allocator/partition_alloc_forward.h",
         "allocator/partition_allocator/partition_alloc_hooks.cc",
         "allocator/partition_allocator/partition_alloc_hooks.h",
+        "allocator/partition_allocator/partition_alloc_notreached.h",
         "allocator/partition_allocator/partition_bucket.cc",
         "allocator/partition_allocator/partition_bucket.h",
         "allocator/partition_allocator/partition_bucket_lookup.h",

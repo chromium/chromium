@@ -148,6 +148,7 @@ class BASE_EXPORT CheckError {
 
 // Async signal safe checking mechanism.
 BASE_EXPORT void RawCheck(const char* message);
+BASE_EXPORT void RawError(const char* message);
 #define RAW_CHECK(condition)                                 \
   do {                                                       \
     if (!(condition))                                        \
