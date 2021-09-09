@@ -10,6 +10,12 @@
 
 namespace blink {
 
+absl::optional<wtf_size_t>
+NGGridNode::GetPreviousGridItemsSizeForReserveCapacity() const {
+  LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
+  return layout_grid->GetPreviousGridItemsSizeForReserveCapacity();
+}
+
 const NGGridPlacementProperties& NGGridNode::GetPositions(
     const NGGridPlacement& grid_placement,
     const GridItems& grid_items,

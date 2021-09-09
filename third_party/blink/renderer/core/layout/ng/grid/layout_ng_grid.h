@@ -45,6 +45,8 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
   Vector<LayoutUnit> RowPositions() const final;
   Vector<LayoutUnit> ColumnPositions() const final;
 
+  absl::optional<wtf_size_t> GetPreviousGridItemsSizeForReserveCapacity();
+
  protected:
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectNGGrid ||

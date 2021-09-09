@@ -385,6 +385,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       grid_placement.AutoRepeatTrackCount(kForRows);
   grid_data->column_auto_repeat_track_count =
       grid_placement.AutoRepeatTrackCount(kForColumns);
+  grid_data->number_of_items = grid_items.Size();
   grid_data->row_geometry =
       ConvertSetGeometry(grid_geometry.row_geometry, row_track_collection);
   grid_data->column_geometry = ConvertSetGeometry(grid_geometry.column_geometry,
@@ -749,6 +750,11 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
 void GridItems::Append(const GridItemData& new_item_data) {
   reordered_item_indices.push_back(item_data.size());
   item_data.emplace_back(new_item_data);
+}
+
+void GridItems::ReserveCapacity(wtf_size_t capacity) {
+  reordered_item_indices.ReserveCapacity(capacity);
+  item_data.ReserveCapacity(capacity);
 }
 
 const NGGridLayoutAlgorithm::SetGeometry&
@@ -1259,6 +1265,11 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
     GridItemStorageVector* out_of_flow_items) const {
   DCHECK(grid_properties);
   DCHECK(grid_items);
+
+  absl::optional<wtf_size_t> previous_capacity =
+      Node().GetPreviousGridItemsSizeForReserveCapacity();
+  if (previous_capacity)
+    grid_items->ReserveCapacity(previous_capacity.value());
 
   const auto& container_style = Style();
   const auto container_writing_mode = ConstraintSpace().GetWritingMode();

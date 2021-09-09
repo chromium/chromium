@@ -26,6 +26,7 @@ struct NGGridData {
   wtf_size_t column_start;
   wtf_size_t row_auto_repeat_track_count;
   wtf_size_t column_auto_repeat_track_count;
+  wtf_size_t number_of_items;
 
   struct SetData {
     SetData(LayoutUnit offset, wtf_size_t track_count)

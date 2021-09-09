@@ -196,6 +196,7 @@ struct GridItemIndices {
     }
 
     void Append(const GridItemData& new_item_data);
+    void ReserveCapacity(wtf_size_t capacity);
 
     wtf_size_t Size() const { return item_data.size(); }
     bool IsEmpty() const { return item_data.IsEmpty(); }

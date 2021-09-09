@@ -255,6 +255,14 @@ Vector<LayoutUnit> LayoutNGGrid::ColumnPositions() const {
   return ComputeExpandedPositions(kForColumns);
 }
 
+absl::optional<wtf_size_t>
+LayoutNGGrid::GetPreviousGridItemsSizeForReserveCapacity() {
+  const NGGridData* grid_data = GetGridData();
+  if (grid_data)
+    return grid_data->number_of_items;
+  return absl::nullopt;
+}
+
 Vector<LayoutUnit> LayoutNGGrid::ComputeExpandedPositions(
     GridTrackSizingDirection direction) const {
   Vector<LayoutUnit> expanded_positions;
