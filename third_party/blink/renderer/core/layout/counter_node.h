@@ -45,16 +45,14 @@ namespace blink {
 class LayoutObject;
 class LayoutCounter;
 
-class CounterNode : public RefCounted<CounterNode> {
-  USING_FAST_MALLOC(CounterNode);
-
+class CounterNode : public GarbageCollected<CounterNode> {
  public:
   enum Type { kIncrementType = 1 << 0, kResetType = 1 << 1, kSetType = 1 << 2 };
 
-  static scoped_refptr<CounterNode> Create(LayoutObject&,
-                                           unsigned type_mask,
-                                           int value);
-  ~CounterNode();
+  CounterNode(LayoutObject&, unsigned type_mask, int value);
+  void Destroy();
+  void Trace(Visitor*) const;
+
   bool ActsAsReset() const { return HasResetType() || !parent_; }
   bool HasResetType() const { return type_mask_ & kResetType; }
   bool HasSetType() const { return type_mask_ & kSetType; }
@@ -108,7 +106,6 @@ class CounterNode : public RefCounted<CounterNode> {
                                             const AtomicString& identifier);
 
  private:
-  CounterNode(LayoutObject&, unsigned type_mask, int value);
   int ComputeCountInParent() const;
   // Invalidates the text in the layoutObject of this counter, if any,
   // and in the layoutObjects of all descendants of this counter, if any.
@@ -118,14 +115,14 @@ class CounterNode : public RefCounted<CounterNode> {
   unsigned type_mask_;
   int value_;
   int count_in_parent_;
-  const UntracedMember<LayoutObject> owner_;
-  UntracedMember<LayoutCounter> root_layout_object_;
+  const Member<LayoutObject> owner_;
+  Member<LayoutCounter> root_layout_object_;
 
-  CounterNode* parent_;
-  CounterNode* previous_sibling_;
-  CounterNode* next_sibling_;
-  CounterNode* first_child_;
-  CounterNode* last_child_;
+  Member<CounterNode> parent_;
+  Member<CounterNode> previous_sibling_;
+  Member<CounterNode> next_sibling_;
+  Member<CounterNode> first_child_;
+  Member<CounterNode> last_child_;
 };
 
 }  // namespace blink

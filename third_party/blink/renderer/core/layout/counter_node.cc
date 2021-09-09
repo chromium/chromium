@@ -23,6 +23,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 #if DCHECK_IS_ON()
 #include <stdio.h>
@@ -42,7 +43,7 @@ CounterNode::CounterNode(LayoutObject& o, unsigned type_mask, int value)
       first_child_(nullptr),
       last_child_(nullptr) {}
 
-CounterNode::~CounterNode() {
+void CounterNode::Destroy() {
   // Ideally this would be an assert and this would never be reached. In reality
   // this happens a lot so we need to handle these cases. The node is still
   // connected to the tree so we need to detach it.
@@ -92,10 +93,14 @@ CounterNode::~CounterNode() {
   ResetLayoutObjects();
 }
 
-scoped_refptr<CounterNode> CounterNode::Create(LayoutObject& owner,
-                                               unsigned type_mask,
-                                               int value) {
-  return base::AdoptRef(new CounterNode(owner, type_mask, value));
+void CounterNode::Trace(Visitor* visitor) const {
+  visitor->Trace(owner_);
+  visitor->Trace(root_layout_object_);
+  visitor->Trace(parent_);
+  visitor->Trace(previous_sibling_);
+  visitor->Trace(next_sibling_);
+  visitor->Trace(first_child_);
+  visitor->Trace(last_child_);
 }
 
 CounterNode* CounterNode::NextInPreOrderAfterChildren(
@@ -289,7 +294,7 @@ void CounterNode::InsertAfter(CounterNode* new_child,
       LayoutCounter::DestroyCounterNode(last_child_->Owner(), identifier);
   }
 
-  CounterNode* next;
+  CounterNode* next = nullptr;
 
   if (ref_child) {
     next = ref_child->next_sibling_;
@@ -399,14 +404,13 @@ void CounterNode::MoveNonResetSiblingsToChildOf(
   if (!first_node)
     return;
 
-  scoped_refptr<CounterNode> cur_node = first_node;
-  scoped_refptr<CounterNode> old_parent = first_node->Parent();
+  CounterNode* cur_node = first_node;
+  CounterNode* old_parent = first_node->Parent();
   while (cur_node) {
-    scoped_refptr<CounterNode> next = cur_node->NextSibling();
+    CounterNode* next = cur_node->NextSibling();
     if (!cur_node->ActsAsReset()) {
-      old_parent->RemoveChild(cur_node.get());
-      new_parent.InsertAfter(cur_node.get(), new_parent.LastChild(),
-                             identifier);
+      old_parent->RemoveChild(cur_node);
+      new_parent.InsertAfter(cur_node, new_parent.LastChild(), identifier);
     }
     cur_node = next;
   }
