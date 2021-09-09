@@ -16,7 +16,8 @@ enum EntryPoint {
   UNKNOWN
 };
 
-extern std::string GetQueryParameterFromEntryPoint(EntryPoint entry_point);
+extern std::string GetQueryParametersForLensRequest(EntryPoint entry_point,
+                                                    bool is_side_panel_request);
 
 }  // namespace lens
 

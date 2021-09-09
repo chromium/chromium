@@ -8,26 +8,48 @@
 
 namespace lens {
 
-TEST(LensEntryPointsTest, GetRegionSearchQueryParameterTest) {
+TEST(LensEntryPointsTest, GetRegionSearchNewTabQueryParameterTest) {
   lens::EntryPoint lens_region_search_ep =
       lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-  std::string query_param =
-      lens::GetQueryParameterFromEntryPoint(lens_region_search_ep);
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_region_search_ep, /*is_side_panel_request=*/false);
   EXPECT_EQ(query_param, "ep=crs");
 }
 
-TEST(LensEntryPointsTest, GetImageSearchQueryParameterTest) {
+TEST(LensEntryPointsTest, GetImageSearchNewTabQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
-  std::string query_param =
-      lens::GetQueryParameterFromEntryPoint(lens_image_search_ep);
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_image_search_ep, /*is_side_panel_request=*/false);
   EXPECT_EQ(query_param, "ep=ccm");
 }
 
-TEST(LensEntryPointsTest, GetEmptyQueryParameterTest) {
-  std::string query_param =
-      lens::GetQueryParameterFromEntryPoint(lens::EntryPoint::UNKNOWN);
+TEST(LensEntryPointsTest, GetRegionSearchSidePanelQueryParameterTest) {
+  lens::EntryPoint lens_region_search_ep =
+      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_region_search_ep, /*is_side_panel_request=*/true);
+  EXPECT_EQ(query_param, "ep=crs&s=csp");
+}
+
+TEST(LensEntryPointsTest, GetImageSearchSidePanelQueryParameterTest) {
+  lens::EntryPoint lens_image_search_ep =
+      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens_image_search_ep, /*is_side_panel_request=*/true);
+  EXPECT_EQ(query_param, "ep=ccm&s=csp");
+}
+
+TEST(LensEntryPointsTest, GetUnknownEntryPointTest) {
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN, /*is_side_panel_request=*/false);
   EXPECT_EQ(query_param, "");
+}
+
+TEST(LensEntryPointsTest, GetUnknownEntryPointSidePanelTest) {
+  std::string query_param = lens::GetQueryParametersForLensRequest(
+      lens::EntryPoint::UNKNOWN, /*is_side_panel_request=*/true);
+  EXPECT_EQ(query_param, "s=csp");
 }
 
 }  // namespace lens
