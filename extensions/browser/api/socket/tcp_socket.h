@@ -99,45 +99,14 @@ class TCPSocket : public Socket {
                 net::CompletionOnceCallback callback) override;
 
  private:
-  // Connects a client TCP socket. This is done on the UI thread because
-  // StoragePartition::GetNetworkContext() needs to happen on the UI thread.
-  // The completion callback is posted back to the thread on which |this| lives.
-  static void ConnectOnUIThread(
-      content::StoragePartition* storage_partition,
-      content::BrowserContext* browser_context,
-      const net::AddressList& remote_address_list,
-      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-      network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
-          callback);
-  static void OnConnectCompleteOnUIThread(
-      scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-      network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback,
-      int result,
-      const base::Optional<net::IPEndPoint>& local_addr,
-      const base::Optional<net::IPEndPoint>& peer_addr,
-      mojo::ScopedDataPipeConsumerHandle receive_stream,
-      mojo::ScopedDataPipeProducerHandle send_stream);
+  // Connects a client TCP socket.
   void OnConnectComplete(int result,
                          const base::Optional<net::IPEndPoint>& local_addr,
                          const base::Optional<net::IPEndPoint>& peer_addr,
                          mojo::ScopedDataPipeConsumerHandle receive_stream,
                          mojo::ScopedDataPipeProducerHandle send_stream);
 
-  // Connects a server TCP socket. This is done on the UI thread because
-  // StoragePartition::GetNetworkContext() needs to happen on the UI thread.
-  // The completion callback is posted back to the thread on which |this| lives.
-  static void ListenOnUIThread(
-      content::StoragePartition* storage_partition,
-      content::BrowserContext* browser_context,
-      const net::IPEndPoint& local_addr,
-      int backlog,
-      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
-      network::mojom::NetworkContext::CreateTCPServerSocketCallback callback);
-  static void OnListenCompleteOnUIThread(
-      const scoped_refptr<base::SequencedTaskRunner>& original_task_runner,
-      network::mojom::NetworkContext::CreateTCPServerSocketCallback callback,
-      int result,
-      const base::Optional<net::IPEndPoint>& local_addr);
+  // Connects a server TCP socket.
   void OnListenComplete(int result,
                         const base::Optional<net::IPEndPoint>& local_addr);
   void OnAccept(
@@ -183,8 +152,6 @@ class TCPSocket : public Socket {
   ReadCompletionCallback read_callback_;
 
   std::unique_ptr<MojoDataPump> mojo_data_pump_;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::Optional<net::IPEndPoint> local_addr_;
   base::Optional<net::IPEndPoint> peer_addr_;
