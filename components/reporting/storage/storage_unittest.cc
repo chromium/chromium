@@ -180,14 +180,73 @@ class SingleDecryptionContext {
 };
 
 class MockUpload
-    : public base::RefCountedThreadSafe<::testing::NiceMock<MockUpload>> {
+    : public base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>> {
  public:
-  explicit MockUpload(base::OnceClosure key_generation)
-      : key_generation_(std::move(key_generation)) {}
+  MockUpload(scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
+             base::OnceClosure key_generation)
+      : base::RefCountedDeleteOnSequence<::testing::NiceMock<MockUpload>>(
+            sequenced_task_runner),
+        key_generation_(std::move(key_generation)) {
+    DETACH_FROM_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.assign("Start\n");
+  }
   MockUpload(const MockUpload& other) = delete;
   MockUpload& operator=(const MockUpload& other) = delete;
 
   void KeyGeneration() { std::move(key_generation_).Run(); }
+
+  void DoEncounterSeqId(int64_t uploader_id,
+                        Priority priority,
+                        int64_t sequence_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.append("SeqId: ")
+        .append(base::NumberToString(sequence_id))
+        .append("\n");
+    EncounterSeqId(uploader_id, priority, sequence_id);
+  }
+  bool DoUploadRecord(int64_t uploader_id,
+                      Priority priority,
+                      int64_t sequence_id,
+                      base::StringPiece data) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.append("Record: ")
+        .append(base::NumberToString(sequence_id))
+        .append(" '")
+        .append(data.data(), data.size())
+        .append("'\n");
+    return UploadRecord(uploader_id, priority, sequence_id, data);
+  }
+  bool DoUploadRecordFailure(int64_t uploader_id,
+                             Priority priority,
+                             int64_t sequence_id,
+                             Status status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.append("Failure: ")
+        .append(base::NumberToString(sequence_id))
+        .append(" '")
+        .append(status.ToString())
+        .append("'\n");
+    return UploadRecordFailure(uploader_id, priority, sequence_id, status);
+  }
+  bool DoUploadGap(int64_t uploader_id,
+                   Priority priority,
+                   int64_t sequence_id,
+                   uint64_t count) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.append("Gap: ")
+        .append(base::NumberToString(sequence_id))
+        .append("(")
+        .append(base::NumberToString(count))
+        .append(")\n");
+    return UploadGap(uploader_id, priority, sequence_id, count);
+  }
+  void DoUploadComplete(int64_t uploader_id, Status status) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    upload_progress_.append("Complete: ")
+        .append(status.ToString())
+        .append("\n");
+    UploadComplete(uploader_id, status);
+  }
 
   MOCK_METHOD(void,
               EncounterSeqId,
@@ -208,12 +267,21 @@ class MockUpload
   MOCK_METHOD(void, UploadComplete, (int64_t /*uploader_id*/, Status), (const));
 
  protected:
-  virtual ~MockUpload() = default;
+  virtual ~MockUpload() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(mock_uploader_checker_);
+    LOG(ERROR) << "TestUploader: " << upload_progress_ << "End\n";
+  }
 
  private:
-  friend class base::RefCounted<::testing::NiceMock<MockUpload>>;
+  friend class base::RefCountedDeleteOnSequence<
+      ::testing::NiceMock<MockUpload>>;
 
   base::OnceClosure key_generation_;
+
+  SEQUENCE_CHECKER(mock_uploader_checker_);
+
+  // Snapshot of data received in this upload (for debug purposes).
+  std::string upload_progress_;
 };
 
 class TestUploader : public UploaderInterface {
@@ -237,6 +305,7 @@ class TestUploader : public UploaderInterface {
         last_record_digest_map_(last_record_digest_map),
         sequenced_task_runner_(sequenced_task_runner),
         mock_upload_(base::MakeRefCounted<::testing::NiceMock<MockUpload>>(
+            sequenced_task_runner,
             std::move(key_generation))),
         decryptor_(decryptor) {
     DETACH_FROM_SEQUENCE(test_uploader_checker_);
@@ -295,7 +364,7 @@ class TestUploader : public UploaderInterface {
                  scoped_refptr<MockUpload> mock_upload,
                  base::OnceCallback<void(bool)> processed_cb) {
                 std::move(processed_cb)
-                    .Run(mock_upload->UploadRecordFailure(
+                    .Run(mock_upload->DoUploadRecordFailure(
                         uploader_id, sequencing_information.priority(),
                         sequencing_information.sequencing_id(),
                         Status(
@@ -328,13 +397,13 @@ class TestUploader : public UploaderInterface {
                int64_t uploader_id, scoped_refptr<MockUpload> mock_upload,
                base::OnceCallback<void(bool)> processed_cb) {
               for (uint64_t c = 0; c < count; ++c) {
-                mock_upload->EncounterSeqId(
+                mock_upload->DoEncounterSeqId(
                     uploader_id, sequencing_information.priority(),
                     sequencing_information.sequencing_id() +
                         static_cast<int64_t>(c));
               }
               std::move(processed_cb)
-                  .Run(mock_upload->UploadGap(
+                  .Run(mock_upload->DoUploadGap(
                       uploader_id, sequencing_information.priority(),
                       sequencing_information.sequencing_id(), count));
             },
@@ -345,7 +414,7 @@ class TestUploader : public UploaderInterface {
   void Completed(Status status) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
     sequenced_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MockUpload::UploadComplete, mock_upload_,
+        FROM_HERE, base::BindOnce(&MockUpload::DoUploadComplete, mock_upload_,
                                   uploader_id_, status));
   }
 
@@ -495,7 +564,7 @@ class TestUploader : public UploaderInterface {
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
-          .Run(mock_upload_->UploadRecordFailure(
+          .Run(mock_upload_->DoUploadRecordFailure(
               uploader_id_, sequencing_information.priority(),
               sequencing_information.sequencing_id(),
               Status(
@@ -519,7 +588,7 @@ class TestUploader : public UploaderInterface {
       DCHECK_EQ(record_digest.size(), crypto::kSHA256Length);
       if (record_digest != wrapped_record.record_digest()) {
         std::move(processed_cb)
-            .Run(mock_upload_->UploadRecordFailure(
+            .Run(mock_upload_->DoUploadRecordFailure(
                 uploader_id_, sequencing_information.priority(),
                 sequencing_information.sequencing_id(),
                 Status(error::DATA_LOSS, "Record digest mismatch")));
@@ -550,7 +619,7 @@ class TestUploader : public UploaderInterface {
         // Previous record has been seen, last record digest must match it.
         if (it->second != wrapped_record.last_record_digest()) {
           std::move(processed_cb)
-              .Run(mock_upload_->UploadRecordFailure(
+              .Run(mock_upload_->DoUploadRecordFailure(
                   uploader_id_, sequencing_information.priority(),
                   sequencing_information.sequencing_id(),
                   Status(error::DATA_LOSS, "Last record digest mismatch")));
@@ -564,14 +633,14 @@ class TestUploader : public UploaderInterface {
           record_digest);
     }
 
-    mock_upload_->EncounterSeqId(uploader_id_,
-                                 sequencing_information.priority(),
-                                 sequencing_information.sequencing_id());
+    mock_upload_->DoEncounterSeqId(uploader_id_,
+                                   sequencing_information.priority(),
+                                   sequencing_information.sequencing_id());
     std::move(processed_cb)
-        .Run(mock_upload_->UploadRecord(uploader_id_,
-                                        sequencing_information.priority(),
-                                        sequencing_information.sequencing_id(),
-                                        wrapped_record.record().data()));
+        .Run(mock_upload_->DoUploadRecord(
+            uploader_id_, sequencing_information.priority(),
+            sequencing_information.sequencing_id(),
+            wrapped_record.record().data()));
   }
 
   SEQUENCE_CHECKER(test_uploader_checker_);
