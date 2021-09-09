@@ -7840,6 +7840,7 @@
     "SendTabToSelfV2": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "mac",
