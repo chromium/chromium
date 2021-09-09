@@ -12,6 +12,8 @@
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/subresource_filter/android/ads_blocked_dialog.h"
+#include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -27,7 +29,8 @@ namespace subresource_filter {
 //
 // The message also appears when the site is known to show intrusive ads.
 class AdsBlockedMessageDelegate
-    : public content::WebContentsUserData<AdsBlockedMessageDelegate> {
+    : public content::WebContentsUserData<AdsBlockedMessageDelegate>,
+      public content::WebContentsObserver {
  public:
   using AdsBlockedDialogFactory =
       base::RepeatingCallback<std::unique_ptr<AdsBlockedDialogBase>(
@@ -38,10 +41,15 @@ class AdsBlockedMessageDelegate
 
   ~AdsBlockedMessageDelegate() override;
 
+  // content::WebContentsObserver implementation.
+  void OnWebContentsFocused(
+      content::RenderWidgetHost* render_widget_host) override;
+
   void ShowMessage();
   void DismissMessage(messages::DismissReason dismiss_reason);
 
   messages::MessageWrapper* message_for_testing() { return message_.get(); }
+  bool reprompt_required_flag_for_testing() { return reprompt_required_; }
 
  private:
   friend class content::WebContentsUserData<AdsBlockedMessageDelegate>;
@@ -77,11 +85,13 @@ class AdsBlockedMessageDelegate
 
   void ShowDialog();
 
-  content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
 
   AdsBlockedDialogFactory ads_blocked_dialog_factory_;
   std::unique_ptr<AdsBlockedDialogBase> ads_blocked_dialog_;
+
+  // Whether we should re-show the dialog to users when users return to the tab.
+  bool reprompt_required_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -74,6 +74,10 @@ class AdsBlockedMessageDelegateTest
     return &message_dispatcher_bridge_;
   }
 
+  void OnWebContentsFocused() {
+    ads_blocked_message_delegate_->OnWebContentsFocused(nullptr);
+  }
+
  private:
   AdsBlockedMessageDelegate* ads_blocked_message_delegate_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
@@ -231,6 +235,27 @@ TEST_F(AdsBlockedMessageDelegateTest, MetricsRecorded_OnLearnMoreClicked) {
   histogram_tester.ExpectBucketCount(
       kSubresourceFilterActionMetric,
       subresource_filter::SubresourceFilterAction::kClickedLearnMore, 1);
+}
+
+// Tests that the dialog restoration state is recorded when 'Learn more' is
+// clicked on the dialog.
+TEST_F(AdsBlockedMessageDelegateTest, RestoreDialog_OnLearnMoreClicked) {
+  EnqueueMessage();
+
+  ExpectDismissMessageCall();
+  MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
+  EXPECT_CALL(*mock_dialog, Show);
+  TriggerMessageManageClicked();
+  EXPECT_EQ(GetMessageWrapper(), nullptr);
+  EXPECT_FALSE(GetDelegate()->reprompt_required_flag_for_testing());
+
+  TriggerLearnMoreClickedCallback();
+  // Simulate the #onDismiss call from Java to dismiss the dialog.
+  TriggerDialogDismissedCallback();
+  EXPECT_TRUE(GetDelegate()->reprompt_required_flag_for_testing());
+
+  OnWebContentsFocused();
+  EXPECT_FALSE(GetDelegate()->reprompt_required_flag_for_testing());
 }
 
 }  // namespace subresource_filter

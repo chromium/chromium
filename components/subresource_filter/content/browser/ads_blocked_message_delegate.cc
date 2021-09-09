@@ -26,6 +26,18 @@ AdsBlockedMessageDelegate::~AdsBlockedMessageDelegate() {
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
+void AdsBlockedMessageDelegate::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  if (reprompt_required_) {
+    // This will be true only if the user has been redirected to
+    // a new tab by clicking on 'Learn more' on the dialog.
+    // Upon returning to the original tab from the redirected tab,
+    // the dialog will be restored.
+    reprompt_required_ = false;
+    ShowDialog();
+  }
+}
+
 void AdsBlockedMessageDelegate::ShowMessage() {
   if (message_ || ads_blocked_dialog_) {
     // There is already an active ads blocked message or dialog.
@@ -59,7 +71,7 @@ void AdsBlockedMessageDelegate::ShowMessage() {
   // activity is being recreated or destroyed, ads blocked message will not be
   // displayed.
   message_dispatcher_bridge->EnqueueMessage(
-      message.get(), web_contents_, messages::MessageScopeType::WEB_CONTENTS,
+      message.get(), web_contents(), messages::MessageScopeType::WEB_CONTENTS,
       messages::MessagePriority::kNormal);
 
   message_ = std::move(message);
@@ -82,7 +94,7 @@ AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
 AdsBlockedMessageDelegate::AdsBlockedMessageDelegate(
     content::WebContents* web_contents,
     AdsBlockedDialogFactory ads_blocked_dialog_factory)
-    : web_contents_(web_contents),
+    : content::WebContentsObserver(web_contents),
       ads_blocked_dialog_factory_(std::move(ads_blocked_dialog_factory)) {}
 
 void AdsBlockedMessageDelegate::HandleMessageOkClicked() {}
@@ -102,32 +114,38 @@ void AdsBlockedMessageDelegate::HandleMessageDismissed(
 
 void AdsBlockedMessageDelegate::HandleDialogAllowAdsClicked() {
   subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-      web_contents_->GetPrimaryPage())
+      web_contents()->GetPrimaryPage())
       ->OnReloadRequested();
 }
 
 void AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked() {
-  // TODO(aishwaryarj): The dialog should be restored once the user
-  // navigates back from the Learn More link tab.
+  reprompt_required_ = true;
   subresource_filter::ContentSubresourceFilterThrottleManager::LogAction(
       subresource_filter::SubresourceFilterAction::kClickedLearnMore);
-  web_contents_->OpenURL(content::OpenURLParams(
+  web_contents()->OpenURL(content::OpenURLParams(
       GURL(subresource_filter::kLearnMoreLink), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
       false));
 }
 
 void AdsBlockedMessageDelegate::HandleDialogDismissed() {
+  if (reprompt_required_) {
+    // When the dialog has been dismissed due to the user clicking on
+    // 'Learn more', do not clean up the dialog instance as the dialog
+    // will be restored when the user navigates back to the original tab.
+    return;
+  }
   DCHECK(ads_blocked_dialog_);
   ads_blocked_dialog_.reset();
 }
 
 void AdsBlockedMessageDelegate::ShowDialog() {
+  DCHECK(!reprompt_required_);
   // Binding with base::Unretained(this) is safe here because
   // AdsBlockedMessageDelegate owns ads_blocked_dialog_. Callbacks won't be
   // called after the AdsBlockedMessageDelegate object is destroyed.
   ads_blocked_dialog_ = ads_blocked_dialog_factory_.Run(
-      web_contents_,
+      web_contents(),
       base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogAllowAdsClicked,
                      base::Unretained(this)),
       base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogLearnMoreClicked,
@@ -135,7 +153,7 @@ void AdsBlockedMessageDelegate::ShowDialog() {
       base::BindOnce(&AdsBlockedMessageDelegate::HandleDialogDismissed,
                      base::Unretained(this)));
 
-  // Ads blocked dialog factory method can return nullptr when web_contents_
+  // Ads blocked dialog factory method can return nullptr when web_contents()
   // is not attached to a window. See crbug.com/1049090 for details.
   if (!ads_blocked_dialog_)
     return;
