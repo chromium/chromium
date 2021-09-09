@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 

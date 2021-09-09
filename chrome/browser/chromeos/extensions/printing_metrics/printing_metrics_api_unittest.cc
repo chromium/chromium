@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 
-#include "chrome/browser/chromeos/printing/history/mock_print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/mock_print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"

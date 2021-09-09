@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/history/mock_print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/mock_print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chrome/browser/chromeos/printing/history/test_print_job_history_service_observer.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "chrome/test/base/testing_browser_process.h"
