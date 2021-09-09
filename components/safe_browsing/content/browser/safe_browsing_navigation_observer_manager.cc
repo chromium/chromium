@@ -303,8 +303,8 @@ GURL SafeBrowsingNavigationObserverManager::ClearURLRef(const GURL& url) {
 // static
 bool SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
     PrefService* prefs,
-    SafeBrowsingServiceInterface* safe_browsing_service) {
-  return IsSafeBrowsingEnabled(*prefs) && safe_browsing_service;
+    bool has_safe_browsing_service) {
+  return IsSafeBrowsingEnabled(*prefs) && has_safe_browsing_service;
 }
 
 // static

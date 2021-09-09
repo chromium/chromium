@@ -24,7 +24,6 @@ class NavigationHandle;
 
 namespace safe_browsing {
 class SafeBrowsingNavigationObserverManager;
-class SafeBrowsingServiceInterface;
 
 // Struct to record the details of a navigation event for any frame.
 // This information will be used to fill referrer chain info in various Safe
@@ -109,7 +108,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
       HostContentSettingsMap* host_content_settings_map,
       SafeBrowsingNavigationObserverManager* observer_manager,
       PrefService* prefs,
-      SafeBrowsingServiceInterface* safe_browsing_service);
+      bool has_safe_browsing_service);
 
   static SafeBrowsingNavigationObserver* FromWebContents(
       content::WebContents* web_contents);

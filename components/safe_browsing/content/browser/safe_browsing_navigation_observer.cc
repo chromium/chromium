@@ -82,12 +82,12 @@ void SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
     HostContentSettingsMap* host_content_settings_map,
     SafeBrowsingNavigationObserverManager* observer_manager,
     PrefService* prefs,
-    SafeBrowsingServiceInterface* safe_browsing_service) {
+    bool has_safe_browsing_service) {
   if (FromWebContents(web_contents))
     return;
 
   if (safe_browsing::SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-          prefs, safe_browsing_service)) {
+          prefs, has_safe_browsing_service)) {
     web_contents->SetUserData(
         kWebContentsUserDataKey,
         std::make_unique<SafeBrowsingNavigationObserver>(

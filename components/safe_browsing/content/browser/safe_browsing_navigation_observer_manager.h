@@ -12,7 +12,6 @@
 #include "base/supports_user_data.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -168,12 +167,11 @@ class SafeBrowsingNavigationObserverManager : public ReferrerChainProvider,
   // entries for these cases in the maps.
   static GURL ClearURLRef(const GURL& url);
 
-  // Checks if we should enable observing navigations for safe browsing purpose.
-  // Return true if the safe browsing safe browsing service is enabled and
-  // initialized.
-  static bool IsEnabledAndReady(
-      PrefService* prefs,
-      SafeBrowsingServiceInterface* safe_browsing_service);
+  // Checks if we should enable observing navigations for safe browsing
+  // purposes. Returns true if safe browsing is enabled and the safe browsing
+  // service is present in the embedder.
+  static bool IsEnabledAndReady(PrefService* prefs,
+                                bool has_safe_browsing_service);
 
   // Sanitize referrer chain by only keeping origin information of all URLs.
   static void SanitizeReferrerChain(ReferrerChain* referrer_chain);
