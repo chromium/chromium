@@ -47,6 +47,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/file_system_util.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -970,6 +971,7 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
         file_delegate_receiver,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
         capacity_allocation_host_receiver,
+    int64_t file_size,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(lock->type() ==
@@ -981,7 +983,7 @@ FileSystemAccessManagerImpl::CreateAccessHandleHost(
       std::make_unique<FileSystemAccessAccessHandleHostImpl>(
           this, url, std::move(lock), PassKey(), std::move(receiver),
           std::move(file_delegate_receiver),
-          std::move(capacity_allocation_host_receiver));
+          std::move(capacity_allocation_host_receiver), file_size);
   access_handle_host_receivers_.insert(std::move(access_handle_host));
 
   return result;
@@ -1337,6 +1339,13 @@ void FileSystemAccessManagerImpl::RemoveAccessHandleHost(
     FileSystemAccessAccessHandleHostImpl* access_handle_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Capacity allocations only exist in non-incognito mode.
+  if (!context()->is_incognito()) {
+    // Asynchronously clean up capacity overallocations.
+    CleanupAccessHandleCapacityAllocation(
+        access_handle_host->url(), access_handle_host->granted_capacity());
+  }
+
   size_t count_removed =
       access_handle_host_receivers_.erase(access_handle_host);
   DCHECK_EQ(1u, count_removed);
@@ -1417,6 +1426,48 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
     }
   }
   return SharedHandleState(std::move(read_grant), std::move(write_grant));
+}
+
+void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(
+    const storage::FileSystemURL& url,
+    int64_t allocated_file_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(allocated_file_size, 0);
+
+  operation_runner()
+      .AsyncCall(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::GetMetadata))
+      .WithArgs(url, storage::FileSystemOperation::GET_METADATA_FIELD_SIZE,
+                base::BindPostTask(
+                    base::SequencedTaskRunnerHandle::Get(),
+                    base::BindOnce(
+                        &FileSystemAccessManagerImpl::
+                            CleanupAccessHandleCapacityAllocationImpl,
+                        weak_factory_.GetWeakPtr(), url, allocated_file_size)));
+}
+
+void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
+    const storage::FileSystemURL& url,
+    int64_t allocated_file_size,
+    base::File::Error result,
+    const base::File::Info& file_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (result != base::File::FILE_OK)
+    return;
+  DCHECK_GE(file_info.size, 0);
+  // if the QuotaManagerProxy is gone, no changes are possible.
+  if (!context_->quota_manager_proxy())
+    return;
+  DCHECK_GE(allocated_file_size, 0);
+
+  int64_t overallocation = allocated_file_size - file_info.size;
+  DCHECK_GE(overallocation, 0)
+      << "An AccessHandle should not use more capacity than allocated.";
+
+  context_->quota_manager_proxy()->NotifyStorageModified(
+      storage::QuotaClientType::kFileSystem, url.storage_key(),
+      storage::FileSystemTypeToQuotaStorageType(url.type()), -overallocation,
+      base::Time::Now());
 }
 
 }  // namespace content

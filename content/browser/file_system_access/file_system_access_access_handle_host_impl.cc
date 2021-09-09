@@ -20,10 +20,12 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileDelegateHost>
         file_delegate_receiver,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessCapacityAllocationHost>
-        capacity_allocation_host_receiver)
+        capacity_allocation_host_receiver,
+    int64_t file_size)
     : manager_(manager),
       lock_(std::move(lock)),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver)),
+      url_(url) {
   DCHECK(manager_);
   DCHECK_EQ(lock_->type(),
             FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
@@ -35,18 +37,18 @@ FileSystemAccessAccessHandleHostImpl::FileSystemAccessAccessHandleHostImpl(
   incognito_host_ =
       manager_->context()->is_incognito()
           ? std::make_unique<FileSystemAccessFileDelegateHostImpl>(
-                manager_, url,
+                manager_, url_,
                 base::PassKey<FileSystemAccessAccessHandleHostImpl>(),
                 std::move(file_delegate_receiver))
           : nullptr;
 
-  // Only create a quota reservation host in non-incognito mode.
+  // Only create a capacity allocation host in non-incognito mode.
   capacity_allocation_host_ =
       !manager_->context()->is_incognito()
           ? std::make_unique<FileSystemAccessCapacityAllocationHostImpl>(
-                manager_, url,
+                manager_, url_,
                 base::PassKey<FileSystemAccessAccessHandleHostImpl>(),
-                std::move(capacity_allocation_host_receiver))
+                std::move(capacity_allocation_host_receiver), file_size)
           : nullptr;
 
   receiver_.set_disconnect_handler(

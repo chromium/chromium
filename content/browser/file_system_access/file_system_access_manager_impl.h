@@ -200,6 +200,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingReceiver<
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
+      int64_t file_size,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock);
 
   // Create a transfer token for a specific file or directory.
@@ -359,6 +360,22 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void DidResolveForSerializeHandle(
       SerializeHandleCallback callback,
       FileSystemAccessTransferTokenImpl* resolved_token);
+
+  // FileSystemAccessCapacityAllocationHosts may reserve too much capacity from
+  // the quota system. This function determines the file's actual size and
+  // corrects its capacity usage in the quota system.
+  //
+  // This function performs an asynchronous call.
+  void CleanupAccessHandleCapacityAllocation(const storage::FileSystemURL& url,
+                                             int64_t allocated_file_size);
+
+  // Performs the actual work of `CleanupAccessHandleCapacityAllocation()` after
+  // the file's size has been determined.
+  void CleanupAccessHandleCapacityAllocationImpl(
+      const storage::FileSystemURL& url,
+      int64_t allocated_file_size,
+      base::File::Error result,
+      const base::File::Info& file_info);
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry object
   // that's at the file path of the FileSystemAccessDataTransferToken with token

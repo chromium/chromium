@@ -1,0 +1,25 @@
+<!doctype html>
+<title>Run async code on a worker helper</title>
+<script>
+const workerCode = `
+onmessage = function(e) {
+  let AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+  let receivedFunction = new AsyncFunction(e.data);
+  receivedFunction().then(workerResult => {postMessage(workerResult);});
+}
+`
+const workerBlob = new Blob ([workerCode], {type: 'text/javascript'});
+const worker = new Worker(window.URL.createObjectURL(workerBlob));
+
+async function runOnWorkerAndWaitForResult(code) {
+  worker.postMessage(code);
+  return new Promise((resolve, reject) => {
+    worker.onmessage = result => {
+      resolve(result.data);
+    }
+    worker.onerror = error => {
+      reject(error);
+    }
+  });
+}
+</script>
