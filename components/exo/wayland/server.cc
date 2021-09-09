@@ -91,6 +91,11 @@
 #include <weston-test-server-protocol.h>
 #include "components/exo/wayland/weston_test.h"
 #endif
+
+#if BUILDFLAG(ENABLE_COLOR_MANAGER)
+#include <color-management-unstable-v1-server-protocol.h>
+#include "components/exo/wayland/zwp_color_manager.h"
+#endif
 #endif
 
 #if defined(USE_OZONE)
@@ -228,6 +233,10 @@ Server::Server(Display* display) : display_(display) {
   wl_global_create(wl_display_.get(),
                    &zwp_relative_pointer_manager_v1_interface, 1, display_,
                    bind_relative_pointer_manager);
+#if BUILDFLAG(ENABLE_COLOR_MANAGER)
+  wl_global_create(wl_display_.get(), &zwp_color_manager_v1_interface, 1,
+                   display_, bind_zwp_color_manager);
+#endif
   wl_global_create(wl_display_.get(), &zcr_color_space_v1_interface, 1,
                    display_, bind_color_space);
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,

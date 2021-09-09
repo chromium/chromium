@@ -6,4 +6,8 @@ declare_args() {
   # If true, enables weston-test. This is a test-only wayland extension that
   # enables things like event injection.
   enable_weston_test = false
+
+  # If true, enables zwp_color_manager_v1. This is a temporary flag meant to
+  # guard an in-progress implementation, to be replaced by a feature flag.
+  enable_color_manager = false
 }

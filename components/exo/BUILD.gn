@@ -13,7 +13,10 @@ import("//ui/base/ui_features.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_WESTON_TEST=$enable_weston_test" ]
+  flags = [
+    "ENABLE_COLOR_MANAGER=$enable_color_manager",
+    "ENABLE_WESTON_TEST=$enable_weston_test",
+  ]
 }
 
 if (use_xkbcommon) {

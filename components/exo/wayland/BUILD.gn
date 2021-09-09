@@ -190,6 +190,14 @@ source_set("wayland") {
       "zxdg_shell.h",
     ]
 
+    if (enable_color_manager) {
+      deps += [ "//third_party/wayland-protocols:color_management_protocol" ]
+      sources += [
+        "zwp_color_manager.cc",
+        "zwp_color_manager.h",
+      ]
+    }
+
     deps += [ "//ui/base/cursor/mojom:cursor_type" ]
 
     if (enable_weston_test) {
