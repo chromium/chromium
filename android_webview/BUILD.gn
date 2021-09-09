@@ -802,6 +802,7 @@ android_aidl("common_aidl") {
     "java/src/org/chromium/android_webview/common/services/ICrashReceiverService.aidl",
     "java/src/org/chromium/android_webview/common/services/IDeveloperUiService.aidl",
     "java/src/org/chromium/android_webview/common/services/IMetricsBridgeService.aidl",
+    "java/src/org/chromium/android_webview/common/services/IMetricsUploadService.aidl",
     "java/src/org/chromium/android_webview/common/services/ISafeModeService.aidl",
     "java/src/org/chromium/android_webview/common/services/IVariationsSeedServer.aidl",
     "java/src/org/chromium/android_webview/common/services/IVariationsSeedServerCallback.aidl",
