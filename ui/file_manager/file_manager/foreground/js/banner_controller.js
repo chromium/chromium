@@ -512,7 +512,6 @@ export class BannerController extends EventTarget {
       return;
     }
     const banner = event.detail.banner;
-
     // If the banner has been dismissed forever (in the case of educational
     // banners) set the localStorage value to be 1.
     if (event.type === Banner.Event.BANNER_DISMISSED_FOREVER) {

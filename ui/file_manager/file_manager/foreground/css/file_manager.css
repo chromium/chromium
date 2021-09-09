@@ -2967,3 +2967,29 @@ cr-input:not(:defined),
 files-tooltip:not(:defined) {
   display: none;
 }
+
+/*
+ * Banner styles.
+ */
+#banners > * {
+  align-items: center;
+  display: flex !important;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms ease 50ms;
+  visibility: hidden;
+}
+
+#banners > *:not([hidden]) {
+  border: 1px solid var(--cros-separator-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 1px var(--cros-separator-color);
+  height: auto;
+  margin: 16px 16px 4px 0;
+  max-height: 300px;
+  min-height: 46px;
+  opacity: 1;
+  padding: 12px 8px 12px 0;
+  visibility: visible;
+}
