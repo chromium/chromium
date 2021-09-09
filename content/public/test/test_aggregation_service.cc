@@ -4,6 +4,8 @@
 
 #include "content/public/test/test_aggregation_service.h"
 
+#include <memory>
+
 #include "content/test/test_aggregation_service_impl.h"
 
 namespace content {

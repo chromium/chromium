@@ -5,15 +5,23 @@
 #ifndef CONTENT_TEST_TEST_AGGREGATION_SERVICE_IMPL_H_
 #define CONTENT_TEST_TEST_AGGREGATION_SERVICE_IMPL_H_
 
-#include "base/callback.h"
+#include <memory>
+
+#include "base/callback_forward.h"
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report_manager.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
-#include "content/browser/aggregation_service/public_key.h"
 #include "content/public/test/test_aggregation_service.h"
-#include "url/origin.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
+
+class AggregatableReportSender;
+
+struct PublicKeysForOrigin;
 
 // Implementation class of a test aggregation service.
 class TestAggregationServiceImpl : public AggregatableReportManager,
@@ -33,6 +41,11 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
   void SetPublicKeys(const url::Origin& origin,
                      const std::string& json_string,
                      base::OnceCallback<void(bool)> callback) override;
+  void SetURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
+                               url_loader_factory) override;
+  void SendReport(const GURL& url,
+                  const base::Value& contents,
+                  base::OnceCallback<void(bool)> callback) override;
 
   void GetPublicKeys(
       const url::Origin& origin,
@@ -40,6 +53,7 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
 
  private:
   base::SequenceBound<AggregationServiceKeyStorage> storage_;
+  std::unique_ptr<AggregatableReportSender> sender_;
 };
 
 }  // namespace content

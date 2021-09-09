@@ -4,22 +4,32 @@
 
 #include "content/test/test_aggregation_service_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
+#include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/aggregation_service/public_key_parsing_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
 TestAggregationServiceImpl::TestAggregationServiceImpl()
     : storage_(base::SequenceBound<AggregationServiceStorage>(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}))) {}
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}))),
+      sender_(std::make_unique<AggregatableReportSender>(
+          /*storage_partition=*/nullptr)) {}
 
 TestAggregationServiceImpl::~TestAggregationServiceImpl() = default;
 
@@ -48,6 +58,26 @@ void TestAggregationServiceImpl::SetPublicKeys(
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
       .WithArgs(std::move(keys))
       .Then(base::BindOnce(std::move(callback), true));
+}
+
+void TestAggregationServiceImpl::SetURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  sender_->SetURLLoaderFactoryForTesting(url_loader_factory);
+}
+
+void TestAggregationServiceImpl::SendReport(
+    const GURL& url,
+    const base::Value& contents,
+    base::OnceCallback<void(bool)> callback) {
+  sender_->SendReport(
+      url, contents,
+      base::BindOnce(
+          [&](base::OnceCallback<void(bool)> callback,
+              AggregatableReportSender::RequestStatus status) {
+            std::move(callback).Run(
+                status == AggregatableReportSender::RequestStatus::kOk);
+          },
+          std::move(callback)));
 }
 
 void TestAggregationServiceImpl::GetPublicKeys(

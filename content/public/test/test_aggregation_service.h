@@ -8,8 +8,24 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
-#include "url/origin.h"
+#include "base/callback_forward.h"
+
+class GURL;
+
+template <class T>
+class scoped_refptr;
+
+namespace base {
+class Value;
+}  // namespace base
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -28,6 +44,19 @@ class TestAggregationService {
   virtual void SetPublicKeys(const url::Origin& origin,
                              const std::string& json_string,
                              base::OnceCallback<void(bool)> callback) = 0;
+
+  // Sets the provided URL loader factory. This will be called by the
+  // aggregation service tool to inject a network::mojom::URLLoaderFactory to
+  // send an aggregatable report over network.
+  virtual void SetURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
+
+  // Sends the aggregatable report to the specified reporting endpoint `url`.
+  // `callback` will be run once completed which returns whether the report was
+  // sent successfully.
+  virtual void SendReport(const GURL& url,
+                          const base::Value& contents,
+                          base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace content

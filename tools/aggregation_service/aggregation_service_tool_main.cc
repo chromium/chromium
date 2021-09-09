@@ -2,25 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <functional>
-#include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "build/build_config.h"
-#include "content/public/test/test_aggregation_service.h"
+#include "base/values.h"
+#include "tools/aggregation_service/aggregation_service_tool.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -28,57 +20,35 @@ namespace {
 const char kSwitchContents[] = "contents";
 const char kSwitchHelperKeys[] = "helper-keys";
 const char kSwitchOutput[] = "output";
+const char kSwitchReportingUrl[] = "reporting-url";
 
 const char kHelpMsg[] = R"(
   aggregation_service_tool --contents=<report_contents>
-  --helper-keys=<helper_server_keys> --output=<output_file_path>
+  --helper-keys=<helper_server_keys> [--output=<output_file_path>]
+  [--reporting-url=<reporting_url>]
 
   Example:
   aggregation_service_tool --contents="count-value,1234,5"
   --helper-keys="a.com:keys1.json,b.com:keys2.json" --output="output.json"
+  or
+  aggregation_service_tool --contents="count-value,1234,5"
+  --helper-keys="a.com:keys1.json,b.com:keys2.json"
+  --reporting-url="https://c.com"
 
   aggregation_service_tool is a command-line tool that accepts report contents
   `contents` and mapping of origins to public key json files
-  `helper_server_keys` as input and output an encrypted report in
-  `output_file_path`.
+  `helper_server_keys` as input and either output an aggregatable report to
+  `output_file_path` or send the aggregatable report to `reporting_url`.
 )";
 
 void PrintHelp() {
   LOG(INFO) << kHelpMsg;
 }
 
-void SetPublicKeysFromFile(const url::Origin& origin,
-                           const std::string& json_file_path,
-                           content::TestAggregationService* agg_service,
-                           base::OnceCallback<void(bool)> callback) {
-#if defined(OS_WIN)
-  base::FilePath json_file(base::UTF8ToWide(json_file_path));
-#else
-  base::FilePath json_file(json_file_path);
-#endif
-
-  if (!base::PathExists(json_file)) {
-    LOG(ERROR) << "aggregation_service_tool failed to open file: "
-               << json_file.value() << ".";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  std::string json_string;
-  if (!base::ReadFileToString(json_file, &json_string)) {
-    LOG(ERROR) << "aggregation_service_tool failed to read file: "
-               << json_file.value() << ".";
-    std::move(callback).Run(false);
-    return;
-  }
-
-  agg_service->SetPublicKeys(origin, json_string, std::move(callback));
-}
-
 }  // namespace
 
 int main(int argc, char* argv[]) {
-  base::SingleThreadTaskExecutor executor;
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
       "aggregation_service_tool");
 
@@ -94,54 +64,71 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  if (!command_line.HasSwitch(kSwitchContents) ||
-      !command_line.HasSwitch(kSwitchHelperKeys) ||
-      !command_line.HasSwitch(kSwitchOutput)) {
-    LOG(ERROR) << "aggregation_service_tool expects contents, helper keys and "
-                  "output to be specified.";
+  if (!command_line.HasSwitch(kSwitchContents)) {
+    LOG(ERROR) << "aggregation_service_tool expects " << kSwitchContents
+               << " to be specified.";
     PrintHelp();
     return 1;
   }
 
-  std::string contents = command_line.GetSwitchValueASCII(kSwitchContents);
-  std::string helper_keys = command_line.GetSwitchValueASCII(kSwitchHelperKeys);
-  base::FilePath output = command_line.GetSwitchValuePath(kSwitchOutput);
+  if (!command_line.HasSwitch(kSwitchHelperKeys)) {
+    LOG(ERROR) << "aggregation_service_tool expects " << kSwitchHelperKeys
+               << " to be specified.";
+    PrintHelp();
+    return 1;
+  }
 
-  std::unique_ptr<content::TestAggregationService> agg_service =
-      content::TestAggregationService::Create();
+  // Either output or reporting url should be specified, but not both.
+  if (!(command_line.HasSwitch(kSwitchOutput) ^
+        command_line.HasSwitch(kSwitchReportingUrl))) {
+    LOG(ERROR) << "aggregation_service_tool expects either " << kSwitchOutput
+               << " or " << kSwitchReportingUrl
+               << " to be specified, but not both.";
+    PrintHelp();
+    return 1;
+  }
+
+  aggregation_service::AggregationServiceTool tool;
+
+  std::string helper_keys = command_line.GetSwitchValueASCII(kSwitchHelperKeys);
 
   // `helper_keys` is formatted like "a.com:keys1.json,b.com:keys2.json".
   base::StringPairs kv_pairs;
   base::SplitStringIntoKeyValuePairs(helper_keys, /*key_value_delimiter=*/':',
                                      /*key_value_pair_delimiter=*/',',
                                      &kv_pairs);
-
-  // Send each origin's specified public keys to the tool's storage.
-  for (const auto& kv : kv_pairs) {
-    url::Origin origin = url::Origin::Create(GURL("https://" + kv.first));
-    bool succeeded = false;
-    base::RunLoop run_loop;
-    SetPublicKeysFromFile(
-        origin, kv.second, agg_service.get(),
-        base::BindOnce(
-            [](base::OnceClosure quit, bool& succeeded_out, bool succeeded_in) {
-              succeeded_out = succeeded_in;
-              std::move(quit).Run();
-            },
-            run_loop.QuitClosure(), std::ref(succeeded)));
-    run_loop.Run();
-    if (!succeeded) {
-      LOG(ERROR)
-          << "aggregation_service_tool failed to set public keys for origin: "
-          << origin << ".";
-      return 1;
-    }
+  if (!tool.SetPublicKeys(kv_pairs)) {
+    LOG(ERROR) << "aggregation_service_tool failed to set public keys.";
+    return 1;
   }
 
   // TODO(crbug.com/1217824): Interact with the assembler to create an encrypted
   // report.
 
-  // TODO(crbug.com/1218124): Returning that report (e.g. by saving to disk).
+  base::Value report_contents;
+
+  bool succeeded = false;
+  if (command_line.HasSwitch(kSwitchOutput)) {
+    base::FilePath output = command_line.GetSwitchValuePath(kSwitchOutput);
+    succeeded = tool.WriteReportToFile(report_contents, output);
+
+    if (!succeeded) {
+      LOG(ERROR) << "aggregation_service_tool failed to write to " << output
+                 << ".";
+    }
+  } else {
+    std::string reporting_url =
+        command_line.GetSwitchValueASCII(kSwitchReportingUrl);
+    succeeded = tool.SendReport(report_contents, GURL(reporting_url));
+
+    if (!succeeded) {
+      LOG(ERROR) << "aggregation_service_tool failed to send the report to "
+                 << reporting_url << ".";
+    }
+  }
+
+  if (!succeeded)
+    return 1;
 
   return 0;
 }
