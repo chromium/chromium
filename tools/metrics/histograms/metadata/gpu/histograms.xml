@@ -443,7 +443,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.CreateSwapChainForComposition"
-    enum="Hresult" expires_after="2021-10-04">
+    enum="Hresult" expires_after="2022-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -508,7 +508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DcompDeviceCreateSurface" enum="Hresult"
-    expires_after="2021-10-04">
+    expires_after="2022-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -549,7 +549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.HardwareOverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2021-10-01">
+    enum="BooleanOverlaySupported" expires_after="2022-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -621,7 +621,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="GPU.DirectComposition.SwapChainCreationResult3"
-    enum="Hresult" expires_after="2021-10-04">
+    enum="Hresult" expires_after="2022-10-01">
 <!-- Name completed by histogram_suffixes name="GPU.ProtectedVideoType" -->
 
   <owner>magchen@chromium.org</owner>
