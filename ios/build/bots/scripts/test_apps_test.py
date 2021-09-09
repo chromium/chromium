@@ -1,9 +1,9 @@
+#!/usr/bin/env vpython
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Unittests for test_apps.py."""
 
-from test_runner import TestRunner
 import mock
 import os
 import unittest
@@ -15,7 +15,6 @@ import test_runner_test
 
 
 _TEST_APP_PATH = '/path/to/test_app.app'
-_HOST_APP_PATH = '/path/to/host_app.app'
 _BUNDLE_ID = 'org.chromium.gtest.test-app'
 _MODULE_NAME = 'test_app'
 _XCTEST_PATH = '/PlugIns/boringssl_ssl_tests_module.xctest'

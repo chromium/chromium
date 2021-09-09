@@ -12,7 +12,7 @@ USE_PYTHON3 = True
 
 def _RunTestRunnerUnitTests(input_api, output_api):
   """ Runs iOS test runner unit tests """
-  files = ['.*_test.py']
+  files = ['.*_test.py$']
 
   return input_api.canned_checks.RunUnitTestsInDirectory(
       input_api, output_api, '.', files_to_check=files)

@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,7 +10,7 @@ import mock
 import os
 import unittest
 
-from test_result_util import ResultCollection, TestResult, TestStatus
+from test_result_util import TestStatus
 import test_runner
 import test_runner_test
 import xcode_log_parser
