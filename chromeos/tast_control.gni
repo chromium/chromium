@@ -49,4 +49,7 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1247485
   "inputs.PhysicalKeyboardInputFields.us_en",
   "inputs.VirtualKeyboardAccent",
+
+  # crbug.com/1248021
+  "mlservice.WebHandwritingRecognition",
 ]
