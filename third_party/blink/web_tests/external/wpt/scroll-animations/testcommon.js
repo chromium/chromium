@@ -15,7 +15,10 @@ function setupScrollTimelineTest(
   let scroller = document.createElement('div');
   scroller.style.width = '100px';
   scroller.style.height = '100px';
-  scroller.style.overflow = 'scroll';
+  // Hide the scrollbars, but maintain the ability to scroll. This setting
+  // ensures that variability in scrollbar sizing does not contribute to test
+  // failures or flakes.
+  scroller.style.overflow = 'hidden';
   for (const [key, value] of scrollerOverrides) {
     scroller.style[key] = value;
   }
@@ -122,9 +125,7 @@ function assert_percents_approx_equal(actual, expected, maxScroll,
 
 function assert_percents_equal(actual, expected, description) {
   // Rough estimate of the default size of the scrollable area based on
-  // sizes in setupScrollTimelineTest. This size estimate ignores the height and
-  // width of the scrollbar, but nonetheless provides a conservative estimate
-  // that may be used to compute a realistic tolerance.
+  // sizes in setupScrollTimelineTest.
   const defaultScrollRange = 400;
   return assert_percents_approx_equal(actual, expected, defaultScrollRange,
                                       description);

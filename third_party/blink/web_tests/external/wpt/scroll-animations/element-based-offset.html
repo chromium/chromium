@@ -85,7 +85,9 @@
       await waitForNextFrame();
 
       const animation = createScrollLinkedAnimation(t, timeline);
-      const scrollRange = end.offsetTop - start.offsetTop;
+      const scrollRange = (config.orientation == 'vertical')
+          ? end.offsetTop - start.offsetTop
+          : end.offsetLeft - start.offsetLeft;
 
       // Verify initial start and current times in Idle state.
       assert_equals(animation.currentTime, null,
@@ -119,19 +121,22 @@
       }
 
       await waitForNextFrame();
-      assert_percents_equal(
+      assert_percents_approx_equal(
           animation.timeline.currentTime,
           config.expectedCurrentTime,
+          scrollRange,
           "The timeline current time corresponds to the scroll position of " +
           "the scroller.");
-      assert_percents_equal(
+      assert_percents_approx_equal(
           animation.currentTime,
           config.expectedCurrentTime,
+          scrollRange,
           "The animation current time corresponds to the scroll position of " +
           "the scroller.");
-      assert_percents_equal(
+      assert_percents_approx_equal(
           animation.effect.getComputedTiming().localTime,
           config.expectedCurrentTime,
+          scrollRange,
           "Effect local time corresponds to the scroll position of the " +
           "scroller.");
     }, description);

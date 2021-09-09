@@ -59,14 +59,30 @@ promise_test(async t => {
   // current time.
   await waitForNextFrame();
 
-  assert_percents_equal(blockScrollTimeline.currentTime, 12.048,
-                        'Scrolled block timeline');
-  assert_percents_equal(inlineScrollTimeline.currentTime, 18.072,
-                        'Scrolled inline timeline');
-  assert_percents_equal(horizontalScrollTimeline.currentTime, 18.072,
-                        'Scrolled horizontal timeline');
-  assert_percents_equal(verticalScrollTimeline.currentTime, 12.048,
-                        'Scrolled vertical timeline');
+  const inlineScrollRange = scroller.scrollWidth - scroller.clientWidth;
+  const expectedInlineCurrentTime =
+      100 * scroller.scrollLeft / inlineScrollRange;
+
+  const blockScrollRange = scroller.scrollHeight - scroller.clientHeight;
+  const expectedBlockCurrentTime =
+      100 * scroller.scrollTop / blockScrollRange;
+
+  assert_percents_approx_equal(blockScrollTimeline.currentTime,
+                               expectedBlockCurrentTime,
+                               blockScrollRange,
+                               'Scrolled block timeline');
+  assert_percents_approx_equal(inlineScrollTimeline.currentTime,
+                               expectedInlineCurrentTime,
+                               inlineScrollRange,
+                               'Scrolled inline timeline');
+  assert_percents_approx_equal(horizontalScrollTimeline.currentTime,
+                               expectedInlineCurrentTime,
+                               inlineScrollRange,
+                               'Scrolled horizontal timeline');
+  assert_percents_approx_equal(verticalScrollTimeline.currentTime,
+                               expectedBlockCurrentTime,
+                               blockScrollRange,
+                               'Scrolled vertical timeline');
 }, 'currentTime calculates the correct time based on scroll progress');
 
 
