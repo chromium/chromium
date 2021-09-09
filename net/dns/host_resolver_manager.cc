@@ -1345,6 +1345,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                        !client_->CanQueryAdditionalTypesViaInsecureDns()))
         return;
 
+      httpssvc_metrics_.emplace(/*expect_intact=*/false);
       transactions_needed_.push_back(DnsQueryType::HTTPS);
       return;
     }
@@ -1535,6 +1536,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         OnFailure(net_error, /*ttl=*/absl::nullopt, dns_query_type);
         return;
       }
+    } else if (dns_query_type == DnsQueryType::HTTPS) {
+      // Just to record metrics about successful HTTPS transactions as a side
+      // effect of the IsFatal...() call.
+      CHECK(!IsFatalHttpsTransactionFailure(net_error, response));
     }
 
     HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -1588,10 +1593,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
     // or "ws" request.
-    if (features::kUseDnsHttpsSvcbHttpUpgrade.Get() &&
-        dns_query_type == DnsQueryType::HTTPS && results.error() == OK &&
-        (GetScheme(host_) == url::kHttpScheme ||
-         GetScheme(host_) == url::kWsScheme)) {
+    if (dns_query_type == DnsQueryType::HTTPS &&
+        ShouldTriggerHttpToHttpsUpgrade(results)) {
       OnFailure(ERR_DNS_NAME_HTTPS_ONLY, results.GetOptionalTtl(),
                 dns_query_type);
       return;
@@ -1648,26 +1651,39 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
   bool IsFatalHttpsTransactionFailure(int transaction_error,
                                       const DnsResponse* response) {
-    // Shouldn't call this method if there wasn't a transaction failure.
-    DCHECK_NE(transaction_error, OK);
-    DCHECK(transaction_error != ERR_NAME_NOT_RESOLVED || !response ||
-           !response->IsValid());
+    // These values are logged to UMA. Entries should not be renumbered and
+    // numeric values should never be reused. Please keep in sync with
+    // "DNS.SvcbHttpsTransactionError" in
+    // src/tools/metrics/histograms/enums.xml.
+    enum class HttpsTransactionError {
+      kNoError = 0,
+      kInsecureError = 1,
+      kNonFatalError = 2,
+      kFatalErrorDisabled = 3,
+      kFatalErrorEnabled = 4,
+      kMaxValue = kFatalErrorEnabled
+    } error;
 
-    // HTTPS failures are never fatal via insecure DNS.
-    if (!secure_)
-      return false;
-
-    // Feature must be enabled for HTTPS to be fatal.
-    if (!features::kUseDnsHttpsSvcbEnforceSecureResponse.Get())
-      return false;
-
-    // For server failures, only SERVFAIL is fatal.
-    if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
-        response->rcode() != dns_protocol::kRcodeSERVFAIL) {
-      return false;
+    if (transaction_error == OK ||
+        (transaction_error == ERR_NAME_NOT_RESOLVED && response &&
+         response->IsValid())) {
+      error = HttpsTransactionError::kNoError;
+    } else if (!secure_) {
+      // HTTPS failures are never fatal via insecure DNS.
+      error = HttpsTransactionError::kInsecureError;
+    } else if (transaction_error == ERR_DNS_SERVER_FAILED && response &&
+               response->rcode() != dns_protocol::kRcodeSERVFAIL) {
+      // For server failures, only SERVFAIL is fatal.
+      error = HttpsTransactionError::kNonFatalError;
+    } else if (features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
+      error = HttpsTransactionError::kFatalErrorEnabled;
+    } else {
+      error = HttpsTransactionError::kFatalErrorDisabled;
     }
 
-    return true;
+    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.SvcbHttpsTransactionError",
+                              error);
+    return error == HttpsTransactionError::kFatalErrorEnabled;
   }
 
   // Postprocesses the transactions' aggregated results after all
@@ -1730,8 +1746,10 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       int net_error,
       absl::optional<base::TimeDelta> ttl = absl::nullopt,
       absl::optional<DnsQueryType> failed_transaction_type = absl::nullopt) {
-    if (httpssvc_metrics_)
+    if (httpssvc_metrics_ && failed_transaction_type &&
+        IsAddressType(failed_transaction_type.value())) {
       httpssvc_metrics_->SaveAddressQueryFailure();
+    }
 
     DCHECK_NE(OK, net_error);
 
@@ -1829,6 +1847,39 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       timeout_timer_.Start(
           FROM_HERE, timeout,
           base::BindOnce(&DnsTask::OnTimeout, base::Unretained(this)));
+  }
+
+  bool ShouldTriggerHttpToHttpsUpgrade(const HostCache::Entry& results) {
+    // These values are logged to UMA. Entries should not be renumbered and
+    // numeric values should never be reused. Please keep in sync with
+    // "DNS.HttpUpgradeResult" in src/tools/metrics/histograms/enums.xml.
+    enum class UpgradeResult {
+      kUpgradeTriggered = 0,
+      kNoHttpsRecord = 1,
+      kHttpsScheme = 2,
+      kOtherScheme = 3,
+      kUpgradeDisabled = 4,
+      kMaxValue = kUpgradeDisabled
+    } upgrade_result;
+
+    if (results.error() != OK) {
+      upgrade_result = UpgradeResult::kNoHttpsRecord;
+    } else if (GetScheme(host_) == url::kHttpsScheme ||
+               GetScheme(host_) == url::kWssScheme) {
+      upgrade_result = UpgradeResult::kHttpsScheme;
+    } else if (GetScheme(host_) != url::kHttpScheme &&
+               GetScheme(host_) != url::kWsScheme) {
+      // This is an unusual case because HTTPS would normally not be requested
+      // if the scheme is not http(s):// or ws(s)://.
+      upgrade_result = UpgradeResult::kOtherScheme;
+    } else if (!features::kUseDnsHttpsSvcbHttpUpgrade.Get()) {
+      upgrade_result = UpgradeResult::kUpgradeDisabled;
+    } else {
+      upgrade_result = UpgradeResult::kUpgradeTriggered;
+    }
+
+    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.HttpUpgrade", upgrade_result);
+    return upgrade_result == UpgradeResult::kUpgradeTriggered;
   }
 
   DnsClient* client_;

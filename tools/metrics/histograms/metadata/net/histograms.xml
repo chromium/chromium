@@ -797,6 +797,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsTask.HttpUpgrade" enum="DNS.HttpUpgradeResult"
+    expires_after="2022-08-14">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Enumeration of whether or not a DNS-based http-&gt;https upgrade is
+    triggered by HostResolver and the reason why. Recorded for all successfully
+    completed HTTPS record transactions.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsTask.SuccessTime" units="ms"
     expires_after="2022-02-20">
   <owner>ericorth@chromium.org</owner>
@@ -805,6 +816,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Duration of time taken by DnsTask (the grouping of all individual DNS
     queries for a single instance of resolving a name) in resolutions that
     succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTask.SvcbHttpsTransactionError"
+    enum="DNS.SvcbHttpsTransactionError" expires_after="2022-08-14">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Enumeration of whether or not an HTTPS (SVCB) record transaction succeeded
+    and whether or not any failure is fatal to the DnsTask. Recorded for all
+    completed HTTPS record transactions.
   </summary>
 </histogram>
 

@@ -20810,6 +20810,15 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Updated stale entry"/>
 </enum>
 
+<enum name="DNS.HttpUpgradeResult">
+  <int value="0" label="HTTPS record received; upgrade triggered"/>
+  <int value="1" label="No HTTPS record received"/>
+  <int value="2" label="HTTPS record received; no upgrade (already https/wss)"/>
+  <int value="3" label="HTTPS record received; no upgrade (not http(s)/ws(s))"/>
+  <int value="4"
+      label="HTTPS record received; http/ws; no upgrade (Finch-disabled)"/>
+</enum>
+
 <enum name="DNS.StaleHostResolverRequestOutcome">
   <int value="0"
       label="Returned synchronously (cache, hosts, IP literal etc.)"/>
@@ -20823,6 +20832,15 @@ Called by update_debug_scenarios.py.-->
   <int value="6"
       label="Returned stale cached result; network got NAME_NOT_RESOLVED."/>
   <int value="7" label="Returned stale result synchronously."/>
+</enum>
+
+<enum name="DNS.SvcbHttpsTransactionError">
+  <int value="0" label="No transaction error"/>
+  <int value="1" label="Insecure DNS transaction error (never task-fatal)"/>
+  <int value="2" label="Non-task-fatal Secure DNS transaction error"/>
+  <int value="3"
+      label="Would be task-fatal transaction error but finch param disabled"/>
+  <int value="4" label="Task-fatal transaction error"/>
 </enum>
 
 <enum name="DNS.UdpIdMismatchStatus">
