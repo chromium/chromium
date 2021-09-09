@@ -8,6 +8,7 @@ import {MockChromeFileManagerPrivateDirectoryChanged, MockChromeStorageAPI} from
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
+import {Crostini} from '../../externs/background/crostini.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -15,7 +16,6 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {BannerController} from './banner_controller.js';
 import {DirectoryModel} from './directory_model.js';
 import {createFakeDirectoryModel} from './mock_directory_model.js';
-import {EducationalBanner} from './ui/banners/educational_banner.js';
 
 /** @type {!BannerController} */
 let controller;
@@ -354,7 +354,8 @@ export function setUp() {
       return volumeManagerGetVolumeInfoType;
     }
   });
-  controller = new BannerController(directoryModel, volumeManager);
+  const crostini = /** @type {!Crostini} */ ({});
+  controller = new BannerController(directoryModel, volumeManager, crostini);
   controller.disableBannersForTesting();
 
   mockDate = mockDateNow();

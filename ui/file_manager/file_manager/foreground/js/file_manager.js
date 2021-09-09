@@ -739,8 +739,8 @@ export class FileManager extends EventTarget {
     this.ui_.listContainer.endBatchUpdates();
 
     if (util.isBannerFrameworkEnabled()) {
-      const bannerController =
-          new BannerController(this.directoryModel_, this.volumeManager_);
+      const bannerController = new BannerController(
+          this.directoryModel_, this.volumeManager_, assert(this.crostini_));
       this.ui_.initBanners(bannerController);
       bannerController.initialize();
     } else {

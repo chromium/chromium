@@ -6,6 +6,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
+import {Crostini} from '../../externs/background/crostini.js';
 import {Banner} from '../../externs/banner.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -65,8 +66,9 @@ export class BannerController extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!VolumeManager} volumeManager
+   * @param {!Crostini} crostini
    */
-  constructor(directoryModel, volumeManager) {
+  constructor(directoryModel, volumeManager, crostini) {
     super();
 
     /**
@@ -130,6 +132,14 @@ export class BannerController extends EventTarget {
      * @private {!DirectoryModel}
      */
     this.directoryModel_ = directoryModel;
+
+    /**
+     * The Crostini background object maintains a list of shared paths with
+     * Crostini and PluginVM. This is used to show the Crostini / PluginVM
+     * shared with state banners.
+     * @private {!Crostini}
+     */
+    this.crostini_ = crostini;
 
     /**
      * The volume manager used to extract volumes from events when the

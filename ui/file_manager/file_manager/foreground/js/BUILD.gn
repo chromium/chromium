@@ -204,6 +204,7 @@ js_library("banner_controller") {
     "//ui/file_manager/file_manager/externs:banner",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -222,6 +223,7 @@ js_unittest("banner_controller_unittest.m") {
     "//ui/file_manager/file_manager/externs:banner",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/externs/background:crostini",
   ]
 }
 
