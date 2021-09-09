@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -82,12 +81,9 @@ class TopControlsSlideControllerTest;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
 namespace lens {
 class LensSidePanelController;
 }  // namespace lens
-#endif
 
 namespace ui {
 class NativeTheme;
@@ -196,12 +192,9 @@ class BrowserView : public BrowserWindow,
     return extensions_side_panel_controller_.get();
   }
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
   lens::LensSidePanelController* lens_side_panel_controller() {
     return lens_side_panel_controller_.get();
   }
-#endif
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -947,11 +940,8 @@ class BrowserView : public BrowserWindow,
   // The Lens side panel.
   SidePanel* lens_side_panel_ = nullptr;
 
-#if (defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // A controller that handles content hosted in the Lens side panel.
   std::unique_ptr<lens::LensSidePanelController> lens_side_panel_controller_;
-#endif
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

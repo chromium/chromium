@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_LENS_LENS_SIDE_PANEL_CONTROLLER_H_
 
-#include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 struct OpenURLParams;
 }  // namespace content
+
+namespace views {
+class WebView;
+}  // namespace views
 
 class BrowserView;
 class SidePanel;
@@ -32,9 +34,6 @@ class LensSidePanelController : public content::WebContentsObserver {
   // Closes the Lens side panel.
   void Close();
 
-  // Launches the Lens URL in a new tab and closes the side panel.
-  void LoadResultsInNewTab();
-
  private:
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
@@ -46,10 +45,9 @@ class LensSidePanelController : public content::WebContentsObserver {
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
-  std::unique_ptr<content::OpenURLParams> lens_web_params_;
   SidePanel* side_panel_;
   BrowserView* browser_view_;
-  lens::LensSidePanelView* side_panel_view_;
+  views::WebView* side_panel_webview_;
 };
 
 }  // namespace lens

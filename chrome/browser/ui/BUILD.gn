@@ -103,6 +103,7 @@ static_library("ui") {
     "interventions/intervention_infobar_delegate.cc",
     "interventions/intervention_infobar_delegate.h",
     "javascript_dialogs/chrome_javascript_app_modal_dialog_view_factory.h",
+    "lens/lens_side_panel_helper.h",
     "login/login_handler.cc",
     "login/login_handler.h",
     "login/login_navigation_throttle.cc",
@@ -4046,6 +4047,9 @@ static_library("ui") {
       "views/javascript_tab_modal_dialog_view_views.h",
       "views/layout/interpolating_layout_manager.cc",
       "views/layout/interpolating_layout_manager.h",
+      "views/lens/lens_side_panel_controller.cc",
+      "views/lens/lens_side_panel_controller.h",
+      "views/lens/lens_side_panel_helper.cc",
       "views/location_bar/content_setting_image_view.cc",
       "views/location_bar/content_setting_image_view.h",
       "views/location_bar/cookie_controls_bubble_view.cc",
@@ -4775,14 +4779,6 @@ static_library("ui") {
     }
 
     if (is_chrome_branded) {
-      sources += [
-        "lens/lens_side_panel_helper.h",
-        "views/lens/lens_side_panel_controller.cc",
-        "views/lens/lens_side_panel_controller.h",
-        "views/lens/lens_side_panel_helper.cc",
-        "views/lens/lens_side_panel_view.cc",
-        "views/lens/lens_side_panel_view.h",
-      ]
       deps += [ "//chrome/browser/ui/media_router/internal/vector_icons" ]
     }
   }
