@@ -37,6 +37,10 @@ Polymer({
    * @return {string}
    */
   computeRoamingText_() {
+    if (!this.network.typeProperties) {
+      return '';
+    }
+
     if (!this.network.typeProperties.cellular.roaming) {
       return this.i18n('networkRoamingOff');
     }
@@ -60,6 +64,10 @@ Polymer({
    * @return {string}
    */
   computeSimLockedText_() {
+    if (!this.network.typeProperties) {
+      return '';
+    }
+
     const {simLocked, lockType} = this.network.typeProperties.cellular;
     return (simLocked && lockType !== LockType.kNone) ?
         this.i18n('networkSimLockedText', getLockType(lockType)) :
