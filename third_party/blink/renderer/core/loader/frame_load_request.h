@@ -73,10 +73,6 @@ struct CORE_EXPORT FrameLoadRequest {
     return resource_request_;
   }
 
-  // TODO(japhet): This is only used from frame_loader.cc, and can probably be
-  // an implementation detail there.
-  ClientRedirectPolicy ClientRedirect() const;
-
   void SetClientRedirectReason(ClientNavigationReason reason) {
     client_navigation_reason_ = reason;
   }

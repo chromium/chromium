@@ -177,10 +177,10 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
 
   std::vector<GURL> redirects = GetRedirects(first_url);
 
-  // There should be 1 redirect from first_url, because the anchor location
-  // change that occurs should be flagged as a redirect but the meta-refresh
+  // There should be no redirect from first_url, because the anchor location
+  // change is not considered as client redirect and the meta-refresh
   // won't have fired yet.
-  ASSERT_EQ(1U, redirects.size());
+  ASSERT_EQ(0U, redirects.size());
   EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().ref());
 }
 
