@@ -36,8 +36,9 @@ class MockTextInputDelegate : public TextInput::Delegate {
   MOCK_METHOD1(OnVirtualKeyboardVisibilityChanged, void(bool));
   MOCK_METHOD1(SetCompositionText, void(const ui::CompositionText&));
   MOCK_METHOD1(Commit, void(const std::u16string&));
-  MOCK_METHOD1(SetCursor, void(const gfx::Range&));
-  MOCK_METHOD1(DeleteSurroundingText, void(const gfx::Range&));
+  MOCK_METHOD2(SetCursor, void(base::StringPiece16, const gfx::Range&));
+  MOCK_METHOD2(DeleteSurroundingText,
+               void(base::StringPiece16, const gfx::Range&));
   MOCK_METHOD1(SendKey, void(const ui::KeyEvent&));
   MOCK_METHOD1(OnLanguageChanged, void(const std::string&));
   MOCK_METHOD1(OnTextDirectionChanged,
@@ -320,7 +321,7 @@ TEST_F(TextInputTest, SurroundingText) {
   EXPECT_FALSE(text_input()->GetTextFromRange(gfx::Range(0, 1), &got_text));
 
   std::u16string text = u"surrounding\u3000text";
-  text_input()->SetSurroundingText(text, 11, 12);
+  text_input()->SetSurroundingText(text, gfx::Range(11, 12));
 
   EXPECT_TRUE(text_input()->GetTextRange(&range));
   EXPECT_EQ(gfx::Range(0, text.size()).ToString(), range.ToString());
@@ -331,9 +332,9 @@ TEST_F(TextInputTest, SurroundingText) {
   EXPECT_TRUE(text_input()->GetTextFromRange(gfx::Range(11, 12), &got_text));
   EXPECT_EQ(text.substr(11, 1), got_text);
 
-  // DeleteSurroundingText receives the range in UTF8 -- so (11, 14) range is
-  // expected.
-  EXPECT_CALL(*delegate(), DeleteSurroundingText(gfx::Range(11, 14))).Times(1);
+  EXPECT_CALL(*delegate(), DeleteSurroundingText(base::StringPiece16(text),
+                                                 gfx::Range(11, 12)))
+      .Times(1);
   text_input()->ExtendSelectionAndDelete(0, 0);
 
   size_t composition_size = std::string("composition").size();
@@ -349,7 +350,7 @@ TEST_F(TextInputTest, SurroundingText) {
 
 TEST_F(TextInputTest, GetTextRange) {
   std::u16string text = u"surrounding text";
-  text_input()->SetSurroundingText(text, 11, 12);
+  text_input()->SetSurroundingText(text, gfx::Range(11, 12));
 
   SetCompositionText(u"composition");
 

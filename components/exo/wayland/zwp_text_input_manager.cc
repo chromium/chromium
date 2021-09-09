@@ -10,6 +10,7 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/display.h"
 #include "components/exo/text_input.h"
@@ -19,7 +20,6 @@
 #include "ui/base/ime/utf_offset.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
-
 
 namespace exo {
 namespace wayland {
@@ -114,14 +114,26 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
-  void SetCursor(const gfx::Range& selection) override {
-    zwp_text_input_v1_send_cursor_position(text_input_, selection.end(),
-                                           selection.start());
+  void SetCursor(base::StringPiece16 surrounding_text,
+                 const gfx::Range& selection) override {
+    std::vector<size_t> offsets{selection.start(), selection.end()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    zwp_text_input_v1_send_cursor_position(text_input_,
+                                           static_cast<uint32_t>(offsets[1]),
+                                           static_cast<uint32_t>(offsets[0]));
   }
 
-  void DeleteSurroundingText(const gfx::Range& range) override {
-    zwp_text_input_v1_send_delete_surrounding_text(text_input_, range.start(),
-                                                   range.length());
+  void DeleteSurroundingText(base::StringPiece16 surrounding_text,
+                             const gfx::Range& range) override {
+    std::vector<size_t> offsets{range.GetMin(), range.GetMax()};
+    base::UTF16ToUTF8AndAdjustOffsets(surrounding_text, &offsets);
+    // Currently, the arguments are conflicting with spec.
+    // However, the only client, Lacros, also interprets wrongly in the same
+    // way so just fixing here could cause visible regression.
+    // TODO(crbug.com/1227590): Fix the behavior with versioning.
+    zwp_text_input_v1_send_delete_surrounding_text(
+        text_input_, static_cast<uint32_t>(offsets[0]),
+        static_cast<uint32_t>(offsets[1] - offsets[0]));
   }
 
   void SendKey(const ui::KeyEvent& event) override {
@@ -232,14 +244,14 @@ void text_input_set_surrounding_text(wl_client* client,
                                      uint32_t cursor,
                                      uint32_t anchor) {
   TextInput* text_input = GetUserDataAs<TextInput>(resource);
-  auto utf16_cursor = ui::Utf16OffsetFromUtf8Offset(text, cursor);
-  if (!utf16_cursor)
+  // TODO(crbug.com/1227590): Selection range should keep cursor/anchor
+  // relationship.
+  auto minmax = std::minmax(cursor, anchor);
+  std::vector<size_t> offsets{minmax.first, minmax.second};
+  std::u16string u16_text = base::UTF8ToUTF16AndAdjustOffsets(text, &offsets);
+  if (offsets[0] == std::u16string::npos || offsets[1] == std::u16string::npos)
     return;
-  auto utf16_anchor = ui::Utf16OffsetFromUtf8Offset(text, anchor);
-  if (!utf16_anchor)
-    return;
-  text_input->SetSurroundingText(base::UTF8ToUTF16(text), *utf16_cursor,
-                                 *utf16_anchor);
+  text_input->SetSurroundingText(u16_text, gfx::Range(offsets[0], offsets[1]));
 }
 
 void text_input_set_content_type(wl_client* client,

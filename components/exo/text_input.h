@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/text_input_client.h"
@@ -53,12 +54,21 @@ class TextInput : public ui::TextInputClient,
     // Commit |text| to the current text input session.
     virtual void Commit(const std::u16string& text) = 0;
 
-    // Set the cursor position. The range should be in bytes offset.
-    virtual void SetCursor(const gfx::Range& selection) = 0;
+    // Set the cursor position.
+    // |surrounding_text| is the current surrounding text.
+    // The |selection| range is in UTF-16 offsets of the current surrounding
+    // text. |selection| must be a valid range, i.e.
+    // selection.IsValid() && selection.GetMax() <= surrounding_text.length().
+    virtual void SetCursor(base::StringPiece16 surrounding_text,
+                           const gfx::Range& selection) = 0;
 
-    // Delete the surrounding text of the current text input. The range should
-    // be in the bytes offset.
-    virtual void DeleteSurroundingText(const gfx::Range& range) = 0;
+    // Delete the surrounding text of the current text input.
+    // |surrounding_text| is the current surrounding text.
+    // The delete |range| is in UTF-16 offsets of the current surrounding text.
+    // |range| must be a valid range, i.e.
+    // range.IsValid() && range.GetMax() <= surrounding_text.length().
+    virtual void DeleteSurroundingText(base::StringPiece16 surrounding_text,
+                                       const gfx::Range& range) = 0;
 
     // Sends a key event.
     virtual void SendKey(const ui::KeyEvent& event) = 0;
@@ -95,9 +105,9 @@ class TextInput : public ui::TextInputClient,
   void Reset();
 
   // Sets the surrounding text in the app.
+  // |cursor_pos| is the range of |text|.
   void SetSurroundingText(const std::u16string& text,
-                          uint32_t cursor_pos,
-                          uint32_t anchor);
+                          const gfx::Range& cursor_pos);
 
   // Sets the text input type, mode, flags, and |should_do_learning|.
   void SetTypeModeFlags(ui::TextInputType type,
