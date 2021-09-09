@@ -100,7 +100,7 @@ const base::Feature kScrollableTabStripButtons{
 // Changes the layout of the chrome://settings page to only show one section at
 // a time, crbug.com/1204457.
 const base::Feature kSettingsLandingPageRedesign{
-    "SettingsLandingPageRedesign", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SettingsLandingPageRedesign", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Updated managed profile sign-in popup. https://crbug.com/1141224
