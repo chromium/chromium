@@ -19,9 +19,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/sync_settings_view_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -45,7 +43,7 @@ using l10n_util::GetNSString;
     advancedSettingsSigninNavigationController;
 // Coordinator to present Sync settings.
 @property(nonatomic, strong)
-    ChromeCoordinator<SyncSettingsViewState>* syncSettingsCoordinator;
+    ManageSyncSettingsCoordinator* syncSettingsCoordinator;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
 // State used to revert to if the user action is canceled during sign-in.
@@ -132,7 +130,7 @@ using l10n_util::GetNSString;
 
 #pragma mark - Private
 
-// Displays the Sync or Google services settings page.
+// Displays the Sync settings page.
 - (void)startSyncSettingsCoordinator {
   DCHECK(!self.syncSettingsCoordinator);
 

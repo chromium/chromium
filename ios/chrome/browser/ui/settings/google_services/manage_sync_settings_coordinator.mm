@@ -52,8 +52,7 @@ using signin_metrics::PromoAction;
     ManageSyncSettingsCommandHandler,
     SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
-    SyncObserverModelBridge,
-    SyncSettingsViewState> {
+    SyncObserverModelBridge> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
@@ -140,17 +139,6 @@ using signin_metrics::PromoAction;
 - (AuthenticationService*)authService {
   return AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
-}
-
-#pragma mark - SyncSettingsViewState
-
-- (BOOL)isSettingsViewShown {
-  return [self.viewController
-      isEqual:self.baseNavigationController.topViewController];
-}
-
-- (UINavigationItem*)navigationItem {
-  return self.viewController.navigationItem;
 }
 
 #pragma mark - Private

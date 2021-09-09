@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
-#import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -53,8 +52,7 @@ using signin_metrics::PromoAction;
     GoogleServicesSettingsCommandHandler,
     GoogleServicesSettingsViewControllerPresentationDelegate,
     ManageSyncSettingsCoordinatorDelegate,
-    SyncErrorSettingsCommandHandler,
-    SyncSettingsViewState>
+    SyncErrorSettingsCommandHandler>
 
 // Google services settings mediator.
 @property(nonatomic, strong) GoogleServicesSettingsMediator* mediator;
@@ -169,17 +167,6 @@ using signin_metrics::PromoAction;
 - (signin::IdentityManager*)identityManager {
   return IdentityManagerFactory::GetForBrowserState(
       self.browser->GetBrowserState());
-}
-
-#pragma mark - SyncSettingsViewState
-
-- (BOOL)isSettingsViewShown {
-  return [self.viewController
-      isEqual:self.baseNavigationController.topViewController];
-}
-
-- (UINavigationItem*)navigationItem {
-  return self.viewController.navigationItem;
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler
