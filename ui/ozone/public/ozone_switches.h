@@ -25,6 +25,8 @@ extern const char kDisableRunningAsSystemCompositor[];
 
 COMPONENT_EXPORT(OZONE_BASE) extern const char kDisableBufferBWCompression[];
 
+COMPONENT_EXPORT(OZONE_BASE) extern const char kOzoneOverrideScreenSize[];
+
 }  // namespace switches
 
 #endif  // UI_OZONE_PUBLIC_OZONE_SWITCHES_H_

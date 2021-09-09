@@ -15,9 +15,6 @@ bool IsChromeNativeHeadless();
 // Adds command line switches necessary for the native headless mode.
 void SetUpCommandLine(const base::CommandLine* command_line);
 
-// Sets headless display bounds.
-void SetHeadlessDisplayBounds();
-
 }  // namespace headless
 
 #endif  // CHROME_BROWSER_HEADLESS_HEADLESS_MODE_UTIL_H_

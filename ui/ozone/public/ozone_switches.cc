@@ -28,4 +28,7 @@ const char kDisableRunningAsSystemCompositor[] =
 // Disable buffer bandwidth compression
 const char kDisableBufferBWCompression[] = "disable-buffer-bw-compression";
 
+// Specifies ozone screen size.
+const char kOzoneOverrideScreenSize[] = "ozone-override-screen-size";
+
 }  // namespace switches
