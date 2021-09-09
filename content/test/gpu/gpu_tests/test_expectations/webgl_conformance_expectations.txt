@@ -216,6 +216,10 @@ crbug.com/1163292 [ win nvidia angle-d3d9 ] conformance/textures/misc/texture-co
 crbug.com/1105129 [ linux ] conformance/context/context-creation.html [ RetryOnFailure ]
 crbug.com/1105129 [ win ] conformance/context/context-creation.html [ RetryOnFailure ]
 
+# Temporary suppression while we wait for a spec update.
+# TODO(jmadill): Remove when possible.
+crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
+
 # Win / AMD / Passthrough command decoder / D3D11
 crbug.com/772037 [ win amd angle-d3d11 passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ RetryOnFailure ]
 

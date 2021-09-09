@@ -177,6 +177,10 @@ crbug.com/1085222 [ mac amd-0x6821 ] deqp/functional/gles3/shaderoperator/unary_
 crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperator/binary_operator_* [ Failure ]
 crbug.com/1198658 [ android android-pixel-2 ] deqp/functional/gles3/shaderoperator/unary_operator_* [ Failure ]
 
+# Temporary suppression while we wait for a spec update.
+# TODO(jmadill): Remove when possible.
+crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
+
 ####################
 # Win failures     #
 ####################
